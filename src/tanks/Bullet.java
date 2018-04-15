@@ -127,15 +127,19 @@ public class Bullet extends Movable
 					((Tank) o).destroy = true;
 				}
 			}
-			else if (o instanceof Bullet && o != this)
+			else if ((o instanceof Bullet || o instanceof Mine) && o != this)
 			{
-				if (!((Bullet)o).destroy)
+				if (!o.destroy)
 				{
 
 					double horizontalDist = Math.abs(this.posX - o.posX);
 					double verticalDist = Math.abs(this.posY - o.posY);
 
-					double bound = this.size / 2 + Bullet.bullet_size / 2;
+					int s = Bullet.bullet_size;
+					if (o instanceof Mine)
+						s = Mine.mine_size;
+					
+					double bound = this.size / 2 + s / 2;
 
 					if (horizontalDist < bound && verticalDist < bound)
 					{
@@ -143,7 +147,7 @@ public class Bullet extends Movable
 						this.vX = 0;
 						this.vY = 0;
 						this.destroy = true;
-						((Bullet)o).destroy = true;
+						o.destroy = true;
 
 						this.vX = 0;
 						this.vY = 0;

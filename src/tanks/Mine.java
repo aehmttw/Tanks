@@ -5,8 +5,9 @@ import java.awt.Graphics;
 
 public class Mine extends Movable
 {
+	public static int mine_size = 30;
 	int timer = 1000;
-	int size = 30;
+	int size = mine_size;
 	
 	Tank tank;
 	
@@ -36,6 +37,9 @@ public class Mine extends Movable
 	public void update()
 	{
 		this.timer--;
+		
+		if (destroy)
+			this.explode();
 		
 		if (this.timer <= 0)
 			this.explode();

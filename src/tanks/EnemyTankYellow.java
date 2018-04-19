@@ -2,21 +2,27 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankMines extends Tank
+public class EnemyTankYellow extends Tank
 {
 	int mineTimer = (int) (Math.random() * 800 + 200);
 	
-	public EnemyTankMines(double x, double y, int size) 
+	public EnemyTankYellow(double x, double y, int size) 
 	{
 		super(x, y, size, new Color(235, 200, 0));
 		this.liveBulletMax = 1;
 		this.hasCollided = true;
 	}
+	
+	public EnemyTankYellow(double x, double y, int size, double a) 
+	{
+		this(x, y, size);
+		this.angle = a;
+	}
 
 	@Override
 	public void shoot() 
 	{
-		Bullet b = new Bullet(this.posX, this.posY, Color.blue, 0, this);
+		Bullet b = new Bullet(this.posX, this.posY, Color.blue, 1, this);
 		b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/4);
 		b.moveOut(8);
 		b.effect = Bullet.BulletEffect.trail;

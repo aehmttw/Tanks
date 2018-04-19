@@ -1,6 +1,5 @@
 package tanks;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
@@ -18,6 +17,8 @@ public class Game
 	
 	public static PlayerTank player;
 	
+	static Screen gamescreen;
+	
 	public static void main(String[] args)
 	{
 		SwingUtilities.invokeLater
@@ -27,7 +28,7 @@ public class Game
 				@Override
 				public void run() 
 				{
-					Screen gamescreen = new Screen();
+					gamescreen = new Screen();
 					
 					start();
 
@@ -55,6 +56,10 @@ public class Game
 	
 	public static void start()
 	{
+		Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-green-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
+		level.loadLevel();
+		/*
+		 
 		player = new PlayerTank(3 * tank_size, 15 * tank_size, tank_size, new Color(0, 150, 255));
 		movables.add(player);
 			
@@ -120,13 +125,16 @@ public class Game
 		obstacles.add(new Obstacle(16, 16, Color.black));
 		obstacles.add(new Obstacle(16, 17, Color.black));
 
-		movables.add(new EnemyTankStationaryFire(7.5 * tank_size, 3.5 * tank_size, tank_size));
-		movables.add(new EnemyTankStationaryFire(20.5 * tank_size, 14.5 * tank_size, tank_size));
-		movables.add(new EnemyTankStationaryFire(22.5 * tank_size, 3.5 * tank_size, tank_size));
-		movables.add(new EnemyTankStationary(8.5 * tank_size, 9 * tank_size, tank_size));
-		movables.add(new EnemyTankFire(19.5 * tank_size, 9 * tank_size, tank_size));
-		movables.add(new EnemyTankMines(14 * tank_size, 5.5 * tank_size, tank_size));
+		movables.add(new EnemyTankGreen(7.5 * tank_size, 3.5 * tank_size, tank_size, Math.PI));
+		movables.add(new EnemyTankGreen(20.5 * tank_size, 14.5 * tank_size, tank_size));
+		movables.add(new EnemyTankGreen(22.5 * tank_size, 3.5 * tank_size, tank_size, Math.PI));
+		movables.add(new EnemyTankBrown(8.5 * tank_size, 9 * tank_size, tank_size));
+		movables.add(new EnemyTankMint(19.5 * tank_size, 9 * tank_size, tank_size, Math.PI));
+		movables.add(new EnemyTankYellow(14 * tank_size, 5.5 * tank_size, tank_size, Math.PI/2));
+		//movables.add(new EnemyTankStationaryFire(8.5 * tank_size, 9 * tank_size, tank_size));
+		//movables.add(new EnemyTankStationaryFire(19.5 * tank_size, 9 * tank_size, tank_size));
+		//movables.add(new EnemyTankStationaryFire(14 * tank_size, 9 * tank_size, tank_size));
 		
-		Panel.preGameTimer = 300;
+		Panel.preGameTimer = 300;*/
 	}
 }

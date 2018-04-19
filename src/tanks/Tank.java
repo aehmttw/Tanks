@@ -151,7 +151,7 @@ public abstract class Tank extends Movable
 	{
 		drawAge++;
 		g.setColor(this.color);
-		g.fillRect((int)this.posX - this.size / 2 + destroyTimer / 2 + Math.max(Game.tank_size - drawAge, 0) / 2, (int)this.posY - this.size / 2 + destroyTimer / 2 + Math.max(Game.tank_size - drawAge, 0) / 2, this.size - destroyTimer - Math.max(Game.tank_size - drawAge, 0), this.size - destroyTimer - Math.max(Game.tank_size - drawAge, 0));
+		Screen.fillRect(g, this.posX, this.posY, this.size - destroyTimer - Math.max(Game.tank_size - drawAge, 0), this.size - destroyTimer - Math.max(Game.tank_size - drawAge, 0));
 		this.turret.draw(g, angle);
 	}
 

@@ -33,7 +33,7 @@ public class AimRay
 		while (true)
 		{
 			age++;
-			//Game.movables.add(new Effect(this.posX, this.posY, Effect.EffectType.aimRay));
+			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.aimRay));
 			this.posX += this.vX;
 			this.posY += this.vY;
 

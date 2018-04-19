@@ -34,7 +34,7 @@ public class Effect extends Movable
 			Color col = new Color(255, green, 0, (int) (opacity * opacityMultiplier));
 			
 			p.setColor(col);
-			p.fillOval((int)(this.posX - size/2), (int)(this.posY - size/2), size, size);
+			Screen.fillOval(p, this.posX, this.posY, size, size);
 			if (this.age >= 20)
 				Game.removeEffects.add(this);
 		}
@@ -49,7 +49,7 @@ public class Effect extends Movable
 			Color col = new Color(127, 127, 127, (int) (opacity * opacityMultiplier * opacityModifier));
 			
 			p.setColor(col);
-			p.fillOval((int)(this.posX - size/2), (int)(this.posY - size/2), size, size);
+			Screen.fillOval(p, this.posX, this.posY, size, size);
 			if (this.age >= 200)
 				Game.removeEffects.add(this);
 		}
@@ -63,7 +63,7 @@ public class Effect extends Movable
 			Color col = new Color(127, 127, 127, (int) (opacity * opacityMultiplier));
 			
 			p.setColor(col);
-			p.fillOval((int)(this.posX - size/2), (int)(this.posY - size/2), size, size);
+			Screen.fillOval(p, this.posX, this.posY, size, size);
 			if (this.age >= 50)
 				Game.removeEffects.add(this);
 		}
@@ -71,7 +71,7 @@ public class Effect extends Movable
 		{
 			int size = 6;
 			p.setColor(Color.black);
-			p.fillOval((int)(this.posX - size/2), (int)(this.posY - size/2), size, size);
+			Screen.fillOval(p, this.posX, this.posY, size, size);
 			
 			Game.removeEffects.add(this);
 		}
@@ -80,7 +80,7 @@ public class Effect extends Movable
 			int size = Game.tank_size * 4;
 			int opacity = 100 - this.age * 5;
 			p.setColor(new Color(255, 0, 0, opacity));
-			p.fillRect((int)(this.posX - size/2), (int)(this.posY - size/2), size, size);
+			Screen.fillRect(p, this.posX, this.posY, size, size);
 			
 			if (this.age >= 20)
 				Game.removeEffects.add(this);

@@ -109,8 +109,8 @@ public class Panel extends JPanel
 		g.setColor(Color.red);
 		double mx = Screen.screen.getMouseX();
 		double my = Screen.screen.getMouseY();
-		g.drawOval((int)(mx-4), (int)(my-4), 8, 8);
-		g.drawOval((int)(mx-2), (int)(my-2), 4, 4);
+		Screen.drawOval(g, mx, my, 8, 8);
+		Screen.drawOval(g, mx, my, 4, 4);
 
 	}
 }

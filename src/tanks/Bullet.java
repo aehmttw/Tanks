@@ -203,7 +203,7 @@ public class Bullet extends Movable
 	{
 		double opacity = ((60 - destroyTimer) / 60.0);
 		p.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		p.fillOval((int)(posX - size / 2 - destroyTimer / 2), (int)(posY - size / 2 - destroyTimer / 2), size + destroyTimer, size + destroyTimer);
+		Screen.fillOval(p, posX, posY, size + destroyTimer, size + destroyTimer);
 	}
 
 }

@@ -2,7 +2,7 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankStationaryFire extends Tank
+public class EnemyTankGreen extends Tank
 {
 	double lockedAngle = 0;
 	double searchAngle = 0;
@@ -21,14 +21,14 @@ public class EnemyTankStationaryFire extends Tank
 	Phase searchPhase = Phase.clockwise;
 	Phase idlePhase = Phase.clockwise;
 
-	public EnemyTankStationaryFire(double x, double y, int size) 
+	public EnemyTankGreen(double x, double y, int size) 
 	{
 		super(x, y, size, new Color(150, 200, 0));
 		this.liveBulletMax = 1;
 		if (Math.random() < 0.5)
 			this.idlePhase = Phase.counterClockwise;
 	}
-	public EnemyTankStationaryFire(double x, double y, int size, double a) 
+	public EnemyTankGreen(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;

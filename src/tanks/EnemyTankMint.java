@@ -2,14 +2,20 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankFire extends Tank
+public class EnemyTankMint extends Tank
 {
 	int moveTime = 0;
 	
-	public EnemyTankFire(double x, double y, int size) 
+	public EnemyTankMint(double x, double y, int size) 
 	{
 		super(x, y, size, new Color(0, 150, 100));
 		this.liveBulletMax = 1;
+	}
+	
+	public EnemyTankMint(double x, double y, int size, double a) 
+	{
+		this(x, y, size);
+		this.angle = a;
 	}
 
 	@Override

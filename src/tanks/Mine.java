@@ -30,7 +30,7 @@ public class Mine extends Movable
 		if (timer < 150 && timer % 2 == 1)
 			p.setColor(Color.red);
 		
-		p.fillRect((int)(this.posX-s/2), (int)(this.posY-s/2), s, s);
+		Screen.fillRect(p, this.posX, this.posY, s, s);
 	}
 	
 	@Override

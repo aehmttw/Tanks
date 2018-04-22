@@ -33,7 +33,7 @@ public class Ray
 		while (true)
 		{
 			age++;
-			Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
+			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 
@@ -126,7 +126,7 @@ public class Ray
 						}
 						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10)
 						{
-							Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.fire));
+							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.fire));
 							return Game.movables.get(i);
 						}
 					}				
@@ -141,7 +141,7 @@ public class Ray
 		{
 			age++;
 			
-			Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
+			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 
@@ -151,10 +151,7 @@ public class Ray
 
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
-
-				double dx = this.posX - o.posX;
-				double dy = this.posY - o.posY;
-
+				
 				double bound = this.size / 2 + Obstacle.obstacle_size / 2;
 
 				if (horizontalDist < bound && verticalDist < bound)

@@ -112,7 +112,7 @@ public class Bullet extends Movable
 		{
 			Movable o = Game.movables.get(i);
 
-			if (o instanceof Tank)
+			if (o instanceof Tank && !o.destroy)
 			{
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
@@ -127,7 +127,7 @@ public class Bullet extends Movable
 					((Tank) o).destroy = true;
 				}
 			}
-			else if ((o instanceof Bullet || o instanceof Mine) && o != this)
+			else if ((o instanceof Bullet || o instanceof Mine) && o != this && !o.destroy)
 			{
 				if (!o.destroy)
 				{

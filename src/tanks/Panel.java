@@ -33,8 +33,14 @@ public class Panel extends JPanel
 				}
 				else
 				{
+					int tanks = 0;
 					for (int i = 0; i < Game.movables.size(); i++)
-						Game.movables.get(i).update();
+					{
+						Movable m = Game.movables.get(i);
+						m.update();
+						if (m instanceof Tank)
+							tanks++;
+					}
 
 					if (!Game.movables.contains(Game.player))
 					{
@@ -45,6 +51,9 @@ public class Panel extends JPanel
 						if (Obstacle.draw_size <= 0)
 							Game.reset();
 					}
+					
+					if (tanks <= 1)
+						Game.reset();
 				}
 				
 				for (int i = 0; i < Game.removeMovables.size(); i++)

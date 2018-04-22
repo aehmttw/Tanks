@@ -20,7 +20,7 @@ public class Screen extends JFrame
 	{
 		this.addMouseListener(new MouseInputListener());
 		this.addKeyListener(new KeyInputListener());
-		this.setSize((int)(sizeX * scale), (int) (sizeY * scale + 22));
+		this.setSize((int)(sizeX * scale), (int) ((sizeY + 22) * scale ));
 		this.setVisible(true);
 		Container visiblePart = this.getContentPane();
 		visiblePart.add(panel);
@@ -88,13 +88,13 @@ public class Screen extends JFrame
 	
 	public double getMouseY()
 	{
-		return (MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY()) / scale - 23;
+		return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY()) - 23) / scale ;
 	}
 	
 	public void setScreenSize(int x, int y)
 	{
 		sizeX = x;
 		sizeY = y;
-		this.setSize((int) (x * scale), (int) (y * scale + 22));
+		this.setSize((int) (x * scale), (int) ((y + 22) * scale));
 	}
 }

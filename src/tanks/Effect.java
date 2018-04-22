@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Effect extends Movable
 {
-	static enum EffectType {fire, smokeTrail, trail, aimRay, mineExplosion}
+	static enum EffectType {fire, smokeTrail, trail, ray, mineExplosion}
 	public EffectType type;
 	int age = 0;
 	
@@ -67,7 +67,7 @@ public class Effect extends Movable
 			if (this.age >= 50)
 				Game.removeEffects.add(this);
 		}
-		else if (this.type == EffectType.aimRay)
+		else if (this.type == EffectType.ray)
 		{
 			int size = 6;
 			p.setColor(Color.black);

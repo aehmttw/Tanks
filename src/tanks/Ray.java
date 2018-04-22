@@ -1,6 +1,6 @@
 package tanks;
 
-public class AimRay
+public class Ray
 {
 	int size = 10;
 	int bounces;
@@ -16,7 +16,7 @@ public class AimRay
 
 	Tank tank;
 
-	public AimRay(double x, double y, double angle, int bounces, Tank tank) 
+	public Ray(double x, double y, double angle, int bounces, Tank tank) 
 	{
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);
@@ -33,7 +33,7 @@ public class AimRay
 		while (true)
 		{
 			age++;
-			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.aimRay));
+			Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 
@@ -124,13 +124,61 @@ public class AimRay
 						{
 							this.inShooter = false;
 						}
-						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2)
+						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10)
 						{
-							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.fire));
+							Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.fire));
 							return Game.movables.get(i);
 						}
 					}				
 				}
+			}
+		}
+	}
+	
+	public int getDist() 
+	{
+		while (true)
+		{
+			age++;
+			
+			Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
+			this.posX += this.vX;
+			this.posY += this.vY;
+
+			for (int i = 0; i < Game.obstacles.size(); i++)
+			{
+				Obstacle o = Game.obstacles.get(i);
+
+				double horizontalDist = Math.abs(this.posX - o.posX);
+				double verticalDist = Math.abs(this.posY - o.posY);
+
+				double dx = this.posX - o.posX;
+				double dy = this.posY - o.posY;
+
+				double bound = this.size / 2 + Obstacle.obstacle_size / 2;
+
+				if (horizontalDist < bound && verticalDist < bound)
+				{
+					return age;
+				}
+
+			}
+
+			if (this.posX + this.size/2 > Screen.sizeX)
+			{
+				return this.age;
+			}
+			else if (this.posX - this.size/2 < 0)
+			{
+				return this.age;
+			}
+			else if (this.posY + this.size/2 > Screen.sizeY)
+			{
+				return this.age;
+			}
+			else if (this.posY - this.size/2 < 0)
+			{
+				return this.age;
 			}
 		}
 	}

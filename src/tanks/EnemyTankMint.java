@@ -5,7 +5,8 @@ import java.awt.Color;
 public class EnemyTankMint extends Tank
 {
 	int moveTime = 0;
-	
+	double aimAngle = 0;
+
 	public EnemyTankMint(double x, double y, int size) 
 	{
 		super(x, y, size, new Color(0, 150, 100));
@@ -33,13 +34,14 @@ public class EnemyTankMint extends Tank
 	{
 		if (Math.random() * 300 < 1 && this.liveBullets < this.liveBulletMax && !this.destroy)
 		{
-			AimRay a = new AimRay(this.posX, this.posY, this.angle, 0, this);
+			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
 			Movable m = a.getTarget();
 			//if (m != null)
 			//	System.out.println(((Tank)m).color);
 			
-			if (!(m instanceof Tank && !m.equals(Game.player)))
-				this.shoot();
+			if (!(m == null))
+				if(m.equals(Game.player))
+					this.shoot();
 		}
 		
 		if (this.moveTime <= 0 || hasCollided)
@@ -52,7 +54,19 @@ public class EnemyTankMint extends Tank
 			
 		//this.moveTime--;
 		
-		this.angle = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+		this.aimAngle = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+		
+		
+		if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
+		//if ((this.aimAngle - this.angle) % (Math.PI * 2) < (this.angle - this.aimAngle) % (Math.PI * 2))
+			this.angle+=0.02;
+		else
+			this.angle-=0.02;
+		
+		if (Math.abs(this.aimAngle - this.angle) < 0.02)
+			this.angle = this.aimAngle;
+		
+		this.angle = this.angle % (Math.PI * 2);
 		
 		super.update();
 	}

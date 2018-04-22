@@ -18,7 +18,9 @@ public class Level
 	
 	public void loadLevel()
 	{
-		Game.gamescreen.setScreenSize(Game.tank_size * Integer.parseInt(resolution[0]), Game.tank_size * Integer.parseInt(resolution[1]));
+		int sX = Integer.parseInt(resolution[0]);
+		int sY = Integer.parseInt(resolution[1]);
+		Game.gamescreen.setScreenSize(Game.tank_size * sX, Game.tank_size * sY);
 		for (int i = 0; i < obstaclesPos.length; i++)
 		{
 			String[] obs = obstaclesPos[i].split("-");

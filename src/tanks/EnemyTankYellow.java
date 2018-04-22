@@ -1,6 +1,7 @@
 package tanks;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class EnemyTankYellow extends Tank
 {
@@ -36,7 +37,7 @@ public class EnemyTankYellow extends Tank
 		{
 			if (Math.abs(this.posX - Game.player.posX) < 400 && Math.abs(this.posY - Game.player.posY) < 400)
 			{
-				AimRay a = new AimRay(this.posX, this.posY, this.angle, 0, this);
+				Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
 				Movable m = a.getTarget();
 				//if (m != null)
 				//	System.out.println(((Tank)m).color);
@@ -63,15 +64,40 @@ public class EnemyTankYellow extends Tank
 			this.setPolarMotion(angleV, 2.5);
 		}
 
+		double nearestX = 1000;
+		double nearestY = 1000;
+		double nearestTimer = 1000;
+
+		Movable nearest = null;
 		if (!laidMine)
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m instanceof Mine && Math.abs(this.posX - m.posX) < Game.tank_size * 2 && Math.abs(this.posY - m.posY) < Game.tank_size * 2)
+				if (m instanceof Mine && Math.abs(this.posX - m.posX) < Game.tank_size * 3 && Math.abs(this.posY - m.posY) < Game.tank_size * 3)
 				{
-					this.setMotionAwayFromDirection(m.posX, m.posY, 2.5);
+					if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
+					{
+						nearestX = this.posX - m.posX;
+						nearestY = this.posY - m.posY;
+						//nearest = m;
+					}
+					if (nearestTimer > ((Mine)m).timer)
+					{
+						nearestTimer = ((Mine)m).timer;
+						nearest = m;
+					}
 				}
 			}
+		
+		if (nearest != null)
+		{
+			this.setMotionAwayFromDirection(nearest.posX, nearest.posY, 2.5);
+		}
+		
+		if (nearestX + nearestY == 0)
+		{
+			this.setPolarMotion(Math.random() * 2 * Math.PI, 2.5);
+		}
 
 		this.mineTimer--;
 

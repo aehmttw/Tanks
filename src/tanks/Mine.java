@@ -26,9 +26,13 @@ public class Mine extends Movable
 	{
 		int s = (int) (this.size - Game.player.destroyTimer);
 		
-		p.setColor(Color.yellow);
-		if (timer < 150 && timer % 2 == 1)
-			p.setColor(Color.red);
+		//p.setColor(Color.yellow);
+		//if (timer < 150 && timer % 2 == 1)
+		//	p.setColor(Color.red);
+		p.setColor(new Color(255, (int) ((this.timer) / 1000.0 * 255), 0));
+		
+		if (timer < 150 && (timer % 8) / 4 == 1)
+				p.setColor(Color.yellow);
 		
 		Screen.fillRect(p, this.posX, this.posY, s, s);
 	}

@@ -16,7 +16,7 @@ public class PlayerTank extends Tank
 
 	@Override
 	public void update()
-	{
+	{	
 		if (KeyInputListener.keys.contains(KeyEvent.VK_LEFT) && !KeyInputListener.keys.contains(KeyEvent.VK_RIGHT))
 			this.vX = Math.max(this.vX - accel, -maxV);
 		else if (KeyInputListener.keys.contains(KeyEvent.VK_RIGHT) && !KeyInputListener.keys.contains(KeyEvent.VK_LEFT))

@@ -102,6 +102,14 @@ public abstract class Movable
 		this.vY = velY;			
 	}
 	
+	public void addPolarMotion(double angle, double velocity)
+	{
+		double velX = velocity * Math.cos(angle);
+		double velY = velocity * Math.sin(angle);
+		this.vX += velX;
+		this.vY += velY;			
+	}
+	
 	public void moveInDirection(double x, double y, double amount)
 	{
 		this.posX += amount * x;

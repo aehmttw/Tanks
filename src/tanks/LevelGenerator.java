@@ -51,7 +51,7 @@ public class LevelGenerator {
 
 		s += x + "-" + y + "-" + "player,";
 		for (int i = 0; i < numTanks; i++) {
-			int type = (int) (Math.random() * 4);
+			int type = (int) (Math.random() * 6);
 			int angle = (int) (Math.random() * 4);
 			x = (int) (Math.random() * (28));
 			y = (int) (Math.random() * (18));
@@ -72,6 +72,10 @@ public class LevelGenerator {
 				s += "mint-" + angle;
 			} else if (type == 3) {
 				s += "yellow-" + angle;
+			} else if (type == 4) {
+				s += "purple-" + angle;
+			} else if (type == 5) {
+				s += "purple2-" + angle;
 			}
 			if (i == numTanks - 1) {
 				s += "}";

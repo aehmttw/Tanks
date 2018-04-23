@@ -74,6 +74,10 @@ public class Level
 				Game.movables.add(new EnemyTankYellow(x, y, Game.tank_size, angle));
 			else if (type.equals("green"))
 				Game.movables.add(new EnemyTankGreen(x, y, Game.tank_size, angle));
+			else if (type.equals("purple"))
+				Game.movables.add(new EnemyTankPurple(x, y, Game.tank_size, angle));
+			else if (type.equals("purple2"))
+				Game.movables.add(new EnemyTankPurple2(x, y, Game.tank_size, angle));
 			else if (type.equals("player"))
 			{
 				Game.player = new PlayerTank(x, y, Game.tank_size, new Color(0, 150, 255));

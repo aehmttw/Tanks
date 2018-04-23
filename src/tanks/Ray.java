@@ -1,5 +1,7 @@
 package tanks;
 
+import java.util.ArrayList;
+
 public class Ray
 {
 	int size = 10;
@@ -16,7 +18,22 @@ public class Ray
 
 	Tank tank;
 
+	ArrayList<Double> bounceX = new ArrayList<Double>();
+	ArrayList<Double> bounceY = new ArrayList<Double>();
+	
 	public Ray(double x, double y, double angle, int bounces, Tank tank) 
+	{
+		this.vX = speed * Math.cos(angle);
+		this.vY = speed * Math.sin(angle);
+
+		this.posX = x;
+		this.posY = y;
+		this.bounces = bounces;
+
+		this.tank = tank;
+	}
+	
+	public Ray(double x, double y, double angle, int bounces, Tank tank, int speed) 
 	{
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);
@@ -58,24 +75,32 @@ public class Ray
 						this.posX += horizontalDist - bound;
 						this.vX = -Math.abs(this.vX);
 						collided = true;
+						bounceX.add(this.posX);
+						bounceY.add(this.posY);
 					}
 					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 					{
 						this.posY += verticalDist - bound;
 						this.vY = -Math.abs(this.vY);
 						collided = true;
+						bounceX.add(this.posX);
+						bounceY.add(this.posY);
 					}
 					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
 					{
 						this.posX -= horizontalDist - bound;
 						this.vX = Math.abs(this.vX);
 						collided = true;
+						bounceX.add(this.posX);
+						bounceY.add(this.posY);
 					}
 					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
 					{
 						this.posY -= verticalDist - bound;
 						this.vY = Math.abs(this.vY);
 						collided = true;
+						bounceX.add(this.posX);
+						bounceY.add(this.posY);
 					}
 				}
 

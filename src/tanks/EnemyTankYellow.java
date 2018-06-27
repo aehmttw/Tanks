@@ -1,19 +1,19 @@
 package tanks;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
 public class EnemyTankYellow extends Tank
 {
-	int mineTimer = (int) (Math.random() * 800 + 200);
-	
+	int mineTimer = (int) (Math.random() * 600 + 200);
+
 	public EnemyTankYellow(double x, double y, int size) 
 	{
 		super(x, y, size, new Color(235, 200, 0));
 		this.liveBulletMax = 1;
 		this.hasCollided = true;
+		this.coinValue = 3;
 	}
-	
+
 	public EnemyTankYellow(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
@@ -49,14 +49,6 @@ public class EnemyTankYellow extends Tank
 
 		boolean laidMine = false;
 
-		if (this.mineTimer <= 0)
-		{
-			Game.movables.add(new Mine(this.posX, this.posY, this));
-			this.mineTimer = (int) (Math.random() * 800 + 200);
-			double angleV = Math.random() * Math.PI * 2;
-			this.setPolarMotion(angleV, 2.5);
-			laidMine = true;
-		}
 
 		if (hasCollided)
 		{
@@ -68,6 +60,7 @@ public class EnemyTankYellow extends Tank
 		double nearestY = 1000;
 		double nearestTimer = 1000;
 
+		
 		Movable nearest = null;
 		if (!laidMine)
 			for (int i = 0; i < Game.movables.size(); i++)
@@ -88,13 +81,49 @@ public class EnemyTankYellow extends Tank
 					}
 				}
 			}
-		
+
 		if (nearest != null)
 		{
 			this.setMotionAwayFromDirection(nearest.posX, nearest.posY, 2.5);
 		}
-		
-		if (nearestX + nearestY == 0)
+		else
+		{
+			if (this.mineTimer <= 0)
+			{
+				//System.out.println(this.mineTimer);
+
+				boolean layMine = true;
+				int i = 0;
+				while (i < Game.movables.size())
+				{
+					Movable m = Game.movables.get(i);
+					if (m instanceof Tank && !m.equals(Game.player) && !m.equals(this))
+					{
+						Tank t = (Tank) m;
+						if (Math.abs(t.posX - this.posX) <= 200 && Math.abs(t.posY - this.posY) <= 200)
+						{
+							//System.out.println(Math.abs(t.posX - this.posX) + " " + Math.abs(t.posY - this.posY));
+							layMine = false;
+							break;
+						}
+						
+					}
+					i++;
+				}
+
+				if (layMine)
+				{
+					Game.movables.add(new Mine(this.posX, this.posY, this));
+					this.mineTimer = (int) (Math.random() * 600 + 200);
+					double angleV = Math.random() * Math.PI * 2;
+					this.setPolarMotion(angleV, 2.5);
+					laidMine = true;
+				}
+
+			}
+		}
+
+		if (Math.abs(nearestX) + Math.abs(nearestY) <= 1)
 		{
 			this.setPolarMotion(Math.random() * 2 * Math.PI, 2.5);
 		}

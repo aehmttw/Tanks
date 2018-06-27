@@ -4,23 +4,63 @@ import java.awt.Color;
 
 public class Level 
 {
-	String[] resolution;
+	String[] screen;
 	String[] obstaclesPos;
 	String[] tanks;
-
+	
+	static Color currentColor = new Color(235, 207, 166);
+	
 	public Level(String level)
 	{
 		String[] preset = level.split("\\{")[1].split("\\}")[0].split("\\|");
-		resolution = preset[0].split(",");
+		screen = preset[0].split(",");
 		obstaclesPos = preset[1].split(",");
 		tanks = preset[2].split(",");
 	}
 	
 	public void loadLevel()
 	{
-		int sX = Integer.parseInt(resolution[0]);
-		int sY = Integer.parseInt(resolution[1]);
-		Game.gamescreen.setScreenSize(Game.tank_size * sX, Game.tank_size * sY);
+		int sX = Integer.parseInt(screen[0]);
+		int sY = Integer.parseInt(screen[1]);
+		
+		int r = 235;
+		int g = 207;
+		int b = 166;
+		
+		int dr = 20;
+		int dg = 20;
+		int db = 20;
+		
+		if (screen.length >= 5)
+		{
+			r = Integer.parseInt(screen[2]);
+			g = Integer.parseInt(screen[3]);
+			b = Integer.parseInt(screen[4]);
+			
+			if (screen.length >= 8)
+			{
+				dr = Integer.parseInt(screen[5]);
+				dg = Integer.parseInt(screen[6]);
+				db = Integer.parseInt(screen[7]);
+			}
+		}
+				
+		Game.currentSizeX = (int) (sX * Game.bgResMultiplier);
+		Game.currentSizeY = (int) (sY * Game.bgResMultiplier);
+		
+		currentColor = new Color(r, g, b);
+		
+		Game.tiles = new Color[Game.currentSizeX][Game.currentSizeY];
+		for (int i = 0; i < Game.currentSizeX; i++)
+		{
+			for (int j = 0; j < Game.currentSizeY; j++)
+			{
+				Game.tiles[i][j] = new Color((int)(r + Math.random() * dr), (int)(g + Math.random() * dg), (int)(b + Math.random() * db));
+			}
+		}
+		
+		Game.gamescreen.setScreenBounds(Game.tank_size * sX, Game.tank_size * sY);
+		
 		for (int i = 0; i < obstaclesPos.length; i++)
 		{
 			String[] obs = obstaclesPos[i].split("-");
@@ -51,7 +91,16 @@ public class Level
 			{
 				for (double y = startY; y <= endY; y++)
 				{
-					Game.obstacles.add(new Obstacle(x, y, Color.BLACK));
+					double colorMul = Math.random() * 0.5 + 0.5;
+					Color col;
+					
+					if (Game.graphicalEffects)
+						col = new Color((int) (colorMul * (176 - Math.random() * 70)), (int) (colorMul * (111 - Math.random() * 34)), (int) (colorMul * 14));
+					else
+						col = new Color(87, 46, 8);
+
+					Game.obstacles.add(new Obstacle(x, y, col));
+					//Game.obstacles.add(new Obstacle(x, y, Color.getHSBColor((float) ((x + y) / 100), 1, 1)));
 				}
 			}
 		}
@@ -78,6 +127,24 @@ public class Level
 				Game.movables.add(new EnemyTankPurple(x, y, Game.tank_size, angle));
 			else if (type.equals("purple2"))
 				Game.movables.add(new EnemyTankPurple2(x, y, Game.tank_size, angle));
+			else if (type.equals("pink"))
+				Game.movables.add(new EnemyTankPink(x, y, Game.tank_size, angle));
+			else if (type.equals("white"))
+				Game.movables.add(new EnemyTankWhite(x, y, Game.tank_size, angle));
+			else if (type.equals("gray"))
+				Game.movables.add(new EnemyTankGray(x, y, Game.tank_size, angle));
+			else if (type.equals("black"))
+				Game.movables.add(new EnemyTankBlack(x, y, Game.tank_size, angle));
+			else if (type.equals("red"))
+				Game.movables.add(new EnemyTankRed(x, y, Game.tank_size, angle));
+			else if (type.equals("orange"))
+				Game.movables.add(new EnemyTankOrange(x, y, Game.tank_size, angle));
+			else if (type.equals("mini"))
+				Game.movables.add(new EnemyTankMini(x, y, Game.tank_size/2, angle));
+			else if (type.equals("darkgreen"))
+				Game.movables.add(new EnemyTankLightPink(x, y, Game.tank_size, angle));
+			else if (type.equals("darkgray"))
+				Game.movables.add(new EnemyTankDarkRed(x, y, Game.tank_size, angle));
 			else if (type.equals("player"))
 			{
 				Game.player = new PlayerTank(x, y, Game.tank_size, new Color(0, 150, 255));
@@ -85,6 +152,6 @@ public class Level
 			}
 		}
 		
-		Panel.preGameTimer = 300;
+		Panel.preGameTimer = 400;
 	}
 }

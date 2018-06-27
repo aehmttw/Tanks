@@ -5,76 +5,122 @@ import java.awt.event.KeyEvent;
 
 public class PlayerTank extends Tank
 {
-	int cooldown = 0;
-	
+	double cooldown = 0;
+
 	public PlayerTank(double x, double y, int size, Color color)
 	{
 		super(x, y, size, color);
 		this.liveBulletMax = 5;
 		this.liveMinesMax = 2;
+		this.coinValue = -5;
+		
+		if (Game.insanity)
+			this.lives = 10;
 	}
 
 	@Override
 	public void update()
 	{	
-		if (KeyInputListener.keys.contains(KeyEvent.VK_LEFT) && !KeyInputListener.keys.contains(KeyEvent.VK_RIGHT))
-			this.vX = Math.max(this.vX - accel, -maxV);
-		else if (KeyInputListener.keys.contains(KeyEvent.VK_RIGHT) && !KeyInputListener.keys.contains(KeyEvent.VK_LEFT))
-			this.vX = Math.min(this.vX + accel, maxV);
+		if (Game.insanity)
+			this.liveBulletMax = 10;
+		else
+			this.liveBulletMax = 5;
+
+		boolean up = KeyInputListener.keys.contains(KeyEvent.VK_UP) || KeyInputListener.keys.contains(KeyEvent.VK_W);
+		boolean down = KeyInputListener.keys.contains(KeyEvent.VK_DOWN) || KeyInputListener.keys.contains(KeyEvent.VK_S);
+		boolean left = KeyInputListener.keys.contains(KeyEvent.VK_LEFT) || KeyInputListener.keys.contains(KeyEvent.VK_A);
+		boolean right = KeyInputListener.keys.contains(KeyEvent.VK_RIGHT) || KeyInputListener.keys.contains(KeyEvent.VK_D);
+
+		double acceleration = accel;
+		if (up && left || up && right || down && left || down && right)
+		{
+			acceleration /= Math.sqrt(2);
+		}
+		
+		if (left && !right)
+			this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, -maxV);
+		else if (right && !left)
+			this.vX = Math.min(this.vX + acceleration * Panel.frameFrequency, maxV);
 		else
 		{
 			if (this.vX > 0)
-				this.vX = Math.max(this.vX - accel, 0);
+				this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, 0);
 			else if (this.vX < 0)
-				this.vX = Math.min(this.vX + accel, 0);
+				this.vX = Math.min(this.vX + acceleration * Panel.frameFrequency, 0);
 		}
-		
-		if (KeyInputListener.keys.contains(KeyEvent.VK_UP) && !KeyInputListener.keys.contains(KeyEvent.VK_DOWN))
-			this.vY = Math.max(this.vY - accel, -maxV);
-		else if (KeyInputListener.keys.contains(KeyEvent.VK_DOWN) && !KeyInputListener.keys.contains(KeyEvent.VK_UP))
-			this.vY = Math.min(this.vY + accel, maxV);
+
+		if (up && !down)
+			this.vY = Math.max(this.vY - acceleration * Panel.frameFrequency, -maxV);
+		else if (down && !up)
+			this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, maxV);
 		else
 		{
 			if (this.vY > 0)
-				this.vY = Math.max(this.vY - accel, 0);
+				this.vY = Math.max(this.vY - acceleration * Panel.frameFrequency, 0);
 			else if (this.vY < 0)
-				this.vY = Math.min(this.vY + accel, 0);
+				this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, 0);
 		}
+		
 		if (this.cooldown > 0)
-			this.cooldown--;
-		
-		if (KeyInputListener.keys.contains(KeyEvent.VK_SPACE) && this.cooldown <= 0 && this.liveBullets < this.liveBulletMax)
+			this.cooldown -= Panel.frameFrequency;
+
+		boolean shoot = false;
+		if (KeyInputListener.keys.contains(KeyEvent.VK_SPACE) || MouseInputListener.lClick)
+			shoot = true;
+
+		boolean mine = false;
+		if (KeyInputListener.keys.contains(KeyEvent.VK_ENTER) || MouseInputListener.rClick)
+			mine = true;
+
+		if (shoot && this.cooldown <= 0 && this.liveBullets < this.liveBulletMax)
 			this.shoot();
-		
-		if (KeyInputListener.keys.contains(KeyEvent.VK_ENTER) && this.cooldown <= 0 && this.liveMines < this.liveMinesMax)
+
+		if (mine && this.cooldown <= 0 && this.liveMines < this.liveMinesMax)
 			this.layMine();
-		
+
 		this.angle = this.getAngleInDirection(Screen.screen.getMouseX(), Screen.screen.getMouseY());
 
-		
+
 		super.update();
 	}
-	
+
 	@Override
 	public void shoot()
 	{	
+		if (Game.bulletLocked)
+			return;
+			
 		this.cooldown = 20;
-		Bullet b = new Bullet(posX, posY, Color.BLACK, 1, this);
-		b.setMotionInDirection(Screen.screen.getMouseX(), Screen.screen.getMouseY(), 25.0 / 4.0);
-		b.moveOut(8);
-		
-		b.effect = Bullet.BulletEffect.trail;
-		
-		//b.vX += this.vX;
-		//b.vY += this.vY;
-		Game.movables.add(b);
+
+		if (!Game.insanity)
+		{
+			fireBullet(25 / 4, 1, Color.black, Bullet.BulletEffect.trail);
+		}
+		else
+		{
+			/*LaserBullet b = new LaserBullet(this.posX, this.posY, Color.blue, 0, this);
+			b.setPolarMotion(this.angle, 25.0/4);
+			b.moveOut(8);
+			b.shoot();
+			this.cooldown = 0;*/
+			fireBullet(25 / 2, 2, Color.red, Bullet.BulletEffect.fireTrail);
+		}
 	}
 	
+	public void fireBullet(double speed, int bounces, Color color, Bullet.BulletEffect effect)
+	{
+		Bullet b = new Bullet(posX, posY, color, bounces, this);
+		b.setMotionInDirection(Screen.screen.getMouseX(), Screen.screen.getMouseY(), speed);
+		b.moveOut((int) (25.0 / speed * 2));
+		b.effect = effect;
+		Game.movables.add(b);
+	}
+
 	public void layMine()
 	{	
 		this.cooldown = 50;
 		Mine m = new Mine(posX, posY, this);
-	
+
 		Game.movables.add(m);
 	}
 }

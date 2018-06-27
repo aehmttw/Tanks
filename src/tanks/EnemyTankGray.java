@@ -2,16 +2,18 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankBrown extends Tank
+public class EnemyTankGray extends Tank
 {
 	enum Phase {clockwise, counterClockwise}
 
 	Phase phase;
 	int idleTimer = (int) (Math.random() * 500) + 500;
 
-	public EnemyTankBrown(double x, double y, int size) 
+	double moveTime;
+	
+	public EnemyTankGray(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(150, 80, 0));
+		super(x, y, size, new Color(100, 100, 100));
 		this.liveBulletMax = 1;
 
 		if (Math.random() < 0.5)
@@ -22,7 +24,7 @@ public class EnemyTankBrown extends Tank
 		this.coinValue = 1;
 	}
 
-	public EnemyTankBrown(double x, double y, int size, double a) 
+	public EnemyTankGray(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;
@@ -51,6 +53,13 @@ public class EnemyTankBrown extends Tank
 		//if (m != null)
 		//	System.out.println(((Tank)m).color);
 
+		if (this.moveTime <= 0 || hasCollided)
+		{
+			double angleV = Math.random() * Math.PI * 2;
+			this.setPolarMotion(angleV, 1.5);
+			this.moveTime = (int) (Math.random() * 100 + 25);
+		}
+		
 		if (!(m == null))
 			if (m.equals(Game.player))
 				this.shoot();

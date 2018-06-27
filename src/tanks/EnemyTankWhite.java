@@ -1,9 +1,10 @@
 package tanks;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class EnemyTankPurple2 extends Tank
+public class EnemyTankWhite extends Tank
 {
 	double lockedAngle = 0;
 	double searchAngle = 0;
@@ -33,16 +34,16 @@ public class EnemyTankPurple2 extends Tank
 	RotationPhase searchPhase = RotationPhase.clockwise;
 	RotationPhase idlePhase = RotationPhase.clockwise;
 
-	public EnemyTankPurple2(double x, double y, int size) 
+	public EnemyTankWhite(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(150, 0, 200));
+		super(x, y, size, new Color(255, 255, 255));
 
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;
 		
-		this.coinValue = 10;
+		this.coinValue = 12;
 	}
-	public EnemyTankPurple2(double x, double y, int size, double a) 
+	public EnemyTankWhite(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;
@@ -84,11 +85,10 @@ public class EnemyTankPurple2 extends Tank
 		//System.out.println(this.aimAngle + " " + this.angle);
 
 		this.age++;
-		
+
 		if (!this.destroy)
 		{
 			boolean avoid = false;
-			
 			ArrayList<Bullet> toAvoid = new ArrayList<Bullet>();
 
 			for (int i = 0; i < Game.movables.size(); i++)
@@ -134,7 +134,7 @@ public class EnemyTankPurple2 extends Tank
 			if (this.avoidTimer > 0)
 			{
 				this.avoidTimer--;
-				this.setPolarMotion(avoidDirection, 2.5);
+				this.setPolarMotion(avoidDirection, 3.5);
 			}
 			else
 			{
@@ -142,7 +142,7 @@ public class EnemyTankPurple2 extends Tank
 
 				if (this.moveToPlayer)
 				{
-					this.setMotionInDirection(Game.player.posX, Game.player.posY, 2.5);
+					this.setMotionInDirection(Game.player.posX, Game.player.posY, 1.5);
 				}
 				else
 				{
@@ -174,7 +174,7 @@ public class EnemyTankPurple2 extends Tank
 							this.direction = directions.get(chosenDir);
 					}
 
-					this.setPolarMotion(this.direction / 2 * Math.PI, 2.5);
+					this.setPolarMotion(this.direction / 2 * Math.PI, 1.5);
 				}
 				double offsetMotion = Math.sin(this.age * 0.02);
 				if (offsetMotion < 0)
@@ -329,7 +329,7 @@ public class EnemyTankPurple2 extends Tank
 
 			if (nearest != null)
 			{
-				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, 2.5);
+				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, 1.5);
 			}
 			else
 			{
@@ -361,7 +361,7 @@ public class EnemyTankPurple2 extends Tank
 						Game.movables.add(new Mine(this.posX, this.posY, this));
 						this.mineTimer = (int) (Math.random() * 2000 + 2000);
 						double angleV = Math.random() * Math.PI * 2;
-						this.setPolarMotion(angleV, 2.5);
+						this.setPolarMotion(angleV, 1.5);
 						laidMine = true;
 					}
 
@@ -370,7 +370,7 @@ public class EnemyTankPurple2 extends Tank
 
 			if (Math.abs(nearestX) + Math.abs(nearestY) <= 1)
 			{
-				this.setPolarMotion(Math.random() * 2 * Math.PI, 2.5);
+				this.setPolarMotion(Math.random() * 2 * Math.PI, 1.5);
 			}
 
 			this.mineTimer--;
@@ -383,4 +383,20 @@ public class EnemyTankPurple2 extends Tank
 		//if (Math.random() * 300 < 1 && this.liveBullets < this.liveBulletMax)
 		//	this.shoot();
 	}
+	
+	@Override
+	public void draw(Graphics g)
+	{
+		if (this.age <= 0 || this.destroy)
+			super.draw(g);
+		else
+		{
+			for (int i = 0; i < Game.tank_size * 2 - this.age; i++)
+			{
+				g.setColor(new Color(Game.tank_size * 2 - i - this.age, 255, Game.tank_size * 2 - i - this.age, Game.tank_size * 2 - i - this.age));
+				Screen.drawOval(g, this.posX, this.posY, i, i);
+			}
+		}
+	}
+	
 }

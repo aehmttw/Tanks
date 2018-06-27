@@ -11,8 +11,12 @@ public class Ray
 	double vX;
 	double vY;
 
+	double xMul = 0;
+	double yMul = 0;
+
 	double speed = 10;
 	
+	boolean skipSelfCheck = false;
 	boolean inShooter = true;
 	int age = 0;
 
@@ -45,6 +49,13 @@ public class Ray
 		this.tank = tank;
 	}
 
+	public Movable getTarget(double xMul, double yMul)
+	{
+		this.xMul = xMul;
+		this.yMul = yMul;
+		return this.getTarget();
+	}
+	
 	public Movable getTarget() 
 	{
 		while (true)
@@ -142,16 +153,27 @@ public class Ray
 			{
 				if (Game.movables.get(i) instanceof Tank)
 				{
-					if (Math.abs(this.posX - Game.movables.get(i).posX) < (Game.tank_size + this.size) / 2 &&
-							Math.abs(this.posY - Game.movables.get(i).posY) < (Game.tank_size + this.size) / 2)
+					Tank t = (Tank)(Game.movables.get(i));
+					
+					double xMult = 1;
+					double yMult = 1;
+
+					if (t.equals(this))
+					{
+						xMult = xMul;
+						yMult = yMul;
+					}
+					
+					if (Math.abs(this.posX - t.posX) < (t.size * xMult + this.size) / 2 &&
+							Math.abs(this.posY - t.posY) < (t.size * yMult + this.size) / 2)
 					{
 						if (!Game.movables.get(i).equals(tank))
 						{
 							this.inShooter = false;
 						}
-						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10)
+						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
 						{
-							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.fire));
+							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
 							return Game.movables.get(i);
 						}
 					}				

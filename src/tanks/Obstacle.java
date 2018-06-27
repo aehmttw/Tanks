@@ -5,10 +5,10 @@ import java.awt.Graphics;
 
 public class Obstacle
 {
-	int posX;
-	int posY;
+	double posX;
+	double posY;
 	Color color;
-	public static int draw_size = 0;
+	public static double draw_size = 0;
 	public static int obstacle_size = Game.tank_size; 
 	
 	public Obstacle(double posX, double posY, Color color)
@@ -21,6 +21,10 @@ public class Obstacle
 	public void draw(Graphics g)
 	{	
 		g.setColor(color);
-		Screen.fillRect(g, this.posX, this.posY, draw_size, draw_size);
+
+		if (Screen.scale * 10 == Math.round(Screen.scale * 10))
+			Screen.fillRect(g, this.posX, this.posY, draw_size, draw_size);
+		else
+			Screen.fillRect(g, this.posX - 1, this.posY - 1, draw_size + 2, draw_size + 2);
 	}
 }

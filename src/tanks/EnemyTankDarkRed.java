@@ -3,10 +3,12 @@ package tanks;
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class EnemyTankPurple2 extends Tank
+public class EnemyTankDarkRed extends Tank
 {
-	double lockedAngle = 0;
-	double searchAngle = 0;
+	//double lockedAngle = 0;
+	//double searchAngle = 0;
+	
+	boolean locked = false;
 	double aimAngle = 0;
 	double direction = ((int)(Math.random() * 8))/2.0;
 	double avoidDirection = 0;
@@ -19,10 +21,10 @@ public class EnemyTankPurple2 extends Tank
 	int mineTimer = (int) (Math.random() * 2000 + 2000);
 	int aimTimer = 0;
 	int avoidTimer = 0;
-	boolean aim = false;
+	//boolean aim = false;
 
-	boolean straightShoot = false;
-	boolean moveToPlayer = false;
+	//boolean straightShoot = false;
+	boolean moveAwayFromPlayer = false;
 
 	double fleeDirection = Math.PI / 4;
 
@@ -30,19 +32,16 @@ public class EnemyTankPurple2 extends Tank
 
 	enum RotationPhase {clockwise, counterClockwise, aiming}
 
-	RotationPhase searchPhase = RotationPhase.clockwise;
-	RotationPhase idlePhase = RotationPhase.clockwise;
+	//RotationPhase searchPhase = RotationPhase.clockwise;
+	//RotationPhase idlePhase = RotationPhase.clockwise;
 
-	public EnemyTankPurple2(double x, double y, int size) 
+	public EnemyTankDarkRed(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(150, 0, 200));
+		super(x, y, size, new Color(100, 0, 0));
 
-		if (Math.random() < 0.5)
-			this.idlePhase = RotationPhase.counterClockwise;
-		
 		this.coinValue = 10;
 	}
-	public EnemyTankPurple2(double x, double y, int size, double a) 
+	public EnemyTankDarkRed(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;
@@ -51,12 +50,14 @@ public class EnemyTankPurple2 extends Tank
 	@Override
 	public void shoot() 
 	{
+		if (!locked)
+			return;
+		
 		this.aimTimer = 10;
-		this.aim = false;
 
-		if (this.cooldown <= 0 && this.liveBullets < 5)
+		if (this.cooldown <= 0 && this.liveBullets < 10)
 		{
-			double offset = Math.random() * 0.15 - 0.075;
+			double offset = Math.random() * 0.1 - 0.05;
 
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, 1, this);
 			Movable m = a.getTarget();
@@ -64,14 +65,14 @@ public class EnemyTankPurple2 extends Tank
 			{
 				//if (m != null)
 				//	System.out.println(((Tank)m).color);
-				Bullet b = new Bullet(this.posX, this.posY, Color.blue, 1, this);
-				b.setPolarMotion(angle + offset, 25.0/4);
-				b.moveOut(8);
+				Bullet b = new Bullet(this.posX, this.posY, Color.black, 0, this);
+				b.setPolarMotion(angle + offset, 25.0/2);
+				b.moveOut(4);
 				//b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/2);
-				b.effect = Bullet.BulletEffect.trail;
 				Game.movables.add(b);
-				this.cooldown = (int) (Math.random() * 60 + 20);
-				this.straightShoot = !this.straightShoot;
+				this.cooldown = 5;
+				b.size /= 2;
+				b.damage = 0.25;
 			}
 		}
 
@@ -84,11 +85,10 @@ public class EnemyTankPurple2 extends Tank
 		//System.out.println(this.aimAngle + " " + this.angle);
 
 		this.age++;
-		
+
 		if (!this.destroy)
 		{
 			boolean avoid = false;
-			
 			ArrayList<Bullet> toAvoid = new ArrayList<Bullet>();
 
 			for (int i = 0; i < Game.movables.size(); i++)
@@ -135,14 +135,16 @@ public class EnemyTankPurple2 extends Tank
 			{
 				this.avoidTimer--;
 				this.setPolarMotion(avoidDirection, 2.5);
+				this.addPolarMotion(this.direction / 2 * Math.PI, 2.5);
+
 			}
 			else
 			{
 				fleeDirection = -fleeDirection;
 
-				if (this.moveToPlayer)
+				if (this.moveAwayFromPlayer)
 				{
-					this.setMotionInDirection(Game.player.posX, Game.player.posY, 2.5);
+					this.setMotionAwayFromDirection(Game.player.posX, Game.player.posY, 2.5);
 				}
 				else
 				{
@@ -191,113 +193,52 @@ public class EnemyTankPurple2 extends Tank
 				this.addPolarMotion((this.direction + 1) / 2 * Math.PI, offsetMotion);
 			}
 
-			if (this.searchPhase == RotationPhase.clockwise)
-			{
-				searchAngle += Math.random() * 0.2;
-			}
-			else if (this.searchPhase == RotationPhase.counterClockwise)
-			{
-				searchAngle -= Math.random() * 0.2;
-			}
-			else
-			{
-				searchAngle = this.lockedAngle + Math.random() * 0.3 - 0.15;
-				this.aimTimer--;
-				if (this.aimTimer <= 0)
-				{
-					this.aimTimer = 0;
-					if (Math.random() < 0.5)
-						this.searchPhase = RotationPhase.clockwise;
-					else
-						this.searchPhase = RotationPhase.counterClockwise;
-				}
-			}
-
-			Ray ray = new Ray(this.posX, this.posY, this.searchAngle, 1, this);
-			Movable target = ray.getTarget();
-			if (target != null)
-				if (target.equals(Game.player))
-				{
-					this.lockedAngle = this.angle;
-					this.searchPhase = RotationPhase.aiming;
-					this.aim = true;
-					this.aimAngle = this.searchAngle % (Math.PI * 2);
-				}
+			this.aimAngle = this.getAngleInDirection(Game.player.posX + Game.player.vX * Movable.distanceBetween(this, Game.player) / 12.5, Game.player.posY + Game.player.vY * Movable.distanceBetween(this, Game.player) / 12.5);
 
 			double a = this.getAngleInDirection(Game.player.posX, Game.player.posY);
 			Ray rayToPlayer = new Ray(this.posX, this.posY, a, 0, this);
 			Movable playerTarget = rayToPlayer.getTarget();
-
 			if (playerTarget != null)
 			{
 				if (playerTarget.equals(Game.player))
 				{
-					this.moveToPlayer = true;
+					this.moveAwayFromPlayer = true;
 				}
 				else
-					this.moveToPlayer = false;
+					this.moveAwayFromPlayer = false;
 			}
 			else
-				this.moveToPlayer = false;
-				
-					
+				this.moveAwayFromPlayer = false;
+
+
 			//System.out.println(straightShoot);
-			if (this.straightShoot)
+
 			{
+				Ray r = new Ray(this.posX, this.posY, /*this.angle*/a, 0, this);
+				Movable m = r.getTarget();
+				//System.out.println(m);
+
+				if (m != null)
+					if (m.equals(Game.player))
+						this.shoot();
+			}
+			
+			if (Math.abs(this.aimAngle - this.angle) > 0.04 && !locked)
+			{
+				if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
+					//if ((this.aimAngle - this.angle) % (Math.PI * 2) < (this.angle - this.aimAngle) % (Math.PI * 2))
+					this.angle+=0.03;
+				else
+					this.angle-=0.03;
 				
-				if (playerTarget != null)
-				{
-					if (playerTarget.equals(Game.player))
-					{
-						this.aimAngle = a;
-					}
-					else
-					{
-						this.straightShoot = false;
-					}
-				}
-				else
-				{
-					this.straightShoot = false;
-				}
-
-
+				if (Math.abs(this.angle - this.aimAngle) < 0.08)
+					this.locked = true;
+				
+				this.angle = this.angle % (Math.PI * 2);
 			}
-
-			if (aim)
-			{
-				if (Math.abs(this.aimAngle - this.angle) < 0.08)
-					this.shoot();
-				else
-				{
-					if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
-						//if ((this.aimAngle - this.angle) % (Math.PI * 2) < (this.angle - this.aimAngle) % (Math.PI * 2))
-						this.angle+=0.03;
-					else
-						this.angle-=0.03;
-
-					this.angle = this.angle % (Math.PI * 2);
-				}
-			}
-			else
-			{
-				if (this.idlePhase == RotationPhase.clockwise)
-					this.angle += 0.005;
-				else
-					this.angle -= 0.005;
-
-				this.idleTimer--;
-
-				if (this.idleTimer <= 0)
-				{
-					if (this.idlePhase == RotationPhase.clockwise)
-						this.idlePhase = RotationPhase.counterClockwise;
-					else
-						this.idlePhase = RotationPhase.clockwise;
-
-					this.idleTimer = (int) (Math.random() * 500) + 25;
-				}
-			}
+			
+			if (locked)
+				this.angle = this.aimAngle;
 
 			boolean laidMine = false;
 

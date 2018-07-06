@@ -32,6 +32,8 @@ public class Effect extends Movable
 	
 	public void drawWithoutUpdate(Graphics p)
 	{
+		//p.setColor(Color.red);
+		//Screen.fillRect(p, this.posX, this.posY, 4, 4);
 		double opacityMultiplier = Obstacle.draw_size * 1.0 / Obstacle.obstacle_size;
 		
 		if (this.type == EffectType.fire)
@@ -109,7 +111,7 @@ public class Effect extends Movable
 			int size = Game.tank_size * 4;
 			int opacity = (int) (100 - this.age * 5);
 			p.setColor(new Color(255, 0, 0, opacity));
-			Screen.fillRect(p, this.posX, this.posY, size, size);	
+			Screen.fillOval(p, this.posX, this.posY, size, size);	
 		}
 		else if (this.type == EffectType.laser)
 		{

@@ -47,7 +47,7 @@ public class EnemyTankGray extends Tank
 	public void update()
 	{
 
-		Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
+		Ray a = new Ray(this.posX, this.posY, this.angle, 1, this);
 		Movable m = a.getTarget();
 
 		//if (m != null)

@@ -9,7 +9,7 @@ public class EnemyTankOrange extends Tank
 
 	public EnemyTankOrange(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(230, 150, 0));
+		super(x, y, size, new Color(230, 120, 0));
 		this.liveBulletMax = 1;
 	}
 

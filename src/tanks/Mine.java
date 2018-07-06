@@ -34,7 +34,7 @@ public class Mine extends Movable
 		if (timer < 150 && (timer % 16) / 8 == 1)
 			p.setColor(Color.yellow);
 
-		Screen.fillRect(p, this.posX, this.posY, s, s);
+		Screen.fillOval(p, this.posX, this.posY, s, s);
 	}
 
 	@Override
@@ -52,8 +52,7 @@ public class Mine extends Movable
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
-			if (Math.abs(o.posX - this.posX) < Game.tank_size * 1.5
-					&& Math.abs(o.posY - this.posY) < Game.tank_size * 1.5)
+			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 1.5, 2))
 			{
 				if (o instanceof Tank && !o.destroy && !o.equals(this.tank))
 				{
@@ -82,8 +81,7 @@ public class Mine extends Movable
 
 
 			Movable o = Game.movables.get(i);
-			if (Math.abs(o.posX - this.posX) < Game.tank_size * 2.5
-					&& Math.abs(o.posY - this.posY) < Game.tank_size * 2.5)
+			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 2.5, 2))
 			{
 				if (o instanceof Tank && !o.destroy)
 				{
@@ -110,24 +108,23 @@ public class Mine extends Movable
 			}
 		}
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
+	for (int i = 0; i < Game.obstacles.size(); i++)
+	{
+		Obstacle o = Game.obstacles.get(i);
+		if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 2.5, 2))
 		{
-			Obstacle o = Game.obstacles.get(i);
-			if (Math.abs(o.posX - this.posX) < Game.tank_size * 2.5 &&
-					Math.abs(o.posY - this.posY) < Game.tank_size * 2.5)
+			Game.removeObstacles.add(o);
+
+			if (Game.graphicalEffects)
 			{
-				Game.removeObstacles.add(o);
-
-				if (Game.graphicalEffects)
+				for (int j = 0; j < Obstacle.obstacle_size - 4; j += 4)
 				{
-					for (int j = 0; j < Obstacle.obstacle_size - 4; j += 4)
+					for (int k = 0; k < Obstacle.obstacle_size - 4; k += 4)
 					{
-						for (int k = 0; k < Obstacle.obstacle_size - 4; k += 4)
-						{
-							int oX = 0;
-							int oY = 0;
+						int oX = 0;
+						int oY = 0;
 
-							/*if (j == 0)
+						/*if (j == 0)
 							oX += 2;
 						if (k == 0)
 							oY += 2;
@@ -137,25 +134,25 @@ public class Mine extends Movable
 						if (k == Obstacle.obstacle_size - 8)
 							oY -= 2;*/
 
-							Effect e = new Effect(o.posX + j + oX + 2- Obstacle.obstacle_size / 2, o.posY + k + oY + 2 - Obstacle.obstacle_size / 2, Effect.EffectType.obstaclePiece);
-							e.col = o.color;
+						Effect e = new Effect(o.posX + j + oX + 2 - Obstacle.obstacle_size / 2, o.posY + k + oY + 2 - Obstacle.obstacle_size / 2, Effect.EffectType.obstaclePiece);
+						e.col = o.color;
 
-							double dist = Movable.distanceBetween(this, e);
-							double angle = this.getAngleInDirection(e.posX, e.posY);
-							e.addPolarMotion(angle, (200 * Math.sqrt(2) - dist) / 400 + Math.random() * 2);
+						double dist = Movable.distanceBetween(this, e);
+						double angle = this.getAngleInDirection(e.posX, e.posY);
+						e.addPolarMotion(angle, (200 * Math.sqrt(2) - dist) / 400 + Math.random() * 2);
 
-							Game.effects.add(e);
+						Game.effects.add(e);
 
-						}
 					}
 				}
 			}
 		}
-
-		tank.liveMines--;
-		Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.mineExplosion));
-
-		Game.removeMovables.add(this);
 	}
+
+	tank.liveMines--;
+	Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.mineExplosion));
+
+	Game.removeMovables.add(this);
+}
 
 }

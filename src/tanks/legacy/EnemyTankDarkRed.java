@@ -2,10 +2,11 @@ package tanks.legacy;
 
 import java.awt.Color;
 import java.util.ArrayList;
+
 import tanks.*;
 
 @Deprecated
-public class EnemyTankBlack extends Tank
+public class EnemyTankDarkRed extends Tank
 {
 	//double lockedAngle = 0;
 	//double searchAngle = 0;
@@ -29,7 +30,6 @@ public class EnemyTankBlack extends Tank
 	boolean moveAwayFromPlayer = false;
 
 	double fleeDirection = Math.PI / 4;
-	double strafeDirection = Math.PI / 2;
 
 	int age = 0;
 
@@ -38,13 +38,13 @@ public class EnemyTankBlack extends Tank
 	//RotationPhase searchPhase = RotationPhase.clockwise;
 	//RotationPhase idlePhase = RotationPhase.clockwise;
 
-	public EnemyTankBlack(double x, double y, int size) 
+	public EnemyTankDarkRed(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(0, 0, 0));
+		super(x, y, size, new Color(100, 0, 0));
 
-		this.coinValue = 15;
+		this.coinValue = 10;
 	}
-	public EnemyTankBlack(double x, double y, int size, double a) 
+	public EnemyTankDarkRed(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;
@@ -58,9 +58,9 @@ public class EnemyTankBlack extends Tank
 		
 		this.aimTimer = 10;
 
-		if (this.cooldown <= 0 && this.liveBullets < 5)
+		if (this.cooldown <= 0 && this.liveBullets < 10)
 		{
-			double offset = Math.random() * 0.2 - 0.1;
+			double offset = Math.random() * 0.1 - 0.05;
 
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, 1, this);
 			Movable m = a.getTarget();
@@ -68,13 +68,14 @@ public class EnemyTankBlack extends Tank
 			{
 				//if (m != null)
 				//	System.out.println(((Tank)m).color);
-				Bullet b = new Bullet(this.posX, this.posY, Color.red, 0, this);
+				Bullet b = new Bullet(this.posX, this.posY, Color.black, 0, this);
 				b.setPolarMotion(angle + offset, 25.0/2);
 				b.moveOut(4);
 				//b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/2);
-				b.effect = Bullet.BulletEffect.fire;
 				Game.movables.add(b);
-				this.cooldown = 60;
+				this.cooldown = 5;
+				b.size /= 2;
+				b.damage = 0.25;
 			}
 		}
 
@@ -136,8 +137,8 @@ public class EnemyTankBlack extends Tank
 			if (this.avoidTimer > 0)
 			{
 				this.avoidTimer--;
-				this.setPolarMotion(avoidDirection, 3.5);
-				this.addPolarMotion(this.direction / 2 * Math.PI, 3.5);
+				this.setPolarMotion(avoidDirection, 2.5);
+				this.addPolarMotion(this.direction / 2 * Math.PI, 2.5);
 
 			}
 			else
@@ -146,15 +147,10 @@ public class EnemyTankBlack extends Tank
 
 				if (this.moveAwayFromPlayer)
 				{
-					if (Math.random() < 0.01)
-						strafeDirection = -strafeDirection;
-
-					this.setMotionInDirectionWithOffset(Game.player.posX, Game.player.posY, 3.5, strafeDirection);
+					this.setMotionAwayFromDirection(Game.player.posX, Game.player.posY, 2.5);
 				}
 				else
 				{
-					strafeDirection = -strafeDirection;
-
 					if (Math.random() < 0.01 || this.hasCollided)
 					{
 						ArrayList<Double> directions = new ArrayList<Double>();
@@ -183,7 +179,7 @@ public class EnemyTankBlack extends Tank
 							this.direction = directions.get(chosenDir);
 					}
 
-					this.setPolarMotion(this.direction / 2 * Math.PI, 3.5);
+					this.setPolarMotion(this.direction / 2 * Math.PI, 2.5);
 				}
 				double offsetMotion = Math.sin(this.age * 0.02);
 				if (offsetMotion < 0)
@@ -277,7 +273,7 @@ public class EnemyTankBlack extends Tank
 
 			if (nearest != null)
 			{
-				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, 3.5);
+				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, 2.5);
 			}
 			else
 			{
@@ -309,7 +305,7 @@ public class EnemyTankBlack extends Tank
 						Game.movables.add(new Mine(this.posX, this.posY, this));
 						this.mineTimer = (int) (Math.random() * 2000 + 2000);
 						double angleV = Math.random() * Math.PI * 2;
-						this.setPolarMotion(angleV, 3.5);
+						this.setPolarMotion(angleV, 2.5);
 						laidMine = true;
 					}
 
@@ -318,12 +314,10 @@ public class EnemyTankBlack extends Tank
 
 			if (Math.abs(nearestX) + Math.abs(nearestY) <= 1)
 			{
-				this.setPolarMotion(Math.random() * 2 * Math.PI, 3.5);
+				this.setPolarMotion(Math.random() * 2 * Math.PI, 2.5);
 			}
 
 			this.mineTimer--;
-
-
 
 		}
 		this.cooldown--;

@@ -21,7 +21,10 @@ public class Screen extends JFrame
 	
 	public static Screen screen;
 	
-	public static int offset = 22;
+	public static int yOffset = 55;
+	public static int xOffset = 22;
+	public static int mouseXoffset = 0;
+	public static int mouseYoffset = -26;
 
 	static FontRenderContext frc = new FontRenderContext(null, true, true);
 	
@@ -29,20 +32,27 @@ public class Screen extends JFrame
 	{
 		this.addMouseListener(new MouseInputListener());
 		this.addKeyListener(new KeyInputListener());
-		this.setSize((int)(sizeX * scale), (int) ((sizeY + offset) * scale ));
+		this.setSize((int)(sizeX * scale), (int) ((sizeY + yOffset) * scale ));
 		this.setVisible(true);
 		Container visiblePart = this.getContentPane();
 		visiblePart.add(panel);
 		this.setResizable(true);
-		this.setMinimumSize(new Dimension(350, 265 + offset));
+		this.setMinimumSize(new Dimension(350, 265 + yOffset));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		screen = this;
+		
+		if (System.getProperties().get("os.name").toString().toLowerCase().contains("mac"))
+		{
+			Screen.yOffset = 22;
+			Screen.xOffset = 0;
+			Screen.mouseYoffset = -2;
+		}
 	}
 	
 	@Override
 	public void setSize(int x, int y)
 	{
-		super.setSize(x, (int) (y + 40 + offset * (1 - scale)));
+		super.setSize(x + xOffset, (int) (y + 40 + yOffset * (1 - scale)));
 	}
 	
 	@SuppressWarnings("static-access")
@@ -59,8 +69,8 @@ public class Screen extends JFrame
 	
 	public static void fillOval(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2);
-		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.offset - 40 - Screen.sizeY * Screen.scale) / 2);
+		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth()  - Screen.xOffset - Screen.sizeX * Screen.scale) / 2);
+		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.yOffset - 40 - Screen.sizeY * Screen.scale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * scale);
 		int drawSizeY = (int) Math.round(sizeY * scale);
 
@@ -69,8 +79,8 @@ public class Screen extends JFrame
 	
 	public static void drawOval(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2);
-		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.offset - 40 - Screen.sizeY * Screen.scale) / 2);
+		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth()  - Screen.xOffset - Screen.sizeX * Screen.scale) / 2);
+		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.yOffset - 40 - Screen.sizeY * Screen.scale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * scale);
 		int drawSizeY = (int) Math.round(sizeY * scale);
 
@@ -79,8 +89,8 @@ public class Screen extends JFrame
 	
 	public static void fillRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2);
-		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.offset - 40 - Screen.sizeY * Screen.scale) / 2);
+		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.xOffset - Screen.sizeX * Screen.scale) / 2);
+		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.yOffset - 40 - Screen.sizeY * Screen.scale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * scale);
 		int drawSizeY = (int) Math.round(sizeY * scale);
 
@@ -89,8 +99,8 @@ public class Screen extends JFrame
 	
 	public static void drawRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2);
-		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.offset - 40 - Screen.sizeY * Screen.scale) / 2);
+		int drawX = (int) Math.round(scale * (x - sizeX / 2) + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.xOffset - Screen.sizeX * Screen.scale) / 2);
+		int drawY = (int) Math.round(scale * (y - sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.yOffset - 40 - Screen.sizeY * Screen.scale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * scale);
 		int drawSizeY = (int) Math.round(sizeY * scale);
 
@@ -101,10 +111,10 @@ public class Screen extends JFrame
 	{
 		double sizeX = Math.round(g.getFont().getStringBounds(text, frc).getWidth());
 				
-		double sizeY = g.getFont().getSize() / 3;
+		double sizeY = g.getFont().getSize() / 3 / Screen.scale;
 		//int size = text.length() * g.getFont().getSize() / 2;
-		int drawX = (int) (scale * x - sizeX / 2 + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2);
-		int drawY = (int) (scale * (y + sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.offset - 40 - Screen.sizeY * Screen.scale) / 2);
+		int drawX = (int) (scale * x - sizeX / 2 + Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.xOffset - Screen.sizeX * Screen.scale) / 2);
+		int drawY = (int) (scale * (y + sizeY / 2) + Math.max(0, Game.gamescreen.getSize().getHeight() - Screen.yOffset - 40 - Screen.sizeY * Screen.scale) / 2);
 		g.drawString(text, drawX, drawY);
 	
 		//g.setColor(Color.red);
@@ -147,19 +157,19 @@ public class Screen extends JFrame
 	
 	public double getMouseX()
 	{
-		return (MouseInfo.getPointerInfo().getLocation().getX() - this.getLocation().getX() - Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2) / scale;
+		return (MouseInfo.getPointerInfo().getLocation().getX() - this.getLocation().getX() - Math.max(0, Game.gamescreen.getSize().getWidth() - Screen.sizeX * Screen.scale) / 2) / scale + mouseXoffset / Screen.scale;
 	}
 	
 	public double getMouseY()
 	{
-		return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY() - Math.max(0, Game.gamescreen.getSize().getHeight() - (offset + 1) - Screen.sizeY * Screen.scale) / 2)) / scale - 2;
+		return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY() - Math.max(0, Game.gamescreen.getSize().getHeight() - (yOffset + 1) - Screen.sizeY * Screen.scale) / 2)) / scale + mouseYoffset / Screen.scale;
 	}
 	
 	public void setScreenSize(int x, int y)
 	{
 		sizeX = x;
 		sizeY = y;
-		this.setSize((int) (x * scale), (int) ((y + offset) * scale));
+		this.setSize((int) (x * scale), (int) ((y + yOffset) * scale));
 	}
 	
 	public void setScreenBounds(int x, int y)

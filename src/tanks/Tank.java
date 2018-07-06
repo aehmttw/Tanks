@@ -5,26 +5,28 @@ import java.awt.Graphics;
 
 public abstract class Tank extends Movable
 {
-	double angle = 0;
+	public double angle = 0;
 
-	int coinValue = 0;
+	public int coinValue = 0;
 	
-	double accel = 0.1;
-	double maxV = 2.5;
-	int liveBullets = 0;
-	int liveMines = 0;
-	int size;
+	public double accel = 0.1;
+	public double maxV = 2.5;
+	public int liveBullets = 0;
+	public int liveMines = 0;
+	public int size;
 	public Color color;
-	int liveBulletMax;
-	int liveMinesMax;
-	double drawAge = 0;
-	double destroyTimer = 0;
-	boolean hasCollided = false;
-	double flashAnimation = 0;
+	public int liveBulletMax;
+	public int liveMinesMax;
+	public double drawAge = 0;
+	public double destroyTimer = 0;
+	public boolean hasCollided = false;
+	public double flashAnimation = 0;
+	public double treadAnimation = 0;
+	public boolean drawTread = false;
+
+	public double lives = 1;
 	
-	double lives = 1;
-	
-	Turret turret;
+	public Turret turret;
 	
 	public Tank(double x, double y, int size, Color color) 
 	{
@@ -140,6 +142,14 @@ public abstract class Tank extends Movable
 	@Override
 	public void update()
 	{	
+		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+		
+		if (this.treadAnimation > 40)
+		{
+			this.drawTread = true;
+			this.treadAnimation -= 40;
+		}
+		
 		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);
 		if (destroy)
 		{
@@ -171,7 +181,7 @@ public abstract class Tank extends Movable
 	{
 		drawAge += Panel.frameFrequency;
 		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
-		Screen.fillRect(g, this.posX, this.posY, this.size - destroyTimer - Math.max(Game.tank_size - drawAge, 0), this.size - destroyTimer - Math.max(Game.tank_size - drawAge, 0));
+		Screen.fillRect(g, this.posX, this.posY, (this.size - destroyTimer) * Math.min(this.drawAge / Game.tank_size, 1), (this.size - destroyTimer) * Math.min(this.drawAge / Game.tank_size, 1));
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
@@ -180,6 +190,26 @@ public abstract class Tank extends Movable
 			}
 		}
 		this.turret.draw(g, angle);
+		
+		if (this.drawTread)
+		{
+			this.drawTread = false;
+			double a = this.getPolarDirection();
+			Effect e1 = new Effect(this.posX, this.posY, Effect.EffectType.tread);
+			Effect e2 = new Effect(this.posX, this.posY, Effect.EffectType.tread);
+			e1.setPolarMotion(a - Math.PI / 2, this.size * 0.25);
+			e2.setPolarMotion(a + Math.PI / 2, this.size * 0.25);
+			e1.size = this.size / 5;
+			e2.size = this.size / 5;
+			e1.posX += e1.vX;
+			e1.posY += e1.vY;
+			e2.posX += e2.vX;
+			e2.posY += e2.vY;
+			e1.setPolarMotion(0, 0);
+			e2.setPolarMotion(0, 0);
+			Game.belowEffects.add(e1);
+			Game.belowEffects.add(e2);
+		}
 		
 	}
 

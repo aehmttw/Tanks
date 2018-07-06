@@ -6,10 +6,10 @@ import java.awt.Graphics;
 public class Mine extends Movable
 {
 	public static int mine_size = 30;
-	int timer = 1000;
-	int size = mine_size;
+	public int timer = 1000;
+	public int size = mine_size;
 
-	Tank tank;
+	public Tank tank;
 
 	public Mine(double x, double y, Tank t) 
 	{
@@ -103,6 +103,10 @@ public class Mine extends Movable
 							Game.coins += ((Tank)o).coinValue;
 					}	
 				}		
+				else if (o instanceof Mine && !o.destroy)
+				{
+					o.destroy = true;
+				}		
 			}
 		}
 
@@ -138,7 +142,7 @@ public class Mine extends Movable
 
 							double dist = Movable.distanceBetween(this, e);
 							double angle = this.getAngleInDirection(e.posX, e.posY);
-							e.addPolarMotion(angle, (200 * Math.sqrt(2) - dist) / 400 + Math.random());
+							e.addPolarMotion(angle, (200 * Math.sqrt(2) - dist) / 400 + Math.random() * 2);
 
 							Game.effects.add(e);
 

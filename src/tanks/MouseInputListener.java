@@ -10,7 +10,7 @@ public class MouseInputListener implements MouseListener
 
 	static boolean lClickValid = false;
 
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) 
 	{

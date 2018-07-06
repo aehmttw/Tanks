@@ -5,14 +5,14 @@ import java.awt.Graphics;
 
 public class Effect extends Movable
 {
-	static enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge}
+	static enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread}
 	public EffectType type;
 	double age = 0;
 	public Color col;
 	public double maxAge = Math.random() * 100 + 50;
 	public double targetX;
 	public double targetY;
-
+	public double size;
 	
 	public Effect(double x, double y, EffectType type)
 	{
@@ -32,7 +32,7 @@ public class Effect extends Movable
 	
 	public void drawWithoutUpdate(Graphics p)
 	{
-double opacityMultiplier = Obstacle.draw_size * 1.0 / Obstacle.obstacle_size;
+		double opacityMultiplier = Obstacle.draw_size * 1.0 / Obstacle.obstacle_size;
 		
 		if (this.type == EffectType.fire)
 		{
@@ -160,6 +160,18 @@ double opacityMultiplier = Obstacle.draw_size * 1.0 / Obstacle.obstacle_size;
 			int size = 1 + (int) (Bullet.bullet_size * (this.age / this.maxAge));
 			p.setColor(col);
 			Screen.fillOval(p, this.posX, this.posY, size, size);
+		}
+		else if (this.type == EffectType.tread)
+		{	
+			if (this.age > 510)
+			{
+				Game.removeBelowEffects.add(this);
+				return;
+			}
+			
+			int opacity = (int) (255 - this.age / 2) / 4;
+			p.setColor(new Color(0, 0, 0, opacity));
+			Screen.fillRect(p, this.posX, this.posY, size * Obstacle.draw_size / Obstacle.obstacle_size, size * Obstacle.draw_size / Obstacle.obstacle_size);
 		}
 	}
 	

@@ -4,27 +4,30 @@ import java.util.ArrayList;
 
 public class Ray
 {
-	int size = 10;
-	int bounces;
-	double posX;
-	double posY;
-	double vX;
-	double vY;
+	public int size = 10;
+	public int bounces;
+	public double posX;
+	public double posY;
+	public double vX;
+	public double vY;
 
-	double xMul = 0;
-	double yMul = 0;
+	public double xMul = 0;
+	public double yMul = 0;
 
-	double speed = 10;
-	
-	boolean skipSelfCheck = false;
-	boolean inShooter = true;
-	int age = 0;
+	public double speed = 10;
 
-	Tank tank;
+	public boolean skipSelfCheck = false;
+	public boolean inShooter = true;
+	public int age = 0;
 
-	ArrayList<Double> bounceX = new ArrayList<Double>();
-	ArrayList<Double> bounceY = new ArrayList<Double>();
-	
+	public Tank tank;
+
+	public ArrayList<Double> bounceX = new ArrayList<Double>();
+	public ArrayList<Double> bounceY = new ArrayList<Double>();
+
+	public double targetX;
+	public double targetY;
+
 	public Ray(double x, double y, double angle, int bounces, Tank tank) 
 	{
 		this.vX = speed * Math.cos(angle);
@@ -36,7 +39,7 @@ public class Ray
 
 		this.tank = tank;
 	}
-	
+
 	public Ray(double x, double y, double angle, int bounces, Tank tank, int speed) 
 	{
 		this.vX = speed * Math.cos(angle);
@@ -55,7 +58,7 @@ public class Ray
 		this.yMul = yMul;
 		return this.getTarget();
 	}
-	
+
 	public Movable getTarget() 
 	{
 		while (true)
@@ -154,7 +157,7 @@ public class Ray
 				if (Game.movables.get(i) instanceof Tank)
 				{
 					Tank t = (Tank)(Game.movables.get(i));
-					
+
 					double xMult = 1;
 					double yMult = 1;
 
@@ -163,7 +166,7 @@ public class Ray
 						xMult = xMul;
 						yMult = yMul;
 					}
-					
+
 					if (Math.abs(this.posX - t.posX) < (t.size * xMult + this.size) / 2 &&
 							Math.abs(this.posY - t.posY) < (t.size * yMult + this.size) / 2)
 					{
@@ -174,6 +177,8 @@ public class Ray
 						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
 						{
 							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
+							this.targetX = this.posX;
+							this.targetY = this.posY;
 							return Game.movables.get(i);
 						}
 					}				
@@ -181,13 +186,13 @@ public class Ray
 			}
 		}
 	}
-	
+
 	public int getDist() 
 	{
 		while (true)
 		{
 			age++;
-			
+
 			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
@@ -198,7 +203,7 @@ public class Ray
 
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
-				
+
 				double bound = this.size / 2 + Obstacle.obstacle_size / 2;
 
 				if (horizontalDist < bound && verticalDist < bound)
@@ -207,6 +212,26 @@ public class Ray
 				}
 
 			}
+
+			for (int i = 0; i < Game.movables.size(); i++)
+			{
+				Movable o = Game.movables.get(i);
+
+				if (o instanceof Tank)
+				{
+					double horizontalDist = Math.abs(this.posX - o.posX);
+					double verticalDist = Math.abs(this.posY - o.posY);
+
+					double bound = this.size / 2 + ((Tank)o).size / 2;
+
+					if (horizontalDist < bound && verticalDist < bound)
+					{
+						return age;
+					}
+				}
+
+			}
+
 
 			if (this.posX + this.size/2 > Screen.sizeX)
 			{

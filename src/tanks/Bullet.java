@@ -8,18 +8,18 @@ public class Bullet extends Movable
 {
 	public static enum BulletEffect {none, fire, fireTrail, trail};
 
-	static int bullet_size = 10;
+	public static int bullet_size = 10;
 
-	int age = 0;
-	double size;
-	int bounces;
-	Color color;
-	int destroyTimer = 0;
-	Tank tank;
-	double damage = 1;
+	public int age = 0;
+	public double size;
+	public int bounces;
+	public Color color;
+	public int destroyTimer = 0;
+	public Tank tank;
+	public double damage = 1;
 	public BulletEffect effect = BulletEffect.none;
-	boolean useCustomWallCollision = false;
-	double wallCollisionSize = 10;
+	public boolean useCustomWallCollision = false;
+	public double wallCollisionSize = 10;
 
 	public Bullet(double x, double y, Color color, int bounces, Tank t)
 	{

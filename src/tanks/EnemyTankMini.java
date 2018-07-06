@@ -6,7 +6,7 @@ public class EnemyTankMini extends Tank
 {
 	int moveTime = 0;
 	double aimAngle = 0;
-	EnemyTankLightPink tank;
+	EnemyTankPink tank;
 
 	boolean previousDestroy = false;
 
@@ -27,7 +27,7 @@ public class EnemyTankMini extends Tank
 		this.coinValue = 1;
 	}
 
-	public EnemyTankMini(double x, double y, int size, double a, EnemyTankLightPink t) 
+	public EnemyTankMini(double x, double y, int size, double a, EnemyTankPink t) 
 	{
 		this(x, y, size, a);
 		t.spawnedMinis++;

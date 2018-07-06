@@ -1,7 +1,9 @@
 package tanks;
 
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.util.ArrayList;
+
 import javax.swing.SwingUtilities;
 
 public class Game 
@@ -11,11 +13,13 @@ public class Game
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 	public static ArrayList<Movable> effects = new ArrayList<Movable>();
+	public static ArrayList<Movable> belowEffects = new ArrayList<Movable>();
 
 	public static ArrayList<Movable> removeMovables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> removeObstacles = new ArrayList<Obstacle>();
 	public static ArrayList<Movable> removeEffects = new ArrayList<Movable>();
-	
+	public static ArrayList<Movable> removeBelowEffects = new ArrayList<Movable>();
+
 	static int currentSizeX = 28;
 	static int currentSizeY = 18;
 	static double bgResMultiplier = 1;	
@@ -48,7 +52,7 @@ public class Game
 	static String currentLevel = "";	
 	
 	public static void main(String[] args)
-	{
+	{		
 		SwingUtilities.invokeLater
 		(
 			new Runnable()
@@ -65,6 +69,9 @@ public class Game
 					}
 					
 					gamescreen = new Screen();
+					gamescreen.setTitle("Tanks");
+					gamescreen.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon64.png")));
+					
 					
 					//movables.add(new EnemyTankStationary(120, 600, tank_size));
 					//movables.add(new EnemyTankStationary(900, 700, tank_size));
@@ -83,6 +90,7 @@ public class Game
 	public static void reset()
 	{
 		obstacles.clear();
+		belowEffects.clear();
 		movables.clear();
 		effects.clear();
 		System.gc();
@@ -94,6 +102,7 @@ public class Game
 		Game.paused = true;
 		menu = Menu.interlevel;
 		obstacles.clear();
+		belowEffects.clear();
 		movables.clear();
 		effects.clear();
 		System.gc();
@@ -115,6 +124,7 @@ public class Game
 		Game.paused = true;
 		menu = Menu.title;
 		obstacles.clear();
+		belowEffects.clear();
 		movables.clear();
 		effects.clear();
 		System.gc();

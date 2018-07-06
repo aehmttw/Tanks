@@ -1,9 +1,11 @@
-package tanks;
+package tanks.legacy;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import tanks.*;
 
+@Deprecated
 public class EnemyTankWhite extends Tank
 {
 	double lockedAngle = 0;

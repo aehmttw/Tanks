@@ -94,12 +94,10 @@ public class LevelGenerator {
 				s += "mint-" + angle;
 			} else if (type == 3) {
 				s += "yellow-" + angle;
-			} else if (type == 14) {
-				s += "purple-" + angle;
 			} else if (type == 4) {
-				s += "purple2-" + angle;
+				s += "purple-" + angle;
 			} else if (type == 5) {
-				s += "pink-" + angle;
+				s += "magenta-" + angle;
 			} else if (type == 6) {
 				s += "white-" + angle;
 			} else if (type == 7) {
@@ -111,7 +109,7 @@ public class LevelGenerator {
 			} else if (type == 10) {
 				s += "orange-" + angle;
 			} else if (type == 11) {
-				s += "darkgreen-" + angle;
+				s += "pink-" + angle;
 			} else if (type == 12) {
 				s += "darkgray-" + angle;
 			}

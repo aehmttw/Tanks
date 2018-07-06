@@ -1,8 +1,14 @@
-package tanks;
+package tanks.legacy;
 
 import java.awt.Color;
 
+import tanks.Game;
+import tanks.Movable;
+import tanks.Ray;
+import tanks.Tank;
+
 // kgurazada
+@Deprecated
 public class EnemyTankPurple extends Tank {
 	double aimAngle = 0;
 	int idleTimer = (int) (Math.random() * 500) + 25;

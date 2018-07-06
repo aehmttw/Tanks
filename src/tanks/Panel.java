@@ -253,7 +253,7 @@ public class Panel extends JPanel
 					if (firstTimer > 0)
 					{
 						firstTimer--;
-						Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + 1);
+						Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
 					}
 					else if (preGameTimer > 0)
 					{
@@ -340,10 +340,14 @@ public class Panel extends JPanel
 
 					for (int i = 0; i < Game.removeEffects.size(); i++)
 						Game.effects.remove(Game.removeEffects.get(i));
+					
+					for (int i = 0; i < Game.removeBelowEffects.size(); i++)
+						Game.effects.remove(Game.removeBelowEffects.get(i));
 
 					Game.removeMovables.clear();
 					Game.removeObstacles.clear();
 					Game.removeEffects.clear();
+					Game.removeBelowEffects.clear();
 				}
 				repaint();
 
@@ -439,7 +443,7 @@ public class Panel extends JPanel
 					if (Screen.scale * 10 == Math.round(Screen.scale * 10))
 						extra = 0;
 					else
-						extra = 4;
+						extra = 0;
 
 					g.setColor(Game.tiles[i][j]);
 					Screen.fillRect(g, (i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, (j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, extra + Obstacle.obstacle_size / Game.bgResMultiplier, extra + Obstacle.obstacle_size / Game.bgResMultiplier);
@@ -452,6 +456,17 @@ public class Panel extends JPanel
 			Screen.fillRect(g, Screen.sizeX / 2, Screen.sizeY / 2, Screen.sizeX, Screen.sizeX);
 		}
 
+		if (!Game.paused)
+		{
+			for (int i = 0; i < Game.belowEffects.size(); i++)
+				Game.belowEffects.get(i).draw(g);
+		}
+		else
+		{
+			for (int i = 0; i < Game.belowEffects.size(); i++)
+				((Effect)Game.belowEffects.get(i)).drawWithoutUpdate(g);
+		}
+		
 		for (int n = 0; n < Game.movables.size(); n++)
 			Game.movables.get(n).draw(g);
 
@@ -472,7 +487,7 @@ public class Panel extends JPanel
 		double mx = Screen.screen.getMouseX();
 		double my = Screen.screen.getMouseY();
 
-		Screen.scale = Math.min(Game.gamescreen.getSize().getWidth() * 1.0 / Game.currentSizeX, (Game.gamescreen.getSize().getHeight() * 1.0 - 40 - Screen.offset) / Game.currentSizeY) / 50.0;
+		Screen.scale = Math.min(Game.gamescreen.getSize().getWidth() * 1.0 / Game.currentSizeX, (Game.gamescreen.getSize().getHeight() * 1.0 - 40 - Screen.yOffset) / Game.currentSizeY) / 50.0;
 
 		//System.out.println(Game.gamescreen.getSize().getWidth() * 1.0 / Game.currentSizeX + " " + (Game.gamescreen.getSize().getHeight() * 1.0 - 40 - Screen.offset) / Game.currentSizeY);
 
@@ -551,15 +566,15 @@ public class Panel extends JPanel
 
 
 		g.setColor(new Color(87, 46, 8));
-		g.fillRect(0, (int) (Game.gamescreen.getSize().getHeight() - 40 - Screen.offset), (int) (Game.gamescreen.getSize().getWidth()), 40);
+		g.fillRect(0, (int) (Game.gamescreen.getSize().getHeight() - 40 - Screen.yOffset), (int) (Game.gamescreen.getSize().getWidth()), 40);
 
 		g.setColor(new Color(255, 227, 186));
 
 		g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-		g.drawString("Tanks v0.3.1", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.offset));
-		g.drawString("FPS: " + lastFPS, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 24 - Screen.offset));
-		g.drawString("Coins: " + Game.coins, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 36 - Screen.offset));		
+		g.drawString("Tanks v0.3.3a", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
+		g.drawString("FPS: " + lastFPS, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 24 - Screen.yOffset));
+		g.drawString("Coins: " + Game.coins, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 36 - Screen.yOffset));		
 
 		/*int obstacles = Game.obstacles.size();
 		int movables = Game.movables.size();
@@ -594,9 +609,9 @@ public class Panel extends JPanel
 			Game.effects.get(i).posY += Math.random() * 4 - 2;
 		}*/
 
-
-		//g.fillRect(0, 23, (int) (100 * (Runtime.getRuntime().totalMemory() * 1.0 / Runtime.getRuntime().maxMemory())), 10);
-		//g.drawRect(0, 23, 100, 10);
+		//g.setColor(Color.red);
+		//g.fillRect(Game.gamescreen.getWidth() - 250, (int)(Game.gamescreen.getSize().getHeight() - 40 + 15 - Screen.offset), (int) (200 * (Runtime.getRuntime().totalMemory() * 1.0 / Runtime.getRuntime().maxMemory())), 10);
+		//g.drawRect(Game.gamescreen.getWidth() - 250, (int)(Game.gamescreen.getSize().getHeight() - 40 + 15 - Screen.offset), 200, 10);
 
 		if (showMouseTarget)
 		{

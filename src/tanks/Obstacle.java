@@ -22,9 +22,9 @@ public class Obstacle
 	{	
 		g.setColor(color);
 
-		if (Screen.scale * 10 == Math.round(Screen.scale * 10))
+		//if (Screen.scale * 10 == Math.round(Screen.scale * 10))
 			Screen.fillRect(g, this.posX, this.posY, draw_size, draw_size);
-		else
-			Screen.fillRect(g, this.posX - 1, this.posY - 1, draw_size + 2, draw_size + 2);
+		//else
+		//	Screen.fillRect(g, this.posX - 1, this.posY - 1, draw_size + 2, draw_size + 2);
 	}
 }

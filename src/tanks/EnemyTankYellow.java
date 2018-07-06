@@ -115,7 +115,7 @@ public class EnemyTankYellow extends Tank
 				{
 					Game.movables.add(new Mine(this.posX, this.posY, this));
 					this.mineTimer = (int) (Math.random() * 600 + 200);
-					double angleV = Math.random() * Math.PI * 2;
+					double angleV = this.getPolarDirection() + Math.PI + (Math.random() - 0.5) * Math.PI / 2;
 					this.setPolarMotion(angleV, 2.5);
 					laidMine = true;
 				}

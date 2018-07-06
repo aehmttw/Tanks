@@ -124,27 +124,25 @@ public class Level
 			else if (type.equals("green"))
 				Game.movables.add(new EnemyTankGreen(x, y, Game.tank_size, angle));
 			else if (type.equals("purple"))
-				Game.movables.add(new EnemyTankPurple(x, y, Game.tank_size, angle));
-			else if (type.equals("purple2"))
-				Game.movables.add(new EnemyTankPurple2(x, y, Game.tank_size, angle));
-			else if (type.equals("pink"))
-				Game.movables.add(new EnemyTankPink(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankPurple(x, y, angle));
+			else if (type.equals("magenta"))
+				Game.movables.add(new EnemyTankMagenta(x, y, angle));
 			else if (type.equals("white"))
-				Game.movables.add(new EnemyTankWhite(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankWhite(x, y, angle));
 			else if (type.equals("gray"))
 				Game.movables.add(new EnemyTankGray(x, y, Game.tank_size, angle));
 			else if (type.equals("black"))
-				Game.movables.add(new EnemyTankBlack(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankBlack(x, y, angle));
 			else if (type.equals("red"))
 				Game.movables.add(new EnemyTankRed(x, y, Game.tank_size, angle));
 			else if (type.equals("orange"))
 				Game.movables.add(new EnemyTankOrange(x, y, Game.tank_size, angle));
 			else if (type.equals("mini"))
 				Game.movables.add(new EnemyTankMini(x, y, Game.tank_size/2, angle));
-			else if (type.equals("darkgreen"))
-				Game.movables.add(new EnemyTankLightPink(x, y, Game.tank_size, angle));
+			else if (type.equals("pink"))
+				Game.movables.add(new EnemyTankPink(x, y, Game.tank_size, angle));
 			else if (type.equals("darkgray"))
-				Game.movables.add(new EnemyTankDarkRed(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankDarkRed(x, y, angle));
 			else if (type.equals("player"))
 			{
 				Game.player = new PlayerTank(x, y, Game.tank_size, new Color(0, 150, 255));

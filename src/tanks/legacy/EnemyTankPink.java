@@ -1,8 +1,16 @@
-package tanks;
+package tanks.legacy;
 
 import java.awt.Color;
 import java.util.ArrayList;
 
+import tanks.Bullet;
+import tanks.Game;
+import tanks.Mine;
+import tanks.Movable;
+import tanks.Ray;
+import tanks.Tank;
+
+@Deprecated
 public class EnemyTankPink extends Tank
 {
 	double lockedAngle = 0;

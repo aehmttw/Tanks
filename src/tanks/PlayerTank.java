@@ -111,6 +111,8 @@ public class PlayerTank extends Tank
 	{
 		Bullet b = new Bullet(posX, posY, color, bounces, this);
 		b.setMotionInDirection(Screen.screen.getMouseX(), Screen.screen.getMouseY(), speed);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
+
 		b.moveOut((int) (25.0 / speed * 2));
 		b.effect = effect;
 		Game.movables.add(b);

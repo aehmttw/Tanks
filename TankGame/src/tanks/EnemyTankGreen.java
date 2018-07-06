@@ -2,19 +2,17 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankLightPink extends Tank
+public class EnemyTankGreen extends Tank
 {
 	double lockedAngle = 0;
 	double searchAngle = 0;
 	double aimAngle = 0;
 
-
-	int spawnedMinis = 0;
 	int idleTimer = (int) (Math.random() * 500) + 25;
+			
 	int cooldown = 0;
-	int aimTimer = 0;
 
-	int age = 0;
+	int aimTimer = 0;
 
 	boolean aim = false;
 
@@ -23,19 +21,16 @@ public class EnemyTankLightPink extends Tank
 	Phase searchPhase = Phase.clockwise;
 	Phase idlePhase = Phase.clockwise;
 
-	public EnemyTankLightPink(double x, double y, int size) 
+	public EnemyTankGreen(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(255, 127, 127));
+		super(x, y, size, new Color(150, 200, 0));
 		this.liveBulletMax = 1;
 		if (Math.random() < 0.5)
 			this.idlePhase = Phase.counterClockwise;
-
-		this.coinValue = 25;
-
-		this.lives = 2;
-
+		
+		this.coinValue = 10;
 	}
-	public EnemyTankLightPink(double x, double y, int size, double a) 
+	public EnemyTankGreen(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;
@@ -44,14 +39,14 @@ public class EnemyTankLightPink extends Tank
 	@Override
 	public void shoot() 
 	{
-
+		
 		this.aimTimer = (int)(Math.random() * 25)+10;
 		this.aim = false;
-
+		
 		if (this.cooldown <= 0)
 		{
 			double offset = Math.random() * 0.1 - 0.05;
-
+			
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, 2, this);
 			Movable m = a.getTarget();
 			if (!(m instanceof Tank && !m.equals(Game.player)))
@@ -67,21 +62,12 @@ public class EnemyTankLightPink extends Tank
 				this.cooldown = 150;
 			}
 		}
-
+		
 	}
 
 	@Override
 	public void update()
 	{
-		if (this.age == 0)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				Game.movables.add(new EnemyTankMini(this.posX, this.posY, this.size/2, this.angle, this));
-			}
-		}
-
-		this.age++;
 		//System.out.println(this.idlePhase + " " + this.searchPhase + " " + aim);
 		if (!this.destroy)
 		{
@@ -122,7 +108,7 @@ public class EnemyTankLightPink extends Tank
 					this.aim = true;
 
 				}
-
+			
 			if (aim)
 			{
 				if (Math.abs(this.aimAngle - this.angle) < 0.06)
@@ -133,11 +119,11 @@ public class EnemyTankLightPink extends Tank
 				else
 				{
 					if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
-						//if ((this.aimAngle - this.angle) % (Math.PI * 2) < (this.angle - this.aimAngle) % (Math.PI * 2))
+					//if ((this.aimAngle - this.angle) % (Math.PI * 2) < (this.angle - this.aimAngle) % (Math.PI * 2))
 						this.angle+=0.02;
 					else
 						this.angle-=0.02;
-
+					
 					this.angle = this.angle % (Math.PI * 2);
 				}
 			}
@@ -147,30 +133,23 @@ public class EnemyTankLightPink extends Tank
 					this.angle += 0.005;
 				else
 					this.angle -= 0.005;
-
+				
 				this.idleTimer--;
-
+				
 				if (this.idleTimer <= 0)
 				{
 					if (this.idlePhase == Phase.clockwise)
 						this.idlePhase = Phase.counterClockwise;
 					else
 						this.idlePhase = Phase.clockwise;
-
+						
 					this.idleTimer = (int) (Math.random() * 500) + 25;
 				}
 			}
 
-			if (Math.random() < 0.003 && this.spawnedMinis < 5)
-			{
-				Game.movables.add(new EnemyTankMini(this.posX, this.posY, this.size/2, this.angle, this));
-			}
-
 		}
-
-
 		this.cooldown--;
-
+		
 		super.update();
 
 		//if (Math.random() * 300 < 1 && this.liveBullets < this.liveBulletMax)

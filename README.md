@@ -1,2 +1,2 @@
 # TankGame
-lmao
+This is a game with tanks.

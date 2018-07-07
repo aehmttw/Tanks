@@ -21,6 +21,7 @@ public class Ray
 	public int age = 0;
 
 	public Tank tank;
+	public Tank targetTank;
 
 	public ArrayList<Double> bounceX = new ArrayList<Double>();
 	public ArrayList<Double> bounceY = new ArrayList<Double>();
@@ -52,10 +53,11 @@ public class Ray
 		this.tank = tank;
 	}
 
-	public Movable getTarget(double xMul, double yMul)
+	public Movable getTarget(double xMul, double yMul, Tank targetTank)
 	{
 		this.xMul = xMul;
 		this.yMul = yMul;
+		this.targetTank = targetTank;
 		return this.getTarget();
 	}
 
@@ -161,11 +163,12 @@ public class Ray
 					double xMult = 1;
 					double yMult = 1;
 
-					if (t.equals(this))
-					{
-						xMult = xMul;
-						yMult = yMul;
-					}
+					if (this.targetTank != null)
+						if (t.equals(this.targetTank))
+						{
+							xMult = xMul;
+							yMult = yMul;
+						}
 
 					if (Math.abs(this.posX - t.posX) < (t.size * xMult + this.size) / 2 &&
 							Math.abs(this.posY - t.posY) < (t.size * yMult + this.size) / 2)

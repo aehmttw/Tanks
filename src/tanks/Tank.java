@@ -142,12 +142,12 @@ public abstract class Tank extends Movable
 	@Override
 	public void update()
 	{	
-		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
 		
-		if (this.treadAnimation > 40)
+		if (this.treadAnimation > this.size * 4 / 5)
 		{
 			this.drawTread = true;
-			this.treadAnimation -= 40;
+			this.treadAnimation -= this.size * 4 / 5;
 		}
 		
 		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);

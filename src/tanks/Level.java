@@ -122,7 +122,7 @@ public class Level
 			else if (type.equals("yellow"))
 				Game.movables.add(new EnemyTankYellow(x, y, Game.tank_size, angle));
 			else if (type.equals("green"))
-				Game.movables.add(new EnemyTankGreen(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankGreen(x, y, angle));
 			else if (type.equals("purple"))
 				Game.movables.add(new EnemyTankPurple(x, y, angle));
 			else if (type.equals("magenta"))

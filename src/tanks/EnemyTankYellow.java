@@ -53,7 +53,7 @@ public class EnemyTankYellow extends Tank
 		if (hasCollided)
 		{
 			double angleV = Math.random() * Math.PI * 2;
-			this.setPolarMotion(angleV, 2.5);
+			this.setPolarMotion(angleV, 3.5);
 		}
 
 		double nearestX = 1000;

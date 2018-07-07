@@ -13,6 +13,7 @@ public class Effect extends Movable
 	public double targetX;
 	public double targetY;
 	public double size;
+	public double ffOpacityMultiplier = Math.min(1, Panel.frameFrequency);
 	
 	public Effect(double x, double y, EffectType type)
 	{
@@ -49,7 +50,7 @@ public class Effect extends Movable
 			int opacity = (int)(rawOpacity * 255);
 			
 			int green = Math.min(255, (int)(127 + 128.0*(this.age / 20.0)));
-			Color col = new Color(255, green, 0, (int) (opacity * opacityMultiplier));
+			Color col = new Color(255, green, 0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier));
 			
 			p.setColor(col);
 			Screen.fillOval(p, this.posX, this.posY, size, size);
@@ -61,10 +62,10 @@ public class Effect extends Movable
 			double opacityModifier = Math.max(0, Math.min(1, this.age / 40.0 - 0.25));
 			int size = 20;
 			double rawOpacity = (1.0 - (this.age)/200.0);
-			rawOpacity *= rawOpacity * rawOpacity * rawOpacity;
+			rawOpacity *= rawOpacity * rawOpacity;
 			int opacity = (int)(rawOpacity * 100);
 						
-			Color col = new Color(127, 127, 127, (int) (opacity * opacityMultiplier * opacityModifier));
+			Color col = new Color(0, 0, 0, (int) (opacity * opacityMultiplier * opacityModifier * ffOpacityMultiplier));
 			
 			if (opacity <= 0)
 			{
@@ -84,10 +85,10 @@ public class Effect extends Movable
 			}
 			int size = (int)Math.min(20, this.age / 20.0 + 10);
 			double rawOpacity = (1.0 - (this.age)/50.0);
-			rawOpacity *= rawOpacity * rawOpacity * rawOpacity;
+			rawOpacity *= rawOpacity * rawOpacity;
 			int opacity = (int)(rawOpacity * 25);
 			
-			Color col = new Color(127, 127, 127, (int) (opacity * opacityMultiplier));
+			Color col = new Color(127, 127, 127, (int) (opacity * opacityMultiplier * ffOpacityMultiplier));
 			
 			p.setColor(col);
 			Screen.fillOval(p, this.posX, this.posY, size, size);
@@ -165,13 +166,22 @@ public class Effect extends Movable
 		}
 		else if (this.type == EffectType.tread)
 		{	
-			if (this.age > 510)
+			int maxAge = 510;
+			double opacityFactor = 2;
+			
+			if (Game.graphicalEffects)
+			{
+				maxAge *= 2;
+				opacityFactor = 4;
+			}
+			
+			if (this.age > maxAge)
 			{
 				Game.removeBelowEffects.add(this);
 				return;
 			}
 			
-			int opacity = (int) (255 - this.age / 2) / 4;
+			int opacity = (int) (255 - this.age / opacityFactor) / 4;
 			p.setColor(new Color(0, 0, 0, opacity));
 			Screen.fillRect(p, this.posX, this.posY, size * Obstacle.draw_size / Obstacle.obstacle_size, size * Obstacle.draw_size / Obstacle.obstacle_size);
 		}

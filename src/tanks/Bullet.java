@@ -14,7 +14,7 @@ public class Bullet extends Movable
 	public double size;
 	public int bounces;
 	public Color color;
-	public int destroyTimer = 0;
+	public double destroyTimer = 0;
 	public Tank tank;
 	public double damage = 1;
 	public BulletEffect effect = BulletEffect.none;
@@ -202,7 +202,7 @@ public class Bullet extends Movable
 
 	public Ray getRay()
 	{
-		Ray r = new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), 0, tank);
+		Ray r = new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank);
 		r.skipSelfCheck = true;
 		return r;
 	}

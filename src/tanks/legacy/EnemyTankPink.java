@@ -106,7 +106,7 @@ public class EnemyTankPink extends Tank
 					{
 						Ray r = b.getRay();
 
-						Movable m = r.getTarget(1.5, 1.5);
+						Movable m = r.getTarget(1.5, 1.5, this);
 						if (m != null)
 						{
 							if (m.equals(this))

@@ -6,7 +6,7 @@ import java.awt.Graphics;
 public class Mine extends Movable
 {
 	public static int mine_size = 30;
-	public int timer = 1000;
+	public double timer = 1000;
 	public int size = mine_size;
 
 	public Tank tank;
@@ -31,7 +31,7 @@ public class Mine extends Movable
 		//	p.setColor(Color.red);
 		p.setColor(new Color(255, (int) ((this.timer) / 1000.0 * 255), 0));
 
-		if (timer < 150 && (timer % 16) / 8 == 1)
+		if (timer < 150 && ((int) timer % 16) / 8 == 1)
 			p.setColor(Color.yellow);
 
 		Screen.fillOval(p, this.posX, this.posY, s, s);
@@ -40,7 +40,7 @@ public class Mine extends Movable
 	@Override
 	public void update()
 	{
-		this.timer--;
+		this.timer -= Panel.frameFrequency;
 
 		if (destroy)
 			this.explode();

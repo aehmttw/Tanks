@@ -31,8 +31,6 @@ public class Panel extends JPanel
 
 	ArrayList<Double> frameFrequencies = new ArrayList<Double>();
 	
-	int firstTimer = (int) (100 / frameFrequency);
-
 	int frames = 0;
 
 	double frameSampling = 1;
@@ -196,11 +194,11 @@ public class Panel extends JPanel
 
 	boolean pausePressed = false;
 
-	static int preGameTimer = 0;
+	static double preGameTimer = 0;
 
 	public Panel()
 	{
-		timer = new Timer((int) (10 * frameFrequency), new ActionListener()
+		timer = new Timer(0, new ActionListener()
 		{
 			
 			@Override
@@ -250,12 +248,7 @@ public class Panel extends JPanel
 
 				if (!Game.paused)
 				{
-					if (firstTimer > 0)
-					{
-						firstTimer--;
-						Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
-					}
-					else if (preGameTimer > 0)
+					if (preGameTimer > 0)
 					{
 						preGameTimer -= frameFrequency;
 						if (Game.movables.contains(Game.player))
@@ -572,7 +565,7 @@ public class Panel extends JPanel
 
 		g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-		g.drawString("Tanks v0.3.3b", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
+		g.drawString("Tanks v0.3.3c", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
 		g.drawString("FPS: " + lastFPS, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 24 - Screen.yOffset));
 		g.drawString("Coins: " + Game.coins, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 36 - Screen.yOffset));		
 

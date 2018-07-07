@@ -11,7 +11,9 @@ public class EnemyTankWhite extends EnemyTankDynamic
 	{
 		super(x, y, Game.tank_size, new Color(255, 255, 255), angle, ShootAI.alternate);
 		this.speed = 1.5;
-		this.enableMineLaying = false;
+		this.enableDefensiveFiring = true;
+		
+		this.coinValue = 4;
 	}
 
 	@Override

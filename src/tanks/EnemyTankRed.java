@@ -9,18 +9,20 @@ public class EnemyTankRed extends Tank
 
 	int age = 0;
 
+	double maxCooldown = 150;
+	
 	public EnemyTankRed(double x, double y, int size) 
 	{
 		super(x, y, size, new Color(200, 0, 0));
 		this.liveBulletMax = 1;
-		this.cooldown = 200;
+		this.cooldown = maxCooldown;
 	}
 
 	public EnemyTankRed(double x, double y, int size, double a) 
 	{
 		this(x, y, size);
 		this.angle = a;
-		this.coinValue = 7;
+		this.coinValue = 3;
 	}
 
 	@Override
@@ -30,7 +32,7 @@ public class EnemyTankRed extends Tank
 		{
 			this.cooldown -= Panel.frameFrequency;
 
-			if (Math.random() * 200 > cooldown)
+			if (Math.random() * maxCooldown > cooldown && Game.graphicalEffects)
 			{
 				Effect e = new Effect(this.posX, this.posY, Effect.EffectType.charge);
 				double var = 50;
@@ -45,7 +47,7 @@ public class EnemyTankRed extends Tank
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		b.shoot();
-		this.cooldown = 200;
+		this.cooldown = maxCooldown;
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class EnemyTankRed extends Tank
 	{
 		this.age++;
 
-		this.color = new Color((int) (200 + (200 - this.cooldown) / 200.0 * 55), (int)((200 - this.cooldown) / 200.0 * 100), (int) ((200 - this.cooldown) / 200.0 * 100));
+		this.color = new Color((int) (200 + (maxCooldown - this.cooldown) / maxCooldown * 55), (int)((maxCooldown - this.cooldown) / maxCooldown * 100), (int) ((maxCooldown - this.cooldown) / maxCooldown * 100));
 
 		if (!this.destroy)
 		{
@@ -70,12 +72,12 @@ public class EnemyTankRed extends Tank
 				}
 				else
 				{
-					this.cooldown = 200;
+					this.cooldown = maxCooldown;
 				}
 			}
 			else
 			{
-				this.cooldown = 200;
+				this.cooldown = maxCooldown;
 			}
 		}	
 

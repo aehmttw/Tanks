@@ -10,5 +10,7 @@ public class EnemyTankPurple extends EnemyTankDynamic
 		this.enableDefensiveFiring = true;
 		this.cooldownBase = 20;
 		this.cooldownRandom = 40;
+		
+		this.coinValue = 4;
 	}
 }

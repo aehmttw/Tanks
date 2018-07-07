@@ -12,8 +12,9 @@ public class EnemyTankDynamic extends Tank
 	/** Determines which type of AI the tank will use when shooting.
 	 *  Straight means that the tank will shoot directly at the player if the player is in line of sight.
 	 *  Reflect means that the tank will use a Ray with reflections to find possible ways to hit the player.
-	 *  Alternate means that the tank will switch between shooting straight at the player and using the reflect AI with every shot.*/
-	public enum ShootAI {straight, alternate, reflect}
+	 *  Alternate means that the tank will switch between shooting straight at the player and using the reflect AI with every shot.
+	 *  Wander means that the tank will randomly rotate and shoot only if it detects the player*/
+	public enum ShootAI {wander, straight, alternate, reflect}
 
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
 	protected enum RotationPhase {clockwise, counterClockwise, aiming}
@@ -46,7 +47,7 @@ public class EnemyTankDynamic extends Tank
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
 	public double aimAccuracyOffset = 0.2;
 	/** Threshold angle difference needed between angle and aimAngle to count as touching the player*/
-	public double aimThreshold = 0.08;
+	public double aimThreshold = 0.1;
 	
 	/** Minimum time to randomly change idle direction, added to turretIdleTimerRandom * Math.random()*/
 	public double turretIdleTimerBase = 25;
@@ -99,9 +100,6 @@ public class EnemyTankDynamic extends Tank
 
 	/** If a direct line of sight to the player exists, set to true*/
 	protected boolean seesPlayer = false;
-
-	/** For tanks with the straight AI, set to true when pointing at the player*/
-	protected boolean locked = false;
 
 	/** Age in frames*/
 	protected double age = 0;
@@ -317,12 +315,12 @@ public class EnemyTankDynamic extends Tank
 		if (offsetMotion < 0)
 		{
 			int dist = this.distances[(int) (this.direction * 2 + 6) % 8];
-			offsetMotion *= Math.max(1, (dist - 1) / 5.0);
+			offsetMotion *= Math.max(1, (dist - 1) / 5.0) * this.speed / 2.5;
 		}
 		else
 		{
 			int dist = this.distances[(int) (this.direction * 2 + 2) % 8];
-			offsetMotion *= Math.max(1, (dist - 1) / 5.0);
+			offsetMotion *= Math.max(1, (dist - 1) / 5.0) * this.speed / 2.5;
 		}
 
 		this.addPolarMotion((this.direction + 1) / 2 * Math.PI, offsetMotion);
@@ -388,12 +386,42 @@ public class EnemyTankDynamic extends Tank
 		if (this.enableLookingAtPlayer)
 			this.lookAtPlayer();
 
-		if (this.shootAIType.equals(ShootAI.straight))
+		if (this.shootAIType.equals(ShootAI.wander))
+			this.updateTurretWander();
+		else if (this.shootAIType.equals(ShootAI.straight))
 			this.updateTurretStraight();
 		else
 			this.updateTurretReflect();
 
 		this.cooldown -= Panel.frameFrequency;
+	}
+	
+	public void updateTurretWander()
+	{
+		Ray a = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
+		Movable m = a.getTarget();
+
+		if (!(m == null))
+			if (m.equals(Game.player))
+				this.shoot();
+
+		if (this.idlePhase == RotationPhase.clockwise)
+			this.angle += this.idleTurretSpeed * Panel.frameFrequency;
+		else
+			this.angle -= this.idleTurretSpeed * Panel.frameFrequency;
+
+		this.idleTimer -= Panel.frameFrequency;
+
+		if (idleTimer <= 0)
+		{
+			this.idleTimer = (int) (Math.random() * turretIdleTimerRandom) + turretIdleTimerBase;
+			if (this.idlePhase == RotationPhase.clockwise)
+				this.idlePhase = RotationPhase.counterClockwise;
+			else
+				this.idlePhase = RotationPhase.clockwise;
+		}
+
+		super.update();
 	}
 
 	public void updateTurretStraight()
@@ -402,12 +430,18 @@ public class EnemyTankDynamic extends Tank
 		{
 			this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX + this.nearestBullet.vX * Movable.distanceBetween(this, this.nearestBullet) / this.bulletSpeed, this.nearestBullet.posY + this.nearestBullet.vY * Movable.distanceBetween(this, nearestBullet) / this.bulletSpeed);
 			this.disableOffset = true;
-			this.locked = false;
 		}
 		else if (this.enablePredictiveFiring)
 		{
-			this.aimAngle = this.getAngleInDirection(Game.player.posX + Game.player.vX * Movable.distanceBetween(this, Game.player) / this.bulletSpeed, Game.player.posY + Game.player.vY * Movable.distanceBetween(this, Game.player) / this.bulletSpeed);
+			Ray r = new Ray(Game.player.posX, Game.player.posY, Game.player.getPolarDirection(), 0, Game.player, Game.tank_size);
+			r.size = Game.tank_size;
+			
 			this.disableOffset = false;
+
+			if (r.getDist() > 2)
+			{
+				this.aimAngle = this.getAngleInDirection(Game.player.posX + Game.player.vX * Movable.distanceBetween(this, Game.player) / this.bulletSpeed, Game.player.posY + Game.player.vY * Movable.distanceBetween(this, Game.player) / this.bulletSpeed);
+			}
 		}
 		else
 		{
@@ -424,7 +458,7 @@ public class EnemyTankDynamic extends Tank
 			if (m.equals(Game.player))
 				this.shoot();
 
-		if (Math.abs(this.aimAngle - this.angle) > this.aimThreshold / 2 && !locked)
+		if (Math.abs(this.aimAngle - this.angle) > this.aimThreshold / 2)
 		{
 			if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
 				this.angle += this.aimTurretSpeed * Panel.frameFrequency;
@@ -432,13 +466,10 @@ public class EnemyTankDynamic extends Tank
 				this.angle -= this.aimTurretSpeed * Panel.frameFrequency;
 
 			if (Math.abs(this.angle - this.aimAngle) < this.aimThreshold && !this.disableOffset)
-				this.locked = true;
-
+				this.angle = this.aimAngle;
+			
 			this.angle = this.angle % (Math.PI * 2);
 		}
-
-		if (locked)
-			this.angle = this.aimAngle;
 	}
 
 	public void updateTurretReflect()
@@ -450,7 +481,6 @@ public class EnemyTankDynamic extends Tank
 		{
 			this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX + this.nearestBullet.vX * Movable.distanceBetween(this, this.nearestBullet) / this.bulletSpeed, this.nearestBullet.posY + this.nearestBullet.vY * Movable.distanceBetween(this, nearestBullet) / this.bulletSpeed);
 			this.disableOffset = true;
-			this.locked = false;
 		}
 		else if (aim)
 		{

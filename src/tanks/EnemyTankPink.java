@@ -4,21 +4,20 @@ import java.awt.Color;
 
 public class EnemyTankPink extends Tank
 {
-	double lockedAngle = 0;
-	double searchAngle = 0;
-	double aimAngle = 0;
+	public double lockedAngle = 0;
+	public double searchAngle = 0;
+	public double aimAngle = 0;
+	
+	public int spawnedMinis = 0;
+	public int idleTimer = (int) (Math.random() * 500) + 25;
+	public int cooldown = 0;
+	public int aimTimer = 0;
 
+	public int age = 0;
 
-	int spawnedMinis = 0;
-	int idleTimer = (int) (Math.random() * 500) + 25;
-	int cooldown = 0;
-	int aimTimer = 0;
+	public boolean aim = false;
 
-	int age = 0;
-
-	boolean aim = false;
-
-	enum Phase {clockwise, counterClockwise, aiming}
+	public enum Phase {clockwise, counterClockwise, aiming}
 
 	Phase searchPhase = Phase.clockwise;
 	Phase idlePhase = Phase.clockwise;
@@ -77,7 +76,7 @@ public class EnemyTankPink extends Tank
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				Game.movables.add(new EnemyTankMini(this.posX, this.posY, this.size/2, this.angle, this));
+				Game.movables.add(new EnemyTankMini(this.posX, this.posY, this.angle, this));
 			}
 		}
 
@@ -163,7 +162,7 @@ public class EnemyTankPink extends Tank
 
 			if (Math.random() < 0.003 && this.spawnedMinis < 5)
 			{
-				Game.movables.add(new EnemyTankMini(this.posX, this.posY, this.size/2, this.angle, this));
+				Game.movables.add(new EnemyTankMini(this.posX, this.posY, this.angle, this));
 			}
 
 		}

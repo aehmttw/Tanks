@@ -19,6 +19,8 @@ public class EnemyTankDarkRed extends EnemyTankDynamic
 		this.bulletColor = Color.black;
 		this.bulletSize /= 2;
 		this.bulletEffect = Bullet.BulletEffect.none;
+		
+		this.coinValue = 9;
 	}
 	
 	@Override

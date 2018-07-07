@@ -18,6 +18,8 @@ public class EnemyTankBlack extends EnemyTankDynamic
 		this.bulletColor = Color.red;
 		this.bulletEffect = Bullet.BulletEffect.fire;
 		this.aimTurretSpeed = 0.06;
+		
+		this.coinValue = 10;
 	}
 	
 	@Override

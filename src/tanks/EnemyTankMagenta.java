@@ -13,5 +13,7 @@ public class EnemyTankMagenta extends EnemyTankDynamic
 		this.liveBulletMax = 3;
 		this.cooldownRandom = 20;
 		this.cooldownBase = 40;
+		
+		this.coinValue = 3;
 	}
 }

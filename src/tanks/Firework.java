@@ -82,7 +82,7 @@ public class Firework extends Movable
 	{
 		if (type == FireworkType.rocket)
 		{
-			this.vY += 0.0625;
+			this.vY += 0.0625 * Panel.frameFrequency;
 			
 			g.setColor(this.color);
 			Screen.fillOval(g, posX, posY, this.size, this.size);
@@ -124,7 +124,7 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.particle)
 		{	
-			this.vY += 0.0625;
+			this.vY += 0.0625 * Panel.frameFrequency;
 			
 			int opacity =  Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
 			g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), opacity));

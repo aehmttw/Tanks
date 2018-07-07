@@ -20,5 +20,7 @@ public class EnemyTankGreen extends EnemyTankDynamic
 		this.turretIdleTimerBase = 25;
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtPlayer = false;
+		
+		this.coinValue = 4;
 	}
 }

@@ -273,7 +273,7 @@ public class Panel extends JPanel
 							for (int m = 0; m < Game.movables.size(); m++)
 							{
 								Movable mo = Game.movables.get(m);
-								if (mo instanceof Bullet)
+								if (mo instanceof Bullet || mo instanceof Mine)
 									mo.destroy = true;
 							}
 
@@ -565,7 +565,7 @@ public class Panel extends JPanel
 
 		g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-		g.drawString("Tanks v0.3.3c", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
+		g.drawString("Tanks v0.3.3d", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
 		g.drawString("FPS: " + lastFPS, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 24 - Screen.yOffset));
 		g.drawString("Coins: " + Game.coins, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 36 - Screen.yOffset));		
 

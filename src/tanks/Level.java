@@ -134,15 +134,15 @@ public class Level
 			else if (type.equals("black"))
 				Game.movables.add(new EnemyTankBlack(x, y, angle));
 			else if (type.equals("red"))
-				Game.movables.add(new EnemyTankRed(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankRed(x, y, angle));
 			else if (type.equals("orange"))
-				Game.movables.add(new EnemyTankOrange(x, y, Game.tank_size, angle));
+				Game.movables.add(new EnemyTankOrange(x, y, angle));
 			else if (type.equals("mini"))
 				Game.movables.add(new EnemyTankMini(x, y, angle));
 			else if (type.equals("pink"))
-				Game.movables.add(new EnemyTankPink(x, y, Game.tank_size, angle));
-			else if (type.equals("darkgray"))
-				Game.movables.add(new EnemyTankDarkRed(x, y, angle));
+				Game.movables.add(new EnemyTankPink(x, y, angle));
+			else if (type.equals("darkgreen"))
+				Game.movables.add(new EnemyTankDarkGreen(x, y, angle));
 			else if (type.equals("player"))
 			{
 				Game.player = new PlayerTank(x, y, Game.tank_size, new Color(0, 150, 255));

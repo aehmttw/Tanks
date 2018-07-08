@@ -2,7 +2,7 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankMini extends EnemyTankDynamic
+public class EnemyTankMini extends EnemyTank
 {
 	public EnemyTankPink tank;
 	public boolean previousDestroy = false;
@@ -28,8 +28,6 @@ public class EnemyTankMini extends EnemyTankDynamic
 		this.enableLookingAtPlayer = false;
 		this.motionChangeChance = 0.001;
 		this.enableBulletAvoidance = false;
-		
-		this.coinValue = 2;
 	}
 	
 	public EnemyTankMini(double x, double y, double angle, EnemyTankPink t)
@@ -54,5 +52,15 @@ public class EnemyTankMini extends EnemyTankDynamic
 		}
 		
 		super.update();
+
+		
+		if (this.tank != null)
+		{
+			if (!this.tank.destroy && Math.sqrt(Math.pow(this.posX - this.tank.posX, 2) + Math.pow(this.posY - this.tank.posY, 2)) > 300)
+			{
+				this.setMotionInDirection(this.tank.posX, this.tank.posY, this.speed);
+			}
+		}
+		
 	}
 }

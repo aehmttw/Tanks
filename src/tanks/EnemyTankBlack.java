@@ -2,7 +2,7 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankBlack extends EnemyTankDynamic
+public class EnemyTankBlack extends EnemyTank
 {
 	public double strafeDirection = Math.PI / 2;
 

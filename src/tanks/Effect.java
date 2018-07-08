@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Effect extends Movable
 {
-	static enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread}
+	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread}
 	public EffectType type;
 	double age = 0;
 	public Color col;
@@ -50,7 +50,7 @@ public class Effect extends Movable
 			int opacity = (int)(rawOpacity * 255);
 			
 			int green = Math.min(255, (int)(127 + 128.0*(this.age / 20.0)));
-			Color col = new Color(255, green, 0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier));
+			Color col = new Color(255, green, 0,  Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
 			p.setColor(col);
 			Screen.fillOval(p, this.posX, this.posY, size, size);
@@ -65,7 +65,7 @@ public class Effect extends Movable
 			rawOpacity *= rawOpacity * rawOpacity;
 			int opacity = (int)(rawOpacity * 100);
 						
-			Color col = new Color(0, 0, 0, (int) (opacity * opacityMultiplier * opacityModifier * ffOpacityMultiplier));
+			Color col = new Color(0, 0, 0, Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * opacityModifier * ffOpacityMultiplier))));
 			
 			if (opacity <= 0)
 			{
@@ -88,7 +88,7 @@ public class Effect extends Movable
 			rawOpacity *= rawOpacity * rawOpacity;
 			int opacity = (int)(rawOpacity * 25);
 			
-			Color col = new Color(127, 127, 127, (int) (opacity * opacityMultiplier * ffOpacityMultiplier));
+			Color col = new Color(127, 127, 127, Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
 			p.setColor(col);
 			Screen.fillOval(p, this.posX, this.posY, size, size);

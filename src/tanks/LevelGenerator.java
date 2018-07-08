@@ -111,7 +111,7 @@ public class LevelGenerator {
 			} else if (type == 11) {
 				s += "pink-" + angle;
 			} else if (type == 12) {
-				s += "darkgray-" + angle;
+				s += "darkgreen-" + angle;
 			}
 			if (i == numTanks - 1) {
 				s += "}";

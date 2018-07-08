@@ -3,6 +3,7 @@ package tanks;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class Panel extends JPanel
 	double darkness = 0;
 	
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
-	static double frameFrequency = 1;
+	public static double frameFrequency = 1;
 
 	ArrayList<Double> frameFrequencies = new ArrayList<Double>();
 	
@@ -40,6 +41,8 @@ public class Panel extends JPanel
 	long firstFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
 	long lastFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
 
+	long startTime = System.currentTimeMillis();
+	
 	int lastFPS = (int) (100 / frameFrequency);
 
 	ArrayList<Firework> fireworks = new ArrayList<Firework>();
@@ -378,9 +381,8 @@ public class Panel extends JPanel
 			}
 
 		});
-
-
 	}
+	
 	public void startTimer()
 	{
 		timer.start();
@@ -404,14 +406,26 @@ public class Panel extends JPanel
 		else
 		{
 			g.setColor(Color.MAGENTA);
-			g.drawRect(15,15,(this.getWidth()-30), this.getHeight()-30);
+			g.drawRect(15,15,(this.getWidth() - 30), this.getHeight() - 30);
 		}
 
 	}
 
 	@Override
 	public void paint(Graphics g)
-	{	
+	{					
+		if (System.currentTimeMillis() - startTime < 1000)
+		{
+			for (int i = 0; i < Game.currentSizeX; i++)
+			{
+				g.setColor(Level.currentColor);
+				Screen.fillRect(g, Screen.sizeX / 2, Screen.sizeY / 2, Screen.sizeX * 1.2, Screen.sizeY * 1.2);				
+				g.drawImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("loading.png")), 0, 0, null);
+
+			}
+			return;
+		}
+
 		g.fillRect(0, 0, 1 + (int)(Game.gamescreen.getSize().getWidth()), 1+(int)(Game.gamescreen.getSize().getHeight()));
 		long time = (long) (System.currentTimeMillis() * frameSampling / 1000 );
 		if (lastFrameSec < time && lastFrameSec != firstFrameSec)
@@ -425,6 +439,9 @@ public class Panel extends JPanel
 
 		//g.setColor(new Color(255, 227, 186));
 		//g.fillRect(0, 0, (int) (Screen.sizeX * Screen.scale), (int) (Screen.sizeY * Screen.scale));
+
+		g.setColor(Level.currentColor);
+		Screen.fillRect(g, Screen.sizeX / 2, Screen.sizeY / 2, Screen.sizeX, Screen.sizeY);
 
 		if (Game.graphicalEffects)
 		{
@@ -443,12 +460,7 @@ public class Panel extends JPanel
 				}
 			}
 		}
-		else
-		{
-			g.setColor(Level.currentColor);
-			Screen.fillRect(g, Screen.sizeX / 2, Screen.sizeY / 2, Screen.sizeX, Screen.sizeX);
-		}
-
+		
 		if (!Game.paused)
 		{
 			for (int i = 0; i < Game.belowEffects.size(); i++)
@@ -494,7 +506,7 @@ public class Panel extends JPanel
 		
 		g.setColor(new Color(0, 0, 0, (int) darkness));
 		Screen.fillRect(g, Screen.sizeX / 2, Screen.sizeY / 2, Screen.sizeX, Screen.sizeY);
-		
+				
 		if (Game.menu.equals(Game.Menu.title))
 		{	
 			Game.paused = true;

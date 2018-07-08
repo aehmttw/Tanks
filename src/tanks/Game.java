@@ -2,7 +2,15 @@ package tanks;
 
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.SwingUtilities;
 
@@ -53,21 +61,34 @@ public class Game
 	
 	static String currentLevel = "";	
 	
+	public static PrintStream logger = System.err;
+	
+	public static void initScript () {
+		System.out.println(System.getProperty("java.class.path"));
+		String homedir = System.getProperty("user.home");
+		if (!Files.exists(Paths.get(homedir+"/.tanks.d"))) {
+			new File (homedir+"/.tanks.d").mkdir();
+			try {
+				new File (homedir+"/.tanks.d/logfile.txt").createNewFile();
+				Game.logger = new PrintStream (new FileOutputStream (homedir+"/.tanks.d/logfile.lmao", true));
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			Registry.initRegistry (homedir);
+		}
+		try {
+			Game.logger = new PrintStream (new FileOutputStream (homedir+"/.tanks.d/logfile.lmao", true));
+		} catch (FileNotFoundException e) {
+			Game.logger = System.err;
+			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks.d! using stderr instead.");
+		}
+		Registry.loadRegistry (homedir);
+	}
+	
 	public static void main(String[] args)
 	{		
-		new Registry.TankRegistry(registry, EnemyTankBrown.class, "brown", 1);
-		new Registry.TankRegistry(registry, EnemyTankGray.class, "gray", 1);
-		new Registry.TankRegistry(registry, EnemyTankMint.class, "mint", 1.0 / 2);
-		new Registry.TankRegistry(registry, EnemyTankYellow.class, "yellow", 1.0 / 2);
-		new Registry.TankRegistry(registry, EnemyTankMagenta.class, "magenta", 1.0 / 3);
-		new Registry.TankRegistry(registry, EnemyTankRed.class, "red", 1.0 / 3);
-		new Registry.TankRegistry(registry, EnemyTankGreen.class, "green", 1.0 / 4);
-		new Registry.TankRegistry(registry, EnemyTankPurple.class, "purple", 1.0 / 4);
-		new Registry.TankRegistry(registry, EnemyTankWhite.class, "white", 1.0 / 4);
-		new Registry.TankRegistry(registry, EnemyTankOrange.class, "orange", 1.0 / 6);
-		new Registry.TankRegistry(registry, EnemyTankDarkGreen.class, "darkgreen", 1.0 / 9);
-		new Registry.TankRegistry(registry, EnemyTankBlack.class, "black", 1.0 / 10);
-		new Registry.TankRegistry(registry, EnemyTankPink.class, "pink", 1.0 / 15);
+		initScript();
 
 		SwingUtilities.invokeLater
 		(

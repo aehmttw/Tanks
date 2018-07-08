@@ -13,7 +13,7 @@ public class EnemyTankOrange extends EnemyTank
 		
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.idleTurretSpeed = 0.01;
+		this.aimTurretSpeed = 0.01;
 		this.aimAccuracyOffset = 0;
 				
 		this.motionChangeChance = 0.0005;

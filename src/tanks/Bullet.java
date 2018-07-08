@@ -48,6 +48,9 @@ public class Bullet extends Movable
 
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
+			double prevX = this.posX;
+			double prevY = this.posY;
+			
 			Obstacle o = Game.obstacles.get(i);
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
@@ -93,6 +96,8 @@ public class Bullet extends Movable
 			if (collided && this.age == 0)
 			{
 				this.destroy = true;
+				this.posX = prevX;
+				this.posY = prevY;
 				return;
 			}
 

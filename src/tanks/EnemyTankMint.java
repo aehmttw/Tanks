@@ -2,7 +2,7 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankMint extends EnemyTankDynamic
+public class EnemyTankMint extends EnemyTank
 {
 	public EnemyTankMint(double x, double y, double angle)
 	{
@@ -14,7 +14,7 @@ public class EnemyTankMint extends EnemyTankDynamic
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
 		this.cooldownRandom = 60;
-		this.cooldownBase = 120;
+		this.cooldownBase = 240;
 		this.idleTurretSpeed = 0.02;
 		this.bulletBounces = 0;
 		this.bulletColor = Color.red;

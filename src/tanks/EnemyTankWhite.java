@@ -3,7 +3,7 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class EnemyTankWhite extends EnemyTankDynamic
+public class EnemyTankWhite extends EnemyTank
 {
 	boolean vanish = false;
 	

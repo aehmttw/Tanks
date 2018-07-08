@@ -7,6 +7,7 @@ public class Flame extends Bullet
 {
 	double life = 100;
 	double age = 0;
+	double frequency = Panel.frameFrequency;
 	
 	public Flame(double x, double y, Color color, int bounces, Tank t) 
 	{
@@ -21,7 +22,7 @@ public class Flame extends Bullet
 		this.age += Panel.frameFrequency;
 		this.size = (int) (this.age + 10);
 		
-		this.damage = Math.max(0, 0.2 - this.age / 500.0) / 2;
+		this.damage = frequency * Math.max(0, 0.2 - this.age / 500.0) / 2;
 		
 		super.update();
 		

@@ -2,7 +2,7 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankGray extends EnemyTankDynamic
+public class EnemyTankGray extends EnemyTank
 {
 	public EnemyTankGray(double x, double y, double angle)
 	{

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /** This class is the skeleton tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
-public class EnemyTankDynamic extends Tank
+public class EnemyTank extends Tank
 {
 
 	/** Determines which type of AI the tank will use when shooting.
@@ -155,7 +155,7 @@ public class EnemyTankDynamic extends Tank
 	/** Time until the tank will continue motion*/
 	protected double motionTimer = 0;
 
-	public EnemyTankDynamic(double x, double y, int size, Color color, double angle, ShootAI ai) 
+	public EnemyTank(double x, double y, int size, Color color, double angle, ShootAI ai) 
 	{
 		super(x, y, size, color);
 
@@ -202,7 +202,7 @@ public class EnemyTankDynamic extends Tank
 	{
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletColor, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
-		b.moveOut((int) (25 / this.bulletSpeed * 2));
+		b.moveOut((int) (25 / this.bulletSpeed * 2 * this.size / Game.tank_size));
 		b.effect = this.bulletEffect;
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;
@@ -442,6 +442,10 @@ public class EnemyTankDynamic extends Tank
 			{
 				this.aimAngle = this.getAngleInDirection(Game.player.posX + Game.player.vX * Movable.distanceBetween(this, Game.player) / this.bulletSpeed, Game.player.posY + Game.player.vY * Movable.distanceBetween(this, Game.player) / this.bulletSpeed);
 			}
+			else
+			{
+				this.aimAngle = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+			}
 		}
 		else
 		{
@@ -463,13 +467,13 @@ public class EnemyTankDynamic extends Tank
 			if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
 				this.angle += this.aimTurretSpeed * Panel.frameFrequency;
 			else
-				this.angle -= this.aimTurretSpeed * Panel.frameFrequency;
-
-			if (Math.abs(this.angle - this.aimAngle) < this.aimThreshold && !this.disableOffset)
-				this.angle = this.aimAngle;
+				this.angle -= this.aimTurretSpeed * Panel.frameFrequency;		
 			
 			this.angle = this.angle % (Math.PI * 2);
 		}
+		
+		if (Math.abs(this.angle - this.aimAngle) < this.aimThreshold && !this.disableOffset)
+			this.angle = this.aimAngle;
 	}
 
 	public void updateTurretReflect()
@@ -636,7 +640,7 @@ public class EnemyTankDynamic extends Tank
 
 		if (nearest != null)
 		{
-			if (this.enableMineAvoidance)
+			if (this.enableMineAvoidance && this.enableMovement)
 				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, speed);
 		}
 		else

@@ -18,14 +18,14 @@ public class EnemyTankMini extends EnemyTank
 		this.liveBulletMax = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
-		this.idleTurretSpeed = 0.02;
+		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 0;
 		this.bulletColor = Color.blue;
 		this.bulletEffect = Bullet.BulletEffect.none;
 		this.bulletSpeed = 25.0 / 4;
 		this.bulletDamage = 0.25;
 		this.bulletSize /= 2;
-		this.enableLookingAtPlayer = false;
+		this.enableLookingAtPlayer = true;
 		this.motionChangeChance = 0.001;
 		this.enableBulletAvoidance = false;
 	}

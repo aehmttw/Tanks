@@ -15,7 +15,7 @@ public class EnemyTankMint extends EnemyTank
 		this.liveBulletMax = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 240;
-		this.idleTurretSpeed = 0.02;
+		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 0;
 		this.bulletColor = Color.red;
 		this.bulletEffect = Bullet.BulletEffect.fire;

@@ -1,8 +1,10 @@
 package tanks;
 
 // kgurazada
-public class LevelGenerator {
-	public static String generateLevelString() {
+public class LevelGenerator 
+{
+	public static String generateLevelString() 
+	{
 		
 		//int type = (int) (Math.random() * 13);
 		//test ^
@@ -25,32 +27,42 @@ public class LevelGenerator {
 
 		String s = "{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|";
 		boolean[][] cells = new boolean[width][height];
-		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells[i].length; j++) {
+		for (int i = 0; i < cells.length; i++) 
+		{
+			for (int j = 0; j < cells[i].length; j++) 
+			{
 				cells[i][j] = false;
 			}
 		}
-		for (int i = 0; i < walls; i++) {
+		for (int i = 0; i < walls; i++) 
+		{
 			int l = (int) (Math.random() * Math.min(height, width) - 3); // max 14
 			int x = (int) (Math.random() * (width - l));
 			int y = (int) (Math.random() * (height - l));
 			boolean o = false;
 			double z = Math.random();
-			if (z > 0.5) {
+			if (z > 0.5)
+			{
 				o = true;
 			}
-			if (o) {
+			if (o) 
+			{
 				s += x + "..." + (x + l) + "-" + y;
-				for (int j = x; j <= x + l; j++) {
+				for (int j = x; j <= x + l; j++) 
+				{
 					cells[j][y] = true;
 				}
-			} else {
-				for (int j = y; j <= y + l; j++) {
+			}
+			else 
+			{
+				for (int j = y; j <= y + l; j++) 
+				{
 					cells[x][j] = true;
 				}
 				s += x + "-" + y + "..." + (y + l);
 			}
-			if (i == walls - 1) {
+			if (i == walls - 1) 
+			{
 				s += "|";
 			} else {
 				s += ",";
@@ -63,7 +75,8 @@ public class LevelGenerator {
 		
 		int x = (int) (Math.random() * (width));
 		int y = (int) (Math.random() * (height));
-		while (cells[x][y]) {
+		while (cells[x][y]) 
+		{
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
 		}
@@ -73,7 +86,6 @@ public class LevelGenerator {
 
 		s += x + "-" + y + "-" + "player,";
 		for (int i = 0; i < numTanks; i++) {
-			int type = (int) (Math.random() * 13);
 			int angle = (int) (Math.random() * 4);
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
@@ -86,36 +98,15 @@ public class LevelGenerator {
 					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
 			
 			s += x + "-" + y + "-";
-			if (type == 0) {
-				s += "brown-" + angle;
-			} else if (type == 1) {
-				s += "green-" + angle;
-			} else if (type == 2) {
-				s += "mint-" + angle;
-			} else if (type == 3) {
-				s += "yellow-" + angle;
-			} else if (type == 4) {
-				s += "purple-" + angle;
-			} else if (type == 5) {
-				s += "magenta-" + angle;
-			} else if (type == 6) {
-				s += "white-" + angle;
-			} else if (type == 7) {
-				s += "gray-" + angle;
-			} else if (type == 8) {
-				s += "black-" + angle;
-			} else if (type == 9) {
-				s += "red-" + angle;
-			} else if (type == 10) {
-				s += "orange-" + angle;
-			} else if (type == 11) {
-				s += "pink-" + angle;
-			} else if (type == 12) {
-				s += "darkgreen-" + angle;
-			}
-			if (i == numTanks - 1) {
+			s += Game.registry.getRandomTank().name;
+			s += "-" + angle;
+			
+			if (i == numTanks - 1) 
+			{
 				s += "}";
-			} else {
+			} 
+			else 
+			{
 				s += ",";
 			}
 		}

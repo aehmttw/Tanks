@@ -47,12 +47,28 @@ public class Game
 	public static int coins = 0;
 	public static Item[] items = new Item[5];
 	
+	public static Registry registry = new Registry();
+	
 	static Screen gamescreen;
 	
 	static String currentLevel = "";	
 	
 	public static void main(String[] args)
 	{		
+		new Registry.TankRegistry(registry, EnemyTankBrown.class, "brown", 1);
+		new Registry.TankRegistry(registry, EnemyTankGray.class, "gray", 1);
+		new Registry.TankRegistry(registry, EnemyTankMint.class, "mint", 1.0 / 2);
+		new Registry.TankRegistry(registry, EnemyTankYellow.class, "yellow", 1.0 / 2);
+		new Registry.TankRegistry(registry, EnemyTankMagenta.class, "magenta", 1.0 / 3);
+		new Registry.TankRegistry(registry, EnemyTankRed.class, "red", 1.0 / 3);
+		new Registry.TankRegistry(registry, EnemyTankGreen.class, "green", 1.0 / 4);
+		new Registry.TankRegistry(registry, EnemyTankPurple.class, "purple", 1.0 / 4);
+		new Registry.TankRegistry(registry, EnemyTankWhite.class, "white", 1.0 / 4);
+		new Registry.TankRegistry(registry, EnemyTankOrange.class, "orange", 1.0 / 6);
+		new Registry.TankRegistry(registry, EnemyTankDarkGreen.class, "darkgreen", 1.0 / 9);
+		new Registry.TankRegistry(registry, EnemyTankBlack.class, "black", 1.0 / 10);
+		new Registry.TankRegistry(registry, EnemyTankPink.class, "pink", 1.0 / 15);
+
 		SwingUtilities.invokeLater
 		(
 			new Runnable()

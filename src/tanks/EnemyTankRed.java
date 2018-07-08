@@ -15,7 +15,7 @@ public class EnemyTankRed extends EnemyTank
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
-		this.idleTurretSpeed = 0.001;
+		this.aimTurretSpeed = 0.02;
 		this.enableLookingAtPlayer = false;
 		this.cooldown = 250;
 		

@@ -3,6 +3,7 @@ package tanks.legacy;
 import java.awt.Color;
 import tanks.*;
 
+@Deprecated
 public class EnemyTankRed extends Tank
 {
 	int moveTime = 0;

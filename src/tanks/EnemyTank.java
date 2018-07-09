@@ -162,7 +162,6 @@ public class EnemyTank extends Tank
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;
 
-		this.coinValue = 10;
 		this.angle = angle;
 
 		this.liveBulletMax = 5;

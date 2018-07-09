@@ -39,7 +39,9 @@ public class Game
 	
 	public static boolean bulletLocked = false;
 	
-	public enum Menu {none, paused, title, options, interlevel}
+	public enum Menu {none, paused, title, options, interlevel, crashed}
+	
+	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	
 	public static Menu menu = Menu.title;
 	
@@ -66,6 +68,7 @@ public class Game
 	public static final String directoryPath = "/.tanks.d";
 	public static final String logPath = directoryPath + "/logfile.txt";
 	public static final String registryPath = directoryPath + "/tank-registry.txt";
+	public static String homedir;
 	
 	public static ArrayList<Registry.DefaultTankEntry> defaultTanks = new ArrayList<Registry.DefaultTankEntry>();
 	
@@ -85,22 +88,27 @@ public class Game
 		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankBlack.class, "black", 1.0 / 10));
 		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankPink.class, "pink", 1.0 / 15));
 		
-		String homedir = System.getProperty("user.home");
+		homedir = System.getProperty("user.home");
 		if (!Files.exists(Paths.get(homedir + directoryPath))) 
 		{
-			new File (homedir + directoryPath).mkdir();
+			new File(homedir + directoryPath).mkdir();
 			try 
 			{
-				new File (homedir + logPath).createNewFile();
-				Game.logger = new PrintStream (new FileOutputStream (homedir + logPath, true));
+				new File(homedir + logPath).createNewFile();
+				Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
 			} 
 			catch (IOException e) 
 			{
 				e.printStackTrace();
 				System.exit(1);
 			}
+		}
+		
+		if (!Files.exists(Paths.get(homedir + registryPath)))
+		{
 			Registry.initRegistry(homedir);
 		}
+		
 		try 
 		{
 			Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
@@ -171,6 +179,17 @@ public class Game
 		movables.clear();
 		effects.clear();
 		System.gc();
+	}
+	
+	public static void exitToCrash()
+	{
+		Game.paused = true;
+		obstacles.clear();
+		belowEffects.clear();
+		movables.clear();
+		effects.clear();
+		System.gc();
+		menu = Menu.crashed;
 	}
 	
 	public static void exitToTitle()

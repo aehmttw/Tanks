@@ -24,29 +24,35 @@ public class Registry
 			Scanner in = new Scanner (new File (path));
 			while (in.hasNextLine()) 
 			{
-				String[] tankLine = in.nextLine().split(",");
+				String line = in.nextLine();
+				String[] tankLine = line.split(",");
+				
 				if (tankLine[0].charAt(0) == '#') 
 				{ 
 					continue; 
 				}
 				if (tankLine[2].toLowerCase().equals("default")) 
 				{
+					boolean foundTank = false;
 					for (int i = 0; i < Game.defaultTanks.size(); i++)
 					{
 						if (tankLine[0].equals(Game.defaultTanks.get(i).name))
 						{
-							Game.defaultTanks.get(i).registerEntry(Game.registry);
+							Game.defaultTanks.get(i).registerEntry(Game.registry, Double.parseDouble(tankLine[1]));
+							foundTank = true;
 							break;
 						}
-						Game.logger.println (new Date().toString() + " (syswarn) the default tank [" + tankLine[0] + "] does not exist!");
 					}
+					
+					if (!foundTank)
+						Game.logger.println (new Date().toString() + " (Warning) The default tank '" + tankLine[0] + "' does not exist!");
 				}
 				else 
 				{
 					try 
 					{
 						@SuppressWarnings("resource")
-						ClassLoader loader = new URLClassLoader ( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
+						ClassLoader loader = new URLClassLoader( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
 						@SuppressWarnings("unchecked")
 						Class<? extends Tank> clasz = (Class<? extends Tank>) loader.loadClass(tankLine[4]);
 						new Registry.TankEntry(Game.registry, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
@@ -54,7 +60,7 @@ public class Registry
 					catch (Exception e) 
 					{
 						e.printStackTrace();
-						Game.logger.println (new Date().toString() + " (syswarn) error loading custom tank '" + tankLine[3] + "'. try adding the path to your jvm classpath. ignoring.");
+						Game.logger.println(new Date().toString() + " (Warning) Error loading custom tank '" + tankLine[0] + "'. try adding the path to your jvm classpath. Ignoring.");
 					}
 				}
 			}
@@ -62,7 +68,8 @@ public class Registry
 		} 
 		catch (Exception e)
 		{
-			Game.logger.println (new Date().toString() + " (syswarn) tank-registry file is nonexistent or broken, using default.");
+			Game.logger.println (new Date().toString() + " (Warning) Tank registry file is nonexistent or broken, using default:");
+			e.printStackTrace(Game.logger);
 			
 			for (int i = 0; i < Game.defaultTanks.size(); i++)
 			{
@@ -71,21 +78,34 @@ public class Registry
 		}
 	}
 	
-	public static void initRegistry (String homedir) 
+	public static void initRegistry(String homedir) 
 	{
 		String path = homedir + Game.registryPath;
 		try 
 		{
-			new File (path).createNewFile();
+			new File(path).createNewFile();
 		}
 		catch (IOException e) 
 		{
-			Game.logger.println (new Date().toString() + " (syserr) file permissions are broken! Cannot initialize tank registry.");
+			Game.logger.println (new Date().toString() + " (Error) File permissions are broken! Cannot initialize tank registry.");
 			System.exit(1);
 		}
 		try 
 		{
 			PrintStream writer = new PrintStream (new File (path));
+			writer.println("# This is the Tank Registry file!");
+			writer.println("# A registry entry is a line in the file");
+			writer.println("# The parameters are name, rarity, custom/default, jar location, and class");
+			writer.println("# Built in tanks do not use the last 2 parameters");
+			writer.println("# and have 'default' written for the third parameter");
+			writer.println("# To make a custom tank, import the TankGame jar into a java project,");
+			writer.println("# write a class extending Tank or EnemyTank, and export as a jar file.");
+			writer.println("# To import a custom tank, put the jar file somewhere on your computer,");
+			writer.println("# put 'custom' for parameter 3");
+			writer.println("# and put its absolute file path as parameter 4 in this file.");
+			writer.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
+			writer.println("# Example custom tank entry: 'mytank,1,custom,C:\\Users\\potato\\.tanks.d\\MyTank.jar,com.potato.MyTank'");
+			writer.println("# Don't leave any blank lines!");
 			
 			for (int i = 0; i < Game.defaultTanks.size(); i++)
 			{
@@ -94,7 +114,8 @@ public class Registry
 		} 
 		catch (Exception e)
 		{
-			Game.logger.println (new Date().toString() + " (syserr) something broke. cannot initialize tank registry.");
+			Game.logger.println(new Date().toString() + " (Error) Something broke! Cannot initialize tank registry:");
+			e.printStackTrace(Game.logger);
 			System.exit(1);
 		}
 		
@@ -157,6 +178,11 @@ public class Registry
 			return new TankEntry(r, this.tank, this.name, this.weight);
 		}
 		
+		public TankEntry registerEntry(Registry r, double weight)
+		{
+			return new TankEntry(r, this.tank, this.name, weight);
+		}
+		
 		public String getString()
 		{
 			return this.name + "," + this.weight + ",default";
@@ -165,6 +191,9 @@ public class Registry
 	
 	public TankEntry getRandomTank()
 	{
+		if (this.tankRegistries.size() <= 0)
+			throw new RuntimeException("The tank registry file is empty. Please register some tanks!");
+			
 		double random = Math.random() * maxTankWeight;
 		for (int i = 0; i < tankRegistries.size(); i++)
 		{

@@ -577,7 +577,7 @@ public class Panel extends JPanel
 
 		g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-		g.drawString("Tanks v0.3.4", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
+		g.drawString("Tanks v0.3.5", 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 12 - Screen.yOffset));
 		g.drawString("FPS: " + lastFPS, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 24 - Screen.yOffset));
 		g.drawString("Coins: " + Game.coins, 2, (int) (Game.gamescreen.getSize().getHeight() - 40 + 36 - Screen.yOffset));		
 

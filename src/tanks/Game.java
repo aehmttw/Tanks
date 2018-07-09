@@ -63,27 +63,55 @@ public class Game
 	
 	public static PrintStream logger = System.err;
 	
-	public static void initScript () {
-		System.out.println(System.getProperty("java.class.path"));
+	public static final String directoryPath = "/.tanks.d";
+	public static final String logPath = directoryPath + "/logfile.txt";
+	public static final String registryPath = directoryPath + "/tank-registry.txt";
+	
+	public static ArrayList<Registry.DefaultTankEntry> defaultTanks = new ArrayList<Registry.DefaultTankEntry>();
+	
+	public static void initScript() 
+	{
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankBrown.class, "brown", 1));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankGray.class, "gray", 1));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankMint.class, "mint", 1.0 / 2));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankYellow.class, "yellow", 1.0 / 2));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankMagenta.class, "magenta", 1.0 / 3));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankRed.class, "red", 1.0 / 3));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankGreen.class, "green", 1.0 / 4));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankPurple.class, "purple", 1.0 / 4));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankWhite.class, "white", 1.0 / 4));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankOrange.class, "orange", 1.0 / 6));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankDarkGreen.class, "darkgreen", 1.0 / 9));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankBlack.class, "black", 1.0 / 10));
+		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankPink.class, "pink", 1.0 / 15));
+		
 		String homedir = System.getProperty("user.home");
-		if (!Files.exists(Paths.get(homedir+"/.tanks.d"))) {
-			new File (homedir+"/.tanks.d").mkdir();
-			try {
-				new File (homedir+"/.tanks.d/logfile.txt").createNewFile();
-				Game.logger = new PrintStream (new FileOutputStream (homedir+"/.tanks.d/logfile.lmao", true));
-			} catch (IOException e) {
+		if (!Files.exists(Paths.get(homedir + directoryPath))) 
+		{
+			new File (homedir + directoryPath).mkdir();
+			try 
+			{
+				new File (homedir + logPath).createNewFile();
+				Game.logger = new PrintStream (new FileOutputStream (homedir + logPath, true));
+			} 
+			catch (IOException e) 
+			{
 				e.printStackTrace();
 				System.exit(1);
 			}
-			Registry.initRegistry (homedir);
+			Registry.initRegistry(homedir);
 		}
-		try {
-			Game.logger = new PrintStream (new FileOutputStream (homedir+"/.tanks.d/logfile.lmao", true));
-		} catch (FileNotFoundException e) {
+		try 
+		{
+			Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
+		} 
+		catch (FileNotFoundException e) 
+		{
 			Game.logger = System.err;
-			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks.d! using stderr instead.");
+			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
-		Registry.loadRegistry (homedir);
+		
+		Registry.loadRegistry(homedir);
 	}
 	
 	public static void main(String[] args)

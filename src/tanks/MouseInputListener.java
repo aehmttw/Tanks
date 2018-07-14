@@ -5,10 +5,11 @@ import java.awt.event.MouseListener;
 
 public class MouseInputListener implements MouseListener
 {
-	static boolean lClick = false;
-	static boolean rClick = false;
-
-	static boolean lClickValid = false;
+	public static boolean lClick = false;
+	public static boolean rClick = false;
+	
+	public static boolean lClickValid = false;
+	public static boolean rClickValid = false;
 
 
 	@Override
@@ -37,8 +38,10 @@ public class MouseInputListener implements MouseListener
 			lClick = false;
 			lClickValid = false;
 		}
-		else if (e.getButton() == 3)
+		else if (e.getButton() == 3) {
 			rClick = false;
+			rClickValid = false;
+		}
 	}
 
 	@Override

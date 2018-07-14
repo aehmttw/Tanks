@@ -125,7 +125,5 @@ public class Level
 				Game.movables.add(Game.registry.getRegistry(type).getTank(x, y, angle));
 			}
 		}
-		
-		Panel.preGameTimer = 400;
 	}
 }

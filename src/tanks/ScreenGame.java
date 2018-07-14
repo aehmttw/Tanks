@@ -5,12 +5,19 @@ import java.awt.event.KeyEvent;
 
 public class ScreenGame extends Screen
 {
+	private Button play = new Button(350, 40, "Play", () -> {
+		playing = true;
+	});
+	
+	private boolean playing;
+	
 	@Override
 	public void update()
 	{
-		if (Panel.preGameTimer > 0)
+		if (!playing)
 		{
-			Panel.preGameTimer -= Panel.frameFrequency;
+			play.update(Window.sizeX-200, Window.sizeY-50);
+			
 			if (Game.movables.contains(Game.player))
 			{
 				Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
@@ -140,7 +147,10 @@ public class ScreenGame extends Screen
 
 		for (int i = 0; i < Game.effects.size(); i++)
 			((Effect)Game.effects.get(i)).draw(g);
-
+		
+		if (!playing) {
+			play.draw(g, Window.sizeX-200, Window.sizeY-50);
+		}
 	}
 
 }

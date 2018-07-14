@@ -2,8 +2,9 @@ package tanks;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class MouseInputListener implements MouseListener
+public class MouseInputListener implements MouseListener, MouseMotionListener
 {
 	public static boolean lClick = false;
 	public static boolean rClick = false;
@@ -54,6 +55,18 @@ public class MouseInputListener implements MouseListener
 	public void mouseExited(MouseEvent e) 
 	{
 		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		lClickValid = false;
+		rClickValid = false;
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		lClickValid = false;
+		rClickValid = false;
 	}
 
 }

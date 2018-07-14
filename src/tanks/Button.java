@@ -6,22 +6,22 @@ import java.awt.Graphics;
 
 public class Button 
 {
-	Runnable function;
-	double posX;
-	double posY;
-	double sizeX;
-	double sizeY;
-	String text;
+	public Runnable function;
+	public double posX;
+	public double posY;
+	public double sizeX;
+	public double sizeY;
+	public String text;
 	
-	boolean enableHover = false;
-	String[] hoverText;
+	public boolean enableHover = false;
+	public String[] hoverText;
 	
-	boolean selected = false;
+	public boolean selected = false;
 	
-	boolean clicked = false;
+	public boolean clicked = false;
 	
-	Color unselectedCol = new Color(255, 255, 255);
-	Color selectedCol = new Color(240, 240, 255);
+	public Color unselectedCol = new Color(255, 255, 255);
+	public Color selectedCol = new Color(240, 240, 255);
 
 	public Button(double sX, double sY, String text, Runnable f)
 	{

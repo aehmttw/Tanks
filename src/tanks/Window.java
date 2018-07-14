@@ -30,7 +30,9 @@ public class Window extends JFrame
 	
 	public Window()
 	{
-		this.addMouseListener(new MouseInputListener());
+		MouseInputListener mouseListener = new MouseInputListener();
+		this.addMouseListener(mouseListener);
+		addMouseMotionListener(mouseListener);
 		this.addKeyListener(new KeyInputListener());
 		this.setSize((int)(sizeX * scale), (int) ((sizeY + yOffset) * scale ));
 		this.setVisible(true);

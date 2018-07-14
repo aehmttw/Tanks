@@ -27,7 +27,7 @@ public class EnemyTankPink extends Tank
 
 	public EnemyTankPink(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(255, 127, 127));
+		super("legacy-lightpink", x, y, size, new Color(255, 127, 127));
 		this.liveBulletMax = 1;
 		if (Math.random() < 0.5)
 			this.idlePhase = Phase.counterClockwise;

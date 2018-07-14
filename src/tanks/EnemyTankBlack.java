@@ -6,9 +6,9 @@ public class EnemyTankBlack extends EnemyTank
 {
 	public double strafeDirection = Math.PI / 2;
 
-	public EnemyTankBlack(double x, double y, double angle)
+	public EnemyTankBlack(String name, double x, double y, double angle)
 	{
-		super(x, y, Game.tank_size, new Color(0, 0, 0), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, new Color(0, 0, 0), angle, ShootAI.straight);
 		this.cooldownBase = 75;
 		this.cooldownRandom = 0;
 		this.speed = 3.5;

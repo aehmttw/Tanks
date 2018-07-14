@@ -11,7 +11,7 @@ public class EnemyTankMint extends Tank
 
 	public EnemyTankMint(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(0, 100, 100));
+		super("legacy-mint", x, y, size, new Color(0, 100, 100));
 		this.liveBulletMax = 1;
 	}
 	

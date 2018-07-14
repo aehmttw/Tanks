@@ -4,9 +4,9 @@ import java.awt.Color;
 
 public class EnemyTankDarkGreen extends EnemyTank
 {
-	public EnemyTankDarkGreen(double x, double y, double angle)
+	public EnemyTankDarkGreen(String name, double x, double y, double angle)
 	{
-		super(x, y, Game.tank_size, new Color(85, 107, 47), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, new Color(85, 107, 47), angle, ShootAI.straight);
 		this.cooldownBase = 5;
 		this.cooldownRandom = 0;
 		this.speed = 2.5;

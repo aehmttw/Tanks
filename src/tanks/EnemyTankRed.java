@@ -7,9 +7,9 @@ public class EnemyTankRed extends EnemyTank
 	boolean lineOfSight = false;
 	double maxCooldown = 150;
 	
-	public EnemyTankRed(double x, double y, double angle)
+	public EnemyTankRed(String name, double x, double y, double angle)
 	{
-		super(x, y, Game.tank_size, new Color(200, 0, 0), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, new Color(200, 0, 0), angle, ShootAI.straight);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;

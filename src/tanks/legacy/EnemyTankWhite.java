@@ -38,7 +38,7 @@ public class EnemyTankWhite extends Tank
 
 	public EnemyTankWhite(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(255, 255, 255));
+		super("legacy-white", x, y, size, new Color(255, 255, 255));
 
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;

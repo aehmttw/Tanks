@@ -5,11 +5,18 @@ import java.awt.event.KeyEvent;
 
 public class ScreenGame extends Screen
 {
-	private Button play = new Button(350, 40, "Play", () -> {
-		playing = true;
-	});
-	
-	private boolean playing;
+	public boolean playing = false;
+
+	Button play = new Button(350, 40, "Play", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			playing = true;
+			Game.player.cooldown = 20;
+		}
+	}
+			);
 	
 	@Override
 	public void update()
@@ -17,7 +24,7 @@ public class ScreenGame extends Screen
 		if (!playing)
 		{
 			play.update(Window.sizeX-200, Window.sizeY-50);
-			
+
 			if (Game.movables.contains(Game.player))
 			{
 				Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
@@ -39,12 +46,12 @@ public class ScreenGame extends Screen
 			{
 				Game.effects.get(i).update();
 			}
-			
+
 			for (int i = 0; i < Game.belowEffects.size(); i++)
 			{
 				Game.belowEffects.get(i).update();
 			}
-			
+
 			if (!Game.movables.contains(Game.player))
 			{
 				for (int m = 0; m < Game.movables.size(); m++)
@@ -118,12 +125,12 @@ public class ScreenGame extends Screen
 		Game.removeObstacles.clear();
 		Game.removeEffects.clear();
 		Game.removeBelowEffects.clear();
-		
+
 		if (KeyInputListener.keys.contains(KeyEvent.VK_ESCAPE))
 		{
 			if (!Panel.pausePressed)
 				Game.screen = new ScreenPaused();
-			
+
 			Panel.pausePressed = true;
 		}
 		else
@@ -135,7 +142,7 @@ public class ScreenGame extends Screen
 	public void draw(Graphics g)
 	{
 		this.drawDefaultBackground(g);
-		
+
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 			Game.belowEffects.get(i).draw(g);
 
@@ -148,9 +155,9 @@ public class ScreenGame extends Screen
 		for (int i = 0; i < Game.effects.size(); i++)
 			((Effect)Game.effects.get(i)).draw(g);
 		
-		if (!playing) {
+		if (!playing) 
 			play.draw(g, Window.sizeX-200, Window.sizeY-50);
-		}
+
 	}
 
 }

@@ -7,9 +7,9 @@ public class EnemyTankMini extends EnemyTank
 	public EnemyTankPink tank;
 	public boolean previousDestroy = false;
 	
-	public EnemyTankMini(double x, double y, double angle)
+	public EnemyTankMini(String name, double x, double y, double angle)
 	{
-		super(x, y, Game.tank_size / 2, new Color(255, 127, 127), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size / 2, new Color(255, 127, 127), angle, ShootAI.straight);
 
 		this.enableMovement = true;
 		this.speed = 2.5;
@@ -30,9 +30,9 @@ public class EnemyTankMini extends EnemyTank
 		this.enableBulletAvoidance = false;
 	}
 	
-	public EnemyTankMini(double x, double y, double angle, EnemyTankPink t)
+	public EnemyTankMini(String name, double x, double y, double angle, EnemyTankPink t)
 	{
-		this(x, y, angle);
+		this(name, x, y, angle);
 		this.tank = t;
 		t.spawnedMinis++;
 		

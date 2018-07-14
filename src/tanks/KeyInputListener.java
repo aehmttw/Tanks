@@ -7,7 +7,8 @@ import java.util.ArrayList;
 public class KeyInputListener implements KeyListener
 {
 	public static ArrayList<Integer> keys = new ArrayList<Integer>();
-	
+	public static ArrayList<Integer> validKeys = new ArrayList<Integer>();
+
 	@Override
 	public void keyTyped(KeyEvent e) 
 	{
@@ -18,14 +19,20 @@ public class KeyInputListener implements KeyListener
 	public void keyPressed(KeyEvent e) 
 	{
 		if (!keys.contains(e.getKeyCode()))
+		{
 			keys.add(e.getKeyCode());
+			validKeys.add(e.getKeyCode());
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) 
 	{
 		if (keys.contains(e.getKeyCode()))
+		{
 			keys.remove((Integer)e.getKeyCode());
+			validKeys.remove((Integer)e.getKeyCode());
+		}
 	}
 
 }

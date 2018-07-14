@@ -42,7 +42,7 @@ public class EnemyTankPinkMagenta extends Tank
 
 	public EnemyTankPinkMagenta(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(230, 0, 200));
+		super("legacy-pink", x, y, size, new Color(230, 0, 200));
 
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;

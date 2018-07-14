@@ -1,6 +1,7 @@
 package tanks;
 
-public interface SolidObject {
+public interface SolidObject 
+{
 	Obstacle getFaces();
 	
 	//Not yet implemented	

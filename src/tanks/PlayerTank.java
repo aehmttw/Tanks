@@ -7,12 +7,13 @@ public class PlayerTank extends Tank
 {
 	double cooldown = 0;
 
-	public PlayerTank(double x, double y, int size, Color color)
+	public PlayerTank(double x, double y, double angle)
 	{
-		super(x, y, size, color);
+		super("player", x, y, Game.tank_size, new Color(0, 150, 255));
 		this.liveBulletMax = 5;
 		this.liveMinesMax = 2;
 		this.coinValue = -5;
+		this.angle = angle;
 		
 		if (Game.insanity)
 			this.lives = 10;

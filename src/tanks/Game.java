@@ -57,9 +57,9 @@ public class Game
 	
 	public static Registry registry = new Registry();
 	
-	static Window window;
+	public static Window window;
 	
-	static String currentLevel = "";	
+	public static String currentLevel = "";	
 	
 	public static PrintStream logger = System.err;
 	

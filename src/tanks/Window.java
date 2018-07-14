@@ -30,10 +30,11 @@ public class Window extends JFrame
 	
 	public Window()
 	{
-		MouseInputListener mouseListener = new MouseInputListener();
-		this.addMouseListener(mouseListener);
-		addMouseMotionListener(mouseListener);
+		this.addMouseListener(new MouseInputListener());
 		this.addKeyListener(new KeyInputListener());
+		this.addMouseWheelListener(new ScrollInputListener());
+		this.addMouseMotionListener(new MouseInputListener());
+		
 		this.setSize((int)(sizeX * scale), (int) ((sizeY + yOffset) * scale ));
 		this.setVisible(true);
 		Container visiblePart = this.getContentPane();

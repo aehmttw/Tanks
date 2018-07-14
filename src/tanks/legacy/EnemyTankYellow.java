@@ -16,7 +16,7 @@ public class EnemyTankYellow extends Tank
 
 	public EnemyTankYellow(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(235, 200, 0));
+		super("legacy-yellow", x, y, size, new Color(235, 200, 0));
 		this.liveBulletMax = 1;
 		this.hasCollided = true;
 		this.coinValue = 3;

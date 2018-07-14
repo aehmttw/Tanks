@@ -9,6 +9,8 @@ public abstract class Tank extends Movable
 
 	public int coinValue = 0;
 	
+	public String name = "";
+	
 	public double accel = 0.1;
 	public double maxV = 2.5;
 	public int liveBullets = 0;
@@ -28,12 +30,13 @@ public abstract class Tank extends Movable
 	
 	public Turret turret;
 	
-	public Tank(double x, double y, int size, Color color) 
+	public Tank(String name, double x, double y, int size, Color color) 
 	{
 		super(x, y);
 		this.size = size;
 		this.color = color;
 		turret = new Turret(this);
+		this.name = name;
 	}
 
 	@Override
@@ -212,5 +215,26 @@ public abstract class Tank extends Movable
 		}
 		
 	}
+	
+	public void drawOutline(Graphics g) 
+	{
+		drawAge = Game.tank_size;
 
+		//g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 128));
+		g.setColor(this.color);
+		Window.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		Window.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		Window.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
+		Window.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+
+		if (this.lives > 1)
+		{
+			for (int i = 1; i < lives; i++)
+			{
+				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+			}
+		}
+		
+		this.turret.draw(g, angle);
+	}
 }

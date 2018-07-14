@@ -18,7 +18,7 @@ public class EnemyTankBrown extends Tank
 
 	public EnemyTankBrown(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(150, 80, 0));
+		super("legacy-brown", x, y, size, new Color(150, 80, 0));
 		this.liveBulletMax = 1;
 
 		if (Math.random() < 0.5)

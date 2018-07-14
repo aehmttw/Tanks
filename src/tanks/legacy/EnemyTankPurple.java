@@ -18,7 +18,7 @@ public class EnemyTankPurple extends Tank {
 	State s1 = State.finding; // find or shoot?
 	State s2 = State.finding; // find or travel?
 	public EnemyTankPurple(double x, double y, int size) {
-		super(x, y, size, new Color (200, 0, 200));
+		super("legacy-purple", x, y, size, new Color (200, 0, 200));
 		this.liveBulletMax = 5;
 		// TODO Auto-generated constructor stub
 	}

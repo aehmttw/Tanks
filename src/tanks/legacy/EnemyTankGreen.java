@@ -25,7 +25,7 @@ public class EnemyTankGreen extends Tank
 
 	public EnemyTankGreen(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(100, 200, 0));
+		super("legacy-green", x, y, size, new Color(100, 200, 0));
 		this.liveBulletMax = 1;
 		if (Math.random() < 0.5)
 			this.idlePhase = Phase.counterClockwise;

@@ -4,9 +4,9 @@ import java.awt.Color;
 
 public class EnemyTankMint extends EnemyTank
 {
-	public EnemyTankMint(double x, double y, double angle)
+	public EnemyTankMint(String name, double x, double y, double angle)
 	{
-		super(x, y, Game.tank_size, new Color(0, 130, 130), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, new Color(0, 130, 130), angle, ShootAI.straight);
 
 		this.enableMovement = true;
 		this.speed = 1;

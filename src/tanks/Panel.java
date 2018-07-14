@@ -48,8 +48,6 @@ public class Panel extends JPanel
 
 	public static boolean pausePressed = false;
 
-	public static double preGameTimer = 0;
-
 	public Panel()
 	{
 		timer = new Timer(0, new ActionListener()

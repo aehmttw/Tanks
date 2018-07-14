@@ -78,7 +78,7 @@ public class PlayerTank extends Tank
 		if (mine && this.cooldown <= 0 && this.liveMines < this.liveMinesMax)
 			this.layMine();
 
-		this.angle = this.getAngleInDirection(Screen.screen.getMouseX(), Screen.screen.getMouseY());
+		this.angle = this.getAngleInDirection(Window.window.getMouseX(), Window.window.getMouseY());
 
 
 		super.update();
@@ -110,7 +110,7 @@ public class PlayerTank extends Tank
 	public void fireBullet(double speed, int bounces, Color color, Bullet.BulletEffect effect)
 	{
 		Bullet b = new Bullet(posX, posY, color, bounces, this);
-		b.setMotionInDirection(Screen.screen.getMouseX(), Screen.screen.getMouseY(), speed);
+		b.setMotionInDirection(Window.window.getMouseX(), Window.window.getMouseY(), speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
 
 		b.moveOut((int) (25.0 / speed * 2));

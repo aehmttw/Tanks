@@ -34,7 +34,7 @@ public class Mine extends Movable
 		if (timer < 150 && ((int) timer % 16) / 8 == 1)
 			p.setColor(Color.yellow);
 
-		Screen.fillOval(p, this.posX, this.posY, s, s);
+		Window.fillOval(p, this.posX, this.posY, s, s);
 	}
 
 	@Override

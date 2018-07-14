@@ -35,7 +35,7 @@ public class Turret extends Movable
 			//p.setColor(new Color(75, 40, 0));
 			p.setColor(new Color((tank.color.getRed() + 64) / 2, (tank.color.getGreen() + 64) / 2, (tank.color.getBlue() + 64) / 2));
 			int s = (int) (size * (Game.tank_size - this.tank.destroyTimer - Math.max(Game.tank_size - tank.drawAge, 0)) / Game.tank_size);
-			Screen.fillOval(p, this.posX, this.posY, s, s);
+			Window.fillOval(p, this.posX, this.posY, s, s);
 			this.posX += this.vX * amount;
 			this.posY += this.vY * amount;
 		}

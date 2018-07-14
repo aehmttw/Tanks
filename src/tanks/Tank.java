@@ -41,14 +41,14 @@ public abstract class Tank extends Movable
 	{
 		hasCollided = false;
 		
-		if (this.posX + this.size / 2 > Screen.sizeX)
+		if (this.posX + this.size / 2 > Window.sizeX)
 		{
-			this.posX = Screen.sizeX - this.size / 2;
+			this.posX = Window.sizeX - this.size / 2;
 			hasCollided = true;
 		}
-		if (this.posY + this.size / 2 > Screen.sizeY)
+		if (this.posY + this.size / 2 > Window.sizeY)
 		{
-			this.posY = Screen.sizeY - this.size / 2;
+			this.posY = Window.sizeY - this.size / 2;
 			hasCollided = true;
 		}
 		if (this.posX - this.size / 2 < 0)
@@ -181,12 +181,12 @@ public abstract class Tank extends Movable
 	{
 		drawAge += Panel.frameFrequency;
 		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
-		Screen.fillRect(g, this.posX, this.posY, (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1), (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1));
+		Window.fillRect(g, this.posX, this.posY, (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1), (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1));
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				Screen.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
 		this.turret.draw(g, angle);

@@ -122,10 +122,10 @@ public class Ray
 
 			}
 
-			if (this.posX + this.size/2 > Screen.sizeX)
+			if (this.posX + this.size/2 > Window.sizeX)
 			{
 				collided = true;
-				this.posX = Screen.sizeX - this.size/2 - (this.posX + this.size/2 - Screen.sizeX);
+				this.posX = Window.sizeX - this.size/2 - (this.posX + this.size/2 - Window.sizeX);
 				this.vX = -Math.abs(this.vX);
 			}
 			if (this.posX - this.size/2 < 0)
@@ -134,10 +134,10 @@ public class Ray
 				this.posX = this.size/2 - (this.posX - this.size / 2);
 				this.vX = Math.abs(this.vX);
 			}
-			if (this.posY + this.size/2 > Screen.sizeY)
+			if (this.posY + this.size/2 > Window.sizeY)
 			{
 				collided = true;
-				this.posY = Screen.sizeY - this.size/2 - (this.posY + this.size/2 - Screen.sizeY);
+				this.posY = Window.sizeY - this.size/2 - (this.posY + this.size/2 - Window.sizeY);
 				this.vY = -Math.abs(this.vY); 
 			}
 			if (this.posY - this.size/2 < 0)
@@ -236,7 +236,7 @@ public class Ray
 			}
 
 
-			if (this.posX + this.size/2 > Screen.sizeX)
+			if (this.posX + this.size/2 > Window.sizeX)
 			{
 				return this.age;
 			}
@@ -244,7 +244,7 @@ public class Ray
 			{
 				return this.age;
 			}
-			else if (this.posY + this.size/2 > Screen.sizeY)
+			else if (this.posY + this.size/2 > Window.sizeY)
 			{
 				return this.age;
 			}

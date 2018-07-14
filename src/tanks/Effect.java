@@ -31,7 +31,8 @@ public class Effect extends Movable
 	@Override
 	public void checkCollision() {}
 	
-	public void drawWithoutUpdate(Graphics p)
+	@Override
+	public void draw(Graphics p)
 	{
 		//p.setColor(Color.red);
 		//Screen.fillRect(p, this.posX, this.posY, 4, 4);
@@ -53,7 +54,7 @@ public class Effect extends Movable
 			Color col = new Color(255, green, 0,  Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
 			p.setColor(col);
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 			
 		}
 		else if (this.type == EffectType.smokeTrail)
@@ -74,7 +75,7 @@ public class Effect extends Movable
 			}
 			
 			p.setColor(col);
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.trail)
 		{
@@ -91,13 +92,13 @@ public class Effect extends Movable
 			Color col = new Color(127, 127, 127, Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
 			p.setColor(col);
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.ray)
 		{
 			int size = 6;
 			p.setColor(new Color(0, 0, 0, 50));
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 			
 			Game.removeEffects.add(this);
 		}
@@ -112,7 +113,7 @@ public class Effect extends Movable
 			int size = Game.tank_size * 4;
 			int opacity = (int) (100 - this.age * 5);
 			p.setColor(new Color(255, 0, 0, opacity));
-			Screen.fillOval(p, this.posX, this.posY, size, size);	
+			Window.fillOval(p, this.posX, this.posY, size, size);	
 		}
 		else if (this.type == EffectType.laser)
 		{
@@ -126,7 +127,7 @@ public class Effect extends Movable
 			//double size = (int) (255 - this.age * 12);
 			double size = Bullet.bullet_size - this.age / 2;
 			p.setColor(new Color(255, 0, 0));
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.piece)
 		{
@@ -138,7 +139,7 @@ public class Effect extends Movable
 			
 			int size = 1 + (int) (Bullet.bullet_size * (1 - this.age / this.maxAge));
 			p.setColor(col);
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.obstaclePiece)
 		{
@@ -150,7 +151,7 @@ public class Effect extends Movable
 			
 			int size = 1 + (int) (Bullet.bullet_size * (1 - this.age / this.maxAge));
 			p.setColor(col);
-			Screen.fillRect(p, this.posX, this.posY, size, size);
+			Window.fillRect(p, this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.charge)
 		{	
@@ -162,7 +163,7 @@ public class Effect extends Movable
 			
 			int size = 1 + (int) (Bullet.bullet_size * (this.age / this.maxAge));
 			p.setColor(col);
-			Screen.fillOval(p, this.posX, this.posY, size, size);
+			Window.fillOval(p, this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.tread)
 		{	
@@ -183,14 +184,13 @@ public class Effect extends Movable
 			
 			int opacity = (int) (255 - this.age / opacityFactor) / 4;
 			p.setColor(new Color(0, 0, 0, opacity));
-			Screen.fillRect(p, this.posX, this.posY, size * Obstacle.draw_size / Obstacle.obstacle_size, size * Obstacle.draw_size / Obstacle.obstacle_size);
+			Window.fillRect(p, this.posX, this.posY, size * Obstacle.draw_size / Obstacle.obstacle_size, size * Obstacle.draw_size / Obstacle.obstacle_size);
 		}
 	}
 	
 	@Override
-	public void draw(Graphics p) 
+	public void update() 
 	{
-		this.drawWithoutUpdate(p);	
 		this.posX += this.vX * Panel.frameFrequency;
 		this.posY += this.vY * Panel.frameFrequency;
 		this.age += Panel.frameFrequency;

@@ -103,10 +103,10 @@ public class Bullet extends Movable
 
 		}
 
-		if (this.posX + this.size/2 > Screen.sizeX)
+		if (this.posX + this.size/2 > Window.sizeX)
 		{
 			collided = true;
-			this.posX = Screen.sizeX - this.size/2 - (this.posX + this.size/2 - Screen.sizeX);
+			this.posX = Window.sizeX - this.size/2 - (this.posX + this.size/2 - Window.sizeX);
 			this.vX = -Math.abs(this.vX);
 		}
 		if (this.posX - this.size/2 < 0)
@@ -115,10 +115,10 @@ public class Bullet extends Movable
 			this.posX = this.size/2 - (this.posX - this.size / 2);
 			this.vX = Math.abs(this.vX);
 		}
-		if (this.posY + this.size/2 > Screen.sizeY)
+		if (this.posY + this.size/2 > Window.sizeY)
 		{
 			collided = true;
-			this.posY = Screen.sizeY - this.size/2 - (this.posY + this.size/2 - Screen.sizeY);
+			this.posY = Window.sizeY - this.size/2 - (this.posY + this.size/2 - Window.sizeY);
 			this.vY = -Math.abs(this.vY); 
 		}
 		if (this.posY - this.size/2 < 0)
@@ -266,7 +266,7 @@ public class Bullet extends Movable
 	{
 		double opacity = ((60 - destroyTimer) / 60.0);
 		p.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Screen.fillOval(p, posX, posY, size + destroyTimer * (size / Bullet.bullet_size), size + destroyTimer * (size / Bullet.bullet_size));
+		Window.fillOval(p, posX, posY, size + destroyTimer * (size / Bullet.bullet_size), size + destroyTimer * (size / Bullet.bullet_size));
 	}
 
 }

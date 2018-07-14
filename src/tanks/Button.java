@@ -39,16 +39,37 @@ public class Button
 		this.hoverText = hoverText.split("---");
 	}
 	
-	public void drawUpdate(Graphics g, int x, int y)
+	public void draw(Graphics g, int x, int y)
 	{
 		this.posX = x;
 		this.posY = y;
 		
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Screen.scale)));
+		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Window.scale)));
+		
+		if (selected)
+			g.setColor(this.selectedCol);
+		else
+			g.setColor(this.unselectedCol);
+		
+		Window.fillRect(g, posX, posY, sizeX, sizeY);
+		
+		g.setColor(Color.black);
+		Window.drawText(g, posX, posY + 5, text);
+		
+		if (selected && enableHover)
+		{
+			Window.drawTooltip(g, this.hoverText);
+		}
+	}
+	
+	public void update(int x, int y)
+	{
+		this.posX = x;
+		this.posY = y;
 
-		double mx = Game.gamescreen.getMouseX();
-		double my = Game.gamescreen.getMouseY();
-
+		double mx = Game.window.getMouseX();
+		double my = Game.window.getMouseY();
+		
 		if (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2)
 			selected = true;
 		else
@@ -63,20 +84,5 @@ public class Button
 		
 		if (!(selected && MouseInputListener.lClick))
 			clicked = false;
-		
-		if (selected)
-			g.setColor(selectedCol);
-		else
-			g.setColor(unselectedCol);
-		
-		Screen.fillRect(g, posX, posY, sizeX, sizeY);
-		
-		g.setColor(Color.black);
-		Screen.drawText(g, posX, posY + 5, text);
-		
-		if (selected && enableHover)
-		{
-			Screen.drawTooltip(g, this.hoverText);
-		}
 	}
 }

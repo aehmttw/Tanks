@@ -7,9 +7,9 @@ public class EnemyTankWhite extends EnemyTank
 {
 	boolean vanish = false;
 	
-	public EnemyTankWhite(double x, double y, double angle)
+	public EnemyTankWhite(String name, double x, double y, double angle)
 	{
-		super(x, y, Game.tank_size, new Color(255, 255, 255), angle, ShootAI.alternate);
+		super(name, x, y, Game.tank_size, new Color(255, 255, 255), angle, ShootAI.alternate);
 		this.speed = 1.5;
 		this.enableDefensiveFiring = true;
 		

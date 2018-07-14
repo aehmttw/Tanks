@@ -84,7 +84,7 @@ public class LevelGenerator
 			for (int j = -2; j <= 2; j++)
 				cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
-		s += x + "-" + y + "-" + "player,";
+		s += x + "-" + y + "-player-" + (int)(Math.random() * 4) + ",";
 		for (int i = 0; i < numTanks; i++) {
 			int angle = (int) (Math.random() * 4);
 			x = (int) (Math.random() * (width));

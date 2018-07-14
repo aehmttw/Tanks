@@ -16,6 +16,16 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
+	Button build = new Button(350, 40, "Level Builder", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.screen = new ScreenLevelBuilder();
+		}
+	}
+			);
+	
 	Button options = new Button(350, 40, "Options...", new Runnable()
 	{
 		@Override
@@ -41,8 +51,9 @@ public class ScreenTitle extends Screen
 	public void update()
 	{
 		newLevel.update(Window.sizeX / 2, Window.sizeY / 2);
-		exit.update(Window.sizeX / 2, Window.sizeY / 2 + 120);
-		options.update(Window.sizeX / 2, Window.sizeY / 2 + 60);		
+		exit.update(Window.sizeX / 2, Window.sizeY / 2 + 180);
+		options.update(Window.sizeX / 2, Window.sizeY / 2 + 60);	
+		build.update(Window.sizeX / 2, Window.sizeY / 2 + 120);		
 	}
 
 	@Override
@@ -54,8 +65,9 @@ public class ScreenTitle extends Screen
 		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (60 * Window.scale)));
 		Window.drawText(g, Window.sizeX / 2, Window.sizeY / 2 - 200, "Tanks");
 		newLevel.draw(g, Window.sizeX / 2, Window.sizeY / 2);
-		exit.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 120);
+		exit.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 180);
 		options.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 60);		
+		build.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 120);		
 	}
 	
 }

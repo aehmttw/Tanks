@@ -146,17 +146,41 @@ public class Registry
 			r.tankRegistries.add(this);
 		}
 		
+		protected TankEntry()
+		{
+			this.tank = EnemyTankUnknown.class;
+			this.name = "unknown";
+			this.weight = 0;
+		}
+		
+		protected TankEntry(String name)
+		{
+			this.tank = EnemyTankUnknown.class;
+			this.name = name;
+			this.weight = 0;
+		}
+		
 		public Tank getTank(double x, double y, double a)
 		{
 			try 
 			{
-				return tank.getConstructor(double.class, double.class, double.class).newInstance(x, y, a);
+				return tank.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, x, y, a);
 			}
 			catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) 
 			{
 				e.printStackTrace();
 				return null;
 			}
+		}
+		
+		public static TankEntry getUnknownEntry()
+		{
+			return new TankEntry();
+		}
+		
+		public static TankEntry getUnknownEntry(String name)
+		{
+			return new TankEntry(name);
 		}
 	}
 	
@@ -208,10 +232,10 @@ public class Registry
 			}
 		}
 		
-		return null;
+		return TankEntry.getUnknownEntry();
 	}
 	
-	public TankEntry getRegistry(String name)
+	public TankEntry getEntry(String name)
 	{		
 		for (int i = 0; i < tankRegistries.size(); i++)
 		{
@@ -223,6 +247,11 @@ public class Registry
 			}
 		}
 		
-		return null;
+		return TankEntry.getUnknownEntry(name);
+	}
+	
+	public TankEntry getRegistry(int number)
+	{		
+		return tankRegistries.get(number);
 	}
 }

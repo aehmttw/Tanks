@@ -15,7 +15,7 @@ public class EnemyTankMini extends Tank
 
 	public EnemyTankMini(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(255, 127, 127));
+		super("legacy-mini", x, y, size, new Color(255, 127, 127));
 		this.liveBulletMax = 1;
 		this.turret.size /= 2;
 		this.turret.length /= 2;

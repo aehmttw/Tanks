@@ -20,8 +20,8 @@ public class Button
 	
 	public boolean clicked = false;
 	
-	public Color unselectedCol = new Color(255, 255, 255);
-	public Color selectedCol = new Color(240, 240, 255);
+	Color unselectedCol = new Color(255, 255, 255);
+	Color selectedCol = new Color(240, 240, 255);
 
 	public Button(double sX, double sY, String text, Runnable f)
 	{

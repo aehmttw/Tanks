@@ -40,7 +40,7 @@ public class EnemyTankBlack extends Tank
 
 	public EnemyTankBlack(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(0, 0, 0));
+		super("legacy-black", x, y, size, new Color(0, 0, 0));
 
 		this.coinValue = 15;
 	}

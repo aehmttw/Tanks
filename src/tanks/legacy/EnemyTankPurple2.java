@@ -43,7 +43,7 @@ public class EnemyTankPurple2 extends Tank
 
 	public EnemyTankPurple2(double x, double y, int size) 
 	{
-		super(x, y, size, new Color(150, 0, 200));
+		super("legacy-purple2", x, y, size, new Color(150, 0, 200));
 
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;

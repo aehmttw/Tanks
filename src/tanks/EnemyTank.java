@@ -155,9 +155,9 @@ public class EnemyTank extends Tank
 	/** Time until the tank will continue motion*/
 	protected double motionTimer = 0;
 
-	public EnemyTank(double x, double y, int size, Color color, double angle, ShootAI ai) 
+	public EnemyTank(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
 	{
-		super(x, y, size, color);
+		super(name, x, y, size, color);
 
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;

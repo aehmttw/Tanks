@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -119,11 +118,7 @@ public class Panel extends JPanel
 				}
 				catch (Exception exception)
 				{
-					Game.exitToCrash();
-
-					Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
-					exception.printStackTrace(Game.logger);
-					Game.crashMessage = e.toString();
+					Game.exitToCrash(exception);
 				}
 			}
 
@@ -202,7 +197,7 @@ public class Panel extends JPanel
 
 			g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-			g.drawString("Tanks v0.4.a", 2, (int) (Game.window.getSize().getHeight() - 40 + 12 - Window.yOffset));
+			g.drawString("Tanks v0.4.b", 2, (int) (Game.window.getSize().getHeight() - 40 + 12 - Window.yOffset));
 			g.drawString("FPS: " + lastFPS, 2, (int) (Game.window.getSize().getHeight() - 40 + 24 - Window.yOffset));
 			g.drawString("Coins: " + Game.coins, 2, (int) (Game.window.getSize().getHeight() - 40 + 36 - Window.yOffset));		
 
@@ -255,11 +250,7 @@ public class Panel extends JPanel
 		}
 		catch (Exception e)
 		{
-			Game.exitToCrash();
-
-			Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
-			e.printStackTrace(Game.logger);
-			Game.crashMessage = e.toString();
+			Game.exitToCrash(e);
 		}
 	}
 }

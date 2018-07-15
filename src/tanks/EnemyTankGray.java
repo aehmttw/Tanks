@@ -20,7 +20,8 @@ public class EnemyTankGray extends EnemyTank
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtPlayer = false;
 		this.motionChangeChance = 0.0005;
-		
+		this.aimAccuracyOffset = 0;
+
 		this.coinValue = 1;
 	}
 }

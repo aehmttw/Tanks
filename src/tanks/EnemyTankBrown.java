@@ -18,6 +18,7 @@ public class EnemyTankBrown extends EnemyTank
 		this.turretIdleTimerBase = 500;
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtPlayer = false;
+		this.aimAccuracyOffset = 0;
 		
 		this.coinValue = 1;
 	}

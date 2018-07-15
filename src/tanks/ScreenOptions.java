@@ -20,7 +20,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 
-	Button mouseTarget = new Button(350, 40, "Mouse target: enabled", new Runnable()
+	Button mouseTarget = new Button(350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -28,9 +28,9 @@ public class ScreenOptions extends Screen
 			Panel.showMouseTarget = !Panel.showMouseTarget;
 
 			if (Panel.showMouseTarget)
-				mouseTarget.text = "Mouse target: enabled";
+				mouseTarget.text = "Mouse target: on";
 			else
-				mouseTarget.text = "Mouse target: disabled";
+				mouseTarget.text = "Mouse target: off";
 		}
 	}
 			);
@@ -84,11 +84,26 @@ public class ScreenOptions extends Screen
 		}
 	}
 			);
+	
+	Button autostart = new Button(350, 40, "Autostart: on", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.autostart = !Game.autostart;
+
+			if (Game.autostart)
+				autostart.text = "Autostart: on";
+			else
+				autostart.text = "Autostart: off";
+		}
+	}
+			);
 
 	@Override
 	public void update()
 	{
-		insanity.update(Window.sizeX / 2, Window.sizeY / 2 + 30);
+		autostart.update(Window.sizeX / 2, Window.sizeY / 2 + 30);
 		mouseTarget.update(Window.sizeX / 2, Window.sizeY / 2 - 30);
 		graphics.update(Window.sizeX / 2, Window.sizeY / 2 - 90);
 		back.update(Window.sizeX / 2, Window.sizeY / 2 + 90);
@@ -98,7 +113,7 @@ public class ScreenOptions extends Screen
 	public void draw(Graphics g)
 	{
 		this.drawDefaultBackground(g);
-		insanity.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 30);
+		autostart.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 30);
 		mouseTarget.draw(g, Window.sizeX / 2, Window.sizeY / 2 - 30);
 		graphics.draw(g, Window.sizeX / 2, Window.sizeY / 2 - 90);
 		back.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 90);

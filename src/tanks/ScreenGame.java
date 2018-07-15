@@ -21,8 +21,11 @@ public class ScreenGame extends Screen
 	@Override
 	public void update()
 	{
-		if (!playing)
+		if (!playing && Game.startTime >= 0)
 		{
+			if (Game.autostart)
+				Game.startTime -= Panel.frameFrequency;
+			
 			play.update(Window.sizeX-200, Window.sizeY-50);
 
 			if (Game.movables.contains(Game.player))
@@ -32,6 +35,9 @@ public class ScreenGame extends Screen
 		}
 		else
 		{
+			playing = true;
+			Game.startTime = 400;
+			
 			Obstacle.draw_size = Math.min(Obstacle.obstacle_size, Obstacle.draw_size);
 			int tanks = 0;
 			for (int i = 0; i < Game.movables.size(); i++)
@@ -129,7 +135,11 @@ public class ScreenGame extends Screen
 		if (KeyInputListener.keys.contains(KeyEvent.VK_ESCAPE))
 		{
 			if (!Panel.pausePressed)
-				Game.screen = new ScreenPaused();
+			{
+				ScreenPaused scr = new ScreenPaused();
+				scr.playing = this.playing;
+				Game.screen = scr;
+			}
 
 			Panel.pausePressed = true;
 		}

@@ -16,7 +16,7 @@ public class Registry
 	public ArrayList<TankEntry> tankRegistries = new ArrayList<TankEntry>();
 	protected double maxTankWeight = 0;
 	
-	public static void loadRegistry (String homedir) 
+	public static void loadRegistry(String homedir) 
 	{
 		Game.registry.tankRegistries.clear();
 		Game.registry.maxTankWeight = 0;
@@ -24,7 +24,7 @@ public class Registry
 		String path = homedir + Game.registryPath;
 		try 
 		{
-			Scanner in = new Scanner (new File (path));
+			Scanner in = new Scanner(new File(path));
 			while (in.hasNextLine()) 
 			{
 				String line = in.nextLine();
@@ -95,7 +95,7 @@ public class Registry
 		}
 		try 
 		{
-			PrintStream writer = new PrintStream (new File (path));
+			PrintStream writer = new PrintStream(new File(path));
 			writer.println("# This is the Tank Registry file!");
 			writer.println("# A registry entry is a line in the file");
 			writer.println("# The parameters are name, rarity, custom/default, jar location, and class");

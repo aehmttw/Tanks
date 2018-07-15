@@ -13,7 +13,6 @@ public class Level
 
 	public Level(String level)
 	{
-		System.out.println(level);
 		preset = level.split("\\{")[1].split("\\}")[0].split("\\|");
 
 		screen = preset[0].split(",");
@@ -63,10 +62,8 @@ public class Level
 		}
 
 		Game.window.setScreenBounds(Game.tank_size * sX, Game.tank_size * sY);
-		
-		System.out.println(obstaclesPos.length);
-		
-		if ((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0) 
+				
+		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{
 			for (int i = 0; i < obstaclesPos.length; i++)
 			{

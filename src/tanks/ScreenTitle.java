@@ -16,17 +16,17 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button build = new Button(350, 40, "Level Builder", new Runnable()
+	Button build = new Button(350, 40, "My levels", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenLevelBuilder();
+			Game.screen = new ScreenSavedLevels();
 		}
 	}
 			);
 	
-	Button options = new Button(350, 40, "Options...", new Runnable()
+	Button options = new Button(350, 40, "Options", new Runnable()
 	{
 		@Override
 		public void run() 

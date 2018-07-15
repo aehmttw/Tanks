@@ -5,7 +5,8 @@ import java.awt.Color;
 public class EnemyTankRed extends EnemyTank
 {
 	boolean lineOfSight = false;
-	double maxCooldown = 150;
+	double maxCooldown = 100;
+	double idleTime = 0;
 	
 	public EnemyTankRed(String name, double x, double y, double angle)
 	{
@@ -25,6 +26,11 @@ public class EnemyTankRed extends EnemyTank
 	@Override
 	public void update()
 	{
+		this.idleTime += Panel.frameFrequency;
+		
+		if (this.idleTime >= 300)
+			this.maxCooldown = 100;
+		
 		this.lineOfSight = false;
 		
 		if (this.cooldown < this.maxCooldown)
@@ -33,7 +39,10 @@ public class EnemyTankRed extends EnemyTank
 		super.update();
 		
 		if (!lineOfSight)
+		{
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
+			this.color = new Color(200, 0, 0);
+		}
 	}
 	
 	@Override
@@ -42,6 +51,7 @@ public class EnemyTankRed extends EnemyTank
 		this.lineOfSight = true;
 		if (this.cooldown > 0)
 		{
+			this.idleTime = 0;
 			if (Math.random() * maxCooldown > cooldown && Game.graphicalEffects)
 			{
 				Effect e = new Effect(this.posX, this.posY, Effect.EffectType.charge);
@@ -52,7 +62,8 @@ public class EnemyTankRed extends EnemyTank
 			return;
 
 		}
-
+		
+		this.maxCooldown = this.maxCooldown * 0.75 + 1;
 		LaserBullet b = new LaserBullet(this.posX, this.posY, Color.red, 0, this);
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);

@@ -12,7 +12,9 @@ public class ScreenPaused extends ScreenGame
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenGame();
+			ScreenGame scr = new ScreenGame();
+			scr.playing = ((ScreenPaused) Game.screen).playing;
+			Game.screen = scr;	
 			Game.player.cooldown = 20;
 		}
 	}
@@ -46,7 +48,11 @@ public class ScreenPaused extends ScreenGame
 		if (KeyInputListener.keys.contains(KeyEvent.VK_ESCAPE))
 		{
 			if (!Panel.pausePressed)
-				Game.screen = new ScreenGame();
+			{
+				ScreenGame scr = new ScreenGame();
+				scr.playing = this.playing;
+				Game.screen = scr;	
+			}
 			
 			Panel.pausePressed = true;
 		}

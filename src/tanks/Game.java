@@ -8,9 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
@@ -51,7 +53,9 @@ public class Game
 	public static boolean graphicalEffects = true;
 
 	public static boolean insanity = false;
-
+	public static boolean autostart = true;
+	public static double startTime = 400;
+	
 	public static int coins = 0;
 	public static Item[] items = new Item[5];
 	
@@ -178,13 +182,17 @@ public class Game
 		System.gc();
 	}
 	
-	public static void exitToCrash()
+	public static void exitToCrash(Exception e)
 	{
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
 		System.gc();
+		e.printStackTrace();
+		Game.crashMessage = e.toString();
+		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
+		e.printStackTrace(Game.logger);
 		screen = new ScreenCrashed();
 	}
 	
@@ -210,6 +218,27 @@ public class Game
 		System.gc();
 	}
 	
+	public static void loadLevel(Path p)
+	{
+		File f = p.toFile();
+		Scanner in;
+		try
+		{
+			in = new Scanner(f);
+			
+			while (in.hasNextLine()) 
+			{
+				String line = in.nextLine();
+				Level l = new Level(line);
+				l.loadLevel();
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			Game.exitToCrash(e);
+		}
+	}
+	
 	public static void start()
 	{
 		//Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-purple2-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
@@ -219,6 +248,7 @@ public class Game
 		Registry.loadRegistry(homedir);
 		
 		Game.currentLevel = LevelGenerator.generateLevelString();
+		//Game.currentLevel = "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();
 		Level level = new Level(currentLevel);
 		//Level level = new Level("{28,18|3...6-3...4,3...4-5...6,10...19-13...14,18...19-4...12|22-14-player,14-10-brown}");
 		//Level level = new Level("{28,18|0...27-9,0...27-7|2-8-player,26-8-purple2-2}");

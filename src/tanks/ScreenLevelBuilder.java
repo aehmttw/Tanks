@@ -3,6 +3,10 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 public class ScreenLevelBuilder extends Screen
 {
@@ -14,15 +18,34 @@ public class ScreenLevelBuilder extends Screen
 	Tank mouseTank = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
 	Obstacle mouseObstacle = new Obstacle(0, 0, Obstacle.getRandomColor());
 
-	public ScreenLevelBuilder()
+	String name;
+
+	boolean menu = false;
+	
+	public ScreenLevelBuilder(String name)
 	{
 		Obstacle.draw_size = Obstacle.obstacle_size;
 
 		ScrollInputListener.validScrollDown = false;
 		ScrollInputListener.validScrollUp = false;
 
-		Game.player = new PlayerTank(25, 25, 0);
-		Game.movables.add(Game.player);
+		boolean containsPlayer = false;
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			if (Game.movables.get(i) instanceof PlayerTank)
+			{
+				Game.player = (PlayerTank) Game.movables.get(i);
+				containsPlayer = true;
+			}
+		}
+
+		if (!containsPlayer)
+		{
+			Game.player = new PlayerTank(25, 25, 0);
+			Game.movables.add(Game.player);
+		}
+		
+		this.name = name;
 	}
 
 	@Override
@@ -135,12 +158,12 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.obstacle)
 			{
 				currentPlaceable = Placeable.enemyTank;
-				mouseTank = new PlayerTank(0, 0, 0);
+				mouseTank = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
 			}
 			else if (currentPlaceable == Placeable.enemyTank)
 			{
 				currentPlaceable = Placeable.playerTank;
-				mouseTank = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
+				mouseTank = new PlayerTank(0, 0, 0);
 			}
 		}
 
@@ -192,6 +215,7 @@ public class ScreenLevelBuilder extends Screen
 			if (!skip && (currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank) && MouseInputListener.rClickValid)
 			{
 				mouseTank.angle += Math.PI / 2;
+				mouseTank.angle = mouseTank.angle % (Math.PI * 2);
 			}
 
 			MouseInputListener.rClickValid = false;
@@ -255,7 +279,7 @@ public class ScreenLevelBuilder extends Screen
 		if (KeyInputListener.validKeys.contains(KeyEvent.VK_ENTER))
 		{
 			String level = "{28,18|";
-			
+
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
@@ -264,14 +288,14 @@ public class ScreenLevelBuilder extends Screen
 
 				level += x + "-" + y + ",";
 			}
-			
+
 			if (Game.obstacles.size() == 0) {
 				level += "|";
 			}
 
 			level = level.substring(0, level.length() - 1);
 			level += "|";
-			
+
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				if (Game.movables.get(i) instanceof Tank)
@@ -286,11 +310,28 @@ public class ScreenLevelBuilder extends Screen
 			}
 
 			level = level.substring(0, level.length() - 1);
-			
+
 			level += "}";
-			
+
 			Game.currentLevel = level;
-					
+			
+			File file = new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name);
+			if (file.exists())
+				file.delete();
+			
+			try
+			{
+				file.createNewFile();
+				
+				PrintWriter pw = new PrintWriter(new PrintStream(file));
+				pw.println(level);
+				pw.close();
+			}
+			catch (IOException e)
+			{
+				Game.exitToCrash(e);
+			}
+			
 			Game.screen = new ScreenGame();
 		}
 	}

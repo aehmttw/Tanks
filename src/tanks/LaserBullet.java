@@ -15,6 +15,9 @@ public class LaserBullet extends Bullet
 	{
 		while(!this.destroy)
 		{
+			if (!Game.movables.contains(Game.player) || Game.player.destroy)
+				this.destroy = true;
+			
 			this.update();
 			Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
 		}

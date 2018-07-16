@@ -174,4 +174,14 @@ public abstract class Movable
 	{
 		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
 	}
+	
+	public static double angleBetween(double a, double b)
+	{
+		return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
+	}
+	
+	public static double absoluteAngleBetween(double a, double b)
+	{
+		return Math.abs((a - b + Math.PI * 3) % (Math.PI*2) - Math.PI);
+	}
 }

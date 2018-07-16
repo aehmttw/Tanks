@@ -254,4 +254,10 @@ public class Ray
 			}
 		}
 	}
+	
+	public void moveOut(double amount)
+	{
+		this.posX += this.vX * amount;
+		this.posY += this.vY * amount;
+	}
 }

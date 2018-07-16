@@ -188,6 +188,8 @@ public class EnemyTank extends Tank
 			}
 			
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this);
+			a.moveOut(5);
+			
 			Movable m = a.getTarget();
 			if (!(m instanceof Tank && !m.equals(Game.player)))
 			{
@@ -398,6 +400,8 @@ public class EnemyTank extends Tank
 	public void updateTurretWander()
 	{
 		Ray a = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
+		a.moveOut(5);
+
 		Movable m = a.getTarget();
 
 		if (!(m == null))
@@ -455,8 +459,10 @@ public class EnemyTank extends Tank
 		double a = this.getAngleInDirection(Game.player.posX, Game.player.posY);
 
 		Ray r = new Ray(this.posX, this.posY, a, 0, this);
-		Movable m = r.getTarget();
+		r.moveOut(5);
 
+		Movable m = r.getTarget();
+		
 		if (m != null)
 			if (m.equals(Game.player))
 				this.shoot();
@@ -519,7 +525,9 @@ public class EnemyTank extends Tank
 			}
 		}
 
-		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, 1, this);
+		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, this.bulletBounces, this);
+		ray.moveOut(5);
+		
 		Movable target = ray.getTarget();
 		if (target != null)
 			if (target.equals(Game.player))
@@ -541,6 +549,7 @@ public class EnemyTank extends Tank
 			a = this.getAngleInDirection(Game.player.posX, Game.player.posY);
 
 		Ray rayToPlayer = new Ray(this.posX, this.posY, a, 0, this);
+		rayToPlayer.moveOut(5);
 		Movable playerTarget = rayToPlayer.getTarget();
 
 		if (playerTarget != null)
@@ -578,14 +587,21 @@ public class EnemyTank extends Tank
 
 	public void updateAimingTurret()
 	{
-		if (Math.abs(this.aimAngle - this.angle) < this.aimThreshold)
+		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold)
 			this.shoot();
 		else
 		{
-			if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
-				this.angle += this.aimTurretSpeed * Panel.frameFrequency;
+			double speed = this.aimTurretSpeed;
+			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
+				speed /= 2;
+			
+			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 1.5)
+				speed /= 2;
+				
+			if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
+				this.angle += speed * Panel.frameFrequency;
 			else
-				this.angle -= this.aimTurretSpeed * Panel.frameFrequency;
+				this.angle -= speed * Panel.frameFrequency;
 
 			this.angle = this.angle % (Math.PI * 2);
 		}

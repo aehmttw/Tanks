@@ -33,15 +33,18 @@ public class PlayerTank extends Tank
 		boolean right = KeyInputListener.keys.contains(KeyEvent.VK_RIGHT) || KeyInputListener.keys.contains(KeyEvent.VK_D);
 
 		double acceleration = accel;
+		double maxVelocity = maxV;
+		
 		if (up && left || up && right || down && left || down && right)
 		{
 			acceleration /= Math.sqrt(2);
+			maxVelocity /= Math.sqrt(2);
 		}
 		
 		if (left && !right)
-			this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, -maxV);
+			this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, -maxVelocity);
 		else if (right && !left)
-			this.vX = Math.min(this.vX + acceleration * Panel.frameFrequency, maxV);
+			this.vX = Math.min(this.vX + acceleration * Panel.frameFrequency, maxVelocity);
 		else
 		{
 			if (this.vX > 0)
@@ -51,9 +54,9 @@ public class PlayerTank extends Tank
 		}
 
 		if (up && !down)
-			this.vY = Math.max(this.vY - acceleration * Panel.frameFrequency, -maxV);
+			this.vY = Math.max(this.vY - acceleration * Panel.frameFrequency, -maxVelocity);
 		else if (down && !up)
-			this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, maxV);
+			this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, maxVelocity);
 		else
 		{
 			if (this.vY > 0)

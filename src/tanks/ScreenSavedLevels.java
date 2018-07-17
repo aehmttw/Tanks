@@ -16,7 +16,8 @@ public class ScreenSavedLevels extends Screen
 	
 	int rows = 6;
 	int yoffset = -150;
-	
+	int page = 0;
+
 	Button quit = new Button(350, 40, "Back", new Runnable()
 	{
 		@Override
@@ -49,8 +50,28 @@ public class ScreenSavedLevels extends Screen
 	}
 			);
 	
+	Button next = new Button(350, 40, "Next page", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			page++;
+		}
+	}
+			);
+	
+	Button previous = new Button(350, 40, "Previous page", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			page--;
+		}
+	}
+			);
+	
 	ArrayList<Button> buttons = new ArrayList<Button>();
-	int page = 0;
+	
 	
 	public ScreenSavedLevels()
 	{
@@ -102,10 +123,10 @@ public class ScreenSavedLevels extends Screen
 	{
 		int offset = 0;
 		
-		if (page * 12 + rows < buttons.size())
+		if (page * rows * 3 + rows < buttons.size())
 			offset = -190;
 		
-		if (page * 12 + rows * 2 < buttons.size())
+		if (page * rows * 3 + rows * 2 < buttons.size())
 			offset = -380;
 			
 		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows, buttons.size()); i++)
@@ -123,8 +144,14 @@ public class ScreenSavedLevels extends Screen
 			buttons.get(i).update(Window.sizeX / 2 + offset + 380 * 2, Window.sizeY / 2 + yoffset + (i - page * rows * 3 - rows * 2) * 60);
 		}
 		
-		quit.update(Window.sizeX / 2 - 190, Window.sizeY / 2 + 240);
-		newLevel.update(Window.sizeX / 2 + 190, Window.sizeY / 2 + 240);
+		quit.update(Window.sizeX / 2 - 190, Window.sizeY / 2 + 300);
+		newLevel.update(Window.sizeX / 2 + 190, Window.sizeY / 2 + 300);
+		
+		if (page > 0)
+			previous.update(Window.sizeX / 2 - 190, Window.sizeY / 2 + 240);
+		
+		if (buttons.size() > (1 + page) * rows * 3)
+			next.update(Window.sizeX / 2 + 190, Window.sizeY / 2 + 240);
 	}
 
 	@Override
@@ -134,10 +161,10 @@ public class ScreenSavedLevels extends Screen
 		
 		int offset = 0;
 		
-		if (page * 12 + rows < buttons.size())
+		if (page * rows * 3 + rows < buttons.size())
 			offset = -190;
 		
-		if (page * 12 + rows * 2 < buttons.size())
+		if (page * rows * 3 + rows * 2 < buttons.size())
 			offset = -380;
 			
 		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows, buttons.size()); i++)
@@ -155,10 +182,16 @@ public class ScreenSavedLevels extends Screen
 			buttons.get(i).draw(g, Window.sizeX / 2 + offset + 380 * 2, Window.sizeY / 2 + yoffset + (i - page * rows * 3 - rows * 2) * 60);
 		}
 	
-		quit.draw(g, Window.sizeX / 2 - 190, Window.sizeY / 2 + 240);
-		newLevel.draw(g, Window.sizeX / 2 + 190, Window.sizeY / 2 + 240);
+		quit.draw(g, Window.sizeX / 2 - 190, Window.sizeY / 2 + 300);
+		newLevel.draw(g, Window.sizeX / 2 + 190, Window.sizeY / 2 + 300);
 
 		Window.drawText(g, Window.sizeX / 2, Window.sizeY / 2 - 210, "My levels");
+		
+		if (page > 0)
+			previous.draw(g, Window.sizeX / 2 - 190, Window.sizeY / 2 + 240);
+		
+		if (buttons.size() > (1 + page) * rows * 3)
+			next.draw(g, Window.sizeX / 2 + 190, Window.sizeY / 2 + 240);
 
 	}
 

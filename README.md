@@ -31,7 +31,7 @@ obstacles.  The user controls the cyan tank using the mouse or keyboard.
 
 To use the game you need to install Java.  For this purpose you may need
 administrator privileges to install software on your machine.  You can install java 
-from ![java.com](https://java.com/download).
+from [java.com](https://java.com/download).
 
 You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ21G8-Idsm6gznPo5) for tanks.  
 To run the jar file you can double-click on it.  

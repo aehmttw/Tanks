@@ -60,7 +60,7 @@ public class EnemyTankPink extends Tank
 			{
 				//if (m != null)
 				//	System.out.println(((Tank)m).color);
-				Bullet b = new Bullet(this.posX, this.posY, Color.red, 2, this);
+				Bullet b = new Bullet(this.posX, this.posY, 2, this);
 				b.setPolarMotion(angle + offset, 25.0/2);
 				b.moveOut(4);
 				//b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/2);

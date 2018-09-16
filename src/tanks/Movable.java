@@ -10,6 +10,7 @@ public abstract class Movable
 	public double vY;
 	public double cooldown = 0;
 	public boolean destroy = false;
+	public Team team;
 
 	public Movable(double x, double y)
 	{
@@ -21,8 +22,8 @@ public abstract class Movable
 	{
 		if (!destroy)
 		{
-			this.posX += this.vX / 2 * Math.max(0, Game.tank_size - Game.player.destroyTimer) / Game.tank_size * Panel.frameFrequency;
-			this.posY += this.vY / 2 * Math.max(0, Game.tank_size - Game.player.destroyTimer) / Game.tank_size * Panel.frameFrequency;
+			this.posX += this.vX / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
+			this.posY += this.vY / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
 			this.checkCollision();
 		}
 	}
@@ -75,7 +76,7 @@ public abstract class Movable
 		this.vY = velY;
 
 	}
-	
+
 	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
 	{
 		x -= this.posX;
@@ -122,7 +123,7 @@ public abstract class Movable
 
 		return angle;
 	}
-	
+
 	public double getPolarDirection()
 	{
 		double x = this.vX;
@@ -166,6 +167,13 @@ public abstract class Movable
 		this.posY += amount * y;	
 	}
 
+	public void drawTeam(Graphics g)
+	{
+		Window.setFontSize(g, 20);
+		if (this.team != null)
+			Window.drawText(g, this.posX, this.posY + 40, this.team.name);
+	}
+
 	public abstract void checkCollision();
 
 	public abstract void draw(Graphics p);
@@ -174,12 +182,12 @@ public abstract class Movable
 	{
 		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
 	}
-	
+
 	public static double angleBetween(double a, double b)
 	{
 		return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
 	}
-	
+
 	public static double absoluteAngleBetween(double a, double b)
 	{
 		return Math.abs((a - b + Math.PI * 3) % (Math.PI*2) - Math.PI);

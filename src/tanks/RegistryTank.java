@@ -10,9 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
-public class Registry 
+public class RegistryTank 
 {
-	
 	public ArrayList<TankEntry> tankRegistries = new ArrayList<TankEntry>();
 	protected double maxTankWeight = 0;
 	
@@ -58,7 +57,7 @@ public class Registry
 						ClassLoader loader = new URLClassLoader( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
 						@SuppressWarnings("unchecked")
 						Class<? extends Tank> clasz = (Class<? extends Tank>) loader.loadClass(tankLine[4]);
-						new Registry.TankEntry(Game.registry, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
+						new RegistryTank.TankEntry(Game.registry, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
 					}
 					catch (Exception e) 
 					{
@@ -133,7 +132,7 @@ public class Registry
 		protected double startWeight;
 		protected double endWeight;
 		
-		public TankEntry(Registry r, Class<? extends Tank> tank, String name, double weight)
+		public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight)
 		{
 			this.tank = tank;
 			this.name = name;
@@ -148,14 +147,14 @@ public class Registry
 		
 		protected TankEntry()
 		{
-			this.tank = EnemyTankUnknown.class;
+			this.tank = TankUnknown.class;
 			this.name = "unknown";
 			this.weight = 0;
 		}
 		
 		protected TankEntry(String name)
 		{
-			this.tank = EnemyTankUnknown.class;
+			this.tank = TankUnknown.class;
 			this.name = name;
 			this.weight = 0;
 		}
@@ -200,12 +199,12 @@ public class Registry
 			this.weight = weight;
 		}
 		
-		public TankEntry registerEntry(Registry r)
+		public TankEntry registerEntry(RegistryTank r)
 		{
 			return new TankEntry(r, this.tank, this.name, this.weight);
 		}
 		
-		public TankEntry registerEntry(Registry r, double weight)
+		public TankEntry registerEntry(RegistryTank r, double weight)
 		{
 			return new TankEntry(r, this.tank, this.name, weight);
 		}

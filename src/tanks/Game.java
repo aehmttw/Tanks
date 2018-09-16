@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,13 +21,21 @@ public class Game
 	
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
-	public static ArrayList<Movable> effects = new ArrayList<Movable>();
-	public static ArrayList<Movable> belowEffects = new ArrayList<Movable>();
+	public static ArrayList<Effect> effects = new ArrayList<Effect>();
+	public static ArrayList<Effect> belowEffects = new ArrayList<Effect>();
 
 	public static ArrayList<Movable> removeMovables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> removeObstacles = new ArrayList<Obstacle>();
-	public static ArrayList<Movable> removeEffects = new ArrayList<Movable>();
-	public static ArrayList<Movable> removeBelowEffects = new ArrayList<Movable>();
+	public static ArrayList<Effect> removeEffects = new ArrayList<Effect>();
+	public static ArrayList<Effect> removeBelowEffects = new ArrayList<Effect>();
+
+	public static ArrayList<Effect> recycleEffects = new ArrayList<Effect>();
+
+	//public static Team playerTeam = new Team(new Color(0, 0, 255));
+	//public static Team enemyTeam = new Team(new Color(255, 0, 0));
+	
+	public static Team playerTeam = new Team("ally");
+	public static Team enemyTeam = new Team("enemy");
 
 	static int currentSizeX = 28;
 	static int currentSizeY = 18;
@@ -37,7 +44,7 @@ public class Game
 	
 	public static double levelSize = 1;
 	
-	public static PlayerTank player;
+	public static TankPlayer player;
 	
 	public static boolean bulletLocked = false;
 		
@@ -59,7 +66,7 @@ public class Game
 	public static int coins = 0;
 	public static Item[] items = new Item[5];
 	
-	public static Registry registry = new Registry();
+	public static RegistryTank registry = new RegistryTank();
 	
 	public static Window window;
 	
@@ -72,23 +79,23 @@ public class Game
 	public static final String registryPath = directoryPath + "/tank-registry.txt";
 	public static String homedir;
 	
-	public static ArrayList<Registry.DefaultTankEntry> defaultTanks = new ArrayList<Registry.DefaultTankEntry>();
+	public static ArrayList<RegistryTank.DefaultTankEntry> defaultTanks = new ArrayList<RegistryTank.DefaultTankEntry>();
 	
 	public static void initScript() 
 	{
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankBrown.class, "brown", 1));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankGray.class, "gray", 1));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankMint.class, "mint", 1.0 / 2));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankYellow.class, "yellow", 1.0 / 2));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankMagenta.class, "magenta", 1.0 / 3));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankRed.class, "red", 1.0 / 3));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankGreen.class, "green", 1.0 / 4));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankPurple.class, "purple", 1.0 / 4));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankWhite.class, "white", 1.0 / 4));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankOrange.class, "orange", 1.0 / 6));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankDarkGreen.class, "darkgreen", 1.0 / 9));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankBlack.class, "black", 1.0 / 10));
-		defaultTanks.add(new Registry.DefaultTankEntry(EnemyTankPink.class, "pink", 1.0 / 15));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGray.class, "gray", 1));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMint.class, "mint", 1.0 / 2));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankYellow.class, "yellow", 1.0 / 2));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMagenta.class, "magenta", 1.0 / 3));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankRed.class, "red", 1.0 / 3));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGreen.class, "green", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPurple.class, "purple", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankWhite.class, "white", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankOrange.class, "orange", 1.0 / 6));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankDarkGreen.class, "darkgreen", 1.0 / 9));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
 		
 		homedir = System.getProperty("user.home");
 		if (!Files.exists(Paths.get(homedir + directoryPath))) 
@@ -108,7 +115,7 @@ public class Game
 		
 		if (!Files.exists(Paths.get(homedir + registryPath)))
 		{
-			Registry.initRegistry(homedir);
+			RegistryTank.initRegistry(homedir);
 		}
 		
 		try 
@@ -121,7 +128,7 @@ public class Game
 			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 		
-		Registry.loadRegistry(homedir);
+		RegistryTank.loadRegistry(homedir);
 	}
 	
 	public static void main(String[] args)
@@ -145,7 +152,7 @@ public class Game
 					
 					window = new Window();
 					window.setTitle("Tanks");
-					window.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon64.png")));
+					window.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/icon64.png")));
 					
 					
 					//movables.add(new EnemyTankStationary(120, 600, tank_size));
@@ -168,6 +175,10 @@ public class Game
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeBelowEffects.clear();
+
 		System.gc();
 		start();
 	}
@@ -179,7 +190,28 @@ public class Game
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeBelowEffects.clear();
+		
 		System.gc();
+	}
+	
+	public static void exit(String name)
+	{
+		obstacles.clear();
+		belowEffects.clear();
+		movables.clear();
+		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeBelowEffects.clear();
+		
+		System.gc();
+		
+		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
+		Game.loadLevel(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+		Game.screen = s;	
 	}
 	
 	public static void exitToCrash(Exception e)
@@ -188,12 +220,16 @@ public class Game
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
-		System.gc();
 		e.printStackTrace();
 		Game.crashMessage = e.toString();
 		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
 		screen = new ScreenCrashed();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeBelowEffects.clear();
+		
+		System.gc();
 	}
 	
 	public static void exitToTitle()
@@ -210,17 +246,25 @@ public class Game
 		Level.currentColor = new Color(235, 207, 166);
 
 		Game.window.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
-		screen = new ScreenTitle();
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeBelowEffects.clear();
+		
+		screen = new ScreenTitle();
 		System.gc();
 	}
 	
-	public static void loadLevel(Path p)
+	public static void loadLevel(File f)
 	{
-		File f = p.toFile();
+		Game.loadLevel(f, null);
+	}
+	
+	public static void loadLevel(File f, ScreenLevelBuilder s)
+	{
 		Scanner in;
 		try
 		{
@@ -230,7 +274,7 @@ public class Game
 			{
 				String line = in.nextLine();
 				Level l = new Level(line);
-				l.loadLevel();
+				l.loadLevel(s);
 			}
 		}
 		catch (FileNotFoundException e)
@@ -240,12 +284,12 @@ public class Game
 	}
 	
 	public static void start()
-	{
+	{		
 		//Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-purple2-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
 		
 		//System.out.println(LevelGenerator.generateLevelString());
 		
-		Registry.loadRegistry(homedir);
+		RegistryTank.loadRegistry(homedir);
 		
 		Game.currentLevel = LevelGenerator.generateLevelString();
 		//Game.currentLevel = "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();

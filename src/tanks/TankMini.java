@@ -2,12 +2,12 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankMini extends EnemyTank
+public class TankMini extends EnemyTank
 {
-	public EnemyTankPink tank;
+	public TankPink tank;
 	public boolean previousDestroy = false;
 	
-	public EnemyTankMini(String name, double x, double y, double angle)
+	public TankMini(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size / 2, new Color(255, 127, 127), angle, ShootAI.straight);
 
@@ -25,12 +25,13 @@ public class EnemyTankMini extends EnemyTank
 		this.bulletSpeed = 25.0 / 4;
 		this.bulletDamage = 0.25;
 		this.bulletSize /= 2;
-		this.enableLookingAtPlayer = true;
+		this.enableLookingAtTargetEnemy = true;
 		this.motionChangeChance = 0.001;
 		this.enableBulletAvoidance = false;
+		this.lives = 0.25;
 	}
 	
-	public EnemyTankMini(String name, double x, double y, double angle, EnemyTankPink t)
+	public TankMini(String name, double x, double y, double angle, TankPink t)
 	{
 		this(name, x, y, angle);
 		this.tank = t;
@@ -38,6 +39,8 @@ public class EnemyTankMini extends EnemyTank
 		
 		this.turret.size /= 2;
 		this.turret.length /= 2;
+		
+		this.team = t.team;
 	}
 	
 	@Override
@@ -51,16 +54,21 @@ public class EnemyTankMini extends EnemyTank
 				tank.spawnedMinis--;
 		}
 		
-		super.update();
-
-		
-		if (this.tank != null)
+		super.update();	
+	}
+	
+	@Override
+	public void postUpdate()
+	{
+		if (this.tank != null && !seesTargetEnemy)
 		{
 			if (!this.tank.destroy && Math.sqrt(Math.pow(this.posX - this.tank.posX, 2) + Math.pow(this.posY - this.tank.posY, 2)) > 300)
 			{
+				this.overrideDirection = true;
 				this.setMotionInDirection(this.tank.posX, this.tank.posY, this.speed);
 			}
 		}
 		
 	}
+	
 }

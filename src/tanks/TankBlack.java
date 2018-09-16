@@ -2,11 +2,11 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankBlack extends EnemyTank
+public class TankBlack extends EnemyTank
 {
 	public double strafeDirection = Math.PI / 2;
 
-	public EnemyTankBlack(String name, double x, double y, double angle)
+	public TankBlack(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, new Color(0, 0, 0), angle, ShootAI.straight);
 		this.cooldownBase = 75;
@@ -16,14 +16,14 @@ public class EnemyTankBlack extends EnemyTank
 		this.bulletSpeed = 25.0 / 2;
 		this.bulletBounces = 0;
 		this.bulletColor = Color.red;
-		this.bulletEffect = Bullet.BulletEffect.fire;
+		this.bulletEffect = Bullet.BulletEffect.darkFire;
 		this.aimTurretSpeed = 0.06;
 		
 		this.coinValue = 10;
 	}
 	
 	@Override
-	public void reactToPlayerSight()
+	public void reactToTargetEnemySight()
 	{
 		if (Math.random() < 0.01)
 			strafeDirection = -strafeDirection;

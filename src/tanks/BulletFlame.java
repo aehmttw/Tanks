@@ -3,15 +3,15 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Flame extends Bullet
+public class BulletFlame extends Bullet
 {
 	double life = 100;
 	double age = 0;
 	double frequency = Panel.frameFrequency;
 	
-	public Flame(double x, double y, Color color, int bounces, Tank t) 
+	public BulletFlame(double x, double y, int bounces, Tank t) 
 	{
-		super(x, y, color, bounces, t);
+		super(x, y, bounces, t);
 		t.liveBullets--;
 		this.useCustomWallCollision = true;
 	}

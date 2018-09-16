@@ -25,7 +25,7 @@ public class EnemyTankOrange extends Tank
 	@Override
 	public void shoot() 
 	{
-		Flame b = new Flame(this.posX, this.posY, Color.blue, 0, this);
+		BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		Game.movables.add(b);

@@ -3,7 +3,7 @@ package tanks;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-public class ScrollInputListener implements MouseWheelListener
+public class InputScroll implements MouseWheelListener
 {
 	static boolean validScrollUp = false;
 	static boolean validScrollDown = false;

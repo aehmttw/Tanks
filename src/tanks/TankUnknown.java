@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
-public class EnemyTankUnknown extends Tank
+/**
+ * This is the tank that appears whenever an invalid ID is specified. It is useful for debugging purposes.
+ * */
+public class TankUnknown extends Tank
 {
-	public EnemyTankUnknown(String name, double x, double y, double angle)
+	public TankUnknown(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, Color.red);
 	}

@@ -2,9 +2,9 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankGreen extends EnemyTank
+public class TankGreen extends EnemyTank
 {
-	public EnemyTankGreen(String name, double x, double y, double angle)
+	public TankGreen(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, new Color(100, 200, 0), angle, ShootAI.reflect);
 		this.enableMovement = false;
@@ -19,7 +19,7 @@ public class EnemyTankGreen extends EnemyTank
 		this.bulletEffect = Bullet.BulletEffect.fireTrail;
 		this.turretIdleTimerBase = 25;
 		this.turretIdleTimerRandom = 500;
-		this.enableLookingAtPlayer = false;
+		this.enableLookingAtTargetEnemy = false;
 		
 		this.coinValue = 4;
 	}

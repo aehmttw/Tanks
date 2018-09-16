@@ -40,7 +40,7 @@ public class EnemyTankBrown extends Tank
 	{
 		if (this.liveBullets < this.liveBulletMax)
 		{
-			Bullet b = new Bullet(this.posX, this.posY, Color.blue, 1, this);
+			Bullet b = new Bullet(this.posX, this.posY, 1, this);
 			b.setPolarMotion(this.angle, 25.0/4);
 			b.moveOut(8);
 			b.effect = Bullet.BulletEffect.trail;

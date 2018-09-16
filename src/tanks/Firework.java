@@ -95,15 +95,17 @@ public class Firework extends Movable
 			
 			if (this.age >= this.maxAge)
 			{
+				Window.playSound("resources/explosion.wav");
+
 				removeList.add(this);
 				
-				for (int i = 0; i < 100; i++)
+				for (int i = 0; i < 50; i++)
 				{
 					Firework e = new Firework(FireworkType.particle, this.posX, this.posY, this.list, this.removeList);
 					e.size = 4;
 					int var = 50;
 					e.color = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
-					double power = Math.random() * 6 + 2;
+					double power = Math.random() * 1 + 2;
 					e.vX = this.vX;
 					e.vY = this.vY;
 					e.addPolarMotion(Math.random() * 2 * Math.PI, Math.random() * power);

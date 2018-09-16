@@ -36,7 +36,7 @@ public class EnemyTankRed extends Tank
 
 			if (Math.random() * maxCooldown > cooldown && Game.graphicalEffects)
 			{
-				Effect e = new Effect(this.posX, this.posY, Effect.EffectType.charge);
+				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.charge);
 				double var = 50;
 				e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
 				Game.effects.add(e);
@@ -45,7 +45,7 @@ public class EnemyTankRed extends Tank
 
 		}
 
-		LaserBullet b = new LaserBullet(this.posX, this.posY, Color.blue, 0, this);
+		BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		b.shoot();

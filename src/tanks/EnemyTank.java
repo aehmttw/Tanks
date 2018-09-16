@@ -3,17 +3,16 @@ package tanks;
 import java.awt.Color;
 import java.util.ArrayList;
 
-/** This class is the skeleton tank class.
+/** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
 public class EnemyTank extends Tank
 {
-
 	/** Determines which type of AI the tank will use when shooting.
-	 *  Straight means that the tank will shoot directly at the player if the player is in line of sight.
-	 *  Reflect means that the tank will use a Ray with reflections to find possible ways to hit the player.
-	 *  Alternate means that the tank will switch between shooting straight at the player and using the reflect AI with every shot.
-	 *  Wander means that the tank will randomly rotate and shoot only if it detects the player*/
+	 *  Straight means that the tank will shoot directly at the target enemy if the target enemy is in line of sight.
+	 *  Reflect means that the tank will use a Ray with reflections to find possible ways to hit the target enemy.
+	 *  Alternate means that the tank will switch between shooting straight at the target enemy and using the reflect AI with every shot.
+	 *  Wander means that the tank will randomly rotate and shoot only if it detects the target enemy*/
 	public enum ShootAI {wander, straight, alternate, reflect}
 
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
@@ -25,18 +24,18 @@ public class EnemyTank extends Tank
 	// These values do not change normally along the course of the game.
 
 	public boolean enableMovement = true;
-	/** When set to true, will call reactToPlayerSight() when an unobstructed line of sight to the player can be made */
-	public boolean enablePlayerReaction = true;
+	/** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
+	public boolean enableTargetEnemyReaction = true;
 	public boolean enableMineLaying = true;
 	public boolean enableMineAvoidance = true;
 	public boolean enableBulletAvoidance = true;
-	/** When set to true, will calculate player velocity when shooting. Only effective when shootAIType is straight!*/
+	/** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!*/
 	public boolean enablePredictiveFiring = true;
 	/** When set to true, will shoot at bullets aiming towards the tank*/
 	public boolean enableDefensiveFiring = false;
-	/** When set to true, will shoot a ray at the player and enable reactions when the player is in sight*/
-	public boolean enableLookingAtPlayer = true;
-	
+	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
+	public boolean enableLookingAtTargetEnemy = true;
+
 	public int bulletBounces = 1;
 	public Color bulletColor = Color.blue;
 	public double bulletSize = Bullet.bullet_size;
@@ -46,18 +45,18 @@ public class EnemyTank extends Tank
 
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
 	public double aimAccuracyOffset = 0.2;
-	/** Threshold angle difference needed between angle and aimAngle to count as touching the player*/
+	/** Threshold angle difference needed between angle and aimAngle to count as touching the target enemy*/
 	public double aimThreshold = 0.1;
-	
+
 	/** Minimum time to randomly change idle direction, added to turretIdleTimerRandom * Math.random()*/
 	public double turretIdleTimerBase = 25;
 	/** Random factor in calculating time to randomly change idle direction, multiplied by Math.random() and added to turretIdleTimerBase*/
 	public double turretIdleTimerRandom = 500;
 
 	/** Minimum time to lay a mine, added to mineTimerRandom * Math.random()*/
-	public double mineTimerBase = 2000;
+	public double mineTimerBase = 1000;
 	/** Random factor in calculating time to lay a mine, multiplied by Math.random() and added to mineTimerBase*/
-	public double mineTimerRandom = 2000;
+	public double mineTimerRandom = 4000;
 
 	/** Minimum time in between shooting bullets, added to cooldownRandom * Math.random()*/
 	public double cooldownBase = 60;
@@ -67,15 +66,17 @@ public class EnemyTank extends Tank
 	/** Time waited when changing direction of motion*/
 	public double directionChangeCooldown = 15;
 
-	/** Speed at which the turret moves while aiming at a player*/
+	/** Speed at which the turret moves while aiming at a target enemy*/
 	public double aimTurretSpeed = 0.03;
 	/** Speed at which the turret moves while idle*/
 	public double idleTurretSpeed = 0.005;
 
 	/** Speed at which the tank moves*/
 	public double speed = 2.5;
+
 	/** Chance per frame to change direction*/
-	public double motionChangeChance = 0.001;
+	public double motionChangeChance = 0.01;
+
 	/** Time which the tank will avoid a bullet after the bullet is no longer aiming at the tank*/
 	public double avoidTimerBase = 30;
 
@@ -89,7 +90,7 @@ public class EnemyTank extends Tank
 	// The following are values which are internally used for carrying out behavior.
 	// These values change constantly during the course of the game.
 
-	/** Used for tanks which do not use the straight AI, when detecting the player with a ray. Tells the tank to aim towards the found target angle.*/
+	/** Used for tanks which do not use the straight AI, when detecting the target enemy with a ray. Tells the tank to aim towards the found target angle.*/
 	protected boolean aim = false;
 
 	/** True for when a tank just laid a mine*/
@@ -98,8 +99,8 @@ public class EnemyTank extends Tank
 	/** Alternates for tanks with the alternate AI. Tells tanks to shoot with reflection and then to shoot straight.*/
 	protected boolean straightShoot = false;
 
-	/** If a direct line of sight to the player exists, set to true*/
-	protected boolean seesPlayer = false;
+	/** If a direct line of sight to the target enemy exists, set to true*/
+	protected boolean seesTargetEnemy = false;
 
 	/** Age in frames*/
 	protected double age = 0;
@@ -107,17 +108,20 @@ public class EnemyTank extends Tank
 	/** Stores distances to obstacles or tanks in 8 directions*/
 	protected int[] distances = new int[8];
 
-	/** Used only in non-straight AI tanks. When detecting the player, set to the angle necessary to hit them. This angle is added to random offsets to search for the player moving.*/
+	/** Used only in non-straight AI tanks. When detecting the target enemy, set to the angle necessary to hit them. This angle is added to random offsets to search for the target enemy moving.*/
 	protected double lockedAngle = 0;
 
-	/** Used only in non-straight AI tanks. Angle at which the tank is searching with its aim ray for the player*/
+	/** Used only in non-straight AI tanks. Angle at which the tank is searching with its aim ray for the target enemy*/
 	protected double searchAngle = 0;
 
 	/** Angle at which the tank aims after having found its target (if non-straight AI, found with a ray, otherwise just the angle to the tank)*/
 	protected double aimAngle = 0;
 
-	/** Direction in which the tank moves*/
+	/** Direction in which the tank moves when idle*/
 	protected double direction = ((int)(Math.random() * 8))/2.0;
+
+	/** When enabled, the current motion direction will be kept until the tank decides to change direction*/
+	protected boolean overrideDirection = false;
 
 	/** Direction in which the tank moves to avoid a bullet that will hit it*/
 	protected double avoidDirection = 0;
@@ -126,7 +130,7 @@ public class EnemyTank extends Tank
 	protected double idleTimer = (Math.random() * turretIdleTimerRandom) + turretIdleTimerBase;
 
 	/** Time between shooting bullets*/
-	protected double cooldown = 100;
+	protected double cooldown = 200;
 
 	/** Time until the next mine will be laid*/
 	protected double mineTimer = (Math.random() * mineTimerBase + mineTimerRandom);
@@ -139,10 +143,10 @@ public class EnemyTank extends Tank
 
 	/** Nearest bullet aiming at this tank, if avoid timer is > than 0*/
 	protected Bullet nearestBullet;
-	
+
 	/** Disable offset to shoot a bullet*/
 	public boolean disableOffset = false;
-	
+
 	/** Direction added to the bullet's direction to flee a bullet, possibly mirrored*/
 	protected double fleeDirection = Math.PI / 2;
 
@@ -153,7 +157,10 @@ public class EnemyTank extends Tank
 	protected RotationPhase idlePhase = RotationPhase.clockwise;
 
 	/** Time until the tank will continue motion*/
-	protected double motionTimer = 0;
+	protected double motionPauseTimer = 0;
+
+	/** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight*/
+	protected Tank targetEnemy;
 
 	public EnemyTank(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
 	{
@@ -167,6 +174,33 @@ public class EnemyTank extends Tank
 		this.liveBulletMax = 5;
 
 		this.shootAIType = ai;
+	}
+
+	@Override
+	public void update()
+	{
+		this.angle = this.angle % (Math.PI * 2);
+
+		this.age += Panel.frameFrequency;
+
+		if (!this.destroy)
+		{
+			if (this.shootAIType != ShootAI.wander)
+				this.updateTarget();
+
+			if (this.enableMovement)
+				this.updateMotionAI();
+
+			if (!ScreenGame.finished)
+			{
+				this.updateTurretAI();
+				this.updateMineAI();
+			}
+
+			this.postUpdate();
+		}
+
+		super.update();
 	}
 
 	/** Prepare to fire a bullet*/
@@ -186,12 +220,13 @@ public class EnemyTank extends Tank
 				offset = 0;
 				this.disableOffset = false;
 			}
-			
+
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this);
 			a.moveOut(5);
-			
+
 			Movable m = a.getTarget();
-			if (!(m instanceof Tank && !m.equals(Game.player)))
+
+			if (!Team.isAllied(this, m))
 			{
 				this.launchBullet(offset);
 			}
@@ -201,13 +236,15 @@ public class EnemyTank extends Tank
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Bullet b = new Bullet(this.posX, this.posY, this.bulletColor, this.bulletBounces, this);
+		Window.playSound("resources/shoot.wav");
+
+		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
 		b.moveOut((int) (25 / this.bulletSpeed * 2 * this.size / Game.tank_size));
 		b.effect = this.bulletEffect;
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;
-		
+
 		Game.movables.add(b);
 		this.cooldown = (int) (Math.random() * this.cooldownRandom + this.cooldownBase);
 
@@ -215,23 +252,27 @@ public class EnemyTank extends Tank
 			this.straightShoot = !this.straightShoot;
 	}
 
-	@Override
-	public void update()
+	public void updateTarget()
 	{
-		this.angle = this.angle % (Math.PI * 2);
+		double nearestDist = Double.MAX_VALUE;
+		Movable nearest = this;
 
-		this.age += Panel.frameFrequency;
-
-		if (!this.destroy)
+		for (int i = 0; i < Game.movables.size(); i++)
 		{
-			if (this.enableMovement)
-				this.updateMotionAI();
-			
-			this.updateTurretAI();
-			this.updateMineAI();
+			Movable m = Game.movables.get(i);
+
+			if (m instanceof Tank && !Team.isAllied(this, m))
+			{				
+				double dist = Movable.distanceBetween(this, m);
+				if (dist < nearestDist)
+				{
+					nearestDist = dist;
+					nearest = m;
+				}
+			}
 		}
 
-		super.update();
+		this.targetEnemy = (Tank) nearest;
 	}
 
 	public void updateMotionAI()
@@ -243,14 +284,15 @@ public class EnemyTank extends Tank
 		{
 			this.avoidTimer -= Panel.frameFrequency;
 			this.setPolarMotion(avoidDirection, speed);
+			this.overrideDirection = true;
 		}
 		else
 		{
 			fleeDirection = -fleeDirection;
 
-			if (this.seesPlayer && this.enablePlayerReaction)
+			if (this.seesTargetEnemy && this.enableTargetEnemyReaction)
 			{
-				this.reactToPlayerSight();
+				this.reactToTargetEnemySight();
 			}
 			else
 			{
@@ -260,15 +302,20 @@ public class EnemyTank extends Tank
 
 	}
 
-	public void reactToPlayerSight()
+	public void reactToTargetEnemySight()
 	{
-		this.setMotionInDirection(Game.player.posX, Game.player.posY, speed);
+		this.overrideDirection = true;
+		this.setMotionInDirection(targetEnemy.posX, targetEnemy.posY, speed);
 	}
 
 	public void updateIdleMotion()
 	{
 		if (Math.random() < this.motionChangeChance || this.hasCollided)
 		{
+			this.overrideDirection = false;
+			
+			double prevDirection = this.direction;
+
 			ArrayList<Double> directions = new ArrayList<Double>();
 
 			for (double dir = 0; dir < 4; dir += 0.5)
@@ -294,19 +341,23 @@ public class EnemyTank extends Tank
 			else
 				this.direction = directions.get(chosenDir);
 
-			this.motionTimer = this.directionChangeCooldown;
+			if (this.direction != prevDirection)
+				this.motionPauseTimer = this.directionChangeCooldown;
 		}
 
-		if (this.motionTimer > 0)
+		if (this.motionPauseTimer > 0)
 		{
 			this.vX = 0;
 			this.vY = 0;
-			this.motionTimer = (Math.max(0, this.motionTimer - Panel.frameFrequency));	
+			this.motionPauseTimer = (Math.max(0, this.motionPauseTimer - Panel.frameFrequency));	
 		}
 		else
-		{		
-			this.setPolarMotion(this.direction / 2 * Math.PI, speed);
-			this.addIdleMotionOffset();
+		{
+			if (!this.overrideDirection)
+			{
+				this.setPolarMotion(this.direction / 2 * Math.PI, speed);
+				this.addIdleMotionOffset();
+			}
 		}
 	}
 
@@ -384,8 +435,8 @@ public class EnemyTank extends Tank
 
 	public void updateTurretAI()
 	{
-		if (this.enableLookingAtPlayer)
-			this.lookAtPlayer();
+		if (this.enableLookingAtTargetEnemy)
+			this.lookAtTargetEnemy();
 
 		if (this.shootAIType.equals(ShootAI.wander))
 			this.updateTurretWander();
@@ -396,7 +447,7 @@ public class EnemyTank extends Tank
 
 		this.cooldown -= Panel.frameFrequency;
 	}
-	
+
 	public void updateTurretWander()
 	{
 		Ray a = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
@@ -405,7 +456,7 @@ public class EnemyTank extends Tank
 		Movable m = a.getTarget();
 
 		if (!(m == null))
-			if (m.equals(Game.player))
+			if (!Team.isAllied(m, this) && m instanceof Tank)
 				this.shoot();
 
 		if (this.idlePhase == RotationPhase.clockwise)
@@ -436,36 +487,37 @@ public class EnemyTank extends Tank
 		}
 		else if (this.enablePredictiveFiring)
 		{
-			Ray r = new Ray(Game.player.posX, Game.player.posY, Game.player.getPolarDirection(), 0, Game.player, Game.tank_size);
+			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getPolarDirection(), 0, targetEnemy, Game.tank_size);
 			r.size = Game.tank_size;
-			
+
 			this.disableOffset = false;
 
 			if (r.getDist() > 2)
 			{
-				this.aimAngle = this.getAngleInDirection(Game.player.posX + Game.player.vX * Movable.distanceBetween(this, Game.player) / this.bulletSpeed, Game.player.posY + Game.player.vY * Movable.distanceBetween(this, Game.player) / this.bulletSpeed);
+				this.aimAngle = this.getAngleInDirection(targetEnemy.posX + targetEnemy.vX * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed, targetEnemy.posY + targetEnemy.vY * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed);
 			}
 			else
 			{
-				this.aimAngle = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+				this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
 			}
 		}
 		else
 		{
-			this.aimAngle = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+			this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
 			this.disableOffset = false;
 		}
-		
-		double a = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+
+		double a = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
 
 		Ray r = new Ray(this.posX, this.posY, a, 0, this);
 		r.moveOut(5);
 
 		Movable m = r.getTarget();
-		
+
 		if (m != null)
-			if (m.equals(Game.player))
+			if (m.equals(this.targetEnemy))
 				this.shoot();
+
 
 		if (Math.abs(this.aimAngle - this.angle) > this.aimThreshold / 2)
 		{
@@ -473,10 +525,10 @@ public class EnemyTank extends Tank
 				this.angle += this.aimTurretSpeed * Panel.frameFrequency;
 			else
 				this.angle -= this.aimTurretSpeed * Panel.frameFrequency;		
-			
+
 			this.angle = this.angle % (Math.PI * 2);
 		}
-		
+
 		if (Math.abs(this.angle - this.aimAngle) < this.aimThreshold && !this.disableOffset)
 			this.angle = this.aimAngle;
 	}
@@ -527,10 +579,10 @@ public class EnemyTank extends Tank
 
 		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, this.bulletBounces, this);
 		ray.moveOut(5);
-		
+
 		Movable target = ray.getTarget();
 		if (target != null)
-			if (target.equals(Game.player))
+			if (target.equals(this.targetEnemy))
 			{
 				this.lockedAngle = this.angle;
 				this.searchPhase = RotationPhase.aiming;
@@ -539,37 +591,37 @@ public class EnemyTank extends Tank
 			}
 	}
 
-	public void lookAtPlayer()
+	public void lookAtTargetEnemy()
 	{
 		double a;
 
 		if (this.enablePredictiveFiring)
-			a = this.getAngleInDirection(Game.player.posX + Game.player.vX * Movable.distanceBetween(this, Game.player) / this.bulletSpeed, Game.player.posY + Game.player.vY * Movable.distanceBetween(this, Game.player) / this.bulletSpeed);
+			a = this.getAngleInDirection(this.targetEnemy.posX + this.targetEnemy.vX * Movable.distanceBetween(this, this.targetEnemy) / this.bulletSpeed, this.targetEnemy.posY + this.targetEnemy.vY * Movable.distanceBetween(this, this.targetEnemy) / this.bulletSpeed);
 		else
-			a = this.getAngleInDirection(Game.player.posX, Game.player.posY);
+			a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
-		Ray rayToPlayer = new Ray(this.posX, this.posY, a, 0, this);
-		rayToPlayer.moveOut(5);
-		Movable playerTarget = rayToPlayer.getTarget();
+		Ray rayToTarget = new Ray(this.posX, this.posY, a, 0, this);
+		rayToTarget.moveOut(5);
+		Movable target = rayToTarget.getTarget();
 
-		if (playerTarget != null)
+		if (target != null)
 		{
-			if (playerTarget.equals(Game.player))
+			if (target.equals(this.targetEnemy))
 			{
-				this.seesPlayer = true;
+				this.seesTargetEnemy = true;
 			}
 			else
-				this.seesPlayer = false;
+				this.seesTargetEnemy = false;
 		}
 		else
-			this.seesPlayer = false;
+			this.seesTargetEnemy = false;
 
 		if (this.straightShoot)
 		{
 
-			if (playerTarget != null)
+			if (target != null)
 			{
-				if (playerTarget.equals(Game.player))
+				if (target.equals(this.targetEnemy))
 				{
 					this.aimAngle = a;
 				}
@@ -594,10 +646,10 @@ public class EnemyTank extends Tank
 			double speed = this.aimTurretSpeed;
 			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 				speed /= 2;
-			
+
 			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 1.5)
 				speed /= 2;
-				
+
 			if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
 				this.angle += speed * Panel.frameFrequency;
 			else
@@ -634,17 +686,19 @@ public class EnemyTank extends Tank
 		double nearestTimer = 1000;
 
 		Movable nearest = null;
+
 		if (!laidMine)
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m instanceof Mine && Math.abs(this.posX - m.posX) < Game.tank_size * 3 && Math.abs(this.posY - m.posY) < Game.tank_size * 3)
+				if (m instanceof Mine && Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(200, 2))
 				{
 					if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
 					{
 						nearestX = this.posX - m.posX;
 						nearestY = this.posY - m.posY;
 					}
+
 					if (nearestTimer > ((Mine)m).timer)
 					{
 						nearestTimer = ((Mine)m).timer;
@@ -653,13 +707,19 @@ public class EnemyTank extends Tank
 				}
 			}
 
+		laidMine = false;
+
 		if (nearest != null)
 		{
 			if (this.enableMineAvoidance && this.enableMovement)
+			{
 				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, speed);
+				this.overrideDirection = true;
+			}
 		}
 		else
 		{
+
 			if (this.mineTimer <= 0 && this.enableMineLaying)
 			{
 				boolean layMine = true;
@@ -667,11 +727,11 @@ public class EnemyTank extends Tank
 				while (i < Game.movables.size())
 				{
 					Movable m = Game.movables.get(i);
-					if (m instanceof Tank && !m.equals(Game.player) && !m.equals(this))
+					if (m instanceof Tank && Team.isAllied(this, m) && m != this)
 					{
 						Tank t = (Tank) m;
-						if (Math.abs(t.posX - this.posX) <= 200 && Math.abs(t.posY - this.posY) <= 200)
-						{
+						if (Math.pow(t.posX - this.posX, 2) + Math.pow(t.posY - this.posY, 2) <= Math.pow(200, 2))
+						{							
 							layMine = false;
 							break;
 						}
@@ -685,6 +745,7 @@ public class EnemyTank extends Tank
 					Game.movables.add(new Mine(this.posX, this.posY, this));
 					this.mineTimer = (int) (Math.random() * mineTimerRandom + mineTimerBase);
 					double angleV = this.getPolarDirection() + Math.PI + (Math.random() - 0.5) * Math.PI / 2;
+					this.overrideDirection = true;
 					this.setPolarMotion(angleV, speed);
 					laidMine = true;
 				}
@@ -696,9 +757,16 @@ public class EnemyTank extends Tank
 
 		if (Math.abs(nearestX) + Math.abs(nearestY) <= 1)
 		{
+			this.overrideDirection = true;
 			this.setPolarMotion(Math.random() * 2 * Math.PI, speed);
 		}
 
 		this.mineTimer -= Panel.frameFrequency;
+	}
+
+	/** Called after updating but before applying motion. Intended to be overridden.*/
+	public void postUpdate()
+	{
+
 	}
 }

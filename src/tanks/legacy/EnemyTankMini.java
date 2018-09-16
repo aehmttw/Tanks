@@ -39,7 +39,7 @@ public class EnemyTankMini extends Tank
 	@Override
 	public void shoot() 
 	{
-		Bullet b = new Bullet(this.posX, this.posY, Color.blue, 0, this);
+		Bullet b = new Bullet(this.posX, this.posY, 0, this);
 		b.size /= 2;
 		b.damage = 0.25;
 		b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/4);

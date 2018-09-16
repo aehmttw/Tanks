@@ -2,9 +2,9 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankYellow extends EnemyTank
+public class TankYellow extends EnemyTank
 {
-	public EnemyTankYellow(String name, double x, double y, double angle)
+	public TankYellow(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, new Color(235, 200, 0), angle, ShootAI.reflect);
 

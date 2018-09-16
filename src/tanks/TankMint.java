@@ -2,11 +2,11 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankMint extends EnemyTank
+public class TankMint extends EnemyTank
 {
-	public EnemyTankMint(String name, double x, double y, double angle)
+	public TankMint(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(0, 130, 130), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, new Color(60, 180, 140), angle, ShootAI.straight);
 
 		this.enableMovement = true;
 		this.speed = 1;
@@ -20,8 +20,8 @@ public class EnemyTankMint extends EnemyTank
 		this.bulletColor = Color.red;
 		this.bulletEffect = Bullet.BulletEffect.fire;
 		this.bulletSpeed = 25.0 / 2;
-		this.enableLookingAtPlayer = false;
-		this.motionChangeChance = 0.0005;
+		this.enableLookingAtTargetEnemy = false;
+		this.motionChangeChance = 0.001;
 		
 		this.coinValue = 2;
 	}

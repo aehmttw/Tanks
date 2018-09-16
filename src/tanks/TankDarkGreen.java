@@ -2,9 +2,9 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankDarkGreen extends EnemyTank
+public class TankDarkGreen extends EnemyTank
 {
-	public EnemyTankDarkGreen(String name, double x, double y, double angle)
+	public TankDarkGreen(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, new Color(85, 107, 47), angle, ShootAI.straight);
 		this.cooldownBase = 5;
@@ -14,7 +14,7 @@ public class EnemyTankDarkGreen extends EnemyTank
 		this.aimAccuracyOffset = 0.1;
 		this.liveBulletMax = 8;
 		this.bulletBounces = 0;
-		this.bulletDamage /= 4;
+		this.bulletDamage /= 8;
 		this.bulletSpeed = 25.0 / 2;
 		this.bulletColor = Color.black;
 		this.bulletSize /= 2;
@@ -24,7 +24,7 @@ public class EnemyTankDarkGreen extends EnemyTank
 	}
 	
 	@Override
-	public void reactToPlayerSight()
+	public void reactToTargetEnemySight()
 	{
 		this.setMotionAwayFromDirection(Game.player.posX, Game.player.posY, speed);
 	}

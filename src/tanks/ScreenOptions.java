@@ -1,11 +1,12 @@
 package tanks;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 public class ScreenOptions extends Screen
 {
-	Button graphics = new Button(350, 40, "Graphics: fancy", new Runnable()
+	Button graphics = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -17,10 +18,10 @@ public class ScreenOptions extends Screen
 			else
 				graphics.text = "Graphics: fast";
 		}
-	}
-			);
+	},
+		"Fast graphics disable most graphical effects and use solid colors for the background---Fancy graphics may significantly reduce framerate"	);
 
-	Button mouseTarget = new Button(350, 40, "Mouse target: on", new Runnable()
+	Button mouseTarget = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -32,15 +33,15 @@ public class ScreenOptions extends Screen
 			else
 				mouseTarget.text = "Mouse target: off";
 		}
-	}
-			);
+	},
+		"When enabled, 2 small black rings will appear around your mouse pointer"	);
 
-	Button scale = new Button(350, 40, "Scale: 100%", new Runnable()
+	Button scale = new Button(0, 0, 350, 40, "Scale: 100%", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			if (KeyInputListener.keys.contains(KeyEvent.VK_SHIFT))
+			if (InputKeyboard.keys.contains(KeyEvent.VK_SHIFT))
 				Window.scale -= 0.1;
 			else
 				Window.scale += 0.1;
@@ -60,7 +61,7 @@ public class ScreenOptions extends Screen
 	, "Click to increase scale by 10%---Hold shift while clicking to decrease scale by 10%");
 
 
-	Button back = new Button(350, 40, "Back", new Runnable()
+	Button back = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -70,7 +71,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 
-	Button insanity = new Button(350, 40, "Insanity mode: disabled", new Runnable()
+	Button insanity = new Button(0, 0, 350, 40, "Insanity mode: disabled", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -85,7 +86,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 	
-	Button autostart = new Button(350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -97,27 +98,30 @@ public class ScreenOptions extends Screen
 			else
 				autostart.text = "Autostart: off";
 		}
-	}
-			);
+	},
+		"When enabled, levels will start playing automatically---4 seconds after they are loaded if the play button isn't clicked earlier"	);
 
+	
 	@Override
 	public void update()
 	{
-		autostart.update(Window.sizeX / 2, Window.sizeY / 2 + 30);
-		mouseTarget.update(Window.sizeX / 2, Window.sizeY / 2 - 30);
-		graphics.update(Window.sizeX / 2, Window.sizeY / 2 - 90);
-		back.update(Window.sizeX / 2, Window.sizeY / 2 + 90);
+		autostart.update();
+		mouseTarget.update();
+		graphics.update();
+		back.update();
 	}
 
 	@Override
 	public void draw(Graphics g)
 	{
 		this.drawDefaultBackground(g);
-		autostart.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 30);
-		mouseTarget.draw(g, Window.sizeX / 2, Window.sizeY / 2 - 30);
-		graphics.draw(g, Window.sizeX / 2, Window.sizeY / 2 - 90);
-		back.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 90);
-		Window.drawText(g, Window.sizeX / 2, Window.sizeY / 2 - 150, "Options");
+		back.draw(g);
+		autostart.draw(g);
+		mouseTarget.draw(g);
+		graphics.draw(g);
+		Window.setInterfaceFontSize(g, 24);
+		g.setColor(Color.black);
+		Window.drawInterfaceText(g, Window.sizeX / 2, Window.sizeY / 2 - 150, "Options");
 	}
 
 }

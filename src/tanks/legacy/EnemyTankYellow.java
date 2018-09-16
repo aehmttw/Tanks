@@ -31,7 +31,7 @@ public class EnemyTankYellow extends Tank
 	@Override
 	public void shoot() 
 	{
-		Bullet b = new Bullet(this.posX, this.posY, Color.blue, 1, this);
+		Bullet b = new Bullet(this.posX, this.posY, 1, this);
 		b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/4);
 		b.moveOut(8);
 		b.effect = Bullet.BulletEffect.trail;

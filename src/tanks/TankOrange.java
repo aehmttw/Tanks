@@ -2,9 +2,9 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankOrange extends EnemyTank
+public class TankOrange extends EnemyTank
 {
-	public EnemyTankOrange(String name, double x, double y, double angle)
+	public TankOrange(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, new Color(230, 120, 0), angle, ShootAI.straight);
 
@@ -16,7 +16,7 @@ public class EnemyTankOrange extends EnemyTank
 		this.aimTurretSpeed = 0.01;
 		this.aimAccuracyOffset = 0;
 				
-		this.motionChangeChance = 0.0005;
+		this.motionChangeChance = 0.001;
 		
 		this.coinValue = 6;
 	}
@@ -24,7 +24,7 @@ public class EnemyTankOrange extends EnemyTank
 	@Override
 	public void shoot() 
 	{
-		if (Movable.distanceBetween(this, Game.player) < 400 && this.cooldown <= 0)
+		if (Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0)
 		{
 			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
 			Movable m = a.getTarget();
@@ -33,9 +33,9 @@ public class EnemyTankOrange extends EnemyTank
 
 			if (!(m == null))
 			{
-				if(m.equals(Game.player))
+				if(m.equals(this.targetEnemy))
 				{
-					Flame b = new Flame(this.posX, this.posY, Color.blue, 0, this);
+					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
 					b.setPolarMotion(this.angle, 25.0/4);
 					b.moveOut(8);
 					Game.movables.add(b);

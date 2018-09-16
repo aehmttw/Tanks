@@ -25,7 +25,7 @@ public class EnemyTankMint extends Tank
 	@Override
 	public void shoot() 
 	{
-		Bullet b = new Bullet(this.posX, this.posY, Color.red, 0, this);
+		Bullet b = new Bullet(this.posX, this.posY, 0, this);
 		b.setMotionInDirection(Game.player.posX, Game.player.posY, 25.0/2);
 		b.moveOut(4);
 		b.effect = Bullet.BulletEffect.fire;

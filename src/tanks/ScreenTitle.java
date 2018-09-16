@@ -1,12 +1,11 @@
 package tanks;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 
 public class ScreenTitle extends Screen
 {
-	Button exit = new Button(350, 40, "Exit the game", new Runnable()
+	Button exit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -16,7 +15,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button build = new Button(350, 40, "My levels", new Runnable()
+	Button build = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 120, 350, 40, "My levels", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -26,7 +25,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button options = new Button(350, 40, "Options", new Runnable()
+	Button options = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 60, 350, 40, "Options", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -36,7 +35,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button newLevel = new Button(350, 40, "Generate a new level", new Runnable()
+	Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -50,10 +49,10 @@ public class ScreenTitle extends Screen
 	@Override
 	public void update()
 	{
-		newLevel.update(Window.sizeX / 2, Window.sizeY / 2);
-		exit.update(Window.sizeX / 2, Window.sizeY / 2 + 180);
-		options.update(Window.sizeX / 2, Window.sizeY / 2 + 60);	
-		build.update(Window.sizeX / 2, Window.sizeY / 2 + 120);		
+		newLevel.update();
+		exit.update();
+		options.update();	
+		build.update();		
 	}
 
 	@Override
@@ -62,12 +61,12 @@ public class ScreenTitle extends Screen
 		this.drawDefaultBackground(g);
 		
 		g.setColor(Color.black);
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (60 * Window.scale)));
-		Window.drawText(g, Window.sizeX / 2, Window.sizeY / 2 - 200, "Tanks");
-		newLevel.draw(g, Window.sizeX / 2, Window.sizeY / 2);
-		exit.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 180);
-		options.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 60);		
-		build.draw(g, Window.sizeX / 2, Window.sizeY / 2 + 120);		
+		Window.setInterfaceFontSize(g, 60);
+		Window.drawInterfaceText(g, Window.sizeX / 2, Window.sizeY / 2 - 200, "Tanks");
+		newLevel.draw(g);
+		exit.draw(g);
+		options.draw(g);		
+		build.draw(g);		
 	}
 	
 }

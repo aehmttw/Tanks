@@ -2,9 +2,9 @@ package tanks;
 
 import java.awt.Color;
 
-public class EnemyTankPurple extends EnemyTank
+public class TankPurple extends EnemyTank
 {
-	public EnemyTankPurple(String name, double x, double y, double angle)
+	public TankPurple(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, new Color(150, 0, 200), angle, ShootAI.alternate);
 		this.enableDefensiveFiring = true;

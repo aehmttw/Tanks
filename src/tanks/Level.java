@@ -1,6 +1,8 @@
 package tanks;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Level 
 {
@@ -8,20 +10,58 @@ public class Level
 	String[] screen;
 	String[] obstaclesPos;
 	String[] tanks;
+	String[] teams;
 
-	static Color currentColor = new Color(235, 207, 166);
+	Team[] tankTeams;
+	boolean enableTeams = false;
 
+	public static Color currentColor = new Color(235, 207, 166);
+	public boolean editable = true;
+
+	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
+	public ArrayList<Team> teamsList = new ArrayList<Team>();
+
+	/**
+	 * A level string is structured like this:
+	 * (parentheses signify required parameters, and square brackets signify optional parameters. 
+	 * Asterisks indicate that the parameter can be repeated, separated by commas
+	 * Do not include these in the level string.)
+	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
+	 * 
+	 */
 	public Level(String level)
-	{
+	{		
 		preset = level.split("\\{")[1].split("\\}")[0].split("\\|");
 
 		screen = preset[0].split(",");
 		obstaclesPos = preset[1].split(",");
 		tanks = preset[2].split(",");
+
+		if (preset.length >= 4)
+		{
+			teams = preset[3].split(",");
+			enableTeams = true;
+		}
+
+		if (screen[0].startsWith("*"))
+		{
+			editable = false;
+			screen[0] = screen[0].substring(1);
+		}
+		else
+			editable = true;
 	}
 
 	public void loadLevel()
 	{
+		loadLevel(null);
+	}
+
+	public void loadLevel(ScreenLevelBuilder s)
+	{
+		ScreenGame.finished = false;
+		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
+
 		int sX = Integer.parseInt(screen[0]);
 		int sY = Integer.parseInt(screen[1]);
 
@@ -33,6 +73,27 @@ public class Level
 		int dg = 20;
 		int db = 20;
 
+		if (enableTeams)
+		{
+			tankTeams = new Team[teams.length];
+
+			for (int i = 0; i < teams.length; i++)
+			{
+				String[] t = teams[i].split("-");
+
+				if (t.length >= 5)
+					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), new Color(Integer.parseInt(t[2]), Integer.parseInt(t[3]), Integer.parseInt(t[4])));
+				else if (t.length >= 2)
+					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
+				else
+					tankTeams[i] = new Team(t[0]);
+
+				teamsMap.put(t[0], tankTeams[i]);
+
+				teamsList.add(tankTeams[i]);
+			}
+		}
+
 		if (screen.length >= 5)
 		{
 			r = Integer.parseInt(screen[2]);
@@ -41,10 +102,79 @@ public class Level
 
 			if (screen.length >= 8)
 			{
-				dr = Integer.parseInt(screen[5]);
-				dg = Integer.parseInt(screen[6]);
-				db = Integer.parseInt(screen[7]);
+				dr = Math.min(255 - r, Integer.parseInt(screen[5]));
+				dg = Math.min(255 - g, Integer.parseInt(screen[6]));
+				db = Math.min(255 - b, Integer.parseInt(screen[7]));
 			}
+		}
+
+		if (s != null)
+		{
+			s.sizeX.inputText = sX + "";
+			s.sizeY.inputText = sY + "";
+
+			s.width = sX;
+			s.height = sY;
+
+			s.r = r;
+			s.g = g;
+			s.b = b;
+			s.dr = dr;
+			s.dg = dg;
+			s.db = db;
+			s.editable = this.editable;
+			Game.movables.remove(Game.player);
+
+			s.colorRed.inputText = r + "";
+			s.colorGreen.inputText = g + "";
+			s.colorBlue.inputText = b + "";
+			s.colorVarRed.inputText = dr + "";
+			s.colorVarGreen.inputText = dg + "";
+			s.colorVarBlue.inputText = db + "";
+
+			s.colorVarRed.maxValue = 255 - r;
+			s.colorVarGreen.maxValue = 255 - g;
+			s.colorVarBlue.maxValue = 255 - b;
+
+			if (!editable)
+			{
+				s.play.posY += 60;
+				s.quit.posY -= 60;
+			}
+
+			if (!enableTeams)
+			{
+				this.teamsList.add(Game.playerTeam);
+				this.teamsList.add(Game.enemyTeam);
+			}
+			
+			for (int i = 0; i < this.teamsList.size(); i++)
+			{
+				final int j = i;
+				Team t = this.teamsList.get(i);
+				Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
+				{
+					@Override
+					public void run() 
+					{
+						s.teamName.inputText = t.name;
+						s.lastTeamButton = j;
+						s.editTeamMenu = true;
+						s.selectedTeam = t;
+						if (s.selectedTeam.friendlyFire)
+							s.teamFriendlyFire.text = "Friendly fire: on";
+						else
+							s.teamFriendlyFire.text = "Friendly fire: off";
+					}
+				}
+						);
+				s.teamButtons.add(buttonToAdd);
+
+			}
+
+			s.teams = this.teamsList;
+
+			s.sortButtons();
 		}
 
 		Game.currentSizeX = (int) (sX * Game.bgResMultiplier);
@@ -62,7 +192,7 @@ public class Level
 		}
 
 		Game.window.setScreenBounds(Game.tank_size * sX, Game.tank_size * sY);
-				
+
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{
 			for (int i = 0; i < obstaclesPos.length; i++)
@@ -103,24 +233,40 @@ public class Level
 			}
 		}
 		
-		for (int i = 0; i < tanks.length; i++)
+		if (!preset[2].equals(""))
 		{
-			String[] tank = tanks[i].split("-");
-			double x = Game.tank_size * (0.5 + Double.parseDouble(tank[0]));
-			double y = Game.tank_size * (0.5 + Double.parseDouble(tank[1]));
-			String type = tank[2].toLowerCase();
-			double angle = 0;
-			if (tank.length == 4)
-				angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
+			for (int i = 0; i < tanks.length; i++)
+			{
+				String[] tank = tanks[i].split("-");
+				double x = Game.tank_size * (0.5 + Double.parseDouble(tank[0]));
+				double y = Game.tank_size * (0.5 + Double.parseDouble(tank[1]));
+				String type = tank[2].toLowerCase();
+				double angle = 0;
+				if (tank.length >= 4)
+					angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
+				
+				Tank t;
+				if (type.equals("player"))
+				{
+					t = new TankPlayer(x, y, angle);					
+					Game.player = (TankPlayer) t;
+					t.team = Game.playerTeam;
+				}
+				else
+				{
+					t = Game.registry.getEntry(type).getTank(x, y, angle);
+					t.team = Game.enemyTeam;
+				}
 
-			if (type.equals("player"))
-			{
-				Game.player = new PlayerTank(x, y, angle);
-				Game.movables.add(Game.player);
-			}
-			else
-			{
-				Game.movables.add(Game.registry.getEntry(type).getTank(x, y, angle));
+				if (enableTeams)
+				{
+					if (tank.length >= 5)
+						t.team = teamsMap.get(tank[4]);
+					else
+						t.team = null;
+				}
+
+				Game.movables.add(t);
 			}
 		}
 	}

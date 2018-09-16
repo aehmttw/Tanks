@@ -1,7 +1,6 @@
 package tanks;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 
 public class Button 
@@ -12,77 +11,87 @@ public class Button
 	public double sizeX;
 	public double sizeY;
 	public String text;
-	
+
 	public boolean enableHover = false;
 	public String[] hoverText;
-	
+
 	public boolean selected = false;
-	
+
 	public boolean clicked = false;
-	
+
 	Color unselectedCol = new Color(255, 255, 255);
 	Color selectedCol = new Color(240, 240, 255);
 
-	public Button(double sX, double sY, String text, Runnable f)
+	public Button(double x, double y, double sX, double sY, String text, Runnable f)
 	{
 		this.function = f;
-		
+
+		this.posX = x;
+		this.posY = y;
 		this.sizeX = sX;
 		this.sizeY = sY;
 		this.text = text;
 	}
-	
-	public Button(double sX, double sY, String text, Runnable f, String hoverText)
+
+	public Button(double x, double y, double sX, double sY, String text, Runnable f, String hoverText)
 	{
-		this(sX, sY, text, f);
+		this(x, y, sX, sY, text, f);
 		this.enableHover = true;
 		this.hoverText = hoverText.split("---");
 	}
-	
-	public void draw(Graphics g, int x, int y)
+
+	public void draw(Graphics g)
 	{
-		this.posX = x;
-		this.posY = y;
-		
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Window.scale)));
-		
+		Window.setInterfaceFontSize(g, 24);
+
 		if (selected)
 			g.setColor(this.selectedCol);
 		else
 			g.setColor(this.unselectedCol);
-		
-		Window.fillRect(g, posX, posY, sizeX, sizeY);
-		
+
+		Window.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
+
 		g.setColor(Color.black);
-		Window.drawText(g, posX, posY + 5, text);
-		
-		if (selected && enableHover)
+		Window.drawInterfaceText(g, posX, posY + 5, text);
+
+		if (enableHover)
 		{
-			Window.drawTooltip(g, this.hoverText);
+			if (selected)
+			{
+				g.setColor(Color.blue);
+				Window.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				g.setColor(Color.white);
+				Window.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				Window.drawTooltip(g, this.hoverText);
+			}
+			else
+			{
+				g.setColor(new Color(0, 150, 255));
+				Window.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				g.setColor(Color.white);
+				Window.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+			}
 		}
 	}
-	
-	public void update(int x, int y)
-	{
-		this.posX = x;
-		this.posY = y;
 
-		double mx = Game.window.getMouseX();
-		double my = Game.window.getMouseY();
-		
+	public void update()
+	{
+		double mx = Game.window.getInterfaceMouseX();
+		double my = Game.window.getInterfaceMouseY();
+
 		if (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2)
 			selected = true;
 		else
 			selected = false;
-		
-		if (selected && MouseInputListener.lClickValid && !clicked)
+
+		if (selected && InputMouse.lClickValid && !clicked)
 		{
 			function.run();
 			clicked = true;
-			MouseInputListener.lClickValid = false;
+			InputMouse.lClickValid = false;
 		}
-		
-		if (!(selected && MouseInputListener.lClick))
+
+		if (!(selected && InputMouse.lClick))
 			clicked = false;
 	}
 }

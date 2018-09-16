@@ -18,9 +18,18 @@ public class Panel extends JPanel
 	int width = Window.sizeX;
 	boolean resize = true;
 
+	public static double windowWidth = 1400;
+	public static double windowHeight = 900;
+
+	public static double restrictedWindowMouseOffsetX = 0;
+	public static double restrictedWindowMouseOffsetY = 0;
+
+	
 	static boolean showMouseTarget = true;
 
 	ArrayList<Long> framesList = new ArrayList<Long>();
+
+	public static Panel panel;
 
 	public static String winlose = "";
 	public static boolean win = false;
@@ -49,6 +58,8 @@ public class Panel extends JPanel
 
 	public Panel()
 	{
+		Panel.panel = this;
+
 		timer = new Timer(0, new ActionListener()
 		{
 
@@ -58,7 +69,7 @@ public class Panel extends JPanel
 				//long start = System.nanoTime();
 
 				try
-				{
+				{		
 					long milliTime = System.currentTimeMillis();
 
 					framesList.add(milliTime);
@@ -79,8 +90,61 @@ public class Panel extends JPanel
 					if (Game.coins < 0)
 						Game.coins = 0;
 
-					Game.screen.update();
+					Panel.windowWidth = Game.window.getSize().getWidth();
+					Panel.windowHeight = Game.window.getSize().getHeight();
 
+					Window.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - 40 - Window.yOffset) / Game.currentSizeY) / 50.0;
+					Window.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - 40 - Window.yOffset) / 18) / 50.0;
+
+					Window.unzoomedScale = Window.scale;
+					
+					if (Game.player != null && Game.screen instanceof ScreenGame && !ScreenGame.finished)
+					{
+						Window.enableMovingCamera = true;
+
+						if (Window.movingCamera)
+						{
+							Window.playerX = Game.player.posX;
+							Window.playerY = Game.player.posY;
+
+							if (Window.scale < Window.interfaceScale)
+							{
+								Window.enableMovingCamera = true;
+								Window.scale = Window.interfaceScale;
+							}
+							else
+							{
+								Window.enableMovingCamera = false;
+							}
+						}
+					}
+					else
+					{
+						Window.enableMovingCamera = false;
+					}
+					
+					if (Panel.windowWidth - Window.xOffset > Game.currentSizeX * Game.tank_size * Window.scale)
+						Window.enableMovingCameraX = false;
+					else
+					{
+						Window.enableMovingCameraX = true;
+						Panel.restrictedWindowMouseOffsetX = 0;
+					}
+						
+					if (Panel.windowHeight - Window.yOffset - 40 > Game.currentSizeY * Game.tank_size * Window.scale)
+						Window.enableMovingCameraY = false;
+					else
+					{
+						Window.enableMovingCameraY = true;
+						Panel.restrictedWindowMouseOffsetY = 0;
+					}
+						
+					Game.screen.update();
+					
+					//long end = System.nanoTime();
+					//System.out.println("Updating took: " + (end - start));
+					//System.out.println(Game.effects.size());
+					//System.out.println(Game.recycleEffects.size());
 
 					repaint();
 
@@ -120,6 +184,7 @@ public class Panel extends JPanel
 				{
 					Game.exitToCrash(exception);
 				}
+
 			}
 
 		});
@@ -128,9 +193,10 @@ public class Panel extends JPanel
 	public void startTimer()
 	{
 		timer.start();
+		new SoundThread().execute();
 	}
 
-	@Override
+	/*@Override
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
@@ -151,11 +217,12 @@ public class Panel extends JPanel
 			g.drawRect(15,15,(this.getWidth() - 30), this.getHeight() - 30);
 		}
 
-	}
+	}*/
 
 	@Override
 	public void paint(Graphics g)
-	{					
+	{		
+		//long start = System.nanoTime();		
 		try
 		{
 			if (System.currentTimeMillis() - startTime < 1000)
@@ -163,24 +230,23 @@ public class Panel extends JPanel
 				for (int i = 0; i < Game.currentSizeX; i++)
 				{
 					g.setColor(Level.currentColor);
-					Window.fillRect(g, Window.sizeX / 2, Window.sizeY / 2, Window.sizeX * 1.2, Window.sizeY * 1.2);				
-					g.drawImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("loading.png")), 0, 0, null);
+					Window.fillInterfaceRect(g, Window.sizeX / 2, Window.sizeY / 2, Window.sizeX * 1.2, Window.sizeY * 1.2);				
+					g.drawImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/loading.png")), 0, 0, null);
 
 				}
 				return;
 			}
-			
-			Window.scale = Math.min(Game.window.getSize().getWidth() * 1.0 / Game.currentSizeX, (Game.window.getSize().getHeight() * 1.0 - 40 - Window.yOffset) / Game.currentSizeY) / 50.0;
 
+			g.setColor(new Color(174, 92, 16));
+			g.fillRect(0, 0, 1 + (int)(Panel.windowWidth), 1+(int)(Panel.windowHeight));
 
-			g.fillRect(0, 0, 1 + (int)(Game.window.getSize().getWidth()), 1+(int)(Game.window.getSize().getHeight()));
-			
 			long time = (long) (System.currentTimeMillis() * frameSampling / 1000 );
 			if (lastFrameSec < time && lastFrameSec != firstFrameSec)
 			{
 				lastFPS = (int) (frames * 1.0 * frameSampling);
 				frames = 0;
 			}
+			
 
 			lastFrameSec = time;	
 			frames++;
@@ -191,15 +257,15 @@ public class Panel extends JPanel
 			Game.screen.draw(g);
 
 			g.setColor(new Color(87, 46, 8));
-			g.fillRect(0, (int) (Game.window.getSize().getHeight() - 40 - Window.yOffset), (int) (Game.window.getSize().getWidth()), 40);
+			g.fillRect(0, (int) (Panel.windowHeight - 40 - Window.yOffset), (int) (Panel.windowWidth), 40);
 
 			g.setColor(new Color(255, 227, 186));
 
 			g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-			g.drawString("Tanks v0.4.c", 2, (int) (Game.window.getSize().getHeight() - 40 + 12 - Window.yOffset));
-			g.drawString("FPS: " + lastFPS, 2, (int) (Game.window.getSize().getHeight() - 40 + 24 - Window.yOffset));
-			g.drawString("Coins: " + Game.coins, 2, (int) (Game.window.getSize().getHeight() - 40 + 36 - Window.yOffset));		
+			g.drawString("Tanks v0.4.0", 2, (int) (Panel.windowHeight - 40 + 12 - Window.yOffset));
+			g.drawString("FPS: " + lastFPS, 2, (int) (Panel.windowHeight - 40 + 24 - Window.yOffset));
+			//g.drawString("Coins: " + Game.coins, 2, (int) (Panel.windowHeight - 40 + 36 - Window.yOffset));		
 
 			/*int obstacles = Game.obstacles.size();
 		int movables = Game.movables.size();
@@ -238,19 +304,28 @@ public class Panel extends JPanel
 			//g.fillRect(Game.gamescreen.getWidth() - 250, (int)(Game.gamescreen.getSize().getHeight() - 40 + 15 - Screen.offset), (int) (200 * (Runtime.getRuntime().totalMemory() * 1.0 / Runtime.getRuntime().maxMemory())), 10);
 			//g.drawRect(Game.gamescreen.getWidth() - 250, (int)(Game.gamescreen.getSize().getHeight() - 40 + 15 - Screen.offset), 200, 10);
 
-			double mx = Game.window.getMouseX();
-			double my = Game.window.getMouseY();
-			
+			double mx = Game.window.getInterfaceMouseX();
+			double my = Game.window.getInterfaceMouseY();
+
+			double mx2 = Game.window.getMouseX();
+			double my2 = Game.window.getMouseY();
 			if (showMouseTarget)
 			{
 				g.setColor(Color.black);
-				Window.drawOval(g, mx, my, 8, 8);
-				Window.drawOval(g, mx, my, 4, 4);
+				Window.drawInterfaceOval(g, mx, my, 8, 8);
+				Window.drawInterfaceOval(g, mx, my, 4, 4);
+				
+				g.setColor(Color.red);
+				Window.drawOval(g, mx2, my2, 8, 8);
+				Window.drawOval(g, mx2, my2, 4, 4);
 			}
 		}
 		catch (Exception e)
 		{
 			Game.exitToCrash(e);
 		}
+
+		//long end = System.nanoTime();
+		//System.out.println("Drawing took: " + (end - start));
 	}
 }

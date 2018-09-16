@@ -8,9 +8,9 @@ public abstract class Tank extends Movable
 	public double angle = 0;
 
 	public int coinValue = 0;
-	
+
 	public String name = "";
-	
+
 	public double accel = 0.1;
 	public double maxV = 2.5;
 	public int liveBullets = 0;
@@ -27,9 +27,9 @@ public abstract class Tank extends Movable
 	public boolean drawTread = false;
 
 	public double lives = 1;
-	
+
 	public Turret turret;
-	
+
 	public Tank(String name, double x, double y, int size, Color color) 
 	{
 		super(x, y);
@@ -43,7 +43,7 @@ public abstract class Tank extends Movable
 	public void checkCollision() 
 	{
 		hasCollided = false;
-		
+
 		if (this.posX + this.size / 2 > Window.sizeX)
 		{
 			this.posX = Window.sizeX - this.size / 2;
@@ -146,60 +146,45 @@ public abstract class Tank extends Movable
 	public void update()
 	{	
 		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
-		
+
 		if (this.treadAnimation > this.size * 4 / 5)
 		{
 			this.drawTread = true;
 			this.treadAnimation -= this.size * 4 / 5;
 		}
-		
+
 		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);
 		if (destroy)
 		{
-			if (this.destroyTimer <= 0 && this.lives <= 0 && Game.graphicalEffects)
+			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
-				for (int i = 0; i < this.size * 4; i++)
+				Window.playSound("resources/destroy.wav");
+
+				if (Game.graphicalEffects)
 				{
-					Effect e = new Effect(this.posX, this.posY, Effect.EffectType.piece);
-					int var = 50;
-					e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
-					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
-					Game.effects.add(e);
+					for (int i = 0; i < this.size * 4; i++)
+					{
+						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+						int var = 50;
+						e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
+						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+						Game.effects.add(e);
+					}
 				}
 			}
-			
+
 			this.destroyTimer += Panel.frameFrequency;
 		}
-		
+
 		if (this.destroyTimer > Game.tank_size)
 			Game.removeMovables.add(this);
-		
-		super.update();
-	}
 
-	public abstract void shoot();
-
-	@Override
-	public void draw(Graphics g) 
-	{
-		drawAge += Panel.frameFrequency;
-		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
-		Window.fillRect(g, this.posX, this.posY, (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1), (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1));
-		if (this.lives > 1)
-		{
-			for (int i = 1; i < lives; i++)
-			{
-				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
-			}
-		}
-		this.turret.draw(g, angle);
-		
 		if (this.drawTread)
 		{
 			this.drawTread = false;
 			double a = this.getPolarDirection();
-			Effect e1 = new Effect(this.posX, this.posY, Effect.EffectType.tread);
-			Effect e2 = new Effect(this.posX, this.posY, Effect.EffectType.tread);
+			Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
+			Effect e2 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
 			e1.setPolarMotion(a - Math.PI / 2, this.size * 0.25);
 			e2.setPolarMotion(a + Math.PI / 2, this.size * 0.25);
 			e1.size = this.size / 5;
@@ -214,8 +199,44 @@ public abstract class Tank extends Movable
 			Game.belowEffects.add(e2);
 		}
 		
+		super.update();
 	}
-	
+
+	public abstract void shoot();
+
+	@Override
+	public void draw(Graphics g) 
+	{
+		drawAge += Panel.frameFrequency;
+		
+		double s = (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1);
+		double sizeMod = 1;
+		
+		Color teamColor = Team.getObjectColor(this.color, this);
+		if (teamColor != this.color)
+		{
+			g.setColor(teamColor);
+			Window.fillRect(g, this.posX, this.posY, s, s);
+
+			sizeMod = 0.8;
+		}
+		
+		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
+
+		Window.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
+		
+		if (this.lives > 1)
+		{
+			for (int i = 1; i < lives; i++)
+			{
+				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+			}
+		}
+		
+		this.turret.draw(g, angle);
+
+	}
+
 	public void drawOutline(Graphics g) 
 	{
 		drawAge = Game.tank_size;
@@ -234,7 +255,7 @@ public abstract class Tank extends Movable
 				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
-		
+
 		this.turret.draw(g, angle);
 	}
 }

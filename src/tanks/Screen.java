@@ -34,8 +34,8 @@ public abstract class Screen
 				}
 			}
 			
-			g.setColor(new Color(0, 0, 0, (int) Panel.darkness));
-			Window.fillRect(g, Window.sizeX / 2, Window.sizeY / 2, Window.sizeX, Window.sizeY);
+			g.setColor(new Color(0, 0, 0, Math.max(0, (int) Panel.darkness)));
+			Window.fillBackgroundRect(g, Window.sizeX / 2, Window.sizeY / 2, Window.sizeX, Window.sizeY);
 		}
 	}
 }

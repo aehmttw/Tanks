@@ -5,7 +5,6 @@ public class LevelGenerator
 {
 	public static String generateLevelString() 
 	{
-		
 		//int type = (int) (Math.random() * 13);
 		//test ^
 		double size = Game.levelSize;
@@ -25,7 +24,7 @@ public class LevelGenerator
 		int g = (int)(Math.random() * 50) + 185;
 		int b = (int)(Math.random() * 50) + 185;
 
-		String s = "{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|";
+		String s = "{*" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|";
 		boolean[][] cells = new boolean[width][height];
 		for (int i = 0; i < cells.length; i++) 
 		{
@@ -64,7 +63,9 @@ public class LevelGenerator
 			if (i == walls - 1) 
 			{
 				s += "|";
-			} else {
+			}
+			else
+			{
 				s += ",";
 			}
 		}
@@ -85,11 +86,13 @@ public class LevelGenerator
 				cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
 		s += x + "-" + y + "-player-" + (int)(Math.random() * 4) + ",";
-		for (int i = 0; i < numTanks; i++) {
+		for (int i = 0; i < numTanks; i++) 
+		{
 			int angle = (int) (Math.random() * 4);
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
-			while (cells[x][y]) {
+			while (cells[x][y])
+			{
 				x = (int) (Math.random() * (width));
 				y = (int) (Math.random() * (height));
 			}

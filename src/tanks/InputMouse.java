@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public class MouseInputListener implements MouseListener, MouseMotionListener
+public class InputMouse implements MouseListener, MouseMotionListener
 {
 	public static boolean lClick = false;
 	public static boolean rClick = false;

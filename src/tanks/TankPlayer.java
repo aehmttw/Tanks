@@ -3,18 +3,20 @@ package tanks;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
-public class PlayerTank extends Tank
+public class TankPlayer extends Tank
 {
 	double cooldown = 0;
+	
+	//double maxCooldown = 100;
 
-	public PlayerTank(double x, double y, double angle)
-	{
+	public TankPlayer(double x, double y, double angle)
+	{		
 		super("player", x, y, Game.tank_size, new Color(0, 150, 255));
 		this.liveBulletMax = 5;
 		this.liveMinesMax = 2;
 		this.coinValue = -5;
 		this.angle = angle;
-		
+
 		if (Game.insanity)
 			this.lives = 10;
 	}
@@ -27,20 +29,20 @@ public class PlayerTank extends Tank
 		else
 			this.liveBulletMax = 5;
 
-		boolean up = KeyInputListener.keys.contains(KeyEvent.VK_UP) || KeyInputListener.keys.contains(KeyEvent.VK_W);
-		boolean down = KeyInputListener.keys.contains(KeyEvent.VK_DOWN) || KeyInputListener.keys.contains(KeyEvent.VK_S);
-		boolean left = KeyInputListener.keys.contains(KeyEvent.VK_LEFT) || KeyInputListener.keys.contains(KeyEvent.VK_A);
-		boolean right = KeyInputListener.keys.contains(KeyEvent.VK_RIGHT) || KeyInputListener.keys.contains(KeyEvent.VK_D);
+		boolean up = InputKeyboard.keys.contains(KeyEvent.VK_UP) || InputKeyboard.keys.contains(KeyEvent.VK_W);
+		boolean down = InputKeyboard.keys.contains(KeyEvent.VK_DOWN) || InputKeyboard.keys.contains(KeyEvent.VK_S);
+		boolean left = InputKeyboard.keys.contains(KeyEvent.VK_LEFT) || InputKeyboard.keys.contains(KeyEvent.VK_A);
+		boolean right = InputKeyboard.keys.contains(KeyEvent.VK_RIGHT) || InputKeyboard.keys.contains(KeyEvent.VK_D);
 
 		double acceleration = accel;
 		double maxVelocity = maxV;
-		
+
 		if (up && left || up && right || down && left || down && right)
 		{
 			acceleration /= Math.sqrt(2);
 			maxVelocity /= Math.sqrt(2);
 		}
-		
+
 		if (left && !right)
 			this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, -maxVelocity);
 		else if (right && !left)
@@ -64,16 +66,16 @@ public class PlayerTank extends Tank
 			else if (this.vY < 0)
 				this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, 0);
 		}
-		
+
 		if (this.cooldown > 0)
 			this.cooldown -= Panel.frameFrequency;
 
 		boolean shoot = false;
-		if (KeyInputListener.keys.contains(KeyEvent.VK_SPACE) || MouseInputListener.lClick)
+		if (InputKeyboard.keys.contains(KeyEvent.VK_SPACE) || InputMouse.lClick)
 			shoot = true;
 
 		boolean mine = false;
-		if (KeyInputListener.keys.contains(KeyEvent.VK_ENTER) || MouseInputListener.rClick)
+		if (InputKeyboard.keys.contains(KeyEvent.VK_ENTER) || InputMouse.rClick)
 			mine = true;
 
 		if (shoot && this.cooldown <= 0 && this.liveBullets < this.liveBulletMax)
@@ -93,27 +95,47 @@ public class PlayerTank extends Tank
 	{	
 		if (Game.bulletLocked)
 			return;
-			
+
 		this.cooldown = 20;
 
 		if (!Game.insanity)
-		{
+		{			
+			/*this.cooldown -= Panel.frameFrequency;
+			
+			if (this.cooldown > 0)
+			{
+				if (Math.random() * maxCooldown > cooldown && Game.graphicalEffects)
+				{
+					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.charge);
+					double var = 50;
+					e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
+					Game.effects.add(e);
+				}
+				return;
+
+			}
+			else
+			{
+				//BulletLaser b = new BulletLaser(this.posX, this.posY, 2, this);
+				//b.setPolarMotion(this.angle, 25.0/4);
+				//b.moveOut(8);
+				//b.shoot();
+				//this.maxCooldown = this.maxCooldown * 0.75 + 1;
+				//this.cooldown = Math.max(this.cooldown, maxCooldown);
+			}*/
 			fireBullet(25 / 4, 1, Color.black, Bullet.BulletEffect.trail);
 		}
 		else
 		{
-			/*LaserBullet b = new LaserBullet(this.posX, this.posY, Color.blue, 0, this);
-			b.setPolarMotion(this.angle, 25.0/4);
-			b.moveOut(8);
-			b.shoot();
-			this.cooldown = 0;*/
 			fireBullet(25 / 2, 2, Color.red, Bullet.BulletEffect.fireTrail);
 		}
 	}
-	
+
 	public void fireBullet(double speed, int bounces, Color color, Bullet.BulletEffect effect)
 	{
-		Bullet b = new Bullet(posX, posY, color, bounces, this);
+		Window.playSound("resources/shoot.wav");
+
+		Bullet b = new Bullet(posX, posY, bounces, this);
 		b.setMotionInDirection(Window.window.getMouseX(), Window.window.getMouseY(), speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
 
@@ -124,6 +146,9 @@ public class PlayerTank extends Tank
 
 	public void layMine()
 	{	
+		if (Game.bulletLocked)
+			return;
+
 		this.cooldown = 50;
 		Mine m = new Mine(posX, posY, this);
 

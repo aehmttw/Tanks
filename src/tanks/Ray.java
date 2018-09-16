@@ -22,6 +22,8 @@ public class Ray
 
 	public Tank tank;
 	public Tank targetTank;
+	
+	public boolean enableBullet = false;
 
 	public ArrayList<Double> bounceX = new ArrayList<Double>();
 	public ArrayList<Double> bounceY = new ArrayList<Double>();
@@ -66,7 +68,7 @@ public class Ray
 		while (true)
 		{
 			age++;
-			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
+			//Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 
@@ -148,7 +150,7 @@ public class Ray
 			}
 			if (collided)
 			{
-				if (this.bounces <= 0)
+				if (this.bounces <= 0 || this.age <= 1)
 				{
 					return null;
 				}
@@ -182,6 +184,23 @@ public class Ray
 							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
 							this.targetX = this.posX;
 							this.targetY = this.posY;
+							return Game.movables.get(i);
+						}
+					}				
+				}
+				else if (Game.movables.get(i) instanceof Bullet && enableBullet)
+				{
+					Bullet t = (Bullet)(Game.movables.get(i));
+
+					if (Math.abs(this.posX - t.posX) < (t.size + this.size) / 2 &&
+							Math.abs(this.posY - t.posY) < (t.size + this.size) / 2)
+					{
+						if (age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
+						{
+							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
+							this.targetX = this.posX;
+							this.targetY = this.posY;
+							System.out.println("hi");
 							return Game.movables.get(i);
 						}
 					}				

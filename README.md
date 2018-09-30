@@ -46,6 +46,6 @@ To access the source code you also need to install git.
 
 ## Credits:
 
-Matei Budiu (Aehmttw)
-Karan Gurazada
+Matei Budiu (Aehmttw)<br>
+Karan Gurazada<br>
 Hallowizer

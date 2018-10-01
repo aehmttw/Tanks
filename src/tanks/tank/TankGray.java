@@ -1,6 +1,8 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
+
+import tanks.Game;
 
 public class TankGray extends EnemyTank
 {

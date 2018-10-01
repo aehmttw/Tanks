@@ -3,6 +3,8 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import tanks.tank.Tank;
+
 public class BulletFlame extends Bullet
 {
 	double life = 100;

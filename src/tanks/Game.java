@@ -15,6 +15,21 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
+import tanks.tank.TankBlack;
+import tanks.tank.TankBrown;
+import tanks.tank.TankDarkGreen;
+import tanks.tank.TankGray;
+import tanks.tank.TankGreen;
+import tanks.tank.TankMagenta;
+import tanks.tank.TankMint;
+import tanks.tank.TankOrange;
+import tanks.tank.TankPink;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankPurple;
+import tanks.tank.TankRed;
+import tanks.tank.TankWhite;
+import tanks.tank.TankYellow;
+
 public class Game 
 {
 	public static final int tank_size = 50;
@@ -66,8 +81,9 @@ public class Game
 	public static int coins = 0;
 	public static Item[] items = new Item[5];
 	
-	public static RegistryTank registry = new RegistryTank();
-	
+	public static RegistryTank registryTank = new RegistryTank();
+	public static RegistryObstacle registryObstacle = new RegistryObstacle();
+
 	public static Window window;
 	
 	public static String currentLevel = "";	
@@ -76,13 +92,20 @@ public class Game
 	
 	public static final String directoryPath = "/.tanks.d";
 	public static final String logPath = directoryPath + "/logfile.txt";
-	public static final String registryPath = directoryPath + "/tank-registry.txt";
+	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
+	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
+
 	public static String homedir;
 	
 	public static ArrayList<RegistryTank.DefaultTankEntry> defaultTanks = new ArrayList<RegistryTank.DefaultTankEntry>();
-	
+	public static ArrayList<RegistryObstacle.DefaultObstacleEntry> defaultObstacles = new ArrayList<RegistryObstacle.DefaultObstacleEntry>();
+
 	public static void initScript() 
 	{
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
+
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGray.class, "gray", 1));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMint.class, "mint", 1.0 / 2));
@@ -113,9 +136,14 @@ public class Game
 			}
 		}
 		
-		if (!Files.exists(Paths.get(homedir + registryPath)))
+		if (!Files.exists(Paths.get(homedir + tankRegistryPath)))
 		{
 			RegistryTank.initRegistry(homedir);
+		}
+		
+		if (!Files.exists(Paths.get(homedir + obstacleRegistryPath)))
+		{
+			RegistryObstacle.initRegistry(homedir);
 		}
 		
 		try 
@@ -129,6 +157,7 @@ public class Game
 		}
 		
 		RegistryTank.loadRegistry(homedir);
+		RegistryObstacle.loadRegistry(homedir);
 	}
 	
 	public static void main(String[] args)
@@ -287,13 +316,9 @@ public class Game
 	{		
 		//Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-purple2-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
 		
-		//System.out.println(LevelGenerator.generateLevelString());
-		
-		RegistryTank.loadRegistry(homedir);
-		
-		Game.currentLevel = LevelGenerator.generateLevelString();
+		//System.out.println(LevelGenerator.generateLevelString());		
 		//Game.currentLevel = "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();
-		Level level = new Level(currentLevel);
+		Level level = new Level(LevelGenerator.generateLevelString());
 		//Level level = new Level("{28,18|3...6-3...4,3...4-5...6,10...19-13...14,18...19-4...12|22-14-player,14-10-brown}");
 		//Level level = new Level("{28,18|0...27-9,0...27-7|2-8-player,26-8-purple2-2}");
 		level.loadLevel();

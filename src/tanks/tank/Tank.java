@@ -1,7 +1,16 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import tanks.Effect;
+import tanks.Game;
+import tanks.Movable;
+import tanks.Obstacle;
+import tanks.Panel;
+import tanks.Team;
+import tanks.Turret;
+import tanks.Window;
 
 public abstract class Tank extends Movable
 {
@@ -68,6 +77,9 @@ public abstract class Tank extends Movable
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
+			
+			if (!o.tankCollision)
+				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
 			double verticalDist = Math.abs(this.posY - o.posY);

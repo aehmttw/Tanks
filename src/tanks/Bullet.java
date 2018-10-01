@@ -3,6 +3,8 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import tanks.tank.Tank;
+
 
 public class Bullet extends Movable
 {
@@ -55,6 +57,9 @@ public class Bullet extends Movable
 			double prevY = this.posY;
 
 			Obstacle o = Game.obstacles.get(i);
+			
+			if (!o.bulletCollision)
+				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
 			double verticalDist = Math.abs(this.posY - o.posY);

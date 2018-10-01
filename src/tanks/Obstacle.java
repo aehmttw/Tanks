@@ -5,17 +5,25 @@ import java.awt.Graphics;
 
 public class Obstacle
 {
-	double posX;
-	double posY;
-	Color color;
+	public boolean destructible = true;
+	public boolean tankCollision = true;
+	public boolean bulletCollision = true;
+	public boolean drawBelow = false;
+	
+	public double posX;
+	public double posY;
+	public Color color;
 	public static double draw_size = 0;
 	public static int obstacle_size = Game.tank_size; 
+	
+	public String name;
 
-	public Obstacle(double posX, double posY, Color color)
+	public Obstacle(String name, double posX, double posY)
 	{
+		this.name = name;
 		this.posX = (int) ((posX + 0.5) * obstacle_size);
 		this.posY = (int) ((posY + 0.5) * obstacle_size);
-		this.color = color;
+		this.color = Obstacle.getRandomColor();
 	}
 
 	public void draw(Graphics g)

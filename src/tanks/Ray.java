@@ -2,6 +2,8 @@ package tanks;
 
 import java.util.ArrayList;
 
+import tanks.tank.Tank;
+
 public class Ray
 {
 	public int size = 10;
@@ -77,6 +79,9 @@ public class Ray
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
+				
+				if (!o.bulletCollision)
+					continue;
 
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
@@ -222,7 +227,10 @@ public class Ray
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
-
+				
+				if (!o.tankCollision)
+					continue;
+					
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
 

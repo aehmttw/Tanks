@@ -1,6 +1,11 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
+
+import tanks.BulletFlame;
+import tanks.Game;
+import tanks.Movable;
+import tanks.Ray;
 
 public class TankOrange extends EnemyTank
 {

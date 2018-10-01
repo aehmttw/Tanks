@@ -18,7 +18,10 @@ public class Button
 	public boolean selected = false;
 
 	public boolean clicked = false;
+	
+	public boolean enabled = true;
 
+	Color disabledCol = new Color(200, 200, 200);
 	Color unselectedCol = new Color(255, 255, 255);
 	Color selectedCol = new Color(240, 240, 255);
 
@@ -39,12 +42,34 @@ public class Button
 		this.enableHover = true;
 		this.hoverText = hoverText.split("---");
 	}
+	
+	public Button(double x, double y, double sX, double sY, String text)
+	{
+		this.posX = x;
+		this.posY = y;
+		this.sizeX = sX;
+		this.sizeY = sY;
+		this.text = text;
+		
+		this.enabled = false;
+	}
+	
+	public Button(double x, double y, double sX, double sY, String text, String hoverText)
+	{
+		this(x, y, sX, sY, text);
+		
+		this.enableHover = true;
+		this.hoverText = hoverText.split("---");		
+	}
 
 	public void draw(Graphics g)
 	{
 		Window.setInterfaceFontSize(g, 24);
-
-		if (selected)
+		
+		if (!enabled)
+			g.setColor(this.disabledCol);	
+		
+		else if (selected)
 			g.setColor(this.selectedCol);
 		else
 			g.setColor(this.unselectedCol);
@@ -84,7 +109,7 @@ public class Button
 		else
 			selected = false;
 
-		if (selected && InputMouse.lClickValid && !clicked)
+		if (selected && InputMouse.lClickValid && !clicked && enabled)
 		{
 			function.run();
 			clicked = true;

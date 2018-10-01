@@ -10,17 +10,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import tanks.tank.Tank;
+import tanks.tank.TankUnknown;
+
 public class RegistryTank 
 {
-	public ArrayList<TankEntry> tankRegistries = new ArrayList<TankEntry>();
+	public ArrayList<TankEntry> tankEntries = new ArrayList<TankEntry>();
 	protected double maxTankWeight = 0;
 	
 	public static void loadRegistry(String homedir) 
 	{
-		Game.registry.tankRegistries.clear();
-		Game.registry.maxTankWeight = 0;
+		Game.registryTank.tankEntries.clear();
+		Game.registryTank.maxTankWeight = 0;
 		
-		String path = homedir + Game.registryPath;
+		String path = homedir + Game.tankRegistryPath;
 		try 
 		{
 			Scanner in = new Scanner(new File(path));
@@ -40,7 +43,7 @@ public class RegistryTank
 					{
 						if (tankLine[0].equals(Game.defaultTanks.get(i).name))
 						{
-							Game.defaultTanks.get(i).registerEntry(Game.registry, Double.parseDouble(tankLine[1]));
+							Game.defaultTanks.get(i).registerEntry(Game.registryTank, Double.parseDouble(tankLine[1]));
 							foundTank = true;
 							break;
 						}
@@ -57,7 +60,7 @@ public class RegistryTank
 						ClassLoader loader = new URLClassLoader( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
 						@SuppressWarnings("unchecked")
 						Class<? extends Tank> clasz = (Class<? extends Tank>) loader.loadClass(tankLine[4]);
-						new RegistryTank.TankEntry(Game.registry, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
+						new RegistryTank.TankEntry(Game.registryTank, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
 					}
 					catch (Exception e) 
 					{
@@ -75,14 +78,14 @@ public class RegistryTank
 			
 			for (int i = 0; i < Game.defaultTanks.size(); i++)
 			{
-				Game.defaultTanks.get(i).registerEntry(Game.registry);
+				Game.defaultTanks.get(i).registerEntry(Game.registryTank);
 			}
 		}
 	}
 	
 	public static void initRegistry(String homedir) 
 	{
-		String path = homedir + Game.registryPath;
+		String path = homedir + Game.tankRegistryPath;
 		try 
 		{
 			new File(path).createNewFile();
@@ -100,7 +103,7 @@ public class RegistryTank
 			writer.println("# The parameters are name, rarity, custom/default, jar location, and class");
 			writer.println("# Built in tanks do not use the last 2 parameters");
 			writer.println("# and have 'default' written for the third parameter");
-			writer.println("# To make a custom tank, import the TankGame jar into a java project,");
+			writer.println("# To make a custom tank, import the 'Tanks' jar into a java project,");
 			writer.println("# write a class extending Tank or EnemyTank, and export as a jar file.");
 			writer.println("# To import a custom tank, put the jar file somewhere on your computer,");
 			writer.println("# put 'custom' for parameter 3");
@@ -142,7 +145,7 @@ public class RegistryTank
 			r.maxTankWeight += weight;
 			this.endWeight = r.maxTankWeight;
 			
-			r.tankRegistries.add(this);
+			r.tankEntries.add(this);
 		}
 		
 		protected TankEntry()
@@ -217,13 +220,13 @@ public class RegistryTank
 	
 	public TankEntry getRandomTank()
 	{
-		if (this.tankRegistries.size() <= 0)
+		if (this.tankEntries.size() <= 0)
 			throw new RuntimeException("the tank registry file is empty. please register some tanks!");
 			
 		double random = Math.random() * maxTankWeight;
-		for (int i = 0; i < tankRegistries.size(); i++)
+		for (int i = 0; i < tankEntries.size(); i++)
 		{
-			TankEntry r = tankRegistries.get(i);
+			TankEntry r = tankEntries.get(i);
 
 			if (random >= r.startWeight && random < r.endWeight)
 			{
@@ -236,9 +239,9 @@ public class RegistryTank
 	
 	public TankEntry getEntry(String name)
 	{		
-		for (int i = 0; i < tankRegistries.size(); i++)
+		for (int i = 0; i < tankEntries.size(); i++)
 		{
-			TankEntry r = tankRegistries.get(i);
+			TankEntry r = tankEntries.get(i);
 			
 			if (r.name.equals(name))
 			{
@@ -249,8 +252,8 @@ public class RegistryTank
 		return TankEntry.getUnknownEntry(name);
 	}
 	
-	public TankEntry getRegistry(int number)
+	public TankEntry getEntry(int number)
 	{		
-		return tankRegistries.get(number);
+		return tankEntries.get(number);
 	}
 }

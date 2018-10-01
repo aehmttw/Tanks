@@ -1,11 +1,19 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
+import tanks.Bullet;
+import tanks.Game;
+import tanks.InputKeyboard;
+import tanks.InputMouse;
+import tanks.Mine;
+import tanks.Panel;
+import tanks.Window;
+
 public class TankPlayer extends Tank
 {
-	double cooldown = 0;
+	public double cooldown = 0;
 	
 	//double maxCooldown = 100;
 
@@ -123,6 +131,13 @@ public class TankPlayer extends Tank
 				//this.maxCooldown = this.maxCooldown * 0.75 + 1;
 				//this.cooldown = Math.max(this.cooldown, maxCooldown);
 			}*/
+			
+			/*BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
+			b.setPolarMotion(this.angle, 25.0/4);
+			b.moveOut(8);
+			b.shoot();
+			this.cooldown = 0;*/
+			
 			fireBullet(25 / 4, 1, Color.black, Bullet.BulletEffect.trail);
 		}
 		else

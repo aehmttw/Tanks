@@ -5,7 +5,7 @@ import java.awt.Color;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Ray;
-import tanks.Tank;
+import tanks.tank.Tank;
 
 // kgurazada
 @Deprecated

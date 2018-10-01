@@ -3,6 +3,7 @@ package tanks.legacy;
 import java.awt.Color;
 import java.util.ArrayList;
 import tanks.*;
+import tanks.tank.Tank;
 
 @Deprecated
 public class EnemyTankBlack extends Tank

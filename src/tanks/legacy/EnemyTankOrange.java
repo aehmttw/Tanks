@@ -2,6 +2,7 @@ package tanks.legacy;
 
 import java.awt.Color;
 import tanks.*;
+import tanks.tank.Tank;
 
 @Deprecated
 public class EnemyTankOrange extends Tank

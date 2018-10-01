@@ -8,7 +8,7 @@ import tanks.Game;
 import tanks.Mine;
 import tanks.Movable;
 import tanks.Ray;
-import tanks.Tank;
+import tanks.tank.Tank;
 
 @Deprecated
 public class EnemyTankPinkMagenta extends Tank

@@ -1,6 +1,9 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
+
+import tanks.Bullet;
+import tanks.Game;
 
 public class TankMint extends EnemyTank
 {

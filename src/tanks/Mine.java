@@ -3,6 +3,8 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import tanks.tank.Tank;
+
 public class Mine extends Movable
 {
 	public static int mine_size = 30;
@@ -116,7 +118,7 @@ public class Mine extends Movable
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
-			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 2.5, 2))
+			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 2.5, 2) && o.destructible)
 			{
 				Game.removeObstacles.add(o);
 

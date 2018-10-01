@@ -263,7 +263,7 @@ public class Panel extends JPanel
 
 			g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-			g.drawString("Tanks v0.4.0", 2, (int) (Panel.windowHeight - 40 + 12 - Window.yOffset));
+			g.drawString("Tanks v0.5.b", 2, (int) (Panel.windowHeight - 40 + 12 - Window.yOffset));
 			g.drawString("FPS: " + lastFPS, 2, (int) (Panel.windowHeight - 40 + 24 - Window.yOffset));
 			//g.drawString("Coins: " + Game.coins, 2, (int) (Panel.windowHeight - 40 + 36 - Window.yOffset));		
 
@@ -307,17 +307,17 @@ public class Panel extends JPanel
 			double mx = Game.window.getInterfaceMouseX();
 			double my = Game.window.getInterfaceMouseY();
 
-			double mx2 = Game.window.getMouseX();
-			double my2 = Game.window.getMouseY();
+			//double mx2 = Game.window.getMouseX();
+			//double my2 = Game.window.getMouseY();
 			if (showMouseTarget)
 			{
 				g.setColor(Color.black);
 				Window.drawInterfaceOval(g, mx, my, 8, 8);
 				Window.drawInterfaceOval(g, mx, my, 4, 4);
 				
-				g.setColor(Color.red);
-				Window.drawOval(g, mx2, my2, 8, 8);
-				Window.drawOval(g, mx2, my2, 4, 4);
+				//g.setColor(Color.red);
+				//Window.drawOval(g, mx2, my2, 8, 8);
+				//Window.drawOval(g, mx2, my2, 4, 4);
 			}
 		}
 		catch (Exception e)

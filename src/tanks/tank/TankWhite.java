@@ -1,7 +1,11 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import tanks.Effect;
+import tanks.Game;
+import tanks.Window;
 
 public class TankWhite extends EnemyTank
 {

@@ -138,7 +138,7 @@ public class TextBox
 					inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
 				else if (inputText.length() + text.length() <= maxChars)
 				{
-					if (text.equals(" ") || text.equals("Space"))
+					if (text.equals("\u2423") || text.equals("Space"))
 					{
 						if (allowSpaces)
 						{

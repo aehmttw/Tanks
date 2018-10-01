@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+import tanks.tank.Tank;
+
 public class ScreenGame extends Screen
 {
 	public boolean playing = false;
@@ -74,6 +76,30 @@ public class ScreenGame extends Screen
 		}
 	}
 			);
+	
+	Button quitCrusade = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Crusade.crusadeMode = false;
+			Crusade.currentCrusade.remainingLives--;
+			Game.exitToTitle();
+		}
+	}
+			, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
+
+	Button quitCrusadeFinalLife = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Crusade.crusadeMode = false;
+			Crusade.currentCrusade = null;
+			Game.exitToTitle();
+		}
+	}
+			, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 
 	public ScreenGame()
 	{
@@ -121,7 +147,16 @@ public class ScreenGame extends Screen
 			else
 				edit.update();
 			
-			quit.update();
+			if (!Crusade.crusadeMode)
+				quit.update();
+			else
+			{
+				if (Crusade.currentCrusade.remainingLives > 1)
+					quitCrusade.update();
+				else
+					quitCrusadeFinalLife.update();
+			}
+			
 			resume.update();
 			return;
 		}
@@ -260,6 +295,13 @@ public class ScreenGame extends Screen
 	{
 		this.drawDefaultBackground(g);
 
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			if (o.drawBelow)
+				o.draw(g);
+		}
+		
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 			Game.belowEffects.get(i).draw(g);
 
@@ -267,7 +309,11 @@ public class ScreenGame extends Screen
 			Game.movables.get(n).draw(g);
 		
 		for (int i = 0; i < Game.obstacles.size(); i++)
-			Game.obstacles.get(i).draw(g);
+		{
+			Obstacle o = Game.obstacles.get(i);
+			if (!o.drawBelow)
+				o.draw(g);
+		}
 
 		for (int i = 0; i < Game.effects.size(); i++)
 			((Effect)Game.effects.get(i)).draw(g);
@@ -285,7 +331,15 @@ public class ScreenGame extends Screen
 			else
 				edit.draw(g);
 			
-			quit.draw(g);
+			if (!Crusade.crusadeMode)
+				quit.draw(g);
+			else
+			{
+				if (Crusade.currentCrusade.remainingLives > 1)
+					quitCrusade.draw(g);
+				else
+					quitCrusadeFinalLife.draw(g);
+			}			
 			resume.draw(g);
 			g.setColor(Color.black);
 			Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Game paused");

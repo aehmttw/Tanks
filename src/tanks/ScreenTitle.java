@@ -35,7 +35,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
+	/*Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -44,12 +44,22 @@ public class ScreenTitle extends Screen
 			Game.screen = new ScreenGame();
 		}
 	}
+			);*/
+	
+	Button play = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Play!", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.screen = new ScreenPlay();
+		}
+	}
 			);
 	
 	@Override
 	public void update()
 	{
-		newLevel.update();
+		play.update();
 		exit.update();
 		options.update();	
 		build.update();		
@@ -63,7 +73,7 @@ public class ScreenTitle extends Screen
 		g.setColor(Color.black);
 		Window.setInterfaceFontSize(g, 60);
 		Window.drawInterfaceText(g, Window.sizeX / 2, Window.sizeY / 2 - 200, "Tanks");
-		newLevel.draw(g);
+		play.draw(g);
 		exit.draw(g);
 		options.draw(g);		
 		build.draw(g);		

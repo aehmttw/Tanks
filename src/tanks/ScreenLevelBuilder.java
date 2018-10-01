@@ -9,20 +9,24 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
+
 public class ScreenLevelBuilder extends Screen
 {
 	enum Placeable {enemyTank, playerTank, obstacle}
 
 	Placeable currentPlaceable = Placeable.enemyTank;
 	int tankNum = 0;
+	int obstacleNum = 0;
 	int teamNum = 1;
 	int playerTeamNum = 0;
-	
+
 	boolean reloadNewLevel = true;
 
 
-	Tank mouseTank = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
-	Obstacle mouseObstacle = new Obstacle(0, 0, Obstacle.getRandomColor());
+	Tank mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+	Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 	boolean paused = true;
 	boolean optionsMenu = false;
 	boolean sizeMenu = false;
@@ -313,7 +317,7 @@ public class ScreenLevelBuilder extends Screen
 	{
 		this(lvlName, true);
 	}
-	
+
 	public ScreenLevelBuilder(String lvlName, boolean reload)
 	{		
 		this.reloadNewLevel = reload;
@@ -552,19 +556,19 @@ public class ScreenLevelBuilder extends Screen
 			public void run() 
 			{
 				boolean duplicate = false;
-				
+
 				for (int i = 0; i < teams.size(); i++)
 				{
 					if (teamName.inputText.equals(teams.get(i).name))
 						duplicate = true;
 				}
-				
+
 				if (teamName.inputText.length() <= 0 || duplicate)
 					teamName.inputText = selectedTeam.name;
 				else
 				{
-				selectedTeam.name = teamName.inputText;
-				teamButtons.get(lastTeamButton).text = teamName.inputText;
+					selectedTeam.name = teamName.inputText;
+					teamButtons.get(lastTeamButton).text = teamName.inputText;
 				}
 			}
 
@@ -745,7 +749,7 @@ public class ScreenLevelBuilder extends Screen
 								teamGreen.update();
 								teamBlue.update();
 							}
-							
+
 							teamColorEnabled.update();
 						}
 						else
@@ -826,20 +830,32 @@ public class ScreenLevelBuilder extends Screen
 
 		if (down && currentPlaceable == Placeable.enemyTank)
 		{
-			tankNum = (tankNum + 1) % Game.registry.tankRegistries.size();
-			Tank t = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
+			tankNum = (tankNum + 1) % Game.registryTank.tankEntries.size();
+			Tank t = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 			t.angle = mouseTank.angle;
 			t.drawAge = mouseTank.drawAge;
 			mouseTank = t;
 		}
+		else if (down && currentPlaceable == Placeable.obstacle)
+		{
+			obstacleNum = (obstacleNum + 1) % Game.registryObstacle.obstacleEntries.size();
+			Obstacle o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+			mouseObstacle = o;
+		}
 
 		if (up && currentPlaceable == Placeable.enemyTank)
 		{
-			tankNum = ((tankNum - 1) + Game.registry.tankRegistries.size()) % Game.registry.tankRegistries.size();
-			Tank t = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
+			tankNum = ((tankNum - 1) + Game.registryTank.tankEntries.size()) % Game.registryTank.tankEntries.size();
+			Tank t = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 			t.angle = mouseTank.angle;
 			t.drawAge = mouseTank.drawAge;
 			mouseTank = t;
+		}
+		else if (up && currentPlaceable == Placeable.obstacle)
+		{
+			obstacleNum = ((obstacleNum - 1) + Game.registryObstacle.obstacleEntries.size()) % Game.registryObstacle.obstacleEntries.size();
+			Obstacle o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+			mouseObstacle = o;
 		}
 
 		boolean right = false;
@@ -881,7 +897,7 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.playerTank)
 			{
 				currentPlaceable = Placeable.enemyTank;
-				mouseTank = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
+				mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 			}
 		}
 
@@ -894,7 +910,7 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.obstacle)
 			{
 				currentPlaceable = Placeable.enemyTank;
-				mouseTank = Game.registry.getRegistry(tankNum).getTank(0, 0, 0);
+				mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 			}
 			else if (currentPlaceable == Placeable.enemyTank)
 			{
@@ -1029,7 +1045,7 @@ public class ScreenLevelBuilder extends Screen
 			{
 				if (currentPlaceable == Placeable.enemyTank)
 				{
-					Tank t = Game.registry.getRegistry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+					Tank t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
 					t.team = mouseTank.team;
 					Game.movables.add(t);
 				}
@@ -1042,10 +1058,11 @@ public class ScreenLevelBuilder extends Screen
 				}
 				else if (currentPlaceable == Placeable.obstacle)
 				{
-					Obstacle o = new Obstacle(0, 0, mouseObstacle.color);
-					mouseObstacle.color = Obstacle.getRandomColor();
+					Obstacle o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+					o.color = mouseObstacle.color;
 					o.posX = mouseObstacle.posX;
 					o.posY = mouseObstacle.posY;
+					mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 					Game.obstacles.add(o);
 				}
 			}
@@ -1074,85 +1091,94 @@ public class ScreenLevelBuilder extends Screen
 
 		level += (width + "," + height + "," + r + "," + g + "," + b + "," + dr + "," + dg + "," + db + "|");
 
-		boolean[][] obstacles = new boolean[width][height];
+		boolean[][][] obstacles = new boolean[Game.registryObstacle.obstacleEntries.size()][width][height];
 
-		for (int i = 0; i < width; i++)
+		for (int h = 0; h < Game.registryObstacle.obstacleEntries.size(); h++)
 		{
-			for (int j = 0; j < height; j++)
+			for (int i = 0; i < width; i++)
 			{
-				obstacles[i][j] = false;
-			}
-		}
-
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-			int x = (int) (o.posX / Game.tank_size);
-			int y = (int) (o.posY / Game.tank_size);
-
-			if (x < obstacles.length && x >= 0 && y < obstacles[0].length && y >= 0)
-				obstacles[x][y] = true;
-
-			//level += x + "-" + y + ",";
-		}
-
-		//compression
-		for (int i = 0; i < width; i++)
-		{
-			for (int j = 0; j < height; j++)
-			{
-				if (obstacles[i][j])
+				for (int j = 0; j < height; j++)
 				{
-					int xLength = 0;
+					obstacles[h][i][j] = false;
+				}
+			}
 
-					while (true)
+			for (int i = 0; i < Game.obstacles.size(); i++)
+			{
+				Obstacle o = Game.obstacles.get(i);
+				int x = (int) (o.posX / Game.tank_size);
+				int y = (int) (o.posY / Game.tank_size);
+
+				if (x < obstacles[h].length && x >= 0 && y < obstacles[h][0].length && y >= 0 && o.name.equals(Game.registryObstacle.getEntry(h).name))
+					obstacles[h][x][y] = true;
+				
+				//level += x + "-" + y + ",";
+			}
+
+			//compression
+			for (int i = 0; i < width; i++)
+			{
+				for (int j = 0; j < height; j++)
+				{
+					if (obstacles[h][i][j])
 					{
-						xLength += 1;
+						int xLength = 0;
 
-						if (i + xLength >= obstacles.length)
-							break;
-						else if (!obstacles[i + xLength][j])
-							break;
-					}
-
-
-					int yLength = 0;
-
-					while (true)
-					{
-						yLength += 1;
-
-						if (j + yLength >= obstacles[0].length)
-							break;
-						else if (!obstacles[i][j + yLength])
-							break;
-					}
-
-					if (xLength >= yLength)
-					{
-						if (xLength == 1)
-							level += i + "-" + j + ",";
-						else
-							level += i + "..." + (i + xLength - 1) + "-" + j + ",";
-
-						for (int z = 0; z < xLength; z++)
+						while (true)
 						{
-							obstacles[i + z][j] = false;
+							xLength += 1;
+
+							if (i + xLength >= obstacles[h].length)
+								break;
+							else if (!obstacles[h][i + xLength][j])
+								break;
 						}
-					}
-					else
-					{
-						level += i + "-" + j + "..." + (j + yLength - 1) + ",";
 
-						for (int z = 0; z < yLength; z++)
+
+						int yLength = 0;
+
+						while (true)
 						{
-							obstacles[i][j + z] = false;
+							yLength += 1;
+
+							if (j + yLength >= obstacles[h][0].length)
+								break;
+							else if (!obstacles[h][i][j + yLength])
+								break;
+						}
+
+						String name = "";
+						String obsName = Game.registryObstacle.obstacleEntries.get(h).name;
+						
+						if (!obsName.equals("normal"))
+							name = "-" + obsName;
+							
+						if (xLength >= yLength)
+						{
+							if (xLength == 1)
+								level += i + "-" + j + name + ",";
+							else
+								level += i + "..." + (i + xLength - 1) + "-" + j + name + ",";
+
+							for (int z = 0; z < xLength; z++)
+							{
+								obstacles[h][i + z][j] = false;
+							}
+						}
+						else
+						{
+							level += i + "-" + j + "..." + (j + yLength - 1) + name + ",";
+
+							for (int z = 0; z < yLength; z++)
+							{
+								obstacles[h][i][j + z] = false;
+							}
 						}
 					}
 				}
 			}
 		}
-
+		
 		if (Game.obstacles.size() == 0) 
 		{
 			level += "|";

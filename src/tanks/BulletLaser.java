@@ -2,6 +2,8 @@ package tanks;
 
 import java.awt.Color;
 
+import tanks.tank.Tank;
+
 public class BulletLaser extends Bullet
 {
 	public BulletLaser(double x, double y, int bounces, Tank t) 

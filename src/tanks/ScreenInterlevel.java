@@ -8,7 +8,7 @@ public class ScreenInterlevel extends Screen
 {
 	ArrayList<Firework> fireworks = new ArrayList<Firework>();
 	ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
-	
+
 	Button replay = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
 	{
 		@Override
@@ -20,12 +20,20 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
 	Button save = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Save this level", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
+			Crusade.crusadeMode = false;
+			
+			if (Crusade.currentCrusade != null)
+			{
+				if (Crusade.currentCrusade.remainingLives <= 0)
+					Crusade.currentCrusade = null;
+			}
+			
 			ScreenLevelBuilder s = new ScreenLevelBuilder(System.currentTimeMillis() + ".tanks", false);
 			Level level = new Level(Game.currentLevel);
 			level.loadLevel(s);
@@ -33,7 +41,7 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
 	Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
@@ -44,28 +52,77 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
+	Button nextLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Next level", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Crusade.currentCrusade.loadLevel();
+			Game.screen = new ScreenGame();
+		}
+	}
+			);
+
 	Button quit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
+			Crusade.crusadeMode = false;
+			Crusade.currentCrusade = null;
 			Game.exitToTitle();
 		}
 	}
 			);
 	
+	Button quitCrusade = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Crusade.crusadeMode = false;
+			Game.exitToTitle();
+		}
+	}
+			, "You will be able to return to the crusade---through the crusade button on---the play screen.");
+
 	@Override
 	public void update()
 	{
-		newLevel.update();
-		replay.update();
+		boolean skip = false;
+		if (Crusade.crusadeMode)
+			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
+				skip = true;
+
+		if (!skip)
+		{
+			if (Crusade.crusadeMode)
+			{
+				if (Panel.win)
+					nextLevel.update();
+				
+				quitCrusade.update();
+			}
+			else
+				newLevel.update();
+
+			replay.update();
+		}
+		
+		if (skip || !Crusade.crusadeMode)
+			quit.update();		
+
 		save.update();		
-		quit.update();		
 	}
-	
+
 	public ScreenInterlevel()
 	{
+		if (Crusade.crusadeMode)
+		{
+			Crusade.currentCrusade.levelFinished(Panel.win);
+		}
+
 		if (Panel.win)
 		{
 			Window.playSound("resources/win.wav");
@@ -110,15 +167,49 @@ public class ScreenInterlevel extends Screen
 			}  
 		}
 
-		newLevel.draw(g);
-		replay.draw(g);
-		save.draw(g);
-		quit.draw(g);
+		boolean skip = false;
+		if (Crusade.crusadeMode)
+			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
+				skip = true;
+
+		if (!skip)
+		{
+			if (Crusade.crusadeMode)
+			{
+				if (Panel.win)
+					nextLevel.draw(g);
+				
+				quitCrusade.draw(g);
+			}
+			else
+				newLevel.draw(g);
+
+			replay.draw(g);
+		}
 		
+		if (!Crusade.crusadeMode || skip)
+			quit.draw(g);
+		
+		save.draw(g);
+
 		if (Panel.win && Game.graphicalEffects)
 			g.setColor(Color.white);
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, Panel.winlose);	
-		
+
+		if (Crusade.crusadeMode)
+		{
+			if (Crusade.currentCrusade.win)
+				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 190, "You finished the crusade!");	
+			else if (Crusade.currentCrusade.lose)
+				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 190, "Game over!");	
+			else
+				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 190, Panel.winlose);	
+		}
+		else
+			Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, Panel.winlose);	
+
+		if (Crusade.crusadeMode)
+			Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);	
+
 		if (Panel.win && Game.graphicalEffects)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
 	}

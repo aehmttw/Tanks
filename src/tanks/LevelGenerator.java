@@ -101,7 +101,7 @@ public class LevelGenerator
 					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
 			
 			s += x + "-" + y + "-";
-			s += Game.registry.getRandomTank().name;
+			s += Game.registryTank.getRandomTank().name;
 			s += "-" + angle;
 			
 			if (i == numTanks - 1) 

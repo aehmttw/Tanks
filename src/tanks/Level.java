@@ -4,8 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
+
 public class Level 
 {
+	String level;
+	
 	String[] preset;
 	String[] screen;
 	String[] obstaclesPos;
@@ -31,6 +36,8 @@ public class Level
 	 */
 	public Level(String level)
 	{		
+		this.level = level;
+		
 		preset = level.split("\\{")[1].split("\\}")[0].split("\\|");
 
 		screen = preset[0].split(",");
@@ -59,6 +66,11 @@ public class Level
 
 	public void loadLevel(ScreenLevelBuilder s)
 	{
+		RegistryTank.loadRegistry(Game.homedir);
+		RegistryObstacle.loadRegistry(Game.homedir);
+
+		Game.currentLevel = this.level;
+
 		ScreenGame.finished = false;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 
@@ -220,14 +232,17 @@ public class Level
 
 				if (yPos.length > 1)
 					endY = Double.parseDouble(yPos[1]);
+				
+				String name = "normal";
+				
+				if (obs.length >= 3)
+						name = obs[2];
 
 				for (double x = startX; x <= endX; x++)
 				{
 					for (double y = startY; y <= endY; y++)
 					{
-						Color col = Obstacle.getRandomColor();
-
-						Game.obstacles.add(new Obstacle(x, y, col));
+						Game.obstacles.add(Game.registryObstacle.getEntry(name).getObstacle(x, y));
 					}
 				}
 			}
@@ -254,7 +269,7 @@ public class Level
 				}
 				else
 				{
-					t = Game.registry.getEntry(type).getTank(x, y, angle);
+					t = Game.registryTank.getEntry(type).getTank(x, y, angle);
 					t.team = Game.enemyTeam;
 				}
 

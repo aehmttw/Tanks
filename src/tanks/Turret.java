@@ -3,6 +3,8 @@ package tanks;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import tanks.tank.Tank;
+
 public class Turret extends Movable
 {
 	public int size = 8;

@@ -6,7 +6,7 @@ import tanks.Bullet;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Ray;
-import tanks.Tank;
+import tanks.tank.Tank;
 
 @Deprecated
 public class EnemyTankBrown extends Tank

@@ -1,8 +1,11 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+
+import tanks.Game;
+import tanks.Window;
 
 /**
  * This is the tank that appears whenever an invalid ID is specified. It is useful for debugging purposes.

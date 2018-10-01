@@ -1,7 +1,17 @@
-package tanks;
+package tanks.tank;
 
 import java.awt.Color;
 import java.util.ArrayList;
+
+import tanks.Bullet;
+import tanks.Game;
+import tanks.Mine;
+import tanks.Movable;
+import tanks.Panel;
+import tanks.Ray;
+import tanks.ScreenGame;
+import tanks.Team;
+import tanks.Window;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.

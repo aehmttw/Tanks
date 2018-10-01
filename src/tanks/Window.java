@@ -117,6 +117,20 @@ public class Window extends JFrame
 
 		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
+	
+	public static void fill3DRect(Graphics g, double x, double y, double sizeX, double sizeY, boolean raised)
+	{
+		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Window.xOffset - Window.sizeX * Window.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Window.yOffset - 40 - Window.sizeY * Window.scale) / 2);
+
+		if (drawX - 200 * Window.scale > Panel.windowWidth || drawX + 200 * Window.scale < 0 || drawY - 200 * Window.scale > Panel.windowHeight || drawY + 200 * Window.scale < 0)
+			return;
+
+		int drawSizeX = (int) Math.round(sizeX * scale);
+		int drawSizeY = (int) Math.round(sizeY * scale);
+
+		g.fill3DRect(drawX, drawY, drawSizeX, drawSizeY, raised);
+	}
 
 	public static void fillBackgroundRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
@@ -268,9 +282,10 @@ public class Window extends JFrame
 		////return (interfaceScale / scale * (getInterfaceMouseX()) - getPlayerOffsetX() /*+ Math.max(0, Panel.windowWidth  - Window.xOffset - Window.interfaceSizeX * Window.interfaceScale) / 2*/);
 		//return x1 / scale * 2 - Math.max(0, Panel.windowWidth - Window.xOffset - Window.sizeX * Window.scale) - getPlayerOffsetX();
 		if (Window.enableMovingCamera && Window.movingCamera && Window.enableMovingCameraX)		
-			return (interfaceScale / scale * ((MouseInfo.getPointerInfo().getLocation().getX() - this.getLocation().getX()) / interfaceScale) - getPlayerOffsetX() + mouseXoffset/*+ Math.max(0, Panel.windowWidth  - Window.xOffset - Window.interfaceSizeX * Window.interfaceScale) / 2*/);
+			return (interfaceScale / scale * ((MouseInfo.getPointerInfo().getLocation().getX() - this.getLocation().getX()) / interfaceScale) - getPlayerOffsetX() + mouseXoffset - Window.xOffset / Window.scale/*+ Math.max(0, Panel.windowWidth  - Window.xOffset - Window.interfaceSizeX * Window.interfaceScale) / 2*/);
 		else
-			return (interfaceScale / scale * (getInterfaceMouseX()) - getPlayerOffsetX() /*+ Math.max(0, Panel.windowWidth  - Window.xOffset - Window.interfaceSizeX * Window.interfaceScale) / 2*/);
+			//return (interfaceScale / scale * (getInterfaceMouseX()) - getPlayerOffsetX() /*+ Math.max(0, Panel.windowWidth  - Window.xOffset - Window.interfaceSizeX * Window.interfaceScale) / 2*/);
+			return ((MouseInfo.getPointerInfo().getLocation().getX() - this.getLocation().getX()) - Math.max(0, Panel.windowWidth - Window.xOffset - Window.sizeX * Window.scale) / 2) / scale - getPlayerOffsetX() - Window.xOffset / Window.scale;
 	}
 
 	public double getMouseY()
@@ -280,9 +295,10 @@ public class Window extends JFrame
 		////return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
 		//return y1 / scale * 2 - Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.sizeY * Window.scale) - getPlayerOffsetY();
 		if (Window.enableMovingCamera && Window.movingCamera && Window.enableMovingCameraY)
-			return (interfaceScale / scale * (((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY())) / interfaceScale) - getPlayerOffsetY() + mouseYoffset/*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
+			return (interfaceScale / scale * (((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY())) / interfaceScale) - getPlayerOffsetY() + mouseYoffset - Window.yOffset / Window.scale/*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
 		else
-			return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
+			//return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
+			return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY()) - Math.max(0, Panel.windowHeight - Window.yOffset - 40 - Window.sizeY * Window.scale) / 2) / scale - getPlayerOffsetY() - Window.yOffset / Window.scale;
 
 	}
 

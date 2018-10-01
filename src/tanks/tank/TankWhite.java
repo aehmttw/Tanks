@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 import tanks.Effect;
 import tanks.Game;
-import tanks.Window;
+import tanks.Drawing;
 
 public class TankWhite extends EnemyTank
 {
@@ -44,7 +44,7 @@ public class TankWhite extends EnemyTank
 			for (int i = 0; i < Game.tank_size * 2 - this.age; i++)
 			{
 				g.setColor(new Color(255, 255, 255, (int)((Game.tank_size * 2 - i - this.age) * 2.55)));
-				Window.fillOval(g, this.posX, this.posY, i, i);
+				Drawing.fillOval(g, this.posX, this.posY, i, i);
 			}
 		}
 	}

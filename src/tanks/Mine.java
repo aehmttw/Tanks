@@ -30,14 +30,14 @@ public class Mine extends Movable
 	public void draw(Graphics p) 
 	{	
 		p.setColor(this.outlineColor);
-		Window.fillOval(p, this.posX, this.posY, this.size, this.size);
+		Drawing.fillOval(p, this.posX, this.posY, this.size, this.size);
 		
 		p.setColor(new Color(255, (int) ((this.timer) / 1000.0 * 255), 0));
 
 		if (timer < 150 && ((int) timer % 16) / 8 == 1)
 			p.setColor(Color.yellow);
 
-		Window.fillOval(p, this.posX, this.posY, this.size * 0.8, this.size * 0.8);
+		Drawing.fillOval(p, this.posX, this.posY, this.size * 0.8, this.size * 0.8);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class Mine extends Movable
 
 	public void explode()
 	{
-		Window.playSound("resources/explosion.wav");
+		Drawing.playSound("resources/explosion.wav");
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{

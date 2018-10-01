@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 public class ScreenCrashed extends Screen
 {
-	Button exit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
+	Button exit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -16,7 +16,7 @@ public class ScreenCrashed extends Screen
 	}
 			);
 	
-	Button quit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
+	Button quit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -37,24 +37,24 @@ public class ScreenCrashed extends Screen
 	public void draw(Graphics g)
 	{
 		g.setColor(Color.blue);
-		Window.fillInterfaceRect(g, Window.sizeX / 2, Window.sizeY / 2, Window.sizeX * 1.2, Window.sizeY * 1.2);				
+		Drawing.fillInterfaceRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX * 1.2, Drawing.sizeY * 1.2);				
 
 		g.setColor(Color.white);
-		Window.setInterfaceFontSize(g, 100);
-		Window.drawInterfaceText(g, 100, 100, ":(");
+		Drawing.setInterfaceFontSize(g, 100);
+		Drawing.drawInterfaceText(g, 100, 100, ":(");
 
-		Window.setInterfaceFontSize(g, 48);
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
+		Drawing.setInterfaceFontSize(g, 48);
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
 
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Window.scale)));
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 200, Game.crashMessage);
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 280, "Check the log file for more information: ");
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 320, Game.homedir.replace("\\", "/") + Game.logPath);
+		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Drawing.scale)));
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 200, Game.crashMessage);
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 280, "Check the log file for more information: ");
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 320, Game.homedir.replace("\\", "/") + Game.logPath);
 
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 400, "You may return to the game if you wish,");
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 440, "but be warned that things may become unstable.");
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, 520, "Also, you may want to report this crash!");
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 400, "You may return to the game if you wish,");
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 440, "but be warned that things may become unstable.");
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 520, "Also, you may want to report this crash!");
 
 		this.quit.draw(g);
 		this.exit.draw(g);

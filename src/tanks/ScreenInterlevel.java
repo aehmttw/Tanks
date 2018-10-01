@@ -9,7 +9,7 @@ public class ScreenInterlevel extends Screen
 	ArrayList<Firework> fireworks = new ArrayList<Firework>();
 	ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
 
-	Button replay = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
+	Button replay = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -21,7 +21,7 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
-	Button save = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Save this level", new Runnable()
+	Button save = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Save this level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -42,7 +42,7 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
-	Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Generate a new level", new Runnable()
+	Button newLevel = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 90, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -53,7 +53,7 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
-	Button nextLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Next level", new Runnable()
+	Button nextLevel = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 90, 350, 40, "Next level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -64,7 +64,7 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
-	Button quit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
+	Button quit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -76,7 +76,7 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 	
-	Button quitCrusade = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -125,10 +125,10 @@ public class ScreenInterlevel extends Screen
 
 		if (Panel.win)
 		{
-			Window.playSound("resources/win.wav");
+			Drawing.playSound("resources/win.wav");
 			for (int i = 0; i < 5; i++)
 			{
-				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Window.sizeX, Window.sizeY, fireworks, removeFireworks);
+				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.sizeX, Drawing.sizeY, fireworks, removeFireworks);
 				f.setRandomColor();
 				f.vY = - Math.random() * 3 - 6;
 				f.vX = Math.random() * 5 - 2.5;
@@ -136,7 +136,7 @@ public class ScreenInterlevel extends Screen
 			}
 		}
 		else
-			Window.playSound("resources/lose.wav");
+			Drawing.playSound("resources/lose.wav");
 
 	}
 
@@ -149,7 +149,7 @@ public class ScreenInterlevel extends Screen
 		{	
 			if (Math.random() < 0.01)
 			{
-				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Window.sizeX, Window.sizeY, fireworks, removeFireworks);
+				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.sizeX, Drawing.sizeY, fireworks, removeFireworks);
 				f.setRandomColor();
 				f.vY = - Math.random() * 3 - 6;
 				f.vX = Math.random() * 5 - 2.5;
@@ -198,17 +198,17 @@ public class ScreenInterlevel extends Screen
 		if (Crusade.crusadeMode)
 		{
 			if (Crusade.currentCrusade.win)
-				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 190, "You finished the crusade!");	
+				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 190, "You finished the crusade!");	
 			else if (Crusade.currentCrusade.lose)
-				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 190, "Game over!");	
+				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 190, "Game over!");	
 			else
-				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 190, Panel.winlose);	
+				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 190, Panel.winlose);	
 		}
 		else
-			Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, Panel.winlose);	
+			Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, Panel.winlose);	
 
 		if (Crusade.crusadeMode)
-			Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);	
+			Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);	
 
 		if (Panel.win && Game.graphicalEffects)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);

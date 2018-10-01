@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 
 public class ScreenOptions extends Screen
 {
-	Button graphics = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
+	Button graphics = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -21,7 +21,7 @@ public class ScreenOptions extends Screen
 	},
 		"Fast graphics disable most graphical effects and use solid colors for the background---Fancy graphics may significantly reduce framerate"	);
 
-	Button mouseTarget = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
+	Button mouseTarget = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -42,26 +42,26 @@ public class ScreenOptions extends Screen
 		public void run() 
 		{
 			if (InputKeyboard.keys.contains(KeyEvent.VK_SHIFT))
-				Window.scale -= 0.1;
+				Drawing.scale -= 0.1;
 			else
-				Window.scale += 0.1;
+				Drawing.scale += 0.1;
 
-			if (Window.scale < 0.45)
-				Window.scale = 2;
+			if (Drawing.scale < 0.45)
+				Drawing.scale = 2;
 
-			if (Window.scale > 2.05)
-				Window.scale = 0.5;
+			if (Drawing.scale > 2.05)
+				Drawing.scale = 0.5;
 
-			Window.scale = Math.round(Window.scale * 10) / 10.0;
+			Drawing.scale = Math.round(Drawing.scale * 10) / 10.0;
 
-			scale.text = "Scale: " + (int)Math.round(Window.scale * 100) + "%";
-			Game.window.setSize((int)(Window.sizeX * Window.scale), (int) ((Window.sizeY) * Window.scale ));
+			scale.text = "Scale: " + (int)Math.round(Drawing.scale * 100) + "%";
+			Game.window.setSize((int)(Drawing.sizeX * Drawing.scale), (int) ((Drawing.sizeY) * Drawing.scale ));
 		}
 	}
 	, "Click to increase scale by 10%---Hold shift while clicking to decrease scale by 10%");
 
 
-	Button back = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -86,7 +86,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 	
-	Button autostart = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -119,9 +119,9 @@ public class ScreenOptions extends Screen
 		autostart.draw(g);
 		mouseTarget.draw(g);
 		graphics.draw(g);
-		Window.setInterfaceFontSize(g, 24);
+		Drawing.setInterfaceFontSize(g, 24);
 		g.setColor(Color.black);
-		Window.drawInterfaceText(g, Window.sizeX / 2, Window.sizeY / 2 - 150, "Options");
+		Drawing.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 150, "Options");
 	}
 
 }

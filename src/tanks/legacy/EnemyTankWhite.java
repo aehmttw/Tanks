@@ -397,7 +397,7 @@ public class EnemyTankWhite extends Tank
 			for (int i = 0; i < Game.tank_size * 2 - this.age; i++)
 			{
 				g.setColor(new Color(Game.tank_size * 2 - i - this.age, 255, Game.tank_size * 2 - i - this.age, Game.tank_size * 2 - i - this.age));
-				Window.drawOval(g, this.posX, this.posY, i, i);
+				Drawing.drawOval(g, this.posX, this.posY, i, i);
 			}
 		}
 	}

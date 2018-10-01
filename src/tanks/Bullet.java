@@ -111,10 +111,10 @@ public class Bullet extends Movable
 
 		}
 
-		if (this.posX + this.size/2 > Window.sizeX)
+		if (this.posX + this.size/2 > Drawing.sizeX)
 		{
 			collided = true;
-			this.posX = Window.sizeX - this.size/2 - (this.posX + this.size/2 - Window.sizeX);
+			this.posX = Drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.sizeX);
 			this.vX = -Math.abs(this.vX);
 		}
 		if (this.posX - this.size/2 < 0)
@@ -123,10 +123,10 @@ public class Bullet extends Movable
 			this.posX = this.size/2 - (this.posX - this.size / 2);
 			this.vX = Math.abs(this.vX);
 		}
-		if (this.posY + this.size/2 > Window.sizeY)
+		if (this.posY + this.size/2 > Drawing.sizeY)
 		{
 			collided = true;
-			this.posY = Window.sizeY - this.size/2 - (this.posY + this.size/2 - Window.sizeY);
+			this.posY = Drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.sizeY);
 			this.vY = -Math.abs(this.vY); 
 		}
 		if (this.posY - this.size/2 < 0)
@@ -210,14 +210,14 @@ public class Bullet extends Movable
 
 			if (this.bounces <= 0)
 			{
-				Window.playSound("resources/bullet_explode.wav");
+				Drawing.playSound("resources/bullet_explode.wav");
 
 				this.destroy = true;
 				this.vX = 0;
 				this.vY = 0;
 			}
 			else
-				Window.playSound("resources/bounce.wav");
+				Drawing.playSound("resources/bounce.wav");
 
 			this.bounces--;
 		}
@@ -303,9 +303,9 @@ public class Bullet extends Movable
 		double opacity = ((60 - destroyTimer) / 60.0);
 		double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
 		p.setColor(new Color(this.outlineColor.getRed(), this.outlineColor.getGreen(), this.outlineColor.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Window.fillOval(p, posX, posY, size + sizeModifier, size + sizeModifier);
+		Drawing.fillOval(p, posX, posY, size + sizeModifier, size + sizeModifier);
 		p.setColor(new Color(this.baseColor.getRed(), this.baseColor.getGreen(), this.baseColor.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Window.fillOval(p, posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+		Drawing.fillOval(p, posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
 	}
 

@@ -9,7 +9,7 @@ import tanks.InputKeyboard;
 import tanks.InputMouse;
 import tanks.Mine;
 import tanks.Panel;
-import tanks.Window;
+import tanks.Drawing;
 
 public class TankPlayer extends Tank
 {
@@ -92,7 +92,7 @@ public class TankPlayer extends Tank
 		if (mine && this.cooldown <= 0 && this.liveMines < this.liveMinesMax)
 			this.layMine();
 
-		this.angle = this.getAngleInDirection(Window.window.getMouseX(), Window.window.getMouseY());
+		this.angle = this.getAngleInDirection(Drawing.window.getMouseX(), Drawing.window.getMouseY());
 
 
 		super.update();
@@ -148,10 +148,10 @@ public class TankPlayer extends Tank
 
 	public void fireBullet(double speed, int bounces, Color color, Bullet.BulletEffect effect)
 	{
-		Window.playSound("resources/shoot.wav");
+		Drawing.playSound("resources/shoot.wav");
 
 		Bullet b = new Bullet(posX, posY, bounces, this);
-		b.setMotionInDirection(Window.window.getMouseX(), Window.window.getMouseY(), speed);
+		b.setMotionInDirection(Drawing.window.getMouseX(), Drawing.window.getMouseY(), speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
 
 		b.moveOut((int) (25.0 / speed * 2));

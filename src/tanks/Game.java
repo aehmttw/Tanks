@@ -84,7 +84,7 @@ public class Game
 	public static RegistryTank registryTank = new RegistryTank();
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
 
-	public static Window window;
+	public static Drawing window;
 	
 	public static String currentLevel = "";	
 	
@@ -179,7 +179,7 @@ public class Game
 						}
 					}
 					
-					window = new Window();
+					window = new Drawing();
 					window.setTitle("Tanks");
 					window.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/icon64.png")));
 					

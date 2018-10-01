@@ -18,9 +18,9 @@ public class SoundThread extends SwingWorker<Void, Object>
 
 		while(true)
 		{
-			for (int i = 0; i < Window.pendingSounds.size(); i++)
+			for (int i = 0; i < Drawing.pendingSounds.size(); i++)
 			{
-				String sound = Window.pendingSounds.get(i);
+				String sound = Drawing.pendingSounds.get(i);
 
 				try 
 				{
@@ -35,7 +35,7 @@ public class SoundThread extends SwingWorker<Void, Object>
 					Game.exitToCrash(e);
 				}
 			}
-			Window.pendingSounds.clear();
+			Drawing.pendingSounds.clear();
 			
 			for (int i = 0; i < clips.size(); i++)
 			{

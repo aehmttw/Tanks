@@ -58,7 +58,7 @@ public class ScreenLevelBuilder extends Screen
 
 	String name;
 
-	Button resume = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 30, 350, 40, "Edit", new Runnable()
+	Button resume = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Edit", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -68,7 +68,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button play = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 - 90), 350, 40, "Play", new Runnable()
+	Button play = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 - 90), 350, 40, "Play", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -80,7 +80,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button options = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 + 30), 350, 40, "Options", new Runnable()
+	Button options = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 + 30), 350, 40, "Options", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -90,7 +90,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button colorOptions = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 - 60), 350, 40, "Background colors", new Runnable()
+	Button colorOptions = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 - 60), 350, 40, "Background colors", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -100,7 +100,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button sizeOptions = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2), 350, 40, "Level size", new Runnable()
+	Button sizeOptions = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2), 350, 40, "Level size", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -110,7 +110,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button teamsOptions = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 + 60), 350, 40, "Teams", new Runnable()
+	Button teamsOptions = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 + 60), 350, 40, "Teams", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -126,7 +126,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button back1 = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
+	Button back1 = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -136,7 +136,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button back2 = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 + 180), 350, 40, "Back", new Runnable()
+	Button back2 = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 + 180), 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -146,7 +146,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button back3 = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
+	Button back3 = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -156,7 +156,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button back4 = new Button(Window.interfaceSizeX / 2 - 190, Window.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button back4 = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -166,7 +166,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button back5 = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button back5 = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -179,7 +179,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button back6 = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button back6 = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -189,7 +189,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button quit = new Button(Window.interfaceSizeX / 2, (int) (Window.interfaceSizeY / 2 + 90), 350, 40, "Exit", new Runnable()
+	Button quit = new Button(Drawing.interfaceSizeX / 2, (int) (Drawing.interfaceSizeY / 2 + 90), 350, 40, "Exit", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -202,7 +202,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button next = new Button(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	Button next = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -212,7 +212,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button previous = new Button(Window.interfaceSizeX / 2 - 190, Window.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	Button previous = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -222,7 +222,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button deleteTeam = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 240, 350, 40, "Delete team", new Runnable()
+	Button deleteTeam = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Delete team", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -236,7 +236,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button teamFriendlyFire = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 60, 350, 40, "Friendly fire: on", new Runnable()
+	Button teamFriendlyFire = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Friendly fire: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -250,7 +250,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button teamColor = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Team color", new Runnable()
+	Button teamColor = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Team color", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -268,7 +268,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button newTeam = new Button(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 + 300, 350, 40, "New team", new Runnable()
+	Button newTeam = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 300, 350, 40, "New team", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -284,7 +284,7 @@ public class ScreenLevelBuilder extends Screen
 	}
 			);
 
-	Button teamColorEnabled = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 180, 350, 40, "Team color: off", new Runnable()
+	Button teamColorEnabled = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 180, 350, 40, "Team color: off", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -334,7 +334,7 @@ public class ScreenLevelBuilder extends Screen
 		else
 			mouseTank.team = this.teams.get(teamNum);
 
-		levelName = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 120, 350, 40, "Level name", new Runnable()
+		levelName = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 120, 350, 40, "Level name", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -360,7 +360,7 @@ public class ScreenLevelBuilder extends Screen
 
 		levelName.enableSpaces = false;
 
-		sizeX = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 60, 350, 40, "Width", new Runnable()
+		sizeX = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Width", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -383,7 +383,7 @@ public class ScreenLevelBuilder extends Screen
 		sizeX.maxValue = 200;
 		sizeX.checkMaxValue = true;
 
-		sizeY = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Height", new Runnable()
+		sizeY = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Height", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -406,7 +406,7 @@ public class ScreenLevelBuilder extends Screen
 		sizeY.maxValue = 200;
 		sizeY.checkMaxValue = true;
 
-		colorRed = new TextBox(Window.interfaceSizeX / 2 - 190, Window.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
+		colorRed = new TextBox(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -432,7 +432,7 @@ public class ScreenLevelBuilder extends Screen
 		colorRed.maxValue = 255;
 		colorRed.checkMaxValue = true;
 
-		colorGreen = new TextBox(Window.interfaceSizeX / 2 - 190, Window.interfaceSizeY / 2 + 30, 350, 40, "Green", new Runnable()
+		colorGreen = new TextBox(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Green", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -458,7 +458,7 @@ public class ScreenLevelBuilder extends Screen
 		colorGreen.maxValue = 255;
 		colorGreen.checkMaxValue = true;
 
-		colorBlue = new TextBox(Window.interfaceSizeX / 2 - 190, Window.interfaceSizeY / 2 + 120, 350, 40, "Blue", new Runnable()
+		colorBlue = new TextBox(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 120, 350, 40, "Blue", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -484,7 +484,7 @@ public class ScreenLevelBuilder extends Screen
 		colorBlue.maxValue = 255;
 		colorBlue.checkMaxValue = true;
 
-		colorVarRed = new TextBox(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 - 60, 350, 40, "Red Noise", new Runnable()
+		colorVarRed = new TextBox(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Red Noise", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -506,7 +506,7 @@ public class ScreenLevelBuilder extends Screen
 		colorVarRed.maxChars = 3;
 		colorVarRed.checkMaxValue = true;
 
-		colorVarGreen = new TextBox(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 + 30, 350, 40, "Green Noise", new Runnable()
+		colorVarGreen = new TextBox(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Green Noise", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -528,7 +528,7 @@ public class ScreenLevelBuilder extends Screen
 		colorVarGreen.maxChars = 3;
 		colorVarGreen.checkMaxValue = true;
 
-		colorVarBlue = new TextBox(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 + 120, 350, 40, "Blue Noise", new Runnable()
+		colorVarBlue = new TextBox(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 120, 350, 40, "Blue Noise", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -550,7 +550,7 @@ public class ScreenLevelBuilder extends Screen
 		colorVarBlue.maxChars = 3;
 		colorVarBlue.checkMaxValue = true;
 
-		teamName = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 120, 350, 40, "Team name", new Runnable()
+		teamName = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 120, 350, 40, "Team name", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -578,7 +578,7 @@ public class ScreenLevelBuilder extends Screen
 		teamName.lowerCase = true;
 		//
 
-		teamRed = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
+		teamRed = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -600,7 +600,7 @@ public class ScreenLevelBuilder extends Screen
 		teamRed.maxValue = 255;
 		teamRed.checkMaxValue = true;
 
-		teamGreen = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Green", new Runnable()
+		teamGreen = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Green", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -622,7 +622,7 @@ public class ScreenLevelBuilder extends Screen
 		teamGreen.maxValue = 255;
 		teamGreen.checkMaxValue = true;
 
-		teamBlue = new TextBox(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 120, 350, 40, "Blue", new Runnable()
+		teamBlue = new TextBox(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 120, 350, 40, "Blue", new Runnable()
 		{
 			@Override
 			public void run() 
@@ -671,14 +671,14 @@ public class ScreenLevelBuilder extends Screen
 			if (page * rows * 3 + rows * 2 < this.teamButtons.size())
 				offset = -380;
 
-			this.teamButtons.get(i).posY = Window.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+			this.teamButtons.get(i).posY = Drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
 
 			if (i / rows % 3 == 0)
-				this.teamButtons.get(i).posX = Window.interfaceSizeX / 2 + offset;
+				this.teamButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset;
 			else if (i / rows % 3 == 1)
-				this.teamButtons.get(i).posX = Window.interfaceSizeX / 2 + offset + 380;
+				this.teamButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380;
 			else
-				this.teamButtons.get(i).posX = Window.interfaceSizeX / 2 + offset + 380 * 2;
+				this.teamButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380 * 2;
 		}
 	}
 
@@ -1321,7 +1321,7 @@ public class ScreenLevelBuilder extends Screen
 				play.draw(g);
 
 				g.setColor(Color.black);
-				Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Level menu");
+				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Level menu");
 			}
 			else
 			{
@@ -1331,7 +1331,7 @@ public class ScreenLevelBuilder extends Screen
 					this.sizeY.draw(g);
 					this.back3.draw(g);
 					g.setColor(Color.black);
-					Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Level size");
+					Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Level size");
 				}
 				else if (this.colorMenu)
 				{
@@ -1341,7 +1341,7 @@ public class ScreenLevelBuilder extends Screen
 					this.colorVarRed.draw(g);
 					this.colorVarGreen.draw(g);
 					this.colorVarBlue.draw(g);
-					Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Background colors");
+					Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Background colors");
 					this.back2.draw(g);
 				}
 				else if (this.teamsMenu)
@@ -1358,7 +1358,7 @@ public class ScreenLevelBuilder extends Screen
 								teamBlue.draw(g);
 							}
 							teamColorEnabled.draw(g);
-							Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 210, "Team color: " + this.selectedTeam.name);
+							Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Team color: " + this.selectedTeam.name);
 						}
 						else
 						{
@@ -1367,7 +1367,7 @@ public class ScreenLevelBuilder extends Screen
 							teamColor.draw(g);
 							deleteTeam.draw(g);
 							teamFriendlyFire.draw(g);
-							Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 210, this.selectedTeam.name);
+							Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, this.selectedTeam.name);
 						}
 					}
 					else
@@ -1380,7 +1380,7 @@ public class ScreenLevelBuilder extends Screen
 						back4.draw(g);
 						newTeam.draw(g);
 
-						Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 210, "Teams");
+						Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Teams");
 
 						if (page > 0)
 							previous.draw(g);
@@ -1398,7 +1398,7 @@ public class ScreenLevelBuilder extends Screen
 					this.teamsOptions.draw(g);
 
 					g.setColor(Color.black);
-					Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 210, "Level options");
+					Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Level options");
 				}
 			}
 		}

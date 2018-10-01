@@ -20,7 +20,7 @@ public class ScreenCrusades extends Screen
 	int yoffset = -150;
 	int page = 0;
 
-	Button quit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -30,7 +30,7 @@ public class ScreenCrusades extends Screen
 	}
 			);
 
-	Button newLevel = new Button(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 + 300, 350, 40, "New level", new Runnable()
+	Button newLevel = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 300, 350, 40, "New level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -45,7 +45,7 @@ public class ScreenCrusades extends Screen
 	}
 			);
 
-	Button next = new Button(Window.interfaceSizeX / 2 + 190, Window.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	Button next = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -55,7 +55,7 @@ public class ScreenCrusades extends Screen
 	}
 			);
 
-	Button previous = new Button(Window.interfaceSizeX / 2 - 190, Window.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	Button previous = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -149,14 +149,14 @@ public class ScreenCrusades extends Screen
 			if (page * rows * 3 + rows * 2 < buttons.size())
 				offset = -380;
 
-			buttons.get(i).posY = Window.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+			buttons.get(i).posY = Drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
 
 			if (i / rows % 3 == 0)
-				buttons.get(i).posX = Window.interfaceSizeX / 2 + offset;
+				buttons.get(i).posX = Drawing.interfaceSizeX / 2 + offset;
 			else if (i / rows % 3 == 1)
-				buttons.get(i).posX = Window.interfaceSizeX / 2 + offset + 380;
+				buttons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380;
 			else
-				buttons.get(i).posX = Window.interfaceSizeX / 2 + offset + 380 * 2;
+				buttons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380 * 2;
 		}
 
 
@@ -193,7 +193,7 @@ public class ScreenCrusades extends Screen
 		quit.draw(g);
 		//newLevel.draw(g);
 
-		Window.drawInterfaceText(g, Window.sizeX / 2, Window.sizeY / 2 - 210, "Crusades");
+		Drawing.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 210, "Crusades");
 
 		if (page > 0)
 			previous.draw(g);

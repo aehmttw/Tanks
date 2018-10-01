@@ -20,8 +20,8 @@ public class ObstacleUnknown extends Obstacle
 	@Override
 	public void draw(Graphics g)
 	{
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (12 * Window.scale)));
-		Window.drawText(g, this.posX, this.posY + 32, this.name);
+		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (12 * Drawing.scale)));
+		Drawing.drawText(g, this.posX, this.posY + 32, this.name);
 		
 		super.draw(g);
 	}

@@ -60,7 +60,7 @@ public class TextBox
 
 	public void draw(Graphics g)
 	{
-		Window.setInterfaceFontSize(g, 24);
+		Drawing.setInterfaceFontSize(g, 24);
 
 		if (selected)
 		{
@@ -74,33 +74,33 @@ public class TextBox
 		else
 			g.setColor(this.color);
 
-		Window.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
+		Drawing.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
 
 		g.setColor(Color.black);
 
-		Window.drawInterfaceText(g, posX, posY - 30, labelText);
+		Drawing.drawInterfaceText(g, posX, posY - 30, labelText);
 
 		if (selected)
-			Window.drawInterfaceText(g, posX, posY + 5, inputText + "_");
+			Drawing.drawInterfaceText(g, posX, posY + 5, inputText + "_");
 		else
-			Window.drawInterfaceText(g, posX, posY + 5, inputText);
+			Drawing.drawInterfaceText(g, posX, posY + 5, inputText);
 
 		if (enableHover)
 		{
 			if (hover)
 			{
 				g.setColor(Color.blue);
-				Window.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				Drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				g.setColor(Color.white);
-				Window.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
-				Window.drawTooltip(g, this.hoverText);
+				Drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				Drawing.drawTooltip(g, this.hoverText);
 			}
 			else
 			{
 				g.setColor(new Color(0, 150, 255));
-				Window.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				Drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				g.setColor(Color.white);
-				Window.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				Drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
 			}
 		}
 	}

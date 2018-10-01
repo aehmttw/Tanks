@@ -11,7 +11,7 @@ import tanks.Panel;
 import tanks.Ray;
 import tanks.ScreenGame;
 import tanks.Team;
-import tanks.Window;
+import tanks.Drawing;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -246,7 +246,7 @@ public class EnemyTank extends Tank
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Window.playSound("resources/shoot.wav");
+		Drawing.playSound("resources/shoot.wav");
 
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);

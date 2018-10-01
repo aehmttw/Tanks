@@ -169,9 +169,9 @@ public abstract class Movable
 
 	public void drawTeam(Graphics g)
 	{
-		Window.setFontSize(g, 20);
+		Drawing.setFontSize(g, 20);
 		if (this.team != null)
-			Window.drawText(g, this.posX, this.posY + 40, this.team.name);
+			Drawing.drawText(g, this.posX, this.posY + 40, this.team.name);
 	}
 
 	public abstract void checkCollision();

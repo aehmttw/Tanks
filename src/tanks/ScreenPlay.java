@@ -6,7 +6,7 @@ import java.awt.Graphics;
 public class ScreenPlay extends Screen
 {
 
-	Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
+	Button newLevel = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -17,7 +17,7 @@ public class ScreenPlay extends Screen
 	}
 			, "Generate a random level to play");
 	
-	Button crusade = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 30, 350, 40, "Crusades", new Runnable()
+	Button crusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Crusades", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -31,11 +31,11 @@ public class ScreenPlay extends Screen
 	}
 			, "Fight battles in an order,---and see how long you can survive!");
 	
-	Button online = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 30, 350, 40, "Online", "Online mode is coming soon!");
+	Button online = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Online", "Online mode is coming soon!");
 	
-	Button party = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 90, 350, 40, "Party", "Party mode is coming soon!");
+	Button party = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 90, 350, 40, "Party", "Party mode is coming soon!");
 	
-	Button back = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -59,9 +59,9 @@ public class ScreenPlay extends Screen
 	public void draw(Graphics g) 
 	{
 		this.drawDefaultBackground(g);
-		Window.setFontSize(g, 24);
+		Drawing.setFontSize(g, 24);
 		g.setColor(Color.black);
-		Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Select a game mode");
+		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Select a game mode");
 		back.draw(g);
 		party.draw(g);
 		online.draw(g);

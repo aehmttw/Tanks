@@ -30,16 +30,16 @@ public class Obstacle
 	{	
 		g.setColor(color);
 
-		Window.fillRect(g, this.posX, this.posY, draw_size, draw_size);
+		Drawing.fillRect(g, this.posX, this.posY, draw_size, draw_size);
 	}
 
 	public void drawOutline(Graphics g)
 	{
 		g.setColor(this.color);
-		Window.fillRect(g, this.posX - Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
-		Window.fillRect(g, this.posX + Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
-		Window.fillRect(g, this.posX, this.posY - Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
-		Window.fillRect(g, this.posX, this.posY + Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
+		Drawing.fillRect(g, this.posX - Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
+		Drawing.fillRect(g, this.posX + Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
+		Drawing.fillRect(g, this.posX, this.posY - Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
+		Drawing.fillRect(g, this.posX, this.posY + Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
 	}
 	
 	public static Color getRandomColor()

@@ -10,7 +10,7 @@ import tanks.Obstacle;
 import tanks.Panel;
 import tanks.Team;
 import tanks.Turret;
-import tanks.Window;
+import tanks.Drawing;
 
 public abstract class Tank extends Movable
 {
@@ -53,14 +53,14 @@ public abstract class Tank extends Movable
 	{
 		hasCollided = false;
 
-		if (this.posX + this.size / 2 > Window.sizeX)
+		if (this.posX + this.size / 2 > Drawing.sizeX)
 		{
-			this.posX = Window.sizeX - this.size / 2;
+			this.posX = Drawing.sizeX - this.size / 2;
 			hasCollided = true;
 		}
-		if (this.posY + this.size / 2 > Window.sizeY)
+		if (this.posY + this.size / 2 > Drawing.sizeY)
 		{
-			this.posY = Window.sizeY - this.size / 2;
+			this.posY = Drawing.sizeY - this.size / 2;
 			hasCollided = true;
 		}
 		if (this.posX - this.size / 2 < 0)
@@ -170,7 +170,7 @@ public abstract class Tank extends Movable
 		{
 			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
-				Window.playSound("resources/destroy.wav");
+				Drawing.playSound("resources/destroy.wav");
 
 				if (Game.graphicalEffects)
 				{
@@ -228,20 +228,20 @@ public abstract class Tank extends Movable
 		if (teamColor != this.color)
 		{
 			g.setColor(teamColor);
-			Window.fillRect(g, this.posX, this.posY, s, s);
+			Drawing.fillRect(g, this.posX, this.posY, s, s);
 
 			sizeMod = 0.8;
 		}
 		
 		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
 
-		Window.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
+		Drawing.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
 		
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				Drawing.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
 		
@@ -255,16 +255,16 @@ public abstract class Tank extends Movable
 
 		//g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 128));
 		g.setColor(this.color);
-		Window.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		Window.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		Window.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
-		Window.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+		Drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		Drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		Drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
+		Drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
 
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				Window.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				Drawing.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
 

@@ -19,7 +19,7 @@ public class ScreenGame extends Screen
 	
 	public boolean screenshotMode = false;
 	
-	Button play = new Button(Window.interfaceSizeX-200, Window.interfaceSizeY-50, 350, 40, "Play", new Runnable()
+	Button play = new Button(Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -30,7 +30,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button resume = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 60, 350, 40, "Continue playing", new Runnable()
+	Button resume = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Continue playing", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -41,7 +41,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
+	Button newLevel = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -54,7 +54,7 @@ public class ScreenGame extends Screen
 	}
 			);
 	
-	Button edit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
+	Button edit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -67,7 +67,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button quit = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -77,7 +77,7 @@ public class ScreenGame extends Screen
 	}
 			);
 	
-	Button quitCrusade = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -89,7 +89,7 @@ public class ScreenGame extends Screen
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
 
-	Button quitCrusadeFinalLife = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusadeFinalLife = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -136,7 +136,7 @@ public class ScreenGame extends Screen
 	
 		if (InputKeyboard.validKeys.contains(KeyEvent.VK_I))
 		{
-			Window.movingCamera = !Window.movingCamera ;
+			Drawing.movingCamera = !Drawing.movingCamera ;
 			InputKeyboard.validKeys.remove((Integer)KeyEvent.VK_I);
 		}
 		
@@ -342,7 +342,7 @@ public class ScreenGame extends Screen
 			}			
 			resume.draw(g);
 			g.setColor(Color.black);
-			Window.drawInterfaceText(g, Window.interfaceSizeX / 2, Window.interfaceSizeY / 2 - 150, "Game paused");
+			Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Game paused");
 		}
 
 	}

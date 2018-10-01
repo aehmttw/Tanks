@@ -129,10 +129,10 @@ public class Ray
 
 			}
 
-			if (this.posX + this.size/2 > Window.sizeX)
+			if (this.posX + this.size/2 > Drawing.sizeX)
 			{
 				collided = true;
-				this.posX = Window.sizeX - this.size/2 - (this.posX + this.size/2 - Window.sizeX);
+				this.posX = Drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.sizeX);
 				this.vX = -Math.abs(this.vX);
 			}
 			if (this.posX - this.size/2 < 0)
@@ -141,10 +141,10 @@ public class Ray
 				this.posX = this.size/2 - (this.posX - this.size / 2);
 				this.vX = Math.abs(this.vX);
 			}
-			if (this.posY + this.size/2 > Window.sizeY)
+			if (this.posY + this.size/2 > Drawing.sizeY)
 			{
 				collided = true;
-				this.posY = Window.sizeY - this.size/2 - (this.posY + this.size/2 - Window.sizeY);
+				this.posY = Drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.sizeY);
 				this.vY = -Math.abs(this.vY); 
 			}
 			if (this.posY - this.size/2 < 0)
@@ -263,7 +263,7 @@ public class Ray
 			}
 
 
-			if (this.posX + this.size/2 > Window.sizeX)
+			if (this.posX + this.size/2 > Drawing.sizeX)
 			{
 				return this.age;
 			}
@@ -271,7 +271,7 @@ public class Ray
 			{
 				return this.age;
 			}
-			else if (this.posY + this.size/2 > Window.sizeY)
+			else if (this.posY + this.size/2 > Drawing.sizeY)
 			{
 				return this.age;
 			}

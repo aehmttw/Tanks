@@ -18,7 +18,7 @@ public class ObstacleIndestructible extends Obstacle
 	public void draw(Graphics g)
 	{	
 		g.setColor(this.color);
-		Window.fillRect(g, this.posX, this.posY, draw_size, draw_size);
+		Drawing.fillRect(g, this.posX, this.posY, draw_size, draw_size);
 	}
 
 }

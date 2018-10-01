@@ -38,7 +38,7 @@ public class RegistryObstacle
 					{
 						if (obstacleLine[0].equals(Game.defaultObstacles.get(i).name))
 						{
-							Game.defaultObstacles.get(i).registerEntry(Game.registryObstacle, Double.parseDouble(obstacleLine[1]));
+							Game.defaultObstacles.get(i).registerEntry(Game.registryObstacle);
 							foundObstacle = true;
 							break;
 						}
@@ -52,9 +52,9 @@ public class RegistryObstacle
 					try 
 					{
 						@SuppressWarnings("resource")
-						ClassLoader loader = new URLClassLoader( new URL[] { new File(obstacleLine[3]).toURI().toURL() }); // super messy
+						ClassLoader loader = new URLClassLoader( new URL[] { new File(obstacleLine[2]).toURI().toURL() }); // super messy
 						@SuppressWarnings("unchecked")
-						Class<? extends Obstacle> clasz = (Class<? extends Obstacle>) loader.loadClass(obstacleLine[4]);
+						Class<? extends Obstacle> clasz = (Class<? extends Obstacle>) loader.loadClass(obstacleLine[3]);
 						new RegistryObstacle.ObstacleEntry(Game.registryObstacle, clasz, obstacleLine[0]);
 					}
 					catch (Exception e) 
@@ -182,11 +182,6 @@ public class RegistryObstacle
 		}
 		
 		public ObstacleEntry registerEntry(RegistryObstacle r)
-		{
-			return new ObstacleEntry(r, this.obstacle, this.name);
-		}
-		
-		public ObstacleEntry registerEntry(RegistryObstacle r, double weight)
 		{
 			return new ObstacleEntry(r, this.obstacle, this.name);
 		}

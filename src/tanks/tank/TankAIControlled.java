@@ -16,7 +16,7 @@ import tanks.Drawing;
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
-public class EnemyTank extends Tank
+public class TankAIControlled extends Tank
 {
 	/** Determines which type of AI the tank will use when shooting.
 	 *  Straight means that the tank will shoot directly at the target enemy if the target enemy is in line of sight.
@@ -172,7 +172,7 @@ public class EnemyTank extends Tank
 	/** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight*/
 	protected Tank targetEnemy;
 
-	public EnemyTank(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
+	public TankAIControlled(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
 	{
 		super(name, x, y, size, color);
 
@@ -752,6 +752,8 @@ public class EnemyTank extends Tank
 
 				if (layMine)
 				{
+					Drawing.playSound("resources/lay-mine.wav");
+
 					Game.movables.add(new Mine(this.posX, this.posY, this));
 					this.mineTimer = (int) (Math.random() * mineTimerRandom + mineTimerBase);
 					double angleV = this.getPolarDirection() + Math.PI + (Math.random() - 0.5) * Math.PI / 2;

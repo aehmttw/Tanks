@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import tanks.Game;
 
-public class TankYellow extends EnemyTank
+public class TankYellow extends TankAIControlled
 {
 	public TankYellow(String name, double x, double y, double angle)
 	{

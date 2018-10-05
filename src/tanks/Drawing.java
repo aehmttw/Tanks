@@ -31,7 +31,8 @@ public class Drawing extends JFrame
 	public static boolean enableMovingCameraX = false;
 	public static boolean enableMovingCameraY = false;
 
-
+	public static int statsHeight = 40;
+	
 	public static boolean movingCamera = false;
 
 	public Panel panel = new Panel();
@@ -73,13 +74,13 @@ public class Drawing extends JFrame
 	@Override
 	public void setSize(int x, int y)
 	{
-		super.setSize(x + xOffset, (int) (y + 40 + yOffset * (1 - scale)));
+		super.setSize(x + xOffset, (int) (y + statsHeight + yOffset * (1 - scale)));
 	}
 
 	public static void fillOval(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 
 		if (drawX - 200 * Drawing.scale > Panel.windowWidth || drawX + 200 * Drawing.scale < 0 || drawY - 200 * Drawing.scale > Panel.windowHeight || drawY + 200 * Drawing.scale < 0)
 			return;
@@ -93,7 +94,7 @@ public class Drawing extends JFrame
 	public static void drawOval(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 
 		if (drawX - 200 * Drawing.scale > Panel.windowWidth || drawX + 200 * Drawing.scale < 0 || drawY - 200 * Drawing.scale > Panel.windowHeight || drawY + 200 * Drawing.scale < 0)
 			return;
@@ -107,7 +108,7 @@ public class Drawing extends JFrame
 	public static void fillRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 
 		if (drawX - 200 * Drawing.scale > Panel.windowWidth || drawX + 200 * Drawing.scale < 0 || drawY - 200 * Drawing.scale > Panel.windowHeight || drawY + 200 * Drawing.scale < 0)
 			return;
@@ -121,7 +122,7 @@ public class Drawing extends JFrame
 	public static void fill3DRect(Graphics g, double x, double y, double sizeX, double sizeY, boolean raised)
 	{
 		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 
 		if (drawX - 200 * Drawing.scale > Panel.windowWidth || drawX + 200 * Drawing.scale < 0 || drawY - 200 * Drawing.scale > Panel.windowHeight || drawY + 200 * Drawing.scale < 0)
 			return;
@@ -135,7 +136,7 @@ public class Drawing extends JFrame
 	public static void fillBackgroundRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * scale);
 		int drawSizeY = (int) Math.round(sizeY * scale);
 
@@ -145,7 +146,7 @@ public class Drawing extends JFrame
 	public static void drawRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 
 		if (drawX - 200 * Drawing.scale > Panel.windowWidth || drawX + 200 * Drawing.scale < 0 || drawY - 200 * Drawing.scale > Panel.windowHeight || drawY + 200 * Drawing.scale < 0)
 			return;
@@ -159,7 +160,7 @@ public class Drawing extends JFrame
 	public static void fillInterfaceOval(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.xOffset - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
 		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
 
@@ -169,7 +170,7 @@ public class Drawing extends JFrame
 	public static void drawInterfaceOval(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.xOffset - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
 		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
 
@@ -179,7 +180,7 @@ public class Drawing extends JFrame
 	public static void fillInterfaceRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
 		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
 
@@ -189,7 +190,7 @@ public class Drawing extends JFrame
 	public static void drawInterfaceRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
 		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
 		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
 
@@ -203,7 +204,7 @@ public class Drawing extends JFrame
 		double sizeY = g.getFont().getSize() / 3 / Drawing.scale;
 		//int size = text.length() * g.getFont().getSize() / 2;
 		int drawX = (int) (scale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.sizeX * Drawing.scale) / 2);
-		int drawY = (int) (scale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2);
+		int drawY = (int) (scale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2);
 		g.drawString(text, drawX, drawY);
 
 		//g.setColor(Color.red);
@@ -216,14 +217,14 @@ public class Drawing extends JFrame
 
 		double sizeY = g.getFont().getSize() / 3 / Drawing.interfaceScale;
 		int drawX = (int) (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawY = (int) (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
 		g.drawString(text, drawX, drawY);
 	}
 
 	public static void drawUncenteredInterfaceText(Graphics g, double x, double y, String text)
 	{
 		int drawX = (int) (interfaceScale * x + Math.max(0, Panel.windowWidth - Drawing.xOffset - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) (interfaceScale * y + Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawY = (int) (interfaceScale * y + Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
 		g.drawString(text, drawX, drawY);
 	}
 
@@ -292,13 +293,13 @@ public class Drawing extends JFrame
 	{
 		//return ((MouseInfo.getPointerInfo().getLocation().getY() - getPlayerOffsetY() / Window.scale - this.getLocation().getY() - Math.max(0, Panel.windowHeight - (yOffset + 1) - Window.sizeY * Window.scale) / 2)) / scale + mouseYoffset / Window.scale;
 		//return (MouseInfo.getPointerInfo().getLocation().getY() - getPlayerOffsetY() / Window.scale - this.getLocation().getY()) / scale - Math.max(Panel.windowHeight - Window.interfaceSizeY * Window.interfaceScale, 0) / Window.scale / 2 - (yOffset + 1) / Window.interfaceScale;
-		////return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
-		//return y1 / scale * 2 - Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.sizeY * Window.scale) - getPlayerOffsetY();
+		////return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - statsHeight - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
+		//return y1 / scale * 2 - Math.max(0, Panel.windowHeight - statsHeight - Window.yOffset - Window.sizeY * Window.scale) - getPlayerOffsetY();
 		if (Drawing.enableMovingCamera && Drawing.movingCamera && Drawing.enableMovingCameraY)
-			return (interfaceScale / scale * (((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY())) / interfaceScale) - getPlayerOffsetY() + mouseYoffset - Drawing.yOffset / Drawing.scale/*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
+			return (interfaceScale / scale * (((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY())) / interfaceScale) - getPlayerOffsetY() + mouseYoffset - Drawing.yOffset / Drawing.scale/*+ Math.max(0, Panel.windowHeight - statsHeight - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
 		else
-			//return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - 40 - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
-			return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY()) - Math.max(0, Panel.windowHeight - Drawing.yOffset - 40 - Drawing.sizeY * Drawing.scale) / 2) / scale - getPlayerOffsetY() - Drawing.yOffset / Drawing.scale;
+			//return (interfaceScale / scale * (getInterfaceMouseY()) - getPlayerOffsetY() /*+ Math.max(0, Panel.windowHeight - statsHeight - Window.yOffset - Window.interfaceSizeY * Window.interfaceScale) / 2*/);
+			return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY()) - Math.max(0, Panel.windowHeight - Drawing.yOffset - statsHeight - Drawing.sizeY * Drawing.scale) / 2) / scale - getPlayerOffsetY() - Drawing.yOffset / Drawing.scale;
 
 	}
 
@@ -365,8 +366,8 @@ public class Drawing extends JFrame
 
 		if (result < 0)
 			return 0;
-		else if (result + (Panel.windowHeight - 40 - Drawing.yOffset) / Drawing.scale > Drawing.sizeY)
-			return 0 - (Drawing.sizeY - (Panel.windowHeight - 40 - Drawing.yOffset) / Drawing.scale);
+		else if (result + (Panel.windowHeight - statsHeight - Drawing.yOffset) / Drawing.scale > Drawing.sizeY)
+			return 0 - (Drawing.sizeY - (Panel.windowHeight - statsHeight - Drawing.yOffset) / Drawing.scale);
 		else
 			return 0 - result;
 	}

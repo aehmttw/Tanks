@@ -9,7 +9,7 @@ import tanks.Panel;
 import tanks.Ray;
 import tanks.Team;
 
-public class TankRed extends EnemyTank
+public class TankRed extends TankAIControlled
 {
 	boolean lineOfSight = false;
 	double maxCooldown = 100;

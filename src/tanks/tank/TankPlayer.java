@@ -159,11 +159,25 @@ public class TankPlayer extends Tank
 		Game.movables.add(b);
 	}
 
+	public void fireBullet(Bullet b, double speed)
+	{
+		Drawing.playSound("resources/shoot.wav");
+
+	    b.setMotionInDirection(Drawing.window.getMouseX(), Drawing.window.getMouseY(), speed);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
+
+		b.moveOut((int) (25.0 / speed * 2));
+		Game.movables.add(b);
+	}
+
+	
 	public void layMine()
 	{	
 		if (Game.bulletLocked)
 			return;
 
+		Drawing.playSound("resources/lay-mine.wav");
+		
 		this.cooldown = 50;
 		Mine m = new Mine(posX, posY, this);
 

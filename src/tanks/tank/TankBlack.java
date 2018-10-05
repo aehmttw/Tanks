@@ -5,7 +5,7 @@ import java.awt.Color;
 import tanks.Bullet;
 import tanks.Game;
 
-public class TankBlack extends EnemyTank
+public class TankBlack extends TankAIControlled
 {
 	public double strafeDirection = Math.PI / 2;
 

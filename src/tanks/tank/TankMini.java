@@ -5,7 +5,7 @@ import java.awt.Color;
 import tanks.Bullet;
 import tanks.Game;
 
-public class TankMini extends EnemyTank
+public class TankMini extends TankAIControlled
 {
 	public TankPink tank;
 	public boolean previousDestroy = false;

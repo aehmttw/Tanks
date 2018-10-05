@@ -5,7 +5,7 @@ import java.awt.Color;
 import tanks.Bullet;
 import tanks.Game;
 
-public class TankMint extends EnemyTank
+public class TankMint extends TankAIControlled
 {
 	public TankMint(String name, double x, double y, double angle)
 	{

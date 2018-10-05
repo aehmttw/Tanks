@@ -7,7 +7,7 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.Drawing;
 
-public class TankWhite extends EnemyTank
+public class TankWhite extends TankAIControlled
 {
 	boolean vanish = false;
 	

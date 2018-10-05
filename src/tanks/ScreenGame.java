@@ -16,9 +16,9 @@ public class ScreenGame extends Screen
 	public static double finishTimer = 100;
 	public static double finishTimerMax = 100;
 	public String name = null;
-	
+
 	public boolean screenshotMode = false;
-	
+
 	Button play = new Button(Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
 		@Override
@@ -53,7 +53,7 @@ public class ScreenGame extends Screen
 		}
 	}
 			);
-	
+
 	Button edit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
 	{
 		@Override
@@ -76,7 +76,7 @@ public class ScreenGame extends Screen
 		}
 	}
 			);
-	
+
 	Button quitCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
@@ -87,7 +87,7 @@ public class ScreenGame extends Screen
 			Game.exitToTitle();
 		}
 	}
-			, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
+	, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
 
 	Button quitCrusadeFinalLife = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
@@ -99,14 +99,14 @@ public class ScreenGame extends Screen
 			Game.exitToTitle();
 		}
 	}
-			, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
+	, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 
 	public ScreenGame()
 	{
 		Game.startTime = 400;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 	}
-	
+
 	public ScreenGame(String s)
 	{
 		this();
@@ -127,26 +127,26 @@ public class ScreenGame extends Screen
 		}
 		else
 			Panel.pausePressed = false;
-		
+
 		if (InputKeyboard.validKeys.contains(KeyEvent.VK_F1))
 		{
 			this.screenshotMode = !this.screenshotMode;
 			InputKeyboard.validKeys.remove((Integer)KeyEvent.VK_F1);
 		}
-	
+
 		if (InputKeyboard.validKeys.contains(KeyEvent.VK_I))
 		{
 			Drawing.movingCamera = !Drawing.movingCamera ;
 			InputKeyboard.validKeys.remove((Integer)KeyEvent.VK_I);
 		}
-		
+
 		if (paused)
 		{
 			if (name == null)
 				newLevel.update();
 			else
 				edit.update();
-			
+
 			if (!Crusade.crusadeMode)
 				quit.update();
 			else
@@ -156,7 +156,7 @@ public class ScreenGame extends Screen
 				else
 					quitCrusadeFinalLife.update();
 			}
-			
+
 			resume.update();
 			return;
 		}
@@ -220,7 +220,7 @@ public class ScreenGame extends Screen
 				else
 				{
 					boolean noMovables = true;
-					
+
 					for (int m = 0; m < Game.movables.size(); m++)
 					{
 						Movable mo = Game.movables.get(m);
@@ -249,7 +249,7 @@ public class ScreenGame extends Screen
 								Panel.winlose = "You were destroyed!";
 								Panel.win = false;
 							}
-							
+
 							if (name != null)
 								Game.exit(name);
 							else
@@ -301,13 +301,13 @@ public class ScreenGame extends Screen
 			if (o.drawBelow)
 				o.draw(g);
 		}
-		
+
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 			Game.belowEffects.get(i).draw(g);
 
 		for (int n = 0; n < Game.movables.size(); n++)
 			Game.movables.get(n).draw(g);
-		
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
@@ -319,18 +319,27 @@ public class ScreenGame extends Screen
 			((Effect)Game.effects.get(i)).draw(g);
 
 		if (!playing) 
+		{
 			play.draw(g);
+
+			if (Crusade.crusadeMode)
+			{
+				g.setColor(new Color(0, 0, 0, 127));
+				Drawing.setFontSize(g, 100);
+				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
+			}
+		}
 
 		if (paused && !screenshotMode)
 		{
 			g.setColor(new Color(127, 178, 228, 64));
 			g.fillRect(0, 0, (int) (Game.window.getSize().getWidth()) + 1, (int) (Game.window.getSize().getHeight()) + 1);
-			
+
 			if (name == null)
 				newLevel.draw(g);
 			else
 				edit.draw(g);
-			
+
 			if (!Crusade.crusadeMode)
 				quit.draw(g);
 			else

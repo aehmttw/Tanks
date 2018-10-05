@@ -16,6 +16,7 @@ public class BulletFlame extends Bullet
 		super(x, y, bounces, t);
 		t.liveBullets--;
 		this.useCustomWallCollision = true;
+		this.playPopSound = false;
 	}
 	
 	@Override

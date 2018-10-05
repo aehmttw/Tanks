@@ -12,6 +12,7 @@ public class Bullet extends Movable
 
 	public static int bullet_size = 10;
 
+	public boolean playPopSound = true;
 	public int age = 0;
 	public double size;
 	public int bounces;
@@ -24,6 +25,8 @@ public class Bullet extends Movable
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
 
+	public boolean affectsMaxLiveBullets = true;
+	
 	public Bullet(double x, double y, int bounces, Tank t)
 	{
 		super(x, y);
@@ -35,7 +38,18 @@ public class Bullet extends Movable
 		this.bounces = bounces;
 		this.tank = t;
 		this.team = t.team;
+		
 		t.liveBullets++;
+	}
+	
+	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets)
+	{
+		this(x, y, bounces, t);
+		
+		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
+		
+		if (!this.affectsMaxLiveBullets)
+			t.liveBullets--;
 	}
 
 	public void moveOut(int amount)
@@ -176,7 +190,6 @@ public class Bullet extends Movable
 			{
 				if (!o.destroy)
 				{
-
 					double horizontalDist = Math.abs(this.posX - o.posX);
 					double verticalDist = Math.abs(this.posY - o.posY);
 
@@ -188,6 +201,9 @@ public class Bullet extends Movable
 
 					if (horizontalDist < bound && verticalDist < bound)
 					{
+						if (this.playPopSound)
+							Drawing.playSound("resources/bullet_explode.wav");
+
 						this.destroy = true;
 						this.vX = 0;
 						this.vY = 0;
@@ -210,7 +226,8 @@ public class Bullet extends Movable
 
 			if (this.bounces <= 0)
 			{
-				Drawing.playSound("resources/bullet_explode.wav");
+				if (this.playPopSound)
+					Drawing.playSound("resources/bullet_explode.wav");
 
 				this.destroy = true;
 				this.vX = 0;
@@ -288,7 +305,9 @@ public class Bullet extends Movable
 
 		if (this.destroyTimer >= 60)
 		{
-			this.tank.liveBullets--;
+			if (this.affectsMaxLiveBullets)
+				this.tank.liveBullets--;
+			
 			Game.removeMovables.add(this);
 		}
 

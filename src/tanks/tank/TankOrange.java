@@ -3,11 +3,12 @@ package tanks.tank;
 import java.awt.Color;
 
 import tanks.BulletFlame;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Ray;
 
-public class TankOrange extends EnemyTank
+public class TankOrange extends TankAIControlled
 {
 	public TankOrange(String name, double x, double y, double angle)
 	{
@@ -40,6 +41,8 @@ public class TankOrange extends EnemyTank
 			{
 				if(m.equals(this.targetEnemy))
 				{
+					Drawing.playSound("resources/flame.wav");
+
 					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
 					b.setPolarMotion(this.angle, 25.0/4);
 					b.moveOut(8);

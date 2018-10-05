@@ -5,7 +5,7 @@ import java.awt.Color;
 import tanks.Bullet;
 import tanks.Game;
 
-public class TankPink extends EnemyTank
+public class TankPink extends TankAIControlled
 {
 	public int spawnedMinis = 0;
 	

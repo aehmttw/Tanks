@@ -65,11 +65,11 @@ public class Bullet extends Movable
 
 		boolean collided = false;
 
+		double prevX = this.posX;
+		double prevY = this.posY;
+		
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
-			double prevX = this.posX;
-			double prevY = this.posY;
-
 			Obstacle o = Game.obstacles.get(i);
 			
 			if (!o.bulletCollision)
@@ -115,14 +115,6 @@ public class Bullet extends Movable
 				}
 			}
 
-			if (collided && this.age == 0)
-			{
-				this.destroy = true;
-				this.posX = prevX;
-				this.posY = prevY;
-				return;
-			}
-
 		}
 
 		if (this.posX + this.size/2 > Drawing.sizeX)
@@ -148,6 +140,14 @@ public class Bullet extends Movable
 			collided = true;
 			this.posY = this.size/2 - (this.posY - this.size / 2);
 			this.vY = Math.abs(this.vY);
+		}
+		
+		if (collided && this.age == 0)
+		{
+			this.destroy = true;
+			this.posX = prevX;
+			this.posY = prevY;
+			return;
 		}
 
 		for (int i = 0; i < Game.movables.size(); i++)
@@ -322,9 +322,9 @@ public class Bullet extends Movable
 		double opacity = ((60 - destroyTimer) / 60.0);
 		double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
 		p.setColor(new Color(this.outlineColor.getRed(), this.outlineColor.getGreen(), this.outlineColor.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Drawing.fillOval(p, posX, posY, size + sizeModifier, size + sizeModifier);
+		Drawing.window.fillOval(p, posX, posY, size + sizeModifier, size + sizeModifier);
 		p.setColor(new Color(this.baseColor.getRed(), this.baseColor.getGreen(), this.baseColor.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Drawing.fillOval(p, posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+		Drawing.window.fillOval(p, posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
 	}
 

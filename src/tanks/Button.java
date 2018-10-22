@@ -65,6 +65,7 @@ public class Button
 	public void draw(Graphics g)
 	{
 		Drawing.setInterfaceFontSize(g, 24);
+		Drawing drawing = Drawing.window;
 		
 		if (!enabled)
 			g.setColor(this.disabledCol);	
@@ -74,27 +75,27 @@ public class Button
 		else
 			g.setColor(this.unselectedCol);
 
-		Drawing.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
+		drawing.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
 
 		g.setColor(Color.black);
-		Drawing.drawInterfaceText(g, posX, posY + 5, text);
+		drawing.drawInterfaceText(g, posX, posY + 5, text);
 
 		if (enableHover)
 		{
 			if (selected)
 			{
 				g.setColor(Color.blue);
-				Drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				g.setColor(Color.white);
-				Drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
 				Drawing.drawTooltip(g, this.hoverText);
 			}
 			else
 			{
 				g.setColor(new Color(0, 150, 255));
-				Drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				g.setColor(Color.white);
-				Drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
 			}
 		}
 	}

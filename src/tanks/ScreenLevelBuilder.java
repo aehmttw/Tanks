@@ -1321,7 +1321,7 @@ public class ScreenLevelBuilder extends Screen
 				play.draw(g);
 
 				g.setColor(Color.black);
-				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Level menu");
+				Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Level menu");
 			}
 			else
 			{
@@ -1331,7 +1331,7 @@ public class ScreenLevelBuilder extends Screen
 					this.sizeY.draw(g);
 					this.back3.draw(g);
 					g.setColor(Color.black);
-					Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Level size");
+					Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Level size");
 				}
 				else if (this.colorMenu)
 				{
@@ -1341,7 +1341,7 @@ public class ScreenLevelBuilder extends Screen
 					this.colorVarRed.draw(g);
 					this.colorVarGreen.draw(g);
 					this.colorVarBlue.draw(g);
-					Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Background colors");
+					Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Background colors");
 					this.back2.draw(g);
 				}
 				else if (this.teamsMenu)
@@ -1358,7 +1358,7 @@ public class ScreenLevelBuilder extends Screen
 								teamBlue.draw(g);
 							}
 							teamColorEnabled.draw(g);
-							Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Team color: " + this.selectedTeam.name);
+							Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Team color: " + this.selectedTeam.name);
 						}
 						else
 						{
@@ -1367,7 +1367,7 @@ public class ScreenLevelBuilder extends Screen
 							teamColor.draw(g);
 							deleteTeam.draw(g);
 							teamFriendlyFire.draw(g);
-							Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, this.selectedTeam.name);
+							Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, this.selectedTeam.name);
 						}
 					}
 					else
@@ -1380,7 +1380,7 @@ public class ScreenLevelBuilder extends Screen
 						back4.draw(g);
 						newTeam.draw(g);
 
-						Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Teams");
+						Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Teams");
 
 						if (page > 0)
 							previous.draw(g);
@@ -1398,7 +1398,7 @@ public class ScreenLevelBuilder extends Screen
 					this.teamsOptions.draw(g);
 
 					g.setColor(Color.black);
-					Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Level options");
+					Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 210, "Level options");
 				}
 			}
 		}

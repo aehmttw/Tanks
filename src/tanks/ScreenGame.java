@@ -205,6 +205,11 @@ public class ScreenGame extends Screen
 			{
 				Game.belowEffects.get(i).update();
 			}
+			
+			if (Crusade.crusadeMode)
+			{
+				Crusade.currentCrusade.itemBar.update();
+			}
 
 			if (aliveTeams.size() <= 1)
 			{
@@ -305,16 +310,27 @@ public class ScreenGame extends Screen
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 			Game.belowEffects.get(i).draw(g);
 
-		for (int n = 0; n < Game.movables.size(); n++)
-			Game.movables.get(n).draw(g);
-
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable m = Game.movables.get(i);
+			if (m.drawBelow)
+				m.draw(g);
+		}
+		
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable m = Game.movables.get(i);
+			if (!m.drawBelow)
+				m.draw(g);
+		}
+		
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			if (!o.drawBelow)
 				o.draw(g);
 		}
-
+		
 		for (int i = 0; i < Game.effects.size(); i++)
 			((Effect)Game.effects.get(i)).draw(g);
 
@@ -326,7 +342,7 @@ public class ScreenGame extends Screen
 			{
 				g.setColor(new Color(0, 0, 0, 127));
 				Drawing.setFontSize(g, 100);
-				Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
+				Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
 			}
 		}
 
@@ -351,7 +367,7 @@ public class ScreenGame extends Screen
 			}			
 			resume.draw(g);
 			g.setColor(Color.black);
-			Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Game paused");
+			Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Game paused");
 		}
 
 	}

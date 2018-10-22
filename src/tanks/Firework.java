@@ -85,7 +85,7 @@ public class Firework extends Movable
 			this.vY += 0.0625 * Panel.frameFrequency;
 			
 			g.setColor(this.color);
-			Drawing.fillOval(g, posX, posY, this.size, this.size);
+			Drawing.window.fillOval(g, posX, posY, this.size, this.size);
 			
 			Firework f = new Firework(FireworkType.trail, this.posX, this.posY, this.list, this.removeList);
 			f.maxAge = 30;
@@ -117,7 +117,8 @@ public class Firework extends Movable
 		else if (type == FireworkType.trail)
 		{	
 			g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge)))));
-			Drawing.fillOval(g, posX, posY, this.size, this.size);
+			double s = this.size - (int) (this.age * this.size / this.maxAge);
+			Drawing.window.fillOval(g, posX, posY, s, s);
 			
 			if (this.age >= this.maxAge)
 			{
@@ -130,7 +131,8 @@ public class Firework extends Movable
 			
 			int opacity =  Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
 			g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), opacity));
-			Drawing.fillOval(g, posX, posY, this.size, this.size);
+			double s = this.size - (int) (this.age * this.size / this.maxAge);
+			Drawing.window.fillOval(g, posX, posY, s, s);
 			
 			/*Firework f = new Firework(FireworkType.trail, this.posX, this.posY, this.list, this.removeList);
 			f.maxAge = opacity / 50;

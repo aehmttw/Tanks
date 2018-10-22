@@ -15,27 +15,25 @@ public abstract class Screen
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
 		g.setColor(Level.currentColor);
-		Drawing.fillRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX, Drawing.sizeY);
+		Drawing.window.fillRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX, Drawing.sizeY);
 
 		if (Game.graphicalEffects)
 		{
 			for (int i = 0; i < Game.currentSizeX; i++)
 			{
 				for (int j = 0; j < Game.currentSizeY; j++)
-				{
-					int extra;
-					if (Drawing.scale * 10 == Math.round(Drawing.scale * 10))
-						extra = 0;
-					else
-						extra = 0;
-
+				{					
 					g.setColor(Game.tiles[i][j]);
-					Drawing.fillRect(g, (i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, (j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, extra + Obstacle.obstacle_size / Game.bgResMultiplier, extra + Obstacle.obstacle_size / Game.bgResMultiplier);
+					Drawing.window.fillRect(g, 
+							(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
+							(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
+							Obstacle.obstacle_size / Game.bgResMultiplier, 
+							Obstacle.obstacle_size / Game.bgResMultiplier);
 				}
 			}
 			
 			g.setColor(new Color(0, 0, 0, Math.max(0, (int) Panel.darkness)));
-			Drawing.fillBackgroundRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX, Drawing.sizeY);
+			Drawing.window.fillBackgroundRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX, Drawing.sizeY);
 		}
 	}
 }

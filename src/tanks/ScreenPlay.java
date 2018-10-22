@@ -61,7 +61,7 @@ public class ScreenPlay extends Screen
 		this.drawDefaultBackground(g);
 		Drawing.setFontSize(g, 24);
 		g.setColor(Color.black);
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Select a game mode");
+		Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Select a game mode");
 		back.draw(g);
 		party.draw(g);
 		online.draw(g);

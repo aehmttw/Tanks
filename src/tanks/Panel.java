@@ -24,12 +24,12 @@ public class Panel extends JPanel
 	public static double restrictedWindowMouseOffsetX = 0;
 	public static double restrictedWindowMouseOffsetY = 0;
 
-	
+
 	static boolean showMouseTarget = true;
 
 	ArrayList<Long> framesList = new ArrayList<Long>();
 
-	public static Panel panel;
+	public static Panel panel = new Panel();
 
 	public static String winlose = "";
 	public static boolean win = false;
@@ -45,7 +45,7 @@ public class Panel extends JPanel
 
 	double frameSampling = 1;
 
-	long lastFrame = System.currentTimeMillis();
+	long lastFrame = System.currentTimeMillis(); 
 
 	long firstFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
 	long lastFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
@@ -56,7 +56,7 @@ public class Panel extends JPanel
 
 	public static boolean pausePressed = false;
 
-	public Panel()
+	private Panel()
 	{
 		Panel.panel = this;
 
@@ -90,14 +90,14 @@ public class Panel extends JPanel
 					if (Game.coins < 0)
 						Game.coins = 0;
 
-					Panel.windowWidth = Game.window.getSize().getWidth();
-					Panel.windowHeight = Game.window.getSize().getHeight();
+					Panel.windowWidth = Panel.panel.getSize().getWidth();
+					Panel.windowHeight = Panel.panel.getSize().getHeight();
 
-					Drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - 40 - Drawing.yOffset) / Game.currentSizeY) / 50.0;
-					Drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - 40 - Drawing.yOffset) / 18) / 50.0;
+					Drawing.window.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - 40) / Game.currentSizeY) / 50.0;
+					Drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - 40) / 18) / 50.0;
 
-					Drawing.unzoomedScale = Drawing.scale;
-					
+					Drawing.unzoomedScale = Drawing.window.scale;
+
 					if (Game.player != null && Game.screen instanceof ScreenGame && !ScreenGame.finished)
 					{
 						Drawing.enableMovingCamera = true;
@@ -107,10 +107,10 @@ public class Panel extends JPanel
 							Drawing.playerX = Game.player.posX;
 							Drawing.playerY = Game.player.posY;
 
-							if (Drawing.scale < Drawing.interfaceScale)
+							if (Drawing.window.scale < Drawing.interfaceScale)
 							{
 								Drawing.enableMovingCamera = true;
-								Drawing.scale = Drawing.interfaceScale;
+								Drawing.window.scale = Drawing.interfaceScale;
 							}
 							else
 							{
@@ -122,25 +122,25 @@ public class Panel extends JPanel
 					{
 						Drawing.enableMovingCamera = false;
 					}
-					
-					if (Panel.windowWidth - Drawing.xOffset > Game.currentSizeX * Game.tank_size * Drawing.scale)
+
+					if (Panel.windowWidth > Game.currentSizeX * Game.tank_size * Drawing.window.scale)
 						Drawing.enableMovingCameraX = false;
 					else
 					{
 						Drawing.enableMovingCameraX = true;
 						Panel.restrictedWindowMouseOffsetX = 0;
 					}
-						
-					if (Panel.windowHeight - Drawing.yOffset - 40 > Game.currentSizeY * Game.tank_size * Drawing.scale)
+
+					if (Panel.windowHeight - 40 > Game.currentSizeY * Game.tank_size * Drawing.window.scale)
 						Drawing.enableMovingCameraY = false;
 					else
 					{
 						Drawing.enableMovingCameraY = true;
 						Panel.restrictedWindowMouseOffsetY = 0;
 					}
-						
+
 					Game.screen.update();
-					
+
 					//long end = System.nanoTime();
 					//System.out.println("Updating took: " + (end - start));
 					//System.out.println(Game.effects.size());
@@ -230,13 +230,13 @@ public class Panel extends JPanel
 				for (int i = 0; i < Game.currentSizeX; i++)
 				{
 					g.setColor(Level.currentColor);
-					Drawing.fillInterfaceRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX * 1.2, Drawing.sizeY * 1.2);				
+					Drawing.window.fillInterfaceRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX * 1.2, Drawing.sizeY * 1.2);				
 					g.drawImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/loading.png")), 0, 0, null);
 
 				}
 				return;
 			}
-			
+
 
 			g.setColor(new Color(174, 92, 16));
 			g.fillRect(0, 0, 1 + (int)(Panel.windowWidth), 1+(int)(Panel.windowHeight));
@@ -247,7 +247,7 @@ public class Panel extends JPanel
 				lastFPS = (int) (frames * 1.0 * frameSampling);
 				frames = 0;
 			}
-			
+
 
 			lastFrameSec = time;	
 			frames++;
@@ -258,15 +258,15 @@ public class Panel extends JPanel
 			Game.screen.draw(g);
 
 			g.setColor(new Color(87, 46, 8));
-			g.fillRect(0, (int) (Panel.windowHeight - 40 - Drawing.yOffset), (int) (Panel.windowWidth), 40);
+			g.fillRect(0, (int) (Panel.windowHeight - 40), (int) (Panel.windowWidth), 40);
 
 			g.setColor(new Color(255, 227, 186));
 
 			g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-			g.drawString("Tanks v0.5.c", 2, (int) (Panel.windowHeight - 40 + 12 - Drawing.yOffset));
-			g.drawString("FPS: " + lastFPS, 2, (int) (Panel.windowHeight - 40 + 24 - Drawing.yOffset));
-			
+			g.drawString("Tanks v0.5.c", 2, (int) (Panel.windowHeight - 40 + 12));
+			g.drawString("FPS: " + lastFPS, 2, (int) (Panel.windowHeight - 40 + 24));
+
 			//g.drawString("Coins: " + Game.coins, 2, (int) (Panel.windowHeight - 40 + 36 - Window.yOffset));		
 
 			/*int obstacles = Game.obstacles.size();
@@ -285,21 +285,21 @@ public class Panel extends JPanel
 
 			/*for (int i = 0; i < Game.obstacles.size(); i++)
 		{
-			//Game.obstacles.get(i).posX += (Game.obstacles.get(i).posX - Game.player.posX) / 1000;
-			//Game.obstacles.get(i).posY += (Game.obstacles.get(i).posY - Game.player.posY) / 1000;
+			Game.obstacles.get(i).posX += (Game.obstacles.get(i).posX - Game.player.posX) / 1000;
+			Game.obstacles.get(i).posY += (Game.obstacles.get(i).posY - Game.player.posY) / 1000;
 
-			Game.obstacles.get(i).posX += Math.random() * 4 - 2;
-			Game.obstacles.get(i).posY += Math.random() * 4 - 2;
+			//Game.obstacles.get(i).posX += Math.random() * 4 - 2;
+			//Game.obstacles.get(i).posY += Math.random() * 4 - 2;
 		}
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
-			Game.movables.get(i).posX += Math.random() * 4 - 2;
-			Game.movables.get(i).posY += Math.random() * 4 - 2;
+			//Game.movables.get(i).posX += Math.random() * 4 - 2;
+			//Game.movables.get(i).posY += Math.random() * 4 - 2;
 		}
 		for (int i = 0; i < Game.effects.size(); i++)
 		{
-			Game.effects.get(i).posX += Math.random() * 4 - 2;
-			Game.effects.get(i).posY += Math.random() * 4 - 2;
+			//Game.effects.get(i).posX += Math.random() * 4 - 2;
+			//Game.effects.get(i).posY += Math.random() * 4 - 2;
 		}*/
 
 			//g.setColor(Color.red);
@@ -309,18 +309,18 @@ public class Panel extends JPanel
 			double mx = Game.window.getInterfaceMouseX();
 			double my = Game.window.getInterfaceMouseY();
 
-			//double mx2 = Game.window.getMouseX();
-			//double my2 = Game.window.getMouseY();
+			double mx2 = Game.window.getMouseX();
+			double my2 = Game.window.getMouseY();
 			if (showMouseTarget)
 			{
 				g.setColor(Color.black);
-				Drawing.drawInterfaceOval(g, mx, my, 8, 8);
-				Drawing.drawInterfaceOval(g, mx, my, 4, 4);
-				
-				//g.setColor(Color.red);
-				//Window.drawOval(g, mx2, my2, 8, 8);
-				//Window.drawOval(g, mx2, my2, 4, 4);
-				
+				Drawing.window.drawInterfaceOval(g, mx, my, 8, 8);
+				Drawing.window.drawInterfaceOval(g, mx, my, 4, 4);
+
+				g.setColor(Color.red);
+				Drawing.window.drawOval(g, mx2, my2, 8, 8);
+				Drawing.window.drawOval(g, mx2, my2, 4, 4);
+
 			}
 		}
 		catch (Exception e)
@@ -330,5 +330,7 @@ public class Panel extends JPanel
 
 		//long end = System.nanoTime();
 		//System.out.println("Drawing took: " + (end - start));
+		
+		
 	}
 }

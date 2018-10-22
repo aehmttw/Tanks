@@ -19,7 +19,7 @@ public class ObstacleHole extends Obstacle
 	public void draw(Graphics g)
 	{	
 		g.setColor(this.color);
-		Drawing.fillRect(g, this.posX, this.posY, draw_size / 2, draw_size / 2);
+		Drawing.window.fillRect(g, this.posX, this.posY, draw_size / 2, draw_size / 2);
 	}
 
 }

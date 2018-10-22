@@ -12,11 +12,15 @@ public class Mine extends Movable
 	public int size = mine_size;
 	public Color outlineColor;
 	
+	public double radius = Game.tank_size * 2.5;
 	public Tank tank;
+	
+	public boolean enabled = false;
 
 	public Mine(double x, double y, Tank t) 
 	{
 		super(x, y);
+		this.drawBelow = true;
 		tank = t;
 		t.liveMines++;
 		this.team = t.team;
@@ -30,14 +34,14 @@ public class Mine extends Movable
 	public void draw(Graphics p) 
 	{	
 		p.setColor(this.outlineColor);
-		Drawing.fillOval(p, this.posX, this.posY, this.size, this.size);
+		Drawing.window.fillOval(p, this.posX, this.posY, this.size, this.size);
 		
 		p.setColor(new Color(255, (int) ((this.timer) / 1000.0 * 255), 0));
 
 		if (timer < 150 && ((int) timer % 16) / 8 == 1)
 			p.setColor(Color.yellow);
 
-		Drawing.fillOval(p, this.posX, this.posY, this.size * 0.8, this.size * 0.8);
+		Drawing.window.fillOval(p, this.posX, this.posY, this.size * 0.8, this.size * 0.8);
 	}
 
 	@Override
@@ -55,7 +59,7 @@ public class Mine extends Movable
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
-			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 1.5, 2))
+			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius - Game.tank_size, 2))
 			{
 				if (o instanceof Tank && !o.destroy && !o.equals(this.tank))
 				{
@@ -79,14 +83,14 @@ public class Mine extends Movable
 					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 					e.maxAge /= 2;
 					e.col = new Color(255, (int) ((1 - random) * 155 + Math.random() * 100), 0);
-					e.setPolarMotion(Math.random() * 2 * Math.PI, random * 4);
+					e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
 					Game.effects.add(e);
 				}
 			}
 
 
 			Movable o = Game.movables.get(i);
-			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 2.5, 2))
+			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
 			{
 				if (o instanceof Tank && !o.destroy)
 				{
@@ -118,7 +122,7 @@ public class Mine extends Movable
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
-			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(Game.tank_size * 2.5, 2) && o.destructible)
+			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible)
 			{
 				Game.removeObstacles.add(o);
 
@@ -131,22 +135,13 @@ public class Mine extends Movable
 							int oX = 0;
 							int oY = 0;
 
-							/*if (j == 0)
-							oX += 2;
-						if (k == 0)
-							oY += 2;
-
-						if (j == Obstacle.obstacle_size - 8)
-							oX -= 2;
-						if (k == Obstacle.obstacle_size - 8)
-							oY -= 2;*/
-
 							Effect e = Effect.createNewEffect(o.posX + j + oX + 2 - Obstacle.obstacle_size / 2, o.posY + k + oY + 2 - Obstacle.obstacle_size / 2, Effect.EffectType.obstaclePiece);
 							e.col = o.color;
 
 							double dist = Movable.distanceBetween(this, e);
 							double angle = this.getAngleInDirection(e.posX, e.posY);
-							e.addPolarMotion(angle, (200 * Math.sqrt(2) - dist) / 400 + Math.random() * 2);
+							double rad = radius - Game.tank_size / 2;
+							e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
 
 							Game.effects.add(e);
 
@@ -157,7 +152,10 @@ public class Mine extends Movable
 		}
 
 		tank.liveMines--;
-		Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.mineExplosion));
+		
+		Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.mineExplosion);
+		e.radius = this.radius - Game.tank_size * 0.5;
+		Game.effects.add(e);
 
 		Game.removeMovables.add(this);
 	}

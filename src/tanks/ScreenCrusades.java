@@ -193,7 +193,7 @@ public class ScreenCrusades extends Screen
 		quit.draw(g);
 		//newLevel.draw(g);
 
-		Drawing.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 210, "Crusades");
+		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 210, "Crusades");
 
 		if (page > 0)
 			previous.draw(g);

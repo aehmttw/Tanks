@@ -18,6 +18,8 @@ public class Crusade
 	public int remainingLives = 3;
 	public int bonusLifeFrequency = 3;
 	
+	ItemBar itemBar = new ItemBar();
+	
 	public String name = "";
 
 	public Crusade(ArrayList<String> levelArray, String name)

@@ -44,7 +44,7 @@ public class BulletFlame extends Bullet
 		Color col = new Color(255, green, 0, opacity);
 		
 		g.setColor(col);
-		Drawing.fillOval(g, this.posX, this.posY, size, size);
+		Drawing.window.fillOval(g, this.posX, this.posY, size, size);
 	}
 
 }

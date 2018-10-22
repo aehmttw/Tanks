@@ -24,7 +24,7 @@ public class LevelGenerator
 		int g = (int)(Math.random() * 50) + 185;
 		int b = (int)(Math.random() * 50) + 185;
 
-		String s = "{*" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|";
+		String s = "{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|";
 		boolean[][] cells = new boolean[width][height];
 		for (int i = 0; i < cells.length; i++) 
 		{
@@ -35,7 +35,7 @@ public class LevelGenerator
 		}
 		for (int i = 0; i < walls; i++) 
 		{
-			int l = (int) (Math.random() * Math.min(height, width) - 3); // max 14
+			int l = (int) Math.max(1, (Math.random() * Math.min(height, width) - 3)); // max 14
 			int x = (int) (Math.random() * (width - l));
 			int y = (int) (Math.random() * (height - l));
 			boolean o = false;
@@ -112,7 +112,7 @@ public class LevelGenerator
 			{
 				s += ",";
 			}
-		}
+		}		
 		return s;
 	}
 }

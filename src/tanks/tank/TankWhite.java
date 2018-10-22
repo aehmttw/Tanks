@@ -44,7 +44,7 @@ public class TankWhite extends TankAIControlled
 			for (int i = 0; i < Game.tank_size * 2 - this.age; i++)
 			{
 				g.setColor(new Color(255, 255, 255, (int)((Game.tank_size * 2 - i - this.age) * 2.55)));
-				Drawing.fillOval(g, this.posX, this.posY, i, i);
+				Drawing.window.fillOval(g, this.posX, this.posY, i, i);
 			}
 		}
 	}

@@ -10,6 +10,8 @@ public abstract class Movable
 	public double vY;
 	public double cooldown = 0;
 	public boolean destroy = false;
+	public boolean drawBelow = false;
+	
 	public Team team;
 
 	public Movable(double x, double y)
@@ -171,7 +173,7 @@ public abstract class Movable
 	{
 		Drawing.setFontSize(g, 20);
 		if (this.team != null)
-			Drawing.drawText(g, this.posX, this.posY + 40, this.team.name);
+			Drawing.window.drawText(g, this.posX, this.posY + 40, this.team.name);
 	}
 
 	public abstract void checkCollision();

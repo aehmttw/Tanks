@@ -323,7 +323,7 @@ public class TankAIControlled extends Tank
 		if (Math.random() < this.motionChangeChance || this.hasCollided)
 		{
 			this.overrideDirection = false;
-			
+
 			double prevDirection = this.direction;
 
 			ArrayList<Double> directions = new ArrayList<Double>();
@@ -701,18 +701,21 @@ public class TankAIControlled extends Tank
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m instanceof Mine && Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(200, 2))
+				if (m instanceof Mine)
 				{
-					if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
+					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius, 2))
 					{
-						nearestX = this.posX - m.posX;
-						nearestY = this.posY - m.posY;
-					}
+						if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
+						{
+							nearestX = this.posX - m.posX;
+							nearestY = this.posY - m.posY;
+						}
 
-					if (nearestTimer > ((Mine)m).timer)
-					{
-						nearestTimer = ((Mine)m).timer;
-						nearest = m;
+						if (nearestTimer > ((Mine)m).timer)
+						{
+							nearestTimer = ((Mine)m).timer;
+							nearest = m;
+						}
 					}
 				}
 			}

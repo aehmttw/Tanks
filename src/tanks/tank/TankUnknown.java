@@ -21,16 +21,17 @@ public class TankUnknown extends Tank
 	public void draw(Graphics g)
 	{
 		g.setColor(Color.red);
-		Drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		Drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		Drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
-		Drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+		Drawing drawing = Drawing.window;
+		drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
+		drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
 	
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Drawing.scale)));
-		Drawing.drawText(g, this.posX, this.posY + 5, "?");
+		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * drawing.scale)));
+		drawing.drawText(g, this.posX, this.posY + 5, "?");
 		
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (12 * Drawing.scale)));
-		Drawing.drawText(g, this.posX, this.posY + 32, this.name);
+		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (12 * drawing.scale)));
+		drawing.drawText(g, this.posX, this.posY + 32, this.name);
 
 	}
 

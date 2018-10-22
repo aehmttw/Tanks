@@ -224,24 +224,27 @@ public abstract class Tank extends Movable
 		double s = (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1);
 		double sizeMod = 1;
 		
+		Drawing drawing = Drawing.window;
 		Color teamColor = Team.getObjectColor(this.color, this);
 		if (teamColor != this.color)
 		{
 			g.setColor(teamColor);
-			Drawing.fillRect(g, this.posX, this.posY, s, s);
+			drawing.fillRect(g, this.posX, this.posY, s, s);
 
 			sizeMod = 0.8;
 		}
 		
 		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
 
-		Drawing.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
+		drawing.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
 		
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				Drawing.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				drawing.drawRect(g, this.posX, 
+						this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 
+						8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
 		
@@ -252,19 +255,20 @@ public abstract class Tank extends Movable
 	public void drawOutline(Graphics g) 
 	{
 		drawAge = Game.tank_size;
+		Drawing drawing = Drawing.window;
 
 		//g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 128));
 		g.setColor(this.color);
-		Drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		Drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		Drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
-		Drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+		drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
+		drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
 
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				Drawing.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				drawing.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
 

@@ -2,16 +2,23 @@ package tanks;
 
 public class ItemBullet extends Item
 {
-	public Bullet.BulletEffect effect;
-	public double speed;
-	public int bounces;
-	public double damage;
-	public int maxAmount;
-	public double cooldown;
-	public double size;
+	public Bullet.BulletEffect effect = Bullet.BulletEffect.none;
+	public double speed = 25.0 / 4;
+	public int bounces = 1;
+	public double damage = 1;
+	public int maxAmount = 5;
+	public double cooldown = 20;
+	public double size = Bullet.bullet_size;
 	
 	public int amount;
 	public int liveBullets;
+	
+	public String name;
+	
+	public ItemBullet()
+	{
+		this.isConsumable = true;
+	}
 	
 	@Override
 	public void use()
@@ -21,13 +28,16 @@ public class ItemBullet extends Item
 		b.effect = this.effect;
 		b.size = this.size;
 		
+		Game.player.cooldown = this.cooldown;
 		Game.player.fireBullet(b, speed);
+		
+		this.stackSize--;
 	}
 
 	@Override
 	public boolean usable()
 	{
-		if (this.liveBullets >= this.maxAmount)
+		if (this.liveBullets >= this.maxAmount || Game.player.cooldown > 0 || this.stackSize <= 0)
 			return false;
 		
 		return true;

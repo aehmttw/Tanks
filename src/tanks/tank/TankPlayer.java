@@ -108,30 +108,6 @@ public class TankPlayer extends Tank
 
 		if (!Game.insanity)
 		{			
-			/*this.cooldown -= Panel.frameFrequency;
-			
-			if (this.cooldown > 0)
-			{
-				if (Math.random() * maxCooldown > cooldown && Game.graphicalEffects)
-				{
-					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.charge);
-					double var = 50;
-					e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
-					Game.effects.add(e);
-				}
-				return;
-
-			}
-			else
-			{
-				//BulletLaser b = new BulletLaser(this.posX, this.posY, 2, this);
-				//b.setPolarMotion(this.angle, 25.0/4);
-				//b.moveOut(8);
-				//b.shoot();
-				//this.maxCooldown = this.maxCooldown * 0.75 + 1;
-				//this.cooldown = Math.max(this.cooldown, maxCooldown);
-			}*/
-			
 			/*BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
 			b.setPolarMotion(this.angle, 25.0/4);
 			b.moveOut(8);

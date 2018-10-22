@@ -167,7 +167,7 @@ public class ScreenSavedLevels extends Screen
 		quit.draw(g);
 		newLevel.draw(g);
 
-		Drawing.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 210, "My levels");
+		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 210, "My levels");
 
 		if (page > 0)
 			previous.draw(g);

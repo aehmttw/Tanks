@@ -68,7 +68,7 @@ public class Level
 	{
 		RegistryTank.loadRegistry(Game.homedir);
 		RegistryObstacle.loadRegistry(Game.homedir);
-
+		
 		Game.currentLevel = this.level;
 
 		ScreenGame.finished = false;

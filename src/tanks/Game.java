@@ -52,9 +52,9 @@ public class Game
 	public static Team playerTeam = new Team("ally");
 	public static Team enemyTeam = new Team("enemy");
 
-	static int currentSizeX = 28;
-	static int currentSizeY = 18;
-	static double bgResMultiplier = 1;	
+	public static int currentSizeX = 28;
+	public static int currentSizeY = 18;
+	public static double bgResMultiplier = 1;	
 	public static Color[][] tiles = new Color[28][18];
 	
 	public static double levelSize = 1;
@@ -66,11 +66,6 @@ public class Game
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	
 	public static Screen screen = new ScreenTitle();
-	
-	//public static boolean mainMenu = false;
-	//public static boolean optionsMenu = true;
-	//public static boolean pausedMenu = false;
-	//public static boolean paused = true;
 
 	public static boolean graphicalEffects = true;
 
@@ -100,6 +95,10 @@ public class Game
 	public static ArrayList<RegistryTank.DefaultTankEntry> defaultTanks = new ArrayList<RegistryTank.DefaultTankEntry>();
 	public static ArrayList<RegistryObstacle.DefaultObstacleEntry> defaultObstacles = new ArrayList<RegistryObstacle.DefaultObstacleEntry>();
 
+	public static Game game = new Game();
+	
+	private Game() {}
+	
 	public static void initScript() 
 	{
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
@@ -171,6 +170,8 @@ public class Game
 				@Override
 				public void run() 
 				{
+					Drawing.window.initializeMouseOffsets();
+					
 					for (int i = 0; i < currentSizeX; i++)
 					{
 						for (int j = 0; j < currentSizeY; j++)
@@ -179,7 +180,7 @@ public class Game
 						}
 					}
 					
-					window = new Drawing();
+					window = Drawing.window;
 					window.setTitle("Tanks");
 					window.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/icon64.png")));
 					
@@ -188,9 +189,7 @@ public class Game
 					//movables.add(new EnemyTankStationary(900, 700, tank_size));
 
 					//add things to movables
-
-					Panel screen = new Panel();
-
+					Panel screen = Panel.panel;
 					window.add(screen);
 					screen.startTimer();
 				}

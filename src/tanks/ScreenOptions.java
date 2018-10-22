@@ -2,7 +2,6 @@ package tanks;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 
 public class ScreenOptions extends Screen
 {
@@ -35,31 +34,6 @@ public class ScreenOptions extends Screen
 		}
 	},
 		"When enabled, 2 small black rings will appear around your mouse pointer"	);
-
-	Button scale = new Button(0, 0, 350, 40, "Scale: 100%", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			if (InputKeyboard.keys.contains(KeyEvent.VK_SHIFT))
-				Drawing.scale -= 0.1;
-			else
-				Drawing.scale += 0.1;
-
-			if (Drawing.scale < 0.45)
-				Drawing.scale = 2;
-
-			if (Drawing.scale > 2.05)
-				Drawing.scale = 0.5;
-
-			Drawing.scale = Math.round(Drawing.scale * 10) / 10.0;
-
-			scale.text = "Scale: " + (int)Math.round(Drawing.scale * 100) + "%";
-			Game.window.setSize((int)(Drawing.sizeX * Drawing.scale), (int) ((Drawing.sizeY) * Drawing.scale ));
-		}
-	}
-	, "Click to increase scale by 10%---Hold shift while clicking to decrease scale by 10%");
-
 
 	Button back = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
 	{
@@ -101,7 +75,6 @@ public class ScreenOptions extends Screen
 	},
 		"When enabled, levels will start playing automatically---4 seconds after they are loaded if the play button isn't clicked earlier"	);
 
-	
 	@Override
 	public void update()
 	{
@@ -121,7 +94,7 @@ public class ScreenOptions extends Screen
 		graphics.draw(g);
 		Drawing.setInterfaceFontSize(g, 24);
 		g.setColor(Color.black);
-		Drawing.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 150, "Options");
+		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 150, "Options");
 	}
 
 }

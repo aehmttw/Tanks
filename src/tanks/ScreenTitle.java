@@ -72,7 +72,7 @@ public class ScreenTitle extends Screen
 		
 		g.setColor(Color.black);
 		Drawing.setInterfaceFontSize(g, 60);
-		Drawing.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 200, "Tanks");
+		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 200, "Tanks");
 		play.draw(g);
 		exit.draw(g);
 		options.draw(g);		

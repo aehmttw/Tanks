@@ -37,24 +37,25 @@ public class ScreenCrashed extends Screen
 	public void draw(Graphics g)
 	{
 		g.setColor(Color.blue);
-		Drawing.fillInterfaceRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX * 1.2, Drawing.sizeY * 1.2);				
+		Drawing drawing = Drawing.window;
+		drawing.fillInterfaceRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX * 1.2, Drawing.sizeY * 1.2);				
 
 		g.setColor(Color.white);
 		Drawing.setInterfaceFontSize(g, 100);
-		Drawing.drawInterfaceText(g, 100, 100, ":(");
+		drawing.drawInterfaceText(g, 100, 100, ":(");
 
 		Drawing.setInterfaceFontSize(g, 48);
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
 
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Drawing.scale)));
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 200, Game.crashMessage);
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 280, "Check the log file for more information: ");
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 320, Game.homedir.replace("\\", "/") + Game.logPath);
+		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Drawing.window.getScale())));
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 200, Game.crashMessage);
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 290, "Check the log file for more information: ");
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 320, Game.homedir.replace("\\", "/") + Game.logPath);
 
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 400, "You may return to the game if you wish,");
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 440, "but be warned that things may become unstable.");
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
-		Drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 520, "Also, you may want to report this crash!");
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 420, "You may return to the game if you wish,");
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 450, "but be warned that things may become unstable.");
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
+		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 510, "Also, you may want to report this crash!");
 
 		this.quit.draw(g);
 		this.exit.draw(g);

@@ -86,7 +86,7 @@ public class Game
 	
 	public static PrintStream logger = System.err;
 	
-	public static final String directoryPath = "/.tanks.d";
+	public static final String directoryPath = "/Tanks";
 	public static final String logPath = directoryPath + "/logfile.txt";
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
 	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";

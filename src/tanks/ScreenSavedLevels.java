@@ -13,6 +13,12 @@ import java.util.Iterator;
 public class ScreenSavedLevels extends Screen
 {
 	public static final String levelDir = Game.directoryPath + "/levels";
+	
+	static {
+		File dir = new File(levelDir);
+		if (!dir.exists())
+			dir.mkdir();
+	}
 
 	int rows = 6;
 	int yoffset = -150;

@@ -1,4 +1,7 @@
-package tanks;
+package tanks.item;
+
+import tanks.Bullet;
+import tanks.Game;
 
 public class ItemBullet extends Item
 {

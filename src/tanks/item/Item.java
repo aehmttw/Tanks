@@ -1,4 +1,4 @@
-package tanks;
+package tanks.item;
 
 public abstract class Item 
 {
@@ -10,9 +10,17 @@ public abstract class Item
 	public boolean inUse = false;
 	public String name;
 
-	public abstract boolean usable();
+	public boolean usable() {
+		return false; // For things like ammo
+	}
 	
-	public abstract void use();
+	public void use() {
+		// NOOP
+	}
+	
+	public boolean isSingleStack() {
+		return false;
+	}
 	
 	public static Item parseItem(String s)
 	{

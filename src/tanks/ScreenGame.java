@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+import tanks.item.ItemBar;
 import tanks.tank.Tank;
 
 public class ScreenGame extends Screen
@@ -100,6 +101,8 @@ public class ScreenGame extends Screen
 		}
 	}
 	, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
+	
+	private final ItemBar itemBar = new ItemBar();
 
 	public ScreenGame()
 	{
@@ -266,6 +269,8 @@ public class ScreenGame extends Screen
 			else
 				Game.bulletLocked = false;
 		}
+		
+		itemBar.update();
 
 		for (int i = 0; i < Game.removeMovables.size(); i++)
 			Game.movables.remove(Game.removeMovables.get(i));
@@ -333,6 +338,8 @@ public class ScreenGame extends Screen
 		
 		for (int i = 0; i < Game.effects.size(); i++)
 			((Effect)Game.effects.get(i)).draw(g);
+		
+		itemBar.draw(g);
 
 		if (!playing) 
 		{

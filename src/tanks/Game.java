@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
+import tanks.item.Item;
 import tanks.tank.TankBlack;
 import tanks.tank.TankBrown;
 import tanks.tank.TankDarkGreen;

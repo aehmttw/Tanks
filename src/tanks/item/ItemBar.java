@@ -10,7 +10,8 @@ import tanks.Panel;
 
 public final class ItemBar  {
 	private static final int SIZE = 50; // The slot size.
-	private static final int COUNT_MARGIN = 25; // Item number's distance from right.
+	private static final int COUNT_MARGIN_RIGHT = 10; // Item number's distance from right.
+	private static final int COUNT_MARGIN_BOTTOM = 5; // Item number's distance from bottom.
 	private static final int GAP = 75; // Gap between slots.
 	private static final int BAR_MARGIN = 100; // Bar's distance from bottom.
 	
@@ -53,7 +54,8 @@ public final class ItemBar  {
 				ItemStack item = slots[i+2];
 				if (!item.getItem().isSingleStack()) {
 					g.setColor(ITEM_COUNT);
-					g.drawString(Integer.toString(item.getCount()), x+SIZE-COUNT_MARGIN, y+SIZE-COUNT_MARGIN);
+					g.drawString(Integer.toString(item.getCount()), x+SIZE-COUNT_MARGIN_RIGHT, y+SIZE-COUNT_MARGIN_BOTTOM);
+					g.setColor(SLOT_BG); // You saw nothing...
 				}
 			}
 			

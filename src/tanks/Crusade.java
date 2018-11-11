@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import tanks.item.ItemBar;
-
 public class Crusade 
 {
 	public static Crusade currentCrusade = null;
@@ -19,8 +17,6 @@ public class Crusade
 	public ArrayList<String> levels = new ArrayList<String>();
 	public int remainingLives = 3;
 	public int bonusLifeFrequency = 3;
-	
-	ItemBar itemBar = new ItemBar();
 	
 	public String name = "";
 

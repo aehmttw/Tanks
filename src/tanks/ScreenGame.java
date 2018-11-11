@@ -208,11 +208,6 @@ public class ScreenGame extends Screen
 			{
 				Game.belowEffects.get(i).update();
 			}
-			
-			if (Crusade.crusadeMode)
-			{
-				Crusade.currentCrusade.itemBar.update();
-			}
 
 			if (aliveTeams.size() <= 1)
 			{

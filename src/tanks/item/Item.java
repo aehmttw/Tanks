@@ -1,12 +1,12 @@
 package tanks.item;
 
-public abstract class Item 
-{
+import tanks.Bullet;
+
+public abstract class Item  {
 	public boolean isConsumable;
 	public int levelUnlock;
 	public int price;
 	public int maxStackSize = 100;
-	public int stackSize = 1;
 	public boolean inUse = false;
 	public String name;
 
@@ -30,7 +30,7 @@ public abstract class Item
 		int level = Integer.parseInt(p[2]);
 		int maxStack = Integer.parseInt(p[3]);
 		*/
-		Item i = new ItemBullet();
+		Item i = new ItemBullet(Bullet.class);
 		
 		
 		

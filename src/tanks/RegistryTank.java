@@ -3,7 +3,9 @@ package tanks;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -56,10 +58,21 @@ public class RegistryTank
 				{
 					try 
 					{
-						@SuppressWarnings("resource")
-						ClassLoader loader = new URLClassLoader( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
-						@SuppressWarnings("unchecked")
-						Class<? extends Tank> clasz = (Class<? extends Tank>) loader.loadClass(tankLine[4]);
+						ClassLoader classLoader = RegistryTank.class.getClassLoader();
+						Class<?> clazz = classLoader.getClass();
+						
+						if (!clazz.equals(URLClassLoader.class)) // Java 9 jdk.internal.loader.ClassLoaders$AppClassLoader
+							clazz = clazz.getSuperclass(); // jdk.internal.loader.BuiltinClassLoader
+						
+						Field field = clazz.getDeclaredField("ucp");
+						field.setAccessible(true);
+						Object ucp = field.get(classLoader);
+						
+						Class<?> URLClassPath = ucp.getClass();
+						Method method = URLClassPath.getDeclaredMethod("addURL", URL.class);
+						method.invoke(ucp, new File(tankLine[3]).toURI().toURL());
+						
+						Class<? extends Tank> clasz = Class.forName(tankLine[4], true, classLoader).asSubclass(Tank.class);
 						new RegistryTank.TankEntry(Game.registryTank, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
 					}
 					catch (Exception e) 

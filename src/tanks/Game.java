@@ -243,7 +243,7 @@ public class Game
 		Game.screen = s;	
 	}
 	
-	public static void exitToCrash(Exception e)
+	public static void exitToCrash(Throwable e)
 	{
 		obstacles.clear();
 		belowEffects.clear();

@@ -2,7 +2,6 @@ package tanks.item;
 
 import java.lang.reflect.Constructor;
 
-import lombok.SneakyThrows;
 import tanks.Bullet;
 import tanks.tank.Tank;
 
@@ -22,13 +21,11 @@ public class ItemBullet extends Item {
 	
 	private final Constructor<? extends Bullet> bulletConstructor;
 	
-	@SneakyThrows
-	public ItemBullet(Class<? extends Bullet> bulletClass) {
+	public ItemBullet(Class<? extends Bullet> bulletClass) throws Exception {
 		this.bulletConstructor = bulletClass.getDeclaredConstructor(double.class, double.class, int.class, Tank.class);
 	}
 	
-	@SneakyThrows
-	public Bullet createBullet(double x, double y, int bounces, Tank tank) {
+	public Bullet createBullet(double x, double y, int bounces, Tank tank) throws Exception {
 		return bulletConstructor.newInstance(x, y, bounces, tank);
 	}
 	

@@ -22,7 +22,7 @@ public abstract class Item  {
 		return false;
 	}
 	
-	public static Item parseItem(String s)
+	public static Item parseItem(String s) throws Exception
 	{
 		//String[] p = s.split("-");
 		/*String name = p[0];

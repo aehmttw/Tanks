@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
-import tanks.Bullet;
 import tanks.InputKeyboard;
 import tanks.Panel;
 
@@ -23,7 +22,7 @@ public final class ItemBar  {
 	private int selected = -1;
 	
 	public ItemBar() {
-		slots[0] = new ItemStack(new ItemBullet(Bullet.class), 3);
+		// slots[0] = new ItemStack(new ItemBullet(Bullet.class), 3);
 	}
 	
 	public void update() {

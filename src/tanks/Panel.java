@@ -180,7 +180,7 @@ public class Panel extends JPanel
 					//System.out.println(frameFrequency);
 					//frameFrequency = 100.0 / framesList.size();
 				}
-				catch (Exception exception)
+				catch (Throwable exception)
 				{
 					Game.exitToCrash(exception);
 				}
@@ -323,7 +323,7 @@ public class Panel extends JPanel
 
 			}
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 			Game.exitToCrash(e);
 		}

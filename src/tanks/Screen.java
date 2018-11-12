@@ -5,9 +5,9 @@ import java.awt.Graphics;
 
 public abstract class Screen
 {
-	public abstract void update();
+	public abstract void update() throws Throwable;
 	
-	public abstract void draw(Graphics g);
+	public abstract void draw(Graphics g) throws Throwable;
 	
 	public void drawDefaultBackground(Graphics g)
 	{

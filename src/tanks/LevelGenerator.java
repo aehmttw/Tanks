@@ -17,9 +17,6 @@ public class LevelGenerator
 		double random = Math.random();
 		int walls = (int) (random * amountWalls + 1);
 		
-		if (Game.insanity)
-			walls += amountWalls / 2;
-		
 		int r = (int)(Math.random() * 50) + 185;
 		int g = (int)(Math.random() * 50) + 185;
 		int b = (int)(Math.random() * 50) + 185;
@@ -70,9 +67,6 @@ public class LevelGenerator
 			}
 		}
 		int numTanks = (int) (random * amountTanks + 1);
-		
-		if (Game.insanity)
-			numTanks = (int) (size * size * (random * 20 + 1) + 40);
 		
 		int x = (int) (Math.random() * (width));
 		int y = (int) (Math.random() * (height));

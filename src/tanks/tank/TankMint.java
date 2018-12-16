@@ -20,7 +20,6 @@ public class TankMint extends TankAIControlled
 		this.cooldownBase = 240;
 		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 0;
-		this.bulletColor = Color.red;
 		this.bulletEffect = Bullet.BulletEffect.fire;
 		this.bulletSpeed = 25.0 / 2;
 		this.enableLookingAtTargetEnemy = false;

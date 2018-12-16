@@ -10,7 +10,25 @@ public class BulletLaser extends Bullet
 	{
 		super(x, y, bounces, t);
 		t.liveBullets--;
+		this.playPopSound = false;
 		this.baseColor = Color.red;
+	}
+	
+	/** Do not use, instead use the constructor with primitive data types. */
+	@Deprecated
+	public BulletLaser(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	{
+		this(x, y, bounces, t);
+		this.item = ib;
+		this.item.liveBullets--;
+	}
+	
+	@Override
+	public void update()
+	{
+		this.shoot();
+		Drawing.pendingSounds.add("resources/laser.wav");
+		Game.movables.remove(this);
 	}
 	
 	public void shoot()
@@ -20,11 +38,11 @@ public class BulletLaser extends Bullet
 			if (ScreenGame.finished)
 				this.destroy = true;
 			
-			this.update();
+			super.update();
 			Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.laser));
 		}
 
-		if (Game.graphicalEffects)
+		if (Game.fancyGraphics)
 		{
 			for (int i = 0; i < this.size * 4; i++)
 			{
@@ -37,5 +55,4 @@ public class BulletLaser extends Bullet
 			}
 		}
 	}
-
 }

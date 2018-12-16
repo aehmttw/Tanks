@@ -70,25 +70,24 @@ public class Mine extends Movable
 	}
 
 	public void explode()
-	{
+	{		
 		Drawing.playSound("resources/explosion.wav");
 
+		if (Game.fancyGraphics)
+		{
+			for (int j = 0; j < 400; j++)
+			{
+				double random = Math.random();
+				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+				e.maxAge /= 2;
+				e.col = new Color(255, (int) ((1 - random) * 155 + Math.random() * 100), 0);
+				e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
+				Game.effects.add(e);
+			}
+		}
+				
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
-			if (Game.graphicalEffects)
-			{
-				for (int j = 0; j < 50; j++)
-				{
-					double random = Math.random();
-					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
-					e.maxAge /= 2;
-					e.col = new Color(255, (int) ((1 - random) * 155 + Math.random() * 100), 0);
-					e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
-					Game.effects.add(e);
-				}
-			}
-
-
 			Movable o = Game.movables.get(i);
 			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
 			{
@@ -105,10 +104,9 @@ public class Mine extends Movable
 						{
 							((Tank)o).flashAnimation = 0;
 							o.destroy = true;
-							if (o.equals(Game.player))
-								Game.coins -= 5;		
+						
 							if (this.tank.equals(Game.player))
-								Game.coins += ((Tank)o).coinValue;
+								Panel.panel.hotbar.currentCoins.coins += ((Tank)o).coinValue;
 						}	
 					}
 				}		
@@ -126,7 +124,7 @@ public class Mine extends Movable
 			{
 				Game.removeObstacles.add(o);
 
-				if (Game.graphicalEffects)
+				if (Game.fancyGraphics)
 				{
 					for (int j = 0; j < Obstacle.obstacle_size - 4; j += 4)
 					{

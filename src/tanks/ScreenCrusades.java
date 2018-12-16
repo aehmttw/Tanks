@@ -114,7 +114,7 @@ public class ScreenCrusades extends Screen
 				Crusade.currentCrusade = new Crusade(al, "Classic Crusade");
 				Crusade.crusadeMode = true;
 				Crusade.currentCrusade.loadLevel();
-				Game.screen = new ScreenGame();
+				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 			}
 		}
 				));
@@ -131,7 +131,7 @@ public class ScreenCrusades extends Screen
 					Crusade.currentCrusade = new Crusade(l.toFile(), pathSections[pathSections.length - 1].split("\\.")[0]);
 					Crusade.crusadeMode = true;
 					Crusade.currentCrusade.loadLevel();
-					Game.screen = new ScreenGame();
+					Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 				}
 			}
 					));

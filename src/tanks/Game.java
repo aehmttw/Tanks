@@ -15,21 +15,7 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 
-import tanks.item.Item;
-import tanks.tank.TankBlack;
-import tanks.tank.TankBrown;
-import tanks.tank.TankDarkGreen;
-import tanks.tank.TankGray;
-import tanks.tank.TankGreen;
-import tanks.tank.TankMagenta;
-import tanks.tank.TankMint;
-import tanks.tank.TankOrange;
-import tanks.tank.TankPink;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPurple;
-import tanks.tank.TankRed;
-import tanks.tank.TankWhite;
-import tanks.tank.TankYellow;
+import tanks.tank.*;
 
 public class Game 
 {
@@ -68,15 +54,16 @@ public class Game
 	
 	public static Screen screen = new ScreenTitle();
 
-	public static boolean graphicalEffects = true;
+	public static boolean fancyGraphics = true;
 
-	public static boolean insanity = false;
 	public static boolean autostart = true;
 	public static double startTime = 400;
 	
-	public static int coins = 0;
 	public static Item[] items = new Item[5];
 	
+	public static boolean enableCustomTankRegistry = false;
+	public static boolean enableCustomObstacleRegistry = false;
+
 	public static RegistryTank registryTank = new RegistryTank();
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
 
@@ -86,10 +73,11 @@ public class Game
 	
 	public static PrintStream logger = System.err;
 	
-	public static final String directoryPath = "/Tanks";
+	public static final String directoryPath = "/.tanks";
 	public static final String logPath = directoryPath + "/logfile.txt";
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
 	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
+	public static final String optionsPath = directoryPath + "/options.txt";
 
 	public static String homedir;
 	
@@ -114,16 +102,36 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankRed.class, "red", 1.0 / 3));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGreen.class, "green", 1.0 / 4));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPurple.class, "purple", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlue.class, "blue", 1.0 / 4));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankWhite.class, "white", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCyan.class, "cyan", 1.0 / 5));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankOrange.class, "orange", 1.0 / 6));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMaroon.class, "maroon", 1.0 / 7));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankDarkGreen.class, "darkgreen", 1.0 / 9));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
-		
+
 		homedir = System.getProperty("user.home");
-		if (!Files.exists(Paths.get(homedir + directoryPath))) 
+		
+		if (Files.exists(Paths.get(homedir + "/.tanks.d"))) 
+		{
+			try
+			{
+				Files.move(Paths.get(homedir + "/.tanks.d"), Paths.get(homedir + directoryPath));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				System.exit(1);
+			}
+			
+		}
+		
+		if (!Files.exists(Paths.get(directoryPath))) 
 		{
 			new File(homedir + directoryPath).mkdir();
+			new File(homedir + directoryPath + ScreenSavedLevels.levelDir).mkdir();
+
 			try 
 			{
 				new File(homedir + logPath).createNewFile();
@@ -146,6 +154,11 @@ public class Game
 			RegistryObstacle.initRegistry(homedir);
 		}
 		
+		if (!Files.exists(Paths.get(homedir + optionsPath)))
+		{
+			ScreenOptions.initOptions(homedir);
+		}
+		
 		try 
 		{
 			Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
@@ -156,6 +169,7 @@ public class Game
 			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 		
+		ScreenOptions.loadOptions(homedir);
 		RegistryTank.loadRegistry(homedir);
 		RegistryObstacle.loadRegistry(homedir);
 	}
@@ -243,7 +257,7 @@ public class Game
 		Game.screen = s;	
 	}
 	
-	public static void exitToCrash(Throwable e)
+	public static void exitToCrash(Exception e)
 	{
 		obstacles.clear();
 		belowEffects.clear();
@@ -283,6 +297,11 @@ public class Game
 		removeEffects.clear();
 		removeBelowEffects.clear();
 		
+		Panel.panel.hotbar.currentCoins = new Coins();
+		Panel.panel.hotbar.enabledCoins = false;
+		Panel.panel.hotbar.currentItemBar = new ItemBar(Panel.panel.hotbar);
+		Panel.panel.hotbar.enabledItemBar = false;
+
 		screen = new ScreenTitle();
 		System.gc();
 	}

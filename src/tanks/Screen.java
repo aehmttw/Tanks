@@ -5,9 +5,9 @@ import java.awt.Graphics;
 
 public abstract class Screen
 {
-	public abstract void update() throws Throwable;
+	public abstract void update();
 	
-	public abstract void draw(Graphics g) throws Throwable;
+	public abstract void draw(Graphics g);
 	
 	public void drawDefaultBackground(Graphics g)
 	{
@@ -17,7 +17,7 @@ public abstract class Screen
 		g.setColor(Level.currentColor);
 		Drawing.window.fillRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX, Drawing.sizeY);
 
-		if (Game.graphicalEffects)
+		if (Game.fancyGraphics)
 		{
 			for (int i = 0; i < Game.currentSizeX; i++)
 			{

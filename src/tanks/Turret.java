@@ -30,7 +30,7 @@ public class Turret extends Movable
 		this.posY = tank.posY;
 		
 		double amount = 1;
-		if (Game.graphicalEffects)
+		if (Game.fancyGraphics)
 			amount = 0.25;
 		
 		this.setPolarMotion(angle, 1);

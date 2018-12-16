@@ -1,6 +1,7 @@
 package tanks;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public abstract class Movable
 {
@@ -11,6 +12,9 @@ public abstract class Movable
 	public double cooldown = 0;
 	public boolean destroy = false;
 	public boolean drawBelow = false;
+	public boolean drawAbove = false;
+
+	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>(); 
 	
 	public Team team;
 
@@ -24,8 +28,28 @@ public abstract class Movable
 	{
 		if (!destroy)
 		{
-			this.posX += this.vX / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
-			this.posY += this.vY / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
+			double vX2 = this.vX;
+			double vY2 = this.vY;
+			
+			ArrayList<AttributeModifier> removeAttributes = new ArrayList<AttributeModifier>(); 
+			for (int i = 0; i < this.attributes.size(); i++)
+			{
+				AttributeModifier a = this.attributes.get(i);
+				
+				if (a.expired)
+					removeAttributes.add(a);
+				
+				a.update();
+				
+				if (a.type.equals("velocity"))
+				{
+					vX2 = a.getValue(vX2);
+					vY2 = a.getValue(vY2);
+				}
+			}
+			
+			this.posX += vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
+			this.posY += vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
 			this.checkCollision();
 		}
 	}
@@ -176,6 +200,11 @@ public abstract class Movable
 			Drawing.window.drawText(g, this.posX, this.posY + 40, this.team.name);
 	}
 
+	public static double[] getLocationInDirection(double angle, double distance)
+	{
+		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};	
+	}
+	
 	public abstract void checkCollision();
 
 	public abstract void draw(Graphics p);

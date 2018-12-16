@@ -38,7 +38,9 @@ public class Panel extends JPanel
 
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
 	public static double frameFrequency = 1;
-
+	
+	public Hotbar hotbar = new Hotbar(); 
+	
 	ArrayList<Double> frameFrequencies = new ArrayList<Double>();
 
 	int frames = 0;
@@ -59,6 +61,9 @@ public class Panel extends JPanel
 	private Panel()
 	{
 		Panel.panel = this;
+		
+		this.hotbar.enabledItemBar = false;
+		this.hotbar.currentCoins = new Coins();
 
 		timer = new Timer(0, new ActionListener()
 		{
@@ -87,8 +92,8 @@ public class Panel extends JPanel
 						framesList.remove(removeList.get(i));
 					}
 
-					if (Game.coins < 0)
-						Game.coins = 0;
+					if (Panel.panel.hotbar.currentCoins.coins < 0)
+						Panel.panel.hotbar.currentCoins.coins = 0;
 
 					Panel.windowWidth = Panel.panel.getSize().getWidth();
 					Panel.windowHeight = Panel.panel.getSize().getHeight();
@@ -180,7 +185,7 @@ public class Panel extends JPanel
 					//System.out.println(frameFrequency);
 					//frameFrequency = 100.0 / framesList.size();
 				}
-				catch (Throwable exception)
+				catch (Exception exception)
 				{
 					Game.exitToCrash(exception);
 				}
@@ -195,29 +200,6 @@ public class Panel extends JPanel
 		timer.start();
 		new SoundThread().execute();
 	}
-
-	/*@Override
-	public void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
-		int verticalCenter = this.getHeight()/2;
-		int horizontalCenter = this.getWidth()/2;
-
-		if(!resize)
-		{
-			int topLeftSquareCornerY = verticalCenter - (height/2);
-			int topLeftSquareCornerX = horizontalCenter - (width/2);
-
-			g.setColor(Color.BLUE);
-			g.drawRect(topLeftSquareCornerX, topLeftSquareCornerY, width, height);
-		}
-		else
-		{
-			g.setColor(Color.MAGENTA);
-			g.drawRect(15,15,(this.getWidth() - 30), this.getHeight() - 30);
-		}
-
-	}*/
 
 	@Override
 	public void paint(Graphics g)
@@ -264,7 +246,7 @@ public class Panel extends JPanel
 
 			g.setFont(g.getFont().deriveFont(Font.BOLD, 12));
 
-			g.drawString("Tanks v0.5.c", 2, (int) (Panel.windowHeight - 40 + 12));
+			g.drawString("Tanks v0.5.0", 2, (int) (Panel.windowHeight - 40 + 12));
 			g.drawString("FPS: " + lastFPS, 2, (int) (Panel.windowHeight - 40 + 24));
 
 			//g.drawString("Coins: " + Game.coins, 2, (int) (Panel.windowHeight - 40 + 36 - Window.yOffset));		
@@ -323,7 +305,7 @@ public class Panel extends JPanel
 
 			}
 		}
-		catch (Throwable e)
+		catch (Exception e)
 		{
 			Game.exitToCrash(e);
 		}

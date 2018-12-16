@@ -172,7 +172,7 @@ public abstract class Tank extends Movable
 			{
 				Drawing.playSound("resources/destroy.wav");
 
-				if (Game.graphicalEffects)
+				if (Game.fancyGraphics)
 				{
 					for (int i = 0; i < this.size * 4; i++)
 					{
@@ -234,7 +234,8 @@ public abstract class Tank extends Movable
 			sizeMod = 0.8;
 		}
 		
-		g.setColor(new Color((int) ((this.color.getRed() * (1 - this.flashAnimation) + 255 * this.flashAnimation)), (int) (this.color.getGreen() * (1 - this.flashAnimation)), (int) (this.color.getBlue() * (1 - this.flashAnimation))));
+		double flash = Math.min(1, this.flashAnimation);
+		g.setColor(new Color((int) ((this.color.getRed() * (1 - flash) + 255 * flash)), (int) (this.color.getGreen() * (1 - flash)), (int) (this.color.getBlue() * (1 - flash))));
 
 		drawing.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
 		

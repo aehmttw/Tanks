@@ -20,6 +20,22 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
+	
+	Button replayCrusadeWin = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Level level = new Level(Game.currentLevel);
+			level.loadLevel();
+			Game.screen = new ScreenGame();
+			Crusade.currentCrusade.replay = true;
+		}
+	}
+			, "You will not gain extra live---"
+					+ "from replaying a level you've already beaten.---"
+					+ "However, you can still earn coins!---"
+					+ "You will still lose a life if you die.");
 
 	Button save = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Save this level", new Runnable()
 	{
@@ -58,8 +74,10 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
+			Crusade.currentCrusade.currentLevel++;
+			Crusade.currentCrusade.replay = false;
 			Crusade.currentCrusade.loadLevel();
-			Game.screen = new ScreenGame();
+			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 		}
 	}
 			);
@@ -100,14 +118,20 @@ public class ScreenInterlevel extends Screen
 			if (Crusade.crusadeMode)
 			{
 				if (Panel.win)
+				{
 					nextLevel.update();
+					replayCrusadeWin.update();
+				}
+				else
+					replay.update();
 				
 				quitCrusade.update();
 			}
 			else
+			{
+				replay.update();
 				newLevel.update();
-
-			replay.update();
+			}
 		}
 		
 		if (skip || !Crusade.crusadeMode)
@@ -118,6 +142,7 @@ public class ScreenInterlevel extends Screen
 
 	public ScreenInterlevel()
 	{
+		Panel.panel.hotbar.bottomOffset = 100;
 		if (Crusade.crusadeMode)
 		{
 			Crusade.currentCrusade.levelFinished(Panel.win);
@@ -145,7 +170,7 @@ public class ScreenInterlevel extends Screen
 	{
 		this.drawDefaultBackground(g);
 
-		if (Panel.win && Game.graphicalEffects)
+		if (Panel.win && Game.fancyGraphics)
 		{	
 			if (Math.random() < 0.01)
 			{
@@ -172,28 +197,42 @@ public class ScreenInterlevel extends Screen
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				skip = true;
 
+		save.draw(g);
+		
+		if (!Crusade.crusadeMode || skip)
+			quit.draw(g);
+		
 		if (!skip)
 		{
 			if (Crusade.crusadeMode)
 			{
 				if (Panel.win)
+				{
 					nextLevel.draw(g);
+					replayCrusadeWin.draw(g);
+				}
+				else
+				{
+					replay.draw(g);
+				}
 				
 				quitCrusade.draw(g);
 			}
 			else
+			{
+				replay.draw(g);
 				newLevel.draw(g);
-
-			replay.draw(g);
+			}
 		}
 		
-		if (!Crusade.crusadeMode || skip)
-			quit.draw(g);
 		
-		save.draw(g);
 
-		if (Panel.win && Game.graphicalEffects)
+		if (Panel.win && Game.fancyGraphics)
 			g.setColor(Color.white);
+		else
+			g.setColor(Color.black);
+		
+		Drawing.setFontSize(g, 24);
 
 		if (Crusade.crusadeMode)
 		{
@@ -210,7 +249,7 @@ public class ScreenInterlevel extends Screen
 		if (Crusade.crusadeMode)
 			Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);	
 
-		if (Panel.win && Game.graphicalEffects)
+		if (Panel.win && Game.fancyGraphics)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
 	}
 

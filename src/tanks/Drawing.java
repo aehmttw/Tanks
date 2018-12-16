@@ -4,6 +4,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
@@ -215,6 +216,26 @@ public class Drawing extends JFrame
 
 		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
+	
+	public void fillInterfaceProgressRect(Graphics g, double x, double y, double sizeX, double sizeY, double progress)
+	{
+		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawSizeX = (int) Math.round(sizeX * interfaceScale * progress);
+		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
+
+		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+	}
+	
+	public void drawInterfaceImage(Graphics g, Image img, double x, double y, double sizeX, double sizeY)
+	{
+		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
+		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
+
+		g.drawImage(img, drawX, drawY, drawSizeX, drawSizeY, null);
+	}
 
 	public void drawInterfaceRect(Graphics g, double x, double y, double sizeX, double sizeY)
 	{
@@ -250,6 +271,21 @@ public class Drawing extends JFrame
 		g.drawString(text, drawX, drawY);
 	}
 
+	public void drawInterfaceText(Graphics g, double x, double y, String text, boolean rightAligned)
+	{
+		double sizeX = Math.round(g.getFont().getStringBounds(text, frc).getWidth());
+
+		double sizeY = g.getFont().getSize() / 3 / Drawing.interfaceScale;
+		double offX = sizeX;
+		
+		if (!rightAligned)
+			offX = 0;
+		
+		int drawX = (int) (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
+		int drawY = (int) (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		g.drawString(text, drawX, drawY);
+	}
+	
 	public void drawUncenteredInterfaceText(Graphics g, double x, double y, String text)
 	{
 		int drawX = (int) (interfaceScale * x + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
@@ -316,7 +352,7 @@ public class Drawing extends JFrame
 
 		rawX -= (1400 - Drawing.sizeX * scale / interfaceScale) / 2 * interfaceScale;
 
-		double gameX = (rawX) / scale - getPlayerOffsetX();	
+		double gameX = (rawX) / scale - getPlayerMouseOffsetX();	
 		
 		return gameX;
 	}
@@ -332,7 +368,7 @@ public class Drawing extends JFrame
 		
 		rawY -= (900 - Drawing.sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
-		double gameY = (rawY) / scale - getPlayerOffsetY();
+		double gameY = (rawY) / scale - getPlayerMouseOffsetY();
 		
 		return gameY;
 	}
@@ -414,5 +450,21 @@ public class Drawing extends JFrame
 			return 0 - (Drawing.sizeY - (Panel.windowHeight - statsHeight) / Drawing.window.scale);
 		else
 			return 0 - result;
+	}
+	
+	public static double getPlayerMouseOffsetX()
+	{
+		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
+			return 0;
+
+		return getPlayerOffsetX() + Drawing.interfaceSizeX / 2;
+	}
+
+	public static double getPlayerMouseOffsetY()
+	{
+		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
+			return 0;
+
+		return getPlayerOffsetY() + Drawing.interfaceSizeY / 2;
 	}
 }

@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Effect extends Movable
 {
-	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread, darkFire}
+	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread, darkFire, electric, stun}
 	public EffectType type;
 	double age = 0;
 	public Color col;
@@ -14,6 +14,8 @@ public class Effect extends Movable
 	public double ffOpacityMultiplier = Math.min(1, Panel.frameFrequency);
 	public boolean removed = false;
 	public double radius;
+	public double angle;
+	public double distance;
 	
 	public static Effect createNewEffect(double x, double y, EffectType type)
 	{
@@ -84,11 +86,18 @@ public class Effect extends Movable
 		else if (type == EffectType.tread)
 		{
 			this.maxAge = 510;
-			if (Game.graphicalEffects)
+			if (Game.fancyGraphics)
 				this.maxAge *= 2;
 		}	
 		else if (type == EffectType.darkFire)
 			this.maxAge = 20;
+		else if (type == EffectType.stun)
+		{
+			this.angle += Math.PI * 2 * Math.random();
+			this.maxAge = 80 + Math.random() * 40;
+			this.size = Math.random() * 5 + 5;
+			this.distance = Math.random() * 50 + 25;
+		}
 	}
 	
 	protected void refurbish()
@@ -104,6 +113,8 @@ public class Effect extends Movable
 		this.size = 0;
 		this.ffOpacityMultiplier =  Math.min(1, Panel.frameFrequency);
 		this.removed = false;
+		this.angle = 0;
+		this.distance = 0;
 	}
 
 	@Override
@@ -128,7 +139,7 @@ public class Effect extends Movable
 			rawOpacity *= rawOpacity * rawOpacity;
 			int opacity = (int)(rawOpacity * 255);
 			
-			int green = Math.min(255, (int)(127 + 128.0*(this.age / 20.0)));
+			int green = Math.min(255, (int)(255 - 255.0*(this.age / 20.0)));
 			Color col = new Color(255, green, 0,  Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
 			p.setColor(col);
@@ -201,7 +212,7 @@ public class Effect extends Movable
 		{	
 			double opacityFactor = 2;
 			
-			if (Game.graphicalEffects)
+			if (Game.fancyGraphics)
 			{
 				opacityFactor = 4;
 			}
@@ -221,8 +232,24 @@ public class Effect extends Movable
 			Color col = new Color(red / 2, 0, red,  Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
 			p.setColor(col);
-			Drawing.window.fillOval(p, this.posX, this.posY, size, size);
+			drawing.fillOval(p, this.posX, this.posY, size, size);
 			
+		}
+		else if (this.type == EffectType.stun)
+		{	
+			int size = 1 + (int) (this.size * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+			double angle = this.angle + this.age / 20;
+			int distance = 1 + (int) (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+
+			p.setColor(col);
+			double[] o = Movable.getLocationInDirection(angle, distance);
+			drawing.fillOval(p, this.posX + o[0], this.posY + o[1], size, size);
+		}
+		else if (this.type == EffectType.electric)
+		{
+			double size = Bullet.bullet_size - this.age / 2;
+			p.setColor(new Color(0, 255, 255));
+			drawing.fillOval(p, this.posX, this.posY, size, size);
 		}
 		else
 		{

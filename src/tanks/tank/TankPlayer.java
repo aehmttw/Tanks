@@ -14,8 +14,6 @@ import tanks.Drawing;
 public class TankPlayer extends Tank
 {
 	public double cooldown = 0;
-	
-	//double maxCooldown = 100;
 
 	public TankPlayer(double x, double y, double angle)
 	{		
@@ -24,18 +22,13 @@ public class TankPlayer extends Tank
 		this.liveMinesMax = 2;
 		this.coinValue = -5;
 		this.angle = angle;
-
-		if (Game.insanity)
-			this.lives = 10;
+		//this.lives = 10;
 	}
 
 	@Override
 	public void update()
 	{	
-		if (Game.insanity)
-			this.liveBulletMax = 10;
-		else
-			this.liveBulletMax = 5;
+		this.liveBulletMax = 5;
 
 		boolean up = InputKeyboard.keys.contains(KeyEvent.VK_UP) || InputKeyboard.keys.contains(KeyEvent.VK_W);
 		boolean down = InputKeyboard.keys.contains(KeyEvent.VK_DOWN) || InputKeyboard.keys.contains(KeyEvent.VK_S);
@@ -97,33 +90,33 @@ public class TankPlayer extends Tank
 
 		super.update();
 	}
-
+	
 	@Override
 	public void shoot()
 	{	
 		if (Game.bulletLocked)
 			return;
 
+		if (Panel.panel.hotbar.enabledItemBar)
+		{
+			if (Panel.panel.hotbar.currentItemBar.useItem(false))
+				return;
+		}
+		
 		this.cooldown = 20;
 
-		if (!Game.insanity)
-		{			
-			/*BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
-			b.setPolarMotion(this.angle, 25.0/4);
-			b.moveOut(8);
-			b.shoot();
-			this.cooldown = 0;*/
+		/*BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
+		b.setPolarMotion(this.angle, 25.0/4);
+		b.moveOut(8);
+		b.shoot();
+		this.cooldown = 0;*/
 			
-			fireBullet(25 / 4, 1, Color.black, Bullet.BulletEffect.trail);
-		}
-		else
-		{
-			fireBullet(25 / 2, 2, Color.red, Bullet.BulletEffect.fireTrail);
-		}
+		fireBullet(25 / 4, 1, Bullet.BulletEffect.trail);
+		
 	}
 
-	public void fireBullet(double speed, int bounces, Color color, Bullet.BulletEffect effect)
-	{
+	public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
+	{		
 		Drawing.playSound("resources/shoot.wav");
 
 		Bullet b = new Bullet(posX, posY, bounces, this);
@@ -132,6 +125,7 @@ public class TankPlayer extends Tank
 
 		b.moveOut((int) (25.0 / speed * 2));
 		b.effect = effect;
+				
 		Game.movables.add(b);
 	}
 
@@ -140,7 +134,7 @@ public class TankPlayer extends Tank
 		Drawing.playSound("resources/shoot.wav");
 
 	    b.setMotionInDirection(Drawing.window.getMouseX(), Drawing.window.getMouseY(), speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0 * b.recoil);
 
 		b.moveOut((int) (25.0 / speed * 2));
 		Game.movables.add(b);
@@ -151,6 +145,12 @@ public class TankPlayer extends Tank
 	{	
 		if (Game.bulletLocked)
 			return;
+		
+		if (Panel.panel.hotbar.enabledItemBar)
+		{
+			if (Panel.panel.hotbar.currentItemBar.useItem(true))
+				return;
+		}
 
 		Drawing.playSound("resources/lay-mine.wav");
 		

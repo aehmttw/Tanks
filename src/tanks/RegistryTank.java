@@ -3,9 +3,7 @@ package tanks;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -19,83 +17,82 @@ public class RegistryTank
 {
 	public ArrayList<TankEntry> tankEntries = new ArrayList<TankEntry>();
 	protected double maxTankWeight = 0;
-	
+
 	public static void loadRegistry(String homedir) 
 	{
 		Game.registryTank.tankEntries.clear();
 		Game.registryTank.maxTankWeight = 0;
-		
+
 		String path = homedir + Game.tankRegistryPath;
-		try 
+
+		boolean loadRegistry = Game.enableCustomTankRegistry;
+
+		if (loadRegistry)
 		{
-			Scanner in = new Scanner(new File(path));
-			while (in.hasNextLine()) 
+			try 
 			{
-				String line = in.nextLine();
-				String[] tankLine = line.split(",");
-				
-				if (tankLine[0].charAt(0) == '#') 
-				{ 
-					continue; 
-				}
-				if (tankLine[2].toLowerCase().equals("default")) 
+				Scanner in = new Scanner(new File(path));
+				while (in.hasNextLine()) 
 				{
-					boolean foundTank = false;
-					for (int i = 0; i < Game.defaultTanks.size(); i++)
+					String line = in.nextLine();
+					String[] tankLine = line.split(",");
+
+					if (tankLine[0].charAt(0) == '#') 
+					{ 
+						continue; 
+					}
+					if (tankLine[2].toLowerCase().equals("default")) 
 					{
-						if (tankLine[0].equals(Game.defaultTanks.get(i).name))
+						boolean foundTank = false;
+						for (int i = 0; i < Game.defaultTanks.size(); i++)
 						{
-							Game.defaultTanks.get(i).registerEntry(Game.registryTank, Double.parseDouble(tankLine[1]));
-							foundTank = true;
-							break;
+							if (tankLine[0].equals(Game.defaultTanks.get(i).name))
+							{
+								Game.defaultTanks.get(i).registerEntry(Game.registryTank, Double.parseDouble(tankLine[1]));
+								foundTank = true;
+								break;
+							}
+						}
+
+						if (!foundTank)
+							Game.logger.println (new Date().toString() + " (syswarn) the default tank '" + tankLine[0] + "' does not exist!");
+					}
+					else 
+					{
+						try 
+						{
+							@SuppressWarnings("resource")
+							ClassLoader loader = new URLClassLoader( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
+							@SuppressWarnings("unchecked")
+							Class<? extends Tank> clasz = (Class<? extends Tank>) loader.loadClass(tankLine[4]);
+							new RegistryTank.TankEntry(Game.registryTank, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
+						}
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+							Game.logger.println(new Date().toString() + " (syswarn) error loading custom tank '" + tankLine[0] + "'. try adding the path to your jvm classpath. ignoring.");
 						}
 					}
-					
-					if (!foundTank)
-						Game.logger.println (new Date().toString() + " (syswarn) the default tank '" + tankLine[0] + "' does not exist!");
 				}
-				else 
-				{
-					try 
-					{
-						ClassLoader classLoader = RegistryTank.class.getClassLoader();
-						Class<?> clazz = classLoader.getClass();
-						
-						if (!clazz.equals(URLClassLoader.class)) // Java 9 jdk.internal.loader.ClassLoaders$AppClassLoader
-							clazz = clazz.getSuperclass(); // jdk.internal.loader.BuiltinClassLoader
-						
-						Field field = clazz.getDeclaredField("ucp");
-						field.setAccessible(true);
-						Object ucp = field.get(classLoader);
-						
-						Class<?> URLClassPath = ucp.getClass();
-						Method method = URLClassPath.getDeclaredMethod("addURL", URL.class);
-						method.invoke(ucp, new File(tankLine[3]).toURI().toURL());
-						
-						Class<? extends Tank> clasz = Class.forName(tankLine[4], true, classLoader).asSubclass(Tank.class);
-						new RegistryTank.TankEntry(Game.registryTank, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
-					}
-					catch (Exception e) 
-					{
-						e.printStackTrace();
-						Game.logger.println(new Date().toString() + " (syswarn) error loading custom tank '" + tankLine[0] + "'. try adding the path to your jvm classpath. ignoring.");
-					}
-				}
+				in.close();
+			} 
+			catch (Exception e)
+			{
+				Game.logger.println (new Date().toString() + " (syswarn) tank registry file is nonexistent or broken, using default:");
+				e.printStackTrace(Game.logger);
+				loadRegistry = false;
 			}
-			in.close();
-		} 
-		catch (Exception e)
+		}
+
+		if (!loadRegistry)
 		{
-			Game.logger.println (new Date().toString() + " (syswarn) tank registry file is nonexistent or broken, using default:");
-			e.printStackTrace(Game.logger);
-			
 			for (int i = 0; i < Game.defaultTanks.size(); i++)
 			{
 				Game.defaultTanks.get(i).registerEntry(Game.registryTank);
 			}
 		}
 	}
-	
+
 	public static void initRegistry(String homedir) 
 	{
 		String path = homedir + Game.tankRegistryPath;
@@ -111,6 +108,9 @@ public class RegistryTank
 		try 
 		{
 			PrintStream writer = new PrintStream(new File(path));
+			writer.println("# Warning! To use a custom Tank Registry, you MUST set use-custom-tank-registry ");
+			writer.println("# in options.txt from false to true!");
+			writer.println("# ");
 			writer.println("# This is the Tank Registry file!");
 			writer.println("# A registry entry is a line in the file");
 			writer.println("# The parameters are name, rarity, custom/default, jar location, and class");
@@ -124,7 +124,7 @@ public class RegistryTank
 			writer.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
 			writer.println("# Example custom tank entry: 'mytank,1,custom,C:\\Users\\potato\\.tanks.d\\MyTank.jar,com.potato.MyTank'");
 			writer.println("# Don't leave any blank lines!");
-			
+
 			for (int i = 0; i < Game.defaultTanks.size(); i++)
 			{
 				writer.println(Game.defaultTanks.get(i).getString());
@@ -136,45 +136,45 @@ public class RegistryTank
 			e.printStackTrace(Game.logger);
 			System.exit(1);
 		}
-		
+
 	}
-	
+
 	static class TankEntry
 	{
 		public final Class<? extends Tank> tank;
 		public final String name;
 		public final double weight;
-	
+
 		protected double startWeight;
 		protected double endWeight;
-		
+
 		public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight)
 		{
 			this.tank = tank;
 			this.name = name;
 			this.weight = weight;
-	
+
 			this.startWeight = r.maxTankWeight;
 			r.maxTankWeight += weight;
 			this.endWeight = r.maxTankWeight;
-			
+
 			r.tankEntries.add(this);
 		}
-		
+
 		protected TankEntry()
 		{
 			this.tank = TankUnknown.class;
 			this.name = "unknown";
 			this.weight = 0;
 		}
-		
+
 		protected TankEntry(String name)
 		{
 			this.tank = TankUnknown.class;
 			this.name = name;
 			this.weight = 0;
 		}
-		
+
 		public Tank getTank(double x, double y, double a)
 		{
 			try 
@@ -187,55 +187,55 @@ public class RegistryTank
 				return null;
 			}
 		}
-		
+
 		public static TankEntry getUnknownEntry()
 		{
 			return new TankEntry();
 		}
-		
+
 		public static TankEntry getUnknownEntry(String name)
 		{
 			return new TankEntry(name);
 		}
 	}
-	
+
 	static class DefaultTankEntry
 	{
 		public final Class<? extends Tank> tank;
 		public final String name;
 		public final double weight;
-	
+
 		protected double startWeight;
 		protected double endWeight;
-		
-		public DefaultTankEntry(Class<? extends Tank> tank, String name, double weight)
+
+		public DefaultTankEntry(Class<? extends Tank> class1, String name, double weight)
 		{
-			this.tank = tank;
+			this.tank = class1;
 			this.name = name;
 			this.weight = weight;
 		}
-		
+
 		public TankEntry registerEntry(RegistryTank r)
 		{
 			return new TankEntry(r, this.tank, this.name, this.weight);
 		}
-		
+
 		public TankEntry registerEntry(RegistryTank r, double weight)
 		{
 			return new TankEntry(r, this.tank, this.name, weight);
 		}
-		
+
 		public String getString()
 		{
 			return this.name + "," + this.weight + ",default";
 		}
 	}
-	
+
 	public TankEntry getRandomTank()
 	{
 		if (this.tankEntries.size() <= 0)
 			throw new RuntimeException("the tank registry file is empty. please register some tanks!");
-			
+
 		double random = Math.random() * maxTankWeight;
 		for (int i = 0; i < tankEntries.size(); i++)
 		{
@@ -246,25 +246,25 @@ public class RegistryTank
 				return r;
 			}
 		}
-		
+
 		return TankEntry.getUnknownEntry();
 	}
-	
+
 	public TankEntry getEntry(String name)
 	{		
 		for (int i = 0; i < tankEntries.size(); i++)
 		{
 			TankEntry r = tankEntries.get(i);
-			
+
 			if (r.name.equals(name))
 			{
 				return r;
 			}
 		}
-		
+
 		return TankEntry.getUnknownEntry(name);
 	}
-	
+
 	public TankEntry getEntry(int number)
 	{		
 		return tankEntries.get(number);

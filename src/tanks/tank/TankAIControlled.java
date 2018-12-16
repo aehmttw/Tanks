@@ -47,10 +47,10 @@ public class TankAIControlled extends Tank
 	public boolean enableLookingAtTargetEnemy = true;
 
 	public int bulletBounces = 1;
-	public Color bulletColor = Color.blue;
 	public double bulletSize = Bullet.bullet_size;
 	public double bulletDamage = 1;
 	public double bulletSpeed = 25.0 / 4;
+	public boolean bulletHeavy = false;
 	public Bullet.BulletEffect bulletEffect = Bullet.BulletEffect.trail;
 
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
@@ -170,7 +170,7 @@ public class TankAIControlled extends Tank
 	protected double motionPauseTimer = 0;
 
 	/** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight*/
-	protected Tank targetEnemy;
+	protected Movable targetEnemy;
 
 	public TankAIControlled(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
 	{
@@ -254,7 +254,7 @@ public class TankAIControlled extends Tank
 		b.effect = this.bulletEffect;
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;
-
+		b.heavy = this.bulletHeavy;
 		Game.movables.add(b);
 		this.cooldown = (int) (Math.random() * this.cooldownRandom + this.cooldownBase);
 
@@ -282,7 +282,7 @@ public class TankAIControlled extends Tank
 			}
 		}
 
-		this.targetEnemy = (Tank) nearest;
+		this.targetEnemy = nearest;
 	}
 
 	public void updateMotionAI()
@@ -495,9 +495,9 @@ public class TankAIControlled extends Tank
 			this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX + this.nearestBullet.vX * Movable.distanceBetween(this, this.nearestBullet) / this.bulletSpeed, this.nearestBullet.posY + this.nearestBullet.vY * Movable.distanceBetween(this, nearestBullet) / this.bulletSpeed);
 			this.disableOffset = true;
 		}
-		else if (this.enablePredictiveFiring)
+		else if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank)
 		{
-			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getPolarDirection(), 0, targetEnemy, Game.tank_size);
+			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getPolarDirection(), 0, (Tank) targetEnemy, Game.tank_size);
 			r.size = Game.tank_size;
 
 			this.disableOffset = false;

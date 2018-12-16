@@ -8,12 +8,12 @@ import tanks.tank.Tank;
 
 public class Bullet extends Movable
 {
-	public static enum BulletEffect {none, fire, darkFire, fireTrail, trail};
+	public static enum BulletEffect {none, fire, darkFire, fireTrail, ice, trail};
 
 	public static int bullet_size = 10;
 
 	public boolean playPopSound = true;
-	public int age = 0;
+	public double age = 0;
 	public double size;
 	public int bounces;
 	public Color baseColor;
@@ -24,9 +24,12 @@ public class Bullet extends Movable
 	public BulletEffect effect = BulletEffect.none;
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
+	public boolean heavy = false;
+	public ItemBullet item;
+	public double recoil = 1.0;
 
 	public boolean affectsMaxLiveBullets = true;
-	
+
 	public Bullet(double x, double y, int bounces, Tank t)
 	{
 		super(x, y);
@@ -38,16 +41,24 @@ public class Bullet extends Movable
 		this.bounces = bounces;
 		this.tank = t;
 		this.team = t.team;
-		
+
 		t.liveBullets++;
 	}
-	
+
+	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
+	@Deprecated
+	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	{
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
+		this.item = ib;
+	}
+
 	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets)
 	{
 		this(x, y, bounces, t);
-		
+
 		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
-		
+
 		if (!this.affectsMaxLiveBullets)
 			t.liveBullets--;
 	}
@@ -55,6 +66,51 @@ public class Bullet extends Movable
 	public void moveOut(int amount)
 	{
 		this.moveInDirection(vX, vY, amount);
+	}
+
+	public void collidedWithTank(Tank t)
+	{
+		if (!heavy)
+			this.destroy = true;
+
+		if (!(Team.isAllied(this, t) && !this.team.friendlyFire))
+		{
+			t.flashAnimation = 1;
+			if (!this.heavy)
+			{
+				this.vX = 0;
+				this.vY = 0;
+			}
+			
+			t.lives -= this.damage;
+
+			if (t.lives <= 0)
+			{
+				t.flashAnimation = 0;
+				t.destroy = true;
+
+				if (this.tank.equals(Game.player))
+					Panel.panel.hotbar.currentCoins.coins += t.coinValue;
+			}
+		}
+	}
+
+	public void collidedWithObject(Movable o)
+	{
+		if (this.playPopSound)
+			Drawing.playSound("resources/bullet_explode.wav");
+
+		if (!heavy)
+		{
+			this.destroy = true;
+			this.vX = 0;
+			this.vY = 0;
+		}
+
+		o.destroy = true;
+
+		o.vX = 0;
+		o.vY = 0;
 	}
 
 	@Override
@@ -67,11 +123,11 @@ public class Bullet extends Movable
 
 		double prevX = this.posX;
 		double prevY = this.posY;
-		
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
-			
+
 			if (!o.bulletCollision)
 				continue;
 
@@ -141,7 +197,7 @@ public class Bullet extends Movable
 			this.posY = this.size/2 - (this.posY - this.size / 2);
 			this.vY = Math.abs(this.vY);
 		}
-		
+
 		if (collided && this.age == 0)
 		{
 			this.destroy = true;
@@ -165,25 +221,7 @@ public class Bullet extends Movable
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{			
-					this.destroy = true;
-					
-					if (!(Team.isAllied(this, t) && !this.team.friendlyFire))
-					{
-						t.flashAnimation = 1;
-						this.vX = 0;
-						this.vY = 0;
-						t.lives -= this.damage;
-
-						if (t.lives <= 0)
-						{
-							t.flashAnimation = 0;
-							o.destroy = true;
-							if (o.equals(Game.player))
-								Game.coins -= 5;		
-							if (this.tank.equals(Game.player))
-								Game.coins += t.coinValue;
-						}
-					}
+					this.collidedWithTank(t);
 				}
 			}
 			else if ((o instanceof Bullet || o instanceof Mine) && o != this && !o.destroy && !(o instanceof BulletFlame || this instanceof BulletFlame))
@@ -201,19 +239,7 @@ public class Bullet extends Movable
 
 					if (horizontalDist < bound && verticalDist < bound)
 					{
-						if (this.playPopSound)
-							Drawing.playSound("resources/bullet_explode.wav");
-
-						this.destroy = true;
-						this.vX = 0;
-						this.vY = 0;
-						this.destroy = true;
-						o.destroy = true;
-
-						this.vX = 0;
-						this.vY = 0;
-						o.vX = 0;
-						o.vY = 0;
+						collidedWithObject(o);
 					}
 				}
 			}
@@ -252,7 +278,7 @@ public class Bullet extends Movable
 	{
 		if (destroy)
 		{
-			if (this.destroyTimer <= 0 && Game.graphicalEffects && !(this instanceof BulletFlame))
+			if (this.destroyTimer <= 0 && Game.fancyGraphics && !(this instanceof BulletFlame))
 			{
 				for (int i = 0; i < this.size * 4; i++)
 				{
@@ -272,7 +298,27 @@ public class Bullet extends Movable
 
 		else
 		{
-			if (Game.graphicalEffects)
+			/*if (this.age > 80)
+			{
+				this.destroy = true;
+
+				Bullet b = new Bullet(this.posX, this.posY, 1, this.tank);
+				b.vX = this.vX;
+				b.vY = this.vY;
+				b.addPolarMotion(this.getPolarDirection() + Math.PI / 2, 5);
+				b.moveOut(2);
+
+				Bullet b2 = new Bullet(this.posX, this.posY, 1, this.tank);
+				b2.vX = this.vX;
+				b2.vY = this.vY;
+				b2.addPolarMotion(this.getPolarDirection() - Math.PI / 2, 5);
+				b2.moveOut(2);
+
+				Game.movables.add(b);
+				Game.movables.add(b2);
+			}*/
+
+			if (Game.fancyGraphics)
 			{
 				if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
 					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.trail));
@@ -292,13 +338,23 @@ public class Bullet extends Movable
 					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.fire, 0.25, 0.25));
 					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.fire, 0.25, 0));
 				}
-				
+
 				if (this.effect.equals(BulletEffect.darkFire))
 				{
 					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.darkFire, 0.25, 0.75));
 					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.darkFire, 0.25, 0.50));
 					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.darkFire, 0.25, 0.25));
 					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.darkFire, 0.25, 0));
+				}
+
+				if (this.effect.equals(BulletEffect.ice))
+				{
+					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+					int var = 50;
+					e.maxAge /= 2;
+					e.col = new Color((int) Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)));
+					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+					Game.effects.add(e);
 				}
 			}
 		}
@@ -307,13 +363,16 @@ public class Bullet extends Movable
 		{
 			if (this.affectsMaxLiveBullets)
 				this.tank.liveBullets--;
-			
+
+			if (this.item != null)
+				this.item.liveBullets--;
+
 			Game.removeMovables.add(this);
 		}
 
 		super.update();
 
-		this.age++;
+		this.age += Panel.frameFrequency;
 	}
 
 	@Override

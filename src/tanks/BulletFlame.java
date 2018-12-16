@@ -19,6 +19,21 @@ public class BulletFlame extends Bullet
 		this.playPopSound = false;
 	}
 	
+	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
+	@Deprecated
+	public BulletFlame(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	{
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
+		this.item = ib;
+		this.item.liveBullets--;
+	}
+	
+	public BulletFlame(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount) 
+	{
+		this(x, y, bounces, t);
+		this.affectsMaxLiveBullets = affectsLiveBulletCount;
+	}
+	
 	@Override
 	public void update()
 	{

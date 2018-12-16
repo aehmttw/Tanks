@@ -3,8 +3,10 @@ package tanks.tank;
 import java.awt.Color;
 
 import tanks.BulletLaser;
+import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
+import tanks.Movable;
 import tanks.Panel;
 import tanks.Ray;
 import tanks.Team;
@@ -59,7 +61,7 @@ public class TankRed extends TankAIControlled
 		if (this.cooldown > 0)
 		{
 			this.idleTime = 0;
-			if (Math.random() * maxCooldown > cooldown && Game.graphicalEffects)
+			if (Math.random() * maxCooldown > cooldown && Game.fancyGraphics)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.charge);
 				double var = 50;
@@ -70,14 +72,24 @@ public class TankRed extends TankAIControlled
 
 		}
 		
-		if (!Team.isAllied(new Ray(this.posX, this.posX, this.angle, 0, this).getTarget(), this))
+		Ray r = new Ray(this.posX, this.posX, this.angle, 0, this);
+		r.moveOut(4);
+		Movable m = r.getTarget();
+		
+		if (!Team.isAllied(m, this))
 		{
 			this.maxCooldown = this.maxCooldown * 0.75 + 1;
 			BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
+			b.team = this.team;
 			b.setPolarMotion(this.angle, 25.0/4);
 			b.moveOut(8);
 			b.shoot();
+			Drawing.pendingSounds.add("resources/laser.wav");
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
+		}
+		else
+		{
+			this.cooldown = (Math.max(this.cooldown, 0));
 		}
 	}
 }

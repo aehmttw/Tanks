@@ -6,18 +6,26 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import tanks.item.ItemBar;
 import tanks.tank.Tank;
 
 public class ScreenGame extends Screen
 {
 	public boolean playing = false;
 	public boolean paused = false;
+
+	public boolean shopScreen = false;
+	public int shopPage = 0;
+	public int rows = 6;
+	public int yoffset = -150;
+
 	public static boolean finished = false;
 	public static double finishTimer = 100;
 	public static double finishTimerMax = 100;
+
+	public boolean cancelCountdown = false;
 	public String name = null;
 
+	public ArrayList<Item> shop = new ArrayList<Item>();
 	public boolean screenshotMode = false;
 
 	Button play = new Button(Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
@@ -27,6 +35,17 @@ public class ScreenGame extends Screen
 		{
 			playing = true;
 			Game.player.cooldown = 20;
+		}
+	}
+			);
+
+	Button enterShop = new Button(Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-110, 350, 40, "Shop", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			cancelCountdown = true;
+			shopScreen = true;
 		}
 	}
 			);
@@ -41,6 +60,18 @@ public class ScreenGame extends Screen
 		}
 	}
 			);
+
+	Button resumeCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			paused = false;
+			Game.player.cooldown = 20;
+		}
+	}
+			);
+
 
 	Button newLevel = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
@@ -78,7 +109,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button quitCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -90,7 +121,7 @@ public class ScreenGame extends Screen
 	}
 	, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
 
-	Button quitCrusadeFinalLife = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusadeFinalLife = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -101,8 +132,38 @@ public class ScreenGame extends Screen
 		}
 	}
 	, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
-	
-	private final ItemBar itemBar = new ItemBar();
+
+	Button exitShop = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit shop", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			shopScreen = false;
+		}
+	}
+			);
+
+	Button next = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			shopPage++;
+		}
+	}
+			);
+
+	Button previous = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			shopPage--;
+		}
+	}
+			);
+
+	ArrayList<Button> shopItemButtons = new ArrayList<Button>();
 
 	public ScreenGame()
 	{
@@ -116,14 +177,74 @@ public class ScreenGame extends Screen
 		this.name = s;
 	}
 
+	public ScreenGame(ArrayList<Item> shop)
+	{
+		this();
+		this.shop = shop;
+		for (int i = 0; i < this.shop.size(); i++)
+		{
+			final int j = i;
+			Item item = this.shop.get(j);
+
+			String price = "Price: " + item.price + " ";
+			if (item.price == 0)
+				price = "Price: Free!";
+			else if (item.price == 1)
+				price += "coin";
+			else
+				price += "coins";
+
+			this.shopItemButtons.add(new Button(0, 0, 350, 40, item.name, new Runnable()
+			{
+				@Override
+				public void run() 
+				{
+					int pr = shop.get(j).price;
+					if (Panel.panel.hotbar.currentCoins.coins >= pr)
+					{
+						if (Panel.panel.hotbar.currentItemBar.addItem(shop.get(j)))
+							Panel.panel.hotbar.currentCoins.coins -= pr;
+					}
+				}
+			}, price
+					));
+		}
+
+		for (int i = 0; i < shopItemButtons.size(); i++)
+		{
+			int page = i / (rows * 3);
+			int offset = 0;
+
+			if (page * rows * 3 + rows < shopItemButtons.size())
+				offset = -190;
+
+			if (page * rows * 3 + rows * 2 < shopItemButtons.size())
+				offset = -380;
+
+			shopItemButtons.get(i).posY = Drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+
+			if (i / rows % 3 == 0)
+				shopItemButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset;
+			else if (i / rows % 3 == 1)
+				shopItemButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380;
+			else
+				shopItemButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380 * 2;
+		}
+	}
+
 	@Override
 	public void update()
 	{
+		Panel.panel.hotbar.update();
+
 		if (InputKeyboard.keys.contains(KeyEvent.VK_ESCAPE))
 		{
 			if (!Panel.pausePressed)
 			{
-				this.paused = !this.paused;
+				if (shopScreen)
+					shopScreen = false;
+				else
+					this.paused = !this.paused;
 			}
 
 			Panel.pausePressed = true;
@@ -146,7 +267,10 @@ public class ScreenGame extends Screen
 		if (paused)
 		{
 			if (name == null)
-				newLevel.update();
+			{
+				if (!Crusade.crusadeMode)
+					newLevel.update();
+			}
 			else
 				edit.update();
 
@@ -160,16 +284,42 @@ public class ScreenGame extends Screen
 					quitCrusadeFinalLife.update();
 			}
 
-			resume.update();
+			if (!Crusade.crusadeMode)
+				resume.update();
+			else
+				resumeCrusade.update();
+
 			return;
 		}
 
 		if (!playing && Game.startTime >= 0)
 		{
-			if (Game.autostart)
-				Game.startTime -= Panel.frameFrequency;
+			if (shopScreen)
+			{
+				Panel.panel.hotbar.hidden = false;
+				Panel.panel.hotbar.hideTimer = 100;
 
-			play.update();
+				this.exitShop.update();
+
+				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)
+					next.update();
+
+				if (shopPage > 0)
+					this.previous.update();
+
+				for (int i = 0; i < this.shopItemButtons.size(); i++)
+					this.shopItemButtons.get(i).update();
+			}
+			else
+			{
+				if (!this.shop.isEmpty())
+					enterShop.update();
+
+				if (Game.autostart && !cancelCountdown)
+					Game.startTime -= Panel.frameFrequency;
+
+				play.update();
+			}
 
 			if (!finished)
 			{
@@ -208,6 +358,9 @@ public class ScreenGame extends Screen
 			{
 				Game.belowEffects.get(i).update();
 			}
+
+			Panel.panel.hotbar.update();
+
 
 			if (aliveTeams.size() <= 1)
 			{
@@ -264,8 +417,6 @@ public class ScreenGame extends Screen
 			else
 				Game.bulletLocked = false;
 		}
-		
-		itemBar.update();
 
 		for (int i = 0; i < Game.removeMovables.size(); i++)
 			Game.movables.remove(Game.removeMovables.get(i));
@@ -316,37 +467,72 @@ public class ScreenGame extends Screen
 			if (m.drawBelow)
 				m.draw(g);
 		}
-		
+
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
-			if (!m.drawBelow)
+			if (!m.drawBelow && ! m.drawAbove)
 				m.draw(g);
 		}
-		
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			if (!o.drawBelow)
 				o.draw(g);
 		}
-		
+
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable m = Game.movables.get(i);
+			if (m.drawAbove)
+				m.draw(g);
+		}
+
 		for (int i = 0; i < Game.effects.size(); i++)
 			((Effect)Game.effects.get(i)).draw(g);
-		
-		itemBar.draw(g);
 
+		
 		if (!playing) 
 		{
-			play.draw(g);
-
 			if (Crusade.crusadeMode)
 			{
 				g.setColor(new Color(0, 0, 0, 127));
 				Drawing.setFontSize(g, 100);
 				Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
 			}
+			
+			if (shopScreen)
+			{				
+				this.exitShop.draw(g);
+
+				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)
+					next.update();
+
+				if (shopPage > 0)
+					this.previous.update();
+
+				for (int i = 0; i < this.shopItemButtons.size(); i++)
+					this.shopItemButtons.get(i).draw(g);
+			}
+			else
+			{
+				if (!this.shop.isEmpty())
+					enterShop.draw(g);
+
+				play.draw(g);
+
+				if (Game.autostart && !cancelCountdown)
+				{
+					g.setColor(Color.gray);
+					Drawing.window.fillInterfaceRect(g, Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-27.5, 350, 5);
+					g.setColor(Color.orange);
+					Drawing.window.fillInterfaceProgressRect(g, Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-27.5, 350, 5, Game.startTime / 400);
+				}
+			}
 		}
+
+		Panel.panel.hotbar.draw(g);
 
 		if (paused && !screenshotMode)
 		{
@@ -354,7 +540,10 @@ public class ScreenGame extends Screen
 			g.fillRect(0, 0, (int) (Game.window.getSize().getWidth()) + 1, (int) (Game.window.getSize().getHeight()) + 1);
 
 			if (name == null)
-				newLevel.draw(g);
+			{
+				if (!Crusade.crusadeMode)
+					newLevel.draw(g);
+			}
 			else
 				edit.draw(g);
 
@@ -366,8 +555,13 @@ public class ScreenGame extends Screen
 					quitCrusade.draw(g);
 				else
 					quitCrusadeFinalLife.draw(g);
-			}			
-			resume.draw(g);
+			}	
+
+			if (!Crusade.crusadeMode)
+				resume.draw(g);
+			else
+				resumeCrusade.draw(g);
+
 			g.setColor(Color.black);
 			Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Game paused");
 		}

@@ -12,7 +12,7 @@ public class ScreenResumeCrusade extends Screen
 		{
 			Crusade.crusadeMode = true;
 			Crusade.currentCrusade.loadLevel();
-			Game.screen = new ScreenGame();
+			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 		}
 	}
 			);

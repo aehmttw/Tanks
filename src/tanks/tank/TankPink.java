@@ -19,7 +19,6 @@ public class TankPink extends TankAIControlled
 		this.cooldownBase = 120;
 		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 2;
-		this.bulletColor = Color.red;
 		this.bulletSpeed = 25.0 / 2;
 		this.bulletEffect = Bullet.BulletEffect.fireTrail;
 		this.turretIdleTimerBase = 25;

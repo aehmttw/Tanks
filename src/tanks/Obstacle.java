@@ -24,27 +24,6 @@ public class Obstacle
 		this.posX = (int) ((posX + 0.5) * obstacle_size);
 		this.posY = (int) ((posY + 0.5) * obstacle_size);
 		this.color = Obstacle.getRandomColor();
-		
-		//int col = (int) (this.posX) % 255;
-		//this.color = new Color(col, col, col);
-		/*if (((this.posY - 25) / 50) % 2 == 1)
-		{
-			this.color = new Color(255, 0, 0);
-		}*/
-		
-		/*if (this.posX > 200)
-		{
-			if (this.posX < 700)
-			{
-				if (this.posY > 200)
-				{
-					if (this.posY < 700)
-					{
-						this.color = new Color(0, 0, 255);
-					}
-				}
-			}
-		}*/
 	}
 
 	public void draw(Graphics g)
@@ -85,7 +64,7 @@ public class Obstacle
 		double colorMul = Math.random() * 0.5 + 0.5;
 		Color col;
 		
-		if (Game.graphicalEffects)
+		if (Game.fancyGraphics)
 			col = new Color((int) (colorMul * (176 - Math.random() * 70)), (int) (colorMul * (111 - Math.random() * 34)), (int) (colorMul * 14));
 		else
 			col = new Color(87, 46, 8);

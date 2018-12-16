@@ -95,7 +95,7 @@ public class Firework extends Movable
 			
 			if (this.age >= this.maxAge)
 			{
-				Drawing.playSound("resources/explosion.wav");
+				Drawing.playSound("resources/destroy.wav");
 
 				removeList.add(this);
 				

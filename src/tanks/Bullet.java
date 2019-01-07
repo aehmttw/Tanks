@@ -128,7 +128,7 @@ public class Bullet extends Movable
 		{
 			Obstacle o = Game.obstacles.get(i);
 
-			if (!o.bulletCollision)
+			if (!o.bulletCollision && !o.checkForObjects)
 				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
@@ -145,6 +145,12 @@ public class Bullet extends Movable
 
 			if (horizontalDist < bound && verticalDist < bound)
 			{
+				if (o.checkForObjects)
+					o.onObjectEntry(this);
+				
+				if (!o.bulletCollision)
+					continue;
+					
 				if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
 					this.posX += horizontalDist - bound;

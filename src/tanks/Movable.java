@@ -13,6 +13,9 @@ public abstract class Movable
 	public boolean destroy = false;
 	public boolean drawBelow = false;
 	public boolean drawAbove = false;
+	public boolean canHide = false;
+	
+	public double hiddenTimer = 0; 
 
 	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>(); 
 	
@@ -28,6 +31,8 @@ public abstract class Movable
 	{
 		if (!destroy)
 		{
+			this.hiddenTimer = Math.max(0, this.hiddenTimer - Panel.frameFrequency);
+			
 			double vX2 = this.vX;
 			double vY2 = this.vY;
 			
@@ -50,6 +55,8 @@ public abstract class Movable
 			
 			this.posX += vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
 			this.posY += vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
+			
+			this.canHide = false;
 			this.checkCollision();
 		}
 	}

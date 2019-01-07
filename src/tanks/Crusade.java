@@ -85,9 +85,8 @@ public class Crusade
 				}
 				else if (parsing == 2)
 				{
-					String[] args = levelArray.get(i).split("-");
-					this.remainingLives = Integer.parseInt(args[0].split(",")[0]);
-					this.bonusLifeFrequency = Integer.parseInt(args[0].split(",")[1]);
+					this.remainingLives = Integer.parseInt(s.split(",")[0]);
+					this.bonusLifeFrequency = Integer.parseInt(s.split(",")[1]);
 				}
 			}
 			
@@ -108,7 +107,7 @@ public class Crusade
 		}
 		else
 		{			
-			if ((this.currentLevel + 1) % 3 == 0 && !replay)
+			if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0 && !replay)
 				remainingLives++;
 			
 			if (this.currentLevel >= levels.size() - 1)

@@ -9,7 +9,8 @@ public class Obstacle
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
 	public boolean drawBelow = false;
-	
+	public boolean checkForObjects = false;
+
 	public double posX;
 	public double posY;
 	public Color color;
@@ -57,6 +58,11 @@ public class Obstacle
 		drawing.fillRect(g, this.posX + Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
 		drawing.fillRect(g, this.posX, this.posY - Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
 		drawing.fillRect(g, this.posX, this.posY + Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
+	}
+	
+	public void onObjectEntry(Movable m)
+	{
+		
 	}
 	
 	public static Color getRandomColor()

@@ -78,7 +78,7 @@ public abstract class Tank extends Movable
 		{
 			Obstacle o = Game.obstacles.get(i);
 			
-			if (!o.tankCollision)
+			if (!o.tankCollision && !o.checkForObjects)
 				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
@@ -91,6 +91,12 @@ public abstract class Tank extends Movable
 
 			if (horizontalDist < bound && verticalDist < bound)
 			{
+				if (o.checkForObjects)
+					o.onObjectEntry(this);
+				
+				if (!o.tankCollision)
+					continue;
+				
 				if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
 					hasCollided = true;

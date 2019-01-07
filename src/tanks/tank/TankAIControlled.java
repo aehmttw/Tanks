@@ -93,6 +93,9 @@ public class TankAIControlled extends Tank
 	/** Range which rays will be used to detect a tank after being locked on to it. Larger values detect motion better but are less accurate.*/
 	public double searchRange = 0.3;
 
+	/** Multiplier of time the tank will hide in a shrub*/
+	public double hideAmount = 350;
+
 	/** Type of shooting AI to use*/
 	public ShootAI shootAIType;
 
@@ -171,7 +174,10 @@ public class TankAIControlled extends Tank
 
 	/** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight*/
 	protected Movable targetEnemy;
-
+	
+	/** True if can find an enemy*/
+	protected boolean hasTarget = true;
+	
 	public TankAIControlled(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
 	{
 		super(name, x, y, size, color);
@@ -266,16 +272,18 @@ public class TankAIControlled extends Tank
 	{
 		double nearestDist = Double.MAX_VALUE;
 		Movable nearest = this;
+		this.hasTarget = false;
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && !Team.isAllied(this, m))
+			if (m instanceof Tank && !Team.isAllied(this, m) && m.hiddenTimer <= 0)
 			{				
 				double dist = Movable.distanceBetween(this, m);
 				if (dist < nearestDist)
 				{
+					this.hasTarget = true;
 					nearestDist = dist;
 					nearest = m;
 				}
@@ -321,7 +329,7 @@ public class TankAIControlled extends Tank
 	public void updateIdleMotion()
 	{
 		if (Math.random() < this.motionChangeChance || this.hasCollided)
-		{
+		{	
 			this.overrideDirection = false;
 
 			double prevDirection = this.direction;
@@ -353,6 +361,9 @@ public class TankAIControlled extends Tank
 
 			if (this.direction != prevDirection)
 				this.motionPauseTimer = this.directionChangeCooldown;
+			
+			if (this.canHide)
+				this.motionPauseTimer += this.hideAmount * (Math.random() + 1);
 		}
 
 		if (this.motionPauseTimer > 0)
@@ -466,7 +477,7 @@ public class TankAIControlled extends Tank
 		Movable m = a.getTarget();
 
 		if (!(m == null))
-			if (!Team.isAllied(m, this) && m instanceof Tank)
+			if (!Team.isAllied(m, this) && m instanceof Tank && m.hiddenTimer <= 0)
 				this.shoot();
 
 		if (this.idlePhase == RotationPhase.clockwise)
@@ -490,6 +501,9 @@ public class TankAIControlled extends Tank
 
 	public void updateTurretStraight()
 	{
+		if (!this.hasTarget)
+			return;
+		
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy)
 		{
 			this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX + this.nearestBullet.vX * Movable.distanceBetween(this, this.nearestBullet) / this.bulletSpeed, this.nearestBullet.posY + this.nearestBullet.vY * Movable.distanceBetween(this, nearestBullet) / this.bulletSpeed);
@@ -553,7 +567,7 @@ public class TankAIControlled extends Tank
 			this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX + this.nearestBullet.vX * Movable.distanceBetween(this, this.nearestBullet) / this.bulletSpeed, this.nearestBullet.posY + this.nearestBullet.vY * Movable.distanceBetween(this, nearestBullet) / this.bulletSpeed);
 			this.disableOffset = true;
 		}
-		else if (aim)
+		else if (aim && this.hasTarget)
 		{
 			this.updateAimingTurret();
 		}
@@ -592,6 +606,7 @@ public class TankAIControlled extends Tank
 
 		Movable target = ray.getTarget();
 		if (target != null)
+		{
 			if (target.equals(this.targetEnemy))
 			{
 				this.lockedAngle = this.angle;
@@ -599,10 +614,22 @@ public class TankAIControlled extends Tank
 				this.aim = true;
 				this.aimAngle = this.searchAngle % (Math.PI * 2);
 			}
+			else if (target instanceof Tank && target.hiddenTimer <= 0 && Team.isAllied(target, this))
+			{
+				this.targetEnemy = target;
+				this.lockedAngle = this.angle;
+				this.searchPhase = RotationPhase.aiming;
+				this.aim = true;
+				this.aimAngle = this.searchAngle % (Math.PI * 2);
+			}
+		}
 	}
 
 	public void lookAtTargetEnemy()
 	{
+		if (!this.hasTarget)
+			return;
+		
 		double a;
 
 		if (this.enablePredictiveFiring)

@@ -93,6 +93,7 @@ public class Game
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleShrubbery.class, "shrub"));
 
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGray.class, "gray", 1));

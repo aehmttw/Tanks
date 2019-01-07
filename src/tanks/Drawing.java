@@ -457,7 +457,7 @@ public class Drawing extends JFrame
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
 			return 0;
 
-		return getPlayerOffsetX() + Drawing.interfaceSizeX / 2;
+		return getPlayerOffsetX() + (Game.currentSizeX / 28.0 - 1) * Drawing.interfaceSizeX / 2;
 	}
 
 	public static double getPlayerMouseOffsetY()
@@ -465,6 +465,6 @@ public class Drawing extends JFrame
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
 			return 0;
 
-		return getPlayerOffsetY() + Drawing.interfaceSizeY / 2;
+		return getPlayerOffsetY() + (Game.currentSizeY / 18.0 - 1) * Drawing.interfaceSizeY / 2;
 	}
 }

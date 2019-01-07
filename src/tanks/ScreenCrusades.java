@@ -119,6 +119,29 @@ public class ScreenCrusades extends Screen
 		}
 				));
 		
+		buttons.add(new Button(0, 0, 350, 40, "Wii crusade", new Runnable()
+		{
+			@Override
+			public void run() 
+			{
+				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("resources/wii_crusade.tanks")));
+				ArrayList<String> al = new ArrayList<String>();
+				
+				while (s.hasNext())
+				{
+					al.add(s.nextLine());
+				}
+				
+				s.close();
+				
+				Crusade.currentCrusade = new Crusade(al, "Wii Crusade");
+				Crusade.crusadeMode = true;
+				Crusade.currentCrusade.loadLevel();
+				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+			}
+		}
+				));
+		
 		for (Path l: levels)
 		{
 			String[] pathSections = l.toString().replaceAll("\\\\", "/").split("/");

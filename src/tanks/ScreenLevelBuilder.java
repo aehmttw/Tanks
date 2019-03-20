@@ -1679,6 +1679,11 @@ public class ScreenLevelBuilder extends Screen
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
 		Game.loadLevel(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
 		s.optionsMenu = true;
+		s.tankNum = tankNum;
+		s.obstacleNum = obstacleNum;
+		s.teamNum = teamNum;
+		s.mouseTank = mouseTank;
+		s.mouseObstacle = mouseObstacle;
 		Game.screen = s;
 	}
 

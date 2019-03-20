@@ -1,7 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.BulletLaser;
 import tanks.Drawing;
 import tanks.Effect;
@@ -19,7 +17,7 @@ public class TankRed extends TankAIControlled
 
 	public TankRed(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(200, 0, 0), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, 200, 0, 0, angle, ShootAI.straight);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;
@@ -43,14 +41,20 @@ public class TankRed extends TankAIControlled
 		this.lineOfSight = false;
 
 		if (this.cooldown < this.maxCooldown)
-			this.color = new Color(Math.min((int) (200 + (maxCooldown - this.cooldown) / maxCooldown * 55), 255), (int)((maxCooldown - this.cooldown) / maxCooldown * 100), (int) ((maxCooldown - this.cooldown) / maxCooldown * 100));	
-
+		{
+			this.colorR = Math.min((200 + (maxCooldown - this.cooldown) / maxCooldown * 55), 255);
+			this.colorG = (maxCooldown - this.cooldown) / maxCooldown * 100;
+			this.colorB = (maxCooldown - this.cooldown) / maxCooldown * 100;	
+		}
+		
 		super.update();
 
 		if (!lineOfSight)
 		{
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
-			this.color = new Color(200, 0, 0);
+			this.colorR = 200;
+			this.colorG = 0;
+			this.colorB = 0;
 		}
 	}
 
@@ -65,7 +69,10 @@ public class TankRed extends TankAIControlled
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.charge);
 				double var = 50;
-				e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
+				e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
+				e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
+				e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+
 				Game.effects.add(e);
 			}
 			return;
@@ -84,7 +91,7 @@ public class TankRed extends TankAIControlled
 			b.setPolarMotion(this.angle, 25.0/4);
 			b.moveOut(8);
 			b.shoot();
-			Drawing.pendingSounds.add("resources/laser.wav");
+			Drawing.drawing.playSound("resources/laser.wav");
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
 		}
 		else

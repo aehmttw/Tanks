@@ -1,9 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-
 import tanks.Game;
 import tanks.Drawing;
 
@@ -14,24 +10,24 @@ public class TankUnknown extends Tank
 {
 	public TankUnknown(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, Color.red);
+		super(name, x, y, Game.tank_size, 255, 0, 0);
 	}
 	
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		g.setColor(Color.red);
-		Drawing drawing = Drawing.window;
-		drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
-		drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+		Drawing drawing = Drawing.drawing;
+		drawing.setColor(255, 0, 0);
+		drawing.fillRect(this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
+		drawing.fillRect(this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
 	
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * drawing.scale)));
-		drawing.drawText(g, this.posX, this.posY + 5, "?");
+		drawing.setFontSize(24);
+		drawing.drawText(this.posX, this.posY - 20, "?");
 		
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (12 * drawing.scale)));
-		drawing.drawText(g, this.posX, this.posY + 32, this.name);
+		drawing.setFontSize(12);
+		drawing.drawText(this.posX, this.posY + 20, this.name);
 
 	}
 

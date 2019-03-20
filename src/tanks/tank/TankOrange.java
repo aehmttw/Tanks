@@ -1,7 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.BulletFlame;
 import tanks.Drawing;
 import tanks.Game;
@@ -12,7 +10,7 @@ public class TankOrange extends TankAIControlled
 {
 	public TankOrange(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(230, 120, 0), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, 230, 120, 0, angle, ShootAI.straight);
 
 		this.enableMovement = true;
 		this.speed = 1.5;
@@ -20,7 +18,6 @@ public class TankOrange extends TankAIControlled
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.aimTurretSpeed = 0.01;
-		this.aimAccuracyOffset = 0;
 				
 		this.motionChangeChance = 0.001;
 		
@@ -41,7 +38,7 @@ public class TankOrange extends TankAIControlled
 			{
 				if(m.equals(this.targetEnemy))
 				{
-					Drawing.playSound("resources/flame.wav");
+					Drawing.drawing.playSound("resources/flame.wav");
 
 					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
 					b.setPolarMotion(this.angle, 25.0/4);

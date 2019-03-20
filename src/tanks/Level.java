@@ -1,6 +1,5 @@
 package tanks;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,7 +19,10 @@ public class Level
 	Team[] tankTeams;
 	boolean enableTeams = false;
 
-	public static Color currentColor = new Color(235, 207, 166);
+	public static double currentColorR = 235;
+	public static double currentColorG = 207;
+	public static double currentColorB = 166;
+
 	public boolean editable = true;
 
 	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
@@ -32,7 +34,6 @@ public class Level
 	 * Asterisks indicate that the parameter can be repeated, separated by commas
 	 * Do not include these in the level string.)
 	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
-	 * 
 	 */
 	public Level(String level)
 	{		
@@ -94,7 +95,7 @@ public class Level
 				String[] t = teams[i].split("-");
 
 				if (t.length >= 5)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), new Color(Integer.parseInt(t[2]), Integer.parseInt(t[3]), Integer.parseInt(t[4])));
+					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
 				else if (t.length >= 2)
 					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
 				else
@@ -180,7 +181,20 @@ public class Level
 					}
 				}
 						);
-				s.teamButtons.add(buttonToAdd);
+				s.teamEditButtons.add(buttonToAdd);
+
+				Button buttonToAdd2 = new Button(0, 0, 350, 40, t.name, new Runnable()
+				{
+					@Override
+					public void run() 
+					{
+						s.setEditorTeam(j);
+					}
+				}
+						);
+				
+				s.teamSelectButtons.add(buttonToAdd2);
+
 
 			}
 
@@ -192,18 +206,25 @@ public class Level
 		Game.currentSizeX = (int) (sX * Game.bgResMultiplier);
 		Game.currentSizeY = (int) (sY * Game.bgResMultiplier);
 
-		currentColor = new Color(r, g, b);
+		currentColorR = r;
+		currentColorG = g;
+		currentColorB = b;
 
-		Game.tiles = new Color[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
+
 		for (int i = 0; i < Game.currentSizeX; i++)
 		{
 			for (int j = 0; j < Game.currentSizeY; j++)
 			{
-				Game.tiles[i][j] = new Color((int)(r + Math.random() * dr), (int)(g + Math.random() * dg), (int)(b + Math.random() * db));
+				Game.tilesR[i][j] = (r + Math.random() * dr);
+				Game.tilesG[i][j] = (g + Math.random() * dg);
+				Game.tilesB[i][j] = (b + Math.random() * db);
 			}
 		}
 
-		Game.window.setScreenBounds(Game.tank_size * sX, Game.tank_size * sY);
+		Drawing.drawing.setScreenBounds(Game.tank_size * sX, Game.tank_size * sY);
 
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{

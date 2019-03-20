@@ -1,8 +1,6 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
+import org.lwjgl.glfw.GLFW;
 
 public class Hotbar
 {
@@ -38,9 +36,10 @@ public class Hotbar
 		else
 			this.bottomOffset = Math.max(0, this.bottomOffset - 4 * Panel.frameFrequency);
 		
-		if (InputKeyboard.validKeys.contains(KeyEvent.VK_SHIFT))
+		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_RIGHT_SHIFT) || Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_LEFT_SHIFT))
 		{
-			InputKeyboard.validKeys.remove((Integer)KeyEvent.VK_SHIFT);
+			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_RIGHT_SHIFT);
+			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_LEFT_SHIFT);
 			this.persistent = !this.persistent;
 		}	
 			
@@ -48,18 +47,18 @@ public class Hotbar
 			this.currentItemBar.update();
 	}
 
-	public void draw(Graphics g)
+	public void draw()
 	{
 		if (this.enabledItemBar)
-			this.currentItemBar.draw(g);
+			this.currentItemBar.draw();
 
 		if (this.enabledHealthBar)
 		{
-			int x = (int) ((Drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.interfaceSizeY - 15 + bottomOffset);
-			g.setColor(new Color(0, 0, 0, 128));
-			Drawing.window.fillInterfaceRect(g, x, y, 350, 5);
-			g.setColor(new Color(255, 128, 0));
+			int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
+			int y = (int) (Drawing.drawing.interfaceSizeY - 15 + bottomOffset);
+			Drawing.drawing.setColor(0, 0, 0, 128);
+			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
+			Drawing.drawing.setColor(255, 128, 0);
 
 			double lives = Game.player.lives % 1.0;
 			if (lives == 0 && Game.player.lives > 0)
@@ -70,23 +69,23 @@ public class Hotbar
 
 			int shields = (int) (Game.player.lives - lives);
 		
-			Drawing.window.fillInterfaceProgressRect(g, x, y, 350, 5, lives);
+			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, lives);
 			
 			if (shields > 0)
 			{
-				g.setColor(new Color(255, 0 , 0));
-				Drawing.window.fillInterfaceOval(g, x - 175, y, 18, 18);
-				Drawing.setFontSize(g, 15);
-				g.setColor(Color.white);
-				Drawing.window.drawInterfaceText(g, x - 174, y + 3, shields + "");
+				Drawing.drawing.setColor(255, 0 , 0);
+				Drawing.drawing.fillInterfaceOval(x - 175, y, 18, 18);
+				Drawing.drawing.setFontSize(15);
+				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.drawInterfaceText(x - 174, y + 3, shields + "");
 			}
 		}
 		
 		if (this.enabledCoins)
 		{
-			Drawing.setFontSize(g, 18);
-			g.setColor(Color.black);
-			Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY - 85 + bottomOffset, "Coins: " + currentCoins.coins);
+			Drawing.drawing.setFontSize(18);
+			Drawing.drawing.setColor(0, 0, 0);
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 85 + bottomOffset, "Coins: " + currentCoins.coins);
 		}
 	}
 }

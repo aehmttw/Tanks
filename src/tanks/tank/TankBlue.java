@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import tanks.BulletElectric;
@@ -16,7 +15,7 @@ public class TankBlue extends TankAIControlled
 
 	public TankBlue(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(0, 0, 200), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, 0, 0, 200, angle, ShootAI.straight);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;
@@ -51,7 +50,7 @@ public class TankBlue extends TankAIControlled
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		Game.movables.add(b);
-		Drawing.pendingSounds.add("resources/laser.wav");
+		Drawing.drawing.pendingSounds.add("resources/laser.wav");
 		this.cooldown = this.cooldownBase;
 
 	}

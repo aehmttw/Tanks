@@ -1,7 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.Bullet;
 import tanks.BulletFreeze;
 import tanks.Drawing;
@@ -11,7 +9,7 @@ public class TankCyan extends TankAIControlled
 {
 	public TankCyan(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(128, 255, 255), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size, 128, 255, 255, angle, ShootAI.straight);
 
 		this.enableMovement = true;
 		this.speed = 1;
@@ -34,7 +32,7 @@ public class TankCyan extends TankAIControlled
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Drawing.playSound("resources/shoot.wav");
+		Drawing.drawing.playSound("resources/shoot.wav");
 
 		Bullet b = new BulletFreeze(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);

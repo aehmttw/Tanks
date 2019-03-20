@@ -1,19 +1,22 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
-public class Obstacle
+public class Obstacle implements IDrawable
 {
 	public boolean destructible = true;
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
-	public boolean drawBelow = false;
+	public boolean drawBelow = true;
 	public boolean checkForObjects = false;
+	public boolean update = false;
+	public boolean draggable = true;
+	public boolean bouncy = false;
 
 	public double posX;
 	public double posY;
-	public Color color;
+	public double colorR;
+	public double colorG;
+	public double colorB;
+	public double colorA = 255;
 	public static double draw_size = 0;
 	public static int obstacle_size = Game.tank_size; 
 	
@@ -24,40 +27,50 @@ public class Obstacle
 		this.name = name;
 		this.posX = (int) ((posX + 0.5) * obstacle_size);
 		this.posY = (int) ((posY + 0.5) * obstacle_size);
-		this.color = Obstacle.getRandomColor();
+		double[] col = Obstacle.getRandomColor();
+		this.colorR = col[0];
+		this.colorG = col[1];
+		this.colorB = col[2];
 	}
 
-	public void draw(Graphics g)
+	@Override
+	public void draw()
 	{	
-		Drawing drawing = Drawing.window;
+		Drawing drawing = Drawing.drawing;
 		
-		g.setColor(this.color);
-		drawing.fillRect(g, this.posX, this.posY, draw_size, draw_size);
-		
-		/*for (int i = 0; i < 10; i++)
-		{
-			int col = i * 25;
-			g.setColor(new Color(col, col, col));
-			drawing.fillRect(g, this.posX, this.posY, draw_size - i * 5, draw_size - i * 5);
-		}*/
-		
-		/*for (int i = 0; i < Math.max(1, draw_size * 2 - obstacle_size); i++)
-		{
-			g.setColor(new Color((int) (color.getRed() - 0.5 * color.getRed() * (obstacle_size - i) / obstacle_size),
-					(int) (color.getGreen() - 0.5 * color.getGreen() * (obstacle_size - i) / obstacle_size), 
-					(int) (color.getBlue() - 0.5 * color.getBlue() * (obstacle_size - i) / obstacle_size)));
-			drawing.fillRect(g, this.posX - 0.5 * i, this.posY - 0.5 * i, Math.min(draw_size * 2, obstacle_size), Math.min(draw_size * 2, obstacle_size));
-		}*/
+		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+		drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
+	}
+	
+	@Override
+	public void drawAt(double x, double y)
+	{	
+		double x1 = this.posX;
+		double y1 = this.posY;
+		this.posX = x;
+		this.posY = y;
+		this.draw();
+		this.posX = x1;
+		this.posY = y1;
 	}
 
-	public void drawOutline(Graphics g)
+	@Override
+	public void drawForInterface(double x, double y)
 	{
-		g.setColor(this.color);
-		Drawing drawing = Drawing.window;
-		drawing.fillRect(g, this.posX - Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
-		drawing.fillRect(g, this.posX + Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
-		drawing.fillRect(g, this.posX, this.posY - Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
-		drawing.fillRect(g, this.posX, this.posY + Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
+		Drawing drawing = Drawing.drawing;
+		
+		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+		drawing.fillInterfaceRect(x, y, draw_size, draw_size);
+	}
+	
+	public void drawOutline()
+	{
+		Drawing drawing = Drawing.drawing;
+		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+		drawing.fillRect(this.posX - Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
+		drawing.fillRect(this.posX + Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
+		drawing.fillRect(this.posX, this.posY - Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
+		drawing.fillRect(this.posX, this.posY + Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
 	}
 	
 	public void onObjectEntry(Movable m)
@@ -65,15 +78,77 @@ public class Obstacle
 		
 	}
 	
-	public static Color getRandomColor()
+	public void update()
+	{
+		
+	}
+	
+	public boolean hasLeftNeighbor()
+	{
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			
+			if (o.bulletCollision && o.posY == this.posY && this.posX - o.posX <= obstacle_size && this.posX - o.posX > 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean hasRightNeighbor()
+	{
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			
+			if (o.bulletCollision && o.posY == this.posY && o.posX - this.posX <= obstacle_size && o.posX - this.posX > 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean hasUpperNeighbor()
+	{
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			
+			if (o.bulletCollision && o.posX == this.posX && this.posY - o.posY <= obstacle_size && this.posY - o.posY > 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean hasLowerNeighbor()
+	{
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			
+			if (o.bulletCollision && o.posX == this.posX && o.posY - this.posY <= obstacle_size && o.posY - this.posY > 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public static double[] getRandomColor()
 	{
 		double colorMul = Math.random() * 0.5 + 0.5;
-		Color col;
+		double[] col = new double[3];
 		
 		if (Game.fancyGraphics)
-			col = new Color((int) (colorMul * (176 - Math.random() * 70)), (int) (colorMul * (111 - Math.random() * 34)), (int) (colorMul * 14));
+		{
+			col[0] = (colorMul * (176 - Math.random() * 70));
+			col[1] = (colorMul * (111 - Math.random() * 34));
+			col[2] = (colorMul * 14);
+
+		}
 		else
-			col = new Color(87, 46, 8);
+			col = new double[]{87, 46, 8};
 		
 		return col;
 	}

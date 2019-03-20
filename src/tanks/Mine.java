@@ -1,8 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import tanks.tank.Tank;
 
 public class Mine extends Movable
@@ -10,8 +7,10 @@ public class Mine extends Movable
 	public static int mine_size = 30;
 	public double timer = 1000;
 	public int size = mine_size;
-	public Color outlineColor;
-	
+	public double outlineColorR;
+	public double outlineColorG;
+	public double outlineColorB;
+
 	public double radius = Game.tank_size * 2.5;
 	public Tank tank;
 	
@@ -24,24 +23,28 @@ public class Mine extends Movable
 		tank = t;
 		t.liveMines++;
 		this.team = t.team;
-		this.outlineColor = Team.getObjectColor(t.color, t);
+		double[] outlineCol = Team.getObjectColor(t.colorR, t.colorG, t.colorB, t);
+		this.outlineColorR = outlineCol[0];
+		this.outlineColorG = outlineCol[1];
+		this.outlineColorB = outlineCol[2];
+
 	}
 
 	@Override
 	public void checkCollision() {	}
 
 	@Override
-	public void draw(Graphics p) 
+	public void draw() 
 	{	
-		p.setColor(this.outlineColor);
-		Drawing.window.fillOval(p, this.posX, this.posY, this.size, this.size);
+		Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
+		Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 		
-		p.setColor(new Color(255, (int) ((this.timer) / 1000.0 * 255), 0));
+		Drawing.drawing.setColor(255, (this.timer) / 1000.0 * 255, 0);
 
 		if (timer < 150 && ((int) timer % 16) / 8 == 1)
-			p.setColor(Color.yellow);
+			Drawing.drawing.setColor(255, 255, 0);
 
-		Drawing.window.fillOval(p, this.posX, this.posY, this.size * 0.8, this.size * 0.8);
+		Drawing.drawing.fillOval(this.posX, this.posY, this.size * 0.8, this.size * 0.8);
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class Mine extends Movable
 
 	public void explode()
 	{		
-		Drawing.playSound("resources/explosion.wav");
+		Drawing.drawing.playSound("resources/explosion.wav");
 
 		if (Game.fancyGraphics)
 		{
@@ -80,21 +83,23 @@ public class Mine extends Movable
 				double random = Math.random();
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 				e.maxAge /= 2;
-				e.col = new Color(255, (int) ((1 - random) * 155 + Math.random() * 100), 0);
+				e.colR = 255;
+				e.colG = (1 - random) * 155 + Math.random() * 100;
+				e.colB = 0;
 				e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
 				Game.effects.add(e);
 			}
 		}
 				
+		this.destroy = true;
+
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
 			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
 			{
-				if (o instanceof Tank && !o.destroy)
+				if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable)
 				{
-					this.destroy = true;
-
 					if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
 					{
 						((Tank) o).lives -= 2;
@@ -134,7 +139,9 @@ public class Mine extends Movable
 							int oY = 0;
 
 							Effect e = Effect.createNewEffect(o.posX + j + oX + 2 - Obstacle.obstacle_size / 2, o.posY + k + oY + 2 - Obstacle.obstacle_size / 2, Effect.EffectType.obstaclePiece);
-							e.col = o.color;
+							e.colR = o.colorR;
+							e.colG = o.colorG;
+							e.colB = o.colorB;
 
 							double dist = Movable.distanceBetween(this, e);
 							double angle = this.getAngleInDirection(e.posX, e.posY);

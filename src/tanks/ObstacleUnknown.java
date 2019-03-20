@@ -1,9 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-
 public class ObstacleUnknown extends Obstacle
 {
 
@@ -11,19 +7,21 @@ public class ObstacleUnknown extends Obstacle
 	{
 		super(name, posX, posY);
 		
-		this.color = Color.red;
+		this.colorR = 255;
+		this.colorG = 0;
+		this.colorB = 0;
 		this.destructible = false;
 		this.tankCollision = false;
 		this.bulletCollision = false;
 	}
 	
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (12 * Drawing.window.getScale())));
-		Drawing.window.drawText(g, this.posX, this.posY + 32, this.name);
+		Drawing.drawing.setFontSize(12);
+		Drawing.drawing.drawText(this.posX, this.posY + 32, this.name);
 		
-		super.draw(g);
+		super.draw();
 	}
 
 }

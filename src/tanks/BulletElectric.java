@@ -1,7 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import tanks.AttributeModifier.Operation;
@@ -163,14 +161,16 @@ public class BulletElectric extends Bullet
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.stun);
 				int var = 50;
-				e.col = new Color((int) Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)));
+				e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				Game.effects.add(e);
 			}
 		}
 	}
 	
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
 		
 	}

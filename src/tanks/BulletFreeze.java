@@ -1,8 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import tanks.tank.Tank;
 
 public class BulletFreeze extends Bullet
@@ -10,7 +7,10 @@ public class BulletFreeze extends Bullet
 	public BulletFreeze(double x, double y, int bounces, Tank t) 
 	{
 		super(x, y, bounces, t);
-		this.outlineColor = Color.white;
+		this.outlineColorR = 255;
+		this.outlineColorG = 255;
+		this.outlineColorB = 255;
+
 	}
 	
 	public BulletFreeze(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount) 
@@ -35,25 +35,25 @@ public class BulletFreeze extends Bullet
 		if (this.destroy && this.destroyTimer == 0)
 		{
 			Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
-			Drawing.playSound("resources/freeze.wav");
+			Drawing.drawing.playSound("resources/freeze.wav");
 		}
 
 		super.update();
 	}	
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
 		if (Game.fancyGraphics)
 		{
 			for (int i = 0; i < 30 - 10 * Math.sin(this.age / 12.0); i++)
 			{
-				g.setColor(new Color(255, 255, 255, 20));
-				Drawing.window.fillOval(g, this.posX, this.posY, i, i);
+				Drawing.drawing.setColor(255, 255, 255, 20);
+				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
 
-		super.draw(g);
+		super.draw();
 	}
 
 }

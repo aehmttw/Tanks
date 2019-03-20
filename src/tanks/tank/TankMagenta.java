@@ -1,14 +1,12 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.Game;
 
 public class TankMagenta extends TankAIControlled
 {
 	public TankMagenta(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(230, 0, 200), angle, ShootAI.reflect);
+		super(name, x, y, Game.tank_size, 230, 0, 200, angle, ShootAI.reflect);
 		this.enableTargetEnemyReaction = false;
 		this.speed = 1.5;
 		this.enableMineLaying = false;

@@ -1,8 +1,6 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
+import org.lwjgl.glfw.GLFW;
 
 public class TextBox 
 {
@@ -21,22 +19,32 @@ public class TextBox
 
 	public boolean selected = false;
 
-	boolean enableSpaces = true;
-	boolean allowSpaces = true;
-	boolean allowLetters = true;
-	boolean allowNumbers = true;
-	boolean allowAll = false;
-	boolean checkMaxValue = false;
-	
-	boolean lowerCase = false;
-	
-	int maxChars = 15;
-	int maxValue = Integer.MAX_VALUE;
+	public boolean enableSpaces = true;
+	public boolean allowSpaces = true;
+	public boolean allowLetters = true;
+	public boolean allowNumbers = true;
+	public boolean allowAll = false;
+	public boolean checkMaxValue = false;
+	public boolean checkMinValue = false;
 
-	Color color = new Color(255, 255, 255);
-	Color hoverColor = new Color(240, 240, 255);
-	Color selectedColor = new Color(220, 255, 220);
-	Color selectedFullColor = new Color(255, 220, 220);
+	public boolean lowerCase = false;
+
+	public int maxChars = 18;
+	public int maxValue = Integer.MAX_VALUE;
+	public int minValue = Integer.MIN_VALUE;
+
+	public double colorR = 255;
+	public double colorG = 255;
+	public double colorB = 255;
+	public double hoverColorR = 240;
+	public double hoverColorG = 240;
+	public double hoverColorB = 255;
+	public double selectedColorR = 220;
+	public double selectedColorG = 255;
+	public double selectedColorB = 220;
+	public double selectedFullColorR = 255;
+	public double selectedFullColorG = 220;
+	public double selectedFullColorB = 220;
 
 	public TextBox(double x, double y, double sX, double sY, String text, Runnable f, String defaultText)
 	{
@@ -58,88 +66,96 @@ public class TextBox
 		this.hoverText = hoverText.split("---");
 	}
 
-	public void draw(Graphics g)
+	public void draw()
 	{
-		Drawing.setInterfaceFontSize(g, 24);
+		Drawing drawing = Drawing.drawing;
+
+		drawing.setInterfaceFontSize(24);
 
 		if (selected)
 		{
 			if (this.inputText.length() >= this.maxChars)
-				g.setColor(this.selectedFullColor);
+				drawing.setColor(this.selectedFullColorR, this.selectedFullColorG, this.selectedFullColorB);
 			else
-				g.setColor(this.selectedColor);
+				drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB);
 		}
 		else if (hover)
-			g.setColor(this.hoverColor);
+			drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);
 		else
-			g.setColor(this.color);
+			drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-		Drawing drawing = Drawing.window;
-		drawing.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
+		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
+		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
 
-		g.setColor(Color.black);
+		drawing.setColor(0, 0, 0);
 
-		drawing.drawInterfaceText(g, posX, posY - 30, labelText);
+		drawing.drawInterfaceText(posX, posY - 30, labelText);
 
 		if (selected)
-			drawing.drawInterfaceText(g, posX, posY + 5, inputText + "_");
+			drawing.drawInterfaceText(posX, posY, inputText + "_");
 		else
-			drawing.drawInterfaceText(g, posX, posY + 5, inputText);
+			drawing.drawInterfaceText(posX, posY, inputText);
 
 		if (enableHover)
 		{
 			if (hover)
 			{
-				g.setColor(Color.blue);
-				drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-				g.setColor(Color.white);
-				drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
-				Drawing.drawTooltip(g, this.hoverText);
+				drawing.setColor(0, 0, 255);
+				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				drawing.setColor(255, 255, 255);
+				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawTooltip(this.hoverText);
 			}
 			else
 			{
-				g.setColor(new Color(0, 150, 255));
-				drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-				g.setColor(Color.white);
-				drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				drawing.setColor(0, 150, 255);
+				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				drawing.setColor(255, 255, 255);
+				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 			}
 		}
 	}
 
 	public void update()
 	{
-		double mx = Game.window.getInterfaceMouseX();
-		double my = Game.window.getInterfaceMouseY();
+		double mx = Drawing.drawing.getInterfaceMouseX();
+		double my = Drawing.drawing.getInterfaceMouseY();
 
 		if (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2)
 			hover = true;
 		else
 			hover = false;
 
-		if (hover && InputMouse.lClickValid && !selected)
+		if (hover && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !selected)
 		{
 			this.inputText = "";
 			selected = true;
-			InputMouse.lClickValid = false;
+			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_1);
 		}
 
-		if (!hover && InputMouse.lClick && selected)
+		if (!hover && Game.game.window.pressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && selected)
 		{
+			this.performValueCheck();
 			function.run();
 			selected = false;
 		}
 
 		if (selected)
 		{
-			for (int i = 0; i < InputKeyboard.validKeys.size(); i++)
+			for (int i = 0; i < Game.game.window.validPressedKeys.size(); i++)
 			{
-				String text = (KeyEvent.getKeyText(InputKeyboard.validKeys.get(i)));
+				String text = (GLFW.glfwGetKeyName(Game.game.window.validPressedKeys.get(i), 0));
 
-				if (InputKeyboard.validKeys.get(i).equals(KeyEvent.VK_BACK_SPACE))
+				if (text == null)
+					text = " ";
+
+				if (Game.game.window.validPressedKeys.get(i).equals(GLFW.GLFW_KEY_BACKSPACE))
 					inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
 				else if (inputText.length() + text.length() <= maxChars)
 				{
-					if (text.equals("\u2423") || text.equals("Space"))
+					if (text.equals(" "))
 					{
 						if (allowSpaces)
 						{
@@ -159,34 +175,42 @@ public class TextBox
 
 						if (allowLetters)
 						{
-							if ("ABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(text))
+							if ("abcdefghijklmnopqrstuvwxyz".contains(text))
 							{
 								if (lowerCase)
 									inputText += text.toLowerCase();
 								else
-									inputText += text;
+									inputText += text.toUpperCase();
 							}
 						}
 
 						if (allowNumbers)
 						{
 							if ("1234567890".contains(text))
+							{
 								inputText += text;
-
-							performMaxValueCheck();
+							}
 						}
 					}
 				}
 			}
 
-			InputKeyboard.validKeys.clear();
+			Game.game.window.validPressedKeys.clear();;
 		}
 	}
-	
-	public void performMaxValueCheck()
+
+	public void performValueCheck()
 	{
-		if (checkMaxValue)
-			if (Integer.parseInt(inputText) > this.maxValue)
-				inputText = this.maxValue + "";
+		try
+		{
+			if (checkMaxValue)
+				if (Integer.parseInt(inputText) > this.maxValue)
+					inputText = this.maxValue + "";
+
+			if (checkMinValue)
+				if (Integer.parseInt(inputText) < this.minValue)
+					inputText = this.minValue + "";
+		}
+		catch (Exception e) {}
 	}
 }

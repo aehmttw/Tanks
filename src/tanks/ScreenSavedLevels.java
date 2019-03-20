@@ -1,6 +1,5 @@
 package tanks;
 
-import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -8,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 public class ScreenSavedLevels extends Screen
@@ -16,9 +16,9 @@ public class ScreenSavedLevels extends Screen
 
 	int rows = 6;
 	int yoffset = -150;
-	int page = 0;
+	static int page = 0;
 
-	Button quit = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -28,7 +28,7 @@ public class ScreenSavedLevels extends Screen
 	}
 			);
 
-	Button newLevel = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 300, 350, 40, "New level", new Runnable()
+	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "New level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -43,7 +43,7 @@ public class ScreenSavedLevels extends Screen
 	}
 			);
 
-	Button next = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -53,7 +53,7 @@ public class ScreenSavedLevels extends Screen
 	}
 			);
 
-	Button previous = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -102,9 +102,19 @@ public class ScreenSavedLevels extends Screen
 				@Override
 				public void run() 
 				{
-					ScreenLevelBuilder s = new ScreenLevelBuilder(pathSections[pathSections.length - 1]);
-					Game.loadLevel(l.toFile(), s);
-					Game.screen = s;
+					try
+					{
+						ScreenLevelBuilder s = new ScreenLevelBuilder(pathSections[pathSections.length - 1]);
+						Game.loadLevel(l.toFile(), s);
+						Game.screen = s;
+					}
+					catch (Exception e)
+					{
+						Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l.toString());
+						e.printStackTrace();
+						e.printStackTrace(Game.logger);
+						Game.screen = new ScreenFailedToLoadLevel(l.toString());
+					}
 				}
 			}
 					));
@@ -122,14 +132,14 @@ public class ScreenSavedLevels extends Screen
 			if (page * rows * 3 + rows * 2 < buttons.size())
 				offset = -380;
 
-			buttons.get(i).posY = Drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+			buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
 
 			if (i / rows % 3 == 0)
-				buttons.get(i).posX = Drawing.interfaceSizeX / 2 + offset;
+				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
 			else if (i / rows % 3 == 1)
-				buttons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380;
+				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
 			else
-				buttons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380 * 2;
+				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
 		}
 
 
@@ -154,25 +164,25 @@ public class ScreenSavedLevels extends Screen
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		this.drawDefaultBackground(g);
+		this.drawDefaultBackground();
 
 		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, buttons.size()); i++)
 		{
-			buttons.get(i).draw(g);
+			buttons.get(i).draw();
 		}
 
-		quit.draw(g);
-		newLevel.draw(g);
+		quit.draw();
+		newLevel.draw();
 
-		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 210, "My levels");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "My levels");
 
 		if (page > 0)
-			previous.draw(g);
+			previous.draw();
 
 		if (buttons.size() > (1 + page) * rows * 3)
-			next.draw(g);
+			next.draw();
 
 	}
 

@@ -1,8 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import tanks.tank.Tank;
 
 public class BulletFlame extends Bullet
@@ -49,17 +46,16 @@ public class BulletFlame extends Bullet
 	}
 	
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
 		double rawOpacity = (1.0 - (this.age)/life);
 		rawOpacity *= rawOpacity;
 		int opacity = (int)(rawOpacity * 255);
 		
 		int green = (int)(255 - 255.0*(this.age / life));
-		Color col = new Color(255, green, 0, opacity);
 		
-		g.setColor(col);
-		Drawing.window.fillOval(g, this.posX, this.posY, size, size);
+		Drawing.drawing.setColor(255, green, 0, opacity);
+		Drawing.drawing.fillOval(this.posX, this.posY, size, size);
 	}
 
 }

@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import tanks.Bullet;
@@ -146,7 +145,7 @@ public class TankAIControlled extends Tank
 	protected double cooldown = 200;
 
 	/** Time until the next mine will be laid*/
-	protected double mineTimer = (Math.random() * mineTimerBase + mineTimerRandom);
+	protected double mineTimer = -1;
 
 	/** Time which the tank will aim at its lockedAngle until giving up and continuing to search*/
 	protected double aimTimer = 0;
@@ -178,9 +177,9 @@ public class TankAIControlled extends Tank
 	/** True if can find an enemy*/
 	protected boolean hasTarget = true;
 	
-	public TankAIControlled(String name, double x, double y, int size, Color color, double angle, ShootAI ai) 
+	public TankAIControlled(String name, double x, double y, int size, double r, double g, double b, double angle, ShootAI ai) 
 	{
-		super(name, x, y, size, color);
+		super(name, x, y, size, r, g, b);
 
 		if (Math.random() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;
@@ -206,6 +205,11 @@ public class TankAIControlled extends Tank
 
 			if (this.enableMovement)
 				this.updateMotionAI();
+			else
+			{
+				this.vX *= 0.85;
+				this.vY *= 0.85;
+			}
 
 			if (!ScreenGame.finished)
 			{
@@ -226,7 +230,7 @@ public class TankAIControlled extends Tank
 		this.aimTimer = 10;
 		this.aim = false;
 
-		if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax)
+		if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled)
 		{
 			// Cancels if the bullet will hit another enemy
 			double offset = Math.random() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2);
@@ -252,7 +256,7 @@ public class TankAIControlled extends Tank
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Drawing.playSound("resources/shoot.wav");
+		Drawing.drawing.playSound("resources/shoot.wav");
 
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
@@ -278,7 +282,7 @@ public class TankAIControlled extends Tank
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && !Team.isAllied(this, m) && m.hiddenTimer <= 0)
+			if (m instanceof Tank && !Team.isAllied(this, m) && m.hiddenTimer <= 0 && !((Tank) m).invulnerable)
 			{				
 				double dist = Movable.distanceBetween(this, m);
 				if (dist < nearestDist)
@@ -308,7 +312,7 @@ public class TankAIControlled extends Tank
 		{
 			fleeDirection = -fleeDirection;
 
-			if (this.seesTargetEnemy && this.enableTargetEnemyReaction)
+			if (this.targetEnemy != null && this.seesTargetEnemy && this.enableTargetEnemyReaction)
 			{
 				this.reactToTargetEnemySight();
 			}
@@ -495,8 +499,6 @@ public class TankAIControlled extends Tank
 			else
 				this.idlePhase = RotationPhase.clockwise;
 		}
-
-		super.update();
 	}
 
 	public void updateTurretStraight()
@@ -614,7 +616,7 @@ public class TankAIControlled extends Tank
 				this.aim = true;
 				this.aimAngle = this.searchAngle % (Math.PI * 2);
 			}
-			else if (target instanceof Tank && target.hiddenTimer <= 0 && Team.isAllied(target, this))
+			else if (target instanceof Tank && target.hiddenTimer <= 0 && !Team.isAllied(target, this))
 			{
 				this.targetEnemy = target;
 				this.lockedAngle = this.angle;
@@ -722,6 +724,10 @@ public class TankAIControlled extends Tank
 		double nearestY = 1000;
 		double nearestTimer = 1000;
 
+
+		if (this.mineTimer == -1)
+			this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);
+
 		Movable nearest = null;
 
 		if (!laidMine)
@@ -760,7 +766,7 @@ public class TankAIControlled extends Tank
 		else
 		{
 
-			if (this.mineTimer <= 0 && this.enableMineLaying)
+			if (this.mineTimer <= 0 && this.enableMineLaying && !this.disabled)
 			{
 				boolean layMine = true;
 				int i = 0;
@@ -782,10 +788,10 @@ public class TankAIControlled extends Tank
 
 				if (layMine)
 				{
-					Drawing.playSound("resources/lay-mine.wav");
+					Drawing.drawing.playSound("resources/lay-mine.wav");
 
 					Game.movables.add(new Mine(this.posX, this.posY, this));
-					this.mineTimer = (int) (Math.random() * mineTimerRandom + mineTimerBase);
+					this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);
 					double angleV = this.getPolarDirection() + Math.PI + (Math.random() - 0.5) * Math.PI / 2;
 					this.overrideDirection = true;
 					this.setPolarMotion(angleV, speed);
@@ -803,7 +809,7 @@ public class TankAIControlled extends Tank
 			this.setPolarMotion(Math.random() * 2 * Math.PI, speed);
 		}
 
-		this.mineTimer -= Panel.frameFrequency;
+		this.mineTimer = Math.max(0, this.mineTimer - Panel.frameFrequency);
 	}
 
 	/** Called after updating but before applying motion. Intended to be overridden.*/

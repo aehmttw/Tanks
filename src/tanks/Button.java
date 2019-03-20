@@ -1,7 +1,6 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import org.lwjgl.glfw.GLFW;
 
 public class Button 
 {
@@ -21,9 +20,17 @@ public class Button
 	
 	public boolean enabled = true;
 
-	Color disabledCol = new Color(200, 200, 200);
-	Color unselectedCol = new Color(255, 255, 255);
-	Color selectedCol = new Color(240, 240, 255);
+	double disabledColR = 200;
+	double disabledColG = 200;
+	double disabledColB = 200;
+	
+	double unselectedColR = 255;
+	double unselectedColG = 255;
+	double unselectedColB = 255;
+	
+	double selectedColR = 240;
+	double selectedColG = 240;
+	double selectedColB = 255;
 
 	public Button(double x, double y, double sX, double sY, String text, Runnable f)
 	{
@@ -62,62 +69,66 @@ public class Button
 		this.hoverText = hoverText.split("---");		
 	}
 
-	public void draw(Graphics g)
+	public void draw()
 	{
-		Drawing.setInterfaceFontSize(g, 24);
-		Drawing drawing = Drawing.window;
+		Drawing drawing = Drawing.drawing;
+		drawing.setInterfaceFontSize(24);
 		
 		if (!enabled)
-			g.setColor(this.disabledCol);	
+			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB);	
 		
 		else if (selected)
-			g.setColor(this.selectedCol);
+			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB);
 		else
-			g.setColor(this.unselectedCol);
+			drawing.setColor(this.unselectedColR, this.unselectedColG, this.unselectedColB);
 
-		drawing.fillInterfaceRect(g, posX, posY, sizeX, sizeY);
+		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 
-		g.setColor(Color.black);
-		drawing.drawInterfaceText(g, posX, posY + 5, text);
+		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
+		 
+		drawing.setColor(0, 0, 0);
+		drawing.drawInterfaceText(posX, posY, text);
 
 		if (enableHover)
 		{
 			if (selected)
 			{
-				g.setColor(Color.blue);
-				drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-				g.setColor(Color.white);
-				drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
-				Drawing.drawTooltip(g, this.hoverText);
+				drawing.setColor(0, 0, 255);
+				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				drawing.setColor(255, 255, 255);
+				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawTooltip(this.hoverText);
 			}
 			else
 			{
-				g.setColor(new Color(0, 150, 255));
-				drawing.fillInterfaceOval(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-				g.setColor(Color.white);
-				drawing.drawInterfaceText(g, this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 5, "i");
+				drawing.setColor(0, 150, 255);
+				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+				drawing.setColor(255, 255, 255);
+				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 			}
 		}
 	}
 
 	public void update()
 	{
-		double mx = Game.window.getInterfaceMouseX();
-		double my = Game.window.getInterfaceMouseY();
+		double mx = Drawing.drawing.getInterfaceMouseX();
+		double my = Drawing.drawing.getInterfaceMouseY();
 
 		if (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2)
 			selected = true;
 		else
 			selected = false;
 
-		if (selected && InputMouse.lClickValid && !clicked && enabled)
+		if (selected && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !clicked && enabled)
 		{
 			function.run();
 			clicked = true;
-			InputMouse.lClickValid = false;
+			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_1);
 		}
 
-		if (!(selected && InputMouse.lClick))
+		if (!(selected && Game.game.window.pressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1)))
 			clicked = false;
 	}
 }

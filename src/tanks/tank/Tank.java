@@ -1,8 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
@@ -10,12 +7,18 @@ import tanks.Obstacle;
 import tanks.Panel;
 import tanks.Team;
 import tanks.Turret;
+import tanks.AttributeModifier;
 import tanks.Drawing;
 
 public abstract class Tank extends Movable
 {
 	public double angle = 0;
+	
+	public boolean invulnerable = false;
+	public boolean disabled = false;
 
+	public boolean functional = true;
+	
 	public int coinValue = 0;
 
 	public String name = "";
@@ -24,8 +27,10 @@ public abstract class Tank extends Movable
 	public double maxV = 2.5;
 	public int liveBullets = 0;
 	public int liveMines = 0;
-	public int size;
-	public Color color;
+	public double size;
+	public double colorR;
+	public double colorG;
+	public double colorB;
 	public int liveBulletMax;
 	public int liveMinesMax;
 	public double drawAge = 0;
@@ -34,16 +39,20 @@ public abstract class Tank extends Movable
 	public double flashAnimation = 0;
 	public double treadAnimation = 0;
 	public boolean drawTread = false;
+	public String texture = null;
 
+	public double baseLives = 1;
 	public double lives = 1;
 
 	public Turret turret;
 
-	public Tank(String name, double x, double y, int size, Color color) 
+	public Tank(String name, double x, double y, int size, double r, double g, double b) 
 	{
 		super(x, y);
 		this.size = size;
-		this.color = color;
+		this.colorR = r;
+		this.colorG = g;
+		this.colorB = b;
 		turret = new Turret(this);
 		this.name = name;
 	}
@@ -51,32 +60,40 @@ public abstract class Tank extends Movable
 	@Override
 	public void checkCollision() 
 	{
+		if (this.size <= 0)
+			return;
+		
 		hasCollided = false;
 
-		if (this.posX + this.size / 2 > Drawing.sizeX)
+		if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
 		{
-			this.posX = Drawing.sizeX - this.size / 2;
+			this.posX = Drawing.drawing.sizeX - this.size / 2;
+			this.vX = 0;
 			hasCollided = true;
 		}
-		if (this.posY + this.size / 2 > Drawing.sizeY)
+		if (this.posY + this.size / 2 > Drawing.drawing.sizeY)
 		{
-			this.posY = Drawing.sizeY - this.size / 2;
+			this.posY = Drawing.drawing.sizeY - this.size / 2;
+			this.vY = 0;
 			hasCollided = true;
 		}
 		if (this.posX - this.size / 2 < 0)
 		{
 			this.posX = this.size / 2;
+			this.vX = 0;
 			hasCollided = true;
 		}
 		if (this.posY - this.size / 2 < 0)
 		{
 			this.posY = this.size / 2;
+			this.vY = 0;
 			hasCollided = true;
 		}
 
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
+			boolean bouncy = o.bouncy;
 			
 			if (!o.tankCollision && !o.checkForObjects)
 				continue;
@@ -100,21 +117,37 @@ public abstract class Tank extends Movable
 				if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
 					hasCollided = true;
+					if (bouncy)
+						this.vX = -this.vX;
+					else
+						this.vX = 0;
 					this.posX += horizontalDist - bound;
 				}
 				else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 				{
 					hasCollided = true;
+					if (bouncy)
+						this.vY = -this.vY;
+					else
+						this.vY = 0;
 					this.posY += verticalDist - bound;
 				}
 				else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
 				{
 					hasCollided = true;
+					if (bouncy)
+						this.vX = -this.vX;
+					else
+						this.vX = 0;
 					this.posX -= horizontalDist - bound;
 				}
 				else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
 				{
 					hasCollided = true;
+					if (bouncy)
+						this.vY = -this.vY;
+					else
+						this.vY = 0;
 					this.posY -= verticalDist - bound;
 				}
 			}
@@ -123,7 +156,7 @@ public abstract class Tank extends Movable
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
-			if (o instanceof Tank)
+			if (o instanceof Tank && ((Tank)o).size > 0)
 			{
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
@@ -138,21 +171,33 @@ public abstract class Tank extends Movable
 					if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 					{
 						hasCollided = true;
+						double v = (this.vX + o.vX) / 2;
+						this.vX = v;
+						o.vX = v;
 						this.posX += horizontalDist - bound;
 					}
 					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 					{
 						hasCollided = true;
+						double v = (this.vY + o.vY) / 2;
+						this.vY = v;
+						o.vY = v;
 						this.posY += verticalDist - bound;
 					}
 					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
 					{
 						hasCollided = true;
+						double v = (this.vX + o.vX) / 2;
+						this.vX = v;
+						o.vX = v;
 						this.posX -= horizontalDist - bound;
 					}
 					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
 					{
 						hasCollided = true;
+						double v = (this.vY + o.vY) / 2;
+						this.vY = v;
+						o.vY = v;
 						this.posY -= verticalDist - bound;
 					}
 				}
@@ -176,7 +221,7 @@ public abstract class Tank extends Movable
 		{
 			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
-				Drawing.playSound("resources/destroy.wav");
+				Drawing.drawing.playSound("resources/destroy.wav");
 
 				if (Game.fancyGraphics)
 				{
@@ -184,7 +229,10 @@ public abstract class Tank extends Movable
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 						int var = 50;
-						e.col = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
+						
+						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
 						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
 						Game.effects.add(e);
 					}
@@ -217,68 +265,159 @@ public abstract class Tank extends Movable
 			Game.belowEffects.add(e2);
 		}
 		
+		for (int i = 0; i < this.attributes.size(); i++)
+		{
+			AttributeModifier a = this.attributes.get(i);
+			if (a.name.equals("healray"))
+			{
+				if (this.lives < this.baseLives)
+				{
+					this.attributes.remove(a);
+					i--;
+				}
+			}
+		}
+		
 		super.update();
 	}
 
 	public abstract void shoot();
-
+	
 	@Override
-	public void draw(Graphics g) 
+	public void drawForInterface(double x, double y)
 	{
-		drawAge += Panel.frameFrequency;
-		
+		double x1 = this.posX;
+		double y1 = this.posY;
+		this.posX = x;
+		this.posY = y;
+		this.drawTank(true);
+		this.posX = x1;
+		this.posY = y1;	
+	}
+
+	
+	public void drawTank(boolean forInterface)
+	{
 		double s = (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1);
 		double sizeMod = 1;
 		
-		Drawing drawing = Drawing.window;
-		Color teamColor = Team.getObjectColor(this.color, this);
-		if (teamColor != this.color)
+		if (forInterface)
+			s = Math.min(this.size, Game.tank_size * 1.5);
+		
+		Drawing drawing = Drawing.drawing;
+		double[] teamColor = Team.getObjectColor(this.colorR, this.colorG, this.colorB, this);
+
+		if (!(teamColor[0] == this.colorR && teamColor[1] == this.colorG && teamColor[2] == this.colorB))
 		{
-			g.setColor(teamColor);
-			drawing.fillRect(g, this.posX, this.posY, s, s);
+			Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2]);
+			
+			if (forInterface)
+				drawing.fillInterfaceRect(this.posX, this.posY, s, s);
+			else
+				drawing.fillRect(this.posX, this.posY, s, s);
 
 			sizeMod = 0.8;
 		}
 		
 		double flash = Math.min(1, this.flashAnimation);
-		g.setColor(new Color((int) ((this.color.getRed() * (1 - flash) + 255 * flash)), (int) (this.color.getGreen() * (1 - flash)), (int) (this.color.getBlue() * (1 - flash))));
-
-		drawing.fillRect(g, this.posX, this.posY, s * sizeMod, s * sizeMod);
 		
+		Drawing.drawing.setColor(0, 255, 0);
+		for (int i = 0; i < this.attributes.size(); i++)
+		{
+			AttributeModifier a = this.attributes.get(i);
+			if (a.name.equals("healray"))
+			{
+				double mod = 1 + 0.4 * (this.lives - this.baseLives);
+				
+				if (this.lives > this.baseLives)
+				{
+					if (forInterface)
+						drawing.fillInterfaceRect(this.posX, this.posY, s * sizeMod * mod, s * sizeMod * mod);
+					else
+						drawing.fillRect(this.posX, this.posY, s * sizeMod * mod, s * sizeMod * mod);
+				}
+			}
+		}
+		
+		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash,  this.colorG * (1 - flash), this.colorB * (1 - flash));
+
+		if (forInterface)
+			drawing.fillInterfaceRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
+		else
+			drawing.fillRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
+
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				drawing.drawRect(g, this.posX, 
-						this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 
-						8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				if (forInterface)
+					drawing.drawInterfaceRect(this.posX, 
+						this.posY, 8 * i + s, 
+						8 * i + s);
+				else
+					drawing.drawRect(this.posX, 
+						this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size, 
+						8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size);
 			}
 		}
-		
-		this.turret.draw(g, angle);
 
+		Drawing.drawing.setColor(255, 255, 255);
+		
+		if (this.texture != null)
+		{
+			if (forInterface)
+				drawing.drawInterfaceImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
+			else
+				drawing.drawImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
+		}
+		
+		this.turret.draw(angle, forInterface);
 	}
 
-	public void drawOutline(Graphics g) 
+	@Override
+	public void draw() 
+	{
+		drawAge += Panel.frameFrequency;
+		this.drawTank(false);
+	}
+
+	public void drawOutline() 
 	{
 		drawAge = Game.tank_size;
-		Drawing drawing = Drawing.window;
+		Drawing drawing = Drawing.drawing;
 
 		//g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 128));
-		g.setColor(this.color);
-		drawing.fillRect(g, this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(g, this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(g, this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
-		drawing.fillRect(g, this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+		drawing.fillRect(this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
+		drawing.fillRect(this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
+		drawing.fillRect(this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
 
 		if (this.lives > 1)
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				drawing.drawRect(g, this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				drawing.drawRect(this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
+		
+		Drawing.drawing.setColor(255, 255, 255, 127);
+		
+		if (this.texture != null)
+			drawing.drawImage(this.texture, this.posX, this.posY, this.size, this.size);
+		
 
-		this.turret.draw(g, angle);
+		this.turret.draw(angle, false);
+	}
+	
+	public void drawAt(double x, double y)
+	{	
+		double x1 = this.posX;
+		double y1 = this.posY;
+		this.posX = x;
+		this.posY = y;
+		this.drawTank(false);
+		this.posX = x1;
+		this.posY = y1;	
 	}
 }

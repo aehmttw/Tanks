@@ -1,7 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.Bullet;
 import tanks.Game;
 
@@ -12,7 +10,7 @@ public class TankMini extends TankAIControlled
 	
 	public TankMini(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size / 2, new Color(255, 127, 127), angle, ShootAI.straight);
+		super(name, x, y, Game.tank_size / 2, 255, 127, 127, angle, ShootAI.straight);
 
 		this.enableMovement = true;
 		this.speed = 2.5;

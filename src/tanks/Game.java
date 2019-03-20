@@ -1,7 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,8 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
-import javax.swing.SwingUtilities;
-
+import lwjglwindow.LWJGLWindow;
 import tanks.tank.*;
 
 public class Game 
@@ -42,8 +39,10 @@ public class Game
 	public static int currentSizeX = 28;
 	public static int currentSizeY = 18;
 	public static double bgResMultiplier = 1;	
-	public static Color[][] tiles = new Color[28][18];
-	
+	public static double[][] tilesR = new double[28][18];
+	public static double[][] tilesG = new double[28][18];
+	public static double[][] tilesB = new double[28][18];
+
 	public static double levelSize = 1;
 	
 	public static TankPlayer player;
@@ -52,7 +51,7 @@ public class Game
 		
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	
-	public static Screen screen = new ScreenTitle();
+	public static Screen screen;
 
 	public static boolean fancyGraphics = true;
 
@@ -67,7 +66,7 @@ public class Game
 	public static RegistryTank registryTank = new RegistryTank();
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
 
-	public static Drawing window;
+	public LWJGLWindow window;
 	
 	public static String currentLevel = "";	
 	
@@ -90,10 +89,16 @@ public class Game
 	
 	public static void initScript() 
 	{
+		Drawing.initialize();
+		Panel.initialize();
+		Game.exitToTitle();
+		
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleBouncy.class, "bouncy"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleShrubbery.class, "shrub"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleTeleporter.class, "teleporter"));
 
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGray.class, "gray", 1));
@@ -108,9 +113,13 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCyan.class, "cyan", 1.0 / 5));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankOrange.class, "orange", 1.0 / 6));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMaroon.class, "maroon", 1.0 / 7));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMedic.class, "medic", 1.0 / 8));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankDarkGreen.class, "darkgreen", 1.0 / 9));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
+
+		//defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCustom.class, "custom", 1));
 
 		homedir = System.getProperty("user.home");
 		
@@ -177,40 +186,9 @@ public class Game
 	
 	public static void main(String[] args)
 	{		
-		initScript();
-
-		SwingUtilities.invokeLater
-		(
-			new Runnable()
-			{
-				@Override
-				public void run() 
-				{
-					Drawing.window.initializeMouseOffsets();
-					
-					for (int i = 0; i < currentSizeX; i++)
-					{
-						for (int j = 0; j < currentSizeY; j++)
-						{
-							Game.tiles[i][j] = new Color((int)(255 - Math.random() * 20), (int)(227 - Math.random() * 20), (int)(186 - Math.random() * 20));
-						}
-					}
-					
-					window = Drawing.window;
-					window.setTitle("Tanks");
-					window.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/icon64.png")));
-					
-					
-					//movables.add(new EnemyTankStationary(120, 600, tank_size));
-					//movables.add(new EnemyTankStationary(900, 700, tank_size));
-
-					//add things to movables
-					Panel screen = Panel.panel;
-					window.add(screen);
-					screen.startTimer();
-				}
-			}
-		);
+		Game.initScript();
+		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, new GameUpdater(), new GameDrawer());
+		Game.game.window.run();
 	}
 	
 	public static void reset()
@@ -276,20 +254,32 @@ public class Game
 		System.gc();
 	}
 	
-	public static void exitToTitle()
+	public static void resetTiles()
 	{
-		Game.tiles = new Color[28][18];
+		Game.tilesR = new double[28][18];
+		Game.tilesG = new double[28][18];
+		Game.tilesB = new double[28][18];
+
 		for (int i = 0; i < 28; i++)
 		{
 			for (int j = 0; j < 18; j++)
 			{
-				Game.tiles[i][j] = new Color((int)(255 - Math.random() * 20), (int)(227 - Math.random() * 20), (int)(186 - Math.random() * 20));
+				Game.tilesR[i][j] = (255 - Math.random() * 20);
+				Game.tilesG[i][j] = (227 - Math.random() * 20);
+				Game.tilesB[i][j] = (186 - Math.random() * 20);
 			}
 		}
 		
-		Level.currentColor = new Color(235, 207, 166);
+		Level.currentColorR = 235; 
+		Level.currentColorG = 207;
+		Level.currentColorB = 166;
+	}
+	
+	public static void exitToTitle()
+	{
+		resetTiles();
 
-		Game.window.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
+		Drawing.drawing.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();

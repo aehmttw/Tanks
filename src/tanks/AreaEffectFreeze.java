@@ -1,8 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import tanks.AttributeModifier.Operation;
 
 public class AreaEffectFreeze extends AreaEffect
@@ -25,7 +22,9 @@ public class AreaEffectFreeze extends AreaEffect
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 				int var = 50;
-				e.col = new Color((int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)));
+				e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 200.0);
 				e.maxAge *= 4;
 				Game.effects.add(e);
@@ -48,13 +47,13 @@ public class AreaEffectFreeze extends AreaEffect
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
 		double size = Math.min(this.size + Game.tank_size / 2, this.age * 8); 
 		for (int i = (int) Math.max(0, size - ((int) (50 * Math.min(100, 600 - this.age) / 100.0))); i < size; i += 2)
 		{
-			g.setColor(new Color(200, 255, 255, 10));
-			Drawing.window.fillOval(g, this.posX, this.posY, i, i);
+			Drawing.drawing.setColor(200, 255, 255, 10);
+			Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 		}
 	}
 

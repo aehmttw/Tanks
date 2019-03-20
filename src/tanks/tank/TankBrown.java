@@ -1,14 +1,12 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.Game;
 
 public class TankBrown extends TankAIControlled
 {
 	public TankBrown(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(150, 80, 0), angle, ShootAI.wander);
+		super(name, x, y, Game.tank_size, 150, 80, 0, angle, ShootAI.wander);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;

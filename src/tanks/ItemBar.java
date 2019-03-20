@@ -1,22 +1,28 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
+import org.lwjgl.glfw.GLFW;
 
 public final class ItemBar
 {
-	public static final int size = 50; // The slot size.
-	public static final int count_margin_right = 27; // Item number's distance from right.
-	public static final int count_margin_bottom = 30; // Item number's distance from bottom.
-	public static final int gap = 75; // Gap between slots.
-	public static final int bar_margin = 50; // Bar's distance from bottom.
+	public static int size = 50; // The slot size.
+	public static int count_margin_right = 27; // Item number's distance from right.
+	public static int count_margin_bottom = 40; // Item number's distance from bottom.
+	public static int gap = 75; // Gap between slots.
+	public static int bar_margin = 50; // Bar's distance from bottom.
 
-	public static final Color slot_bg = new Color(0, 0, 0, 128); // BG color of slots.
-	public static final Color slot_selected = new Color(255, 128, 0); // Border color of selected slot.
-	public static final Color item_count = new Color(255, 255, 255); // Text color of item count.
+	public static double slotBgR = 0;
+	public static double slotBgG = 0;
+	public static double slotBgB = 0;
+	public static double slotBgA = 127;
 
+	public static double slotSelectedR = 255;
+	public static double slotSelectedG = 128;
+	public static double slotSelectedB = 0;
+	
+	public static double itemCountR = 255;
+	public static double itemCountG = 255;
+	public static double itemCountB = 255;
+	
 	public Item[] slots = new Item[5];
 	public int selected = -1;
 		
@@ -109,40 +115,58 @@ public final class ItemBar
 	
 	public void update()
 	{
-		checkKey(KeyEvent.VK_1, 0);
-		checkKey(KeyEvent.VK_2, 1);
-		checkKey(KeyEvent.VK_3, 2);
-		checkKey(KeyEvent.VK_4, 3);
-		checkKey(KeyEvent.VK_5, 4);
+		checkKey(GLFW.GLFW_KEY_1, 0);
+		checkKey(GLFW.GLFW_KEY_2, 1);
+		checkKey(GLFW.GLFW_KEY_3, 2);
+		checkKey(GLFW.GLFW_KEY_4, 3);
+		checkKey(GLFW.GLFW_KEY_5, 4);
+		
+		if (Game.game.window.validScrollUp)
+		{
+			this.setItem(((this.selected - 1) + this.slots.length) % this.slots.length);
+			Game.game.window.validScrollUp = false;
+		}
+		
+		if (Game.game.window.validScrollDown)
+		{
+			this.setItem(((this.selected + 1) + this.slots.length) % this.slots.length);
+			Game.game.window.validScrollDown = false;
+		}
 	}
 
 	public void checkKey(int key, int index)
 	{
-		if (InputKeyboard.validKeys.contains(key))
+		if (Game.game.window.validPressedKeys.contains(key))
 		{
-			this.hotbar.hidden = false;
-			this.hotbar.hideTimer = 500;
-			selected = (selected == index ? -1 : index);
-			InputKeyboard.validKeys.remove((Object) key);
+			this.setItem(index);
+			Game.game.window.validPressedKeys.remove((Integer) key);
+
 		}
 	}
-
-	public void draw(Graphics g)
+	
+	public void setItem(int index)
 	{
-		g.setColor(slot_bg);
+		this.hotbar.hidden = false;
+		this.hotbar.hideTimer = 500;
+		selected = (selected == index ? -1 : index);
+	}
 
+	public void draw()
+	{
 		for (int i = -2; i <= 2; i++)
 		{
-			int x = (int) ((i * gap) + (Drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.interfaceSizeY - bar_margin + this.hotbar.bottomOffset);
+			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
 
-			Drawing.window.fillInterfaceRect(g, x, y, size, size);
+			int x = (int) ((i * gap) + (Drawing.drawing.interfaceSizeX / 2));
+			int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.hotbar.bottomOffset);
+
+			Drawing.drawing.fillInterfaceRect(x, y, size, size);
 
 			if (i + 2 == selected)
 			{
-				g.setColor(slot_selected);
-				Drawing.window.fillInterfaceRect(g, x, y, size, size);
-				g.setColor(slot_bg); // Unless you want the rest of the slots to be orange...
+				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB);
+				Drawing.drawing.fillInterfaceRect(x, y, size, size);
+				Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
 			}
 			
 			if (slots[i + 2] != null)
@@ -150,15 +174,16 @@ public final class ItemBar
 				Item item = slots[i + 2];
 				if (item.stackSize > 1)
 				{
-					g.setColor(item_count);
-					Drawing.setFontSize(g, 12);
-					Drawing.window.drawInterfaceText(g, x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
-					g.setColor(slot_bg); // You saw nothing...
+					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB);
+					Drawing.drawing.setFontSize(12);
+					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
+					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
 				}
 			}
 			
+			Drawing.drawing.setColor(255, 255, 255);
 			if (slots[i + 2].icon != null)
-				Drawing.window.drawInterfaceImage(g, Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/" + slots[i + 2].icon)), x, y, size, size);
+				Drawing.drawing.drawInterfaceImage("/tanks/resources/" + slots[i + 2].icon, x, y, size, size);
 		}
 	}
 }

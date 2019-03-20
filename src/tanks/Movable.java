@@ -1,9 +1,8 @@
 package tanks;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
-public abstract class Movable
+public abstract class Movable implements IDrawable
 {
 	public double posX;
 	public double posY;
@@ -200,11 +199,25 @@ public abstract class Movable
 		this.posY += amount * y;	
 	}
 
-	public void drawTeam(Graphics g)
+	public void drawTeam()
 	{
-		Drawing.setFontSize(g, 20);
+		Drawing.drawing.setFontSize(20);
 		if (this.team != null)
-			Drawing.window.drawText(g, this.posX, this.posY + 40, this.team.name);
+			Drawing.drawing.drawText(this.posX, this.posY + 25, this.team.name);
+	}
+	
+	public void addUnduplicateAttribute(AttributeModifier m)
+	{
+		for (int i = 0; i < this.attributes.size(); i++)
+		{
+			if (this.attributes.get(i).name.equals(m.name))
+			{
+				this.attributes.remove(i);
+				i--;
+			}			
+		}
+		
+		this.attributes.add(m);
 	}
 
 	public static double[] getLocationInDirection(double angle, double distance)
@@ -214,9 +227,30 @@ public abstract class Movable
 	
 	public abstract void checkCollision();
 
-	public abstract void draw(Graphics p);
+	public abstract void draw();
+	
+	public void drawAt(double x, double y)
+	{	
+		double x1 = this.posX;
+		double y1 = this.posY;
+		this.posX = x;
+		this.posY = y;
+		this.draw();
+		this.posX = x1;
+		this.posY = y1;
+	}
+	
+	public void drawForInterface(double x, double y)
+	{	
+		this.drawAt(x, y);
+	}
 
 	public static double distanceBetween(final Movable a, final Movable b)
+	{
+		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
+	}
+	
+	public static double distanceBetween(final Obstacle a, final Movable b)
 	{
 		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
 	}

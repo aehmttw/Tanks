@@ -139,7 +139,7 @@ public class RegistryTank
 
 	}
 
-	static class TankEntry
+	public static class TankEntry
 	{
 		public final Class<? extends Tank> tank;
 		public final String name;

@@ -1,7 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,7 +27,7 @@ public class ScreenOptions extends Screen
 			autostart.text = "Autostart: off";
 	}
 
-	Button graphics = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
+	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -44,7 +42,7 @@ public class ScreenOptions extends Screen
 	},
 			"Fast graphics disable most graphical effects and use solid colors for the background---Fancy graphics may significantly reduce framerate"	);
 
-	Button mouseTarget = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
+	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -59,7 +57,7 @@ public class ScreenOptions extends Screen
 	},
 			"When enabled, 2 small black rings will appear around your mouse pointer"	);
 
-	Button back = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -70,7 +68,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 
-	Button autostart = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -95,16 +93,16 @@ public class ScreenOptions extends Screen
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		this.drawDefaultBackground(g);
-		back.draw(g);
-		autostart.draw(g);
-		mouseTarget.draw(g);
-		graphics.draw(g);
-		Drawing.setInterfaceFontSize(g, 24);
-		g.setColor(Color.black);
-		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 150, "Options");
+		this.drawDefaultBackground();
+		back.draw();
+		autostart.draw();
+		mouseTarget.draw();
+		graphics.draw();
+		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 150, "Options");
 	}
 
 	public static void initOptions(String homedir)

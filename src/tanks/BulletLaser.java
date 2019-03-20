@@ -1,7 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-
 import tanks.tank.Tank;
 
 public class BulletLaser extends Bullet
@@ -11,7 +9,10 @@ public class BulletLaser extends Bullet
 		super(x, y, bounces, t);
 		t.liveBullets--;
 		this.playPopSound = false;
-		this.baseColor = Color.red;
+		this.baseColorR = 255;
+		this.baseColorG = 0;
+		this.baseColorB = 0;
+
 	}
 	
 	/** Do not use, instead use the constructor with primitive data types. */
@@ -27,7 +28,7 @@ public class BulletLaser extends Bullet
 	public void update()
 	{
 		this.shoot();
-		Drawing.pendingSounds.add("resources/laser.wav");
+		Drawing.drawing.playSound("resources/laser.wav");
 		Game.movables.remove(this);
 	}
 	
@@ -49,7 +50,9 @@ public class BulletLaser extends Bullet
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 				int var = 50;
 				e.maxAge /= 2;
-				e.col = new Color((int) Math.min(255, Math.max(0, this.baseColor.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.baseColor.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.baseColor.getBlue() + Math.random() * var - var / 2)));
+				e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
+				e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
+				e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
 				e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
 				Game.effects.add(e);
 			}

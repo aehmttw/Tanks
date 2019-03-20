@@ -1,80 +1,49 @@
 package tanks;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MouseInfo;
-import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 
-import javax.swing.*;
-
-@SuppressWarnings("serial")
-public class Drawing extends JFrame 
+public class Drawing
 {
-	public static int sizeX = 1400;//1920;
-	public static int sizeY = 900;//1100;
+	protected static boolean initialized = false;
+	
+	public int sizeX = 1400;//1920;
+	public int sizeY = 900;//1100;
 
-	public static double playerX = sizeX / 2;
-	public static double playerY = sizeY / 2;
+	public double playerX = sizeX / 2;
+	public double playerY = sizeY / 2;
 
-	public static double interfaceSizeX = 1400;
-	public static double interfaceSizeY = 900;
+	public double interfaceSizeX = 1400;
+	public double interfaceSizeY = 900;
 
 	public double scale = 1;
-	public static double unzoomedScale = 1;
+	public double unzoomedScale = 1;
 
-	public static double interfaceScale = 1;
+	public double interfaceScale = 1;
 
-	public static boolean enableMovingCamera = false;
-	public static boolean enableMovingCameraX = false;
-	public static boolean enableMovingCameraY = false;
+	public boolean enableMovingCamera = false;
+	public boolean enableMovingCameraX = false;
+	public boolean enableMovingCameraY = false;
 
-	public static int statsHeight = 40;
+	public int statsHeight = 40;
 	
-	public static boolean movingCamera = false;
+	public boolean movingCamera = false;
 
-	public static Drawing window = new Drawing();
+	public static Drawing drawing;
 
-	public static int mouseXoffset = 0;
-	public static int mouseYoffset = 0;
+	public int mouseXoffset = 0;
+	public int mouseYoffset = 0;
 
-	public static FontRenderContext frc = new FontRenderContext(null, true, true);
-	public static ArrayList<String> pendingSounds = new ArrayList<String>();
-
-	private Drawing()
-	{
-		this.addMouseListener(new InputMouse());
-		this.addKeyListener(new InputKeyboard());
-		this.addMouseWheelListener(new InputScroll());
-		this.addMouseMotionListener(new InputMouse());
-
-		//this.setSize((int)(sizeX * scale), (int) ((sizeY + yOffset) * scale ));
-		
-		Container contentPane = this.getContentPane();
-		Panel.panel.setPreferredSize(new Dimension(sizeX, sizeY + statsHeight));
-		contentPane.add(Panel.panel);
-		contentPane.setSize(sizeX, sizeY + statsHeight);
-
-		this.pack();
-		this.setVisible(true);
-		
-		this.setResizable(true);
-		this.setMinimumSize(new Dimension(350, 265));
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+	public ArrayList<String> pendingSounds = new ArrayList<String>();
 	
-	public void initializeMouseOffsets()
+	public double fontSize = 1;
+
+	private Drawing() {}
+	
+	public static void initialize()
 	{
-		mouseXoffset = 0 - (int) ((Drawing.window.getSize().getWidth() - Panel.panel.getSize().getWidth()) / 2);
-		mouseYoffset = 1 - (int) ((Drawing.window.getSize().getHeight() - Panel.panel.getSize().getHeight()) / 2);
+		if (!initialized)
+			drawing = new Drawing();
 		
-		if (System.getProperties().getProperty("os.name").toLowerCase().contains("mac"))
-		{
-			mouseYoffset += 6;
-		}
+		initialized = true;
 	}
 	
 	public void setScale(double scale)
@@ -96,227 +65,287 @@ public class Drawing extends JFrame
 		this.pack();
 	}*/
 
-	public void fillOval(Graphics g, double x, double y, double sizeX, double sizeY)
+	public void setColor(double r, double g, double b)
 	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.sizeX * this.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * this.scale) / 2);
+		Game.game.window.setColor(r, g, b);
+	}
+	
+	public void setColor(double r, double g, double b, double a)
+	{
+		Game.game.window.setColor(r, g, b, a);
+	}
+	
+	public void fillOval(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
 
 		if (drawX - 200 * this.scale > Panel.windowWidth || drawX + 200 * this.scale < 0 || drawY - 200 * this.scale > Panel.windowHeight || drawY + 200 * this.scale < 0)
 			return;
 
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
 
-		g.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 	
-	public void fillForcedOval(Graphics g, double x, double y, double sizeX, double sizeY)
+	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.sizeX * this.scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * this.scale) / 2);
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
 
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
 
-		g.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
-	public void drawOval(Graphics g, double x, double y, double sizeX, double sizeY)
+	public void drawOval(double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.sizeX * scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * scale) / 2);
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
 
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
 
-		g.drawOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.drawOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
-	public void fillRect(Graphics g, double x, double y, double sizeX, double sizeY)
+	public void fillRect(double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.sizeX * scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * scale) / 2);
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+		
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+	}
+	
+	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+		
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
+	}
+	
+	public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+	{
+		double dX1 = getPointX(x1);
+		double dX2 = getPointX(x2);
+		double dX3 = getPointX(x3);
+		double dX4 = getPointX(x4);
+
+		double dY1 = getPointY(y1);
+		double dY2 = getPointY(y2);
+		double dY3 = getPointY(y3);
+		double dY4 = getPointY(y4);
+		
+		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
+	}
+	
+	public void fillInterfaceQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+	{
+		double dX1 = getInterfacePointX(x1);
+		double dX2 = getInterfacePointX(x2);
+		double dX3 = getInterfacePointX(x3);
+		double dX4 = getInterfacePointX(x4);
+
+		double dY1 = getInterfacePointY(y1);
+		double dY2 = getInterfacePointY(y2);
+		double dY3 = getInterfacePointY(y3);
+		double dY4 = getInterfacePointY(y4);
+		
+		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
+	}
+	
+	public double getPointX(double x)
+	{
+		return (scale * (x + getPlayerOffsetX()) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+	}
+	
+	public double getPointY(double y)
+	{
+		return (scale * (y + getPlayerOffsetY()) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+	}
+	
+	public double getInterfacePointX(double x)
+	{
+		return (interfaceScale * (x) + Math.max(0, Panel.windowWidth - this.interfaceSizeX * interfaceScale) / 2);
+	}
+	
+	public double getInterfacePointY(double y)
+	{
+		return (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - this.interfaceSizeY * interfaceScale) / 2);
+	}
+
+	public void fillBackgroundRect(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+	}
+
+	public void drawRect(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
 
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
+		double drawSizeX = Math.round(sizeX * scale);
+		double drawSizeY = Math.round(sizeY * scale);
 
-		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.drawRect(drawX, drawY, drawSizeX, drawSizeY);
+	}
+
+	public void fillInterfaceOval(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+	}
+
+	public void drawInterfaceOval(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.drawOval(drawX, drawY, drawSizeX, drawSizeY);
+	}
+
+	public void fillInterfaceRect(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+		
+		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 	
-	public void fill3DRect(Graphics g, double x, double y, double sizeX, double sizeY, boolean raised)
+	public void fillInterfaceProgressRect(double x, double y, double sizeX, double sizeY, double progress)
 	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.sizeX * scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * scale) / 2);
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale * progress);
+		double drawSizeY = (sizeY * interfaceScale);
 
-		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
-			return;
-
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
-
-		g.fill3DRect(drawX, drawY, drawSizeX, drawSizeY, raised);
-	}
-
-	public void fillBackgroundRect(Graphics g, double x, double y, double sizeX, double sizeY)
-	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.sizeX * scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * scale) / 2);
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
-
-		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
-	}
-
-	public void drawRect(Graphics g, double x, double y, double sizeX, double sizeY)
-	{
-		int drawX = (int) Math.round(scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.sizeX * scale) / 2);
-		int drawY = (int) Math.round(scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * scale) / 2);
-
-		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
-			return;
-
-		int drawSizeX = (int) Math.round(sizeX * scale);
-		int drawSizeY = (int) Math.round(sizeY * scale);
-
-		g.drawRect(drawX, drawY, drawSizeX, drawSizeY);
-	}
-
-	public void fillInterfaceOval(Graphics g, double x, double y, double sizeX, double sizeY)
-	{
-		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
-		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
-
-		g.fillOval(drawX, drawY, drawSizeX, drawSizeY);
-	}
-
-	public void drawInterfaceOval(Graphics g, double x, double y, double sizeX, double sizeY)
-	{
-		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
-		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
-
-		g.drawOval(drawX, drawY, drawSizeX, drawSizeY);
-	}
-
-	public void fillInterfaceRect(Graphics g, double x, double y, double sizeX, double sizeY)
-	{
-		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
-		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
-
-		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 	
-	public void fillInterfaceProgressRect(Graphics g, double x, double y, double sizeX, double sizeY, double progress)
+	public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		int drawSizeX = (int) Math.round(sizeX * interfaceScale * progress);
-		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
 
-		g.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
 	}
-	
-	public void drawInterfaceImage(Graphics g, Image img, double x, double y, double sizeX, double sizeY)
+
+	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)
 	{
-		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
+		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
 		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
 
-		g.drawImage(img, drawX, drawY, drawSizeX, drawSizeY, null);
+		Game.game.window.drawRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
-	public void drawInterfaceRect(Graphics g, double x, double y, double sizeX, double sizeY)
+	public void drawText(double x, double y, String text)
 	{
-		int drawX = (int) Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		int drawSizeX = (int) Math.round(sizeX * interfaceScale);
-		int drawSizeY = (int) Math.round(sizeY * interfaceScale);
-
-		g.drawRect(drawX , drawY, drawSizeX, drawSizeY);
+		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
+		
+		int drawX = (int) (scale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		int drawY = (int) (scale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		
+		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
-	public void drawText(Graphics g, double x, double y, String text)
+	public void drawInterfaceText(double x, double y, String text)
 	{
-		double sizeX = Math.round(g.getFont().getStringBounds(text, frc).getWidth());
-
-		double sizeY = g.getFont().getSize() / 3 / scale;
-		//int size = text.length() * g.getFont().getSize() / 2;
-		int drawX = (int) (scale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - Drawing.sizeX * scale) / 2);
-		int drawY = (int) (scale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.sizeY * scale) / 2);
-		g.drawString(text, drawX, drawY);
-
-		//g.setColor(Color.red);
-		//g.drawRect((int)((x - sizeX / 2) * scale), (int)((y - sizeY * 3 / 2) * scale), (int)g.getFont().getStringBounds(text, frc).getWidth(), (int)g.getFont().getStringBounds(text, frc).getHeight());
+		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
+				
+		int drawX = (int) (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		int drawY = (int) (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		
+		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
-	public void drawInterfaceText(Graphics g, double x, double y, String text)
+	public void drawInterfaceText(double x, double y, String text, boolean rightAligned)
 	{
-		double sizeX = Math.round(g.getFont().getStringBounds(text, frc).getWidth());
+		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
+		//System.out.println(sizeX);
+		//System.out.println(sizeY);
 
-		double sizeY = g.getFont().getSize() / 3 / Drawing.interfaceScale;
-		int drawX = (int) (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		g.drawString(text, drawX, drawY);
-	}
-
-	public void drawInterfaceText(Graphics g, double x, double y, String text, boolean rightAligned)
-	{
-		double sizeX = Math.round(g.getFont().getStringBounds(text, frc).getWidth());
-
-		double sizeY = g.getFont().getSize() / 3 / Drawing.interfaceScale;
 		double offX = sizeX;
 		
 		if (!rightAligned)
 			offX = 0;
 		
-		int drawX = (int) (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		g.drawString(text, drawX, drawY);
+		int drawX = (int) (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		int drawY = (int) (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 	
-	public void drawUncenteredInterfaceText(Graphics g, double x, double y, String text)
+	public void drawUncenteredInterfaceText(double x, double y, String text)
 	{
-		int drawX = (int) (interfaceScale * x + Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2);
-		int drawY = (int) (interfaceScale * y + Math.max(0, Panel.windowHeight  - statsHeight - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2);
-		g.drawString(text, drawX, drawY);
+		int drawX = (int) (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		int drawY = (int) (interfaceScale * y + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
-	public static void setFontSize(Graphics g, double size)
+	public void setFontSize(double size)
 	{
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (size * Drawing.window.scale)));
+		this.fontSize = size / 36.0 * scale;
 	}
 
-	public static void setInterfaceFontSize(Graphics g, double size)
+	public void setInterfaceFontSize(double size)
 	{
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (size * Drawing.interfaceScale)));
+		this.fontSize = size / 36.0 * interfaceScale;
 	}
 
-	public static void drawTooltip(Graphics g, String[] text)
+	public void drawTooltip(String[] text)
 	{
-		double x = Game.window.getInterfaceMouseX();
-		double y = Game.window.getInterfaceMouseY();
+		double x = getInterfaceMouseX();
+		double y = getInterfaceMouseY();
 
 		int xPadding = (int) (16);
 		int yPadding = (int) (8);
 
-		Drawing.setInterfaceFontSize(g, 14);
+		setInterfaceFontSize(14);
 
 		int sizeX = 0;
 		for (int i = 0; i < text.length; i++)
 		{
-			sizeX = Math.max(sizeX, (int) Math.round(g.getFont().getStringBounds(text[i], frc).getWidth() / interfaceScale) + xPadding);
+			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, text[i]) / this.interfaceScale) + xPadding);
 		}
 
 		int sizeY = 14;
@@ -324,21 +353,21 @@ public class Drawing extends JFrame
 		double drawX = x + sizeX / 2 + xPadding;
 		double drawY = y + sizeY / 2 + yPadding * text.length;
 
-		g.setColor(new Color(0, 0, 0, 127));
-		Drawing.window.fillInterfaceRect(g, drawX, drawY, sizeX + xPadding * 2, sizeY + yPadding * 2 * text.length);
+		setColor(0, 0, 0, 127);
+		fillInterfaceRect(drawX, drawY, sizeX + xPadding * 2, sizeY + yPadding * 2 * text.length);
 
-		g.setColor(Color.WHITE);
+		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
 		{
-			Drawing.window.drawUncenteredInterfaceText(g, x + xPadding, y + yPadding * (2 * i + 1) + 14, text[i]);
+			drawUncenteredInterfaceText(x + xPadding, y + 2 + yPadding * (2 * i + 1), text[i]);
 		}
 
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
 	}
 
-	public static void playSound(String sound)
+	public void playSound(String sound)
 	{
-		Drawing.pendingSounds.add(sound);
+		pendingSounds.add(sound);
 	}
 	
 	public double toGameCoordsX(double x)
@@ -346,11 +375,11 @@ public class Drawing extends JFrame
 		double x1 = x;
 		
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
-			x1 += (Panel.panel.getSize().getWidth() - Drawing.interfaceScale * Drawing.interfaceSizeX) / 2 / Drawing.interfaceScale;
+			x1 += (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
 		
 		double rawX = interfaceScale * (x1);
 
-		rawX -= (1400 - Drawing.sizeX * scale / interfaceScale) / 2 * interfaceScale;
+		rawX -= (1400 - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 
 		double gameX = (rawX) / scale - getPlayerMouseOffsetX();	
 		
@@ -362,11 +391,11 @@ public class Drawing extends JFrame
 		double y1 = y;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
-			y1 += (Panel.panel.getSize().getHeight() - Drawing.interfaceScale * Drawing.interfaceSizeY - Drawing.statsHeight) / 2 / Drawing.interfaceScale;
+			y1 += (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
 		
 		double rawY = interfaceScale * (y1);
 		
-		rawY -= (900 - Drawing.sizeY * scale / interfaceScale) / 2 * interfaceScale;
+		rawY -= (900 - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
 		double gameY = (rawY) / scale - getPlayerMouseOffsetY();
 		
@@ -385,34 +414,20 @@ public class Drawing extends JFrame
 
 	public double getInterfaceMouseX()
 	{
-		try
-		{
-			return (MouseInfo.getPointerInfo().getLocation().getX() - this.getLocation().getX() - Math.max(0, Panel.windowWidth - Drawing.interfaceSizeX * Drawing.interfaceScale) / 2) / interfaceScale + mouseXoffset / Drawing.interfaceScale;
-		}
-		catch (Exception e)
-		{
-			return 0;
-		}
+		return (Game.game.window.absoluteMouseX - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale + mouseXoffset / interfaceScale;
 	}
 
 	public double getInterfaceMouseY()
 	{
-		try
-		{
-			return ((MouseInfo.getPointerInfo().getLocation().getY() - this.getLocation().getY() - Math.max(0, Panel.windowHeight - (1) - Drawing.interfaceSizeY * Drawing.interfaceScale) / 2)) / interfaceScale + mouseYoffset / Drawing.interfaceScale;
-		}
-		catch (Exception e)
-		{
-			return 0;
-		}
+		return (Game.game.window.absoluteMouseY - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale + mouseYoffset / interfaceScale;
 	}
 
-	public void setScreenSize(int x, int y)
+	/*public void setScreenSize(int x, int y)
 	{
 		sizeX = x;
 		sizeY = y;
 		this.setSize((int) (x * scale), (int) ((y) * scale));
-	}
+	}*/
 
 	public void setScreenBounds(int x, int y)
 	{
@@ -422,49 +437,49 @@ public class Drawing extends JFrame
 		Game.currentSizeY = y / Game.tank_size;
 	}
 
-	public static double getPlayerOffsetX()
+	public double getPlayerOffsetX()
 	{
-		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
+		if (!enableMovingCameraX)
 			return 0;
 
-		double result = (playerX - (Panel.windowWidth) / Drawing.window.scale / 2);
+		double result = (playerX - (Panel.windowWidth) / scale / 2);
 
 		if (result < 0)
 			return 0;
-		else if (result + (Panel.windowWidth) / Drawing.window.scale > Drawing.sizeX)
-			return 0 - (Drawing.sizeX - (Panel.windowWidth) / Drawing.window.scale);
+		else if (result + (Panel.windowWidth) / scale > sizeX)
+			return 0 - (sizeX - (Panel.windowWidth) / scale);
 		else
 			return 0 - result;
 	}
 
-	public static double getPlayerOffsetY()
+	public double getPlayerOffsetY()
 	{
-		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
+		if (!enableMovingCameraY)
 			return 0;
 
-		double result = (playerY - Panel.windowHeight / Drawing.window.scale / 2);
+		double result = (playerY - Panel.windowHeight / scale / 2);
 
 		if (result < 0)
 			return 0;
-		else if (result + (Panel.windowHeight - statsHeight) / Drawing.window.scale > Drawing.sizeY)
-			return 0 - (Drawing.sizeY - (Panel.windowHeight - statsHeight) / Drawing.window.scale);
+		else if (result + (Panel.windowHeight - statsHeight) / scale > sizeY)
+			return 0 - (sizeY - (Panel.windowHeight - statsHeight) / scale);
 		else
 			return 0 - result;
 	}
 	
-	public static double getPlayerMouseOffsetX()
+	public double getPlayerMouseOffsetX()
 	{
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
 			return 0;
 
-		return getPlayerOffsetX() + (Game.currentSizeX / 28.0 - 1) * Drawing.interfaceSizeX / 2;
+		return getPlayerOffsetX() + (Game.currentSizeX / 28.0 - 1) * interfaceSizeX / 2;
 	}
 
-	public static double getPlayerMouseOffsetY()
+	public double getPlayerMouseOffsetY()
 	{
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
 			return 0;
 
-		return getPlayerOffsetY() + (Game.currentSizeY / 18.0 - 1) * Drawing.interfaceSizeY / 2;
+		return getPlayerOffsetY() + (Game.currentSizeY / 18.0 - 1) * interfaceSizeY / 2;
 	}
 }

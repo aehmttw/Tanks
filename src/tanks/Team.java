@@ -1,11 +1,12 @@
 package tanks;
 
-import java.awt.Color;
-
 public class Team 
 {
 	public boolean enableColor;
-	public Color teamColor = Color.black;
+	public double teamColorR = 0;
+	public double teamColorG = 0;
+	public double teamColorB = 0;
+
 	public boolean friendlyFire = true;
 	public String name = "";
 	
@@ -21,11 +22,14 @@ public class Team
 		this.friendlyFire = ff;
 	}
 	
-	public Team(String name, boolean ff, Color col)
+	public Team(String name, boolean ff, double r, double g, double b)
 	{
 		this.name = name;
 		this.enableColor = true;
-		this.teamColor = col;
+		this.teamColorR = r;
+		this.teamColorG = g;
+		this.teamColorB = b;
+
 		this.friendlyFire = ff;
 	}
 
@@ -40,13 +44,13 @@ public class Team
 		else return a.team == b.team;
 	}
 	
-	public static Color getObjectColor(Color c, Movable m)
+	public static double[] getObjectColor(double r, double g, double b, Movable m)
 	{
 		if (m.team == null)
-			return c;
+			return new double[]{r, g, b};
 		else if (!m.team.enableColor)
-			return c;
+			return new double[]{r, g, b};
 		else
-			return m.team.teamColor;
+			return new double[]{m.team.teamColorR, m.team.teamColorG, m.team.teamColorB};
 	}
 }

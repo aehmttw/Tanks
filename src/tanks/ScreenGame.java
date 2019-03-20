@@ -1,10 +1,9 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+
+import org.lwjgl.glfw.GLFW;
 
 import tanks.tank.Tank;
 
@@ -28,7 +27,7 @@ public class ScreenGame extends Screen
 	public ArrayList<Item> shop = new ArrayList<Item>();
 	public boolean screenshotMode = false;
 
-	Button play = new Button(Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
+	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -39,7 +38,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button enterShop = new Button(Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-110, 350, 40, "Shop", new Runnable()
+	Button enterShop = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-110, 350, 40, "Shop", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -50,7 +49,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button resume = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 60, 350, 40, "Continue playing", new Runnable()
+	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Continue playing", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -61,7 +60,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button resumeCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
+	Button resumeCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -73,7 +72,7 @@ public class ScreenGame extends Screen
 			);
 
 
-	Button newLevel = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
+	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -86,7 +85,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button edit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
+	Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -99,7 +98,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button quit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -109,7 +108,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button quitCrusade = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -121,7 +120,7 @@ public class ScreenGame extends Screen
 	}
 	, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
 
-	Button quitCrusadeFinalLife = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -133,7 +132,7 @@ public class ScreenGame extends Screen
 	}
 	, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 
-	Button exitShop = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit shop", new Runnable()
+	Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit shop", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -143,7 +142,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button next = new Button(Drawing.interfaceSizeX / 2 + 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -153,7 +152,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button previous = new Button(Drawing.interfaceSizeX / 2 - 190, Drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -221,14 +220,14 @@ public class ScreenGame extends Screen
 			if (page * rows * 3 + rows * 2 < shopItemButtons.size())
 				offset = -380;
 
-			shopItemButtons.get(i).posY = Drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+			shopItemButtons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
 
 			if (i / rows % 3 == 0)
-				shopItemButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset;
+				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
 			else if (i / rows % 3 == 1)
-				shopItemButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380;
+				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
 			else
-				shopItemButtons.get(i).posX = Drawing.interfaceSizeX / 2 + offset + 380 * 2;
+				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
 		}
 	}
 
@@ -237,7 +236,7 @@ public class ScreenGame extends Screen
 	{
 		Panel.panel.hotbar.update();
 
-		if (InputKeyboard.keys.contains(KeyEvent.VK_ESCAPE))
+		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ESCAPE))
 		{
 			if (!Panel.pausePressed)
 			{
@@ -252,16 +251,16 @@ public class ScreenGame extends Screen
 		else
 			Panel.pausePressed = false;
 
-		if (InputKeyboard.validKeys.contains(KeyEvent.VK_F1))
+		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_F1))
 		{
 			this.screenshotMode = !this.screenshotMode;
-			InputKeyboard.validKeys.remove((Integer)KeyEvent.VK_F1);
+			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_F1);
 		}
 
-		if (InputKeyboard.validKeys.contains(KeyEvent.VK_I))
+		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_I))
 		{
-			Drawing.movingCamera = !Drawing.movingCamera ;
-			InputKeyboard.validKeys.remove((Integer)KeyEvent.VK_I);
+			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_I);
 		}
 
 		if (paused)
@@ -349,6 +348,14 @@ public class ScreenGame extends Screen
 				}
 			}
 
+			for (int i = 0; i < Game.obstacles.size(); i++)
+			{
+				Obstacle o = Game.obstacles.get(i);
+				if (o.update)
+					o.update();
+			}
+
+			
 			for (int i = 0; i < Game.effects.size(); i++)
 			{
 				Game.effects.get(i).update();
@@ -447,64 +454,63 @@ public class ScreenGame extends Screen
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		this.drawDefaultBackground(g);
+		this.drawDefaultBackground();
 
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			if (o.drawBelow)
-				o.draw(g);
+				o.draw();
 		}
 
 		for (int i = 0; i < Game.belowEffects.size(); i++)
-			Game.belowEffects.get(i).draw(g);
+			Game.belowEffects.get(i).draw();
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
 			if (m.drawBelow)
-				m.draw(g);
+				m.draw();
 		}
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
-			if (!m.drawBelow && ! m.drawAbove)
-				m.draw(g);
-		}
-
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-			if (!o.drawBelow)
-				o.draw(g);
+			if (!m.drawBelow && !m.drawAbove)
+				m.draw();
 		}
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
 			if (m.drawAbove)
-				m.draw(g);
+				m.draw();
 		}
 
 		for (int i = 0; i < Game.effects.size(); i++)
-			((Effect)Game.effects.get(i)).draw(g);
+			((Effect)Game.effects.get(i)).draw();
 
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			if (!o.drawBelow)
+				o.draw();
+		}
 		
 		if (!playing) 
 		{
 			if (Crusade.crusadeMode)
 			{
-				g.setColor(new Color(0, 0, 0, 127));
-				Drawing.setFontSize(g, 100);
-				Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
+				Drawing.drawing.setColor(0, 0, 0, 127);
+				Drawing.drawing.setFontSize(100);
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
 			}
 			
 			if (shopScreen)
 			{				
-				this.exitShop.draw(g);
+				this.exitShop.draw();
 
 				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)
 					next.update();
@@ -513,57 +519,57 @@ public class ScreenGame extends Screen
 					this.previous.update();
 
 				for (int i = 0; i < this.shopItemButtons.size(); i++)
-					this.shopItemButtons.get(i).draw(g);
+					this.shopItemButtons.get(i).draw();
 			}
 			else
 			{
 				if (!this.shop.isEmpty())
-					enterShop.draw(g);
+					enterShop.draw();
 
-				play.draw(g);
+				play.draw();
 
 				if (Game.autostart && !cancelCountdown)
 				{
-					g.setColor(Color.gray);
-					Drawing.window.fillInterfaceRect(g, Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-27.5, 350, 5);
-					g.setColor(Color.orange);
-					Drawing.window.fillInterfaceProgressRect(g, Drawing.interfaceSizeX-200, Drawing.interfaceSizeY-27.5, 350, 5, Game.startTime / 400);
+					Drawing.drawing.setColor(127, 127, 127);
+					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 35, 320, 3);
+					Drawing.drawing.setColor(255, 127, 0);
+					Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 35, 320, 3, Game.startTime / 400);
 				}
 			}
 		}
 
-		Panel.panel.hotbar.draw(g);
+		Panel.panel.hotbar.draw();
 
 		if (paused && !screenshotMode)
 		{
-			g.setColor(new Color(127, 178, 228, 64));
-			g.fillRect(0, 0, (int) (Game.window.getSize().getWidth()) + 1, (int) (Game.window.getSize().getHeight()) + 1);
+			Drawing.drawing.setColor(127, 178, 228, 64);
+			Game.game.window.fillRect(0, 0, (int) (Game.game.window.absoluteWidth) + 1, (int) (Game.game.window.absoluteHeight) + 1);
 
 			if (name == null)
 			{
 				if (!Crusade.crusadeMode)
-					newLevel.draw(g);
+					newLevel.draw();
 			}
 			else
-				edit.draw(g);
+				edit.draw();
 
 			if (!Crusade.crusadeMode)
-				quit.draw(g);
+				quit.draw();
 			else
 			{
 				if (Crusade.currentCrusade.remainingLives > 1)
-					quitCrusade.draw(g);
+					quitCrusade.draw();
 				else
-					quitCrusadeFinalLife.draw(g);
+					quitCrusadeFinalLife.draw();
 			}	
 
 			if (!Crusade.crusadeMode)
-				resume.draw(g);
+				resume.draw();
 			else
-				resumeCrusade.draw(g);
+				resumeCrusade.draw();
 
-			g.setColor(Color.black);
-			Drawing.window.drawInterfaceText(g, Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 - 150, "Game paused");
+			Drawing.drawing.setColor(0, 0, 0);
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game paused");
 		}
 
 	}

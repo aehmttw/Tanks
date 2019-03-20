@@ -1,10 +1,6 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import tanks.tank.Tank;
-
 
 public class Bullet extends Movable
 {
@@ -16,8 +12,16 @@ public class Bullet extends Movable
 	public double age = 0;
 	public double size;
 	public int bounces;
-	public Color baseColor;
-	public Color outlineColor;
+	public int bouncyBounces = 100;
+	
+	public double baseColorR;
+	public double baseColorG;
+	public double baseColorB;
+
+	public double outlineColorR;
+	public double outlineColorG;
+	public double outlineColorB;
+	
 	public double destroyTimer = 0;
 	public Tank tank;
 	public double damage = 1;
@@ -36,8 +40,15 @@ public class Bullet extends Movable
 		this.vX = 0;
 		this.vY = 0;
 		this.size = bullet_size;
-		this.baseColor = t.color;
-		this.outlineColor = Team.getObjectColor(t.turret.color, t);
+		this.baseColorR = t.colorR;
+		this.baseColorG = t.colorG;
+		this.baseColorB = t.colorB;
+
+		double[] oc = Team.getObjectColor(t.turret.colorR, t.turret.colorG, t.turret.colorB, t);
+		this.outlineColorR = oc[0];
+		this.outlineColorG = oc[1];
+		this.outlineColorB = oc[2];
+
 		this.bounces = bounces;
 		this.tank = t;
 		this.team = t.team;
@@ -72,8 +83,8 @@ public class Bullet extends Movable
 	{
 		if (!heavy)
 			this.destroy = true;
-
-		if (!(Team.isAllied(this, t) && !this.team.friendlyFire))
+		
+		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable)
 		{
 			t.flashAnimation = 1;
 			if (!this.heavy)
@@ -98,9 +109,16 @@ public class Bullet extends Movable
 	public void collidedWithObject(Movable o)
 	{
 		if (this.playPopSound)
-			Drawing.playSound("resources/bullet_explode.wav");
+			Drawing.drawing.playSound("resources/bullet_explode.wav");
 
 		if (!heavy)
+		{
+			this.destroy = true;
+			this.vX = 0;
+			this.vY = 0;
+		}
+		
+		if (heavy && o instanceof Bullet && ((Bullet)o).heavy)
 		{
 			this.destroy = true;
 			this.vX = 0;
@@ -119,6 +137,8 @@ public class Bullet extends Movable
 		if (this.destroy)
 			return;
 
+		boolean bouncy = false;
+		
 		boolean collided = false;
 
 		double prevX = this.posX;
@@ -131,12 +151,12 @@ public class Bullet extends Movable
 			if (!o.bulletCollision && !o.checkForObjects)
 				continue;
 
-			double horizontalDist = Math.abs(this.posX - o.posX);
-			double verticalDist = Math.abs(this.posY - o.posY);
-
 			double dx = this.posX - o.posX;
 			double dy = this.posY - o.posY;
 
+			double horizontalDist = Math.abs(dx);
+			double verticalDist = Math.abs(dy);
+			
 			double s = this.size;
 			if (useCustomWallCollision)
 				s = this.wallCollisionSize;
@@ -150,39 +170,55 @@ public class Bullet extends Movable
 				
 				if (!o.bulletCollision)
 					continue;
-					
-				if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
+				
+				boolean left = o.hasLeftNeighbor();
+				boolean right = o.hasRightNeighbor();
+				boolean up = o.hasUpperNeighbor();
+				boolean down = o.hasLowerNeighbor();
+
+				if (left && dx <= 0)
+					horizontalDist = 0;
+				
+				if (right && dx >= 0)
+					horizontalDist = 0;
+				
+				if (up && dy <= 0)
+					verticalDist = 0;
+				
+				if (down && dy >= 0)
+					verticalDist = 0;
+				
+				bouncy = o.bouncy;
+				collided = true;
+				
+				if (!left && dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
 					this.posX += horizontalDist - bound;
 					this.vX = -Math.abs(this.vX);
-					collided = true;
 				}
-				else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
+				else if (!up && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 				{
 					this.posY += verticalDist - bound;
 					this.vY = -Math.abs(this.vY);
-					collided = true;
 				}
-				else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
+				else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
 				{
 					this.posX -= horizontalDist - bound;
 					this.vX = Math.abs(this.vX);
-					collided = true;
 				}
-				else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
+				else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
 				{
 					this.posY -= verticalDist - bound;
 					this.vY = Math.abs(this.vY);
-					collided = true;
 				}
 			}
 
 		}
 
-		if (this.posX + this.size/2 > Drawing.sizeX)
+		if (this.posX + this.size/2 > Drawing.drawing.sizeX)
 		{
 			collided = true;
-			this.posX = Drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.sizeX);
+			this.posX = Drawing.drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.drawing.sizeX);
 			this.vX = -Math.abs(this.vX);
 		}
 		if (this.posX - this.size/2 < 0)
@@ -191,10 +227,10 @@ public class Bullet extends Movable
 			this.posX = this.size/2 - (this.posX - this.size / 2);
 			this.vX = Math.abs(this.vX);
 		}
-		if (this.posY + this.size/2 > Drawing.sizeY)
+		if (this.posY + this.size/2 > Drawing.drawing.sizeY)
 		{
 			collided = true;
-			this.posY = Drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.sizeY);
+			this.posY = Drawing.drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.drawing.sizeY);
 			this.vY = -Math.abs(this.vY); 
 		}
 		if (this.posY - this.size/2 < 0)
@@ -255,20 +291,22 @@ public class Bullet extends Movable
 
 		if (collided)
 		{
-
-			if (this.bounces <= 0)
+			if (!bouncy)
+				this.bounces--;
+			else
+				this.bouncyBounces--;
+			
+			if (this.bounces < 0 || this.bouncyBounces < 0)
 			{
 				if (this.playPopSound)
-					Drawing.playSound("resources/bullet_explode.wav");
+					Drawing.drawing.playSound("resources/bullet_explode.wav");
 
 				this.destroy = true;
 				this.vX = 0;
 				this.vY = 0;
 			}
 			else
-				Drawing.playSound("resources/bounce.wav");
-
-			this.bounces--;
+				Drawing.drawing.playSound("resources/bounce.wav");
 		}
 	}
 
@@ -291,7 +329,9 @@ public class Bullet extends Movable
 					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 					int var = 50;
 					e.maxAge /= 2;
-					e.col = new Color((int) Math.min(255, Math.max(0, this.baseColor.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.baseColor.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.baseColor.getBlue() + Math.random() * var - var / 2)));
+					e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
 					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
 					Game.effects.add(e);
 				}
@@ -358,7 +398,9 @@ public class Bullet extends Movable
 					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 					int var = 50;
 					e.maxAge /= 2;
-					e.col = new Color((int) Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2)));
+					e.colR = Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
 					Game.effects.add(e);
 				}
@@ -382,14 +424,14 @@ public class Bullet extends Movable
 	}
 
 	@Override
-	public void draw(Graphics p) 
+	public void draw() 
 	{
 		double opacity = ((60 - destroyTimer) / 60.0);
 		double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
-		p.setColor(new Color(this.outlineColor.getRed(), this.outlineColor.getGreen(), this.outlineColor.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Drawing.window.fillOval(p, posX, posY, size + sizeModifier, size + sizeModifier);
-		p.setColor(new Color(this.baseColor.getRed(), this.baseColor.getGreen(), this.baseColor.getBlue(), (int)(opacity * opacity * opacity * 255.0)));
-		Drawing.window.fillOval(p, posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+		Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, (int)(opacity * opacity * opacity * 255.0));
+		Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
+		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int)(opacity * opacity * opacity * 255.0));
+		Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
 	}
 

@@ -1,14 +1,14 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 public class Effect extends Movable
 {
-	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread, darkFire, electric, stun}
+	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, charge, tread, darkFire, electric, healing, stun}
 	public EffectType type;
 	double age = 0;
-	public Color col;
+	public double colR;
+	public double colG;
+	public double colB;
+
 	public double maxAge = 100;
 	public double size;
 	public double ffOpacityMultiplier = Math.min(1, Panel.frameFrequency);
@@ -67,7 +67,7 @@ public class Effect extends Movable
 		else if (type == EffectType.trail)
 			this.maxAge = 50;
 		else if (type == EffectType.ray)
-			this.maxAge = 1;
+			this.maxAge = 20;
 		else if (type == EffectType.mineExplosion)
 			this.maxAge = 20;
 		else if (type == EffectType.laser)
@@ -98,6 +98,8 @@ public class Effect extends Movable
 			this.size = Math.random() * 5 + 5;
 			this.distance = Math.random() * 50 + 25;
 		}
+		else if (type == EffectType.healing)
+			this.maxAge = 21;
 	}
 	
 	protected void refurbish()
@@ -108,7 +110,9 @@ public class Effect extends Movable
 		this.vY = 0;
 		this.type = null;
 		this.age = 0;
-		this.col = null;
+		this.colR = 0;
+		this.colG = 0;
+		this.colB = 0;
 		this.maxAge = Math.random() * 100 + 50;
 		this.size = 0;
 		this.ffOpacityMultiplier =  Math.min(1, Panel.frameFrequency);
@@ -121,7 +125,7 @@ public class Effect extends Movable
 	public void checkCollision() {}
 	
 	@Override
-	public void draw(Graphics p)
+	public void draw()
 	{
 		if (this.maxAge < this.age)
 			return;
@@ -130,20 +134,18 @@ public class Effect extends Movable
 			Game.exitToCrash(new RuntimeException("Effect with negative age"));
 		
 		double opacityMultiplier = ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-		Drawing drawing = Drawing.window;
+		Drawing drawing = Drawing.drawing;
 		
 		if (this.type == EffectType.fire)
 		{	
-			int size = (int) (this.age * 3 + 10);
+			double size = (this.age * 3 + 10);
 			double rawOpacity = (1.0 - (this.age)/20.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			int opacity = (int)(rawOpacity * 255);
+			double opacity = (rawOpacity * 255);
 			
-			int green = Math.min(255, (int)(255 - 255.0*(this.age / 20.0)));
-			Color col = new Color(255, green, 0,  Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
-			
-			p.setColor(col);
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			double green = Math.min(255, (255 - 255.0*(this.age / 20.0)));
+			drawing.setColor(255, green, 0,  Math.min(255, Math.max(0, (opacity * opacityMultiplier * ffOpacityMultiplier))));
+			drawing.fillOval(this.posX, this.posY, size, size);
 			
 		}
 		else if (this.type == EffectType.smokeTrail)
@@ -152,61 +154,59 @@ public class Effect extends Movable
 			int size = 20;
 			double rawOpacity = (1.0 - (this.age)/200.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			int opacity = (int)(rawOpacity * 100);
-						
-			Color col = new Color(0, 0, 0, Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * opacityModifier * ffOpacityMultiplier))));
-		
-			p.setColor(col);
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			double opacity = (rawOpacity * 100);
+			
+			drawing.setColor(0, 0, 0, Math.min(255, Math.max(0, (opacity * opacityMultiplier * opacityModifier * ffOpacityMultiplier))));
+			drawing.fillOval(this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.trail)
 		{
-			int size = (int)Math.min(20, this.age / 20.0 + 10);
+			double size = Math.min(20, this.age / 20.0 + 10);
 			double rawOpacity = (1.0 - (this.age)/50.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			int opacity = (int)(rawOpacity * 25);
+			double opacity = (rawOpacity * 25);
 			
-			Color col = new Color(127, 127, 127, Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
+			drawing.setColor(127, 127, 127, Math.min(255, Math.max(0, (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
-			p.setColor(col);
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			drawing.fillOval(this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.ray)
 		{
 			int size = 6;
-			p.setColor(new Color(0, 0, 0, 50));
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			drawing.setColor(0, 0, 0, 50);
+			drawing.fillOval(this.posX, this.posY, size, size);
+			Game.removeEffects.add(this);
 		}
 		else if (this.type == EffectType.mineExplosion)
 		{
-			int size = (int) (radius * 2);
-			int opacity = (int) (100 - this.age * 5);
-			p.setColor(new Color(255, 0, 0, opacity));
-			drawing.fillForcedOval(p, this.posX, this.posY, size, size);	
+			double size = (radius * 2);
+			double opacity = (100 - this.age * 5);
+			drawing.setColor(255, 0, 0, opacity);
+			drawing.fillForcedOval(this.posX, this.posY, size, size);	
 		}
 		else if (this.type == EffectType.laser)
 		{
 			double size = Bullet.bullet_size - this.age / 2;
-			p.setColor(new Color(255, 0, 0));
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			drawing.setColor(255, 0, 0);
+			drawing.fillOval(this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.piece)
 		{
-			int size = 1 + (int) (Bullet.bullet_size * (1 - this.age / this.maxAge));
-			p.setColor(col);
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+			drawing.setColor(this.colR, this.colG, this.colB);
+			drawing.fillOval(this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.obstaclePiece)
 		{
-			int size = 1 + (int) (Bullet.bullet_size * (1 - this.age / this.maxAge));
-			p.setColor(col);
-			drawing.fillRect(p, this.posX, this.posY, size, size);
+			double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+			drawing.setColor(this.colR, this.colG, this.colB);
+			drawing.fillRect(this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.charge)
 		{	
-			int size = 1 + (int) (Bullet.bullet_size * (this.age / this.maxAge));
-			p.setColor(col);
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			double size = 1 + (Bullet.bullet_size * (this.age / this.maxAge));
+			drawing.setColor(this.colR, this.colG, this.colB);
+			drawing.fillOval(this.posX, this.posY, size, size);
 		}
 		else if (this.type == EffectType.tread)
 		{	
@@ -217,39 +217,44 @@ public class Effect extends Movable
 				opacityFactor = 4;
 			}
 			
-			int opacity = (int) (255 - this.age / opacityFactor) / 4;
-			p.setColor(new Color(0, 0, 0, opacity));
-			drawing.fillRect(p, this.posX, this.posY, size * Obstacle.draw_size / Obstacle.obstacle_size, size * Obstacle.draw_size / Obstacle.obstacle_size);
+			double opacity = (255 - this.age / opacityFactor) / 4;
+			drawing.setColor(0, 0, 0, opacity);
+			drawing.fillRect(this.posX, this.posY, size * Obstacle.draw_size / Obstacle.obstacle_size, size * Obstacle.draw_size / Obstacle.obstacle_size);
 		}
 		else if (this.type == EffectType.darkFire)
 		{	
-			int size = (int) (this.age * 3 + 10);
+			double size = (this.age * 3 + 10);
 			double rawOpacity = (1.0 - (this.age)/20.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			int opacity = (int)(rawOpacity * 255);
+			double opacity = (rawOpacity * 255);
 			
-			int red = Math.min(255, (int)(128 - 128.0 * (this.age / 20.0)));
-			Color col = new Color(red / 2, 0, red,  Math.min(255, Math.max(0, (int) (opacity * opacityMultiplier * ffOpacityMultiplier))));
+			double red = Math.min(255, (128 - 128.0 * (this.age / 20.0)));
+			drawing.setColor(red / 2, 0, red,  Math.min(255, Math.max(0, (opacity * opacityMultiplier * ffOpacityMultiplier))));
 			
-			p.setColor(col);
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			drawing.fillOval(this.posX, this.posY, size, size);
 			
 		}
 		else if (this.type == EffectType.stun)
 		{	
-			int size = 1 + (int) (this.size * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+			double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
 			double angle = this.angle + this.age / 20;
-			int distance = 1 + (int) (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+			double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
 
-			p.setColor(col);
+			drawing.setColor(this.colR, this.colG, this.colB);
 			double[] o = Movable.getLocationInDirection(angle, distance);
-			drawing.fillOval(p, this.posX + o[0], this.posY + o[1], size, size);
+			drawing.fillOval(this.posX + o[0], this.posY + o[1], size, size);
 		}
 		else if (this.type == EffectType.electric)
 		{
+			double size = Math.max(0, Bullet.bullet_size - this.age / 2);
+			drawing.setColor(0, 255, 255);
+			drawing.fillOval(this.posX, this.posY, size, size);
+		}
+		else if (this.type == EffectType.healing)
+		{
 			double size = Bullet.bullet_size - this.age / 2;
-			p.setColor(new Color(0, 255, 255));
-			drawing.fillOval(p, this.posX, this.posY, size, size);
+			drawing.setColor(0, 255, 0);
+			drawing.fillOval(this.posX, this.posY, size, size);
 		}
 		else
 		{

@@ -1,7 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 public class Firework extends Movable
@@ -17,8 +15,10 @@ public class Firework extends Movable
 	public ArrayList<Firework> list;
 	public ArrayList<Firework> removeList;
 
-	public Color color;
-	
+	public double colorR;
+	public double colorG;
+	public double colorB;
+
 	public Firework(FireworkType t, double x, double y, ArrayList<Firework> list, ArrayList<Firework> removeList)
 	{
 		super(x, y);
@@ -75,27 +75,32 @@ public class Firework extends Movable
 			b = 256 * 6 - col - 1;
 		}
 		
-		this.color = new Color(r, g, b);
+		this.colorR = r;
+		this.colorG = g;
+		this.colorB = b;
 	}
 	
-	public void drawUpdate(Graphics g)
+	public void drawUpdate()
 	{
 		if (type == FireworkType.rocket)
 		{
 			this.vY += 0.0625 * Panel.frameFrequency;
 			
-			g.setColor(this.color);
-			Drawing.window.fillOval(g, posX, posY, this.size, this.size);
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+			Drawing.drawing.fillOval(posX, posY, this.size, this.size);
 			
 			Firework f = new Firework(FireworkType.trail, this.posX, this.posY, this.list, this.removeList);
 			f.maxAge = 30;
-			f.color = this.color;
+			f.colorR = this.colorR;
+			f.colorG = this.colorG;
+			f.colorB = this.colorB;
+
 			f.size = this.size;
 			this.list.add(f);
 			
 			if (this.age >= this.maxAge)
 			{
-				Drawing.playSound("resources/destroy.wav");
+				Drawing.drawing.playSound("resources/destroy.wav");
 
 				removeList.add(this);
 				
@@ -104,7 +109,9 @@ public class Firework extends Movable
 					Firework e = new Firework(FireworkType.particle, this.posX, this.posY, this.list, this.removeList);
 					e.size = 4;
 					int var = 50;
-					e.color = new Color((int) Math.min(255, Math.max(0, this.color.getRed() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getGreen() + Math.random() * var - var / 2)), (int) Math.min(255, Math.max(0, this.color.getBlue() + Math.random() * var - var / 2)));
+					e.colorR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
+					e.colorG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
+					e.colorB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
 					double power = Math.random() * 1 + 2;
 					e.vX = this.vX;
 					e.vY = this.vY;
@@ -116,9 +123,9 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.trail)
 		{	
-			g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge)))));
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge))));
 			double s = this.size - (int) (this.age * this.size / this.maxAge);
-			Drawing.window.fillOval(g, posX, posY, s, s);
+			Drawing.drawing.fillOval(posX, posY, s, s);
 			
 			if (this.age >= this.maxAge)
 			{
@@ -130,13 +137,15 @@ public class Firework extends Movable
 			this.vY += 0.0625 * Panel.frameFrequency;
 			
 			int opacity =  Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
-			g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), opacity));
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity);
 			double s = this.size - (int) (this.age * this.size / this.maxAge);
-			Drawing.window.fillOval(g, posX, posY, s, s);
+			Drawing.drawing.fillOval(posX, posY, s, s);
 			
 			/*Firework f = new Firework(FireworkType.trail, this.posX, this.posY, this.list, this.removeList);
 			f.maxAge = opacity / 50;
-			f.color = this.color;
+			f.colorR = this.colorR;
+			f.colorG = this.colorG;
+			f.colorB = this.colorB;
 			f.size = this.size;
 			this.list.add(f);*/
 			
@@ -155,5 +164,5 @@ public class Firework extends Movable
 	public void checkCollision() { }
 
 	@Override
-	public void draw(Graphics p) { }
+	public void draw() { }
 }

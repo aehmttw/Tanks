@@ -1,7 +1,5 @@
 package tanks.tank;
 
-import java.awt.Color;
-
 import tanks.Bullet;
 import tanks.Game;
 
@@ -11,7 +9,7 @@ public class TankPink extends TankAIControlled
 	
 	public TankPink(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, new Color(255, 127, 127), angle, ShootAI.reflect);
+		super(name, x, y, Game.tank_size, 255, 127, 127, angle, ShootAI.reflect);
 		this.enableMovement = false;
 		this.enableMineLaying = false;
 		this.liveBulletMax = 2;

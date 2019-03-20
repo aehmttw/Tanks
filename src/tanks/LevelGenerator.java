@@ -7,6 +7,7 @@ public class LevelGenerator
 	{
 		//int type = (int) (Math.random() * 13);
 		//test ^
+		//String name = Game.registryTank.getRandomTank().name;
 		double size = Game.levelSize;
 		
 		int height = (int)(18 * size);

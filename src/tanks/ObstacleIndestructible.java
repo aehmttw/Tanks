@@ -1,8 +1,5 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 public class ObstacleIndestructible extends Obstacle
 {
 
@@ -11,14 +8,17 @@ public class ObstacleIndestructible extends Obstacle
 		super(name, posX, posY);
 		
 		this.destructible = false;
-		int col = (this.color.getRed() + this.color.getGreen() + this.color.getBlue()) / 3;
-		this.color = new Color(col, col, col);
+		double col = (this.colorR + this.colorG + this.colorB) / 3;
+		this.colorR = col;
+		this.colorG = col;
+		this.colorB = col;
 	}
 	
-	public void draw(Graphics g)
+	@Override
+	public void draw()
 	{	
-		g.setColor(this.color);
-		Drawing.window.fillRect(g, this.posX, this.posY, draw_size, draw_size);
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+		Drawing.drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 	}
 
 }

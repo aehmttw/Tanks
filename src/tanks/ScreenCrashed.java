@@ -1,12 +1,8 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-
 public class ScreenCrashed extends Screen
 {
-	Button exit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
+	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -16,7 +12,7 @@ public class ScreenCrashed extends Screen
 	}
 			);
 	
-	Button quit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -34,31 +30,31 @@ public class ScreenCrashed extends Screen
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		g.setColor(Color.blue);
-		Drawing drawing = Drawing.window;
-		drawing.fillInterfaceRect(g, Drawing.sizeX / 2, Drawing.sizeY / 2, Drawing.sizeX * 1.2, Drawing.sizeY * 1.2);				
+		Drawing drawing = Drawing.drawing;
+		drawing.setColor(0, 0, 255);
+		drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 1.2, Drawing.drawing.interfaceSizeY * 1.2);				
 
-		g.setColor(Color.white);
-		Drawing.setInterfaceFontSize(g, 100);
-		drawing.drawInterfaceText(g, 100, 100, ":(");
+		drawing.setColor(255, 255, 255);
+		drawing.setInterfaceFontSize(100);
+		drawing.drawInterfaceText(100, 100, ":(");
 
-		Drawing.setInterfaceFontSize(g, 48);
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
+		drawing.setInterfaceFontSize(48);
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
 
-		g.setFont(g.getFont().deriveFont(Font.BOLD, (float) (24 * Drawing.window.getScale())));
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 200, Game.crashMessage);
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 290, "Check the log file for more information: ");
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 320, Game.homedir.replace("\\", "/") + Game.logPath);
+		drawing.setInterfaceFontSize(24);
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 200, Game.crashMessage);
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 290, "Check the log file for more information: ");
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 320, Game.homedir.replace("\\", "/") + Game.logPath);
 
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 420, "You may return to the game if you wish,");
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 450, "but be warned that things may become unstable.");
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
-		drawing.drawInterfaceText(g, Drawing.interfaceSizeX / 2, 510, "Also, you may want to report this crash!");
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 420, "You may return to the game if you wish,");
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 450, "but be warned that things may become unstable.");
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
+		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 510, "Also, you may want to report this crash!");
 
-		this.quit.draw(g);
-		this.exit.draw(g);
+		this.quit.draw();
+		this.exit.draw();
 
 		return;
 	}

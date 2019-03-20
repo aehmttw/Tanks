@@ -1,11 +1,8 @@
 package tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 public class ScreenTitle extends Screen
 {
-	Button exit = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
+	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -15,7 +12,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button build = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 120, 350, 40, "My levels", new Runnable()
+	Button build = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "My levels", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -25,7 +22,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button options = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2 + 60, 350, 40, "Options", new Runnable()
+	Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Options", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -46,7 +43,7 @@ public class ScreenTitle extends Screen
 	}
 			);*/
 	
-	Button play = new Button(Drawing.interfaceSizeX / 2, Drawing.interfaceSizeY / 2, 350, 40, "Play!", new Runnable()
+	Button play = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Play!", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -66,17 +63,16 @@ public class ScreenTitle extends Screen
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw()
 	{
-		this.drawDefaultBackground(g);
+		this.drawDefaultBackground();
 		
-		g.setColor(Color.black);
-		Drawing.setInterfaceFontSize(g, 60);
-		Drawing.window.drawInterfaceText(g, Drawing.sizeX / 2, Drawing.sizeY / 2 - 200, "Tanks");
-		play.draw(g);
-		exit.draw(g);
-		options.draw(g);		
-		build.draw(g);		
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setInterfaceFontSize(60);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 200, "Tanks");
+		play.draw();
+		exit.draw();
+		options.draw();		
+		build.draw();		
 	}
-	
 }

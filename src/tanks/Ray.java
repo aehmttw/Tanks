@@ -8,6 +8,7 @@ public class Ray
 {
 	public int size = 10;
 	public int bounces;
+	public int bouncyBounces = 100;
 	public double posX;
 	public double posY;
 	public double vX;
@@ -70,11 +71,13 @@ public class Ray
 		while (true)
 		{
 			age++;
+			
 			//Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 
 			boolean collided = false;
+			boolean bouncy = false;
 
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
@@ -97,6 +100,7 @@ public class Ray
 					{
 						this.posX += horizontalDist - bound;
 						this.vX = -Math.abs(this.vX);
+						bouncy = o.bouncy;
 						collided = true;
 						bounceX.add(this.posX);
 						bounceY.add(this.posY);
@@ -105,6 +109,7 @@ public class Ray
 					{
 						this.posY += verticalDist - bound;
 						this.vY = -Math.abs(this.vY);
+						bouncy = o.bouncy;
 						collided = true;
 						bounceX.add(this.posX);
 						bounceY.add(this.posY);
@@ -113,6 +118,7 @@ public class Ray
 					{
 						this.posX -= horizontalDist - bound;
 						this.vX = Math.abs(this.vX);
+						bouncy = o.bouncy;
 						collided = true;
 						bounceX.add(this.posX);
 						bounceY.add(this.posY);
@@ -121,6 +127,7 @@ public class Ray
 					{
 						this.posY -= verticalDist - bound;
 						this.vY = Math.abs(this.vY);
+						bouncy = o.bouncy;
 						collided = true;
 						bounceX.add(this.posX);
 						bounceY.add(this.posY);
@@ -129,10 +136,10 @@ public class Ray
 
 			}
 
-			if (this.posX + this.size/2 > Drawing.sizeX)
+			if (this.posX + this.size/2 > Drawing.drawing.sizeX)
 			{
 				collided = true;
-				this.posX = Drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.sizeX);
+				this.posX = Drawing.drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.drawing.sizeX);
 				this.vX = -Math.abs(this.vX);
 			}
 			if (this.posX - this.size/2 < 0)
@@ -141,10 +148,10 @@ public class Ray
 				this.posX = this.size/2 - (this.posX - this.size / 2);
 				this.vX = Math.abs(this.vX);
 			}
-			if (this.posY + this.size/2 > Drawing.sizeY)
+			if (this.posY + this.size/2 > Drawing.drawing.sizeY)
 			{
 				collided = true;
-				this.posY = Drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.sizeY);
+				this.posY = Drawing.drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.drawing.sizeY);
 				this.vY = -Math.abs(this.vY); 
 			}
 			if (this.posY - this.size/2 < 0)
@@ -153,14 +160,20 @@ public class Ray
 				this.posY = this.size/2 - (this.posY - this.size / 2);
 				this.vY = Math.abs(this.vY);
 			}
+			
 			if (collided)
 			{
-				if (this.bounces <= 0 || this.age <= 1)
+				if (this.bounces <= 0 || this.bouncyBounces <= 0 || this.age <= 1)
 				{
 					return null;
 				}
-				this.bounces--;
+				
+				if (!bouncy)
+					this.bounces--;
+				else
+					this.bouncyBounces--;
 			}
+			
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				if (Game.movables.get(i) instanceof Tank)
@@ -186,7 +199,6 @@ public class Ray
 						}
 						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
 						{
-							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
 							this.targetX = this.posX;
 							this.targetY = this.posY;
 							return Game.movables.get(i);
@@ -202,7 +214,6 @@ public class Ray
 					{
 						if (age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
 						{
-							//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.laser));
 							this.targetX = this.posX;
 							this.targetY = this.posY;
 							System.out.println("hi");
@@ -263,7 +274,7 @@ public class Ray
 			}
 
 
-			if (this.posX + this.size/2 > Drawing.sizeX)
+			if (this.posX + this.size/2 > Drawing.drawing.sizeX)
 			{
 				return this.age;
 			}
@@ -271,7 +282,7 @@ public class Ray
 			{
 				return this.age;
 			}
-			else if (this.posY + this.size/2 > Drawing.sizeY)
+			else if (this.posY + this.size/2 > Drawing.drawing.sizeY)
 			{
 				return this.age;
 			}

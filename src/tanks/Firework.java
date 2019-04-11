@@ -84,7 +84,7 @@ public class Firework extends Movable
 	{
 		if (type == FireworkType.rocket)
 		{
-			this.vY += 0.0625 * Panel.frameFrequency;
+			this.vY += 0.0625 * Panel.frameFrequency / 2;
 			
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 			Drawing.drawing.fillOval(posX, posY, this.size, this.size);
@@ -116,7 +116,7 @@ public class Firework extends Movable
 					e.vX = this.vX;
 					e.vY = this.vY;
 					e.addPolarMotion(Math.random() * 2 * Math.PI, Math.random() * power);
-					e.maxAge = 100;
+					e.maxAge = 2 * 100;
 					this.list.add(e);
 				}
 			}
@@ -124,7 +124,7 @@ public class Firework extends Movable
 		else if (type == FireworkType.trail)
 		{	
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge))));
-			double s = this.size - (int) (this.age * this.size / this.maxAge);
+			double s = Math.max(0, this.size - (int) (this.age * this.size / this.maxAge));
 			Drawing.drawing.fillOval(posX, posY, s, s);
 			
 			if (this.age >= this.maxAge)
@@ -134,7 +134,7 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.particle)
 		{	
-			this.vY += 0.0625 * Panel.frameFrequency;
+			this.vY += 0.0625 * Panel.frameFrequency / 2;
 			
 			int opacity =  Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity);

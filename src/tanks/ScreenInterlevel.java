@@ -1,9 +1,12 @@
 package tanks;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class ScreenInterlevel extends Screen
 {
+	static boolean tutorial = false;
+
 	ArrayList<Firework> fireworks = new ArrayList<Firework>();
 	ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
 
@@ -18,7 +21,7 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
 	Button replayCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Try again", new Runnable()
 	{
 		@Override
@@ -30,7 +33,17 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
+	Button replayTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Try again", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			ScreenTutorial.loadTutorial();
+		}
+	}
+			);
+
 	Button replayCrusadeWin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
 	{
 		@Override
@@ -42,10 +55,10 @@ public class ScreenInterlevel extends Screen
 			Crusade.currentCrusade.replay = true;
 		}
 	}
-			, "You will not gain extra live---"
-					+ "from replaying a level you've already beaten.---"
-					+ "However, you can still earn coins!---"
-					+ "You will still lose a life if you die.");
+	, "You will not gain extra live---"
+			+ "from replaying a level you've already beaten.---"
+			+ "However, you can still earn coins!---"
+			+ "You will still lose a life if you die.");
 
 	Button save = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Save this level", new Runnable()
 	{
@@ -53,13 +66,13 @@ public class ScreenInterlevel extends Screen
 		public void run() 
 		{
 			Crusade.crusadeMode = false;
-			
+
 			if (Crusade.currentCrusade != null)
 			{
 				if (Crusade.currentCrusade.remainingLives <= 0)
 					Crusade.currentCrusade = null;
 			}
-			
+
 			ScreenLevelBuilder s = new ScreenLevelBuilder(System.currentTimeMillis() + ".tanks", false);
 			Level level = new Level(Game.currentLevel);
 			level.loadLevel(s);
@@ -103,7 +116,26 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
+	Button exitTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Let's go!", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			tutorial = false;
+			Game.exitToTitle();
+			try 
+			{
+				new File(Game.homedir + Game.tutorialPath).createNewFile();
+			} 
+			catch (Exception e)
+			{
+				Game.exitToCrash(e);
+			}
+		}
+	}
+			);
+
 	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
@@ -113,7 +145,7 @@ public class ScreenInterlevel extends Screen
 			Game.exitToTitle();
 		}
 	}
-			, "You will be able to return to the crusade---through the crusade button on---the play screen.");
+	, "You will be able to return to the crusade---through the crusade button on---the play screen.");
 
 	@Override
 	public void update()
@@ -122,6 +154,22 @@ public class ScreenInterlevel extends Screen
 		if (Crusade.crusadeMode)
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				skip = true;
+
+		if (tutorial)
+		{
+			skip = true;
+			if (Panel.win)
+				exitTutorial.update();
+			else
+				replayTutorial.update();
+		}
+		else
+		{
+			save.update();
+
+			if (!Crusade.crusadeMode || skip)
+				quit.update();
+		}
 
 		if (!skip)
 		{
@@ -134,7 +182,7 @@ public class ScreenInterlevel extends Screen
 				}
 				else
 					replayCrusade.update();
-				
+
 				quitCrusade.update();
 			}
 			else
@@ -143,11 +191,6 @@ public class ScreenInterlevel extends Screen
 				newLevel.update();
 			}
 		}
-		
-		if (skip || !Crusade.crusadeMode)
-			quit.update();		
-
-		save.update();		
 	}
 
 	public ScreenInterlevel()
@@ -165,7 +208,7 @@ public class ScreenInterlevel extends Screen
 			{
 				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
 				f.setRandomColor();
-				f.vY = - Math.random() * 3 - 6;
+				f.vY = - Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
 				f.vX = Math.random() * 5 - 2.5;
 				fireworks.add(f);
 			}
@@ -180,38 +223,27 @@ public class ScreenInterlevel extends Screen
 	{
 		this.drawDefaultBackground();
 
-		if (Panel.win && Game.fancyGraphics)
-		{	
-			if (Math.random() < 0.01)
-			{
-				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
-				f.setRandomColor();
-				f.vY = - Math.random() * 3 - 6;
-				f.vX = Math.random() * 5 - 2.5;
-				fireworks.add(f);
-			}
-
-			for (int i = 0; i < fireworks.size(); i++)
-			{
-				fireworks.get(i).drawUpdate();
-			}
-
-			for (int i = 0; i < removeFireworks.size(); i++)
-			{
-				fireworks.remove(removeFireworks.get(i));
-			}  
-		}
-
 		boolean skip = false;
 		if (Crusade.crusadeMode)
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				skip = true;
 
-		save.draw();
-		
-		if (!Crusade.crusadeMode || skip)
-			quit.draw();
-		
+		if (tutorial)
+		{
+			skip = true;
+			if (Panel.win)
+				exitTutorial.draw();
+			else
+				replayTutorial.draw();
+		}
+		else
+		{
+			save.draw();
+
+			if (!Crusade.crusadeMode || skip)
+				quit.draw();
+		}
+
 		if (!skip)
 		{
 			if (Crusade.crusadeMode)
@@ -223,7 +255,7 @@ public class ScreenInterlevel extends Screen
 				}
 				else
 					replayCrusade.draw();
-				
+
 				quitCrusade.draw();
 			}
 			else
@@ -232,17 +264,24 @@ public class ScreenInterlevel extends Screen
 				newLevel.draw();
 			}
 		}
-		
-		
+
+
 
 		if (Panel.win && Game.fancyGraphics)
 			Drawing.drawing.setColor(255, 255, 255);
 		else
 			Drawing.drawing.setColor(0, 0, 0);
-		
-		Drawing.drawing.setFontSize(24);
 
-		if (Crusade.crusadeMode)
+		Drawing.drawing.setInterfaceFontSize(24);
+
+		if (tutorial)
+		{
+			if (Panel.win)
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Congratulations! You are now ready to play!");
+			else
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, Panel.winlose);
+		}
+		else if (Crusade.crusadeMode)
 		{
 			if (Crusade.currentCrusade.win)
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 190, "You finished the crusade!");	
@@ -259,6 +298,29 @@ public class ScreenInterlevel extends Screen
 
 		if (Panel.win && Game.fancyGraphics)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+		
+		if (Panel.win && Game.fancyGraphics)
+		{	
+			if (Math.random() < 0.02)
+			{
+				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
+				f.setRandomColor();
+				f.vY = - Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
+				f.vX = Math.random() * 5 - 2.5;
+				fireworks.add(f);
+			}
+
+			for (int i = 0; i < fireworks.size(); i++)
+			{
+				fireworks.get(i).drawUpdate();
+			}
+
+			for (int i = 0; i < removeFireworks.size(); i++)
+			{
+				fireworks.remove(removeFireworks.get(i));
+			}  
+		}
+
 	}
 
 }

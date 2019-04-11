@@ -36,6 +36,9 @@ public class TextBox
 	public double colorR = 255;
 	public double colorG = 255;
 	public double colorB = 255;
+	public double bgColorR = 200;
+	public double bgColorG = 200;
+	public double bgColorB = 200;
 	public double hoverColorR = 240;
 	public double hoverColorG = 240;
 	public double hoverColorB = 255;
@@ -72,6 +75,17 @@ public class TextBox
 
 		drawing.setInterfaceFontSize(24);
 
+		drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
+		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
+		
+		drawing.fillInterfaceRect(posX, posY - 30, sizeX - sizeY, sizeY);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY - 30, sizeY, sizeY);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY - 30, sizeY, sizeY);
+		
+		drawing.fillInterfaceRect(posX, posY - 15, sizeX, 30);
+		
 		if (selected)
 		{
 			if (this.inputText.length() >= this.maxChars)
@@ -85,9 +99,10 @@ public class TextBox
 			drawing.setColor(this.colorR, this.colorG, this.colorB);
 
 		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
-		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
-		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
-		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
+		double m = 0.8;
+		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY * m, sizeY * m);
 
 		drawing.setColor(0, 0, 0);
 

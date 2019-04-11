@@ -19,7 +19,7 @@ public abstract class Screen
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
-		Drawing.drawing.fillRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
+		Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
 
 		if (Game.fancyGraphics)
 		{

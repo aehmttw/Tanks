@@ -63,6 +63,57 @@ public abstract class Tank extends Movable
 		if (this.size <= 0)
 			return;
 		
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable o = Game.movables.get(i);
+			if (o instanceof Tank && ((Tank)o).size > 0)
+			{
+				double horizontalDist = Math.abs(this.posX - o.posX);
+				double verticalDist = Math.abs(this.posY - o.posY);
+
+				double dx = this.posX - o.posX;
+				double dy = this.posY - o.posY;
+
+				double bound = this.size / 2 + ((Tank)o).size / 2;
+
+				if (horizontalDist < bound && verticalDist < bound)
+				{
+					if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
+					{
+						hasCollided = true;
+						double v = (this.vX + o.vX) / 2;
+						this.vX = v;
+						o.vX = v;
+						this.posX += horizontalDist - bound;
+					}
+					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
+					{
+						hasCollided = true;
+						double v = (this.vY + o.vY) / 2;
+						this.vY = v;
+						o.vY = v;
+						this.posY += verticalDist - bound;
+					}
+					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
+					{
+						hasCollided = true;
+						double v = (this.vX + o.vX) / 2;
+						this.vX = v;
+						o.vX = v;
+						this.posX -= horizontalDist - bound;
+					}
+					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
+					{
+						hasCollided = true;
+						double v = (this.vY + o.vY) / 2;
+						this.vY = v;
+						o.vY = v;
+						this.posY -= verticalDist - bound;
+					}
+				}
+			}
+		}
+		
 		hasCollided = false;
 
 		if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
@@ -89,7 +140,7 @@ public abstract class Tank extends Movable
 			this.vY = 0;
 			hasCollided = true;
 		}
-
+		
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
@@ -152,62 +203,13 @@ public abstract class Tank extends Movable
 				}
 			}
 		}
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable o = Game.movables.get(i);
-			if (o instanceof Tank && ((Tank)o).size > 0)
-			{
-				double horizontalDist = Math.abs(this.posX - o.posX);
-				double verticalDist = Math.abs(this.posY - o.posY);
-
-				double dx = this.posX - o.posX;
-				double dy = this.posY - o.posY;
-
-				double bound = this.size / 2 + ((Tank)o).size / 2;
-
-				if (horizontalDist < bound && verticalDist < bound)
-				{
-					if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vX + o.vX) / 2;
-						this.vX = v;
-						o.vX = v;
-						this.posX += horizontalDist - bound;
-					}
-					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vY + o.vY) / 2;
-						this.vY = v;
-						o.vY = v;
-						this.posY += verticalDist - bound;
-					}
-					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vX + o.vX) / 2;
-						this.vX = v;
-						o.vX = v;
-						this.posX -= horizontalDist - bound;
-					}
-					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vY + o.vY) / 2;
-						this.vY = v;
-						o.vY = v;
-						this.posY -= verticalDist - bound;
-					}
-				}
-			}
-		}
 	}
 
 	@Override
 	public void update()
 	{	
+		this.checkCollision();
+
 		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
 
 		if (this.treadAnimation > this.size * 4 / 5)

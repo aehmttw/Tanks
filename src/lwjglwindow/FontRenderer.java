@@ -59,9 +59,9 @@ public class FontRenderer
 		}
 	}
 	
-	public int getStringSizeX(double sX, String s)
+	public double getStringSizeX(double sX, String s)
 	{
-		int w = 0;
+		double w = 0;
 		char[] c = s.toCharArray();
 		
 		for (int i = 0; i < c.length; i++)
@@ -72,8 +72,8 @@ public class FontRenderer
 		return w;
 	}
 	
-	public int getStringSizeY(double sY, String s)
+	public double getStringSizeY(double sY, String s)
 	{
-		return (int) (sY * 32);
+		return (sY * 32);
 	}
 }

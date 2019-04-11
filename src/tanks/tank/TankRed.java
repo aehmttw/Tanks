@@ -92,6 +92,10 @@ public class TankRed extends TankAIControlled
 			b.moveOut(8);
 			b.shoot();
 			Drawing.drawing.playSound("resources/laser.wav");
+			
+			if (this.targetEnemy.destroy)
+				this.maxCooldown = 100;
+			
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
 		}
 		else

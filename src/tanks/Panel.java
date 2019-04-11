@@ -141,7 +141,7 @@ public class Panel
 	}
 
 	public void draw()
-	{
+	{	
 		double introTime = 1000;
 		double introAnimationTime = 500;
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
@@ -161,7 +161,7 @@ public class Panel
 		}
 
 		Drawing.drawing.setColor(174, 92, 16);
-		Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 2, Drawing.drawing.interfaceSizeY * 2);				
+		Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 4, Drawing.drawing.interfaceSizeY * 4);				
 
 		long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
 		if (lastFrameSec < time && lastFrameSec != firstFrameSec)
@@ -213,7 +213,7 @@ public class Panel
 
 		Drawing.drawing.setFontSize(12);
 
-		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Tanks v0.6.0");
+		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Tanks v0.6.1");
 		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 		
 		Game.game.window.fontRenderer.drawString(600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);

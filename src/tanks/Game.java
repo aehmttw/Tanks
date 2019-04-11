@@ -49,6 +49,8 @@ public class Game
 	
 	public static boolean bulletLocked = false;
 		
+	public static boolean vsync = true;
+
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	
 	public static Screen screen;
@@ -77,6 +79,7 @@ public class Game
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
 	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
 	public static final String optionsPath = directoryPath + "/options.txt";
+	public static final String tutorialPath = directoryPath + "/tutorial.txt";
 
 	public static String homedir;
 	
@@ -119,8 +122,6 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
 
-		//defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCustom.class, "custom", 1));
-
 		homedir = System.getProperty("user.home");
 		
 		if (Files.exists(Paths.get(homedir + "/.tanks.d"))) 
@@ -152,6 +153,11 @@ public class Game
 				e.printStackTrace();
 				System.exit(1);
 			}
+		}
+		
+		if (!Files.exists(Paths.get(homedir + tutorialPath))) 
+		{
+			Game.screen = new ScreenTutorial();
 		}
 		
 		if (!Files.exists(Paths.get(homedir + tankRegistryPath)))
@@ -187,7 +193,7 @@ public class Game
 	public static void main(String[] args)
 	{		
 		Game.initScript();
-		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, new GameUpdater(), new GameDrawer());
+		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, new GameUpdater(), new GameDrawer(), Game.vsync);
 		Game.game.window.run();
 	}
 	

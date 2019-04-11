@@ -13,6 +13,8 @@ public class Ray
 	public double posY;
 	public double vX;
 	public double vY;
+	
+	public boolean enableBounciness = true;
 
 	public double xMul = 0;
 	public double yMul = 0;
@@ -67,12 +69,13 @@ public class Ray
 	}
 
 	public Movable getTarget() 
-	{
+	{ 
 		while (true)
 		{
 			age++;
 			
 			//Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.ray));
+			
 			this.posX += this.vX;
 			this.posY += this.vY;
 
@@ -168,7 +171,7 @@ public class Ray
 					return null;
 				}
 				
-				if (!bouncy)
+				if (!bouncy || !enableBounciness)
 					this.bounces--;
 				else
 					this.bouncyBounces--;
@@ -216,7 +219,6 @@ public class Ray
 						{
 							this.targetX = this.posX;
 							this.targetY = this.posY;
-							System.out.println("hi");
 							return Game.movables.get(i);
 						}
 					}				
@@ -231,7 +233,7 @@ public class Ray
 		{
 			age++;
 
-			//Game.effects.add(new Effect(this.posX, this.posY, Effect.EffectType.ray));
+			//Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 
@@ -251,14 +253,13 @@ public class Ray
 				{
 					return age;
 				}
-
 			}
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable o = Game.movables.get(i);
 
-				if (o instanceof Tank)
+				if (o instanceof Tank && o != tank)
 				{
 					double horizontalDist = Math.abs(this.posX - o.posX);
 					double verticalDist = Math.abs(this.posY - o.posY);

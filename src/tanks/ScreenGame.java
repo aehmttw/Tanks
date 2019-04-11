@@ -547,14 +547,17 @@ public class ScreenGame extends Screen
 
 			if (name == null)
 			{
-				if (!Crusade.crusadeMode)
+				if (!Crusade.crusadeMode && !ScreenInterlevel.tutorial)
 					newLevel.draw();
 			}
 			else
 				edit.draw();
 
 			if (!Crusade.crusadeMode)
-				quit.draw();
+			{
+				if (!ScreenInterlevel.tutorial)
+					quit.draw();
+			}
 			else
 			{
 				if (Crusade.currentCrusade.remainingLives > 1)

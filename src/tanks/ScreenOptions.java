@@ -7,6 +7,8 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.Scanner;
 
+import org.lwjgl.glfw.GLFW;
+
 public class ScreenOptions extends Screen
 {
 	public ScreenOptions()
@@ -25,9 +27,15 @@ public class ScreenOptions extends Screen
 			autostart.text = "Autostart: on";
 		else
 			autostart.text = "Autostart: off";
+		
+		if (Game.vsync)
+			vsync.text = "V-Sync: on";
+		else
+			vsync.text = "V-Sync: off";
+
 	}
 
-	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
+	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Graphics: fancy", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -42,7 +50,7 @@ public class ScreenOptions extends Screen
 	},
 			"Fast graphics disable most graphical effects and use solid colors for the background---Fancy graphics may significantly reduce framerate"	);
 
-	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
+	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -57,7 +65,7 @@ public class ScreenOptions extends Screen
 	},
 			"When enabled, 2 small black rings will appear around your mouse pointer"	);
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -68,7 +76,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Autostart: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -83,12 +91,35 @@ public class ScreenOptions extends Screen
 	},
 			"When enabled, levels will start playing automatically---4 seconds after they are loaded if the play button isn't clicked earlier"	);
 
+	Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "V-Sync: on", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.vsync = !Game.vsync;
+
+			if (Game.vsync)
+			{
+				GLFW.glfwSwapInterval(1);
+				vsync.text = "V-Sync: on";
+			}
+			else
+			{
+				GLFW.glfwSwapInterval(0);
+				vsync.text = "V-Sync: off";
+			}
+		}
+	},
+			"Limits framerate to your screen's refresh rate---May decrease battery consumption");
+
+	
 	@Override
 	public void update()
 	{
 		autostart.update();
 		mouseTarget.update();
 		graphics.update();
+		vsync.update();
 		back.update();
 	}
 
@@ -97,12 +128,13 @@ public class ScreenOptions extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
+		vsync.draw();
 		autostart.draw();
 		mouseTarget.draw();
 		graphics.draw();
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 150, "Options");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "Options");
 	}
 
 	public static void initOptions(String homedir)
@@ -135,6 +167,7 @@ public class ScreenOptions extends Screen
 			writer.println("fancy_graphics=" + Game.fancyGraphics);
 			writer.println("mouse_target=" + Panel.showMouseTarget);
 			writer.println("auto_start=" + Game.autostart);
+			writer.println("vsync=" + Game.vsync);
 			writer.println("use-custom-tank-registry=" + Game.enableCustomTankRegistry);
 			writer.println("use-custom-obstacle-registry=" + Game.enableCustomObstacleRegistry);
 		}
@@ -169,6 +202,8 @@ public class ScreenOptions extends Screen
 					Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
 				else if (optionLine[0].toLowerCase().equals("auto_start")) 
 					Game.autostart = Boolean.parseBoolean(optionLine[1]);
+				else if (optionLine[0].toLowerCase().equals("vsync")) 
+					Game.vsync = Boolean.parseBoolean(optionLine[1]);
 				else if (optionLine[0].toLowerCase().equals("use-custom-tank-registry")) 
 					Game.enableCustomTankRegistry = Boolean.parseBoolean(optionLine[1]);
 				else if (optionLine[0].toLowerCase().equals("use-custom-obstacle-registry")) 

@@ -55,7 +55,7 @@ public class TankAIControlled extends Tank
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
 	public double aimAccuracyOffset = 0.2;
 	/** Threshold angle difference needed between angle and aimAngle to count as touching the target enemy*/
-	public double aimThreshold = 0.1;
+	public double aimThreshold = 0.05;
 
 	/** Minimum time to randomly change idle direction, added to turretIdleTimerRandom * Math.random()*/
 	public double turretIdleTimerBase = 25;
@@ -104,6 +104,8 @@ public class TankAIControlled extends Tank
 
 	/** Used for tanks which do not use the straight AI, when detecting the target enemy with a ray. Tells the tank to aim towards the found target angle.*/
 	protected boolean aim = false;
+	
+	protected double aimTime = 0;
 
 	/** True for when a tank just laid a mine*/
 	protected boolean laidMine = false;
@@ -232,8 +234,18 @@ public class TankAIControlled extends Tank
 
 		if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled)
 		{
+			double an = this.angle;
+			
+			if (this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
+				an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
+			
+			Ray a2 = new Ray(this.posX, this.posY, an, this.bulletBounces, this);
+
+			a2.getTarget();
+			
+			int dist = a2.age;
 			// Cancels if the bullet will hit another enemy
-			double offset = Math.random() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2);
+			double offset = (Math.random() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((dist / 100.0), 2);
 
 			if (this.disableOffset)
 			{
@@ -511,20 +523,25 @@ public class TankAIControlled extends Tank
 			this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX + this.nearestBullet.vX * Movable.distanceBetween(this, this.nearestBullet) / this.bulletSpeed, this.nearestBullet.posY + this.nearestBullet.vY * Movable.distanceBetween(this, nearestBullet) / this.bulletSpeed);
 			this.disableOffset = true;
 		}
-		else if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank)
+		else if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
 		{
-			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getPolarDirection(), 0, (Tank) targetEnemy, Game.tank_size);
+			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getPolarDirection(), 0, (Tank) targetEnemy);
 			r.size = Game.tank_size;
-
+			r.enableBounciness = false;
+			
 			this.disableOffset = false;
+			double dist = Math.sqrt(Math.pow(targetEnemy.posX + targetEnemy.vX * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed - this.targetEnemy.posX, 2) + 
+					Math.pow(targetEnemy.posY + targetEnemy.vY * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed - this.targetEnemy.posY, 2));
+	
+			double d = r.getDist();
 
-			if (r.getDist() > 2)
+			if (d * 10 > dist)
 			{
 				this.aimAngle = this.getAngleInDirection(targetEnemy.posX + targetEnemy.vX * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed, targetEnemy.posY + targetEnemy.vY * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed);
 			}
 			else
 			{
-				this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
+				this.aimAngle = this.getAngleInDirection(r.posX, r.posY);
 			}
 		}
 		else
@@ -544,13 +561,24 @@ public class TankAIControlled extends Tank
 			if (m.equals(this.targetEnemy))
 				this.shoot();
 
+		double speed = this.aimTurretSpeed;
+		
+		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 4)
+			speed /= 2;
 
-		if (Math.abs(this.aimAngle - this.angle) > this.aimThreshold / 2)
+		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 3)
+			speed /= 2;
+		
+		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
+			speed /= 2;		
+		
+
+		if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold / 2)
 		{
 			if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
-				this.angle += this.aimTurretSpeed * Panel.frameFrequency;
+				this.angle += speed * Panel.frameFrequency;
 			else
-				this.angle -= this.aimTurretSpeed * Panel.frameFrequency;		
+				this.angle -= speed * Panel.frameFrequency;		
 
 			this.angle = this.angle % (Math.PI * 2);
 		}
@@ -679,14 +707,21 @@ public class TankAIControlled extends Tank
 	public void updateAimingTurret()
 	{
 		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold)
+		{
+			this.angle = this.aimAngle;
 			this.shoot();
+		}
 		else
 		{
 			double speed = this.aimTurretSpeed;
-			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
+			
+			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 4)
 				speed /= 2;
 
-			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 1.5)
+			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 3)
+				speed /= 2;
+			
+			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 				speed /= 2;
 
 			if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
@@ -815,6 +850,6 @@ public class TankAIControlled extends Tank
 	/** Called after updating but before applying motion. Intended to be overridden.*/
 	public void postUpdate()
 	{
-
+		
 	}
 }

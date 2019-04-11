@@ -59,7 +59,7 @@ public class ScreenTitle extends Screen
 		play.update();
 		exit.update();
 		options.update();	
-		build.update();		
+		build.update();
 	}
 
 	@Override

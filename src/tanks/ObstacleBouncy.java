@@ -10,5 +10,8 @@ public class ObstacleBouncy extends Obstacle
 		this.colorR = Math.random() * 127 + 128;
 		this.colorG = 0;
 		this.colorB = 255;
+		
+		if (!Game.fancyGraphics)
+			this.colorR = 191;
 	}
 }

@@ -56,7 +56,6 @@ public abstract class Movable implements IDrawable
 			this.posY += vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
 			
 			this.canHide = false;
-			this.checkCollision();
 		}
 	}
 
@@ -203,7 +202,7 @@ public abstract class Movable implements IDrawable
 	{
 		Drawing.drawing.setFontSize(20);
 		if (this.team != null)
-			Drawing.drawing.drawText(this.posX, this.posY + 25, this.team.name);
+			Drawing.drawing.drawText(this.posX, this.posY + 35, this.team.name);
 	}
 	
 	public void addUnduplicateAttribute(AttributeModifier m)

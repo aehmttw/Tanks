@@ -371,26 +371,26 @@ public class Bullet extends Movable
 
 				if (this.effect.equals(BulletEffect.fireTrail))
 				{	
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.smokeTrail, 0.25, 0.75));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.smokeTrail, 0.25, 0.50));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.smokeTrail, 0.25, 0.25));
 					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.smokeTrail, 0.25, 0));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.smokeTrail, 0.25, 0.25 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.smokeTrail, 0.25, 0.50 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.smokeTrail, 0.25, 0.75 * Panel.frameFrequency));
 				}
 
 				if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
 				{
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.fire, 0.25, 0.75));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.fire, 0.25, 0.50));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.fire, 0.25, 0.25));
 					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.fire, 0.25, 0));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.fire, 0.25, 0.25 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.fire, 0.25, 0.50 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.fire, 0.25, 0.75 * Panel.frameFrequency));
 				}
 
 				if (this.effect.equals(BulletEffect.darkFire))
 				{
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.darkFire, 0.25, 0.75));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.darkFire, 0.25, 0.50));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.darkFire, 0.25, 0.25));
 					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.darkFire, 0.25, 0));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY / 8, Effect.EffectType.darkFire, 0.25, 0.25 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY / 4, Effect.EffectType.darkFire, 0.25, 0.50 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY / 8 * 3, Effect.EffectType.darkFire, 0.25, 0.75 * Panel.frameFrequency));
 				}
 
 				if (this.effect.equals(BulletEffect.ice))
@@ -419,7 +419,7 @@ public class Bullet extends Movable
 		}
 
 		super.update();
-
+		this.checkCollision();
 		this.age += Panel.frameFrequency;
 	}
 

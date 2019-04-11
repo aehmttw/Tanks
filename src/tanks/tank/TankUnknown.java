@@ -24,10 +24,10 @@ public class TankUnknown extends Tank
 		drawing.fillRect(this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
 	
 		drawing.setFontSize(24);
-		drawing.drawText(this.posX, this.posY - 20, "?");
+		drawing.drawText(this.posX, this.posY, "?");
 		
 		drawing.setFontSize(12);
-		drawing.drawText(this.posX, this.posY + 20, this.name);
+		drawing.drawText(this.posX, this.posY - 40, this.name);
 
 	}
 

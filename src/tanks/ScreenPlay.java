@@ -3,7 +3,7 @@ package tanks;
 public class ScreenPlay extends Screen
 {
 
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
+	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, 350, 40, "Random level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -14,7 +14,7 @@ public class ScreenPlay extends Screen
 	}
 			, "Generate a random level to play");
 	
-	Button crusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Crusades", new Runnable()
+	Button crusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Crusades", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -28,10 +28,22 @@ public class ScreenPlay extends Screen
 	}
 			, "Fight battles in an order,---and see how long you can survive!");
 	
-	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Online", "Online mode is coming soon!");
+	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Online", "Online mode is coming soon!");
 	
-	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Party", "Party mode is coming soon!");
+	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Party", "Party mode is coming soon!");
 	
+	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Tutorial", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			ScreenTutorial s = new ScreenTutorial();
+			s.fromInitial = false;
+			Game.screen = s;
+		}
+	}, "Learn how to play Tanks!"
+	);
+
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()
 	{
 		@Override
@@ -49,6 +61,7 @@ public class ScreenPlay extends Screen
 		crusade.update();
 		online.update();
 		party.update();
+		tutorial.update();
 		back.update();
 	}
 
@@ -58,8 +71,9 @@ public class ScreenPlay extends Screen
 		this.drawDefaultBackground();
 		Drawing.drawing.setFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Select a game mode");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Select a game mode");
 		back.draw();
+		tutorial.draw();
 		party.draw();
 		online.draw();
 		crusade.draw();

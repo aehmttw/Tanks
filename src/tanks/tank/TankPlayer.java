@@ -44,36 +44,59 @@ public class TankPlayer extends Tank
 			}
 		}
 
-		if (up && left || up && right || down && left || down && right)
-		{
-			acceleration /= Math.sqrt(2);
-			maxVelocity /= Math.sqrt(2);
-		}
+		double x = 0;
+		double y = 0;
+		
+		double a = -1;
 
-		if (left && !right)
-			this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, -maxVelocity);
-		else if (right && !left)
-			this.vX = Math.min(this.vX + acceleration * Panel.frameFrequency, maxVelocity);
+		if (left)
+			x -= 1;
+		
+		if (right)
+			x += 1;
+		
+		if (up)
+			y -= 1;
+		
+		if (down)
+			y += 1;
+		
+		if (x == 1 && y == 0)
+			a = 0;
+		else if (x == 1 && y == 1)
+			a = Math.PI / 4;
+		else if (x == 0 && y == 1)
+			a = Math.PI / 2;
+		else if (x == -1 && y == 1)
+			a = 3 * Math.PI / 4;
+		else if (x == -1 && y == 0)
+			a = Math.PI;
+		else if (x == -1 && y == -1)
+			a = 5 * Math.PI / 4;
+		else if (x == 0 && y == -1)
+			a = 3 * Math.PI / 2;
+		else if (x == 1 && y == -1)
+			a = 7 * Math.PI / 4;
+		
+		if (a >= 0)
+			this.addPolarMotion(a, acceleration);
 		else
 		{
-			if (this.vX > 0)
-				this.vX = Math.max(this.vX - acceleration * Panel.frameFrequency, 0);
-			else if (this.vX < 0)
-				this.vX = Math.min(this.vX + acceleration * Panel.frameFrequency, 0);
+			this.vX *= 0.95;
+			this.vY *= 0.95;
+			
+			if (Math.abs(this.vX) < 0.001)
+				this.vX = 0;
+			
+			if (Math.abs(this.vY) < 0.001)
+				this.vY = 0;
 		}
-
-		if (up && !down)
-			this.vY = Math.max(this.vY - acceleration * Panel.frameFrequency, -maxVelocity);
-		else if (down && !up)
-			this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, maxVelocity);
-		else
-		{
-			if (this.vY > 0)
-				this.vY = Math.max(this.vY - acceleration * Panel.frameFrequency, 0);
-			else if (this.vY < 0)
-				this.vY = Math.min(this.vY + acceleration * Panel.frameFrequency, 0);
-		}
-
+		
+		double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+	
+		if (speed > maxVelocity)
+			this.setPolarMotion(this.getPolarDirection(), maxVelocity);
+		
 		if (this.cooldown > 0)
 			this.cooldown -= Panel.frameFrequency;
 
@@ -92,8 +115,7 @@ public class TankPlayer extends Tank
 			this.layMine();
 
 		this.angle = this.getAngleInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
-
-
+		
 		super.update();
 	}
 	

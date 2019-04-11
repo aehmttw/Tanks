@@ -35,6 +35,8 @@ public class LWJGLWindow
 	
 	public boolean validScrollUp;
 	public boolean validScrollDown;
+	
+	public boolean vsync;
 
 	protected ArrayList<Long> framesList = new ArrayList<Long>();
 	protected ArrayList<Double> frameFrequencies = new ArrayList<Double>();
@@ -50,7 +52,7 @@ public class LWJGLWindow
 	public Drawer drawer;
 	public Updater updater;
 	
-	public LWJGLWindow(String name, int x, int y, Updater u, Drawer d)
+	public LWJGLWindow(String name, int x, int y, Updater u, Drawer d, boolean vsync)
 	{
 		this.name = name;
 		this.absoluteWidth = x;
@@ -155,8 +157,12 @@ public class LWJGLWindow
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 		// Enable v-sync
-		glfwSwapInterval(1);
-
+		
+		if (vsync)
+			GLFW.glfwSwapInterval(1);
+		else
+			GLFW.glfwSwapInterval(0);
+		
 		// Make the window visible
 		glfwShowWindow(window);
 	}

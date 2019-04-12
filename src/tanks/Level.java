@@ -152,6 +152,7 @@ public class Level
 			if (!editable)
 			{
 				s.play.posY += 60;
+				s.delete.posY -= 60;
 				s.quit.posY -= 60;
 			}
 

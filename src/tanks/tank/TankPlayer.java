@@ -79,11 +79,11 @@ public class TankPlayer extends Tank
 			a = 7 * Math.PI / 4;
 		
 		if (a >= 0)
-			this.addPolarMotion(a, acceleration);
+			this.addPolarMotion(a, acceleration * Panel.frameFrequency);
 		else
 		{
-			this.vX *= 0.95;
-			this.vY *= 0.95;
+			this.vX *= Math.pow(0.95, Panel.frameFrequency);
+			this.vY *= Math.pow(0.95, Panel.frameFrequency);
 			
 			if (Math.abs(this.vX) < 0.001)
 				this.vX = 0;

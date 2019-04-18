@@ -110,7 +110,7 @@ public class ScreenOptions extends Screen
 			}
 		}
 	},
-			"Limits framerate to your screen's refresh rate---May decrease battery consumption");
+			"Limits framerate to your screen's refresh rate---May decrease battery consumption---Also, might fix issues with inconsistent game speed");
 
 	
 	@Override

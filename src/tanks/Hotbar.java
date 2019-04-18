@@ -75,9 +75,9 @@ public class Hotbar
 			{
 				Drawing.drawing.setColor(255, 0 , 0);
 				Drawing.drawing.fillInterfaceOval(x - 175, y, 18, 18);
-				Drawing.drawing.setFontSize(15);
+				Drawing.drawing.setFontSize(12);
 				Drawing.drawing.setColor(255, 255, 255);
-				Drawing.drawing.drawInterfaceText(x - 174, y + 3, shields + "");
+				Drawing.drawing.drawInterfaceText(x - 175, y, shields + "");
 			}
 		}
 		

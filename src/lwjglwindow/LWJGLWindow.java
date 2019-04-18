@@ -59,6 +59,7 @@ public class LWJGLWindow
 		this.absoluteHeight = y;
 		this.updater = u;
 		this.drawer = d;
+		this.vsync = vsync;
 	}
 	
 	public void run() 

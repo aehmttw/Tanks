@@ -25,7 +25,7 @@ public class Turret extends Movable
 	@Override
 	public void checkCollision() {}
 
-	public void draw(double angle, boolean forInterface) 
+	public void draw(double angle, boolean forInterface, boolean in3d) 
 	{
 		this.posX = tank.posX;
 		this.posY = tank.posY;
@@ -69,8 +69,12 @@ public class Turret extends Movable
 		if (forInterface)
 			Drawing.drawing.fillInterfaceQuad(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3);
 		else
-			Drawing.drawing.fillQuad(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3);
-
+		{
+			if (Game.enable3d && in3d)
+				Drawing.drawing.fillQuadBox(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3, this.tank.size * 0.5 * (s / this.size), s);
+			else
+				Drawing.drawing.fillQuad(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3);
+		}
 		//this.setPolarMotion(angle, 1);
 		
 		/*for (double i = 0; i < length * (Game.tank_size - this.tank.destroyTimer) / Game.tank_size - Math.max(Game.tank_size - tank.drawAge, 0); i += amount)

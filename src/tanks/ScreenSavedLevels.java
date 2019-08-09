@@ -113,7 +113,7 @@ public class ScreenSavedLevels extends Screen
 						Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l.toString());
 						e.printStackTrace();
 						e.printStackTrace(Game.logger);
-						Game.screen = new ScreenFailedToLoadLevel(l.toString());
+						Game.screen = new ScreenFailedToLoadLevel(l.toString(), Game.screen);
 					}
 				}
 			}

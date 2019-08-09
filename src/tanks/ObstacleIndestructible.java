@@ -13,12 +13,4 @@ public class ObstacleIndestructible extends Obstacle
 		this.colorG = col;
 		this.colorB = col;
 	}
-	
-	@Override
-	public void draw()
-	{	
-		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
-		Drawing.drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
-	}
-
 }

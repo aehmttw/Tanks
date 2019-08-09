@@ -15,6 +15,7 @@ public class Button
 	public String[] hoverText;
 
 	public boolean selected = false;
+	public boolean infoSelected = false;
 
 	public boolean clicked = false;
 	
@@ -93,7 +94,7 @@ public class Button
 
 		if (enableHover)
 		{
-			if (selected)
+			if (infoSelected)
 			{
 				drawing.setColor(0, 0, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
@@ -120,6 +121,11 @@ public class Button
 			selected = true;
 		else
 			selected = false;
+		
+		if (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2)
+			infoSelected = true;
+		else
+			infoSelected = false;
 
 		if (selected && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !clicked && enabled)
 		{

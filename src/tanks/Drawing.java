@@ -45,16 +45,6 @@ public class Drawing
 		
 		initialized = true;
 	}
-	
-	public void setScale(double scale)
-	{
-		this.scale = scale;
-	}
-	
-	public double getScale() 
-	{
-		return this.scale;
-	}
 
 	/*@Override
 	public void setSize(int x, int y)
@@ -87,6 +77,22 @@ public class Drawing
 		double drawSizeY = (sizeY * scale);
 
 		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+	}
+	
+	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
+
+		if (drawX - 200 * this.scale > Panel.windowWidth || drawX + 200 * this.scale < 0 || drawY - 200 * this.scale > Panel.windowHeight || drawY + 200 * this.scale < 0)
+			return;
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		double dZ = z * scale / interfaceScale;
+
+		Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY);
 	}
 	
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
@@ -142,6 +148,22 @@ public class Drawing
 		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
 	}
 	
+	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+		
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+		
+		double drawZ = z * scale / interfaceScale;
+
+		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, false);
+	}
+	
 	public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 	{
 		double dX1 = getPointX(x1);
@@ -155,6 +177,24 @@ public class Drawing
 		double dY4 = getPointY(y4);
 		
 		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
+	}
+	
+	public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ)
+	{
+		double dX1 = getPointX(x1);
+		double dX2 = getPointX(x2);
+		double dX3 = getPointX(x3);
+		double dX4 = getPointX(x4);
+
+		double dY1 = getPointY(y1);
+		double dY2 = getPointY(y2);
+		double dY3 = getPointY(y3);
+		double dY4 = getPointY(y4);
+		
+		double dZ = z * scale / interfaceScale;
+		double dsZ = sZ * scale / interfaceScale;
+		
+		Game.game.window.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, (byte) 0);
 	}
 	
 	public void fillInterfaceQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
@@ -201,6 +241,40 @@ public class Drawing
 
 		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
+	
+	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ)
+	{
+		fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0);
+	}
+	
+	/**
+	 * Options byte:
+	 * 
+	 * 0: default
+	 * 
+	 * +1 hide behind face
+	 * +2 hide front face
+	 * +4 hide bottom face
+	 * +8 hide top face
+	 * +16 hide left face
+	 * +32 hide right face
+	 * 
+	 * +64 draw on top
+	 * */
+	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+
+		double drawSizeX = sizeX * scale;
+		double drawSizeY = sizeY * scale;
+		double drawSizeZ = sizeZ * scale / interfaceScale;
+
+		Game.game.window.fillBox(drawX, drawY, z, drawSizeX, drawSizeY, drawSizeZ, options);
+	}
 
 	public void drawRect(double x, double y, double sizeX, double sizeY)
 	{
@@ -210,8 +284,8 @@ public class Drawing
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
 
-		double drawSizeX = Math.round(sizeX * scale);
-		double drawSizeY = Math.round(sizeY * scale);
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
 
 		Game.game.window.drawRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
@@ -302,8 +376,6 @@ public class Drawing
 	{
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
-		//System.out.println(sizeX);
-		//System.out.println(sizeY);
 
 		double offX = sizeX;
 		
@@ -311,7 +383,7 @@ public class Drawing
 			offX = 0;
 		
 		double drawX = (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-		double drawY = (interfaceScale * (y + sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 	
@@ -354,7 +426,7 @@ public class Drawing
 		double drawY = y + sizeY / 2 + yPadding * text.length;
 
 		setColor(0, 0, 0, 127);
-		fillInterfaceRect(drawX, drawY, sizeX + xPadding * 2, sizeY + yPadding * 2 * text.length);
+		fillInterfaceRect(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length);
 
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)

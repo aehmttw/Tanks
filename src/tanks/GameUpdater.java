@@ -1,8 +1,8 @@
 package tanks;
 
-import lwjglwindow.Updater;
+import lwjglwindow.IUpdater;
 
-public class GameUpdater extends Updater
+public class GameUpdater implements IUpdater
 {
 	@Override
 	public void update()

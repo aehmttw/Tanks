@@ -10,7 +10,7 @@ public abstract class AreaEffect extends Movable
 	public AreaEffect(double x, double y)
 	{
 		super(x, y);
-		this.drawAbove = true;
+		this.drawLevel = 5;
 	}	
 	
 	@Override

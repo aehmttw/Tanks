@@ -1,13 +1,16 @@
 package tanks;
 
+import tanks.event.EventShootBullet;
 import tanks.tank.Tank;
 
-public class Bullet extends Movable
+public class Bullet extends Movable implements IDrawable
 {
 	public static enum BulletEffect {none, fire, darkFire, fireTrail, ice, trail};
-
+	
 	public static int bullet_size = 10;
 
+	public String name;
+	
 	public boolean playPopSound = true;
 	public double age = 0;
 	public double size;
@@ -22,6 +25,8 @@ public class Bullet extends Movable
 	public double outlineColorG;
 	public double outlineColorB;
 	
+	public double iPosZ;
+	
 	public double destroyTimer = 0;
 	public Tank tank;
 	public double damage = 1;
@@ -35,6 +40,24 @@ public class Bullet extends Movable
 	public boolean affectsMaxLiveBullets = true;
 
 	public Bullet(double x, double y, int bounces, Tank t)
+	{
+		this(x, y, bounces, t, true, true);
+	}
+
+	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
+	@Deprecated
+	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	{
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
+		this.item = ib;
+	}
+
+	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets)
+	{
+		this(x, y, bounces, t, affectsMaxLiveBullets, true);
+	}
+	
+	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, boolean fireEvent)
 	{
 		super(x, y);
 		this.vX = 0;
@@ -52,22 +75,17 @@ public class Bullet extends Movable
 		this.bounces = bounces;
 		this.tank = t;
 		this.team = t.team;
+		this.name = "normal";
 
 		t.liveBullets++;
-	}
-
-	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-	@Deprecated
-	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
-	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
-		this.item = ib;
-	}
-
-	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets)
-	{
-		this(x, y, bounces, t);
-
+		
+		this.iPosZ = this.tank.size / 2 + this.tank.turret.size / 2;
+		
+		this.isRemote = t.isRemote;
+		
+		if (!t.isRemote && fireEvent)
+			Game.events.add(new EventShootBullet(this));
+		
 		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
 
 		if (!this.affectsMaxLiveBullets)
@@ -313,6 +331,7 @@ public class Bullet extends Movable
 	public Ray getRay()
 	{
 		Ray r = new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank);
+		r.size = this.size;
 		r.skipSelfCheck = true;
 		return r;
 	}
@@ -326,7 +345,7 @@ public class Bullet extends Movable
 			{
 				for (int i = 0; i < this.size * 4; i++)
 				{
-					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 					int var = 50;
 					e.maxAge /= 2;
 					e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
@@ -341,61 +360,43 @@ public class Bullet extends Movable
 			this.vX = 0;
 			this.vY = 0;
 		}
-
 		else
 		{
-			/*if (this.age > 80)
-			{
-				this.destroy = true;
-
-				Bullet b = new Bullet(this.posX, this.posY, 1, this.tank);
-				b.vX = this.vX;
-				b.vY = this.vY;
-				b.addPolarMotion(this.getPolarDirection() + Math.PI / 2, 5);
-				b.moveOut(2);
-
-				Bullet b2 = new Bullet(this.posX, this.posY, 1, this.tank);
-				b2.vX = this.vX;
-				b2.vY = this.vY;
-				b2.addPolarMotion(this.getPolarDirection() - Math.PI / 2, 5);
-				b2.moveOut(2);
-
-				Game.movables.add(b);
-				Game.movables.add(b2);
-			}*/
-
+			double frac = 1 / (1 + this.age / 100);
+			this.posZ = this.iPosZ * frac + (Game.tank_size / 4) * (1 - frac);
+			
 			if (Game.fancyGraphics)
 			{
 				if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.trail));
+					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.trail));
 
 				if (this.effect.equals(BulletEffect.fireTrail))
 				{	
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.smokeTrail, 0.25, 0));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.smokeTrail, 0.25, 0.25 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.smokeTrail, 0.25, 0.50 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.smokeTrail, 0.25, 0.75 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0.25 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0.50 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0.75 * Panel.frameFrequency));
 				}
 
 				if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
 				{
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.fire, 0.25, 0));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8, this.posY - this.vY * Panel.frameFrequency / 8, Effect.EffectType.fire, 0.25, 0.25 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 4, this.posY - this.vY * Panel.frameFrequency / 4, Effect.EffectType.fire, 0.25, 0.50 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, Effect.EffectType.fire, 0.25, 0.75 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.fire, 0.25, 0));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, this.posZ, Effect.EffectType.fire, 0.25, 0.25 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, this.posZ, Effect.EffectType.fire, 0.25, 0.50 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX  * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, this.posZ, Effect.EffectType.fire, 0.25, 0.75 * Panel.frameFrequency));
 				}
 
 				if (this.effect.equals(BulletEffect.darkFire))
 				{
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.darkFire, 0.25, 0));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY / 8, Effect.EffectType.darkFire, 0.25, 0.25 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY / 4, Effect.EffectType.darkFire, 0.25, 0.50 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY / 8 * 3, Effect.EffectType.darkFire, 0.25, 0.75 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.darkFire, 0.25, 0));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, this.posZ, Effect.EffectType.darkFire, 0.25, 0.25 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, this.posZ, Effect.EffectType.darkFire, 0.25, 0.50 * Panel.frameFrequency));
+					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, this.posZ, Effect.EffectType.darkFire, 0.25, 0.75 * Panel.frameFrequency));
 				}
 
 				if (this.effect.equals(BulletEffect.ice))
 				{
-					Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 					int var = 50;
 					e.maxAge /= 2;
 					e.colR = Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2));
@@ -429,9 +430,18 @@ public class Bullet extends Movable
 		double opacity = ((60 - destroyTimer) / 60.0);
 		double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
 		Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, (int)(opacity * opacity * opacity * 255.0));
-		Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
+		
+		if (Game.enable3d)
+			Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
+		else
+			Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
+
 		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int)(opacity * opacity * opacity * 255.0));
-		Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+		
+		if (Game.enable3d)
+			Drawing.drawing.fillOval(posX, posY, posZ, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+		else
+			Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
 	}
 

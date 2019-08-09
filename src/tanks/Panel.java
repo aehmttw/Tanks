@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
+import tanks.event.IEvent;
+import tanks.event.INetworkEvent;
+
 public class Panel
 {
 	Timer timer;
@@ -52,15 +55,15 @@ public class Panel
 
 	public static boolean pausePressed = false;
 	protected static boolean initialized = false;
-	
+
 	public static void initialize()
 	{
 		if (!initialized)
 			panel = new Panel();
-		
+
 		initialized = true;
 	}
-	
+
 	private Panel()
 	{		
 		this.hotbar.enabledItemBar = false;
@@ -68,9 +71,9 @@ public class Panel
 	}
 
 	public void update()
-	{
+	{		
 		Panel.frameFrequency = Game.game.window.frameFrequency;
-		
+
 		if (Panel.panel.hotbar.currentCoins.coins < 0)
 			Panel.panel.hotbar.currentCoins.coins = 0;
 
@@ -84,7 +87,8 @@ public class Panel
 
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
-		if (Game.player != null && Game.screen instanceof ScreenGame && !ScreenGame.finished)
+		if (Game.player != null && Game.screen instanceof ScreenGame && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale 
+				&& Game.screen instanceof ScreenGame && ((ScreenGame)(Game.screen)).playing)
 		{
 			Drawing.drawing.enableMovingCamera = true;
 
@@ -93,8 +97,8 @@ public class Panel
 				Drawing.drawing.playerX = Game.player.posX;
 				Drawing.drawing.playerY = Game.player.posY;
 				this.zoomTimer += 0.04 * Panel.frameFrequency;
-				
-				if (Drawing.drawing.scale < Drawing.drawing.interfaceScale)
+
+				if (Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale)
 				{
 					Drawing.drawing.enableMovingCamera = true;
 					//Drawing.drawing.scale = Drawing.drawing.interfaceScale;
@@ -109,9 +113,9 @@ public class Panel
 		{
 			Drawing.drawing.enableMovingCamera = false;
 		}
-		
+
 		this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
-		
+
 		Drawing.drawing.scale = Drawing.drawing.scale * (1 - zoomTimer) + Drawing.drawing.interfaceScale * zoomTimer; 
 
 		if (Panel.windowWidth > Game.currentSizeX * Game.tank_size * Drawing.drawing.scale)
@@ -132,6 +136,25 @@ public class Panel
 
 		Game.screen.update();
 
+		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
+		{
+			for (int i = 0; i < Game.events.size(); i++)
+			{
+				//synchronized(ScreenPartyHost.server.connections)
+				{
+					for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
+					{
+						IEvent e = Game.events.get(i);
+
+						if (e instanceof INetworkEvent)
+							ScreenPartyHost.server.connections.get(j).events.add((INetworkEvent) e);
+					}
+				}
+			}
+
+			Game.events.clear();
+		}
+
 		//long end = System.nanoTime();
 		//System.out.println("Updating took: " + (end - start));
 		//System.out.println(Game.effects.size());
@@ -144,19 +167,23 @@ public class Panel
 	{	
 		double introTime = 1000;
 		double introAnimationTime = 500;
+
+		if (Game.fancyGraphics && Game.enable3d)
+			introAnimationTime = 1000;
+
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{	
 			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 			Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);				
 			Drawing.drawing.setColor(255, 255, 255);
 			Drawing.drawing.drawInterfaceImage("/tanks/resources/loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
-			
+
 			if (System.currentTimeMillis() - startTime > introTime)
 			{
 				Game.screen.drawDefaultBackground((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
-				drawBar(120 -((System.currentTimeMillis() - startTime) / introAnimationTime) * 40);
+				drawBar(40 - ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime) * 40);
 			}
-			
+
 			return;
 		}
 
@@ -170,7 +197,7 @@ public class Panel
 			frames = 0;
 		}
 
-		
+
 		lastFrameSec = time;	
 		frames++;
 
@@ -180,7 +207,7 @@ public class Panel
 		Game.screen.draw();
 
 		drawBar();
-		
+
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
@@ -198,12 +225,12 @@ public class Panel
 			//Drawing.drawing.drawOval(mx2, my2, 4, 4);
 		}
 	}
-	
+
 	public void drawBar()
 	{
 		drawBar(0);
 	}
-	
+
 	public void drawBar(double offset)
 	{
 		Drawing.drawing.setColor(87, 46, 8);
@@ -213,34 +240,9 @@ public class Panel
 
 		Drawing.drawing.setFontSize(12);
 
-		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Tanks v0.6.1");
+		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
 		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
-		
+
 		Game.game.window.fontRenderer.drawString(600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
 	}
-
-	/*public void startTimer()
-	{
-		//timer.start();
-		//new SoundThread().execute();
-	}*/
-
-	/*@Override
-	public void paint(Graphics g)
-	{		
-		//long start = System.nanoTime();		
-		try
-		{
-			draw();
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
-
-		//long end = System.nanoTime();
-		//System.out.println("Drawing took: " + (end - start));
-
-
-	}*/
 }

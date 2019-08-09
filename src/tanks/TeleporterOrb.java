@@ -25,8 +25,9 @@ public class TeleporterOrb extends Movable
 		this.tank = t;
 		this.size = t.size;
 		this.tSize = t.turret.size;
-		this.drawAbove = true;
+		this.drawLevel = 6;
 		t.invulnerable = true;
+		t.targetable = false;
 		this.fX = x;
 		this.fY = y;
 		this.iX = iX;
@@ -60,6 +61,7 @@ public class TeleporterOrb extends Movable
 		{
 			Game.removeMovables.add(this);
 			this.tank.invulnerable = false;
+			this.tank.targetable = true;
 
 			for (int i = 0; i < 100; i++)
 			{

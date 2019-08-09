@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class ScreenInterlevel extends Screen
 {
 	static boolean tutorial = false;
+	static boolean fromSavedLevels = false;
 
 	ArrayList<Firework> fireworks = new ArrayList<Firework>();
 	ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
@@ -15,7 +16,7 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
-			Level level = new Level(Game.currentLevel);
+			Level level = new Level(Game.currentLevelString);
 			level.loadLevel();
 			Game.screen = new ScreenGame();
 		}
@@ -27,7 +28,7 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
-			Level level = new Level(Game.currentLevel);
+			Level level = new Level(Game.currentLevelString);
 			level.loadLevel();
 			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 		}
@@ -49,7 +50,7 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
-			Level level = new Level(Game.currentLevel);
+			Level level = new Level(Game.currentLevelString);
 			level.loadLevel();
 			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 			Crusade.currentCrusade.replay = true;
@@ -74,7 +75,7 @@ public class ScreenInterlevel extends Screen
 			}
 
 			ScreenLevelBuilder s = new ScreenLevelBuilder(System.currentTimeMillis() + ".tanks", false);
-			Level level = new Level(Game.currentLevel);
+			Level level = new Level(Game.currentLevelString);
 			level.loadLevel(s);
 			Game.screen = s;
 		}
@@ -113,6 +114,19 @@ public class ScreenInterlevel extends Screen
 			Crusade.crusadeMode = false;
 			Crusade.currentCrusade = null;
 			Game.exitToTitle();
+		}
+	}
+			);
+	
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to my levels", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.cleanUp();
+			System.gc();
+			Game.screen = new ScreenPlaySavedLevels();
+			fromSavedLevels = false;
 		}
 	}
 			);
@@ -162,6 +176,12 @@ public class ScreenInterlevel extends Screen
 				exitTutorial.update();
 			else
 				replayTutorial.update();
+		}
+		else if (fromSavedLevels)
+		{
+			skip = true;
+			replay.update();
+			back.update();
 		}
 		else
 		{
@@ -235,6 +255,12 @@ public class ScreenInterlevel extends Screen
 				exitTutorial.draw();
 			else
 				replayTutorial.draw();
+		}
+		else if (fromSavedLevels)
+		{
+			skip = true;
+			replay.draw();
+			back.draw();
 		}
 		else
 		{

@@ -8,7 +8,7 @@ public class ObstacleText extends Obstacle
 	{
 		super(name, posX, posY);
 		
-		this.drawBelow = true;
+		this.drawLevel = 1;
 		this.destructible = false;
 		this.bulletCollision = false;
 		this.tankCollision = false;

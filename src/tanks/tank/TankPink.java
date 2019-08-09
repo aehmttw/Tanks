@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.Bullet;
 import tanks.Game;
+import tanks.event.EventCreateCustomTank;
 
 public class TankPink extends TankAIControlled
 {
@@ -33,7 +34,7 @@ public class TankPink extends TankAIControlled
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				Game.movables.add(new TankMini("mini", this.posX, this.posY, this.angle, this));
+				spawnTank();
 			}	
 		}
 		
@@ -41,8 +42,14 @@ public class TankPink extends TankAIControlled
 		
 		if (Math.random() < 0.003 && this.spawnedMinis < 6)
 		{
-			Game.movables.add(new TankMini("mini", this.posX, this.posY, this.angle, this));
+			spawnTank();
 		}
 	}
 	
+	public void spawnTank()
+	{
+		TankMini t = new TankMini("mini", this.posX, this.posY, this.angle, this);
+		Game.events.add(new EventCreateCustomTank(t));
+		Game.movables.add(t);
+	}
 }

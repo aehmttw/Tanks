@@ -14,6 +14,7 @@ public class BulletFlame extends Bullet
 		t.liveBullets--;
 		this.useCustomWallCollision = true;
 		this.playPopSound = false;
+		this.name = "flame";
 	}
 	
 	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
@@ -55,7 +56,11 @@ public class BulletFlame extends Bullet
 		int green = (int)(255 - 255.0*(this.age / life));
 		
 		Drawing.drawing.setColor(255, green, 0, opacity);
-		Drawing.drawing.fillOval(this.posX, this.posY, size, size);
+		
+		if (Game.enable3d)
+			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
+		else
+			Drawing.drawing.fillOval(this.posX, this.posY, size, size);
 	}
 
 }

@@ -3,27 +3,33 @@ package tanks;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import tanks.event.EventCreatePlayer;
+import tanks.event.EventEnterLevel;
+import tanks.event.EventLoadLevel;
+import tanks.network.ServerHandler;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
+import tanks.tank.TankRemote;
 
 public class Level 
 {
-	String level;
-	
-	String[] preset;
-	String[] screen;
-	String[] obstaclesPos;
-	String[] tanks;
-	String[] teams;
+	public String levelString;
 
-	Team[] tankTeams;
-	boolean enableTeams = false;
+	public String[] preset;
+	public String[] screen;
+	public String[] obstaclesPos;
+	public String[] tanks;
+	public String[] teams;
+
+	public Team[] tankTeams;
+	public boolean enableTeams = false;
 
 	public static double currentColorR = 235;
 	public static double currentColorG = 207;
 	public static double currentColorB = 166;
 
 	public boolean editable = true;
+	public boolean remote = false;
 
 	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
 	public ArrayList<Team> teamsList = new ArrayList<Team>();
@@ -37,9 +43,9 @@ public class Level
 	 */
 	public Level(String level)
 	{		
-		this.level = level;
-		
-		preset = level.split("\\{")[1].split("\\}")[0].split("\\|");
+		this.levelString = level.replaceAll("\u0000", "");
+
+		preset = this.levelString.split("\\{")[1].split("\\}")[0].split("\\|");
 
 		screen = preset[0].split(",");
 		obstaclesPos = preset[1].split(",");
@@ -65,12 +71,33 @@ public class Level
 		loadLevel(null);
 	}
 
+	public void loadLevel(boolean remote)
+	{
+		loadLevel(null, remote);
+	}
+
 	public void loadLevel(ScreenLevelBuilder s)
 	{
+		loadLevel(s, false);
+	}
+
+	public void loadLevel(ScreenLevelBuilder s, boolean remote)
+	{
+		this.remote = remote;
+
+		if (!remote)
+			Game.events.add(new EventLoadLevel(this));
+
+		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<EventCreatePlayer>();
+
+		Tank.currentID = 0;
+		Tank.freeIDs.clear();
+
 		RegistryTank.loadRegistry(Game.homedir);
 		RegistryObstacle.loadRegistry(Game.homedir);
-		
-		Game.currentLevel = this.level;
+
+		Game.currentLevel = this;
+		Game.currentLevelString = this.levelString;
 
 		ScreenGame.finished = false;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
@@ -105,6 +132,11 @@ public class Level
 
 				teamsList.add(tankTeams[i]);
 			}
+		}
+		else
+		{
+			teamsMap.put("ally", Game.playerTeam);
+			teamsMap.put("enemy", Game.enemyTeam);
 		}
 
 		if (screen.length >= 5)
@@ -161,7 +193,7 @@ public class Level
 				this.teamsList.add(Game.playerTeam);
 				this.teamsList.add(Game.enemyTeam);
 			}
-			
+
 			for (int i = 0; i < this.teamsList.size(); i++)
 			{
 				final int j = i;
@@ -193,7 +225,7 @@ public class Level
 					}
 				}
 						);
-				
+
 				s.teamSelectButtons.add(buttonToAdd2);
 
 
@@ -214,6 +246,8 @@ public class Level
 		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesDepth = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
 
 		for (int i = 0; i < Game.currentSizeX; i++)
 		{
@@ -222,6 +256,7 @@ public class Level
 				Game.tilesR[i][j] = (r + Math.random() * dr);
 				Game.tilesG[i][j] = (g + Math.random() * dg);
 				Game.tilesB[i][j] = (b + Math.random() * db);
+				Game.tilesDepth[i][j] = Math.random() * 10;
 			}
 		}
 
@@ -254,22 +289,24 @@ public class Level
 
 				if (yPos.length > 1)
 					endY = Double.parseDouble(yPos[1]);
-				
+
 				String name = "normal";
-				
+
 				if (obs.length >= 3)
-						name = obs[2];
+					name = obs[2];
 
 				for (double x = startX; x <= endX; x++)
 				{
 					for (double y = startY; y <= endY; y++)
 					{
-						Game.obstacles.add(Game.registryObstacle.getEntry(name).getObstacle(x, y));
+						Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
+						o.isRemote = remote;
+						Game.obstacles.add(o);
 					}
 				}
 			}
 		}
-		
+
 		if (!preset[2].equals(""))
 		{
 			for (int i = 0; i < tanks.length; i++)
@@ -279,32 +316,70 @@ public class Level
 				double y = Game.tank_size * (0.5 + Double.parseDouble(tank[1]));
 				String type = tank[2].toLowerCase();
 				double angle = 0;
+
 				if (tank.length >= 4)
 					angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
-				
+
+				Team team = Game.enemyTeam;
+				if (enableTeams)
+				{
+					if (tank.length >= 5)
+						team = teamsMap.get(tank[4]);
+					else
+						team = null;
+				}
+
 				Tank t;
 				if (type.equals("player"))
 				{
-					t = new TankPlayer(x, y, angle);					
+					if (team == Game.enemyTeam)
+						team = Game.playerTeam;
+
+					if (ScreenPartyHost.isServer)
+					{
+						EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
+						playerEvents.add(local);
+						Game.events.add(local);
+
+						synchronized(ScreenPartyHost.server.connections)
+						{
+							for (ServerHandler c: ScreenPartyHost.server.connections)
+							{
+								if (c.clientID == null)
+									continue;
+
+								EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
+								playerEvents.add(e);
+								Game.events.add(e);
+							}
+						}
+						
+						continue;
+					}
+					else if (remote)
+						continue;
+
+					t = new TankPlayer(x, y, angle, Game.clientID);					
 					Game.player = (TankPlayer) t;
-					t.team = Game.playerTeam;
 				}
 				else
 				{
 					t = Game.registryTank.getEntry(type).getTank(x, y, angle);
-					t.team = Game.enemyTeam;
 				}
 
-				if (enableTeams)
-				{
-					if (tank.length >= 5)
-						t.team = teamsMap.get(tank[4]);
-					else
-						t.team = null;
-				}
+				t.team = team;
 
-				Game.movables.add(t);
+				if (remote)
+					Game.movables.add(new TankRemote(t));
+				else
+					Game.movables.add(t);
 			}
 		}
+
+		for (EventCreatePlayer e: playerEvents)
+			e.execute();
+
+		if (!remote)
+			Game.events.add(new EventEnterLevel());
 	}
 }

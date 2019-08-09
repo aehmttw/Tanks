@@ -2,7 +2,11 @@ package tanks;
 
 public class ScreenPlay extends Screen
 {
+	public ScreenPlay()
+	{
 
+	}
+	
 	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, 350, 40, "Random level", new Runnable()
 	{
 		@Override
@@ -28,11 +32,32 @@ public class ScreenPlay extends Screen
 	}
 			, "Fight battles in an order,---and see how long you can survive!");
 	
-	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Online", "Online mode is coming soon!");
+	Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "My levels", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.screen = new ScreenPlaySavedLevels();
+		}
+	}
+			, "Play levels you have created!");
 	
-	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Party", "Party mode is coming soon!");
+	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Online", "Online mode is coming soon!");
 	
-	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Tutorial", new Runnable()
+	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Party", new Runnable() 
+	{
+		@Override
+		public void run() 
+		{
+			if (Game.username != "")
+				Game.screen = new ScreenParty();
+			else
+				Game.screen = new ScreenUsernamePrompt();
+		}
+	},
+	"Play with other people who are---connected to your local network");
+		
+	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Tutorial", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -44,7 +69,7 @@ public class ScreenPlay extends Screen
 	}, "Learn how to play Tanks!"
 	);
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -59,6 +84,7 @@ public class ScreenPlay extends Screen
 	{
 		newLevel.update();
 		crusade.update();
+		myLevels.update();
 		online.update();
 		party.update();
 		tutorial.update();
@@ -76,9 +102,9 @@ public class ScreenPlay extends Screen
 		tutorial.draw();
 		party.draw();
 		online.draw();
+		myLevels.draw();
 		crusade.draw();
 		newLevel.draw();
-
 	}
 
 }

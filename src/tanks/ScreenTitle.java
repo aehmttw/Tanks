@@ -12,16 +12,6 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button build = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "My levels", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenSavedLevels();
-		}
-	}
-			);
-	
 	Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Options", new Runnable()
 	{
 		@Override
@@ -32,16 +22,16 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	/*Button newLevel = new Button(Window.interfaceSizeX / 2, Window.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
+	Button create = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Create levels", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			Game.reset();
-			Game.screen = new ScreenGame();
+			Game.screen = new ScreenSavedLevels();
 		}
 	}
-			);*/
+			);
+	
 	
 	Button play = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Play!", new Runnable()
 	{
@@ -58,8 +48,8 @@ public class ScreenTitle extends Screen
 	{
 		play.update();
 		exit.update();
+		create.update();
 		options.update();	
-		build.update();
 	}
 
 	@Override
@@ -72,7 +62,7 @@ public class ScreenTitle extends Screen
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 200, "Tanks");
 		play.draw();
 		exit.draw();
+		create.draw();
 		options.draw();		
-		build.draw();		
 	}
 }

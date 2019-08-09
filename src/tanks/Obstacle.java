@@ -1,15 +1,21 @@
 package tanks;
 
-public class Obstacle implements IDrawable
+public class Obstacle implements IDrawableForInterface
 {
 	public boolean destructible = true;
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
-	public boolean drawBelow = true;
+	//public boolean drawBelow = false;
+	//public boolean drawAbove = false;
+	
+	public int drawLevel = 5;
+	
 	public boolean checkForObjects = false;
 	public boolean update = false;
 	public boolean draggable = true;
 	public boolean bouncy = false;
+	public boolean replaceTiles = false;
+	public boolean isRemote = false;
 
 	public double posX;
 	public double posY;
@@ -18,7 +24,7 @@ public class Obstacle implements IDrawable
 	public double colorB;
 	public double colorA = 255;
 	public static double draw_size = 0;
-	public static int obstacle_size = Game.tank_size; 
+	public static double obstacle_size = Game.tank_size; 
 	
 	public String name;
 
@@ -32,14 +38,18 @@ public class Obstacle implements IDrawable
 		this.colorG = col[1];
 		this.colorB = col[2];
 	}
-
+	
 	@Override
 	public void draw()
 	{	
 		Drawing drawing = Drawing.drawing;
 		
 		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
-		drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
+	
+		if (Game.enable3d)
+			drawing.fillBox(this.posX, this.posY, (obstacle_size - draw_size) / 2, draw_size, draw_size, draw_size);
+		else
+			drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 	}
 	
 	@Override
@@ -133,6 +143,13 @@ public class Obstacle implements IDrawable
 		}
 		
 		return false;
+	}
+	
+	public void drawTile(double r, double g, double b, double d) { }
+	
+	public void postOverride() 
+	{
+		Game.tileDrawables[(int) (this.posX / obstacle_size)][(int) (this.posY / obstacle_size)] = this;
 	}
 	
 	public static double[] getRandomColor()

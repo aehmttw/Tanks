@@ -31,8 +31,6 @@ public class TankOrange extends TankAIControlled
 		{
 			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
 			Movable m = a.getTarget();
-			//if (m != null)
-			//	System.out.println(((Tank)m).color);
 
 			if (!(m == null))
 			{

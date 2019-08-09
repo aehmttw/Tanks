@@ -10,7 +10,7 @@ public class BulletFreeze extends Bullet
 		this.outlineColorR = 255;
 		this.outlineColorG = 255;
 		this.outlineColorB = 255;
-
+		this.name = "freeze";
 	}
 	
 	public BulletFreeze(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount) 
@@ -49,7 +49,7 @@ public class BulletFreeze extends Bullet
 			for (int i = 0; i < 30 - 10 * Math.sin(this.age / 12.0); i++)
 			{
 				Drawing.drawing.setColor(255, 255, 255, 20);
-				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
+				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i);
 			}
 		}
 

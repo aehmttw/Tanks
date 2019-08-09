@@ -1,5 +1,7 @@
 package tanks.tank;
 
+import java.util.UUID;
+
 import org.lwjgl.glfw.GLFW;
 
 import tanks.Bullet;
@@ -11,14 +13,16 @@ import tanks.Drawing;
 
 public class TankPlayer extends Tank
 {
-	public TankPlayer(double x, double y, double angle)
+	public final UUID clientID;
+	
+	public TankPlayer(double x, double y, double angle, UUID id)
 	{		
 		super("player", x, y, Game.tank_size, 0, 150, 255);
 		this.liveBulletMax = 5;
 		this.liveMinesMax = 2;
 		this.coinValue = -5;
 		this.angle = angle;
-		//this.lives = 10;
+		this.clientID = id;
 	}
 
 	@Override
@@ -122,7 +126,7 @@ public class TankPlayer extends Tank
 	@Override
 	public void shoot()
 	{	
-		if (Game.bulletLocked)
+		if (Game.bulletLocked || this.destroy)
 			return;
 
 		if (Panel.panel.hotbar.enabledItemBar)

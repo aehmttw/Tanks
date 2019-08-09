@@ -11,7 +11,7 @@ public class ScreenCrashed extends Screen
 		}
 	}
 			);
-	
+
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
 	{
 		@Override
@@ -21,12 +21,33 @@ public class ScreenCrashed extends Screen
 		}
 	}
 			);
-	
+
+
+	Button backToParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 130, 350, 40, "Back to party", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.cleanUp();
+
+			if (ScreenPartyHost.isServer)
+				Game.screen = ScreenPartyHost.activeScreen;
+			else
+				Game.screen = new ScreenPartyLobby();
+		}
+	}
+			);
+
 	@Override
 	public void update()
 	{
-		this.quit.update();
-		this.exit.update();
+		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			this.backToParty.update();
+		else
+		{
+			this.quit.update();
+			this.exit.update();
+		}
 	}
 
 	@Override
@@ -53,8 +74,13 @@ public class ScreenCrashed extends Screen
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 510, "Also, you may want to report this crash!");
 
-		this.quit.draw();
-		this.exit.draw();
+		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			this.backToParty.draw();
+		else
+		{
+			this.quit.draw();
+			this.exit.draw();
+		}
 
 		return;
 	}

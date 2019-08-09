@@ -232,7 +232,7 @@ public class TankAIControlled extends Tank
 		this.aimTimer = 10;
 		this.aim = false;
 
-		if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled)
+		if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled && !this.destroy)
 		{
 			double an = this.angle;
 			
@@ -253,8 +253,8 @@ public class TankAIControlled extends Tank
 				this.disableOffset = false;
 			}
 
-			Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this);
-			a.moveOut(5);
+			Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this, 2.5);
+			a.moveOut(20);
 
 			Movable m = a.getTarget();
 
@@ -294,7 +294,7 @@ public class TankAIControlled extends Tank
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && !Team.isAllied(this, m) && m.hiddenTimer <= 0 && !((Tank) m).invulnerable)
+			if (m instanceof Tank && !Team.isAllied(this, m) && m.hiddenTimer <= 0 && ((Tank) m).targetable)
 			{				
 				double dist = Movable.distanceBetween(this, m);
 				if (dist < nearestDist)
@@ -427,7 +427,7 @@ public class TankAIControlled extends Tank
 			if (Game.movables.get(i) instanceof Bullet && !Game.movables.get(i).destroy)
 			{
 				Bullet b = (Bullet) Game.movables.get(i);
-				if (Math.abs(b.posX - this.posX) < Game.tank_size * 10 && Math.abs(b.posY - this.posY) < Game.tank_size * 10)
+				if (!(b.tank == this && b.age < 20) && Math.abs(b.posX - this.posX) < Game.tank_size * 10 && Math.abs(b.posY - this.posY) < Game.tank_size * 10)
 				{
 					Ray r = b.getRay();
 

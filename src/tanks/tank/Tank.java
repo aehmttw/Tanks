@@ -7,19 +7,33 @@ import tanks.Obstacle;
 import tanks.Panel;
 import tanks.Team;
 import tanks.Turret;
+import tanks.event.EventTankDestroyed;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import tanks.AttributeModifier;
 import tanks.Drawing;
 
 public abstract class Tank extends Movable
 {
+	public static int currentID = 0;
+	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
+	public static HashMap<Integer, Tank> idMap = new HashMap<Integer, Tank>();
+
 	public double angle = 0;
-	
+
+	public boolean showName = false;
+
 	public boolean invulnerable = false;
+	public boolean targetable = true;
+
 	public boolean disabled = false;
 
 	public boolean functional = true;
-	
+
 	public int coinValue = 0;
+	public int networkID;
 
 	public String name = "";
 
@@ -46,7 +60,7 @@ public abstract class Tank extends Movable
 
 	public Turret turret;
 
-	public Tank(String name, double x, double y, int size, double r, double g, double b) 
+	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
 		super(x, y);
 		this.size = size;
@@ -55,6 +69,26 @@ public abstract class Tank extends Movable
 		this.colorB = b;
 		turret = new Turret(this);
 		this.name = name;
+		this.drawLevel = 4;
+
+		if (countID)
+		{
+			if (freeIDs.size() > 0)
+				this.networkID = freeIDs.remove(0);
+			else
+			{
+				this.networkID = currentID;
+				currentID++;
+			}
+			idMap.put(this.networkID, this);
+		}
+		else
+			this.networkID = -1;
+	}
+
+	public Tank(String name, double x, double y, double size, double r, double g, double b) 
+	{
+		this(name, x, y, size, r, g, b, true);
 	}
 
 	@Override
@@ -62,7 +96,7 @@ public abstract class Tank extends Movable
 	{
 		if (this.size <= 0)
 			return;
-		
+
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
@@ -113,7 +147,7 @@ public abstract class Tank extends Movable
 				}
 			}
 		}
-		
+
 		hasCollided = false;
 
 		if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
@@ -140,12 +174,12 @@ public abstract class Tank extends Movable
 			this.vY = 0;
 			hasCollided = true;
 		}
-		
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
-			
+
 			if (!o.tankCollision && !o.checkForObjects)
 				continue;
 
@@ -161,10 +195,10 @@ public abstract class Tank extends Movable
 			{
 				if (o.checkForObjects)
 					o.onObjectEntry(this);
-				
+
 				if (!o.tankCollision)
 					continue;
-				
+
 				if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
 					hasCollided = true;
@@ -219,11 +253,20 @@ public abstract class Tank extends Movable
 		}
 
 		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);
+
 		if (destroy)
 		{
 			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
 				Drawing.drawing.playSound("resources/destroy.wav");
+
+				if (!freeIDs.contains(this.networkID))
+				{
+					if (!this.isRemote)
+						Game.events.add(new EventTankDestroyed(this));
+					freeIDs.add(this.networkID);
+					idMap.remove(this.networkID);
+				}
 
 				if (Game.fancyGraphics)
 				{
@@ -231,7 +274,7 @@ public abstract class Tank extends Movable
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 						int var = 50;
-						
+
 						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
 						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
 						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
@@ -266,7 +309,7 @@ public abstract class Tank extends Movable
 			Game.belowEffects.add(e1);
 			Game.belowEffects.add(e2);
 		}
-		
+
 		for (int i = 0; i < this.attributes.size(); i++)
 		{
 			AttributeModifier a = this.attributes.get(i);
@@ -279,12 +322,12 @@ public abstract class Tank extends Movable
 				}
 			}
 		}
-		
+
 		super.update();
 	}
 
 	public abstract void shoot();
-	
+
 	@Override
 	public void drawForInterface(double x, double y)
 	{
@@ -297,56 +340,73 @@ public abstract class Tank extends Movable
 		this.posY = y1;	
 	}
 
-	
+
 	public void drawTank(boolean forInterface)
 	{
 		double s = (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1);
 		double sizeMod = 1;
-		
+
 		if (forInterface)
 			s = Math.min(this.size, Game.tank_size * 1.5);
-		
+
 		Drawing drawing = Drawing.drawing;
 		double[] teamColor = Team.getObjectColor(this.colorR, this.colorG, this.colorB, this);
 
 		if (!(teamColor[0] == this.colorR && teamColor[1] == this.colorG && teamColor[2] == this.colorB))
 		{
 			Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2]);
-			
+
 			if (forInterface)
 				drawing.fillInterfaceRect(this.posX, this.posY, s, s);
 			else
-				drawing.fillRect(this.posX, this.posY, s, s);
+			{
+				if (Game.enable3d)
+					drawing.fillBox(this.posX, this.posY, 0, s, s, s / 2 - 0.1);
+				else
+					drawing.fillRect(this.posX, this.posY, s, s);
+			}
 
 			sizeMod = 0.8;
 		}
-		
+
 		double flash = Math.min(1, this.flashAnimation);
-		
-		Drawing.drawing.setColor(0, 255, 0);
-		for (int i = 0; i < this.attributes.size(); i++)
+
+		if (forInterface || !Game.enable3d)
 		{
-			AttributeModifier a = this.attributes.get(i);
-			if (a.name.equals("healray"))
+			Drawing.drawing.setColor(0, 255, 0);
+			for (int i = 0; i < this.attributes.size(); i++)
 			{
-				double mod = 1 + 0.4 * (this.lives - this.baseLives);
-				
-				if (this.lives > this.baseLives)
+				AttributeModifier a = this.attributes.get(i);
+				if (a.name.equals("healray"))
 				{
-					if (forInterface)
-						drawing.fillInterfaceRect(this.posX, this.posY, s * sizeMod * mod, s * sizeMod * mod);
-					else
-						drawing.fillRect(this.posX, this.posY, s * sizeMod * mod, s * sizeMod * mod);
+					double mod = 1 + 0.4 * (this.lives - this.baseLives);
+
+					if (this.lives > this.baseLives)
+					{
+						if (forInterface)
+							drawing.fillInterfaceRect(this.posX, this.posY, s * mod, s * mod);
+						else
+						{
+							if (!Game.enable3d)
+								drawing.fillRect(this.posX, this.posY, s * mod, s * mod);
+						}
+					}
 				}
 			}
 		}
-		
+
 		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash,  this.colorG * (1 - flash), this.colorB * (1 - flash));
 
 		if (forInterface)
 			drawing.fillInterfaceRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
 		else
-			drawing.fillRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
+		{
+			if (Game.enable3d)
+				drawing.fillBox(this.posX, this.posY, 0, s * sizeMod, s * sizeMod, s / 2);
+			else
+				drawing.fillRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
+
+		}
 
 		if (this.lives > 1)
 		{
@@ -354,26 +414,55 @@ public abstract class Tank extends Movable
 			{
 				if (forInterface)
 					drawing.drawInterfaceRect(this.posX, 
-						this.posY, 8 * i + s, 
-						8 * i + s);
+							this.posY, 8 * i + s, 
+							8 * i + s);
 				else
 					drawing.drawRect(this.posX, 
-						this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size, 
-						8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size);
+							this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size, 
+							8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size);
 			}
 		}
 
 		Drawing.drawing.setColor(255, 255, 255);
-		
+
 		if (this.texture != null)
 		{
 			if (forInterface)
 				drawing.drawInterfaceImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			else
-				drawing.drawImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
+			{
+				if (Game.enable3d)
+					drawing.drawImage(this.texture, this.posX, this.posY, this.size / 2 + 0.1, s * sizeMod, s * sizeMod);
+				else
+					drawing.drawImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
+			}
 		}
-		
-		this.turret.draw(angle, forInterface);
+
+		if (!forInterface && Game.enable3d)
+		{
+			Drawing.drawing.setColor(0, 255, 0, 127);
+			for (int i = 0; i < this.attributes.size(); i++)
+			{
+				AttributeModifier a = this.attributes.get(i);
+				if (a.name.equals("healray"))
+				{
+					double mod = 1 + 0.4 * (this.lives - this.baseLives);
+
+					if (this.lives > this.baseLives)
+					{
+						if (!forInterface && Game.enable3d)
+						{
+							drawing.fillBox(this.posX, this.posY, 0, s * mod, s * mod, s / 2 - 0.2);
+						}
+					}
+				}
+			}
+		}
+
+		this.turret.draw(angle, forInterface, true);
+
+		if (this.showName)
+			this.drawName();
 	}
 
 	@Override
@@ -381,6 +470,12 @@ public abstract class Tank extends Movable
 	{
 		drawAge += Panel.frameFrequency;
 		this.drawTank(false);
+	}
+
+	public void drawName()
+	{
+		Drawing.drawing.setFontSize(20);
+		Drawing.drawing.drawText(this.posX, this.posY + 35, this.name);
 	}
 
 	public void drawOutline() 
@@ -402,16 +497,18 @@ public abstract class Tank extends Movable
 				drawing.drawRect(this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
 			}
 		}
-		
-		Drawing.drawing.setColor(255, 255, 255, 127);
-		
-		if (this.texture != null)
-			drawing.drawImage(this.texture, this.posX, this.posY, this.size, this.size);
-		
 
-		this.turret.draw(angle, false);
+		Drawing.drawing.setColor(255, 255, 255, 127);
+
+		if (this.texture != null)
+		{
+			drawing.drawImage(this.texture, this.posX, this.posY, this.size, this.size);
+		}
+
+
+		this.turret.draw(angle, false, false);
 	}
-	
+
 	public void drawAt(double x, double y)
 	{	
 		double x1 = this.posX;

@@ -1,8 +1,8 @@
 package tanks;
 
-import lwjglwindow.Drawer;
+import lwjglwindow.IDrawer;
 
-public class GameDrawer extends Drawer
+public class GameDrawer implements IDrawer
 {
 	@Override
 	public void draw()

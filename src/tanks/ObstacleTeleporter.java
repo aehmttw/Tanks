@@ -17,7 +17,7 @@ public class ObstacleTeleporter extends Obstacle
 		this.tankCollision = false;
 		this.bulletCollision = false;
 		this.checkForObjects = true;
-		this.drawBelow = true;
+		this.drawLevel = 0;
 		this.update = true;
 		this.colorR = 0;
 		this.colorG = 255;
@@ -55,6 +55,9 @@ public class ObstacleTeleporter extends Obstacle
 	@Override
 	public void update()
 	{
+		if (this.isRemote)
+			return;
+		
 		ArrayList<ObstacleTeleporter> teleporters = new ArrayList<ObstacleTeleporter>(); 
 		Tank t = null;
 
@@ -62,7 +65,7 @@ public class ObstacleTeleporter extends Obstacle
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && !((Tank) m).invulnerable && Movable.distanceBetween(this, m) < ((Tank)m).size)
+			if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank)m).size)
 			{
 				t = (Tank) m;
 

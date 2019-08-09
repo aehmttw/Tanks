@@ -2,17 +2,22 @@ package tanks;
 
 import java.util.ArrayList;
 
-public abstract class Movable implements IDrawable
+public abstract class Movable implements IDrawableForInterface
 {
 	public double posX;
 	public double posY;
+	public double posZ = 0;
 	public double vX;
 	public double vY;
+	public double vZ = 0;
 	public double cooldown = 0;
 	public boolean destroy = false;
-	public boolean drawBelow = false;
-	public boolean drawAbove = false;
+	
+	public int drawLevel = 3;
+	//public boolean drawBelow = false;
+	//public boolean drawAbove = false;
 	public boolean canHide = false;
+	public boolean isRemote = false;
 	
 	public double hiddenTimer = 0; 
 
@@ -34,7 +39,8 @@ public abstract class Movable implements IDrawable
 			
 			double vX2 = this.vX;
 			double vY2 = this.vY;
-			
+			double vZ2 = this.vZ;
+
 			ArrayList<AttributeModifier> removeAttributes = new ArrayList<AttributeModifier>(); 
 			for (int i = 0; i < this.attributes.size(); i++)
 			{
@@ -49,12 +55,14 @@ public abstract class Movable implements IDrawable
 				{
 					vX2 = a.getValue(vX2);
 					vY2 = a.getValue(vY2);
+					vZ2 = a.getValue(vZ2);
 				}
 			}
 			
 			this.posX += vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
 			this.posY += vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
-			
+			this.posZ += vZ2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
+
 			this.canHide = false;
 		}
 	}

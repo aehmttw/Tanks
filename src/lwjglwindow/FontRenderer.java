@@ -44,7 +44,9 @@ public class FontRenderer
 				
 		for (int i = 0; i < c.length; i++)
 		{
-			if (c[i] == '\u00A7')
+			if (c[i] == '\u00C2')
+				continue;
+			else if (c[i] == '\u00A7')
 			{
 				int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
@@ -52,10 +54,10 @@ public class FontRenderer
 				int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
 				this.home.setColor(r, g, b, a);
 				
-				i += 13;
+				i += 12;
 			}
-			
-			curX += (drawChar(curX, y, sX, sY, c[i]) + 1) * sX * 4;
+			else
+				curX += (drawChar(curX, y, sX, sY, c[i]) + 1) * sX * 4;
 		}
 	}
 	
@@ -66,7 +68,12 @@ public class FontRenderer
 		
 		for (int i = 0; i < c.length; i++)
 		{	
-			w += (charSizes[this.chars.indexOf(c[i])] + 1) * sX * 4;
+			if (c[i] == '\u00C2')
+				continue;
+			else if (c[i] == '\u00A7')
+				i += 12;
+			else
+				w += (charSizes[this.chars.indexOf(c[i])] + 1) * sX * 4;
 		}
 		
 		return w;

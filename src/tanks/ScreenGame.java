@@ -5,7 +5,16 @@ import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
 
+import tanks.event.EventBeginLevelCountdown;
+import tanks.event.EventPlayerReady;
+import tanks.event.EventReturnToLobby;
+import tanks.event.EventLevelEnd;
+import tanks.event.EventTick;
+import tanks.event.EventUpdateReadyCount;
+import tanks.network.Client;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankRemote;
 
 public class ScreenGame extends Screen
 {
@@ -27,6 +36,11 @@ public class ScreenGame extends Screen
 	public ArrayList<Item> shop = new ArrayList<Item>();
 	public boolean screenshotMode = false;
 
+	public boolean ready = false;
+
+	@SuppressWarnings("unchecked")
+	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
+
 	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
 		@Override
@@ -37,6 +51,48 @@ public class ScreenGame extends Screen
 		}
 	}
 			);
+
+	Button readyButton = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Ready", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			if (ScreenPartyLobby.isClient)
+				Game.events.add(new EventPlayerReady());
+			else
+			{
+				ScreenPartyHost.readyPlayers.add(Game.clientID);
+				Game.events.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+
+				//synchronized(ScreenPartyHost.server.connections)
+				{
+					if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.server.connections.size() + 1)
+					{
+						Game.events.add(new EventBeginLevelCountdown());
+						cancelCountdown = false;
+					}
+				}
+			}
+			ready = true;
+		}
+	}
+			);
+
+	Button startNow = new Button(Drawing.drawing.interfaceSizeX-580, Drawing.drawing.interfaceSizeY-50, 350, 40, "Start now", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			if (ScreenPartyHost.isServer)
+			{
+				Game.events.add(new EventBeginLevelCountdown());
+				cancelCountdown = false;
+			}
+			ready = true;
+		}
+	}
+			);
+
 
 	Button enterShop = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-110, 350, 40, "Shop", new Runnable()
 	{
@@ -60,7 +116,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button resumeCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
+	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -71,6 +127,27 @@ public class ScreenGame extends Screen
 	}
 			);
 
+	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Close menu", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			paused = false;
+			Game.player.cooldown = 20;
+		}
+	}
+			);
+
+	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Close menu", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			paused = false;
+			Game.player.cooldown = 20;
+		}
+	}
+			);
 
 	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
@@ -81,6 +158,14 @@ public class ScreenGame extends Screen
 			Game.startTime = 400;
 			paused = false;
 			Game.reset();
+
+			if (ScreenPartyHost.isServer)
+			{
+				ready = false;
+				readyButton.enabled = true;
+				cancelCountdown = true;
+				ScreenPartyHost.readyPlayers.clear();
+			}
 		}
 	}
 			);
@@ -104,6 +189,53 @@ public class ScreenGame extends Screen
 		public void run() 
 		{
 			Game.exitToTitle();
+		}
+	}
+			);
+
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to my levels", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.cleanUp();
+			System.gc();
+			Game.screen = new ScreenPlaySavedLevels();
+			ScreenInterlevel.fromSavedLevels = false;
+
+			if (ScreenPartyHost.isServer)
+			{
+				ScreenPartyHost.readyPlayers.clear();
+				Game.events.add(new EventReturnToLobby());
+			}
+		}
+	}
+			);
+
+	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.cleanUp();
+			System.gc();
+			Game.screen = ScreenPartyHost.activeScreen;	
+			ScreenPartyHost.readyPlayers.clear();
+			Game.events.add(new EventReturnToLobby());
+		}
+	}
+			);
+
+	Button exitParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Leave party", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.cleanUp();
+			System.gc();
+			Game.screen = new ScreenJoinParty();
+			Client.handler.ctx.close();
+			ScreenPartyLobby.connections.clear();
 		}
 	}
 			);
@@ -167,7 +299,16 @@ public class ScreenGame extends Screen
 	public ScreenGame()
 	{
 		Game.startTime = 400;
+
+		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			cancelCountdown = true;
+
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
+
+		for (int i = 0; i < this.drawables.length; i++)
+		{
+			this.drawables[i] = new ArrayList<IDrawable>();
+		}
 	}
 
 	public ScreenGame(String s)
@@ -236,6 +377,15 @@ public class ScreenGame extends Screen
 	{
 		Panel.panel.hotbar.update();
 
+		if (Game.enable3d)
+			for (int i = 0; i < Game.obstacles.size(); i++)
+			{
+				Obstacle o = Game.obstacles.get(i);
+
+				if (o.replaceTiles)
+					o.postOverride();
+			}
+
 		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ESCAPE))
 		{
 			if (!Panel.pausePressed)
@@ -265,30 +415,58 @@ public class ScreenGame extends Screen
 
 		if (paused)
 		{
-			if (name == null)
+			if (ScreenPartyLobby.isClient)
 			{
-				if (!Crusade.crusadeMode)
-					newLevel.update();
+				closeMenuLowerPos.update();
+				exitParty.update();
 			}
-			else
-				edit.update();
-
-			if (!Crusade.crusadeMode)
-				quit.update();
-			else
+			else if (ScreenPartyHost.isServer)
 			{
-				if (Crusade.currentCrusade.remainingLives > 1)
-					quitCrusade.update();
+				if (ScreenInterlevel.fromSavedLevels)
+				{
+					closeMenuLowerPos.update();
+					back.update();
+				}
 				else
-					quitCrusadeFinalLife.update();
+				{
+					closeMenu.update();
+					newLevel.update();
+					quitPartyGame.update();
+				}
+			}
+			else if (ScreenInterlevel.fromSavedLevels)
+			{
+				resumeLowerPos.update();
+				back.update();
+			}
+			else
+			{
+				if (name == null)
+				{
+					if (!Crusade.crusadeMode)
+						newLevel.update();
+				}
+				else
+					edit.update();
+
+				if (!Crusade.crusadeMode)
+					quit.update();
+				else
+				{
+					if (Crusade.currentCrusade.remainingLives > 1)
+						quitCrusade.update();
+					else
+						quitCrusadeFinalLife.update();
+				}
+
+				if (!Crusade.crusadeMode)
+					resume.update();
+				else
+					resumeLowerPos.update();
 			}
 
-			if (!Crusade.crusadeMode)
-				resume.update();
-			else
-				resumeCrusade.update();
-
-			return;
+			if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+				return;
 		}
 
 		if (!playing && Game.startTime >= 0)
@@ -317,7 +495,40 @@ public class ScreenGame extends Screen
 				if (Game.autostart && !cancelCountdown)
 					Game.startTime -= Panel.frameFrequency;
 
-				play.update();
+				if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+					play.update();
+				else
+				{
+					if (this.cancelCountdown)
+					{
+						readyButton.enabled = !this.ready;
+
+						if (this.ready)
+							readyButton.text = "Waiting... (";
+						else
+							readyButton.text = "Ready (";
+
+						if (ScreenPartyHost.isServer)
+						{
+							//synchronized(ScreenPartyHost.server.connections)
+							{
+								readyButton.text += ScreenPartyHost.readyPlayers.size() + "/" + (ScreenPartyHost.server.connections.size() + 1) + ")";
+							}
+						}
+						else
+							readyButton.text += ScreenPartyLobby.readyPlayers + "/" + ScreenPartyLobby.connections.size() + ")";
+
+						readyButton.update();
+					}
+					else
+					{
+						readyButton.enabled = false;
+						readyButton.text = "Starting in " + ((int)(Game.startTime / 100) + 1);
+					}
+				}
+
+				if (ScreenPartyHost.isServer && this.cancelCountdown)
+					startNow.update();
 			}
 
 			if (!finished)
@@ -342,7 +553,14 @@ public class ScreenGame extends Screen
 				if (m instanceof Tank)
 				{
 					if (m.team == null)
-						aliveTeams.add(new Team("null"));
+					{
+						if (m instanceof TankPlayer)
+							aliveTeams.add(new Team(Game.clientID.toString()));
+						else if (m instanceof TankRemote && ((TankRemote)m).tank != null && ((TankRemote)m).tank instanceof TankPlayer)
+							aliveTeams.add(new Team(((TankPlayer)((TankRemote)m).tank).clientID.toString()));
+						else
+							aliveTeams.add(new Team("*"));
+					}
 					else if (!aliveTeams.contains(m.team))
 						aliveTeams.add(m.team);
 				}
@@ -351,11 +569,12 @@ public class ScreenGame extends Screen
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
+
 				if (o.update)
 					o.update();
 			}
 
-			
+
 			for (int i = 0; i < Game.effects.size(); i++)
 			{
 				Game.effects.get(i).update();
@@ -367,7 +586,6 @@ public class ScreenGame extends Screen
 			}
 
 			Panel.panel.hotbar.update();
-
 
 			if (aliveTeams.size() <= 1)
 			{
@@ -402,7 +620,7 @@ public class ScreenGame extends Screen
 
 						if (Obstacle.draw_size <= 0)
 						{
-							if (aliveTeams.contains(Game.player.team))
+							if (aliveTeams.contains(Game.player.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.clientID.toString())))
 							{
 								Panel.winlose = "Victory!";
 								Panel.win = true;
@@ -413,10 +631,27 @@ public class ScreenGame extends Screen
 								Panel.win = false;
 							}
 
-							if (name != null)
-								Game.exit(name);
-							else
-								Game.exit();
+							if (ScreenPartyHost.isServer)
+							{
+								Game.cleanUp();
+								Game.screen = ScreenPartyHost.activeScreen;
+
+								String s = "**";
+								if (aliveTeams.size() > 0)
+									s = aliveTeams.get(0).name;
+
+								ScreenPartyHost.readyPlayers.clear();
+								Game.events.add(new EventLevelEnd(s));
+
+								System.gc();
+							}
+							else if (!Game.currentLevel.remote)
+							{
+								if (name != null)
+									Game.exit(name);
+								else
+									Game.exit();
+							}
 						}
 					}
 				}
@@ -451,6 +686,10 @@ public class ScreenGame extends Screen
 		Game.removeEffects.clear();
 		Game.removeBelowEffects.clear();
 
+		EventTick e = new EventTick();
+
+		if (!e.isEmpty)
+			Game.events.add(e);
 	}
 
 	@Override
@@ -458,47 +697,38 @@ public class ScreenGame extends Screen
 	{
 		this.drawDefaultBackground();
 
+		for (int i = 0; i < Game.belowEffects.size(); i++)
+			drawables[0].add(Game.belowEffects.get(i));
+
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable m = Game.movables.get(i);
+			drawables[m.drawLevel].add(m);
+		}
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
-			if (o.drawBelow)
-				o.draw();
-		}
-
-		for (int i = 0; i < Game.belowEffects.size(); i++)
-			Game.belowEffects.get(i).draw();
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable m = Game.movables.get(i);
-			if (m.drawBelow)
-				m.draw();
-		}
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable m = Game.movables.get(i);
-			if (!m.drawBelow && !m.drawAbove)
-				m.draw();
-		}
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable m = Game.movables.get(i);
-			if (m.drawAbove)
-				m.draw();
+			drawables[o.drawLevel].add(o);
 		}
 
 		for (int i = 0; i < Game.effects.size(); i++)
-			((Effect)Game.effects.get(i)).draw();
+			drawables[7].add(Game.effects.get(i));
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
+
+		for (int i = 0; i < this.drawables.length; i++)
 		{
-			Obstacle o = Game.obstacles.get(i);
-			if (!o.drawBelow)
-				o.draw();
+			for (int j = 0; j < this.drawables[i].size(); j++)
+			{
+				IDrawable d = this.drawables[i].get(j);
+
+				if (d != null)
+					d.draw();
+			}
+
+			drawables[i].clear();
 		}
-		
+
 		if (!playing) 
 		{
 			if (Crusade.crusadeMode)
@@ -507,7 +737,7 @@ public class ScreenGame extends Screen
 				Drawing.drawing.setFontSize(100);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
 			}
-			
+
 			if (shopScreen)
 			{				
 				this.exitShop.draw();
@@ -526,7 +756,13 @@ public class ScreenGame extends Screen
 				if (!this.shop.isEmpty())
 					enterShop.draw();
 
-				play.draw();
+				if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+					play.draw();
+				else
+					readyButton.draw();
+
+				if (ScreenPartyHost.isServer && this.cancelCountdown)
+					startNow.draw();
 
 				if (Game.autostart && !cancelCountdown)
 				{
@@ -545,34 +781,65 @@ public class ScreenGame extends Screen
 			Drawing.drawing.setColor(127, 178, 228, 64);
 			Game.game.window.fillRect(0, 0, (int) (Game.game.window.absoluteWidth) + 1, (int) (Game.game.window.absoluteHeight) + 1);
 
-			if (name == null)
+			if (ScreenPartyLobby.isClient)
 			{
-				if (!Crusade.crusadeMode && !ScreenInterlevel.tutorial)
-					newLevel.draw();
+				closeMenuLowerPos.draw();
+				exitParty.draw();
 			}
-			else
-				edit.draw();
-
-			if (!Crusade.crusadeMode)
+			else if (ScreenPartyHost.isServer)
 			{
-				if (!ScreenInterlevel.tutorial)
-					quit.draw();
-			}
-			else
-			{
-				if (Crusade.currentCrusade.remainingLives > 1)
-					quitCrusade.draw();
+				if (ScreenInterlevel.fromSavedLevels)
+				{
+					closeMenuLowerPos.draw();
+					back.draw();
+				}
 				else
-					quitCrusadeFinalLife.draw();
-			}	
-
-			if (!Crusade.crusadeMode)
-				resume.draw();
+				{
+					closeMenu.draw();
+					newLevel.draw();
+					quitPartyGame.draw();
+				}
+			}
+			else if (ScreenInterlevel.fromSavedLevels)
+			{
+				resumeLowerPos.draw();
+				back.draw();
+			}
 			else
-				resumeCrusade.draw();
+			{
+				if (name == null)
+				{
+					if (!Crusade.crusadeMode && !ScreenInterlevel.tutorial)
+						newLevel.draw();
+				}
+				else
+					edit.draw();
+
+				if (!Crusade.crusadeMode)
+				{
+					if (!ScreenInterlevel.tutorial)
+						quit.draw();
+				}
+				else
+				{
+					if (Crusade.currentCrusade.remainingLives > 1)
+						quitCrusade.draw();
+					else
+						quitCrusadeFinalLife.draw();
+				}	
+
+				if (!Crusade.crusadeMode)
+					resume.draw();
+				else
+					resumeLowerPos.draw();
+			}
 
 			Drawing.drawing.setColor(0, 0, 0);
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game paused");
+
+			if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game paused");
+			else
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game menu");
 		}
 
 	}

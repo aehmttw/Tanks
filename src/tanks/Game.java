@@ -10,13 +10,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.UUID;
 
 import lwjglwindow.LWJGLWindow;
+import tanks.event.*;
+import tanks.event.IEvent;
+import tanks.network.NetworkEventMap;
 import tanks.tank.*;
 
 public class Game 
 {
 	public static final int tank_size = 50;
+	
+	public static final UUID clientID = UUID.randomUUID();
 	
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -30,6 +36,8 @@ public class Game
 
 	public static ArrayList<Effect> recycleEffects = new ArrayList<Effect>();
 
+	public static ArrayList<IEvent> events = new ArrayList<IEvent>();
+	
 	//public static Team playerTeam = new Team(new Color(0, 0, 255));
 	//public static Team enemyTeam = new Team(new Color(255, 0, 0));
 	
@@ -39,10 +47,20 @@ public class Game
 	public static int currentSizeX = 28;
 	public static int currentSizeY = 18;
 	public static double bgResMultiplier = 1;	
+	
 	public static double[][] tilesR = new double[28][18];
 	public static double[][] tilesG = new double[28][18];
 	public static double[][] tilesB = new double[28][18];
+	
+	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
+	
+	public static double[][] tilesDepth = new double[28][18];
 
+	public static final int network_protocol = 3;
+	public static final String version = "Tanks 0.7.l";
+
+	public static int port = 8080;
+	
 	public static double levelSize = 1;
 	
 	public static TankPlayer player;
@@ -50,11 +68,19 @@ public class Game
 	public static boolean bulletLocked = false;
 		
 	public static boolean vsync = true;
+	
+	public static boolean enable3d = true;
 
+	public static boolean enableChatFilter = true;
+	
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	
 	public static Screen screen;
 
+	public static String username = "";
+	
+	public static String ip = "";
+	
 	public static boolean fancyGraphics = true;
 
 	public static boolean autostart = true;
@@ -70,7 +96,10 @@ public class Game
 
 	public LWJGLWindow window;
 	
-	public static String currentLevel = "";	
+	public static Level currentLevel = null;	
+	public static String currentLevelString = "";	
+	
+	public static ChatFilter chatFilter = new ChatFilter();
 	
 	public static PrintStream logger = System.err;
 	
@@ -91,11 +120,31 @@ public class Game
 	private Game() {}
 	
 	public static void initScript() 
-	{
+	{		
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
 		
+		NetworkEventMap.register(EventConnectionSuccess.class);
+		NetworkEventMap.register(EventKick.class);
+		NetworkEventMap.register(EventAnnounceConnection.class);
+		NetworkEventMap.register(EventChat.class);
+		NetworkEventMap.register(EventPlayerChat.class);
+		NetworkEventMap.register(EventLoadLevel.class);
+		NetworkEventMap.register(EventEnterLevel.class);
+		NetworkEventMap.register(EventLevelEnd.class);
+		NetworkEventMap.register(EventReturnToLobby.class);
+		NetworkEventMap.register(EventPlayerReady.class);
+		NetworkEventMap.register(EventUpdateReadyCount.class);
+		NetworkEventMap.register(EventBeginLevelCountdown.class);
+		NetworkEventMap.register(EventTick.class);
+		NetworkEventMap.register(EventCreatePlayer.class);
+		NetworkEventMap.register(EventCreateTank.class);
+		NetworkEventMap.register(EventCreateCustomTank.class);
+		NetworkEventMap.register(EventTankDestroyed.class);
+		NetworkEventMap.register(EventShootBullet.class);
+		NetworkEventMap.register(EventLayMine.class);
+
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
@@ -121,10 +170,10 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
-
+		
 		homedir = System.getProperty("user.home");
 		
-		if (Files.exists(Paths.get(homedir + "/.tanks.d"))) 
+		if (Files.exists(Paths.get(homedir + "/.tanks.d")) && !Files.exists(Paths.get(homedir + directoryPath))) 
 		{
 			try
 			{
@@ -193,12 +242,16 @@ public class Game
 	public static void main(String[] args)
 	{		
 		Game.initScript();
-		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, new GameUpdater(), new GameDrawer(), Game.vsync);
+		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, 1000, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync);
 		Game.game.window.run();
 	}
 	
 	public static void reset()
 	{
+		Tank.currentID = 0;
+		Tank.freeIDs.clear();
+		Tank.idMap.clear();
+		Game.events.clear();
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
@@ -214,6 +267,10 @@ public class Game
 	public static void exit()
 	{
 		screen = new ScreenInterlevel();
+		Tank.currentID = 0;
+		Tank.freeIDs.clear();
+		Tank.idMap.clear();
+		Game.events.clear();
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
@@ -265,6 +322,8 @@ public class Game
 		Game.tilesR = new double[28][18];
 		Game.tilesG = new double[28][18];
 		Game.tilesB = new double[28][18];
+		Game.tilesDepth = new double[28][18];
+		Game.tileDrawables = new Obstacle[28][18];
 
 		for (int i = 0; i < 28; i++)
 		{
@@ -273,6 +332,7 @@ public class Game
 				Game.tilesR[i][j] = (255 - Math.random() * 20);
 				Game.tilesG[i][j] = (227 - Math.random() * 20);
 				Game.tilesB[i][j] = (186 - Math.random() * 20);
+				Game.tilesDepth[i][j] = Math.random() * 10;
 			}
 		}
 		
@@ -282,6 +342,13 @@ public class Game
 	}
 	
 	public static void exitToTitle()
+	{
+		cleanUp();
+		screen = new ScreenTitle();
+		System.gc();
+	}
+	
+	public static void cleanUp()
 	{
 		resetTiles();
 
@@ -298,9 +365,6 @@ public class Game
 		Panel.panel.hotbar.enabledCoins = false;
 		Panel.panel.hotbar.currentItemBar = new ItemBar(Panel.panel.hotbar);
 		Panel.panel.hotbar.enabledItemBar = false;
-
-		screen = new ScreenTitle();
-		System.gc();
 	}
 	
 	public static void loadLevel(File f)

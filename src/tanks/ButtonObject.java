@@ -2,33 +2,33 @@ package tanks;
 
 public class ButtonObject extends Button
 {
-	public IDrawable object;
+	public IDrawableForInterface object;
 	
-	public ButtonObject(IDrawable d, double x, double y, double sX, double sY, Runnable f)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f)
 	{
 		super(x, y, sX, sY, "", f);
 		this.initialize(d);
 	}
 
-	public ButtonObject(IDrawable d, double x, double y, double sX, double sY, Runnable f, String hoverText)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f, String hoverText)
 	{
 		super(x, y, sX, sY, "", f, hoverText);	
 		this.initialize(d);
 	}
 	
-	public ButtonObject(IDrawable d, double x, double y, double sX, double sY)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY)
 	{
 		super(x, y, sX, sY, "");	
 		this.initialize(d);
 	}
 	
-	public ButtonObject(IDrawable d, double x, double y, double sX, double sY, String hoverText)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, String hoverText)
 	{
 		super(x, y, sX, sY, "", hoverText);
 		this.initialize(d);
 	}
 	
-	public void initialize(IDrawable d)
+	public void initialize(IDrawableForInterface d)
 	{
 		this.object = d;
 		this.disabledColR = 0;

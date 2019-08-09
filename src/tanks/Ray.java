@@ -6,7 +6,7 @@ import tanks.tank.Tank;
 
 public class Ray
 {
-	public int size = 10;
+	public double size = 10;
 	public int bounces;
 	public int bouncyBounces = 100;
 	public double posX;
@@ -48,7 +48,7 @@ public class Ray
 		this.tank = tank;
 	}
 
-	public Ray(double x, double y, double angle, int bounces, Tank tank, int speed) 
+	public Ray(double x, double y, double angle, int bounces, Tank tank, double speed) 
 	{
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);

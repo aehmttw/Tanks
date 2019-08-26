@@ -1,10 +1,10 @@
 package tanks.tank;
 
-import tanks.BulletFlame;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Ray;
+import tanks.bullets.BulletFlame;
 
 public class TankOrange extends TankAIControlled
 {

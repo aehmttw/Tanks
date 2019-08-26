@@ -2,9 +2,11 @@ package tanks;
 
 import java.util.UUID;
 
+import tanks.gui.Panel;
+
 public class AttributeModifier
 {
-	enum Operation {add, multiply}
+	public enum Operation {add, multiply}
 	
 	/**An unique name for the modifier, to prevent double effects*/
 	public String name = UUID.randomUUID().toString();

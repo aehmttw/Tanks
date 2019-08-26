@@ -3,12 +3,12 @@ package tanks.network;
 import java.util.UUID;
 
 import tanks.Game;
-import tanks.ScreenHostingEnded;
-import tanks.ScreenKicked;
-import tanks.ScreenPartyHost;
-import tanks.ScreenPartyLobby;
 import tanks.event.INetworkEvent;
 import tanks.event.PersonalEvent;
+import tanks.gui.screen.ScreenHostingEnded;
+import tanks.gui.screen.ScreenKicked;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class MessageExecutor 
 {

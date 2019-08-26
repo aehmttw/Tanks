@@ -1,7 +1,7 @@
 package tanks.event;
 
 import tanks.ChatMessage;
-import tanks.ScreenPartyLobby;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class EventPlayerChat extends PersonalEvent
 {

@@ -2,7 +2,7 @@ package tanks.event;
 
 import java.util.UUID;
 
-import tanks.ScreenPartyLobby;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
 
 public class EventAnnounceConnection implements INetworkEvent

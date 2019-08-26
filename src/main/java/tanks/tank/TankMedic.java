@@ -1,13 +1,13 @@
 package tanks.tank;
 
-import tanks.Bullet;
-import tanks.BulletHealing;
 import tanks.Game;
 import tanks.Mine;
 import tanks.Movable;
-import tanks.Panel;
 import tanks.Ray;
 import tanks.Team;
+import tanks.bullets.Bullet;
+import tanks.bullets.BulletHealing;
+import tanks.gui.Panel;
 
 public class TankMedic extends TankAIControlled
 {

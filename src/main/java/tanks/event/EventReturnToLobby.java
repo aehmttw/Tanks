@@ -1,7 +1,7 @@
 package tanks.event;
 
 import tanks.Game;
-import tanks.ScreenPartyLobby;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class EventReturnToLobby implements INetworkEvent
 {		

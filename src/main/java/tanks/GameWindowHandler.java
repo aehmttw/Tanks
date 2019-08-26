@@ -1,6 +1,7 @@
 package tanks;
 
 import lwjglwindow.IWindowHandler;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ServerHandler;
 
 public class GameWindowHandler implements IWindowHandler

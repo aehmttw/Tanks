@@ -4,11 +4,11 @@ import java.util.UUID;
 
 import org.lwjgl.glfw.GLFW;
 
-import tanks.Bullet;
 import tanks.Game;
 import tanks.Mine;
-import tanks.Panel;
 import tanks.Team;
+import tanks.bullets.Bullet;
+import tanks.gui.Panel;
 import tanks.Drawing;
 
 public class TankPlayer extends Tank

@@ -2,6 +2,8 @@ package tanks;
 
 import java.util.ArrayList;
 
+import tanks.bullets.Bullet;
+import tanks.obstacles.Obstacle;
 import tanks.tank.Tank;
 
 public class Ray

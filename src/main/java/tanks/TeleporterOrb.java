@@ -1,5 +1,6 @@
 package tanks;
 
+import tanks.gui.Panel;
 import tanks.tank.Tank;
 
 public class TeleporterOrb extends Movable

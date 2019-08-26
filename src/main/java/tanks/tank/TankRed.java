@@ -1,13 +1,13 @@
 package tanks.tank;
 
-import tanks.BulletLaser;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
-import tanks.Panel;
 import tanks.Ray;
 import tanks.Team;
+import tanks.bullets.BulletLaser;
+import tanks.gui.Panel;
 
 public class TankRed extends TankAIControlled
 {

@@ -1,7 +1,7 @@
 package tanks.tank;
 
-import tanks.Bullet;
 import tanks.Game;
+import tanks.bullets.Bullet;
 import tanks.event.EventCreateCustomTank;
 
 public class TankPink extends TankAIControlled

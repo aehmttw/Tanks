@@ -1,8 +1,8 @@
 package tanks.event;
 
 import tanks.Game;
-import tanks.Panel;
-import tanks.ScreenPartyLobby;
+import tanks.gui.Panel;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class EventLevelEnd implements INetworkEvent
 {	

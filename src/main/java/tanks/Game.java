@@ -15,7 +15,24 @@ import java.util.UUID;
 import lwjglwindow.LWJGLWindow;
 import tanks.event.*;
 import tanks.event.IEvent;
+import tanks.gui.Panel;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenCrashed;
+import tanks.gui.screen.ScreenInterlevel;
+import tanks.gui.screen.ScreenLevelBuilder;
+import tanks.gui.screen.ScreenOptions;
+import tanks.gui.screen.ScreenSavedLevels;
+import tanks.gui.screen.ScreenTitle;
+import tanks.gui.screen.ScreenTutorial;
 import tanks.network.NetworkEventMap;
+import tanks.obstacles.Obstacle;
+import tanks.obstacles.ObstacleBouncy;
+import tanks.obstacles.ObstacleHole;
+import tanks.obstacles.ObstacleIndestructible;
+import tanks.obstacles.ObstacleShrubbery;
+import tanks.obstacles.ObstacleTeleporter;
+import tanks.registry.RegistryObstacle;
+import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
 public class Game 

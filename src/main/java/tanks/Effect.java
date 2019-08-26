@@ -1,5 +1,10 @@
 package tanks;
 
+import tanks.bullets.Bullet;
+import tanks.gui.Panel;
+import tanks.gui.screen.ScreenGame;
+import tanks.obstacles.Obstacle;
+
 public class Effect extends Movable
 {
 	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun}

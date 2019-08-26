@@ -2,8 +2,8 @@ package tanks.event;
 
 import tanks.Game;
 import tanks.Level;
-import tanks.ScreenFailedToLoadLevel;
-import tanks.ScreenPartyLobby;
+import tanks.gui.screen.ScreenFailedToLoadLevel;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class EventLoadLevel extends PersonalEvent
 {

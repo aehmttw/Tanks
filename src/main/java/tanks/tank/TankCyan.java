@@ -1,9 +1,9 @@
 package tanks.tank;
 
-import tanks.Bullet;
-import tanks.BulletFreeze;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.bullets.Bullet;
+import tanks.bullets.BulletFreeze;
 
 public class TankCyan extends TankAIControlled
 {

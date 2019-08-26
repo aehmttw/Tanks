@@ -1,6 +1,8 @@
 package tanks;
 
 import tanks.event.EventLayMine;
+import tanks.gui.Panel;
+import tanks.obstacles.Obstacle;
 import tanks.tank.Tank;
 
 public class Mine extends Movable

@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import tanks.gui.Panel;
+
 public class Crusade 
 {
 	public static Crusade currentCrusade = null;

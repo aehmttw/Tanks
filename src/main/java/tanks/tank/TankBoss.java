@@ -2,8 +2,8 @@ package tanks.tank;
 
 import java.util.ArrayList;
 
-import tanks.Bullet;
 import tanks.Game;
+import tanks.bullets.Bullet;
 import tanks.event.EventCreateTank;
 
 public class TankBoss extends TankAIControlled

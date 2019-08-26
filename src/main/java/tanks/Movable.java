@@ -2,6 +2,10 @@ package tanks;
 
 import java.util.ArrayList;
 
+import tanks.gui.Panel;
+import tanks.gui.screen.ScreenGame;
+import tanks.obstacles.Obstacle;
+
 public abstract class Movable implements IDrawableForInterface
 {
 	public double posX;

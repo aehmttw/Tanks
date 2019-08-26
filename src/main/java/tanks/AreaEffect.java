@@ -1,5 +1,7 @@
 package tanks;
 
+import tanks.gui.Panel;
+
 public abstract class AreaEffect extends Movable
 {	
 	public double duration = 500;

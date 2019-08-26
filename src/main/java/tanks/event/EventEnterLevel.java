@@ -1,7 +1,7 @@
 package tanks.event;
 
 import tanks.Game;
-import tanks.ScreenGame;
+import tanks.gui.screen.ScreenGame;
 
 public class EventEnterLevel implements INetworkEvent
 {	

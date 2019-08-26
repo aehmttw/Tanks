@@ -2,6 +2,8 @@ package tanks;
 
 import org.lwjgl.glfw.GLFW;
 
+import tanks.gui.Hotbar;
+
 public final class ItemBar
 {
 	public static int size = 50; // The slot size.

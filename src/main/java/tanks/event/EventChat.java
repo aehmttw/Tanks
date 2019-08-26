@@ -2,8 +2,8 @@ package tanks.event;
 
 import tanks.ChatMessage;
 import tanks.Game;
-import tanks.ScreenPartyHost;
-import tanks.ScreenPartyLobby;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ServerHandler;
 
 public class EventChat extends PersonalEvent

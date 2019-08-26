@@ -9,6 +9,13 @@
 	<name>Tanks</name>
 	<description>A game where you shoot other tanks</description>
 	
+	<properties>
+		<netty.version>4.1.39.Final</netty.version>
+		<lwjgl.version>3.2.0</lwjgl.version>
+		<pngdecoder.version>1.0</pngdecoder.version>
+		<mavennatives.version>0.0.3</mavennatives.version>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -22,13 +29,20 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		
+		<testResources>
+			<testResource>
+				<filtering>false</filtering>
+				<directory>${basedir}/src/test/natives/</directory>
+				
+				<includes>
+					<include>liblwjgl.dylib</include>
+					<include>libglfw.dylib</include>
+					<include>liblwjgl_opengl.dylib</include>
+				</includes>
+			</testResource>
+		</testResources>
 	</build>
-	
-	<properties>
-		<netty.version>4.1.39.Final</netty.version>
-		<lwjgl.version>3.2.2</lwjgl.version>
-		<pngdecoder.version>1.0</pngdecoder.version>
-	</properties>
 	
 	<dependencies>
 		<dependency>
@@ -59,6 +73,12 @@
 			<groupId>org.l33tlabs.twl</groupId>
 			<artifactId>pngdecoder</artifactId>
 			<version>${pngdecoder.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.4</version>
 		</dependency>
 	</dependencies>
 </project>

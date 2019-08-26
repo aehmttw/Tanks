@@ -1,5 +1,6 @@
 package tanks;
 
+import tanks.bullets.Bullet;
 import tanks.tank.Tank;
 
 public class ItemBullet extends Item

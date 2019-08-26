@@ -3,11 +3,11 @@ package tanks.tank;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
-import tanks.Obstacle;
-import tanks.Panel;
 import tanks.Team;
 import tanks.Turret;
 import tanks.event.EventTankDestroyed;
+import tanks.gui.Panel;
+import tanks.obstacles.Obstacle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

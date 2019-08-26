@@ -1,6 +1,8 @@
 package tanks;
 import java.util.ArrayList;
 
+import tanks.gui.Panel;
+
 public class Drawing
 {
 	protected static boolean initialized = false;

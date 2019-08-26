@@ -1,6 +1,7 @@
 package tanks;
 
 import lwjglwindow.IUpdater;
+import tanks.gui.Panel;
 
 public class GameUpdater implements IUpdater
 {

@@ -12,13 +12,13 @@ import io.netty.util.ReferenceCountUtil;
 import tanks.ChatMessage;
 import tanks.Game;
 import tanks.IPartyMenuScreen;
-import tanks.ScreenPartyHost;
 import tanks.event.EventAnnounceConnection;
 import tanks.event.EventChat;
 import tanks.event.EventConnectionSuccess;
 import tanks.event.EventKick;
 import tanks.event.EventUpdateReadyCount;
 import tanks.event.INetworkEvent;
+import tanks.gui.screen.ScreenPartyHost;
 
 /**
  * Handles a server-side channel.

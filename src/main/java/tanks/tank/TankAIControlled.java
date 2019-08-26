@@ -2,14 +2,14 @@ package tanks.tank;
 
 import java.util.ArrayList;
 
-import tanks.Bullet;
 import tanks.Game;
 import tanks.Mine;
 import tanks.Movable;
-import tanks.Panel;
 import tanks.Ray;
-import tanks.ScreenGame;
 import tanks.Team;
+import tanks.bullets.Bullet;
+import tanks.gui.Panel;
+import tanks.gui.screen.ScreenGame;
 import tanks.Drawing;
 
 /** This class is the 'skeleton' tank class.

@@ -2,11 +2,11 @@ package tanks.tank;
 
 import java.util.ArrayList;
 
-import tanks.BulletElectric;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
-import tanks.Panel;
+import tanks.bullets.BulletElectric;
+import tanks.gui.Panel;
 
 public class TankBlue extends TankAIControlled
 {

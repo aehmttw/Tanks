@@ -1,9 +1,9 @@
 package tanks.tank;
 
-import tanks.Bullet;
 import tanks.Game;
 import tanks.Mine;
 import tanks.Team;
+import tanks.bullets.Bullet;
 
 public class TankRemote extends Tank
 {

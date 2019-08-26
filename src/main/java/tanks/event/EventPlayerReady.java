@@ -1,8 +1,8 @@
 package tanks.event;
 
 import tanks.Game;
-import tanks.ScreenGame;
-import tanks.ScreenPartyHost;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
 
 public class EventPlayerReady extends PersonalEvent
 {

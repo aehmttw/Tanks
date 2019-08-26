@@ -2,9 +2,11 @@ package tanks;
 
 import java.util.ArrayList;
 
+import tanks.gui.Panel;
+
 public class Firework extends Movable
 {
-	enum FireworkType {rocket, particle, trail}
+	public enum FireworkType {rocket, particle, trail}
 	public FireworkType type;
 	
 	double age = 0;

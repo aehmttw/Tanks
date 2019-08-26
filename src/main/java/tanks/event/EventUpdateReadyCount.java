@@ -1,6 +1,6 @@
 package tanks.event;
 
-import tanks.ScreenPartyLobby;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class EventUpdateReadyCount implements INetworkEvent
 {

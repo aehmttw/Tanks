@@ -1,13 +1,13 @@
 package tanks.event;
 
-import tanks.Bullet;
-import tanks.BulletElectric;
-import tanks.BulletFlame;
-import tanks.BulletFreeze;
-import tanks.BulletHealing;
-import tanks.BulletInstant;
-import tanks.BulletLaser;
 import tanks.Game;
+import tanks.bullets.Bullet;
+import tanks.bullets.BulletElectric;
+import tanks.bullets.BulletFlame;
+import tanks.bullets.BulletFreeze;
+import tanks.bullets.BulletHealing;
+import tanks.bullets.BulletInstant;
+import tanks.bullets.BulletLaser;
 import tanks.tank.Tank;
 
 public class EventShootBullet implements INetworkEvent

@@ -1,7 +1,7 @@
 package tanks.event;
 
 import tanks.Game;
-import tanks.ScreenKicked;
+import tanks.gui.screen.ScreenKicked;
 
 public class EventKick implements INetworkEvent
 {	

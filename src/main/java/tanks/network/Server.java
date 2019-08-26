@@ -11,7 +11,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import tanks.Game;
-import tanks.ScreenHostingEnded;
+import tanks.gui.screen.ScreenHostingEnded;
 
 /**
  * Discards any incoming data.

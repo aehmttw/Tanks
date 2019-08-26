@@ -1,5 +1,11 @@
 package tanks;
 
+import tanks.bullets.Bullet;
+import tanks.bullets.BulletElectric;
+import tanks.bullets.BulletFlame;
+import tanks.bullets.BulletFreeze;
+import tanks.bullets.BulletLaser;
+
 public abstract class Item 
 {
 	public boolean isConsumable;

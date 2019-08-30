@@ -229,6 +229,8 @@ public class Panel
 			Drawing.drawing.setColor(0, 0, 0);
 			Drawing.drawing.drawInterfaceOval(mx, my, 8, 8);
 			Drawing.drawing.drawInterfaceOval(mx, my, 4, 4);
+			Drawing.drawing.drawInterfaceRect(mx, my, 10, 0);
+			Drawing.drawing.drawInterfaceRect(mx, my, 0, 10);
 
 			//Drawing.drawing.setColor(255, 0, 0);
 			//Drawing.drawing.drawOval(mx2, my2, 8, 8);

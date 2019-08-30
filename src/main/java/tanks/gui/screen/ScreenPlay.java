@@ -67,9 +67,7 @@ public class ScreenPlay extends Screen
 		@Override
 		public void run() 
 		{
-			ScreenTutorial s = new ScreenTutorial();
-			s.fromInitial = false;
-			Game.screen = s;
+			ScreenTutorial.loadTutorial(false);
 		}
 	}, "Learn how to play Tanks!"
 	);

@@ -41,7 +41,7 @@ public class ScreenTutorial extends Screen
 		@Override
 		public void run() 
 		{
-			loadTutorial();
+//			loadTutorial();
 		}
 	}
 			);
@@ -63,8 +63,17 @@ public class ScreenTutorial extends Screen
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "Would you like to play the tutorial?");
 	}
 	
-	public static void loadTutorial()
+	public static void loadTutorial(boolean initial)
 	{
+		try 
+		{
+			new File(Game.homedir + Game.tutorialPath).createNewFile();
+		} 
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+		
 		Level l = new Level("{48,18,235,207,166,20,20,20"
 				+ "|38-6...11,19-4...17-hard,24-0...5-hard,38-0...5-hard,38-12...17-hard"
 				+ "|4-6-player-0-ally,25-13-brown-0,46-13-gray-2}");
@@ -101,8 +110,8 @@ public class ScreenTutorial extends Screen
 		Game.obstacles.add(new ObstacleText("text", "Destroy all enemy tanks to clear the level!", 43, 10));
 		
 		Drawing.drawing.movingCamera = true;
-		ScreenInterlevel.tutorial = true;
+		ScreenInterlevel.tutorial = initial;
 		
-		Game.screen = new ScreenGame();
+		Game.screen = initial ? new ScreenTutorialGame() : new ScreenGame();
 	}
 }

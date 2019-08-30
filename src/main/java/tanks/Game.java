@@ -13,7 +13,25 @@ import java.util.Scanner;
 import java.util.UUID;
 
 import lwjglwindow.LWJGLWindow;
-import tanks.event.*;
+import tanks.event.EventAnnounceConnection;
+import tanks.event.EventBeginLevelCountdown;
+import tanks.event.EventChat;
+import tanks.event.EventConnectionSuccess;
+import tanks.event.EventCreateCustomTank;
+import tanks.event.EventCreatePlayer;
+import tanks.event.EventCreateTank;
+import tanks.event.EventEnterLevel;
+import tanks.event.EventKick;
+import tanks.event.EventLayMine;
+import tanks.event.EventLevelEnd;
+import tanks.event.EventLoadLevel;
+import tanks.event.EventPlayerChat;
+import tanks.event.EventPlayerReady;
+import tanks.event.EventReturnToLobby;
+import tanks.event.EventShootBullet;
+import tanks.event.EventTankDestroyed;
+import tanks.event.EventTick;
+import tanks.event.EventUpdateReadyCount;
 import tanks.event.IEvent;
 import tanks.gui.Panel;
 import tanks.gui.screen.Screen;
@@ -33,7 +51,26 @@ import tanks.obstacles.ObstacleShrubbery;
 import tanks.obstacles.ObstacleTeleporter;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.*;
+import tanks.tank.Tank;
+import tanks.tank.TankBlack;
+import tanks.tank.TankBlue;
+import tanks.tank.TankBoss;
+import tanks.tank.TankBrown;
+import tanks.tank.TankCyan;
+import tanks.tank.TankDarkGreen;
+import tanks.tank.TankGray;
+import tanks.tank.TankGreen;
+import tanks.tank.TankMagenta;
+import tanks.tank.TankMaroon;
+import tanks.tank.TankMedic;
+import tanks.tank.TankMint;
+import tanks.tank.TankOrange;
+import tanks.tank.TankPink;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankPurple;
+import tanks.tank.TankRed;
+import tanks.tank.TankWhite;
+import tanks.tank.TankYellow;
 
 public class Game 
 {
@@ -223,7 +260,7 @@ public class Game
 		
 		if (!Files.exists(Paths.get(homedir + tutorialPath))) 
 		{
-			Game.screen = new ScreenTutorial();
+			ScreenTutorial.loadTutorial(true);
 		}
 		
 		if (!Files.exists(Paths.get(homedir + tankRegistryPath)))

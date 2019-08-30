@@ -48,7 +48,7 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
-			ScreenTutorial.loadTutorial();
+			ScreenTutorial.loadTutorial(!Panel.win && tutorial);
 		}
 	}
 			);

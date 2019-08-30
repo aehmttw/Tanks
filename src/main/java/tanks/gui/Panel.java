@@ -189,7 +189,8 @@ public class Panel
 				Game.screen.drawDefaultBackground((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
 				drawBar(40 - ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime) * 40);
 			}
-
+			
+			drawMouse();
 			return;
 		}
 
@@ -213,13 +214,16 @@ public class Panel
 		Game.screen.draw();
 
 		drawBar();
-
+		drawMouse();
+	}
+	
+	private void drawMouse() {
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
 		//double mx2 = Drawing.drawing.getMouseX();
 		//double my2 = Drawing.drawing.getMouseY();
-
+		
 		if (showMouseTarget)
 		{
 			Drawing.drawing.setColor(0, 0, 0);

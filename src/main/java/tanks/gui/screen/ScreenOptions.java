@@ -86,11 +86,15 @@ public class ScreenOptions extends Screen
 		public void run() 
 		{
 			Panel.showMouseTarget = !Panel.showMouseTarget;
+			
 
-			if (Panel.showMouseTarget)
+			if (Panel.showMouseTarget) {
 				mouseTarget.text = "Mouse target: on";
-			else
+			} else {
 				mouseTarget.text = "Mouse target: off";
+			}
+			
+			setShowCursor(!Panel.showMouseTarget);
 		}
 	},
 			"When enabled, 2 small black rings---will appear around your mouse pointer"	);
@@ -228,6 +232,10 @@ public class ScreenOptions extends Screen
 		}
 	}
 	
+	public static void setShowCursor(boolean show) {
+		GLFW.glfwSetInputMode(Game.game.window.getWindow(), GLFW.GLFW_CURSOR, show ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
+	}
+	
 	public static void loadOptions(String homedir) 
 	{
 		String path = homedir + Game.optionsPath;
@@ -256,8 +264,9 @@ public class ScreenOptions extends Screen
 					Game.fancyGraphics = Boolean.parseBoolean(optionLine[1]);
 				if (optionLine[0].toLowerCase().equals("3d")) 
 					Game.enable3d = Boolean.parseBoolean(optionLine[1]);
-				else if (optionLine[0].toLowerCase().equals("mouse_target")) 
+				else if (optionLine[0].toLowerCase().equals("mouse_target"))  {
 					Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
+				}
 				else if (optionLine[0].toLowerCase().equals("auto_start")) 
 					Game.autostart = Boolean.parseBoolean(optionLine[1]);
 				else if (optionLine[0].toLowerCase().equals("vsync")) 

@@ -1,5 +1,6 @@
 package tanks;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.sound.sampled.AudioInputStream;
@@ -25,7 +26,12 @@ public class SoundThread extends SwingWorker<Void, Object>
 				try 
 				{
 					Clip clip = AudioSystem.getClip();
-					AudioInputStream inputStream = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream(sound));
+					
+					InputStream in = Game.class.getResourceAsStream(sound);
+					if (in == null && sound.startsWith("/resources"))
+						in = Game.class.getResourceAsStream(sound.substring("/resources".length()));
+					
+					AudioInputStream inputStream = AudioSystem.getAudioInputStream(in);
 					clip.open(inputStream);
 					clip.start(); 
 					clips.add(clip);

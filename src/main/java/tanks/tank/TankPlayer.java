@@ -14,8 +14,9 @@ import tanks.Drawing;
 public class TankPlayer extends Tank
 {
 	public final UUID clientID;
+	public final boolean ui;
 	
-	public TankPlayer(double x, double y, double angle, UUID id)
+	public TankPlayer(double x, double y, double angle, UUID id, boolean ui)
 	{		
 		super("player", x, y, Game.tank_size, 0, 150, 255);
 		this.liveBulletMax = 5;
@@ -23,6 +24,7 @@ public class TankPlayer extends Tank
 		this.coinValue = -5;
 		this.angle = angle;
 		this.clientID = id;
+		this.ui = ui;
 	}
 
 	@Override

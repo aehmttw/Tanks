@@ -60,12 +60,12 @@ public class EventCreatePlayer implements INetworkEvent
 		
 		if (clientID.equals(Game.clientID))
 		{
-			t = new TankPlayer(posX, posY, angle, clientID);
+			t = new TankPlayer(posX, posY, angle, clientID, false);
 			Game.player = (TankPlayer) t;
 		}
 		else
 		{
-			t = new TankRemote(new TankPlayer(posX, posY, angle, clientID));
+			t = new TankRemote(new TankPlayer(posX, posY, angle, clientID, false));
 			t.showName = true;
 		}
 		

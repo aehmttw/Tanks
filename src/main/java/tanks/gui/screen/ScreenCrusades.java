@@ -105,7 +105,7 @@ public class ScreenCrusades extends Screen
 			@Override
 			public void run() 
 			{
-				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("resources/classic_crusade.tanks")));
+				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("/classic_crusade.tanks")));
 				ArrayList<String> al = new ArrayList<String>();
 				
 				while (s.hasNext())
@@ -128,7 +128,7 @@ public class ScreenCrusades extends Screen
 			@Override
 			public void run() 
 			{
-				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("resources/wii_crusade.tanks")));
+				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("/wii_crusade.tanks")));
 				ArrayList<String> al = new ArrayList<String>();
 				
 				while (s.hasNext())

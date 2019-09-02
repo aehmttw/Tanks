@@ -366,7 +366,7 @@ public class Level
 					else if (remote)
 						continue;
 
-					t = new TankPlayer(x, y, angle, Game.clientID);					
+					t = new TankPlayer(x, y, angle, Game.clientID, false);					
 					Game.player = (TankPlayer) t;
 				}
 				else

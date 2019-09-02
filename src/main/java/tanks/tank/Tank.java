@@ -368,6 +368,9 @@ public abstract class Tank extends Movable
 
 			sizeMod = 0.8;
 		}
+		
+		if (this instanceof TankPlayer && ((TankPlayer) this).ui)
+			sizeMod *= Panel.LOAD_SIZE_MOD;
 
 		double flash = Math.min(1, this.flashAnimation);
 

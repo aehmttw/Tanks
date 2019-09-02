@@ -95,7 +95,7 @@ public class ScreenLevelBuilder extends Screen
 	@SuppressWarnings("unchecked")
 	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 	
-	ButtonObject playerButton = new ButtonObject(new TankPlayer(0, 0, 0, Game.clientID), Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75);
+	ButtonObject playerButton = new ButtonObject(new TankPlayer(0, 0, 0, Game.clientID, false), Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75);
 
 	public Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Edit", new Runnable()
 	{
@@ -531,7 +531,7 @@ public class ScreenLevelBuilder extends Screen
 		public void run() 
 		{
 			currentPlaceable = Placeable.playerTank;
-			mouseTank = new TankPlayer(0, 0, 0, Game.clientID);
+			mouseTank = new TankPlayer(0, 0, 0, Game.clientID, false);
 		}
 	}
 			);
@@ -918,7 +918,7 @@ public class ScreenLevelBuilder extends Screen
 		{
 			this.teams.add(new Team("ally"));
 			this.teams.add(new Team("enemy"));
-			Game.player = new TankPlayer(Game.tank_size / 2, Game.tank_size / 2, 0, Game.clientID);
+			Game.player = new TankPlayer(Game.tank_size / 2, Game.tank_size / 2, 0, Game.clientID, false);
 			Game.player.team = this.teams.get(0);
 			Game.movables.add(Game.player);
 			this.reload();
@@ -1374,7 +1374,7 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.obstacle)
 			{
 				currentPlaceable = Placeable.playerTank;
-				mouseTank = new TankPlayer(0, 0, 0, Game.clientID);
+				mouseTank = new TankPlayer(0, 0, 0, Game.clientID, false);
 			}
 			else if (currentPlaceable == Placeable.playerTank)
 			{
@@ -1397,7 +1397,7 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.enemyTank)
 			{
 				currentPlaceable = Placeable.playerTank;
-				mouseTank = new TankPlayer(0, 0, 0, Game.clientID);
+				mouseTank = new TankPlayer(0, 0, 0, Game.clientID, false);
 			}
 		}
 

@@ -90,6 +90,7 @@ import org.lwjgl.system.MemoryStack;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import lombok.Getter;
+import tanks.Resources;
 import tanks.gui.Panel;
 import tanks.gui.screen.ScreenOptions;
 
@@ -674,13 +675,10 @@ public class LWJGLWindow
 	{
 		try
 		{
-			InputStream in;
-
-
-			in = getClass().getResourceAsStream(image);
+			InputStream in = Resources.getResourceAsStream(image);
 
 			if (in == null)
-				in = getClass().getResourceAsStream("/missing.png");
+				in = Resources.getResourceAsStream("missing.png");
 
 			try 
 			{

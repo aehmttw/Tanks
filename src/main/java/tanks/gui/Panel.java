@@ -12,9 +12,13 @@ import tanks.event.IEvent;
 import tanks.event.INetworkEvent;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 
 public class Panel
 {
+	public static final double LOAD_SIZE_MOD = 1.5;
+	
 	Timer timer;
 	int height = Drawing.drawing.sizeY;
 	int width = Drawing.drawing.sizeX;
@@ -61,6 +65,8 @@ public class Panel
 
 	public static boolean pausePressed = false;
 	protected static boolean initialized = false;
+	
+	private static final Tank dummySpin = new TankPlayer(Drawing.drawing.interfaceSizeX/2, Drawing.drawing.interfaceSizeY/2, 0, null, true);
 
 	public static void initialize()
 	{
@@ -77,8 +83,19 @@ public class Panel
 	}
 
 	public void update()
-	{		
+	{	
 		Panel.frameFrequency = Game.game.window.frameFrequency;
+		
+		double introTime = 1000;
+		double introAnimationTime = 500;
+
+		if (Game.fancyGraphics && Game.enable3d)
+			introAnimationTime = 1000;
+		
+		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime) {
+			dummySpin.angle += 0.02 * frameFrequency;
+			return;
+		}
 
 		if (Panel.panel.hotbar.currentCoins.coins < 0)
 			Panel.panel.hotbar.currentCoins.coins = 0;
@@ -180,16 +197,19 @@ public class Panel
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{	
 			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
-			Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);				
-			Drawing.drawing.setColor(255, 255, 255);
-			Drawing.drawing.drawInterfaceImage("/tanks/resources/loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
-
+			Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);	
+			
+						
+//			Drawing.drawing.setColor(255, 255, 255);
+//			Drawing.drawing.drawInterfaceImage("/tanks/resources/loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
+//
 			if (System.currentTimeMillis() - startTime > introTime)
 			{
 				Game.screen.drawDefaultBackground((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
 				drawBar(40 - ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime) * 40);
 			}
-			
+//
+			dummySpin.draw();
 			drawMouse();
 			return;
 		}

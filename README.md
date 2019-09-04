@@ -1,7 +1,7 @@
 # Tanks
 
-Tanks is a game written in Java inspired by a game of the same name on the Wii.
-There are 13 unique enemies you can fight, but you can add more of your own too.
+Tanks is a game written in Java inspired by a minigame of the same name on the Wii game "Wii Play".
+There are 18 unique enemies you can fight, but you can add more of your own too.
 The game works in Windows, Mac or Linux.
 
 ## How to play
@@ -42,19 +42,19 @@ argument -XstartOnFirstThread, or by using the file whose name starts with RunTa
 
 To develop the game we suggest using Eclipse or IntelliJ.  Eclipse can be installed from 
 [eclipse.org](http://www.eclipse.org/downloads/).  IntelliJ can be installed from 
-[jetbrains.com](https://www.jetbrains.com/idea/download/)
+[jetbrains.com](https://www.jetbrains.com/idea/download/)<br>
 
-To access the source code you also need to install git.
+To access the source code you also need to install git.<br>
 
-You will need to add the following libraries to the build path of the project: 
-PNGDecoder by Matthias Mann in TWL
-All the jars and natives of the following LWJGL libraries:
-LWJGL (core)
-OpenGL
-OpenAL
-GLFW
-Assimp
-STB
+You will need to add the following libraries to the build path of the project: <br>
+PNGDecoder by Matthias Mann in TWL<br>
+All the jars and natives of the following LWJGL libraries:<br>
+LWJGL (core)<br>
+OpenGL<br>
+OpenAL<br>
+GLFW<br>
+Assimp<br>
+STB<br>
 
 ## Credits:
 

@@ -1,12 +1,11 @@
 package tanks.gui.screen;
 
-import org.lwjgl.opengl.GL11;
-
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
-import tanks.gui.Panel;
-import tanks.obstacles.Obstacle;
+import tanks.Panel;
+import tanks.obstacle.Obstacle;
+import org.lwjgl.opengl.GL11;
 
 public abstract class Screen
 {

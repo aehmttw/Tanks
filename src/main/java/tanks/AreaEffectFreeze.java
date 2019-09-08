@@ -21,7 +21,7 @@ public class AreaEffectFreeze extends AreaEffect
 			for (int i = 0; i < 200; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
-				int var = 50;
+				double var = 50;
 				e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));

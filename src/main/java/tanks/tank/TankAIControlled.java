@@ -1,16 +1,11 @@
 package tanks.tank;
 
-import java.util.ArrayList;
-
-import tanks.Game;
-import tanks.Mine;
-import tanks.Movable;
-import tanks.Ray;
-import tanks.Team;
-import tanks.bullets.Bullet;
-import tanks.gui.Panel;
+import tanks.*;
+import tanks.bullet.Bullet;
+import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
-import tanks.Drawing;
+
+import java.util.ArrayList;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -104,8 +99,6 @@ public class TankAIControlled extends Tank
 
 	/** Used for tanks which do not use the straight AI, when detecting the target enemy with a ray. Tells the tank to aim towards the found target angle.*/
 	protected boolean aim = false;
-	
-	protected double aimTime = 0;
 
 	/** True for when a tank just laid a mine*/
 	protected boolean laidMine = false;
@@ -179,7 +172,7 @@ public class TankAIControlled extends Tank
 	/** True if can find an enemy*/
 	protected boolean hasTarget = true;
 	
-	public TankAIControlled(String name, double x, double y, int size, double r, double g, double b, double angle, ShootAI ai) 
+	public TankAIControlled(String name, double x, double y, double size, double r, double g, double b, double angle, ShootAI ai)
 	{
 		super(name, x, y, size, r, g, b);
 
@@ -226,8 +219,7 @@ public class TankAIControlled extends Tank
 	}
 
 	/** Prepare to fire a bullet*/
-	@Override
-	public void shoot() 
+	public void shoot()
 	{
 		this.aimTimer = 10;
 		this.aim = false;
@@ -268,7 +260,7 @@ public class TankAIControlled extends Tank
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Drawing.drawing.playSound("resources/shoot.wav");
+		Drawing.drawing.playSound("/shoot.wav");
 
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
@@ -277,7 +269,10 @@ public class TankAIControlled extends Tank
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;
 		b.heavy = this.bulletHeavy;
+		
 		Game.movables.add(b);
+		Game.eventsOut.add(new EventShootBullet(b));
+		
 		this.cooldown = (int) (Math.random() * this.cooldownRandom + this.cooldownBase);
 
 		if (this.shootAIType.equals(ShootAI.alternate))
@@ -673,12 +668,7 @@ public class TankAIControlled extends Tank
 
 		if (target != null)
 		{
-			if (target.equals(this.targetEnemy))
-			{
-				this.seesTargetEnemy = true;
-			}
-			else
-				this.seesTargetEnemy = false;
+			this.seesTargetEnemy = target.equals(this.targetEnemy);
 		}
 		else
 			this.seesTargetEnemy = false;
@@ -823,7 +813,7 @@ public class TankAIControlled extends Tank
 
 				if (layMine)
 				{
-					Drawing.drawing.playSound("resources/lay-mine.wav");
+					Drawing.drawing.playSound("/lay-mine.wav");
 
 					Game.movables.add(new Mine(this.posX, this.posY, this));
 					this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);
@@ -832,9 +822,6 @@ public class TankAIControlled extends Tank
 					this.setPolarMotion(angleV, speed);
 					laidMine = true;
 				}
-				else
-					laidMine = false;
-
 			}
 		}
 

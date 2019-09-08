@@ -1,8 +1,8 @@
 package tanks.network;
 
-import java.util.HashMap;
-
 import tanks.event.INetworkEvent;
+
+import java.util.HashMap;
 
 public class NetworkEventMap 
 {

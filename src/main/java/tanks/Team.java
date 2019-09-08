@@ -8,7 +8,7 @@ public class Team
 	public double teamColorB = 0;
 
 	public boolean friendlyFire = true;
-	public String name = "";
+	public String name;
 	
 	public Team(String name)
 	{

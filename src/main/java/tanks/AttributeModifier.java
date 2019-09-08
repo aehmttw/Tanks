@@ -2,8 +2,6 @@ package tanks;
 
 import java.util.UUID;
 
-import tanks.gui.Panel;
-
 public class AttributeModifier
 {
 	public enum Operation {add, multiply}
@@ -53,7 +51,7 @@ public class AttributeModifier
 	
 	public double getValue(double in)
 	{
-		double val = 0;
+		double val;
 		
 		if (this.expired)
 			return in;

@@ -1,19 +1,12 @@
 package tanks.tank;
 
-import tanks.Effect;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Team;
-import tanks.Turret;
+import tanks.*;
 import tanks.event.EventTankDestroyed;
-import tanks.gui.Panel;
-import tanks.obstacles.Obstacle;
+import tanks.event.EventTankUpdate;
+import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import tanks.AttributeModifier;
-import tanks.Drawing;
 
 public abstract class Tank extends Movable
 {
@@ -35,7 +28,7 @@ public abstract class Tank extends Movable
 	public int coinValue = 0;
 	public int networkID;
 
-	public String name = "";
+	public String name;
 
 	public double accel = 0.1;
 	public double maxV = 2.5;
@@ -91,8 +84,7 @@ public abstract class Tank extends Movable
 		this(name, x, y, size, r, g, b, true);
 	}
 
-	@Override
-	public void checkCollision() 
+	public void checkCollision()
 	{
 		if (this.size <= 0)
 			return;
@@ -258,12 +250,12 @@ public abstract class Tank extends Movable
 		{
 			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
-				Drawing.drawing.playSound("resources/destroy.wav");
+				Drawing.drawing.playSound("/destroy.wav");
 
 				if (!freeIDs.contains(this.networkID))
 				{
 					if (!this.isRemote)
-						Game.events.add(new EventTankDestroyed(this));
+						Game.eventsOut.add(new EventTankDestroyed(this));
 					freeIDs.add(this.networkID);
 					idMap.remove(this.networkID);
 				}
@@ -273,7 +265,7 @@ public abstract class Tank extends Movable
 					for (int i = 0; i < this.size * 4; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
-						int var = 50;
+						double var = 50;
 
 						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
 						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
@@ -323,10 +315,11 @@ public abstract class Tank extends Movable
 			}
 		}
 
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventTankUpdate(this));
+		
 		super.update();
 	}
-
-	public abstract void shoot();
 
 	@Override
 	public void drawForInterface(double x, double y)
@@ -368,9 +361,6 @@ public abstract class Tank extends Movable
 
 			sizeMod = 0.8;
 		}
-		
-		if (this instanceof TankPlayer && ((TankPlayer) this).ui)
-			sizeMod *= Panel.LOAD_SIZE_MOD;
 
 		double flash = Math.min(1, this.flashAnimation);
 
@@ -453,7 +443,7 @@ public abstract class Tank extends Movable
 
 					if (this.lives > this.baseLives)
 					{
-						if (!forInterface && Game.enable3d)
+						if (Game.enable3d)
 						{
 							drawing.fillBox(this.posX, this.posY, 0, s * mod, s * mod, s / 2 - 0.2);
 						}

@@ -1,41 +1,39 @@
 package tanks.gui.screen;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.lwjgl.glfw.GLFW;
-
-import tanks.ChatMessage;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.IPartyMenuScreen;
+import tanks.Panel;
 import tanks.event.EventPlayerChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
-import tanks.gui.Panel;
+import tanks.gui.ChatMessage;
 import tanks.network.Server;
+import tanks.network.SynchronizedList;
+import org.lwjgl.glfw.GLFW;
+
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.util.UUID;
 
 public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 {
 	Thread serverThread;
 	public static Server server;
 	public static boolean isServer = false;
-	public static ArrayList<UUID> readyPlayers = new ArrayList<UUID>();
+	public static SynchronizedList<UUID> readyPlayers = new SynchronizedList<UUID>();
 	public static ScreenPartyHost activeScreen;
 	public String ip = "";
 
-	public static ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
+	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
-	ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_SPACE, 
-			"\u00A7127127127255Click here or press space to send a chat message", new Runnable()
+	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T, 
+			"\u00A7127127127255Click here or press 'T' to send a chat message", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
 			chat.add(0, new ChatMessage(Game.username, chatbox.inputText));
-			Game.events.add(new EventPlayerChat(Game.username, chatbox.inputText));
+			Game.eventsOut.add(new EventPlayerChat(Game.username, chatbox.inputText));
 		}
 
 	});
@@ -94,7 +92,6 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 				catch (Exception e) 
 				{
 					e.printStackTrace();
-					return;
 				}
 			}
 
@@ -112,7 +109,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 				ip = "Getting your IP Address...";
 				try 
 				{
-					ip = "Your Local IP Address: " + Inet4Address.getLocalHost().getHostAddress();
+					ip = "Your Local IP Address: " + Inet4Address.getLocalHost().getHostAddress() + " (Port: " + Game.port + ")";
 				} 
 				catch (UnknownHostException e) 
 				{

@@ -1,8 +1,8 @@
 package tanks.network;
 
-import java.util.UUID;
-
 import tanks.Game;
+
+import java.util.UUID;
 
 public class ConnectedPlayer
 {

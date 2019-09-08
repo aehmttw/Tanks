@@ -1,20 +1,17 @@
 package tanks.gui.screen;
 
+import tanks.*;
+import tanks.gui.Button;
+import tanks.gui.Firework;
+
 import java.io.File;
 import java.util.ArrayList;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Firework;
-import tanks.Game;
-import tanks.Level;
-import tanks.gui.Button;
-import tanks.gui.Panel;
-
 public class ScreenInterlevel extends Screen
 {
-	static boolean tutorial = false;
-	static boolean fromSavedLevels = false;
+	public static boolean tutorialInitial = false;
+	public static boolean fromSavedLevels = false;
+	public static boolean tutorial = false;
 
 	ArrayList<Firework> fireworks = new ArrayList<Firework>();
 	ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
@@ -48,11 +45,32 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
-			ScreenTutorial.loadTutorial(!Panel.win && tutorial);
+			Tutorial.loadTutorial(!Panel.win && tutorialInitial);
+		}
+	}
+			);
+	
+	Button replayTutorial2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Try again", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Tutorial.loadTutorial(!Panel.win && tutorialInitial);
 		}
 	}
 			);
 
+	Button quitTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to title", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			tutorial = false;
+			Game.exitToTitle();
+		}
+	}
+			);
+	
 	Button replayCrusadeWin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
 	{
 		@Override
@@ -144,7 +162,9 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
+			tutorialInitial = false;
 			tutorial = false;
+
 			Game.exitToTitle();
 			try 
 			{
@@ -163,6 +183,12 @@ public class ScreenInterlevel extends Screen
 		@Override
 		public void run() 
 		{
+			if (Panel.win)
+			{
+				Crusade.currentCrusade.currentLevel++;
+				Crusade.currentCrusade.replay = false;
+			}
+			
 			Crusade.crusadeMode = false;
 			Game.exitToTitle();
 		}
@@ -177,13 +203,22 @@ public class ScreenInterlevel extends Screen
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				skip = true;
 
-		if (tutorial)
+		if (tutorialInitial)
 		{
 			skip = true;
 			if (Panel.win)
 				exitTutorial.update();
 			else
 				replayTutorial.update();
+		}
+		else if (tutorial)
+		{
+			skip = true;
+			
+			quitTutorial.update();
+			
+			if (!Panel.win)
+				replayTutorial2.update();
 		}
 		else if (fromSavedLevels)
 		{
@@ -231,7 +266,7 @@ public class ScreenInterlevel extends Screen
 
 		if (Panel.win)
 		{
-			Drawing.drawing.playSound("resources/win.wav");
+			Drawing.drawing.playSound("/win.wav");
 			for (int i = 0; i < 5; i++)
 			{
 				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
@@ -242,7 +277,7 @@ public class ScreenInterlevel extends Screen
 			}
 		}
 		else
-			Drawing.drawing.playSound("resources/lose.wav");
+			Drawing.drawing.playSound("/lose.wav");
 
 	}
 
@@ -256,13 +291,22 @@ public class ScreenInterlevel extends Screen
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				skip = true;
 
-		if (tutorial)
+		if (tutorialInitial)
 		{
 			skip = true;
 			if (Panel.win)
 				exitTutorial.draw();
 			else
 				replayTutorial.draw();
+		}
+		else if (tutorial)
+		{
+			skip = true;
+			
+			quitTutorial.draw();
+			
+			if (!Panel.win)
+				replayTutorial2.draw();
 		}
 		else if (fromSavedLevels)
 		{
@@ -308,7 +352,7 @@ public class ScreenInterlevel extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(24);
 
-		if (tutorial)
+		if (tutorialInitial)
 		{
 			if (Panel.win)
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Congratulations! You are now ready to play!");

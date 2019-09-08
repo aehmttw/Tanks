@@ -2,5 +2,5 @@ package tanks;
 
 public interface IDrawable 
 {
-	public void draw();
+	void draw();
 }

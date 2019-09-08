@@ -1,17 +1,18 @@
 package tanks.event;
 
-import tanks.ChatMessage;
+import io.netty.buffer.ByteBuf;
+import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.NetworkUtils;
 
 public class EventPlayerChat extends PersonalEvent
 {
 	public String message;
 	public String username;
 	
-	public EventPlayerChat(String s)
+	public EventPlayerChat()
 	{
-		this.username = s.substring(0, s.indexOf("|"));
-		this.message = s.substring(1 + s.indexOf("|"));
+		
 	}
 	
 	public EventPlayerChat(String p, String m)
@@ -21,16 +22,24 @@ public class EventPlayerChat extends PersonalEvent
 	}
 
 	@Override
-	public String getNetworkString()
-	{
-		return this.username + "|" + this.message;
-	}
-
-	@Override
 	public void execute() 
 	{
 		if (this.clientID == null)
 			ScreenPartyLobby.chat.add(0, new ChatMessage(this.username, this.message));
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		NetworkUtils.writeString(b, this.username);
+		NetworkUtils.writeString(b, this.message);
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		this.username = NetworkUtils.readString(b);
+		this.message = NetworkUtils.readString(b);
 	}
 
 }

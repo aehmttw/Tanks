@@ -1,22 +1,23 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.gui.Panel;
+import tanks.Panel;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.NetworkUtils;
 
 public class EventLevelEnd implements INetworkEvent
 {	
 	public String winningTeam;
 	
+	public EventLevelEnd()
+	{
+		
+	}
+	
 	public EventLevelEnd(String winner)
 	{
 		this.winningTeam = winner;
-	}
-	
-	@Override
-	public String getNetworkString() 
-	{
-		return winningTeam;
 	}
 
 	@Override
@@ -39,5 +40,17 @@ public class EventLevelEnd implements INetworkEvent
 		ScreenPartyLobby.readyPlayers = 0;
 			
 		System.gc();
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		NetworkUtils.writeString(b, this.winningTeam);
+	}
+
+	@Override
+	public void read(ByteBuf b)
+	{
+		this.winningTeam = NetworkUtils.readString(b);
 	}
 }

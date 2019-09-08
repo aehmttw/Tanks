@@ -12,13 +12,7 @@ public class TankDummy extends Tank
 		this.coinValue = 0;
 	}
 
-	@Override
-	public void shoot() 
-	{
-		
-	}
-	
-	@Override
+    @Override
 	public void update()
 	{
 		this.vX *= 0.8;

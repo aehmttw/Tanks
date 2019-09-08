@@ -1,7 +1,6 @@
 package tanks;
 
 import lwjglwindow.IDrawer;
-import tanks.gui.Panel;
 
 public class GameDrawer implements IDrawer
 {

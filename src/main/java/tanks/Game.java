@@ -1,10 +1,18 @@
 package tanks;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import lwjglwindow.LWJGLWindow;
+
+import tanks.network.*;
+import tanks.event.*;
+import tanks.tank.*;
+import tanks.obstacle.*;
+import tanks.registry.*;
+import tanks.gui.*;
+import tanks.gui.screen.*;
+import tanks.hotbar.*;
+
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,69 +20,9 @@ import java.util.Date;
 import java.util.Scanner;
 import java.util.UUID;
 
-import lwjglwindow.LWJGLWindow;
-import tanks.event.EventAnnounceConnection;
-import tanks.event.EventBeginLevelCountdown;
-import tanks.event.EventChat;
-import tanks.event.EventConnectionSuccess;
-import tanks.event.EventCreateCustomTank;
-import tanks.event.EventCreatePlayer;
-import tanks.event.EventCreateTank;
-import tanks.event.EventEnterLevel;
-import tanks.event.EventKick;
-import tanks.event.EventLayMine;
-import tanks.event.EventLevelEnd;
-import tanks.event.EventLoadLevel;
-import tanks.event.EventPlayerChat;
-import tanks.event.EventPlayerReady;
-import tanks.event.EventReturnToLobby;
-import tanks.event.EventShootBullet;
-import tanks.event.EventTankDestroyed;
-import tanks.event.EventTick;
-import tanks.event.EventUpdateReadyCount;
-import tanks.event.IEvent;
-import tanks.gui.Panel;
-import tanks.gui.screen.Screen;
-import tanks.gui.screen.ScreenCrashed;
-import tanks.gui.screen.ScreenInterlevel;
-import tanks.gui.screen.ScreenLevelBuilder;
-import tanks.gui.screen.ScreenOptions;
-import tanks.gui.screen.ScreenSavedLevels;
-import tanks.gui.screen.ScreenTitle;
-import tanks.gui.screen.ScreenTutorial;
-import tanks.network.NetworkEventMap;
-import tanks.obstacles.Obstacle;
-import tanks.obstacles.ObstacleBouncy;
-import tanks.obstacles.ObstacleHole;
-import tanks.obstacles.ObstacleIndestructible;
-import tanks.obstacles.ObstacleShrubbery;
-import tanks.obstacles.ObstacleTeleporter;
-import tanks.registry.RegistryObstacle;
-import tanks.registry.RegistryTank;
-import tanks.tank.Tank;
-import tanks.tank.TankBlack;
-import tanks.tank.TankBlue;
-import tanks.tank.TankBoss;
-import tanks.tank.TankBrown;
-import tanks.tank.TankCyan;
-import tanks.tank.TankDarkGreen;
-import tanks.tank.TankGray;
-import tanks.tank.TankGreen;
-import tanks.tank.TankMagenta;
-import tanks.tank.TankMaroon;
-import tanks.tank.TankMedic;
-import tanks.tank.TankMint;
-import tanks.tank.TankOrange;
-import tanks.tank.TankPink;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPurple;
-import tanks.tank.TankRed;
-import tanks.tank.TankWhite;
-import tanks.tank.TankYellow;
-
 public class Game 
 {
-	public static final int tank_size = 50;
+	public static final double tank_size = 50;
 	
 	public static final UUID clientID = UUID.randomUUID();
 	
@@ -90,8 +38,9 @@ public class Game
 
 	public static ArrayList<Effect> recycleEffects = new ArrayList<Effect>();
 
-	public static ArrayList<IEvent> events = new ArrayList<IEvent>();
-	
+	public static SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<INetworkEvent>();
+	public static SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<INetworkEvent>();
+
 	//public static Team playerTeam = new Team(new Color(0, 0, 255));
 	//public static Team enemyTeam = new Team(new Color(255, 0, 0));
 	
@@ -110,11 +59,13 @@ public class Game
 	
 	public static double[][] tilesDepth = new double[28][18];
 
-	public static final int network_protocol = 3;
-	public static final String version = "Tanks 0.7.l";
+	public static final int network_protocol = 4;
+	public static final String version = "Tanks 0.7.0";
 
 	public static int port = 8080;
-	
+
+	public static String lastParty = "";
+
 	public static double levelSize = 1;
 	
 	public static TankPlayer player;
@@ -139,9 +90,7 @@ public class Game
 
 	public static boolean autostart = true;
 	public static double startTime = 400;
-	
-	public static Item[] items = new Item[5];
-	
+
 	public static boolean enableCustomTankRegistry = false;
 	public static boolean enableCustomObstacleRegistry = false;
 
@@ -173,31 +122,34 @@ public class Game
 	
 	private Game() {}
 	
-	public static void initScript() 
+	public static void initScript()
 	{		
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
 		
-		NetworkEventMap.register(EventConnectionSuccess.class);
-		NetworkEventMap.register(EventKick.class);
-		NetworkEventMap.register(EventAnnounceConnection.class);
-		NetworkEventMap.register(EventChat.class);
-		NetworkEventMap.register(EventPlayerChat.class);
-		NetworkEventMap.register(EventLoadLevel.class);
-		NetworkEventMap.register(EventEnterLevel.class);
-		NetworkEventMap.register(EventLevelEnd.class);
-		NetworkEventMap.register(EventReturnToLobby.class);
-		NetworkEventMap.register(EventPlayerReady.class);
-		NetworkEventMap.register(EventUpdateReadyCount.class);
-		NetworkEventMap.register(EventBeginLevelCountdown.class);
-		NetworkEventMap.register(EventTick.class);
-		NetworkEventMap.register(EventCreatePlayer.class);
-		NetworkEventMap.register(EventCreateTank.class);
-		NetworkEventMap.register(EventCreateCustomTank.class);
-		NetworkEventMap.register(EventTankDestroyed.class);
-		NetworkEventMap.register(EventShootBullet.class);
-		NetworkEventMap.register(EventLayMine.class);
+		/* 0 */ NetworkEventMap.register(EventSendClientDetails.class);
+		/* 1 */ NetworkEventMap.register(EventKeepConnectionAlive.class);
+		/* 2 */ NetworkEventMap.register(EventConnectionSuccess.class);
+		/* 3 */ NetworkEventMap.register(EventKick.class);
+		/* 4 */ NetworkEventMap.register(EventAnnounceConnection.class);
+		/* 5 */ NetworkEventMap.register(EventChat.class);
+		/* 6 */ NetworkEventMap.register(EventPlayerChat.class);
+		/* 7 */ NetworkEventMap.register(EventLoadLevel.class);
+		/* 8 */ NetworkEventMap.register(EventEnterLevel.class);
+		/* 9 */ NetworkEventMap.register(EventLevelEnd.class);
+		/* 10*/ NetworkEventMap.register(EventReturnToLobby.class);
+		/* 11*/ NetworkEventMap.register(EventPlayerReady.class);
+		/* 12*/ NetworkEventMap.register(EventUpdateReadyCount.class);
+		/* 13*/ NetworkEventMap.register(EventBeginLevelCountdown.class);
+		/* 14*/ NetworkEventMap.register(EventTankUpdate.class);
+		/* 15*/ NetworkEventMap.register(EventCreatePlayer.class);
+		/* 16*/ NetworkEventMap.register(EventCreateTank.class);
+		/* 17*/ NetworkEventMap.register(EventCreateCustomTank.class);
+		/* 18*/ NetworkEventMap.register(EventTankDestroyed.class);
+		/* 19*/ NetworkEventMap.register(EventShootBullet.class);
+		/* 20*/ NetworkEventMap.register(EventLayMine.class);
+		/* 21*/ NetworkEventMap.register(EventTankTeleport.class);
 
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
@@ -227,7 +179,7 @@ public class Game
 		
 		homedir = System.getProperty("user.home");
 		
-		if (Files.exists(Paths.get(homedir + "/.tanks.d")) && !Files.exists(Paths.get(homedir + directoryPath))) 
+		if (Files.exists(Paths.get(homedir + "/.tanks.d")) && !Files.exists(Paths.get(homedir + directoryPath)))
 		{
 			try
 			{
@@ -260,7 +212,7 @@ public class Game
 		
 		if (!Files.exists(Paths.get(homedir + tutorialPath))) 
 		{
-			ScreenTutorial.loadTutorial(true);
+			Tutorial.loadTutorial(true);
 		}
 		
 		if (!Files.exists(Paths.get(homedir + tankRegistryPath)))
@@ -290,13 +242,32 @@ public class Game
 		
 		ScreenOptions.loadOptions(homedir);
 		RegistryTank.loadRegistry(homedir);
-		RegistryObstacle.loadRegistry(homedir);
+		RegistryObstacle.loadRegistry(homedir);		
+		
+		if (Game.usernameInvalid(Game.username))
+			Game.screen = new ScreenUsernameInvalid();
+	}
+	
+	public static boolean usernameInvalid(String username)
+	{
+		if (username.length() > 18)
+			return true;
+			
+		for (int i = 0; i < Game.username.length(); i++)
+		{
+			if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(Game.username.toLowerCase().substring(i, i+1)))
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public static void main(String[] args)
 	{		
 		Game.initScript();
-		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, 1000, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync);
+		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, 1000, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
 		Game.game.window.run();
 	}
 	
@@ -305,7 +276,6 @@ public class Game
 		Tank.currentID = 0;
 		Tank.freeIDs.clear();
 		Tank.idMap.clear();
-		Game.events.clear();
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
@@ -324,7 +294,6 @@ public class Game
 		Tank.currentID = 0;
 		Tank.freeIDs.clear();
 		Tank.idMap.clear();
-		Game.events.clear();
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
@@ -355,6 +324,15 @@ public class Game
 	
 	public static void exitToCrash(Exception e)
 	{
+		if (ScreenPartyHost.isServer)
+			ScreenPartyHost.server.close("The party has ended because the host crashed");
+		
+		if (ScreenPartyLobby.isClient)
+			Client.handler.ctx.close();
+		
+		ScreenPartyHost.isServer = false;
+		ScreenPartyLobby.isClient = false;
+
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();

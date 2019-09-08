@@ -2,14 +2,14 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.TextBox;
 import tanks.gui.Button;
+import tanks.gui.TextBox;
 
 public class ScreenParty extends Screen
 {
 	public ScreenParty()
 	{
-		Game.events.clear();
+		Game.eventsOut.clear();
 		port.allowSpaces = false;
 		port.enableSpaces = false;
 		port.allowLetters = false;
@@ -60,7 +60,7 @@ public class ScreenParty extends Screen
 				Game.port = Integer.parseInt(port.inputText);
 				ScreenOptions.saveOptions(Game.homedir);
 			}
-			catch (Exception e) { }
+			catch (Exception ignored) { }
 			port.inputText = Game.port + "";
 		}
 	},

@@ -1,18 +1,17 @@
 package tanks.gui.screen;
 
-import java.util.ArrayList;
-
-import org.lwjgl.glfw.GLFW;
-
-import tanks.ChatMessage;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.event.EventChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
-import tanks.gui.Panel;
+import tanks.gui.ChatMessage;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
 
 public class ScreenPartyLobby extends Screen
 {
@@ -22,13 +21,13 @@ public class ScreenPartyLobby extends Screen
 	
 	public static ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
 
-	ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_SPACE, 
-			"\u00A7127127127255Click here or press space to send a chat message", new Runnable()
+	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T, 
+			"\u00A7127127127255Click here or press 'T' to send a chat message", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			Game.events.add(new EventChat(chatbox.inputText));
+			Game.eventsOut.add(new EventChat(chatbox.inputText));
 		}
 		
 	});

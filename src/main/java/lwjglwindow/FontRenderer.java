@@ -10,7 +10,7 @@ public class FontRenderer
 	public FontRenderer(LWJGLWindow h, String fontFile)
 	{
 		this.home = h;
-		this.chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'abcdefghijklmnopqrstuvwxyz{|}�";
+		this.chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'abcdefghijklmnopqrstuvwxyz{|}~`";
 		this.charSizes = new int[]
 				{
 						3, 2, 4, 5, 5, 5, 5, 2, 4, 4, 4, 5, 1, 5, 1, 5,
@@ -18,7 +18,7 @@ public class FontRenderer
 						6, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5,
 						2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
-						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 5
+						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2
 				};
 		this.image = fontFile;
 	}
@@ -28,7 +28,7 @@ public class FontRenderer
 		int i = this.chars.indexOf(c);
 		
 		if (i == -1)
-			i = 95;
+			i = 31;
 		
 		int col = i % 16;
 		int row = i / 16;
@@ -65,13 +65,15 @@ public class FontRenderer
 	{
 		double w = 0;
 		char[] c = s.toCharArray();
-		
+				
 		for (int i = 0; i < c.length; i++)
-		{	
+		{
 			if (c[i] == '\u00C2')
 				continue;
 			else if (c[i] == '\u00A7')
 				i += 12;
+			else if (this.chars.indexOf(c[i]) == -1)
+				c[i] = '?';
 			else
 				w += (charSizes[this.chars.indexOf(c[i])] + 1) * sX * 4;
 		}

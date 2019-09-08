@@ -1,9 +1,6 @@
 package tanks.tank;
 
-import tanks.Game;
-import tanks.Mine;
 import tanks.Team;
-import tanks.bullets.Bullet;
 
 public class TankRemote extends Tank
 {
@@ -13,6 +10,7 @@ public class TankRemote extends Tank
 	public TankRemote(String name, double x, double y, double angle, Team team, double size, double ts, double tl, double r, double g, double b, double lives, double baselives)
 	{
 		super(name, x, y, size, r, g, b);
+		this.angle = angle;
 		this.team = team;
 		this.lives = lives;
 		this.baseLives = baselives;
@@ -27,6 +25,7 @@ public class TankRemote extends Tank
 	public TankRemote(Tank t)
 	{
 		super(t.name, t.posX, t.posY, t.size, t.colorR, t.colorG, t.colorB, false);
+		this.angle = t.angle;
 		this.team = t.team;
 		this.lives = t.lives;
 		this.baseLives = t.baseLives;
@@ -41,29 +40,4 @@ public class TankRemote extends Tank
 		Tank.idMap.put(this.networkID, this);
 	}
 
-	@Override
-	public void shoot() 
-	{
-		
-	}
-	
-	public void shoot(Bullet b)
-	{
-		Game.movables.add(b);
-	}
-	
-	public void layMine(Mine m)
-	{
-		Game.movables.add(m);
-	}
-	
-	public void updateState(double x, double y, double vx, double vy, double angle, double health)
-	{
-		this.posX = x;
-		this.posY = y;
-		this.vX = vx;
-		this.vY = vy;
-		this.lives = health;
-		this.angle = angle;
-	}
 }

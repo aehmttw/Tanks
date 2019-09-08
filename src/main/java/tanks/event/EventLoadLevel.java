@@ -1,33 +1,29 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.NetworkUtils;
 
 public class EventLoadLevel extends PersonalEvent
 {
-	public Level level;
+	public String level;
 
+	public EventLoadLevel()
+	{
+		
+	}
+	
 	public EventLoadLevel(Level l)
 	{
-		this.level = l;
-	}
-
-	public EventLoadLevel(String l)
-	{
-		this.level = new Level(l);
-	}
-
-	@Override
-	public String getNetworkString() 
-	{
-		return this.level.levelString;
+		this.level = l.levelString;
 	}
 
 	@Override
 	public void execute() 
-	{
+	{		
 		if (this.clientID != null)
 			return;
 			
@@ -35,12 +31,24 @@ public class EventLoadLevel extends PersonalEvent
 		{
 			ScreenPartyLobby.readyPlayers = 0;
 			Game.exit();
-			Game.currentLevel = level;
+			Game.currentLevel = new Level(level);
 			Game.currentLevel.loadLevel(true);
 		}
 		catch (Exception e)
 		{
 			Game.screen = new ScreenFailedToLoadLevel("Level is remote!", new ScreenPartyLobby());
 		}
+	}
+
+	@Override
+	public void write(ByteBuf b)
+	{
+		NetworkUtils.writeString(b, this.level);
+	}
+
+	@Override
+	public void read(ByteBuf b)
+	{
+		this.level = NetworkUtils.readString(b);
 	}
 }

@@ -1,85 +1,7 @@
 package lwjglwindow;
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_ALWAYS;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_LESS;
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_REPEAT;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
-import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glColor3d;
-import static org.lwjgl.opengl.GL11.glColor4d;
-import static org.lwjgl.opengl.GL11.glDepthFunc;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glFrustum;
-import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glPixelStorei;
-import static org.lwjgl.opengl.GL11.glTexCoord2d;
-import static org.lwjgl.opengl.GL11.glTexImage2D;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.opengl.GL11.glTranslated;
-import static org.lwjgl.opengl.GL11.glVertex2d;
-import static org.lwjgl.opengl.GL11.glVertex3d;
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import de.matthiasmann.twl.utils.PNGDecoder;
+import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -87,23 +9,27 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
-import de.matthiasmann.twl.utils.PNGDecoder;
-import de.matthiasmann.twl.utils.PNGDecoder.Format;
-import lombok.Getter;
-import tanks.Resources;
-import tanks.gui.Panel;
-import tanks.gui.screen.ScreenOptions;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class LWJGLWindow 
 {
 	public FontRenderer fontRenderer;
 
 	// The window handle
-	@Getter
 	protected long window;
-	public int absoluteWidth;
-	public int absoluteHeight;
-	public int absoluteDepth;
+	public double absoluteWidth;
+	public double absoluteHeight;
+	public double absoluteDepth;
 
 	public double absoluteMouseX;
 	public double absoluteMouseY;
@@ -125,6 +51,7 @@ public class LWJGLWindow
 	public boolean mac = false;
 
 	public boolean vsync;
+	public boolean showMouseOnLaunch;
 
 	protected ArrayList<Long> framesList = new ArrayList<Long>();
 	protected ArrayList<Double> frameFrequencies = new ArrayList<Double>();
@@ -141,7 +68,7 @@ public class LWJGLWindow
 	public IUpdater updater;
 	public IWindowHandler windowHandler;
 
-	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync)
+	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
 		this.name = name;
 		this.absoluteWidth = x;
@@ -151,9 +78,15 @@ public class LWJGLWindow
 		this.drawer = d;
 		this.vsync = vsync;
 		this.windowHandler = w;
+		this.showMouseOnLaunch = showMouse;
 
 		if (System.getProperties().toString().contains("Mac OS X"))
 			mac = true;
+	}
+
+	public long getWindow()
+	{
+		return this.window;
 	}
 
 	public void run() 
@@ -191,7 +124,7 @@ public class LWJGLWindow
 		// resizable
 
 		// Create the window
-		window = glfwCreateWindow(this.absoluteWidth, this.absoluteHeight, this.name, NULL, NULL);
+		window = glfwCreateWindow((int)this.absoluteWidth, (int)this.absoluteHeight, this.name, NULL, NULL);
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
@@ -201,8 +134,8 @@ public class LWJGLWindow
 		{
 			if (action == GLFW_PRESS)
 			{
-				pressedKeys.add((Integer)key);
-				validPressedKeys.add((Integer)key);
+				pressedKeys.add(key);
+				validPressedKeys.add(key);
 			}
 			else if (action == GLFW_RELEASE)
 			{
@@ -252,14 +185,13 @@ public class LWJGLWindow
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 		// Enable v-sync
+		
+		this.setShowCursor(this.showMouseOnLaunch);
 
 		if (vsync)
 			GLFW.glfwSwapInterval(1);
 		else
 			GLFW.glfwSwapInterval(0);
-		
-		if (Panel.showMouseTarget)
-			ScreenOptions.setShowCursor(false);
 
 		// Make the window visible
 		glfwShowWindow(window);
@@ -319,7 +251,7 @@ public class LWJGLWindow
 			absoluteMouseY = my[0];
 
 			if (!mac)
-				glViewport(0, 0, absoluteWidth, absoluteHeight);
+				glViewport(0, 0, (int)absoluteWidth, (int)absoluteHeight);
 
 			setPerspective();
 			
@@ -357,7 +289,15 @@ public class LWJGLWindow
 		this.windowHandler.onWindowClose();
 		System.exit(0);
 	}
-
+	
+	public void setShowCursor(boolean show) 
+	{
+		int mouse = GLFW.GLFW_CURSOR_HIDDEN;
+		if (show)
+			mouse = GLFW.GLFW_CURSOR_NORMAL;
+		
+ 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, mouse);
+ 	}
 
 	public void fillOval(double x, double y, double sX, double sY)
 	{		
@@ -675,10 +615,13 @@ public class LWJGLWindow
 	{
 		try
 		{
-			InputStream in = Resources.getResourceAsStream(image);
+			InputStream in;
+
+
+			in = getClass().getResourceAsStream(image);
 
 			if (in == null)
-				in = Resources.getResourceAsStream("missing.png");
+				in = getClass().getResourceAsStream("/missing.png");
 
 			try 
 			{

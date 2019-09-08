@@ -1,71 +1,60 @@
 package tanks.event;
 
-import java.util.UUID;
-
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
+import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
 
+import java.util.UUID;
+
 public class EventCreatePlayer implements INetworkEvent
 {
-	public UUID clientID;
+	public UUID clientId;
 	public String username;
 	public double posX;
 	public double posY;
 	public double angle;
-	public Team team;
+	public String team;
+	
+	public EventCreatePlayer()
+	{
+	
+	}
 	
 	public EventCreatePlayer(UUID id, String username, double x, double y, double angle, Team t)
 	{
-		this.clientID = id;
+		this.clientId = id;
 		this.posX = x;
 		this.posY = y;
 		this.angle = angle;
-		this.team = t;
+		
+		if (t == null)
+			this.team = "*";
+		else if (t == Game.playerTeam)
+			this.team = "**";
+		else
+			this.team = t.name;
+		
 		this.username = username;
 	}
 	
-	public EventCreatePlayer(String s)
-	{
-		String[] parts2 = s.split(",");
-		posX = Double.parseDouble(parts2[2]);
-		posY = Double.parseDouble(parts2[3]);
-		angle = Double.parseDouble(parts2[4]);
-		
-		clientID = UUID.fromString(parts2[0]);
-		username = parts2[1];
-
-		if (parts2.length >= 5)
-			team = Game.currentLevel.teamsMap.get(parts2[5]);
-		else
-			team = Game.playerTeam;
-	}
-
-	@Override
-	public String getNetworkString() 
-	{
-		String t = "*";
-		if (team != null)
-			t = team.name;
-		
-		return clientID.toString() + "," + username + "," + posX + "," + posY + "," + angle + "," + t;
-	}
 	
 	@Override
 	public void execute()
 	{
 		Tank t;
 		
-		if (clientID.equals(Game.clientID))
+		if (clientId.equals(Game.clientID))
 		{
-			t = new TankPlayer(posX, posY, angle, clientID, false);
+			t = new TankPlayer(posX, posY, angle, clientId);
 			Game.player = (TankPlayer) t;
 		}
 		else
 		{
-			t = new TankRemote(new TankPlayer(posX, posY, angle, clientID, false));
+			t = new TankRemote(new TankPlayer(posX, posY, angle, clientId));
 			t.showName = true;
 		}
 		
@@ -74,8 +63,35 @@ public class EventCreatePlayer implements INetworkEvent
 		if (Game.enableChatFilter)
 			t.name = Game.chatFilter.filterChat(t.name);
 		
-		t.team = team;
+		if (team.equals("**"))
+			t.team = Game.playerTeam;
+		else if (team.equals("*"))
+			t.team = null;
+		else
+			t.team = Game.currentLevel.teamsMap.get(team);
 
 		Game.movables.add(t);
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		NetworkUtils.writeString(b, this.clientId.toString());
+		NetworkUtils.writeString(b, this.username);
+		b.writeDouble(this.posX);
+		b.writeDouble(this.posY);
+		b.writeDouble(this.angle);
+		NetworkUtils.writeString(b, this.team);
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		this.clientId = UUID.fromString(NetworkUtils.readString(b));
+		this.username = NetworkUtils.readString(b);
+		this.posX = b.readDouble();
+		this.posY = b.readDouble();
+		this.angle = b.readDouble();
+		this.team = NetworkUtils.readString(b);
 	}
 }

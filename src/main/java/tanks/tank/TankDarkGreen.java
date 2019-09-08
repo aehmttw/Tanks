@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullets.Bullet;
+import tanks.bullet.Bullet;
 
 public class TankDarkGreen extends TankAIControlled
 {
@@ -16,7 +16,6 @@ public class TankDarkGreen extends TankAIControlled
 		this.liveBulletMax = 8;
 		this.bulletBounces = 0;
 		this.bulletDamage /= 8;
-		this.bulletSpeed = 25.0 / 2;
 		this.bulletSize /= 2;
 		this.bulletEffect = Bullet.BulletEffect.none;
 		

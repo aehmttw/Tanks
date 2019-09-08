@@ -1,49 +1,72 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
+import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
 public class EventCreateTank implements INetworkEvent
 {
-	public Tank tank;
+	public String type;
+	public double posX;
+	public double posY;
+	public double angle;
+	public String team;
 	
-	public EventCreateTank(Tank tank)
+	public EventCreateTank()
 	{
-		this.tank = tank;
+		
 	}
 	
-	public EventCreateTank(String s)
+	public EventCreateTank(Tank t)
 	{
-		String[] parts2 = s.split(",");
-		
-		String type = parts2[0];
+		this.type = t.name;
+		this.posX = t.posX;
+		this.posY = t.posY;
+		this.angle = t.angle;
 
-		double posX = Double.parseDouble(parts2[1]);
-		double posY = Double.parseDouble(parts2[2]);
-		double angle = Double.parseDouble(parts2[3]);
-		
-		Team team;
-		if (parts2.length >= 5)
-			team = Game.currentLevel.teamsMap.get(parts2[4]);
+		if (t.team == null)
+			this.team = "*";
+		else if (t.team == Game.enemyTeam)
+			this.team = "**";
 		else
-			team = Game.enemyTeam;
-		
-		this.tank = Game.registryTank.getEntry(type).getTank(posX, posY, angle);
-		this.tank.team = team;
-
-	}
-
-	@Override
-	public String getNetworkString() 
-	{
-		return tank.name + "," + tank.posX + "," + tank.posY + "," + tank.angle + "," + tank.team.name;
+			this.team = t.team.name;
 	}
 	
 	@Override
 	public void execute()
 	{
-		Game.movables.add(new TankRemote(this.tank));
+		Tank t = Game.registryTank.getEntry(type).getTank(posX, posY, angle);
+
+		Team tm = Game.currentLevel.teamsMap.get(team);
+		
+		if (this.team.equals("**"))
+			tm = Game.enemyTeam;
+		
+		t.team = tm;
+				
+		Game.movables.add(new TankRemote(t));
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		NetworkUtils.writeString(b, this.type);
+		b.writeDouble(this.posX);
+		b.writeDouble(this.posY);
+		b.writeDouble(this.angle);
+		NetworkUtils.writeString(b, this.team);
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		this.type = NetworkUtils.readString(b);
+		this.posX = b.readDouble();
+		this.posY = b.readDouble();
+		this.angle = b.readDouble();
+		this.team = NetworkUtils.readString(b);
 	}
 }

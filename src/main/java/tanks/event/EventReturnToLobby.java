@@ -1,5 +1,6 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyLobby;
 
@@ -8,17 +9,6 @@ public class EventReturnToLobby implements INetworkEvent
 	public EventReturnToLobby()
 	{
 
-	}
-	
-	public EventReturnToLobby(String s)
-	{
-
-	}
-	
-	@Override
-	public String getNetworkString() 
-	{
-		return "x";
 	}
 
 	@Override
@@ -29,5 +19,17 @@ public class EventReturnToLobby implements INetworkEvent
 		ScreenPartyLobby.readyPlayers = 0;
 			
 		System.gc();
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		
 	}
 }

@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.event.EventKick;
 import tanks.gui.Button;
 import tanks.network.ServerHandler;
 
@@ -20,7 +21,7 @@ public class ScreenHostingEnded extends Screen
 				for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
 				{
 					ServerHandler c = ScreenPartyHost.server.connections.get(i);
-					c.kick(c.ctx, reason);
+					c.sendEventAndClose(new EventKick(reason));
 				}
 			}
 		}

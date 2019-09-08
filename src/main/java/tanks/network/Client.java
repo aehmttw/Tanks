@@ -26,7 +26,7 @@ public class Client
             b.handler(new ChannelInitializer<SocketChannel>() 
             {
                 @Override
-                public void initChannel(SocketChannel ch) throws Exception 
+                public void initChannel(SocketChannel ch)
                 {
                 	handler = new ClientHandler();
                     ch.pipeline().addLast(handler);

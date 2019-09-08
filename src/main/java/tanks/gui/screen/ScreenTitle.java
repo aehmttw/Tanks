@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.gui.Button;
 
 public class ScreenTitle extends Screen
-{
+{	
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override

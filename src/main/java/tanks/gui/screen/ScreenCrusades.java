@@ -1,5 +1,10 @@
 package tanks.gui.screen;
 
+import tanks.Crusade;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.gui.Button;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,11 +15,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
-
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.gui.Button;
 
 public class ScreenCrusades extends Screen
 {
@@ -30,21 +30,6 @@ public class ScreenCrusades extends Screen
 		public void run() 
 		{
 			Game.screen = new ScreenPlay();
-		}
-	}
-			);
-
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "New level", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			String name = System.currentTimeMillis() + ".tanks";
-
-			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-
-			s.paused = false;
-			Game.screen = s;
 		}
 	}
 			);
@@ -85,10 +70,7 @@ public class ScreenCrusades extends Screen
 		{
 			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(Game.homedir + crusadeDir));
 
-			Iterator<Path> irritator = ds.iterator();
-			while (irritator.hasNext())
-			{
-				Path p = irritator.next();
+			for (Path p : ds) {
 				if (p.toString().endsWith(".tanks"))
 					levels.add(p);
 			}

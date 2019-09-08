@@ -1,11 +1,13 @@
 package tanks;
 
+import tanks.hotbar.Coins;
+import tanks.hotbar.Item;
+import tanks.hotbar.ItemBar;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import tanks.gui.Panel;
 
 public class Crusade 
 {
@@ -69,27 +71,32 @@ public class Crusade
 		while (i < levelArray.size())
 		{
 			String s = levelArray.get(i);
-			if (s.toLowerCase().equals("levels"))
-				parsing = 0;
-			else if (s.toLowerCase().equals("items"))
-				parsing = 1;
-			else if (s.toLowerCase().equals("properties"))
-				parsing = 2;
-			else
+			switch (s.toLowerCase())
 			{
-				if (parsing == 0)
-				{
-					this.levels.add(levelArray.get(i));
-				}
-				else if (parsing == 1)
-				{
-					this.crusadeItems.add(Item.parseItem(s));
-				}
-				else if (parsing == 2)
-				{
-					this.remainingLives = Integer.parseInt(s.split(",")[0]);
-					this.bonusLifeFrequency = Integer.parseInt(s.split(",")[1]);
-				}
+				case "levels":
+					parsing = 0;
+					break;
+				case "items":
+					parsing = 1;
+					break;
+				case "properties":
+					parsing = 2;
+					break;
+				default:
+					if (parsing == 0)
+					{
+						this.levels.add(levelArray.get(i));
+					}
+					else if (parsing == 1)
+					{
+						this.crusadeItems.add(Item.parseItem(s));
+					}
+					else if (parsing == 2)
+					{
+						this.remainingLives = Integer.parseInt(s.split(",")[0]);
+						this.bonusLifeFrequency = Integer.parseInt(s.split(",")[1]);
+					}
+					break;
 			}
 			
 			i++;

@@ -1,5 +1,9 @@
 package tanks.registry;
 
+import tanks.Game;
+import tanks.tank.Tank;
+import tanks.tank.TankUnknown;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -9,10 +13,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
-
-import tanks.Game;
-import tanks.tank.Tank;
-import tanks.tank.TankUnknown;
 
 public class RegistryTank 
 {
@@ -206,9 +206,6 @@ public class RegistryTank
 		public final String name;
 		public final double weight;
 
-		protected double startWeight;
-		protected double endWeight;
-
 		public DefaultTankEntry(Class<? extends Tank> class1, String name, double weight)
 		{
 			this.tank = class1;
@@ -216,14 +213,14 @@ public class RegistryTank
 			this.weight = weight;
 		}
 
-		public TankEntry registerEntry(RegistryTank r)
+		public void registerEntry(RegistryTank r)
 		{
-			return new TankEntry(r, this.tank, this.name, this.weight);
+			new TankEntry(r, this.tank, this.name, this.weight);
 		}
 
-		public TankEntry registerEntry(RegistryTank r, double weight)
+		public void registerEntry(RegistryTank r, double weight)
 		{
-			return new TankEntry(r, this.tank, this.name, weight);
+			new TankEntry(r, this.tank, this.name, weight);
 		}
 
 		public String getString()

@@ -1,22 +1,21 @@
 package tanks.tank;
 
-import java.util.UUID;
-
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Panel;
+import tanks.Team;
+import tanks.bullet.Bullet;
+import tanks.event.EventShootBullet;
 import org.lwjgl.glfw.GLFW;
 
-import tanks.Game;
-import tanks.Mine;
-import tanks.Team;
-import tanks.bullets.Bullet;
-import tanks.gui.Panel;
-import tanks.Drawing;
+import java.util.UUID;
 
 public class TankPlayer extends Tank
 {
 	public final UUID clientID;
-	public final boolean ui;
+	public boolean enableDestroyCheat = false;
 	
-	public TankPlayer(double x, double y, double angle, UUID id, boolean ui)
+	public TankPlayer(double x, double y, double angle, UUID id)
 	{		
 		super("player", x, y, Game.tank_size, 0, 150, 255);
 		this.liveBulletMax = 5;
@@ -24,7 +23,6 @@ public class TankPlayer extends Tank
 		this.coinValue = -5;
 		this.angle = angle;
 		this.clientID = id;
-		this.ui = ui;
 	}
 
 	@Override
@@ -36,12 +34,11 @@ public class TankPlayer extends Tank
 		boolean down = Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_DOWN) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_S);
 		boolean left = Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_LEFT) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_A);
 		boolean right = Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_RIGHT) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_D);
-		boolean destroy = Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_BACKSPACE);
+		boolean trace = Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_PERIOD) || Game.game.window.pressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_4);
 
-		double acceleration = accel;
-		double maxVelocity = maxV;
+		boolean destroy = Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_BACKSPACE);
 		
-		if (destroy)
+		if (destroy && this.enableDestroyCheat)
 		{
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
@@ -49,7 +46,10 @@ public class TankPlayer extends Tank
 					Game.movables.get(i).destroy = true;
 			}
 		}
-
+		
+		double acceleration = accel;
+		double maxVelocity = maxV;
+	
 		double x = 0;
 		double y = 0;
 		
@@ -122,10 +122,20 @@ public class TankPlayer extends Tank
 
 		this.angle = this.getAngleInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
 		
+		if (trace && !Game.bulletLocked)
+		{
+			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
+			r.vX /= 2;
+			r.vY /= 2;
+			r.trace = true;
+			r.dotted = true;
+			r.moveOut(10);
+			r.getTarget();
+		}
+		
 		super.update();
 	}
 	
-	@Override
 	public void shoot()
 	{	
 		if (Game.bulletLocked || this.destroy)
@@ -151,7 +161,7 @@ public class TankPlayer extends Tank
 
 	public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
 	{		
-		Drawing.drawing.playSound("resources/shoot.wav");
+		Drawing.drawing.playSound("/shoot.wav");
 
 		Bullet b = new Bullet(posX, posY, bounces, this);
 		b.setMotionInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY(), speed);
@@ -159,13 +169,15 @@ public class TankPlayer extends Tank
 
 		b.moveOut((int) (25.0 / speed * 2));
 		b.effect = effect;
+		
+		Game.eventsOut.add(new EventShootBullet(b));
 				
 		Game.movables.add(b);
 	}
 
 	public void fireBullet(Bullet b, double speed)
 	{
-		Drawing.drawing.playSound("resources/shoot.wav");
+		Drawing.drawing.playSound("/shoot.wav");
 
 	    b.setMotionInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY(), speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0 * b.recoil);
@@ -177,7 +189,7 @@ public class TankPlayer extends Tank
 	
 	public void layMine()
 	{	
-		if (Game.bulletLocked)
+		if (Game.bulletLocked || this.destroy)
 			return;
 		
 		if (Panel.panel.hotbar.enabledItemBar)
@@ -186,7 +198,7 @@ public class TankPlayer extends Tank
 				return;
 		}
 
-		Drawing.drawing.playSound("resources/lay-mine.wav");
+		Drawing.drawing.playSound("/lay-mine.wav");
 		
 		this.cooldown = 50;
 		Mine m = new Mine(posX, posY, this);

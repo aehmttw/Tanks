@@ -1,33 +1,22 @@
 package tanks.gui.screen;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.lwjgl.glfw.GLFW;
-
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.IDrawable;
-import tanks.Item;
-import tanks.Mine;
-import tanks.Movable;
-import tanks.Team;
-import tanks.bullets.Bullet;
-import tanks.event.EventBeginLevelCountdown;
-import tanks.event.EventPlayerReady;
-import tanks.event.EventReturnToLobby;
-import tanks.event.EventLevelEnd;
-import tanks.event.EventTick;
-import tanks.event.EventUpdateReadyCount;
+import tanks.*;
+import tanks.bullet.Bullet;
+import tanks.event.*;
 import tanks.gui.Button;
-import tanks.gui.Panel;
+import tanks.gui.ChatMessage;
+import tanks.hotbar.Item;
 import tanks.network.Client;
-import tanks.obstacles.Obstacle;
+import tanks.obstacle.Obstacle;
+import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
+import org.lwjgl.glfw.GLFW;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ScreenGame extends Screen
 {
@@ -54,6 +43,7 @@ public class ScreenGame extends Screen
 	@SuppressWarnings("unchecked")
 	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
+	
 	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
 		@Override
@@ -71,17 +61,17 @@ public class ScreenGame extends Screen
 		public void run() 
 		{
 			if (ScreenPartyLobby.isClient)
-				Game.events.add(new EventPlayerReady());
+				Game.eventsOut.add(new EventPlayerReady());
 			else
 			{
 				ScreenPartyHost.readyPlayers.add(Game.clientID);
-				Game.events.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+				Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
 
 				//synchronized(ScreenPartyHost.server.connections)
 				{
 					if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.server.connections.size() + 1)
 					{
-						Game.events.add(new EventBeginLevelCountdown());
+						Game.eventsOut.add(new EventBeginLevelCountdown());
 						cancelCountdown = false;
 					}
 				}
@@ -98,7 +88,7 @@ public class ScreenGame extends Screen
 		{
 			if (ScreenPartyHost.isServer)
 			{
-				Game.events.add(new EventBeginLevelCountdown());
+				Game.eventsOut.add(new EventBeginLevelCountdown());
 				cancelCountdown = false;
 			}
 			ready = true;
@@ -205,6 +195,17 @@ public class ScreenGame extends Screen
 		}
 	}
 			);
+	
+	Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
+	{
+		@Override
+		public void run() 
+		{
+			Game.exitToTitle();
+			ScreenInterlevel.tutorial = false;
+		}
+	}
+			);
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to my levels", new Runnable()
 	{
@@ -219,7 +220,7 @@ public class ScreenGame extends Screen
 			if (ScreenPartyHost.isServer)
 			{
 				ScreenPartyHost.readyPlayers.clear();
-				Game.events.add(new EventReturnToLobby());
+				Game.eventsOut.add(new EventReturnToLobby());
 			}
 		}
 	}
@@ -234,7 +235,7 @@ public class ScreenGame extends Screen
 			System.gc();
 			Game.screen = ScreenPartyHost.activeScreen;	
 			ScreenPartyHost.readyPlayers.clear();
-			Game.events.add(new EventReturnToLobby());
+			Game.eventsOut.add(new EventReturnToLobby());
 		}
 	}
 			);
@@ -388,6 +389,11 @@ public class ScreenGame extends Screen
 	@Override
 	public void update()
 	{
+		if (ScreenPartyLobby.isClient)
+			ScreenPartyLobby.chatbox.update(false);
+		else if (ScreenPartyHost.isServer)
+			ScreenPartyHost.chatbox.update(false);
+
 		Panel.panel.hotbar.update();
 
 		if (Game.enable3d)
@@ -451,6 +457,15 @@ public class ScreenGame extends Screen
 			{
 				resumeLowerPos.update();
 				back.update();
+			}
+			else if (ScreenInterlevel.tutorialInitial)
+			{
+				resumeLowerPos.update();
+			}
+			else if (ScreenInterlevel.tutorial)
+			{
+				resumeLowerPos.update();
+				quitHigherPos.update();
 			}
 			else
 			{
@@ -654,7 +669,7 @@ public class ScreenGame extends Screen
 									s = aliveTeams.get(0).name;
 
 								ScreenPartyHost.readyPlayers.clear();
-								Game.events.add(new EventLevelEnd(s));
+								Game.eventsOut.add(new EventLevelEnd(s));
 
 								System.gc();
 							}
@@ -698,11 +713,6 @@ public class ScreenGame extends Screen
 		Game.removeObstacles.clear();
 		Game.removeEffects.clear();
 		Game.removeBelowEffects.clear();
-
-		EventTick e = new EventTick();
-
-		if (!e.isEmpty)
-			Game.events.add(e);
 	}
 
 	@Override
@@ -752,14 +762,18 @@ public class ScreenGame extends Screen
 			}
 
 			if (shopScreen)
-			{				
+			{		
+				Drawing.drawing.setFontSize(24);
+				Drawing.drawing.setColor(0, 0, 0);
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Shop");
+	
 				this.exitShop.draw();
 
 				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)
-					next.update();
+					next.draw();
 
 				if (shopPage > 0)
-					this.previous.update();
+					this.previous.draw();
 
 				for (int i = 0; i < this.shopItemButtons.size(); i++)
 					this.shopItemButtons.get(i).draw();
@@ -792,7 +806,7 @@ public class ScreenGame extends Screen
 		if (paused && !screenshotMode)
 		{
 			Drawing.drawing.setColor(127, 178, 228, 64);
-			Game.game.window.fillRect(0, 0, (int) (Game.game.window.absoluteWidth) + 1, (int) (Game.game.window.absoluteHeight) + 1);
+			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 			if (ScreenPartyLobby.isClient)
 			{
@@ -818,11 +832,20 @@ public class ScreenGame extends Screen
 				resumeLowerPos.draw();
 				back.draw();
 			}
+			else if (ScreenInterlevel.tutorialInitial)
+			{
+				resumeLowerPos.draw();
+			}
+			else if (ScreenInterlevel.tutorial)
+			{
+				resumeLowerPos.draw();
+				quitHigherPos.draw();
+			}
 			else
 			{
 				if (name == null)
 				{
-					if (!Crusade.crusadeMode && !ScreenInterlevel.tutorial)
+					if (!Crusade.crusadeMode)
 						newLevel.draw();
 				}
 				else
@@ -830,8 +853,7 @@ public class ScreenGame extends Screen
 
 				if (!Crusade.crusadeMode)
 				{
-					if (!ScreenInterlevel.tutorial)
-						quit.draw();
+					quit.draw();
 				}
 				else
 				{
@@ -853,6 +875,36 @@ public class ScreenGame extends Screen
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game paused");
 			else
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game menu");
+		}
+
+		Drawing.drawing.setInterfaceFontSize(24);
+		if (ScreenPartyLobby.isClient)
+		{
+			ScreenPartyLobby.chatbox.draw(false);
+			long time = System.currentTimeMillis();
+			for (int i = 0; i < ScreenPartyLobby.chat.size(); i++)
+			{
+				ChatMessage c = ScreenPartyLobby.chat.get(i);
+				if (time - c.time <= 30000 || ScreenPartyLobby.chatbox.selected)
+				{
+					Drawing.drawing.setColor(0, 0, 0);
+					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+				}
+			}
+		}
+		else if (ScreenPartyHost.isServer)
+		{
+			ScreenPartyHost.chatbox.draw(false);
+			long time = System.currentTimeMillis();
+			for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
+			{
+				ChatMessage c = ScreenPartyHost.chat.get(i);
+				if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
+				{
+					Drawing.drawing.setColor(0, 0, 0);
+					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+				}
+			}
 		}
 
 	}

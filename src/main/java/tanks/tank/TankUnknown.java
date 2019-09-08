@@ -1,7 +1,7 @@
 package tanks.tank;
 
-import tanks.Game;
 import tanks.Drawing;
+import tanks.Game;
 
 /**
  * This is the tank that appears whenever an invalid ID is specified. It is useful for debugging purposes.
@@ -11,6 +11,7 @@ public class TankUnknown extends Tank
 	public TankUnknown(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tank_size, 255, 0, 0);
+		this.angle = angle;
 	}
 	
 	@Override
@@ -29,12 +30,6 @@ public class TankUnknown extends Tank
 		drawing.setFontSize(12);
 		drawing.drawText(this.posX, this.posY - 40, this.name);
 
-	}
-
-	@Override
-	public void shoot()
-	{
-		
 	}
 
 }

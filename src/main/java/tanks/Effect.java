@@ -1,9 +1,8 @@
 package tanks;
 
-import tanks.bullets.Bullet;
-import tanks.gui.Panel;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacles.Obstacle;
+import tanks.obstacle.Obstacle;
 
 public class Effect extends Movable
 {
@@ -67,10 +66,7 @@ public class Effect extends Movable
 	}
 	
 	/**
-	 * Use Effect.createNewEffect(double x, double y, Effect.EffectType type) instead of this because it can refurbish and reuse old effects 
-	 * @param x
-	 * @param y
-	 * @param type
+	 * Use Effect.createNewEffect(double x, double y, Effect.EffectType type) instead of this because it can refurbish and reuse old effects
 	 */
 	protected Effect()
 	{
@@ -149,12 +145,9 @@ public class Effect extends Movable
 	}
 
 	@Override
-	public void checkCollision() {}
-	
-	@Override
 	public void draw()
 	{
-		if (this.maxAge < this.age)
+		if (this.maxAge > 0 && this.maxAge < this.age)
 			return;
 		
 		if (this.age < 0)
@@ -211,7 +204,12 @@ public class Effect extends Movable
 		{
 			int size = 6;
 			drawing.setColor(0, 0, 0, 50);
-			drawing.fillOval(this.posX, this.posY, size, size);
+
+			if (Game.enable3d)
+				drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
+			else
+				drawing.fillOval(this.posX, this.posY, size, size);
+
 			Game.removeEffects.add(this);
 		}
 		else if (this.type == EffectType.mineExplosion)
@@ -339,10 +337,12 @@ public class Effect extends Movable
 		this.posX += this.vX * Panel.frameFrequency;
 		this.posY += this.vY * Panel.frameFrequency;
 		this.posZ += this.vZ * Panel.frameFrequency;
-		this.age += Panel.frameFrequency;
+		
+		if (this.maxAge >= 0)
+			this.age += Panel.frameFrequency;
 		//this.age++;
 		
-		if (this.age > this.maxAge && !removed)
+		if (this.maxAge > 0 && this.age > this.maxAge && !removed)
 		{
 			removed = true;
 			

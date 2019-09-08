@@ -1,7 +1,5 @@
 package tanks.network;
 
-import java.util.ArrayList;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -11,14 +9,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import tanks.Game;
+import tanks.event.EventKick;
 import tanks.gui.screen.ScreenHostingEnded;
 
-/**
- * Discards any incoming data.
- */
+import java.util.ArrayList;
+
 public class Server
 {
-	public int port = Game.port;
+	public int port;
 	public EventLoopGroup bossGroup;
 	public EventLoopGroup workerGroup;
 	public ArrayList<ServerHandler> connections = new ArrayList<ServerHandler>();
@@ -31,8 +29,7 @@ public class Server
 		this.port = port;
 	}
 
-	public void run() throws Exception 
-	{
+	public void run() {
 		bossGroup = new NioEventLoopGroup(); // (1)
 		workerGroup = new NioEventLoopGroup();
 
@@ -44,8 +41,7 @@ public class Server
 			.childHandler(new ChannelInitializer<SocketChannel>()
 			{ // (4)
 				@Override
-				public void initChannel(SocketChannel ch) throws Exception 
-				{
+				public void initChannel(SocketChannel ch) {
 					ch.pipeline().addLast(new ServerHandler(instance));
 				}
 			})
@@ -73,13 +69,18 @@ public class Server
 	}
 
 	public void close()
+	{  
+		this.close("The host has ended the party");
+	}
+	
+	public void close(String reason)
 	{    	
-		//synchronized(this.connections)
+		synchronized(this.connections)
 		{
 			for (int i = 0; i < this.connections.size(); i++)
 			{
 				ServerHandler c = this.connections.get(i);
-				c.kick(c.ctx, "The host has ended the party");
+				c.sendEventAndClose(new EventKick(reason));
 			}
 
 			workerGroup.shutdownGracefully();

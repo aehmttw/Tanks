@@ -6,6 +6,11 @@ import tanks.gui.Button;
 
 public class ScreenCrashed extends Screen
 {
+	public ScreenCrashed()
+	{
+
+	}
+
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override
@@ -26,32 +31,11 @@ public class ScreenCrashed extends Screen
 	}
 			);
 
-
-	Button backToParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 130, 350, 40, "Back to party", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.cleanUp();
-
-			if (ScreenPartyHost.isServer)
-				Game.screen = ScreenPartyHost.activeScreen;
-			else
-				Game.screen = new ScreenPartyLobby();
-		}
-	}
-			);
-
 	@Override
 	public void update()
 	{
-		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-			this.backToParty.update();
-		else
-		{
-			this.quit.update();
-			this.exit.update();
-		}
+		this.quit.update();
+		this.exit.update();
 	}
 
 	@Override
@@ -77,16 +61,9 @@ public class ScreenCrashed extends Screen
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 450, "but be warned that things may become unstable.");
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 510, "Also, you may want to report this crash!");
-
-		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-			this.backToParty.draw();
-		else
-		{
-			this.quit.draw();
-			this.exit.draw();
-		}
-
-		return;
+		
+		this.quit.draw();
+		this.exit.draw();
 	}
 
 }

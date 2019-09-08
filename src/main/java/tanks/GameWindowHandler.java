@@ -2,7 +2,6 @@ package tanks;
 
 import lwjglwindow.IWindowHandler;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.ServerHandler;
 
 public class GameWindowHandler implements IWindowHandler
 {
@@ -12,14 +11,7 @@ public class GameWindowHandler implements IWindowHandler
 	{
 		if (ScreenPartyHost.isServer)
 		{
-			//synchronized(ScreenPartyHost.server.connections)
-			{
-				for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
-				{
-					ServerHandler h = ScreenPartyHost.server.connections.get(i);
-					h.kick(h.ctx, "The party host has closed their game");
-				}
-			}
+			ScreenPartyHost.server.close("The party host has closed their game");
 		}
 	}
 

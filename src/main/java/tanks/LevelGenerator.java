@@ -33,9 +33,9 @@ public class LevelGenerator
 		int shrubCount = (int) (walls + Math.random() * 4 - 2);
 
 		boolean teleporters = Math.random() < 0.2;
-		int numTeleporters = (int) (walls / 5 + 2);
+		int numTeleporters = walls / 5 + 2;
 
-		String s = "{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|";
+		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|");
 
 		boolean[][] cells = new boolean[width][height];
 		double[][] cellWeights = new double[width][height];
@@ -72,7 +72,7 @@ public class LevelGenerator
 			if (Math.random() * (vertical + horizontal) < horizontal) 
 			{
 				vertical++;
-				int rand = -1;
+				int rand;
 				Integer[] sp = null;
 
 				if (Math.random() < 0.25 || startPointsH.isEmpty())
@@ -106,10 +106,10 @@ public class LevelGenerator
 							for (int y1 = y - 2; y1 <= yEnd + 2; y1++)
 							{
 								if (cells[Math.max(0, Math.min(width-1, x1))][Math.max(0, Math.min(height-1, y1))])
+								{
 									stop = true;
-
-								if (stop)
 									break;
+								}
 							}
 
 							if (stop)
@@ -156,15 +156,15 @@ public class LevelGenerator
 						{
 							if (stopped)
 							{
-								s += "-" + y;
+								s.append("-").append(y);
 
-								s += type;
+								s.append(type);
 
-								s += ",";
+								s.append(",");
 								stopped = false;
 							}
 
-							s += z + "...";
+							s.append(z).append("...");
 							started = true;
 						}
 					}
@@ -174,21 +174,21 @@ public class LevelGenerator
 						{
 							started = false;
 							stopped = true;
-							s += (z - 1);							
+							s.append(z - 1);
 						}
 					}
 				}
 
 				if (started)
 				{
-					s += xEnd;
+					s.append(xEnd);
 				}
 
 				if (started || stopped)
 				{
-					s += "-" + y;
+					s.append("-").append(y);
 
-					s += type;
+					s.append(type);
 
 				}
 
@@ -208,7 +208,7 @@ public class LevelGenerator
 			else 
 			{
 				horizontal++;
-				int rand = -1;
+				int rand;
 				Integer[] sp = null;
 
 				if (Math.random() < 0.25 || startPointsV.isEmpty())
@@ -241,11 +241,11 @@ public class LevelGenerator
 						{
 							for (int y1 = y - 2; y1 <= yEnd + 2; y1++)
 							{
-								if (cells[Math.max(0, Math.min(width-1, x1))][Math.max(0, Math.min(height-1, y1))])
+								if (cells[Math.max(0, Math.min(width - 1, x1))][Math.max(0, Math.min(height - 1, y1))])
+								{
 									stop = true;
-
-								if (stop)
 									break;
+								}
 							}
 
 							if (stop)
@@ -292,13 +292,13 @@ public class LevelGenerator
 						{
 							if (stopped)
 							{
-								s += type;
+								s.append(type);
 
-								s += ",";
+								s.append(",");
 								stopped = false;
 							}
 
-							s += x + "-" + z + "...";	
+							s.append(x).append("-").append(z).append("...");
 							started = true;
 						}
 					}
@@ -306,7 +306,7 @@ public class LevelGenerator
 					{
 						if (started)
 						{
-							s += (z - 1);		
+							s.append(z - 1);
 							started = false;
 							stopped = true;
 						}
@@ -315,12 +315,12 @@ public class LevelGenerator
 
 				if (started)
 				{
-					s += yEnd;			
+					s.append(yEnd);
 				}
 
 				if (started || stopped)
 				{
-					s += type;
+					s.append(type);
 				}
 
 				for (int j = y; j <= yEnd; j++) 
@@ -339,8 +339,8 @@ public class LevelGenerator
 
 			if (i < walls - 1)
 			{
-				if (!s.endsWith(","))
-					s += ",";
+				if (!s.toString().endsWith(","))
+					s.append(",");
 			}
 		}
 
@@ -358,10 +358,10 @@ public class LevelGenerator
 					{
 						cells[x][y] = true;
 						
-						if (!s.endsWith(","))
-							s += ",";
+						if (!s.toString().endsWith(","))
+							s.append(",");
 						
-						s += x + "-" + y + "-shrub";
+						s.append(x).append("-").append(y).append("-shrub");
 					}
 					
 					double rand = Math.random();
@@ -392,16 +392,16 @@ public class LevelGenerator
 						for (int j = Math.max(y - 2, 0); j <= Math.min(y + 2, height - 1); j++)
 							cells[i][j] = true;
 					
-					if (!s.endsWith(","))
-						s += ",";
+					if (!s.toString().endsWith(","))
+						s.append(",");
 					
-					s += x + "-" + y + "-teleporter";
+					s.append(x).append("-").append(y).append("-teleporter");
 					n--;
 				}
 			}
 		}
 
-		s += "|";
+		s.append("|");
 
 		int numTanks = (int) (random * amountTanks + 1);
 
@@ -416,7 +416,7 @@ public class LevelGenerator
 			for (int j = -2; j <= 2; j++)
 				cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
-		s += x + "-" + y + "-player-" + (int)(Math.random() * 4) + ",";
+		s.append(x).append("-").append(y).append("-player-").append((int) (Math.random() * 4)).append(",");
 		for (int i = 0; i < numTanks; i++) 
 		{
 			int angle = (int) (Math.random() * 4);
@@ -431,20 +431,20 @@ public class LevelGenerator
 				for (int j = -2; j <= 1; j++)
 					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
-			s += x + "-" + y + "-";
-			s += Game.registryTank.getRandomTank().name;
-			s += "-" + angle;
+			s.append(x).append("-").append(y).append("-");
+			s.append(Game.registryTank.getRandomTank().name);
+			s.append("-").append(angle);
 
 			if (i == numTanks - 1) 
 			{
-				s += "}";
+				s.append("}");
 			} 
 			else 
 			{
-				s += ",";
+				s.append(",");
 			}
 		}		
  
-		return s;
+		return s.toString();
 	}
 }

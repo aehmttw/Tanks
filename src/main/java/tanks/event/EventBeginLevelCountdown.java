@@ -1,5 +1,6 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 
@@ -9,17 +10,6 @@ public class EventBeginLevelCountdown implements INetworkEvent
 	{
 		
 	}
-	
-	public EventBeginLevelCountdown(String l)
-	{
-		
-	}
-
-	@Override
-	public String getNetworkString() 
-	{
-		return "x";
-	}
 
 	@Override
 	public void execute() 
@@ -28,5 +18,17 @@ public class EventBeginLevelCountdown implements INetworkEvent
 		{
 			((ScreenGame)Game.screen).cancelCountdown = false;
 		}
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		
 	}
 }

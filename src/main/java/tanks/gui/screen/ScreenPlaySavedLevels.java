@@ -1,5 +1,10 @@
 package tanks.gui.screen;
 
+import tanks.Drawing;
+import tanks.Game;
+import tanks.gui.Button;
+import tanks.gui.ChatMessage;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -9,11 +14,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IPartyMenuScreen;
-import tanks.gui.Button;
 
 public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 {
@@ -71,10 +71,7 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 		{
 			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(Game.homedir + levelDir));
 
-			Iterator<Path> irritator = ds.iterator();
-			while (irritator.hasNext())
-			{
-				Path p = irritator.next();
+			for (Path p : ds) {
 				if (p.toString().endsWith(".tanks"))
 					levels.add(p);
 			}
@@ -153,6 +150,8 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 		if (buttons.size() > (1 + page) * rows * 3)
 			next.update();
+		
+		ScreenPartyHost.chatbox.update();
 	}
 
 	@Override
@@ -174,7 +173,19 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 		if (buttons.size() > (1 + page) * rows * 3)
 			next.draw();
-
+		
+		ScreenPartyHost.chatbox.draw();
+		long time = System.currentTimeMillis();
+		
+		Drawing.drawing.setColor(0, 0, 0);
+		for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
+		{
+			ChatMessage c = ScreenPartyHost.chat.get(i);
+			if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
+			{
+				Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+			}
+		}
 	}
 
 }

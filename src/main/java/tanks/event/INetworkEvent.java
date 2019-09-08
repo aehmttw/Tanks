@@ -1,8 +1,12 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
+
 public interface INetworkEvent extends IEvent
 {
-	public String getNetworkString();
-
-	public void execute();
+	void write(ByteBuf b);
+	
+	void read(ByteBuf b);
+	
+	void execute();
 }

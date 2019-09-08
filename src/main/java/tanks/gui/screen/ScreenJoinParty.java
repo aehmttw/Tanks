@@ -2,8 +2,8 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.TextBox;
 import tanks.gui.Button;
+import tanks.gui.TextBox;
 import tanks.network.Client;
 
 public class ScreenJoinParty extends Screen
@@ -36,6 +36,7 @@ public class ScreenJoinParty extends Screen
 		@Override
 		public void run() 
 		{
+			Game.eventsOut.clear();
 			clientThread = new Thread(new Runnable()
 			{
 
@@ -56,7 +57,7 @@ public class ScreenJoinParty extends Screen
 							port = Integer.parseInt(ip.inputText.split(":")[1]);
 						}
 						
-						if (ip.inputText.equals("Insert party host IP Address here..."))
+						if (ip.inputText.equals(""))
 							Client.connect("localhost", Game.port);
 						else
 							Client.connect(ipaddress, port);
@@ -69,7 +70,6 @@ public class ScreenJoinParty extends Screen
 
 						e.printStackTrace(Game.logger);
 						e.printStackTrace();
-						return;
 					}
 				}
 
@@ -87,11 +87,12 @@ public class ScreenJoinParty extends Screen
 		@Override
 		public void run() 
 		{
-			
+			Game.lastParty = ip.inputText;
+			ScreenOptions.saveOptions(Game.homedir);
 		}
 		
 	}	
-			,"Insert party host IP Address here...", "You can find this on the---party host's screen");
+			,Game.lastParty, "You can find this on the---party host's screen");
 	
 	@Override
 	public void update() 

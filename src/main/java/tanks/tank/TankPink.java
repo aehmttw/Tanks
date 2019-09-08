@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullets.Bullet;
+import tanks.bullet.Bullet;
 import tanks.event.EventCreateCustomTank;
 
 public class TankPink extends TankAIControlled
@@ -49,7 +49,7 @@ public class TankPink extends TankAIControlled
 	public void spawnTank()
 	{
 		TankMini t = new TankMini("mini", this.posX, this.posY, this.angle, this);
-		Game.events.add(new EventCreateCustomTank(t));
+		Game.eventsOut.add(new EventCreateCustomTank(t));
 		Game.movables.add(t);
 	}
 }

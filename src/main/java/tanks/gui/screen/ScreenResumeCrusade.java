@@ -61,7 +61,8 @@ public class ScreenResumeCrusade extends Screen
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Progress in the current crusade will be lost");
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, "if you decide to start a new crusade!");
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, "Crusade: " + Crusade.currentCrusade.name);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, "Remaining Lives: " + Crusade.currentCrusade.remainingLives);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, "Battle: " + (Crusade.currentCrusade.currentLevel + 1));
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, "Remaining Lives: " + Crusade.currentCrusade.remainingLives);
 	}
 
 }

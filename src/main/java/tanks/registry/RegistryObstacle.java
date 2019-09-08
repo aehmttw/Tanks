@@ -1,5 +1,9 @@
 package tanks.registry;
 
+import tanks.Game;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleUnknown;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -9,10 +13,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
-
-import tanks.Game;
-import tanks.obstacles.Obstacle;
-import tanks.obstacles.ObstacleUnknown;
 
 public class RegistryObstacle 
 {
@@ -199,9 +199,9 @@ public class RegistryObstacle
 			this.name = name;
 		}
 
-		public ObstacleEntry registerEntry(RegistryObstacle r)
+		public void registerEntry(RegistryObstacle r)
 		{
-			return new ObstacleEntry(r, this.obstacle, this.name);
+			new ObstacleEntry(r, this.obstacle, this.name);
 		}
 
 		public String getString()

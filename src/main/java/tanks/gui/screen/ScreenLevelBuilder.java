@@ -1,117 +1,83 @@
 package tanks.gui.screen;
 
+import tanks.*;
+import tanks.gui.Button;
+import tanks.gui.ButtonObject;
+import tanks.gui.TextBox;
+import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
+import org.lwjgl.glfw.GLFW;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
-import org.lwjgl.glfw.GLFW;
-
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.IDrawable;
-import tanks.Movable;
-import tanks.Team;
-import tanks.TextBox;
-import tanks.gui.Button;
-import tanks.gui.ButtonObject;
-import tanks.gui.Panel;
-import tanks.obstacles.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
+import java.util.Arrays;
 
 public class ScreenLevelBuilder extends Screen
 {
-	enum Placeable {enemyTank, playerTank, obstacle}
-
-	Placeable currentPlaceable = Placeable.enemyTank;
-	int tankNum = 0;
-	int obstacleNum = 0;
-	int teamNum = 1;
-	int playerTeamNum = 0;
-
-	boolean reloadNewLevel = true;
-
-	Tank mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
-	int mouseTankOrientation = 0;
-	Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-	boolean paused = true;
-	boolean optionsMenu = false;
-	boolean sizeMenu = false;
-	boolean colorMenu = false;
-	boolean teamsMenu = false;
+	public Placeable currentPlaceable = Placeable.enemyTank;
+	public int tankNum = 0;
+	public int obstacleNum = 0;
+	public int teamNum = 1;
+	public int playerTeamNum = 0;
+	public boolean reloadNewLevel;
+	public Tank mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+	public int mouseTankOrientation = 0;
+	public Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+	public boolean paused = true;
+	public boolean optionsMenu = false;
+	public boolean sizeMenu = false;
+	public boolean colorMenu = false;
+	public boolean teamsMenu = false;
 	public boolean editTeamMenu = false;
-	boolean teamColorMenu = false;
-
-	boolean objectMenu;
-	boolean obstacleMenu;
-	boolean tankMenu;
-	boolean selectTeamMenu;
-	boolean rotateTankMenu;
-
-	boolean confirmDeleteMenu = false;
-
-	double clickCooldown = 0;
-
+	public boolean teamColorMenu = false;
+	public boolean objectMenu;
+	public boolean selectTeamMenu;
+	public boolean rotateTankMenu;
+	public boolean confirmDeleteMenu = false;
+	public double clickCooldown = 0;
 	public Team selectedTeam;
-
-	int teamPageRows = 6;
-	int teamPage = 0;
-
-	String teamSelectTitle = "";
-
-	int tankButtonPage = 0;
-	int obstacleButtonPage = 0;
-
-	public boolean editable = true; 
-
+	public int teamPageRows = 6;
+	public int teamPage = 0;
+	public String teamSelectTitle = "";
+	public int tankButtonPage = 0;
+	public int obstacleButtonPage = 0;
+	public boolean editable = true;
 	public ArrayList<Team> teams = new ArrayList<Team>();
 	public ArrayList<Button> teamEditButtons = new ArrayList<Button>();
 	public ArrayList<Button> teamSelectButtons = new ArrayList<Button>();
-
-	ArrayList<ButtonObject> tankButtons = new ArrayList<ButtonObject>();
-	ArrayList<ButtonObject> obstacleButtons = new ArrayList<ButtonObject>();
-
-	int objectButtonRows = 3;
-	int objectButtonCols = 10;
-
+	public ArrayList<ButtonObject> tankButtons = new ArrayList<ButtonObject>();
+	public ArrayList<ButtonObject> obstacleButtons = new ArrayList<ButtonObject>();
+	public int objectButtonRows = 3;
+	public int objectButtonCols = 10;
 	public int lastTeamButton;
-
 	public int r = 235;
 	public int g = 207;
 	public int b = 166;
-
 	public int dr = 20;
 	public int dg = 20;
 	public int db = 20;
-
 	public int width = Game.currentSizeX;
 	public int height = Game.currentSizeY;
-
-	String name;
-
-	@SuppressWarnings("unchecked")
-	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
-	
-	ButtonObject playerButton = new ButtonObject(new TankPlayer(0, 0, 0, Game.clientID, false), Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75);
-
+	public String name;
+	public ButtonObject playerButton = new ButtonObject(new TankPlayer(0, 0, 0, Game.clientID), Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75);
 	public Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Edit", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			clickCooldown = 20;
 			paused = false;
 		}
 	}
 			);
-
 	public Button play = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 - 120), 350, 40, "Play", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			save();
 
@@ -119,41 +85,37 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
 	public Button options = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 0), 350, 40, "Options", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			optionsMenu = true;
 		}
 	}
 			);
-
 	public Button colorOptions = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 - 60), 350, 40, "Background colors", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			colorMenu = true;
 		}
 	}
 			);
-
 	public Button sizeOptions = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2), 350, 40, "Level size", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			sizeMenu = true;
 		}
 	}
 			);
-
 	public Button teamsOptions = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), 350, 40, "Teams", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			if (teams.size() != teamEditButtons.size())
 			{
@@ -165,51 +127,46 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-	Button back1 = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
+	public Button back1 = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			optionsMenu = false;
 		}
 	}
 			);
-
-	Button back2 = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 180), 350, 40, "Back", new Runnable()
+	public Button back2 = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 180), 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			colorMenu = false;
 		}
 	}
 			);
-
-	Button back3 = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
+	public Button back3 = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 120), 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			sizeMenu = false;
 		}
 	}
 			);
-
-	Button back4 = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	public Button back4 = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			teamsMenu = false;
 		}
 	}
 			);
-
-	Button back5 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	public Button back5 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			reload();
 			((ScreenLevelBuilder)Game.screen).optionsMenu = true;
@@ -218,51 +175,46 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-	Button back6 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	public Button back6 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			teamColorMenu = false;
 		}
 	}
 			);
-
-	Button back7 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	public Button back7 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			selectTeamMenu = false;
 		}
 	}
 			);
-
 	public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), 350, 40, "Delete level", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			confirmDeleteMenu = true;
 		}
 	}
 			);
-
 	public Button cancelDelete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), 350, 40, "No", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			confirmDeleteMenu = false;
 		}
 	}
 			);
-
 	public Button confirmDelete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2), 350, 40, "Yes", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			File file = new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name);
 
@@ -277,12 +229,10 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-
 	public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 120), 350, 40, "Exit", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			save();
 
@@ -291,71 +241,64 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
 	public Button nextTeamPage = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			teamPage++;
 		}
 	}
 			);
-
 	public Button previousTeamPage = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			teamPage--;
 		}
 	}
 			);
-
 	public Button nextTankPage = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Next page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			tankButtonPage++;
 		}
 	}
 			);
-
 	public Button previousTankPage = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			tankButtonPage--;
 		}
 	}
 			);
-
 	public Button nextObstaclePage = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Next page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			obstacleButtonPage++;
 		}
 	}
 			);
-
 	public Button previousObstaclePage = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			obstacleButtonPage--;
 		}
 	}
 			);
-
-	Button exitObjectMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Ok", new Runnable()
+	public Button exitObjectMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Ok", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			objectMenu = false;
 			paused = false;
@@ -363,21 +306,19 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-	Button rotateTankButton = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Tank orientation", new Runnable()
+	public Button rotateTankButton = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Tank orientation", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			rotateTankMenu = true;
 		}
 	}
 			);
-
-	Button selectTeam = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Team: ", new Runnable()
+	public Button selectTeam = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Team: ", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			if (teams.size() != teamEditButtons.size())
 			{
@@ -396,11 +337,10 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-	Button deleteTeam = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Delete team", new Runnable()
+	public Button deleteTeam = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Delete team", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			teams.remove(selectedTeam);
 			reload();
@@ -410,11 +350,10 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
 	public Button teamFriendlyFire = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Friendly fire: on", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			selectedTeam.friendlyFire = !selectedTeam.friendlyFire;
 			if (selectedTeam.friendlyFire)
@@ -424,11 +363,125 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-	Button teamColor = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Team color", new Runnable()
+	public Button rotateUp = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 100, 75, 75, "Up", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
+		{
+			mouseTankOrientation = 3;
+		}
+	}
+			);
+	public Button rotateRight = new Button(Drawing.drawing.interfaceSizeX / 2 + 100, Drawing.drawing.interfaceSizeY / 2, 75, 75, "Right", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			mouseTankOrientation = 0;
+		}
+	}
+			);
+	public Button rotateDown = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 100, 75, 75, "Down", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			mouseTankOrientation = 1;
+		}
+	}
+			);
+	public Button rotateLeft = new Button(Drawing.drawing.interfaceSizeX / 2 - 100, Drawing.drawing.interfaceSizeY / 2, 75, 75, "Left", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			mouseTankOrientation = 2;
+		}
+	}
+			);
+	public Button back8 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75, "Done", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			rotateTankMenu = false;
+		}
+	}
+			);
+	public Button teamColorEnabled = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, 350, 40, "Team color: off", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			selectedTeam.enableColor = !selectedTeam.enableColor;
+			if (selectedTeam.enableColor)
+				teamColorEnabled.text = "Team color: on";
+			else
+				teamColorEnabled.text = "Team color: off";
+		}
+	}
+			);
+	public Button placePlayer = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Player", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			currentPlaceable = Placeable.playerTank;
+			mouseTank = new TankPlayer(0, 0, 0, Game.clientID);
+		}
+	}
+			);
+	public Button placeEnemy = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Tank", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			currentPlaceable = Placeable.enemyTank;
+			mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+		}
+	}
+			);
+	public Button placeObstacle = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Block", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			currentPlaceable = Placeable.obstacle;
+		}
+	}
+			);
+	public TextBox levelName;
+	public TextBox sizeX;
+	public TextBox sizeY;
+	public TextBox colorRed;
+	public TextBox colorGreen;
+	public TextBox colorBlue;
+	public TextBox colorVarRed;
+	public TextBox colorVarGreen;
+	public TextBox colorVarBlue;
+	public TextBox teamName;
+	public Button newTeam = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "New team", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Team t = new Team(System.currentTimeMillis() + "");
+			teams.add(t);
+			reload();
+			((ScreenLevelBuilder)Game.screen).teamsMenu = true;
+			((ScreenLevelBuilder)Game.screen).editTeamMenu = true;
+			((ScreenLevelBuilder)Game.screen).teamName.inputText = t.name;
+			((ScreenLevelBuilder)Game.screen).selectedTeam = ((ScreenLevelBuilder)Game.screen).teams.get(teams.size() - 1);
+		}
+	}
+			);
+	public TextBox teamRed;
+	public TextBox teamGreen;
+	public TextBox teamBlue;
+	public Button teamColor = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Team color", new Runnable()
+	{
+		@Override
+		public void run()
 		{
 			teamColorMenu = true;
 			teamRed.inputText = selectedTeam.teamColorR + "";
@@ -442,151 +495,20 @@ public class ScreenLevelBuilder extends Screen
 		}
 	}
 			);
-
-	Button newTeam = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "New team", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Team t = new Team(System.currentTimeMillis() + "");
-			teams.add(t);
-			reload();
-			((ScreenLevelBuilder)Game.screen).teamsMenu = true;
-			((ScreenLevelBuilder)Game.screen).editTeamMenu = true;
-			((ScreenLevelBuilder)Game.screen).teamName.inputText = t.name;
-			((ScreenLevelBuilder)Game.screen).selectedTeam = ((ScreenLevelBuilder)Game.screen).teams.get(teams.size() - 1);
-		}
-	}
-			);
-
-	Button rotateUp = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 100, 75, 75, "Up", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			mouseTankOrientation = 3;
-		}
-	}
-			);
-
-	Button rotateRight = new Button(Drawing.drawing.interfaceSizeX / 2 + 100, Drawing.drawing.interfaceSizeY / 2, 75, 75, "Right", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			mouseTankOrientation = 0;
-		}
-	}
-			);
-
-	Button rotateDown = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 100, 75, 75, "Down", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			mouseTankOrientation = 1;
-		}
-	}
-			);
-
-
-	Button rotateLeft = new Button(Drawing.drawing.interfaceSizeX / 2 - 100, Drawing.drawing.interfaceSizeY / 2, 75, 75, "Left", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			mouseTankOrientation = 2;
-		}
-	}
-			);
-
-	Button back8 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75, "Done", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			rotateTankMenu = false;
-		}
-	}
-			);
-
-
-	Button teamColorEnabled = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, 350, 40, "Team color: off", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			selectedTeam.enableColor = !selectedTeam.enableColor;
-			if (selectedTeam.enableColor)
-				teamColorEnabled.text = "Team color: on";
-			else
-				teamColorEnabled.text = "Team color: off";
-		}
-	}
-			);
-
-	Button placePlayer = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Player", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			currentPlaceable = Placeable.playerTank;
-			mouseTank = new TankPlayer(0, 0, 0, Game.clientID, false);
-		}
-	}
-			);
-
-	Button placeEnemy = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Tank", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			currentPlaceable = Placeable.enemyTank;
-			mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
-		}
-	}
-			);
-
-	Button placeObstacle = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Block", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			currentPlaceable = Placeable.obstacle;
-		}
-	}
-			);
-
-	public TextBox levelName;
-	public TextBox sizeX;
-	public TextBox sizeY;
-	public TextBox colorRed;
-	public TextBox colorGreen;
-	public TextBox colorBlue;
-	public TextBox colorVarRed;
-	public TextBox colorVarGreen;
-	public TextBox colorVarBlue;
-	public TextBox teamName;
-
-	TextBox teamRed;
-	TextBox teamGreen;
-	TextBox teamBlue;
-
+	@SuppressWarnings("unchecked")
+	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 	public ScreenLevelBuilder(String lvlName)
 	{
 		this(lvlName, true);
 	}
 
 	public ScreenLevelBuilder(String lvlName, boolean reload)
-	{		
+	{
 		this.screenHint = "Press space to access the object menu";
 		this.reloadNewLevel = reload;
 
-		for (int i = 0; i < this.drawables.length; i++)
-		{
-			this.drawables[i] = new ArrayList<IDrawable>();
-		}
-		
+		Arrays.fill(this.drawables, new ArrayList<IDrawable>());
+
 		Obstacle.draw_size = Obstacle.obstacle_size;
 
 		Game.game.window.validScrollDown = false;
@@ -602,7 +524,7 @@ public class ScreenLevelBuilder extends Screen
 		levelName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Level name", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				File file = new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + lvlName);
 
@@ -629,7 +551,7 @@ public class ScreenLevelBuilder extends Screen
 		sizeX = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Width", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (sizeX.inputText.length() <= 0)
 					sizeX.inputText = width + "";
@@ -654,7 +576,7 @@ public class ScreenLevelBuilder extends Screen
 		sizeY = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Height", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (sizeY.inputText.length() <= 0)
 					sizeY.inputText = height + "";
@@ -679,7 +601,7 @@ public class ScreenLevelBuilder extends Screen
 		colorRed = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (colorRed.inputText.length() <= 0)
 					colorRed.inputText = "0";
@@ -705,7 +627,7 @@ public class ScreenLevelBuilder extends Screen
 		colorGreen = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Green", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (colorGreen.inputText.length() <= 0)
 					colorGreen.inputText = "0";
@@ -731,7 +653,7 @@ public class ScreenLevelBuilder extends Screen
 		colorBlue = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Blue", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (colorBlue.inputText.length() <= 0)
 					colorBlue.inputText = "0";
@@ -757,7 +679,7 @@ public class ScreenLevelBuilder extends Screen
 		colorVarRed = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Red noise", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (colorVarRed.inputText.length() <= 0)
 					colorVarRed.inputText = "0";
@@ -779,7 +701,7 @@ public class ScreenLevelBuilder extends Screen
 		colorVarGreen = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Green noise", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (colorVarGreen.inputText.length() <= 0)
 					colorVarGreen.inputText = "0";
@@ -801,7 +723,7 @@ public class ScreenLevelBuilder extends Screen
 		colorVarBlue = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Blue noise", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (colorVarBlue.inputText.length() <= 0)
 					colorVarBlue.inputText = "0";
@@ -823,14 +745,17 @@ public class ScreenLevelBuilder extends Screen
 		teamName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Team name", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				boolean duplicate = false;
 
 				for (int i = 0; i < teams.size(); i++)
 				{
 					if (teamName.inputText.equals(teams.get(i).name))
+					{
 						duplicate = true;
+						break;
+					}
 				}
 
 				if (teamName.inputText.length() <= 0 || duplicate)
@@ -850,14 +775,12 @@ public class ScreenLevelBuilder extends Screen
 		teamRed = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (teamRed.inputText.length() <= 0)
 					teamRed.inputText = "0";
 
-				int r = Integer.parseInt(teamRed.inputText);
-
-				selectedTeam.teamColorR = r;
+				selectedTeam.teamColorR = Integer.parseInt(teamRed.inputText);
 			}
 
 		}
@@ -872,14 +795,12 @@ public class ScreenLevelBuilder extends Screen
 		teamGreen = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Green", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (teamGreen.inputText.length() <= 0)
 					teamGreen.inputText = "0";
 
-				int g = Integer.parseInt(teamGreen.inputText);
-
-				selectedTeam.teamColorG = g;
+				selectedTeam.teamColorG = Integer.parseInt(teamGreen.inputText);
 			}
 
 		}
@@ -894,14 +815,12 @@ public class ScreenLevelBuilder extends Screen
 		teamBlue = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Blue", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
 				if (teamBlue.inputText.length() <= 0)
 					teamBlue.inputText = "0";
 
-				int b = Integer.parseInt(teamBlue.inputText);
-
-				selectedTeam.teamColorB = b;
+				selectedTeam.teamColorB = Integer.parseInt(teamBlue.inputText);
 			}
 
 		}
@@ -918,7 +837,7 @@ public class ScreenLevelBuilder extends Screen
 		{
 			this.teams.add(new Team("ally"));
 			this.teams.add(new Team("enemy"));
-			Game.player = new TankPlayer(Game.tank_size / 2, Game.tank_size / 2, 0, Game.clientID, false);
+			Game.player = new TankPlayer(Game.tank_size / 2, Game.tank_size / 2, 0, Game.clientID);
 			Game.player.team = this.teams.get(0);
 			Game.movables.add(Game.player);
 			this.reload();
@@ -1004,7 +923,7 @@ public class ScreenLevelBuilder extends Screen
 
 	@Override
 	public void update()
-	{		
+	{
 		if (Game.enable3d)
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
@@ -1066,7 +985,7 @@ public class ScreenLevelBuilder extends Screen
 			this.objectMenu = !this.objectMenu;
 		}
 
-		if (this.paused)	
+		if (this.paused)
 		{
 			if (this.confirmDeleteMenu)
 			{
@@ -1154,10 +1073,7 @@ public class ScreenLevelBuilder extends Screen
 					{
 						for (int i = 0; i < tankButtons.size(); i++)
 						{
-							if (tankNum == i)
-								tankButtons.get(i).enabled = false;
-							else
-								tankButtons.get(i).enabled = true;
+							tankButtons.get(i).enabled = tankNum != i;
 
 							if (i / (objectButtonCols * objectButtonRows) == tankButtonPage)
 								tankButtons.get(i).update();
@@ -1170,13 +1086,10 @@ public class ScreenLevelBuilder extends Screen
 							previousTankPage.update();
 					}
 					else if (currentPlaceable == Placeable.obstacle)
-					{	
+					{
 						for (int i = 0; i < obstacleButtons.size(); i++)
 						{
-							if (obstacleNum == i)
-								obstacleButtons.get(i).enabled = false;
-							else
-								obstacleButtons.get(i).enabled = true;
+							obstacleButtons.get(i).enabled = obstacleNum != i;
 
 							if (i / (objectButtonCols * objectButtonRows) == obstacleButtonPage)
 								obstacleButtons.get(i).update();
@@ -1322,8 +1235,7 @@ public class ScreenLevelBuilder extends Screen
 		else if (down && currentPlaceable == Placeable.obstacle)
 		{
 			obstacleNum = (obstacleNum + 1) % Game.registryObstacle.obstacleEntries.size();
-			Obstacle o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-			mouseObstacle = o;
+			mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 		}
 
 		if (up && currentPlaceable == Placeable.enemyTank)
@@ -1336,8 +1248,7 @@ public class ScreenLevelBuilder extends Screen
 		else if (up && currentPlaceable == Placeable.obstacle)
 		{
 			obstacleNum = ((obstacleNum - 1) + Game.registryObstacle.obstacleEntries.size()) % Game.registryObstacle.obstacleEntries.size();
-			Obstacle o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-			mouseObstacle = o;
+			mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 		}
 
 		boolean right = false;
@@ -1374,7 +1285,7 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.obstacle)
 			{
 				currentPlaceable = Placeable.playerTank;
-				mouseTank = new TankPlayer(0, 0, 0, Game.clientID, false);
+				mouseTank = new TankPlayer(0, 0, 0, Game.clientID);
 			}
 			else if (currentPlaceable == Placeable.playerTank)
 			{
@@ -1397,7 +1308,7 @@ public class ScreenLevelBuilder extends Screen
 			else if (currentPlaceable == Placeable.enemyTank)
 			{
 				currentPlaceable = Placeable.playerTank;
-				mouseTank = new TankPlayer(0, 0, 0, Game.clientID, false);
+				mouseTank = new TankPlayer(0, 0, 0, Game.clientID);
 			}
 		}
 
@@ -1414,9 +1325,9 @@ public class ScreenLevelBuilder extends Screen
 				Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_MINUS);
 
 				if (currentPlaceable == Placeable.enemyTank)
-					teamNum = (teamNum - 1 + this.teams.size() + 1) % (this.teams.size() + 1); 
+					teamNum = (teamNum - 1 + this.teams.size() + 1) % (this.teams.size() + 1);
 				else if (currentPlaceable == Placeable.playerTank)
-					playerTeamNum = (playerTeamNum - 1 + this.teams.size() + 1) % (this.teams.size() + 1); 
+					playerTeamNum = (playerTeamNum - 1 + this.teams.size() + 1) % (this.teams.size() + 1);
 			}
 		}
 
@@ -1433,9 +1344,9 @@ public class ScreenLevelBuilder extends Screen
 				Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_EQUAL);
 
 				if (currentPlaceable == Placeable.enemyTank)
-					teamNum = (teamNum + 1) % (this.teams.size() + 1); 
+					teamNum = (teamNum + 1) % (this.teams.size() + 1);
 				else if (currentPlaceable == Placeable.playerTank)
-					playerTeamNum = (playerTeamNum + 1) % (this.teams.size() + 1); 
+					playerTeamNum = (playerTeamNum + 1) % (this.teams.size() + 1);
 			}
 		}
 
@@ -1476,7 +1387,7 @@ public class ScreenLevelBuilder extends Screen
 						for (int z = 0; z < 100; z++)
 						{
 							Effect e = Effect.createNewEffect(m.posX, m.posY, Effect.EffectType.piece);
-							int var = 50;
+							double var = 50;
 							e.colR = Math.min(255, Math.max(0, ((Tank)m).colorR + Math.random() * var - var / 2));
 							e.colG = Math.min(255, Math.max(0, ((Tank)m).colorG + Math.random() * var - var / 2));
 							e.colB = Math.min(255, Math.max(0, ((Tank)m).colorB + Math.random() * var - var / 2));
@@ -1555,7 +1466,7 @@ public class ScreenLevelBuilder extends Screen
 					Game.movables.add(t);
 				}
 				else if (currentPlaceable == Placeable.playerTank)
-				{	
+				{
 					Game.player.posX = mouseTank.posX;
 					Game.player.posY = mouseTank.posY;
 					Game.player.angle = mouseTank.angle;
@@ -1580,7 +1491,7 @@ public class ScreenLevelBuilder extends Screen
 
 		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ENTER))
 		{
-			this.save();		
+			this.save();
 			Game.screen = new ScreenGame(this.name);
 		}
 
@@ -1591,13 +1502,13 @@ public class ScreenLevelBuilder extends Screen
 	}
 
 	public void save()
-	{	
-		String level = "{";
+	{
+		StringBuilder level = new StringBuilder("{");
 
 		if (!this.editable)
-			level += "*";
+			level.append("*");
 
-		level += (width + "," + height + "," + r + "," + g + "," + b + "," + dr + "," + dg + "," + db + "|");
+		level.append(width).append(",").append(height).append(",").append(r).append(",").append(g).append(",").append(b).append(",").append(dr).append(",").append(dg).append(",").append(db).append("|");
 
 		boolean[][][] obstacles = new boolean[Game.registryObstacle.obstacleEntries.size()][width][height];
 
@@ -1664,9 +1575,9 @@ public class ScreenLevelBuilder extends Screen
 						if (xLength >= yLength)
 						{
 							if (xLength == 1)
-								level += i + "-" + j + name + ",";
+								level.append(i).append("-").append(j).append(name).append(",");
 							else
-								level += i + "..." + (i + xLength - 1) + "-" + j + name + ",";
+								level.append(i).append("...").append(i + xLength - 1).append("-").append(j).append(name).append(",");
 
 							for (int z = 0; z < xLength; z++)
 							{
@@ -1675,7 +1586,7 @@ public class ScreenLevelBuilder extends Screen
 						}
 						else
 						{
-							level += i + "-" + j + "..." + (j + yLength - 1) + name + ",";
+							level.append(i).append("-").append(j).append("...").append(j + yLength - 1).append(name).append(",");
 
 							for (int z = 0; z < yLength; z++)
 							{
@@ -1687,12 +1598,12 @@ public class ScreenLevelBuilder extends Screen
 			}
 		}
 
-		if (level.charAt(level.length() - 1) == ',') 
+		if (level.charAt(level.length() - 1) == ',')
 		{
-			level = level.substring(0, level.length() - 1);
+			level = new StringBuilder(level.substring(0, level.length() - 1));
 		}
 
-		level += "|";
+		level.append("|");
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -1703,39 +1614,39 @@ public class ScreenLevelBuilder extends Screen
 				int y = (int) (t.posY / Game.tank_size);
 				int angle = (int) (t.angle * 2 / Math.PI);
 
-				level += x + "-" + y + "-" + t.name + "-" + angle;
+				level.append(x).append("-").append(y).append("-").append(t.name).append("-").append(angle);
 
 				if (t.team != null)
-					level += "-" + t.team.name;
+					level.append("-").append(t.team.name);
 
-				level += ",";
+				level.append(",");
 			}
 		}
 
-		if (Game.movables.size() == 0) 
+		if (Game.movables.size() == 0)
 		{
-			level += "|";
+			level.append("|");
 		}
 
-		level = level.substring(0, level.length() - 1);
+		level = new StringBuilder(level.substring(0, level.length() - 1));
 
-		level += "|";
+		level.append("|");
 
 		for (int i = 0; i < teams.size(); i++)
 		{
 			Team t = teams.get(i);
-			level += t.name + "-" + t.friendlyFire;
+			level.append(t.name).append("-").append(t.friendlyFire);
 			if (t.enableColor)
-				level += "-" + t.teamColorR + "-" + t.teamColorG + "-" + t.teamColorB;
+				level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
 
-			level += ",";
+			level.append(",");
 		}
 
-		level = level.substring(0, level.length() - 1);
+		level = new StringBuilder(level.substring(0, level.length() - 1));
 
-		level += "}";
+		level.append("}");
 
-		Game.currentLevelString = level;
+		Game.currentLevelString = level.toString();
 
 		File file = new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name);
 		if (file.exists())
@@ -1826,16 +1737,16 @@ public class ScreenLevelBuilder extends Screen
 
 		for (Effect e: Game.belowEffects)
 			drawables[0].add(e);
-		
+
 		for (Movable m: Game.movables)
 			drawables[m.drawLevel].add(m);
-		
+
 		for (Obstacle o: Game.obstacles)
 			drawables[o.drawLevel].add(o);
-		
+
 		for (Effect e: Game.effects)
 			drawables[6].add(e);
-		
+
 		for (int i = 0; i < this.drawables.length; i++)
 		{
 			for (IDrawable d: this.drawables[i])
@@ -1844,14 +1755,14 @@ public class ScreenLevelBuilder extends Screen
 				if (d instanceof Movable)
 					((Movable) d).drawTeam();
 			}
-			
+
 			drawables[i].clear();
 		}
-		
-		if (this.paused)	
+
+		if (this.paused)
 		{
 			Drawing.drawing.setColor(127, 178, 228, 64);
-			Game.game.window.fillRect(0, 0, (int) (Game.game.window.absoluteWidth) + 1, (int) (Game.game.window.absoluteHeight) + 1);
+			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 			if (this.confirmDeleteMenu)
 			{
@@ -1930,7 +1841,7 @@ public class ScreenLevelBuilder extends Screen
 							previousTankPage.draw();
 					}
 					else if (currentPlaceable == Placeable.obstacle)
-					{	
+					{
 						for (int i = 0; i < obstacleButtons.size(); i++)
 						{
 							if (i / (objectButtonCols * objectButtonRows) == obstacleButtonPage)
@@ -2048,4 +1959,6 @@ public class ScreenLevelBuilder extends Screen
 		else
 			this.teamNum = i;
 	}
+
+	public enum Placeable {enemyTank, playerTank, obstacle}
 }

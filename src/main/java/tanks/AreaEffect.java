@@ -1,10 +1,7 @@
 package tanks;
 
-import tanks.gui.Panel;
-
 public abstract class AreaEffect extends Movable
 {	
-	public double duration = 500;
 	public boolean constantlyImbue = true;
 	public double age = 0;
 	public double maxAge = 1000;
@@ -13,14 +10,8 @@ public abstract class AreaEffect extends Movable
 	{
 		super(x, y);
 		this.drawLevel = 5;
-	}	
-	
-	@Override
-	public void checkCollision()
-	{
-		
 	}
-	
+
 	@Override
 	public void update()
 	{

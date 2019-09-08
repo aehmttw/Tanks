@@ -2,8 +2,9 @@ package tanks.tank;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.bullets.Bullet;
-import tanks.bullets.BulletFreeze;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletFreeze;
+import tanks.event.EventShootBullet;
 
 public class TankCyan extends TankAIControlled
 {
@@ -30,9 +31,10 @@ public class TankCyan extends TankAIControlled
 	}
 	
 	/** Actually fire a bullet*/
+	@Override
 	public void launchBullet(double offset)
 	{
-		Drawing.drawing.playSound("resources/shoot.wav");
+		Drawing.drawing.playSound("/shoot.wav");
 
 		Bullet b = new BulletFreeze(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
@@ -42,6 +44,8 @@ public class TankCyan extends TankAIControlled
 		b.damage = this.bulletDamage;
 
 		Game.movables.add(b);
+		Game.eventsOut.add(new EventShootBullet(b));
+		
 		this.cooldown = (int) (Math.random() * this.cooldownRandom + this.cooldownBase);
 
 		if (this.shootAIType.equals(ShootAI.alternate))

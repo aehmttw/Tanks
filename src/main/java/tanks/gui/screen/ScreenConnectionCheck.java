@@ -1,11 +1,11 @@
 package tanks.gui.screen;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 public class ScreenConnectionCheck extends Screen
 {	
@@ -47,7 +47,7 @@ public class ScreenConnectionCheck extends Screen
 					{
 						ip = Inet4Address.getLocalHost().getHostAddress();
 					} 
-					catch (UnknownHostException e) { }
+					catch (UnknownHostException ignored) { }
 					
 					if (!ip.contains("%"))
 						Game.screen = screen;

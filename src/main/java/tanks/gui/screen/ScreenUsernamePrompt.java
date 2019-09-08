@@ -7,12 +7,12 @@ import tanks.gui.Button;
 public class ScreenUsernamePrompt extends Screen
 {
 
-	Button gotoOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Go to options", new Runnable()
+	Button gotoOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Multiplayer options", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenOptions();
+			Game.screen = new ScreenMultiplayerOptions();
 		}
 	}
 			);
@@ -42,7 +42,7 @@ public class ScreenUsernamePrompt extends Screen
 		quit.draw();
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "You must choose a username to play with others!");
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Would you like to go to options and choose one now?");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Would you like to go to multiplayer options and choose one now?");
 	}
 
 }

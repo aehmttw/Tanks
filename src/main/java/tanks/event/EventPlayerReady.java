@@ -1,5 +1,6 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
@@ -11,33 +12,34 @@ public class EventPlayerReady extends PersonalEvent
 
 	}
 
-	public EventPlayerReady(String l)
-	{
-
-	}
-
-	@Override
-	public String getNetworkString() 
-	{
-		return "x";
-	}
-
 	@Override
 	public void execute() 
 	{
 		if (!ScreenPartyHost.readyPlayers.contains(this.clientID))
 			ScreenPartyHost.readyPlayers.add(this.clientID);
 
-		Game.events.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+		Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
 
 		//synchronized(ScreenPartyHost.server.connections)
 		{
 			if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.server.connections.size() + 1 && Game.screen instanceof ScreenGame)
 			{
-				Game.events.add(new EventBeginLevelCountdown());
+				Game.eventsOut.add(new EventBeginLevelCountdown());
 				((ScreenGame)Game.screen).cancelCountdown = false;
 			}
 		}
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		
 	}
 
 }

@@ -1,13 +1,12 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.Mine;
 import tanks.Movable;
-import tanks.Ray;
+import tanks.Panel;
 import tanks.Team;
-import tanks.bullets.Bullet;
-import tanks.bullets.BulletHealing;
-import tanks.gui.Panel;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletHealing;
+import tanks.event.EventShootBullet;
 
 public class TankMedic extends TankAIControlled
 {
@@ -20,7 +19,7 @@ public class TankMedic extends TankAIControlled
 	{
 		super(name, x, y, Game.tank_size, 255, 255, 255, angle, ShootAI.straight);
 
-		this.texture = "/tanks/resources/medic.png";
+		this.texture = "/medic.png";
 		this.enableMovement = true;
 		this.speed = 1;
 		this.enableMineLaying = false;
@@ -64,7 +63,7 @@ public class TankMedic extends TankAIControlled
 			this.enableBulletAvoidance = false;
 			this.enableMineAvoidance = false;
 		}
-			
+
 		if (this.timeUntilDeath < 500)
 		{
 			this.colorG = this.timeUntilDeath / 500 * 255;
@@ -87,7 +86,7 @@ public class TankMedic extends TankAIControlled
 	}
 
 	@Override
-	public void shoot() 
+	public void shoot()
 	{
 		if (this.cooldown > 0 || this.suicidal)
 			return;
@@ -102,6 +101,8 @@ public class TankMedic extends TankAIControlled
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		Game.movables.add(b);
+		Game.eventsOut.add(new EventShootBullet(b));
+
 		this.cooldown = this.cooldownBase;
 	}
 
@@ -113,7 +114,7 @@ public class TankMedic extends TankAIControlled
 			super.updateTarget();
 			return;
 		}
-		
+
 		double nearestDist = Double.MAX_VALUE;
 		Movable nearest = null;
 		this.hasTarget = false;
@@ -123,7 +124,7 @@ public class TankMedic extends TankAIControlled
 			Movable m = Game.movables.get(i);
 
 			if (m instanceof Tank && m != this && Team.isAllied(this, m) && m.hiddenTimer <= 0 && !((Tank) m).invulnerable && ((Tank) m).lives - ((Tank) m).baseLives < 1)
-			{		
+			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 				r.moveOut(5);
 				if (r.getTarget() != m)

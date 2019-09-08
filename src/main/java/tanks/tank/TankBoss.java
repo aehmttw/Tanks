@@ -1,10 +1,10 @@
 package tanks.tank;
 
-import java.util.ArrayList;
-
 import tanks.Game;
-import tanks.bullets.Bullet;
+import tanks.bullet.Bullet;
 import tanks.event.EventCreateTank;
+
+import java.util.ArrayList;
 
 public class TankBoss extends TankAIControlled
 {
@@ -89,7 +89,7 @@ public class TankBoss extends TankAIControlled
 			t.team = this.team;
 		}
 		
-		Game.events.add(new EventCreateTank(t));
+		Game.eventsOut.add(new EventCreateTank(t));
 		this.spawned.add(t);
 		
 		Game.movables.add(t);

@@ -1,33 +1,28 @@
 package tanks.event;
 
-import java.util.UUID;
-
+import io.netty.buffer.ByteBuf;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
+import tanks.network.NetworkUtils;
+
+import java.util.UUID;
 
 public class EventAnnounceConnection implements INetworkEvent
 {
-	public ConnectedPlayer player;
+	public String name;
+	public UUID clientId;
 	public boolean joined;
+	
+	public EventAnnounceConnection()
+	{
+		
+	}
 	
 	public EventAnnounceConnection(ConnectedPlayer p, boolean joined)
 	{
-		this.player = p;
+		this.name = p.rawUsername;
+		this.clientId = p.clientId;
 		this.joined = joined;
-	}
-	
-	public EventAnnounceConnection(String s)
-	{
-		String[] sp = s.split(",");
-		this.joined = Boolean.parseBoolean(sp[0]);
-		this.player = new ConnectedPlayer(UUID.fromString(sp[1]), sp[2]);
-	}
-	
-	
-	@Override
-	public String getNetworkString() 
-	{
-		return this.joined + "," + this.player.clientId + "," + this.player.rawUsername;
 	}
 
 	@Override
@@ -35,19 +30,35 @@ public class EventAnnounceConnection implements INetworkEvent
 	{
 		if (this.joined)
 		{
-			ScreenPartyLobby.connections.add(this.player);
+			ScreenPartyLobby.connections.add(new ConnectedPlayer(this.clientId, this.name));
 		}
 		else
 		{
 			for (int i = 0; i < ScreenPartyLobby.connections.size(); i++)
 			{
-				if (ScreenPartyLobby.connections.get(i).clientId.equals(player.clientId))
+				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientId))
 				{
 					ScreenPartyLobby.connections.remove(i);
 					i--;
 				}
 			}
 		}
+	}
+
+	@Override
+	public void read(ByteBuf b)
+	{
+		this.joined = b.readBoolean();
+		this.clientId = UUID.fromString(NetworkUtils.readString(b));
+		this.name = NetworkUtils.readString(b);
+	}
+	
+	@Override
+	public void write(ByteBuf b)
+	{
+		b.writeBoolean(this.joined);
+		NetworkUtils.writeString(b, this.clientId.toString());
+		NetworkUtils.writeString(b, this.name);
 	}
 
 }

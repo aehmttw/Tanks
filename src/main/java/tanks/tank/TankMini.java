@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullets.Bullet;
+import tanks.bullet.Bullet;
 
 public class TankMini extends TankAIControlled
 {

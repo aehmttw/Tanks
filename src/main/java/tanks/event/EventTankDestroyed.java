@@ -1,40 +1,48 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
 
 public class EventTankDestroyed implements INetworkEvent
 {
-	public Tank tank;
+	public int tank;
+	
+	public EventTankDestroyed()
+	{
+		
+	}
 	
 	public EventTankDestroyed(Tank t)
 	{
-		tank = t;
+		tank = t.networkID;
 	}
 	
-	public EventTankDestroyed(String t)
-	{
-		tank = Tank.idMap.get(Integer.parseInt(t));
-	}
-	
-	@Override
-	public String getNetworkString()
-	{
-		return "" + tank.networkID;
-	}
-
 	@Override
 	public void execute() 
 	{
-		if (tank == null)
+		Tank t = Tank.idMap.get(tank);
+		if (t == null)
 			return;
 
-		tank.destroy = true;
-		tank.lives = 0;
+		t.destroyNextFrame = true;
+		t.lives = 0;
 		
-		if (!Tank.freeIDs.contains(tank.networkID))
+		if (!Tank.freeIDs.contains(tank))
 		{
-			Tank.freeIDs.add(tank.networkID);
-			Tank.idMap.remove(tank.networkID);
+			Tank.freeIDs.add(tank);
+			Tank.idMap.remove(tank);
 		}
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		b.writeInt(this.tank);
+	}
+
+	@Override
+	public void read(ByteBuf b)
+	{
+		this.tank = b.readInt();
 	}
 }

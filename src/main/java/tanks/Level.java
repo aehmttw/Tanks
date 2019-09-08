@@ -1,8 +1,5 @@
 package tanks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import tanks.event.EventCreatePlayer;
 import tanks.event.EventEnterLevel;
 import tanks.event.EventLoadLevel;
@@ -11,12 +8,15 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenLevelBuilder;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ServerHandler;
-import tanks.obstacles.Obstacle;
+import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Level 
 {
@@ -52,7 +52,7 @@ public class Level
 	{		
 		this.levelString = level.replaceAll("\u0000", "");
 
-		preset = this.levelString.split("\\{")[1].split("\\}")[0].split("\\|");
+		preset = this.levelString.split("\\{")[1].split("}")[0].split("\\|");
 
 		screen = preset[0].split(",");
 		obstaclesPos = preset[1].split(",");
@@ -69,8 +69,6 @@ public class Level
 			editable = false;
 			screen[0] = screen[0].substring(1);
 		}
-		else
-			editable = true;
 	}
 
 	public void loadLevel()
@@ -93,7 +91,7 @@ public class Level
 		this.remote = remote;
 
 		if (!remote)
-			Game.events.add(new EventLoadLevel(this));
+			Game.eventsOut.add(new EventLoadLevel(this));
 
 		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<EventCreatePlayer>();
 
@@ -307,7 +305,6 @@ public class Level
 					for (double y = startY; y <= endY; y++)
 					{
 						Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
-						o.isRemote = remote;
 						Game.obstacles.add(o);
 					}
 				}
@@ -346,7 +343,7 @@ public class Level
 					{
 						EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
 						playerEvents.add(local);
-						Game.events.add(local);
+						Game.eventsOut.add(local);
 
 						synchronized(ScreenPartyHost.server.connections)
 						{
@@ -357,7 +354,7 @@ public class Level
 
 								EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
 								playerEvents.add(e);
-								Game.events.add(e);
+								Game.eventsOut.add(e);
 							}
 						}
 						
@@ -366,7 +363,7 @@ public class Level
 					else if (remote)
 						continue;
 
-					t = new TankPlayer(x, y, angle, Game.clientID, false);					
+					t = new TankPlayer(x, y, angle, Game.clientID);					
 					Game.player = (TankPlayer) t;
 				}
 				else
@@ -387,6 +384,6 @@ public class Level
 			e.execute();
 
 		if (!remote)
-			Game.events.add(new EventEnterLevel());
+			Game.eventsOut.add(new EventEnterLevel());
 	}
 }

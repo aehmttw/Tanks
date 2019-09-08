@@ -1,14 +1,12 @@
 package tanks;
 import java.util.ArrayList;
 
-import tanks.gui.Panel;
-
 public class Drawing
 {
 	protected static boolean initialized = false;
 	
-	public int sizeX = 1400;//1920;
-	public int sizeY = 900;//1100;
+	public double sizeX = 1400;//1920;
+	public double sizeY = 900;//1100;
 
 	public double playerX = sizeX / 2;
 	public double playerY = sizeY / 2;
@@ -411,8 +409,8 @@ public class Drawing
 		double x = getInterfaceMouseX();
 		double y = getInterfaceMouseY();
 
-		int xPadding = (int) (16);
-		int yPadding = (int) (8);
+		int xPadding = 16;
+		int yPadding = 8;
 
 		setInterfaceFontSize(14);
 
@@ -422,7 +420,7 @@ public class Drawing
 			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, text[i]) / this.interfaceScale) + xPadding);
 		}
 
-		int sizeY = 14;
+		double sizeY = 14;
 
 		double drawX = x + sizeX / 2 + xPadding;
 		double drawY = y + sizeY / 2 + yPadding * text.length;
@@ -455,9 +453,7 @@ public class Drawing
 
 		rawX -= (1400 - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 
-		double gameX = (rawX) / scale - getPlayerMouseOffsetX();	
-		
-		return gameX;
+		return (rawX) / scale - getPlayerMouseOffsetX();
 	}
 	
 	public double toGameCoordsY(double y)
@@ -471,9 +467,7 @@ public class Drawing
 		
 		rawY -= (900 - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
-		double gameY = (rawY) / scale - getPlayerMouseOffsetY();
-		
-		return gameY;
+		return (rawY) / scale - getPlayerMouseOffsetY();
 	}
 
 	public double getMouseX()
@@ -503,12 +497,12 @@ public class Drawing
 		this.setSize((int) (x * scale), (int) ((y) * scale));
 	}*/
 
-	public void setScreenBounds(int x, int y)
+	public void setScreenBounds(double x, double y)
 	{
 		sizeX = x;
 		sizeY = y;
-		Game.currentSizeX = x / Game.tank_size;
-		Game.currentSizeY = y / Game.tank_size;
+		Game.currentSizeX = (int)(x / Game.tank_size);
+		Game.currentSizeY = (int)(y / Game.tank_size);
 	}
 
 	public double getPlayerOffsetX()

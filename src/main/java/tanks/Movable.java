@@ -1,10 +1,9 @@
 package tanks;
 
-import java.util.ArrayList;
-
-import tanks.gui.Panel;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacles.Obstacle;
+import tanks.obstacle.Obstacle;
+
+import java.util.ArrayList;
 
 public abstract class Movable implements IDrawableForInterface
 {
@@ -16,6 +15,7 @@ public abstract class Movable implements IDrawableForInterface
 	public double vZ = 0;
 	public double cooldown = 0;
 	public boolean destroy = false;
+	public boolean destroyNextFrame = false;
 	
 	public int drawLevel = 3;
 	//public boolean drawBelow = false;
@@ -25,7 +25,7 @@ public abstract class Movable implements IDrawableForInterface
 	
 	public double hiddenTimer = 0; 
 
-	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>(); 
+	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>();
 	
 	public Team team;
 
@@ -62,6 +62,13 @@ public abstract class Movable implements IDrawableForInterface
 					vZ2 = a.getValue(vZ2);
 				}
 			}
+
+			for (int i = 0; i < removeAttributes.size(); i++)
+			{
+				this.attributes.remove(removeAttributes.get(i));
+			}
+
+			removeAttributes.clear();
 			
 			this.posX += vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
 			this.posY += vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
@@ -69,6 +76,9 @@ public abstract class Movable implements IDrawableForInterface
 
 			this.canHide = false;
 		}
+
+		if (this.destroyNextFrame)
+			this.destroy = true;
 	}
 
 	public void setMotionInDirection(double x, double y, double velocity)
@@ -235,8 +245,6 @@ public abstract class Movable implements IDrawableForInterface
 	{
 		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};	
 	}
-	
-	public abstract void checkCollision();
 
 	public abstract void draw();
 	

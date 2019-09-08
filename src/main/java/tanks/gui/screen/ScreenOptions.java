@@ -1,19 +1,17 @@
 package tanks.gui.screen;
 
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Panel;
+import tanks.gui.Button;
+import org.lwjgl.glfw.GLFW;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.Scanner;
-
-import org.lwjgl.glfw.GLFW;
-
-import tanks.Drawing;
-import tanks.Game;
-import tanks.TextBox;
-import tanks.gui.Button;
-import tanks.gui.Panel;
 
 public class ScreenOptions extends Screen
 {
@@ -44,8 +42,7 @@ public class ScreenOptions extends Screen
 		else
 			graphics3d.text = "3D graphics: off";
 		
-		username.enableCaps = true;
-		username.enableSpaces = false;
+		
 
 	}
 
@@ -86,18 +83,16 @@ public class ScreenOptions extends Screen
 		public void run() 
 		{
 			Panel.showMouseTarget = !Panel.showMouseTarget;
-			
 
-			if (Panel.showMouseTarget) {
+			if (Panel.showMouseTarget)
 				mouseTarget.text = "Mouse target: on";
-			} else {
+			else
 				mouseTarget.text = "Mouse target: off";
-			}
 			
-			setShowCursor(!Panel.showMouseTarget);
+			Game.game.window.setShowCursor(!Panel.showMouseTarget);
 		}
 	},
-			"When enabled, 2 small black rings---will appear around your mouse pointer"	);
+			"When enabled, your mouse pointer---will be replaced by a target");
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
 	{
@@ -146,30 +141,26 @@ public class ScreenOptions extends Screen
 	},
 			"Limits framerate to your screen's refresh rate---May decrease battery consumption---Also, might fix issues with inconsistent game speed");
 
-	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Username", new Runnable()
+	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Multiplayer options", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			Game.username = username.inputText;
-			username.inputText = Game.username + "";
-			
-			if (!Game.username.equals(Game.chatFilter.filterChat(Game.username)))
-				Game.screen = new ScreenUsernameWarning();
+			Game.screen = new ScreenMultiplayerOptions();
 		}
-	},
-			Game.username, "Pick a username that players---will see in multiplayer");
+	}
+			);
 	
 	
 	@Override
 	public void update()
 	{
-		username.update();
 		autostart.update();
 		mouseTarget.update();
 		graphics.update();
 		graphics3d.update();
 		vsync.update();
+		multiplayerOptions.update();
 		back.update();
 	}
 
@@ -178,7 +169,7 @@ public class ScreenOptions extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
-		username.draw();
+		multiplayerOptions.draw();
 		vsync.draw();
 		autostart.draw();
 		mouseTarget.draw();
@@ -223,17 +214,15 @@ public class ScreenOptions extends Screen
 			writer.println("auto_start=" + Game.autostart);
 			writer.println("vsync=" + Game.vsync);
 			writer.println("port=" + Game.port);
-			writer.println("use-custom-tank-registry=" + Game.enableCustomTankRegistry);
-			writer.println("use-custom-obstacle-registry=" + Game.enableCustomObstacleRegistry);
+			writer.println("last_party=" + Game.lastParty);
+			writer.println("chat_filter=" + Game.enableChatFilter);
+			writer.println("use_custom_tank_registry=" + Game.enableCustomTankRegistry);
+			writer.println("use_custom_obstacle_registry=" + Game.enableCustomObstacleRegistry);
 		}
 		catch (FileNotFoundException e)
 		{
 			Game.exitToCrash(e);
 		}
-	}
-	
-	public static void setShowCursor(boolean show) {
-		GLFW.glfwSetInputMode(Game.game.window.getWindow(), GLFW.GLFW_CURSOR, show ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
 	}
 	
 	public static void loadOptions(String homedir) 
@@ -252,37 +241,55 @@ public class ScreenOptions extends Screen
 				{ 
 					continue; 
 				}
-				
-				if (optionLine[0].toLowerCase().equals("username")) 
+
+				switch (optionLine[0].toLowerCase())
 				{
-					if (optionLine.length >= 2)
-						Game.username = optionLine[1];
-					else
-						Game.username = "";
+					case "username":
+						if (optionLine.length >= 2)
+							Game.username = optionLine[1];
+						else
+							Game.username = "";
+						break;
+					case "fancy_graphics":
+						Game.fancyGraphics = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "3d":
+						Game.enable3d = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "mouse_target":
+						Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "auto_start":
+						Game.autostart = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "vsync":
+						Game.vsync = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "port":
+						Game.port = Integer.parseInt(optionLine[1]);
+						break;
+					case "last_party":
+						if (optionLine.length >= 2)
+							Game.lastParty = optionLine[1];
+						else
+							Game.lastParty = "";
+						break;
+					case "chat_filter":
+						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "use_custom_tank_registry":
+						Game.enableCustomTankRegistry = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "use_custom_obstacle_registry":
+						Game.enableCustomObstacleRegistry = Boolean.parseBoolean(optionLine[1]);
+						break;
 				}
-				if (optionLine[0].toLowerCase().equals("fancy_graphics")) 
-					Game.fancyGraphics = Boolean.parseBoolean(optionLine[1]);
-				if (optionLine[0].toLowerCase().equals("3d")) 
-					Game.enable3d = Boolean.parseBoolean(optionLine[1]);
-				else if (optionLine[0].toLowerCase().equals("mouse_target"))  {
-					Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
-				}
-				else if (optionLine[0].toLowerCase().equals("auto_start")) 
-					Game.autostart = Boolean.parseBoolean(optionLine[1]);
-				else if (optionLine[0].toLowerCase().equals("vsync")) 
-					Game.vsync = Boolean.parseBoolean(optionLine[1]);
-				else if (optionLine[0].toLowerCase().equals("port")) 
-					Game.port = Integer.parseInt(optionLine[1]);
-				else if (optionLine[0].toLowerCase().equals("use-custom-tank-registry")) 
-					Game.enableCustomTankRegistry = Boolean.parseBoolean(optionLine[1]);
-				else if (optionLine[0].toLowerCase().equals("use-custom-obstacle-registry")) 
-					Game.enableCustomObstacleRegistry = Boolean.parseBoolean(optionLine[1]);
 			}
 			in.close();
 		} 
 		catch (Exception e)
 		{
-			Game.logger.println (new Date().toString() + " (syswarn) obstacle registry file is nonexistent or broken, using default:");
+			Game.logger.println (new Date().toString() + " (syswarn) options file is nonexistent or broken, using default:");
 			e.printStackTrace(Game.logger);
 		}
 	}

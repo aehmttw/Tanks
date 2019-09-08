@@ -1,15 +1,13 @@
 package tanks.gui;
 
-import org.lwjgl.glfw.GLFW;
-
 import tanks.Drawing;
 import tanks.Game;
-import tanks.TextBox;
+import org.lwjgl.glfw.GLFW;
 
 public class ChatBox extends TextBox
 {
 	public int key;
-	public String defaultText = "";
+	public String defaultText;
 	public boolean persistent = true;
 
 	public ChatBox(double x, double y, double sX, double sY, int key, String defaultText, Runnable f) 
@@ -42,22 +40,21 @@ public class ChatBox extends TextBox
 
 	}
 
-	public ChatBox(double x, double y, double sX, double sY, int key, Runnable f) 
+	public void update(boolean persistent)
 	{
-		this(x, y, sX, sY, key, "", f);
-		this.persistent = false;
-
+		boolean prevPersistent = this.persistent;
+		this.persistent = persistent;
+		this.update();
+		this.persistent = prevPersistent;	
 	}
 
 	public void update()
 	{
+		
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
-		if (this.persistent && mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2 && my < posY + sizeY/2)
-			hover = true;
-		else
-			hover = false;
+		hover = this.persistent && mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
 
 		if (hover && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !selected)
 		{
@@ -91,6 +88,14 @@ public class ChatBox extends TextBox
 
 		if (this.selected)
 			this.checkKeys();
+	}
+	
+	public void draw(boolean persistent)
+	{
+		boolean prevPersistent = this.persistent;
+		this.persistent = persistent;
+		this.draw();
+		this.persistent = prevPersistent;	
 	}
 
 	public void draw()

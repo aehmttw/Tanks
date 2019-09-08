@@ -1,53 +1,101 @@
 package tanks.event;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
+import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
 public class EventCreateCustomTank implements INetworkEvent
 {
-	public Tank tank;
-	
-	public EventCreateCustomTank(Tank tank)
+	public String name;
+	public double posX;
+	public double posY;
+	public double angle;
+	public String team;
+	public double size;
+	public double turretSize;
+	public double turretLength;
+	public double red;
+	public double green;
+	public double blue;
+	public double lives;
+	public double baseLives;
+
+	public EventCreateCustomTank()
 	{
-		this.tank = tank;
+	
 	}
 	
-	public EventCreateCustomTank(String s)
+	public EventCreateCustomTank(Tank t)
 	{
-		String[] parts2 = s.split(",");
+		this.name = t.name;
+		this.posX = t.posX;
+		this.posY = t.posY;
+		this.angle = t.angle;
 		
-		String type = parts2[0];
-
-		double posX = Double.parseDouble(parts2[1]);
-		double posY = Double.parseDouble(parts2[2]);
-		double angle = Double.parseDouble(parts2[3]);
-		Team team = Game.currentLevel.teamsMap.get(parts2[4]);
-		double size = Double.parseDouble(parts2[5]);
-		double ts = Double.parseDouble(parts2[6]);
-		double tl = Double.parseDouble(parts2[7]);
-		double r = Double.parseDouble(parts2[8]);
-		double g = Double.parseDouble(parts2[9]);
-		double b = Double.parseDouble(parts2[10]);
-		double lives = Double.parseDouble(parts2[11]);
-		double baseLives = Double.parseDouble(parts2[12]);
+		if (t.team == null)
+			this.team = "*";
+		else if (t.team == Game.enemyTeam)
+			this.team = "**";
+		else
+			this.team = t.team.name;
 		
-		this.tank = new TankRemote(type, posX, posY, angle, team, size, ts, tl, r, g, b, lives, baseLives);
-
-	}
-
-	@Override
-	public String getNetworkString() 
-	{
-		return tank.name + "," + tank.posX + "," + tank.posY + "," + tank.angle + "," + tank.team.name + ","
-				+ tank.size + "," + tank.turret.size + "," + tank.turret.length + "," 
-				+ tank.colorR + "," + tank.colorG + "," + tank.colorB + "," + tank.lives + "," + tank.baseLives;
+		this.size = t.size;
+		this.turretSize = t.turret.size;
+		this.turretLength = t.turret.length;
+		this.red = t.colorR;
+		this.green = t.colorG;
+		this.blue = t.colorB;
+		this.lives = t.lives;
+		this.baseLives = t.baseLives;
 	}
 	
 	@Override
 	public void execute()
 	{
-		Game.movables.add(this.tank);
+		Team t = Game.currentLevel.teamsMap.get(team);
+		
+		if (this.team.equals("**"))
+			t = Game.enemyTeam;
+		
+		Game.movables.add(new TankRemote(name, posX, posY, angle, t, size, turretSize, turretLength, red, green, blue, lives, baseLives));
+	}
+
+	@Override
+	public void write(ByteBuf b) 
+	{
+		NetworkUtils.writeString(b, this.name);
+		b.writeDouble(this.posX);
+		b.writeDouble(this.posY);
+		b.writeDouble(this.angle);
+		NetworkUtils.writeString(b, this.team);
+		b.writeDouble(this.size);
+		b.writeDouble(this.turretSize);
+		b.writeDouble(this.turretLength);
+		b.writeDouble(this.red);
+		b.writeDouble(this.green);
+		b.writeDouble(this.blue);
+		b.writeDouble(this.lives);
+		b.writeDouble(this.baseLives);
+	}
+
+	@Override
+	public void read(ByteBuf b) 
+	{
+		this.name = NetworkUtils.readString(b);
+		this.posX = b.readDouble();
+		this.posY = b.readDouble();
+		this.angle = b.readDouble();
+		this.team = NetworkUtils.readString(b);
+		this.size = b.readDouble();
+		this.turretSize = b.readDouble();
+		this.turretLength = b.readDouble();
+		this.red = b.readDouble();
+		this.green = b.readDouble();
+		this.blue = b.readDouble();
+		this.lives = b.readDouble();
+		this.baseLives = b.readDouble();
 	}
 }

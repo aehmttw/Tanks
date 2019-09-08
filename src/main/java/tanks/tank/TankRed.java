@@ -1,13 +1,9 @@
 package tanks.tank;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Ray;
-import tanks.Team;
-import tanks.bullets.BulletLaser;
-import tanks.gui.Panel;
+import tanks.*;
+import tanks.bullet.BulletLaser;
+import tanks.Panel;
+import tanks.event.EventShootBullet;
 
 public class TankRed extends TankAIControlled
 {
@@ -44,9 +40,9 @@ public class TankRed extends TankAIControlled
 		{
 			this.colorR = Math.min((200 + (maxCooldown - this.cooldown) / maxCooldown * 55), 255);
 			this.colorG = (maxCooldown - this.cooldown) / maxCooldown * 100;
-			this.colorB = (maxCooldown - this.cooldown) / maxCooldown * 100;	
+			this.colorB = (maxCooldown - this.cooldown) / maxCooldown * 100;
 		}
-		
+
 		super.update();
 
 		if (!lineOfSight)
@@ -59,7 +55,7 @@ public class TankRed extends TankAIControlled
 	}
 
 	@Override
-	public void shoot() 
+	public void shoot()
 	{
 		this.lineOfSight = true;
 		if (this.cooldown > 0)
@@ -78,11 +74,11 @@ public class TankRed extends TankAIControlled
 			return;
 
 		}
-		
+
 		Ray r = new Ray(this.posX, this.posX, this.angle, 0, this);
 		r.moveOut(4);
 		Movable m = r.getTarget();
-		
+
 		if (!Team.isAllied(m, this))
 		{
 			this.maxCooldown = this.maxCooldown * 0.75 + 1;
@@ -90,12 +86,14 @@ public class TankRed extends TankAIControlled
 			b.team = this.team;
 			b.setPolarMotion(this.angle, 25.0/4);
 			b.moveOut(8);
+			Game.eventsOut.add(new EventShootBullet(b));
 			b.shoot();
+
 			Drawing.drawing.playSound("resources/laser.wav");
-			
+
 			if (this.targetEnemy.destroy)
 				this.maxCooldown = 100;
-			
+
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
 		}
 		else

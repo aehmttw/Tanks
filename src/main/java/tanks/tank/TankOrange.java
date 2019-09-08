@@ -3,8 +3,8 @@ package tanks.tank;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
-import tanks.Ray;
-import tanks.bullets.BulletFlame;
+import tanks.bullet.BulletFlame;
+import tanks.event.EventShootBullet;
 
 public class TankOrange extends TankAIControlled
 {
@@ -14,18 +14,18 @@ public class TankOrange extends TankAIControlled
 
 		this.enableMovement = true;
 		this.speed = 1.5;
-		
+
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.aimTurretSpeed = 0.01;
-				
+
 		this.motionChangeChance = 0.001;
-		
+
 		this.coinValue = 6;
 	}
-	
+
 	@Override
-	public void shoot() 
+	public void shoot()
 	{
 		if (Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0)
 		{
@@ -42,6 +42,7 @@ public class TankOrange extends TankAIControlled
 					b.setPolarMotion(this.angle, 25.0/4);
 					b.moveOut(8);
 					Game.movables.add(b);
+					Game.eventsOut.add(new EventShootBullet(b));
 					this.cooldown = 0;
 				}
 			}

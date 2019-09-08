@@ -1,81 +1,84 @@
 package tanks.network;
 
-import java.nio.charset.Charset;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
-import tanks.event.IEvent;
+import tanks.event.EventKeepConnectionAlive;
+import tanks.event.EventSendClientDetails;
 import tanks.event.INetworkEvent;
 import tanks.gui.screen.ScreenPartyLobby;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter 
 {	
 	public String message = "";
-	public boolean reading = false;
-	public static MessageExecutor executor = new MessageExecutor();
+	public MessageReader reader = new MessageReader();
 	
 	public ChannelHandlerContext ctx;
 	
 	@Override
     public void channelActive(ChannelHandlerContext ctx)
     {
-		String s = "<$" + Game.network_protocol + "." + Game.clientID + "." + Game.username + ">";
-		final ByteBuf buffy = Unpooled.wrappedBuffer(s.getBytes());
-		ctx.channel().writeAndFlush(buffy);
+		this.reader.queue = ctx.channel().alloc().buffer();
 		this.ctx = ctx;
+		this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.username));
+		this.sendEvent(new EventKeepConnectionAlive());
 		ScreenPartyLobby.isClient = true;
     }
+	
+	public void sendEvent(INetworkEvent e)
+	{
+		ByteBuf b = ctx.channel().alloc().buffer();
+		b.writeInt(NetworkEventMap.get(e.getClass()));
+		e.write(b);
+		
+		ByteBuf b2 = ctx.channel().alloc().buffer();
+		b2.writeInt(b.readableBytes());
+		b2.writeBytes(b);
+		ctx.channel().writeAndFlush(b2);
+		
+		ReferenceCountUtil.release(b);
+	}
+	
+	public void sendEventAndClose(INetworkEvent e)
+	{
+		this.sendEvent(e);
+		ctx.close();
+	}
+
 	
 	@Override
     public void channelInactive(ChannelHandlerContext ctx)
     {
 		ScreenPartyLobby.isClient = false;
+		ReferenceCountUtil.release(this.reader.queue);
     }
 	
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg)
     {
+    	this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-
-		String s = buffy.toString(Charset.defaultCharset());
-		
-		for (int i = 0; i < s.length(); i++)
-		{
-			char c = s.charAt(i);
-
-			if (c == '<')
-				reading = true;
-			else if (c == '>')
-			{
-				reading = false;	
-				
-				executor.executeMessage(message, null);
-				message = "";
-			}
-			else if (reading)
-				message += c;
-		}
-
+		boolean reply = this.reader.queueMessage(buffy, null);
 		ReferenceCountUtil.release(msg);
-		
-		String reply = "<>";
-		for (int i = 0; i < Game.events.size(); i++)
+
+		if (reply)
 		{
-			IEvent e = Game.events.get(i);
-			if (e instanceof INetworkEvent)
+			synchronized (Game.eventsOut)
 			{
-				INetworkEvent event = (INetworkEvent) e;
-				reply += "<" + NetworkEventMap.get(event.getClass()) + "#" + event.getNetworkString() + ">";
+				EventKeepConnectionAlive k = new EventKeepConnectionAlive();
+				Game.eventsOut.add(k);
+
+				for (int i = 0; i < Game.eventsOut.size(); i++)
+				{
+					INetworkEvent e = Game.eventsOut.get(i); 
+					this.sendEvent(e);
+				}
+				
+				Game.eventsOut.clear();
 			}
-		}
-		Game.events.clear();
-		
-		final ByteBuf buffy2 = Unpooled.wrappedBuffer((reply).getBytes());
-		ctx.writeAndFlush(buffy2);
-		
+		}	
     }
     
     @Override

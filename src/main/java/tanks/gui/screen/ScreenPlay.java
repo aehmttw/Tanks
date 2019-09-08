@@ -12,7 +12,7 @@ public class ScreenPlay extends Screen
 
 	}
 	
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, 350, 40, "Random level", new Runnable()
+	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Random level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -23,7 +23,7 @@ public class ScreenPlay extends Screen
 	}
 			, "Generate a random level to play");
 	
-	Button crusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Crusades", new Runnable()
+	Button crusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Crusades", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -37,24 +37,14 @@ public class ScreenPlay extends Screen
 	}
 			, "Fight battles in an order,---and see how long you can survive!");
 	
-	Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "My levels", new Runnable()
+	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Online", "Online mode is coming soon!");
+	
+	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Party", new Runnable() 
 	{
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenPlaySavedLevels();
-		}
-	}
-			, "Play levels you have created!");
-	
-	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Online", "Online mode is coming soon!");
-	
-	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Party", new Runnable() 
-	{
-		@Override
-		public void run() 
-		{
-			if (Game.username != "")
+			if (!Game.username.equals(""))
 				Game.screen = new ScreenParty();
 			else
 				Game.screen = new ScreenUsernamePrompt();
@@ -62,12 +52,12 @@ public class ScreenPlay extends Screen
 	},
 	"Play with other people who are---connected to your local network");
 		
-	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Tutorial", new Runnable()
+	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Tutorial", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			ScreenTutorial.loadTutorial(false);
+			Tutorial.loadTutorial(false);
 		}
 	}, "Learn how to play Tanks!"
 	);
@@ -87,7 +77,6 @@ public class ScreenPlay extends Screen
 	{
 		newLevel.update();
 		crusade.update();
-		myLevels.update();
 		online.update();
 		party.update();
 		tutorial.update();
@@ -105,7 +94,6 @@ public class ScreenPlay extends Screen
 		tutorial.draw();
 		party.draw();
 		online.draw();
-		myLevels.draw();
 		crusade.draw();
 		newLevel.draw();
 	}

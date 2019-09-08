@@ -6,18 +6,18 @@ The game works in Windows, Mac or Linux.
 
 ## How to play
 
-Controls: 
-Use the arrow keys or WASD to move 
-Left click or click space to shoot
-Right click or press enter to lay a mine
-Press escape to pause the game
+Controls: <br>
+Use the arrow keys or WASD to move<br>
+Left click or click space to shoot<br>
+Right click or press enter to lay a mine<br>
+Press escape to pause the game<br>
 
-Level Editor controls:
-Left click to place
-Right click on an object to destroy it
-Right click on nothing to rotate the object you are placing
-Press up and down arrow keys or scroll to cycle enemy tanks
-Press left and right arrow keys to cycle enemy tank, obstacle, player tank
+Level Editor controls:<br>
+Left click to place<br>
+Right click on an object to destroy it<br>
+Right click on nothing to rotate the object you are placing<br>
+Press up and down arrow keys or scroll to cycle enemy tanks<br>
+Press left and right arrow keys to cycle enemy tank, obstacle, player tank<br><br>
 
 The following are three screenshots of the game in action.  The colored squares are
 tanks belonging to different teams, firing at each other.  The brown squares are

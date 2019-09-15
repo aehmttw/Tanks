@@ -40,14 +40,6 @@ public class BulletHealing extends BulletInstant
 	
 	public void shoot()
 	{
-		if (!tank.isRemote)
-		{
-			BulletHealing b = new BulletHealing(this.posX, this.posY, this.bounces, this.tank);
-			b.vX = this.vX;
-			b.vY = this.vY;
-			Game.eventsOut.add(new EventShootBullet(b));
-		}
-		
 		while(!this.destroy)
 		{
 			if (ScreenGame.finished)

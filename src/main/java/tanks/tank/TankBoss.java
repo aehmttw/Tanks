@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateTank;
+import tanks.registry.RegistryTank;
 
 import java.util.ArrayList;
 
@@ -81,14 +82,16 @@ public class TankBoss extends TankAIControlled
 		else if (side == 3)
 			y = 100;
 		
-		Tank t = new TankBoss("boss", 0, 0, 0);
-		
-		while (t instanceof TankBoss)
+		RegistryTank.TankEntry e = Game.registryTank.getEntry(this.name);
+
+		while (e.name.equals(this.name))
 		{
-			t = Game.registryTank.getRandomTank().getTank(this.posX + x, this.posY + y, this.angle);
-			t.team = this.team;
+			e = Game.registryTank.getRandomTank();
 		}
-		
+
+		Tank t = e.getTank(this.posX + x, this.posY + y, this.angle);
+		t.team = this.team;
+
 		Game.eventsOut.add(new EventCreateTank(t));
 		this.spawned.add(t);
 		

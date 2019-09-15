@@ -60,7 +60,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	public static final int network_protocol = 4;
-	public static final String version = "Tanks 0.7.0";
+	public static final String version = "Tanks 0.7.1";
 
 	public static int port = 8080;
 

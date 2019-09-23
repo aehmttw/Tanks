@@ -723,8 +723,13 @@ public class LWJGLWindow
 		glMatrixMode(GL_PROJECTION);
 		glDisable(GL_TEXTURE_2D);
 	}
-	
+
 	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
+	{
+		this.drawImage(x, y, z, sX, sY, u1, v1, u2, v2, image, scaled, true);
+	}
+
+	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest)
 	{
 		if (!textures.containsKey(image))
 			createImage(image);
@@ -732,7 +737,8 @@ public class LWJGLWindow
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		glEnable(GL_DEPTH_TEST);
+		if (depthtest)
+			glEnable(GL_DEPTH_TEST);
 		
 		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
 		glTranslated(-absoluteWidth / 2, -absoluteHeight / 2, -absoluteDepth);
@@ -768,6 +774,8 @@ public class LWJGLWindow
 
 		glMatrixMode(GL_PROJECTION);
 		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_DEPTH_TEST);
+
+		if (depthtest)
+			glDisable(GL_DEPTH_TEST);
 	}
 }

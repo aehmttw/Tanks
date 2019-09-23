@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.event.EventPlayerChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
@@ -23,6 +21,13 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	public static SynchronizedList<UUID> readyPlayers = new SynchronizedList<UUID>();
 	public static ScreenPartyHost activeScreen;
 	public String ip = "";
+
+	public int usernamePage = 0;
+
+	public static int entries_per_page = 10;
+	public static int username_spacing = 30;
+	public static int username_y_offset = -120;
+
 
 	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
@@ -49,7 +54,45 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	}
 	, "Generate a random level to play");
 
-	Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Crusades", "Crusades are not yet---supported in party mode");
+	Button nextUsernamePage = new Button(Drawing.drawing.interfaceSizeX / 2 - 190,
+			Drawing.drawing.interfaceSizeY / 2 + username_y_offset + username_spacing * (1 + entries_per_page), 300, 30, "Next page", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			usernamePage++;
+		}
+	}
+	);
+
+	Button previousUsernamePage = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + username_y_offset,
+			300, 30, "Previous page", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			usernamePage--;
+		}
+	}
+	);
+
+	Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Versus", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.cleanUp();
+			String s = LevelGeneratorVersus.generateLevelString();
+			Level l = new Level(s);
+			l.loadLevel();
+			ScreenGame.versus = true;
+
+			Game.screen = new ScreenGame();
+		}
+	}
+			, "Fight other players in this party---in a randomly generated level");
+
+	Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Crusades", "Crusades are not yet---supported in party mode");
 
 	Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "My levels", new Runnable()
 	{
@@ -59,7 +102,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 			Game.screen = new ScreenPlaySavedLevels();
 		}
 	}
-	, "Play levels you have created!");
+	, "Play levels you have created");
 
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "End party", new Runnable()
 	{
@@ -130,7 +173,17 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 		newLevel.update();
 		crusades.update();
 		myLevels.update();
+		versus.update();
 		quit.update();
+
+		if (server != null && server.connections != null)
+		{
+			if (this.usernamePage > 0)
+				this.previousUsernamePage.update();
+
+			if ((this.usernamePage + 1) * 10 < server.connections.size())
+				this.nextUsernamePage.update();
+		}
 
 		chatbox.update();
 	}
@@ -140,10 +193,10 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	{
 		this.drawDefaultBackground();
 
-
 		myLevels.draw();
 		crusades.draw();
 		newLevel.draw();
+		versus.draw();
 		quit.draw();
 
 		chatbox.draw();
@@ -167,21 +220,36 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 			}
 		}
 
-		String n = Game.username;
-		if (Game.enableChatFilter)
-			n = Game.chatFilter.filterChat(n);
-
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 120, n);
-
-
 		if (server != null && server.connections != null)
 		{
-			//synchronized(server.connections)
+			if (this.usernamePage > 0)
+				this.previousUsernamePage.draw();
+
+			if ((this.usernamePage + 1) * entries_per_page <  server.connections.size())
+				this.nextUsernamePage.draw();
+
+			if (this.usernamePage <= 0)
 			{
-				for (int i = 0; i < server.connections.size(); i++)
+				String n = Game.username;
+				if (Game.enableChatFilter)
+					n = Game.chatFilter.filterChat(n);
+
+				n = "\u00A7000127255255" + n;
+
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + username_y_offset, n);
+			}
+
+			if (server.connections != null)
+			{
+				for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), server.connections.size()); i++)
 				{
 					if (server.connections.get(i).username != null)
-						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 30 - 120, server.connections.get(i).username);
+					{
+						Drawing.drawing.setColor(0, 0, 0);
+						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190,
+								Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
+								server.connections.get(i).username);
+					}
 				}
 			}
 		}

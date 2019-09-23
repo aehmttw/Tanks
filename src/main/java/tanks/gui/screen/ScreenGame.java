@@ -40,6 +40,8 @@ public class ScreenGame extends Screen
 
 	public boolean ready = false;
 
+	public static boolean versus = false;
+
 	@SuppressWarnings("unchecked")
 	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
@@ -160,7 +162,14 @@ public class ScreenGame extends Screen
 			playing = false;
 			Game.startTime = 400;
 			paused = false;
-			Game.reset();
+
+			if (versus)
+			{
+				Game.cleanUp();
+				new Level(LevelGeneratorVersus.generateLevelString()).loadLevel();
+			}
+			else
+				Game.reset();
 
 			if (ScreenPartyHost.isServer)
 			{
@@ -226,7 +235,7 @@ public class ScreenGame extends Screen
 	}
 			);
 
-	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to party", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -236,6 +245,7 @@ public class ScreenGame extends Screen
 			Game.screen = ScreenPartyHost.activeScreen;	
 			ScreenPartyHost.readyPlayers.clear();
 			Game.eventsOut.add(new EventReturnToLobby());
+			versus = false;
 		}
 	}
 			);
@@ -520,7 +530,7 @@ public class ScreenGame extends Screen
 				if (!this.shop.isEmpty())
 					enterShop.update();
 
-				if (Game.autostart && !cancelCountdown)
+				if ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient || Game.autostart) && !cancelCountdown)
 					Game.startTime -= Panel.frameFrequency;
 
 				if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
@@ -617,6 +627,8 @@ public class ScreenGame extends Screen
 
 			if (aliveTeams.size() <= 1)
 			{
+				versus = false;
+
 				ScreenGame.finished = true;
 				Game.bulletLocked = true;
 
@@ -791,7 +803,7 @@ public class ScreenGame extends Screen
 				if (ScreenPartyHost.isServer && this.cancelCountdown)
 					startNow.draw();
 
-				if (Game.autostart && !cancelCountdown)
+				if ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient || Game.autostart) && !cancelCountdown)
 				{
 					Drawing.drawing.setColor(127, 127, 127);
 					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 35, 320, 3);

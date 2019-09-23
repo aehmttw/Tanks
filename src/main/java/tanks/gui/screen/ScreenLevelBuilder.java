@@ -611,7 +611,7 @@ public class ScreenLevelBuilder extends Screen
 				colorVarRed.maxValue = 255 - r;
 				colorVarRed.performValueCheck();
 
-				reload();
+				reload(true);
 				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
@@ -637,7 +637,7 @@ public class ScreenLevelBuilder extends Screen
 				colorVarGreen.maxValue = 255 - g;
 				colorVarGreen.performValueCheck();
 
-				reload();
+				reload(true);
 				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
@@ -663,7 +663,7 @@ public class ScreenLevelBuilder extends Screen
 				colorVarBlue.maxValue = 255 - b;
 				colorVarBlue.performValueCheck();
 
-				reload();
+				reload(true);
 				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
@@ -686,7 +686,7 @@ public class ScreenLevelBuilder extends Screen
 
 				dr = Integer.parseInt(colorVarRed.inputText);
 
-				reload();
+				reload(true);
 				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
@@ -708,7 +708,7 @@ public class ScreenLevelBuilder extends Screen
 
 				dg = Integer.parseInt(colorVarGreen.inputText);
 
-				reload();
+				reload(true);
 				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
@@ -730,7 +730,7 @@ public class ScreenLevelBuilder extends Screen
 
 				db = Integer.parseInt(colorVarBlue.inputText);
 
-				reload();
+				reload(true);
 				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
@@ -1062,6 +1062,9 @@ public class ScreenLevelBuilder extends Screen
 
 					if (currentPlaceable == Placeable.playerTank)
 					{
+						if (this.playerTeamNum >= this.teams.size())
+							this.playerTeamNum = 0;
+
 						this.selectTeam.text = "Team: " + this.teams.get(this.playerTeamNum).name;
 						this.selectTeam.update();
 						this.rotateTankButton.update();
@@ -1677,6 +1680,11 @@ public class ScreenLevelBuilder extends Screen
 
 	public void reload()
 	{
+		reload(false);
+	}
+
+	public void reload(boolean colorChange)
+	{
 		save();
 
 		int sX = Game.currentSizeX;
@@ -1705,7 +1713,7 @@ public class ScreenLevelBuilder extends Screen
 				((Tank) m).drawAge = Game.tank_size;
 		}
 
-		if (sX == Game.currentSizeX && sY == Game.currentSizeY)
+		if (!colorChange && sX == Game.currentSizeX && sY == Game.currentSizeY)
 		{
 			Game.tilesR = r;
 			Game.tilesG = g;
@@ -1889,6 +1897,7 @@ public class ScreenLevelBuilder extends Screen
 					this.colorVarRed.draw();
 					this.colorVarGreen.draw();
 					this.colorVarBlue.draw();
+					Drawing.drawing.setColor(0, 0, 0);
 					Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Background colors");
 					this.back2.draw();
 				}

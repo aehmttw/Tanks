@@ -3,6 +3,7 @@ package tanks.bullet;
 import tanks.*;
 import tanks.AttributeModifier.Operation;
 import tanks.event.EventShootBullet;
+import tanks.event.EventTankUpdateHealth;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
 import tanks.tank.Tank;
@@ -72,6 +73,9 @@ public class BulletHealing extends BulletInstant
 			this.destroy = true;
 		
 		t.lives = Math.min(t.baseLives + 1, t.lives - this.damage);
+
+		Game.eventsOut.add(new EventTankUpdateHealth(t));
+
 		t.attributes.add(new AttributeModifier("healray", "healray", Operation.add, 1.0));
 	}
 	

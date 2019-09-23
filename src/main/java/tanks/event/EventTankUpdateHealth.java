@@ -3,18 +3,20 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
 
-public class EventTankDestroyed implements INetworkEvent
+public class EventTankUpdateHealth implements INetworkEvent
 {
 	public int tank;
+	public double health;
 	
-	public EventTankDestroyed()
+	public EventTankUpdateHealth()
 	{
 		
 	}
 	
-	public EventTankDestroyed(Tank t)
+	public EventTankUpdateHealth(Tank t)
 	{
 		tank = t.networkID;
+		health = t.lives;
 	}
 	
 	@Override
@@ -24,25 +26,23 @@ public class EventTankDestroyed implements INetworkEvent
 		if (t == null)
 			return;
 
-		t.destroyNextFrame = true;
-		t.lives = 0;
-		
-		if (!Tank.freeIDs.contains(tank))
-		{
-			Tank.freeIDs.add(tank);
-			Tank.idMap.remove(tank);
-		}
+		if (t.lives > health && health > 0)
+			t.flashAnimation = 1;
+
+		t.lives = health;
 	}
 
 	@Override
 	public void write(ByteBuf b) 
 	{
 		b.writeInt(this.tank);
+		b.writeDouble(this.health);
 	}
 
 	@Override
 	public void read(ByteBuf b)
 	{
 		this.tank = b.readInt();
+		this.health = b.readDouble();
 	}
 }

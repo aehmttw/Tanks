@@ -59,8 +59,8 @@ public class Game
 	
 	public static double[][] tilesDepth = new double[28][18];
 
-	public static final int network_protocol = 4;
-	public static final String version = "Tanks 0.7.1";
+	public static final int network_protocol = 5;
+	public static final String version = "Tanks 0.7.2";
 
 	public static int port = 8080;
 
@@ -146,7 +146,7 @@ public class Game
 		/* 15*/ NetworkEventMap.register(EventCreatePlayer.class);
 		/* 16*/ NetworkEventMap.register(EventCreateTank.class);
 		/* 17*/ NetworkEventMap.register(EventCreateCustomTank.class);
-		/* 18*/ NetworkEventMap.register(EventTankDestroyed.class);
+		/* 18*/ NetworkEventMap.register(EventTankUpdateHealth.class);
 		/* 19*/ NetworkEventMap.register(EventShootBullet.class);
 		/* 20*/ NetworkEventMap.register(EventLayMine.class);
 		/* 21*/ NetworkEventMap.register(EventTankTeleport.class);
@@ -324,7 +324,9 @@ public class Game
 	
 	public static void exitToCrash(Exception e)
 	{
-		if (ScreenPartyHost.isServer)
+		e.printStackTrace();
+
+		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 			ScreenPartyHost.server.close("The party has ended because the host crashed");
 		
 		if (ScreenPartyLobby.isClient)
@@ -337,7 +339,6 @@ public class Game
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
-		e.printStackTrace();
 		Game.crashMessage = e.toString();
 		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
@@ -406,7 +407,7 @@ public class Game
 	
 	public static void loadLevel(File f, ScreenLevelBuilder s)
 	{
-		Scanner in;
+		Scanner in = null;
 		try
 		{
 			in = new Scanner(f);
@@ -422,6 +423,9 @@ public class Game
 		{
 			Game.exitToCrash(e);
 		}
+
+		if (in != null)
+			in.close();
 	}
 	
 	public static void start()

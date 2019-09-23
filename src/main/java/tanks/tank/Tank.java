@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.event.EventTankDestroyed;
+import tanks.event.EventTankUpdateHealth;
 import tanks.event.EventTankUpdate;
 import tanks.obstacle.Obstacle;
 
@@ -255,7 +255,8 @@ public abstract class Tank extends Movable
 				if (!freeIDs.contains(this.networkID))
 				{
 					if (!this.isRemote)
-						Game.eventsOut.add(new EventTankDestroyed(this));
+						Game.eventsOut.add(new EventTankUpdateHealth(this));
+
 					freeIDs.add(this.networkID);
 					idMap.remove(this.networkID);
 				}
@@ -319,6 +320,9 @@ public abstract class Tank extends Movable
 			Game.eventsOut.add(new EventTankUpdate(this));
 		
 		super.update();
+
+		if (this.lives <= 0)
+			this.destroy = true;
 	}
 
 	@Override
@@ -468,7 +472,11 @@ public abstract class Tank extends Movable
 	public void drawName()
 	{
 		Drawing.drawing.setFontSize(20);
-		Drawing.drawing.drawText(this.posX, this.posY + 35, this.name);
+
+		if (Game.enable3d)
+			Drawing.drawing.drawText(this.posX, this.posY + 35, this.size / 2, this.name);
+		else
+			Drawing.drawing.drawText(this.posX, this.posY + 35, this.name);
 	}
 
 	public void drawOutline() 

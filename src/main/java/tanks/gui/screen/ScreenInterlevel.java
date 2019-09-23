@@ -119,6 +119,18 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
+	Button newLevelVersus = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Generate a new level", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.cleanUp();
+			new Level(LevelGeneratorVersus.generateLevelString()).loadLevel();
+			Game.screen = new ScreenGame();
+		}
+	}
+	);
+
 	Button nextLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Next level", new Runnable()
 	{
 		@Override

@@ -6,7 +6,9 @@ import tanks.event.EventLoadLevel;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenLevelBuilder;
+import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.network.Server;
 import tanks.network.ServerHandler;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryObstacle;
@@ -39,7 +41,15 @@ public class Level
 	public boolean remote = false;
 
 	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
+
 	public ArrayList<Team> teamsList = new ArrayList<Team>();
+
+	public ArrayList<Integer> availablePlayerSpawns = new ArrayList<Integer>();
+
+	public ArrayList<Double> playerSpawnsX = new ArrayList<Double>();
+	public ArrayList<Double> playerSpawnsY = new ArrayList<Double>();
+	public ArrayList<Double> playerSpawnsAngle = new ArrayList<Double>();
+	public ArrayList<Team> playerSpawnsTeam = new ArrayList<Team>();
 
 	/**
 	 * A level string is structured like this:
@@ -49,7 +59,7 @@ public class Level
 	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
 	 */
 	public Level(String level)
-	{		
+	{
 		this.levelString = level.replaceAll("\u0000", "");
 
 		preset = this.levelString.split("\\{")[1].split("}")[0].split("\\|");
@@ -339,32 +349,12 @@ public class Level
 					if (team == Game.enemyTeam)
 						team = Game.playerTeam;
 
-					if (ScreenPartyHost.isServer)
-					{
-						EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
-						playerEvents.add(local);
-						Game.eventsOut.add(local);
+					this.playerSpawnsX.add(x);
+					this.playerSpawnsY.add(y);
+					this.playerSpawnsAngle.add(angle);
+					this.playerSpawnsTeam.add(team);
 
-						synchronized(ScreenPartyHost.server.connections)
-						{
-							for (ServerHandler c: ScreenPartyHost.server.connections)
-							{
-								if (c.clientID == null)
-									continue;
-
-								EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
-								playerEvents.add(e);
-								Game.eventsOut.add(e);
-							}
-						}
-						
-						continue;
-					}
-					else if (remote)
-						continue;
-
-					t = new TankPlayer(x, y, angle, Game.clientID);					
-					Game.player = (TankPlayer) t;
+					continue;
 				}
 				else
 				{
@@ -377,6 +367,62 @@ public class Level
 					Game.movables.add(new TankRemote(t));
 				else
 					Game.movables.add(t);
+			}
+		}
+
+		this.availablePlayerSpawns.clear();
+
+		int playerCount = 1;
+		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
+			playerCount += ScreenPartyHost.server.connections.size();
+
+		for (int i = 0; i < playerCount; i++)
+		{
+			if (this.availablePlayerSpawns.size() == 0)
+			{
+				for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
+				{
+					this.availablePlayerSpawns.add(j);
+				}
+			}
+
+			int spawn = this.availablePlayerSpawns.remove((int) (Math.random() * this.availablePlayerSpawns.size()));
+
+			double x = this.playerSpawnsX.get(spawn);
+			double y = this.playerSpawnsY.get(spawn);
+			double angle = this.playerSpawnsAngle.get(spawn);
+			Team team = this.playerSpawnsTeam.get(spawn);
+
+			if (ScreenPartyHost.isServer)
+			{
+				if (i == 0)
+				{
+					EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
+					playerEvents.add(local);
+					Game.eventsOut.add(local);
+				}
+				else
+				{
+					synchronized (ScreenPartyHost.server.connections)
+					{
+						ServerHandler c = ScreenPartyHost.server.connections.get(i - 1);
+
+						EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
+						playerEvents.add(e);
+						Game.eventsOut.add(e);
+					}
+				}
+
+				continue;
+			}
+			else if (remote)
+				continue;
+			else
+			{
+				Tank tank = new TankPlayer(x, y, angle, Game.clientID);
+				Game.player = (TankPlayer) tank;
+				tank.team = team;
+				Game.movables.add(tank);
 			}
 		}
 

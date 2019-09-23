@@ -15,8 +15,7 @@ public abstract class Movable implements IDrawableForInterface
 	public double vZ = 0;
 	public double cooldown = 0;
 	public boolean destroy = false;
-	public boolean destroyNextFrame = false;
-	
+
 	public int drawLevel = 3;
 	//public boolean drawBelow = false;
 	//public boolean drawAbove = false;
@@ -76,9 +75,6 @@ public abstract class Movable implements IDrawableForInterface
 
 			this.canHide = false;
 		}
-
-		if (this.destroyNextFrame)
-			this.destroy = true;
 	}
 
 	public void setMotionInDirection(double x, double y, double velocity)

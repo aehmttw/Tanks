@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.event.EventTankUpdateHealth;
 import tanks.hotbar.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Mine;
@@ -111,6 +112,8 @@ public class Bullet extends Movable implements IDrawable
 			}
 			
 			t.lives -= this.damage;
+
+			Game.eventsOut.add(new EventTankUpdateHealth(t));
 
 			if (t.lives <= 0)
 			{

@@ -361,6 +361,17 @@ public class Drawing
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
+	public void drawText(double x, double y, double z, String text)
+	{
+		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
+		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+
+		Game.game.window.fontRenderer.drawString(drawX, drawY, z, this.fontSize, this.fontSize, text);
+	}
+
 	public void drawInterfaceText(double x, double y, String text)
 	{
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);

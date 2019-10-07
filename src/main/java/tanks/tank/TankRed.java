@@ -4,12 +4,13 @@ import tanks.*;
 import tanks.bullet.BulletLaser;
 import tanks.Panel;
 import tanks.event.EventShootBullet;
+import tanks.event.EventTankRedUpdateCharge;
 
 public class TankRed extends TankAIControlled
 {
-	boolean lineOfSight = false;
-	double maxCooldown = 100;
-	double idleTime = 0;
+	public boolean lineOfSight = false;
+	public double maxCooldown = 100;
+	public double idleTime = 0;
 
 	public TankRed(String name, double x, double y, double angle)
 	{
@@ -38,6 +39,9 @@ public class TankRed extends TankAIControlled
 
 		if (this.cooldown < this.maxCooldown)
 		{
+			if (!this.destroy)
+				Game.eventsOut.add(new EventTankRedUpdateCharge(this.networkID, (maxCooldown - this.cooldown) / maxCooldown));
+
 			this.colorR = Math.min((200 + (maxCooldown - this.cooldown) / maxCooldown * 55), 255);
 			this.colorG = (maxCooldown - this.cooldown) / maxCooldown * 100;
 			this.colorB = (maxCooldown - this.cooldown) / maxCooldown * 100;
@@ -51,6 +55,9 @@ public class TankRed extends TankAIControlled
 			this.colorR = 200;
 			this.colorG = 0;
 			this.colorB = 0;
+
+			if (!this.destroy)
+				Game.eventsOut.add(new EventTankRedUpdateCharge(this.networkID, 0));
 		}
 	}
 
@@ -58,12 +65,14 @@ public class TankRed extends TankAIControlled
 	public void shoot()
 	{
 		this.lineOfSight = true;
+
 		if (this.cooldown > 0)
 		{
 			this.idleTime = 0;
 			if (Math.random() * maxCooldown > cooldown && Game.fancyGraphics)
 			{
-				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.charge);
+				Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.charge);
+
 				double var = 50;
 				e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
 				e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
@@ -75,7 +84,7 @@ public class TankRed extends TankAIControlled
 
 		}
 
-		Ray r = new Ray(this.posX, this.posX, this.angle, 0, this);
+		Ray r = new Ray(this.posX, this.posY, this.angle, 0, this);
 		r.moveOut(4);
 		Movable m = r.getTarget();
 

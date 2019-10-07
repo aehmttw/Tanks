@@ -48,14 +48,16 @@ public abstract class Screen
 							if (size != 1)
 								Drawing.drawing.fillBox( 
 										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
-										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Obstacle.obstacle_size + Game.tilesDepth[i][j], 
+										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Obstacle.obstacle_size + Game.tilesDepth[i][j],
 										Obstacle.obstacle_size / Game.bgResMultiplier, 
 										Obstacle.obstacle_size / Game.bgResMultiplier,
 										Obstacle.obstacle_size);
 							else
 								Drawing.drawing.fillBox( 
 										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
-										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 0, 
+										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										0,
 										Obstacle.obstacle_size / Game.bgResMultiplier, 
 										Obstacle.obstacle_size / Game.bgResMultiplier,
 										Game.tilesDepth[i][j]);

@@ -59,6 +59,7 @@ public class EventCreatePlayer implements INetworkEvent
 		}
 		
 		t.name = this.username;
+		t.nameTag.name = this.username;
 		
 		if (Game.enableChatFilter)
 			t.name = Game.chatFilter.filterChat(t.name);

@@ -1,5 +1,7 @@
 package tanks;
 
+import tanks.gui.screen.ScreenPartyHost;
+
 import java.util.ArrayList;
 
 public class LevelGenerator 
@@ -407,28 +409,70 @@ public class LevelGenerator
 
 		int x = (int) (Math.random() * (width));
 		int y = (int) (Math.random() * (height));
-		while (cells[x][y]) 
+
+		while (cells[x][y])
 		{
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
 		}
-		for (int i = -2; i <= 2; i++)
+
+		/*for (int i = -2; i <= 2; i++)
 			for (int j = -2; j <= 2; j++)
 				cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
-		s.append(x).append("-").append(y).append("-player-").append((int) (Math.random() * 4)).append(",");
-		for (int i = 0; i < numTanks; i++) 
+		s.append(x).append("-").append(y).append("-player-").append((int) (Math.random() * 4)).append(",");*/
+
+		int numPlayers = 1;
+
+		if (ScreenPartyHost.isServer)
+			numPlayers += ScreenPartyHost.server.connections.size();
+
+		for (int i = 0; i < numPlayers; i++)
 		{
 			int angle = (int) (Math.random() * 4);
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
+
 			while (cells[x][y])
 			{
 				x = (int) (Math.random() * (width));
 				y = (int) (Math.random() * (height));
 			}
+
+			int bound;
+
+			if (numPlayers < 20)
+				bound = 2;
+			else if (numPlayers < 56)
+				bound = 1;
+			else
+				bound = 0;
+
+			for (int a = -bound; a <= bound; a++)
+				for (int j = -bound; j <= bound; j++)
+					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
+
+			s.append(x).append("-").append(y).append("-");
+			s.append("player");
+			s.append("-").append(angle);
+
+			s.append(",");
+		}
+
+		for (int i = 0; i < numTanks; i++)
+		{
+			int angle = (int) (Math.random() * 4);
+			x = (int) (Math.random() * (width));
+			y = (int) (Math.random() * (height));
+
+			while (cells[x][y])
+			{
+				x = (int) (Math.random() * (width));
+				y = (int) (Math.random() * (height));
+			}
+
 			for (int a = -1; a <= 1; a++)
-				for (int j = -2; j <= 1; j++)
+				for (int j = -1; j <= 1; j++)
 					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
 			s.append(x).append("-").append(y).append("-");

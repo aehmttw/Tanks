@@ -219,6 +219,8 @@ public class Panel
 		this.drawBar();
 
 		this.drawMouseTarget();
+
+
 	}
 
 	public void drawMouseTarget()

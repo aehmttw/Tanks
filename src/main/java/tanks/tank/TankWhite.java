@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
+import tanks.event.EventTankUpdateVisibility;
 
 public class TankWhite extends TankAIControlled
 {
@@ -15,6 +16,8 @@ public class TankWhite extends TankAIControlled
 		this.enableDefensiveFiring = true;
 
 		this.coinValue = 4;
+
+		Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
 	}
 
 	@Override
@@ -32,12 +35,17 @@ public class TankWhite extends TankAIControlled
 				{
 					for (int i = 0; i < 50; i++)
 					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 						double var = 50;
 						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+
 						Game.effects.add(e);
 					}
 				}

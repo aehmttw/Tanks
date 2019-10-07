@@ -16,8 +16,6 @@ public abstract class Tank extends Movable
 
 	public double angle = 0;
 
-	public boolean showName = false;
-
 	public boolean invulnerable = false;
 	public boolean targetable = true;
 
@@ -62,6 +60,8 @@ public abstract class Tank extends Movable
 		this.colorB = b;
 		turret = new Turret(this);
 		this.name = name;
+		this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, this.name, r, g, b);
+
 		this.drawLevel = 4;
 
 		if (countID)
@@ -265,13 +265,18 @@ public abstract class Tank extends Movable
 				{
 					for (int i = 0; i < this.size * 4; i++)
 					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 						double var = 50;
 
 						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
 						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
 						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
-						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+
 						Game.effects.add(e);
 					}
 				}
@@ -457,9 +462,6 @@ public abstract class Tank extends Movable
 		}
 
 		this.turret.draw(angle, forInterface, true);
-
-		if (this.showName)
-			this.drawName();
 	}
 
 	@Override
@@ -467,16 +469,6 @@ public abstract class Tank extends Movable
 	{
 		drawAge += Panel.frameFrequency;
 		this.drawTank(false);
-	}
-
-	public void drawName()
-	{
-		Drawing.drawing.setFontSize(20);
-
-		if (Game.enable3d)
-			Drawing.drawing.drawText(this.posX, this.posY + 35, this.size / 2, this.name);
-		else
-			Drawing.drawing.drawText(this.posX, this.posY + 35, this.name);
 	}
 
 	public void drawOutline() 

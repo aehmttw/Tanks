@@ -315,8 +315,14 @@ public class LWJGLWindow
 		glEnd();
 	}
 	
-	public void fillOval(double x, double y, double z, double sX, double sY)
-	{				
+	public void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest)
+	{
+		if (depthTest)
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(false);
+		}
+
 		x += sX / 2;
 		y += sY / 2;
 
@@ -329,6 +335,12 @@ public class LWJGLWindow
 		}
 
 		glEnd();
+
+		if (depthTest)
+		{
+			glDepthMask(true);
+			glDisable(GL_DEPTH_TEST);
+		}
 	}
 
 	public void setColor(double r, double g, double b, double a)
@@ -415,15 +427,15 @@ public class LWJGLWindow
 	 * +64 draw on top
 	 * */
 	public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options)
-	{    
+	{
 		glEnable(GL_DEPTH_TEST);
-		
+
 		if ((options >> 6) % 2 == 0)
-			glDepthFunc(GL_LESS);  
+			glDepthFunc(GL_LESS);
 		else
-			glDepthFunc(GL_ALWAYS);  
-		
-		GL11.glBegin(GL11.GL_QUADS);    
+			glDepthFunc(GL_ALWAYS);
+
+		GL11.glBegin(GL11.GL_QUADS);
 
 		if (options % 2 == 0)
 		{
@@ -479,7 +491,7 @@ public class LWJGLWindow
 			GL11.glVertex3d(x + sX, y, z + sZ);
 		}
 		
-		GL11.glEnd();    
+		GL11.glEnd();
 		glDisable(GL_DEPTH_TEST);
 	}
 
@@ -672,7 +684,7 @@ public class LWJGLWindow
 		//double ang1 = Math.PI / 4;
 		//glMultMatrixd(new double[]{Math.cos(ang1), -Math.sin(ang1), 0, 0,  Math.sin(ang1), Math.cos(ang1), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1});
 
-		//double ang2 = -Math.PI / 16;
+		//double ang2 = -Math.PI * 6 / 16;
 		//glMultMatrixd(new double[]{1, 0, 0, 0,  0, Math.cos(ang2), -Math.sin(ang2), 0,  0, Math.sin(ang2), Math.cos(ang2), 0,  0, 0, 0, 1});
 
 		//double ang3 = Math.PI / 5;
@@ -740,8 +752,9 @@ public class LWJGLWindow
 		if (depthtest)
 			glEnable(GL_DEPTH_TEST);
 		
-		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
-		glTranslated(-absoluteWidth / 2, -absoluteHeight / 2, -absoluteDepth);
+		//glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
+		//glTranslated(-absoluteWidth / 2, -absoluteHeight / 2, -absoluteDepth);
+		setPerspective();
 
 		glMatrixMode(GL_MODELVIEW);
 		//glLoadIdentity();

@@ -23,17 +23,24 @@ public class Button
 	
 	public boolean enabled = true;
 
-	double disabledColR = 200;
-	double disabledColG = 200;
-	double disabledColB = 200;
-	
-	double unselectedColR = 255;
-	double unselectedColG = 255;
-	double unselectedColB = 255;
-	
-	double selectedColR = 240;
-	double selectedColG = 240;
-	double selectedColB = 255;
+	public double disabledColR = 200;
+	public double disabledColG = 200;
+	public double disabledColB = 200;
+
+	public double unselectedColR = 255;
+	public double unselectedColG = 255;
+	public double unselectedColB = 255;
+
+	public double selectedColR = 240;
+	public double selectedColG = 240;
+	public double selectedColB = 255;
+
+	public double textColR = 0;
+	public double textColG = 0;
+	public double textColB = 0;
+
+	public double textOffsetX = 0;
+	public double textOffsetY = 0;
 
 	public Button(double x, double y, double sX, double sY, String text, Runnable f)
 	{
@@ -91,8 +98,8 @@ public class Button
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
 		 
-		drawing.setColor(0, 0, 0);
-		drawing.drawInterfaceText(posX, posY, text);
+		drawing.setColor(this.textColR, this.textColG, this.textColB);
+		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, text);
 
 		if (enableHover)
 		{

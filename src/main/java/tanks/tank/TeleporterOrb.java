@@ -46,7 +46,11 @@ public class TeleporterOrb extends Movable
 		for (int i = 0; i < this.size - this.tank.size; i++)
 		{
 			Drawing.drawing.setColor(255, 255, 255, 20);
-			Drawing.drawing.fillOval(this.posX, this.posY, i, i);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i, false);
+			else
+				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 		}
 	}
 	
@@ -74,7 +78,10 @@ public class TeleporterOrb extends Movable
 
 		double frac = (Math.sin((this.maxAge - this.age) / this.maxAge * Math.PI - Math.PI / 2) + 1) / 2;
 		double frac2 = (Math.sin((-this.age + 50) / 50 * Math.PI - Math.PI / 2) + 1) / 2;
-		
+
+		this.posZ = Math.sin((this.maxAge - Math.max(0, Math.min(this.maxAge, this.age))) / this.maxAge * Math.PI) *
+				Math.sqrt(Math.pow(this.dX - this.iX, 2) + Math.pow(this.dY - this.iY, 2)) / 2;
+
 		if (this.age <= 0)
 			frac = 1;
 				
@@ -114,13 +121,18 @@ public class TeleporterOrb extends Movable
 		if (!Game.fancyGraphics)
 			return;
 		
-		Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 		double var = 50;
 		
 		e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 		e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 		e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 4);
+
+		if (Game.enable3d)
+			e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI * 2, Math.random() * 4);
+		else
+			e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 4);
+
 		Game.effects.add(e);		
 	}
 }

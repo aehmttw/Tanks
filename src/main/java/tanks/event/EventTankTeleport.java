@@ -2,6 +2,8 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.tank.Tank;
 import tanks.tank.TeleporterOrb;
 
@@ -80,6 +82,16 @@ public class EventTankTeleport implements INetworkEvent
 		t.maxAge = this.maxAge;
 		t.endAge = this.endAge;
 		Game.movables.add(t);
+
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+
+			if (o instanceof ObstacleTeleporter && ((o.posX == this.iX && o.posY == this.iY) || (o.posX == this.dX && o.posY == this.dY)))
+			{
+				((ObstacleTeleporter)o).cooldown = 500;
+			}
+		}
 	}
 
 }

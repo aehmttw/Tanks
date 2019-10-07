@@ -83,7 +83,7 @@ public class Ray
 			age++;
 			
 			if (trace && (!dotted || (this.age % 2 == 0)))
-				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.ray));
+				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tank_size / 4, Effect.EffectType.ray));
 			
 			this.posX += this.vX;
 			this.posY += this.vY;

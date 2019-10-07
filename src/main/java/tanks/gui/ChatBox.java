@@ -81,7 +81,10 @@ public class ChatBox extends TextBox
 		{
 			if (this.inputText.length() > 0)
 				this.function.run();
-			
+
+			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_ENTER);
+			Game.game.window.pressedKeys.remove((Integer)GLFW.GLFW_KEY_ENTER);
+
 			this.selected = false;
 			this.inputText = this.defaultText;
 		}

@@ -8,12 +8,10 @@ import tanks.gui.ChatMessage;
 import tanks.hotbar.Item;
 import tanks.network.Client;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 import org.lwjgl.glfw.GLFW;
 
+import javax.naming.Name;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +42,6 @@ public class ScreenGame extends Screen
 
 	@SuppressWarnings("unchecked")
 	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
-
 	
 	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
@@ -732,13 +729,18 @@ public class ScreenGame extends Screen
 	{
 		this.drawDefaultBackground();
 
+
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 			drawables[0].add(Game.belowEffects.get(i));
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
+
 			drawables[m.drawLevel].add(m);
+
+			if (m.showName)
+				drawables[m.nameTag.drawLevel].add(m.nameTag);
 		}
 
 		for (int i = 0; i < Game.obstacles.size(); i++)
@@ -749,7 +751,6 @@ public class ScreenGame extends Screen
 
 		for (int i = 0; i < Game.effects.size(); i++)
 			drawables[7].add(Game.effects.get(i));
-
 
 		for (int i = 0; i < this.drawables.length; i++)
 		{

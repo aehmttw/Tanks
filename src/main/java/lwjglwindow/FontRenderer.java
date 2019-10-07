@@ -25,7 +25,7 @@ public class FontRenderer
 		this.image = fontFile;
 	}
 	
-	public int drawChar(double x, double y, double z, double sX, double sY, char c)
+	public int drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
 	{
 		int i = this.chars.indexOf(c);
 		
@@ -35,7 +35,7 @@ public class FontRenderer
 		int col = i % 16;
 		int row = i / 16;
 		int width = charSizes[i];
-		this.home.drawImage(x, y, z, sX, sY - 0.0001, col / 16f, row / 16f, (col + width / 8f) / 16f, (row + 1) / 16f, image, true, false);
+		this.home.drawImage(x, y, z, sX, sY - 0.0001, col / 16f, row / 16f, (col + width / 8f) / 16f, (row + 1) / 16f, image, true, depthtest);
 		return width;
 	}
 	
@@ -61,7 +61,7 @@ public class FontRenderer
 				i += 12;
 			}
 			else
-				curX += (drawChar(curX, y, z, sX, sY, c[i]) + 1) * sX * 4;
+				curX += (drawChar(curX, y, z, sX, sY, c[i], true) + 1) * sX * 4;
 		}
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -87,7 +87,7 @@ public class FontRenderer
 				i += 12;
 			}
 			else
-				curX += (drawChar(curX, y, 0, sX, sY, c[i]) + 1) * sX * 4;
+				curX += (drawChar(curX, y, 0, sX, sY, c[i], false) + 1) * sX * 4;
 		}
 	}
 	

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class ObstacleTeleporter extends Obstacle
 {	
-	double cooldown;
-	double green = 255;
+	public double cooldown;
+	public double green = 255;
 
 	public ObstacleTeleporter(String name, double posX, double posY) 
 	{
@@ -70,7 +70,7 @@ public class ObstacleTeleporter extends Obstacle
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && ((Tank) m).targetable && !m.isRemote && Movable.distanceBetween(this, m) < ((Tank)m).size)
+			if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank)m).size)
 			{
 				t = (Tank) m;
 
@@ -80,15 +80,17 @@ public class ObstacleTeleporter extends Obstacle
 					continue;
 				}
 
-				for (int j = 0; j < Game.obstacles.size(); j++)
+				if (!m.isRemote)
 				{
-					Obstacle o = Game.obstacles.get(j);
-					if (o instanceof ObstacleTeleporter && o != this)
+					for (int j = 0; j < Game.obstacles.size(); j++)
 					{
-						teleporters.add((ObstacleTeleporter) o);
+						Obstacle o = Game.obstacles.get(j);
+						if (o instanceof ObstacleTeleporter && o != this)
+						{
+							teleporters.add((ObstacleTeleporter) o);
+						}
 					}
-				}			
-
+				}
 			}
 		}
 

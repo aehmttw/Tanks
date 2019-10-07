@@ -1,9 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableForInterface;
-import tanks.Movable;
+import tanks.*;
 
 public class Obstacle implements IDrawableForInterface
 {
@@ -28,8 +25,8 @@ public class Obstacle implements IDrawableForInterface
 	public double colorB;
 	public double colorA = 255;
 	public static double draw_size = 0;
-	public static double obstacle_size = Game.tank_size; 
-	
+	public static double obstacle_size = Game.tank_size;
+
 	public String name;
 
 	public Obstacle(String name, double posX, double posY)
@@ -49,7 +46,7 @@ public class Obstacle implements IDrawableForInterface
 		Drawing drawing = Drawing.drawing;
 		
 		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
-	
+
 		if (Game.enable3d)
 			drawing.fillBox(this.posX, this.posY, (obstacle_size - draw_size) / 2, draw_size, draw_size, draw_size);
 		else

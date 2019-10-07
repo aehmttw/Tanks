@@ -409,27 +409,40 @@ public class LevelGeneratorVersus
 
 		int x = (int) (Math.random() * (width));
 		int y = (int) (Math.random() * (height));
-		while (cells[x][y]) 
+
+		while (cells[x][y])
 		{
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
 		}
-		for (int i = -2; i <= 2; i++)
-			for (int j = -2; j <= 2; j++)
-				cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
 		for (int i = 0; i < numTanks; i++)
 		{
 			int angle = (int) (Math.random() * 4);
 			x = (int) (Math.random() * (width));
 			y = (int) (Math.random() * (height));
+
 			while (cells[x][y])
 			{
 				x = (int) (Math.random() * (width));
 				y = (int) (Math.random() * (height));
 			}
-			for (int a = -1; a <= 1; a++)
-				for (int j = -2; j <= 1; j++)
+
+			int bound;
+
+			if (numTanks < 6)
+				bound = 4;
+			else if (numTanks < 10)
+				bound = 3;
+			else if (numTanks < 20)
+				bound = 2;
+			else if (numTanks < 56)
+				bound = 1;
+			else
+				bound = 0;
+
+			for (int a = -bound; a <= bound; a++)
+				for (int j = -bound; j <= bound; j++)
 					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
 
 			s.append(x).append("-").append(y).append("-");

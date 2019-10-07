@@ -21,7 +21,7 @@ public class Effect extends Movable
 	public double angle;
 	public double distance;
 	
-	public static Effect createNewEffect(double x, double y, EffectType type)
+	public static Effect createNewEffect(double x, double y, double z, EffectType type)
 	{
 		//while (Game.recycleEffects.size() > 0 && Game.recycleEffects.get(0) == null)
 		//	Game.recycleEffects.remove(0);
@@ -31,38 +31,34 @@ public class Effect extends Movable
 			Effect e = Game.recycleEffects.remove(0);
 			
 			e.refurbish();
-			e.initialize(x, y, type);
+			e.initialize(x, y, z, type);
 			
 			return e;
 		}
 		else
 		{
 			Effect e = new Effect();
-			e.initialize(x, y, type);
+			e.initialize(x, y, z, type);
 			return e;
 		}
 	}
 	
 	public static Effect createNewEffect(double x, double y, EffectType type, double opacityMultiplier, double age)
 	{
-		Effect e = Effect.createNewEffect(x, y, type);
+		return Effect.createNewEffect(x, y, 0, type, opacityMultiplier, age);
+	}
+	
+	public static Effect createNewEffect(double x, double y, double z, EffectType type, double opacityMultiplier, double age)
+	{
+		Effect e = Effect.createNewEffect(x, y, z, type);
 		e.ffOpacityMultiplier = Math.min(1, Panel.frameFrequency * opacityMultiplier);
 		e.age = age * Panel.frameFrequency;
 		return e;
 	}
 	
-	public static Effect createNewEffect(double x, double y, double z, EffectType type, double opacityMultiplier, double age)
+	public static Effect createNewEffect(double x, double y, EffectType type)
 	{
-		Effect e = Effect.createNewEffect(x, y, type, opacityMultiplier, age);
-		e.posZ = z;
-		return e;
-	}
-	
-	public static Effect createNewEffect(double x, double y, double z, EffectType type)
-	{
-		Effect e = Effect.createNewEffect(x, y, type);
-		e.posZ = z;
-		return e;
+		return Effect.createNewEffect(x, y, 0, type);
 	}
 	
 	/**
@@ -73,10 +69,11 @@ public class Effect extends Movable
 		super(0, 0);	
 	}
 	
-	protected void initialize(double x, double y, EffectType type)
+	protected void initialize(double x, double y, double z, EffectType type)
 	{
 		this.posX = x;
 		this.posY = y;
+		this.posZ = z;
 		this.type = type;
 		
 		if (type == EffectType.fire)
@@ -99,9 +96,14 @@ public class Effect extends Movable
 			this.maxAge = Math.random() * 100 + 50;
 		else if (type.equals(EffectType.charge))
 		{
-			this.addPolarMotion(Math.random() * Math.PI * 2, Math.random() * 3 + 3);
+			if (Game.enable3d)
+				this.add3dPolarMotion(Math.random() * Math.PI * 2,-Math.random() * Math.PI / 2, Math.random() * 3 + 3);
+			else
+				this.addPolarMotion(Math.random() * Math.PI * 2, Math.random() * 3 + 3);
+
 			this.posX -= this.vX * 25;
 			this.posY -= this.vY * 25;
+			this.posZ -= this.vZ * 25;
 			this.maxAge = 25;
 		}
 		else if (type == EffectType.tread)
@@ -254,7 +256,7 @@ public class Effect extends Movable
 			drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
 		}
 		else if (this.type == EffectType.charge)
-		{	
+		{
 			double size = 1 + (Bullet.bullet_size * (this.age / this.maxAge));
 			drawing.setColor(this.colR, this.colG, this.colB);
 

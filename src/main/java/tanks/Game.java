@@ -59,8 +59,8 @@ public class Game
 	
 	public static double[][] tilesDepth = new double[28][18];
 
-	public static final int network_protocol = 5;
-	public static final String version = "Tanks 0.7.2";
+	public static final int network_protocol = 6;
+	public static final String version = "Tanks 0.7.3";
 
 	public static int port = 8080;
 
@@ -150,6 +150,8 @@ public class Game
 		/* 19*/ NetworkEventMap.register(EventShootBullet.class);
 		/* 20*/ NetworkEventMap.register(EventLayMine.class);
 		/* 21*/ NetworkEventMap.register(EventTankTeleport.class);
+		/* 22*/ NetworkEventMap.register(EventTankUpdateVisibility.class);
+		/* 23*/ NetworkEventMap.register(EventTankRedUpdateCharge.class);
 
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));

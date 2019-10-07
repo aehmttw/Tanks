@@ -22,12 +22,13 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	public static ScreenPartyHost activeScreen;
 	public String ip = "";
 
+	Button[] kickButtons = new Button[entries_per_page];
+
 	public int usernamePage = 0;
 
 	public static int entries_per_page = 10;
 	public static int username_spacing = 30;
 	public static int username_y_offset = -120;
-
 
 	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
@@ -119,6 +120,35 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 	public ScreenPartyHost()
 	{
+		for (int i = 0; i < this.kickButtons.length; i++)
+		{
+			final int j = i;
+			kickButtons[i] = new Button(Drawing.drawing.interfaceSizeX / 2 - 20,
+					Drawing.drawing.interfaceSizeY / 2 + (1 + i) * username_spacing + username_y_offset, 25, 25, "x", new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					Game.screen = new ScreenPartyKick(server.connections.get(j + usernamePage * entries_per_page));
+				}
+			});
+
+			kickButtons[i].textOffsetY = -1;
+			kickButtons[i].textOffsetX = 1;
+
+			kickButtons[i].textColR = 255;
+			kickButtons[i].textColG = 255;
+			kickButtons[i].textColB = 255;
+
+			kickButtons[i].unselectedColR = 255;
+			kickButtons[i].unselectedColG = 0;
+			kickButtons[i].unselectedColB = 0;
+
+			kickButtons[i].selectedColR = 255;
+			kickButtons[i].selectedColG = 127;
+			kickButtons[i].selectedColB = 127;
+		}
+
 		activeScreen = this;
 		isServer = true;
 		serverThread = new Thread(new Runnable()
@@ -183,7 +213,15 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 			if ((this.usernamePage + 1) * 10 < server.connections.size())
 				this.nextUsernamePage.update();
+
+			int entries = Math.min(10, server.connections.size() - this.usernamePage * entries_per_page);
+
+			for (int i = 0; i < entries; i++)
+			{
+				this.kickButtons[i].update();
+			}
 		}
+
 
 		chatbox.update();
 	}
@@ -249,6 +287,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190,
 								Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
 								server.connections.get(i).username);
+
+						this.kickButtons[i - this.usernamePage * entries_per_page].draw();
 					}
 				}
 			}

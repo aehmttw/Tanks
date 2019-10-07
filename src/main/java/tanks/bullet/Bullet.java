@@ -349,7 +349,12 @@ public class Bullet extends Movable implements IDrawable
 					e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
 					e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
 					e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
-					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+					if (Game.enable3d)
+						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
+					else
+						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
 					Game.effects.add(e);
 				}
 			}
@@ -437,7 +442,7 @@ public class Bullet extends Movable implements IDrawable
 		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int)(opacity * opacity * opacity * 255.0));
 		
 		if (Game.enable3d)
-			Drawing.drawing.fillOval(posX, posY, posZ, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+			Drawing.drawing.fillOval(posX, posY, posZ + 1, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 		else
 			Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 

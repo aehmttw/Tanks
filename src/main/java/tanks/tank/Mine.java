@@ -92,7 +92,11 @@ public class Mine extends Movable
 				e.colR = 255;
 				e.colG = (1 - random) * 155 + Math.random() * 100;
 				e.colB = 0;
-				e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
+
+				if (Game.enable3d)
+					e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
+				else
+					e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tank_size / 2) / Game.tank_size * 2);
 				Game.effects.add(e);
 			}
 		}
@@ -145,8 +149,7 @@ public class Mine extends Movable
 							{
 								for (int l = 0; l < Obstacle.obstacle_size; l += 10)
 								{
-									Effect e = Effect.createNewEffect(o.posX + j + 5 - Obstacle.obstacle_size / 2, o.posY + k + 5 - Obstacle.obstacle_size / 2, Effect.EffectType.obstaclePiece3d);
-									e.posZ = l;
+									Effect e = Effect.createNewEffect(o.posX + j + 5 - Obstacle.obstacle_size / 2, o.posY + k + 5 - Obstacle.obstacle_size / 2, l, Effect.EffectType.obstaclePiece3d);
 
 									e.colR = o.colorR;
 									e.colG = o.colorG;

@@ -25,7 +25,12 @@ public class AreaEffectFreeze extends AreaEffect
 				e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-				e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 200.0);
+
+				if (Game.enable3d)
+					e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 200.0);
+				else
+					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 200.0);
+
 				e.maxAge *= 4;
 				Game.effects.add(e);
 			}

@@ -2,6 +2,7 @@ package tanks;
 
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
+import tanks.tank.NameTag;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,9 @@ public abstract class Movable implements IDrawableForInterface
 	public double vZ = 0;
 	public double cooldown = 0;
 	public boolean destroy = false;
+
+	public NameTag nameTag;
+	public boolean showName = false;
 
 	public int drawLevel = 3;
 	//public boolean drawBelow = false;
@@ -202,12 +206,34 @@ public abstract class Movable implements IDrawableForInterface
 		this.vY = velY;			
 	}
 
+	public void set3dPolarMotion(double angle1, double angle2, double velocity)
+	{
+		double velX = velocity * Math.cos(angle1) * Math.cos(angle2);
+		double velY = velocity * Math.sin(angle1) * Math.cos(angle2);
+		double velZ = velocity * Math.sin(angle2);
+
+		this.vX = velX;
+		this.vY = velY;
+		this.vZ = velZ;
+	}
+
 	public void addPolarMotion(double angle, double velocity)
 	{
 		double velX = velocity * Math.cos(angle);
 		double velY = velocity * Math.sin(angle);
 		this.vX += velX;
 		this.vY += velY;			
+	}
+
+	public void add3dPolarMotion(double angle1, double angle2, double velocity)
+	{
+		double velX = velocity * Math.cos(angle1) * Math.cos(angle2);
+		double velY = velocity * Math.sin(angle1) * Math.cos(angle2);
+		double velZ = velocity * Math.sin(angle2);
+
+		this.vX += velX;
+		this.vY += velY;
+		this.vZ += velZ;
 	}
 
 	public void moveInDirection(double x, double y, double amount)

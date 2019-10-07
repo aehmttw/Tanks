@@ -531,7 +531,14 @@ public class ScreenLevelBuilder extends Screen
 				if (levelName.inputText.length() > 0 && !new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText + ".tanks").exists())
 				{
 					if (file.exists())
+					{
 						file.renameTo(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText + ".tanks"));
+					}
+
+					while (file.exists())
+					{
+						file.delete();
+					}
 
 					name = levelName.inputText + ".tanks";
 				}
@@ -1389,12 +1396,17 @@ public class ScreenLevelBuilder extends Screen
 
 						for (int z = 0; z < 100; z++)
 						{
-							Effect e = Effect.createNewEffect(m.posX, m.posY, Effect.EffectType.piece);
+							Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
 							double var = 50;
 							e.colR = Math.min(255, Math.max(0, ((Tank)m).colorR + Math.random() * var - var / 2));
 							e.colG = Math.min(255, Math.max(0, ((Tank)m).colorG + Math.random() * var - var / 2));
 							e.colB = Math.min(255, Math.max(0, ((Tank)m).colorB + Math.random() * var - var / 2));
-							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2);
+
+							if (Game.enable3d)
+								e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * 2);
+							else
+								e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2);
+
 							e.maxAge /= 2;
 							Game.effects.add(e);
 						}

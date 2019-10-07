@@ -78,8 +78,13 @@ public class Drawing
 
 		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
-	
+
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
+	{
+		this.fillOval(x, y, z, sizeX, sizeY, true);
+	}
+
+	public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
@@ -92,7 +97,7 @@ public class Drawing
 
 		double dZ = z * scale / interfaceScale;
 
-		Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY);
+		Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
 	
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
@@ -265,6 +270,7 @@ public class Drawing
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawZ = z * scale / interfaceScale;
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -273,7 +279,7 @@ public class Drawing
 		double drawSizeY = sizeY * scale;
 		double drawSizeZ = sizeZ * scale / interfaceScale;
 
-		Game.game.window.fillBox(drawX, drawY, z, drawSizeX, drawSizeY, drawSizeZ, options);
+		Game.game.window.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
 	}
 
 	public void drawRect(double x, double y, double sizeX, double sizeY)
@@ -368,8 +374,9 @@ public class Drawing
 
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+		double drawZ = z * scale / interfaceScale;
 
-		Game.game.window.fontRenderer.drawString(drawX, drawY, z, this.fontSize, this.fontSize, text);
+		Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text);
 	}
 
 	public void drawInterfaceText(double x, double y, String text)

@@ -10,11 +10,10 @@
 	<description>A game where you shoot other tanks</description>
 	
 	<properties>
-		<netty.version>4.1.39.Final</netty.version>
+		<netty.version>4.1.42.Final</netty.version>
 		<lwjgl.version>3.2.0</lwjgl.version>
 		<pngdecoder.version>1.0</pngdecoder.version>
 		<mavennatives.version>0.0.3</mavennatives.version>
-		<lombok.version>1.18.4</lombok.version>
 	</properties>
 	
 	<build>
@@ -74,12 +73,6 @@
 			<groupId>org.l33tlabs.twl</groupId>
 			<artifactId>pngdecoder</artifactId>
 			<version>${pngdecoder.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
 		</dependency>
 	</dependencies>
 </project>

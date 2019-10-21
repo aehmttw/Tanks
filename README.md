@@ -33,7 +33,7 @@ To use the game you need to install Java.  For this purpose you may need
 administrator privileges to install software on your machine.  You can install java 
 from [java.com](https://java.com/download).
 
-You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ6XTWxNA18OQna3la) for tanks (Choose this if you want to play the game but not modify its code).
+You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ-ltbmsJuG2pZdfVk?e=dNsY3z) for current and past versions of Tanks (Choose this if you want to play the game but not modify its code).
 This comes as a zip, extract the zip file and you will have the jar file and a run command for mac.  
 To run the jar file on Windows you can double-click on it. For Mac, you need to run the jar file with the
 argument -XstartOnFirstThread, or by using the file whose name starts with RunTanks.

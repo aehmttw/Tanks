@@ -36,17 +36,20 @@ public class AreaEffectFreeze extends AreaEffect
 			}
 		}
 
-		for (int i = 0; i < Game.movables.size(); i++)
+		if (!this.isRemote)
 		{
-			Movable m = Game.movables.get(i);
-
-			if (Movable.distanceBetween(this, m) <= this.size / 2)
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				AttributeModifier a = new AttributeModifier("freeze", "velocity", Operation.multiply, -1);
-				a.duration = 600;
-				a.warmupAge = 50;
-				a.deteriorationAge = 500;
-				m.attributes.add(a);
+				Movable m = Game.movables.get(i);
+
+				if (Movable.distanceBetween(this, m) <= this.size / 2)
+				{
+					AttributeModifier a = new AttributeModifier("freeze", "velocity", Operation.multiply, -1);
+					a.duration = 600;
+					a.warmupAge = 50;
+					a.deteriorationAge = 500;
+					m.addAttribute(a);
+				}
 			}
 		}
 	}

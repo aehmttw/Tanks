@@ -3,7 +3,7 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
 
-public class EventTankUpdateHealth implements INetworkEvent
+public class EventTankUpdateHealth extends PersonalEvent
 {
 	public int tank;
 	public double health;
@@ -23,7 +23,8 @@ public class EventTankUpdateHealth implements INetworkEvent
 	public void execute() 
 	{
 		Tank t = Tank.idMap.get(tank);
-		if (t == null)
+
+		if (t == null || this.clientID != null)
 			return;
 
 		if (t.lives > health && health > 0)

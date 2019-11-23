@@ -14,6 +14,12 @@ public abstract class Movable implements IDrawableForInterface
 	public double vX;
 	public double vY;
 	public double vZ = 0;
+
+	public double lastFinalVX;
+	public double lastFinalVY;
+	public double lastFinalVZ;
+
+
 	public double cooldown = 0;
 	public boolean destroy = false;
 
@@ -72,10 +78,14 @@ public abstract class Movable implements IDrawableForInterface
 			}
 
 			removeAttributes.clear();
-			
-			this.posX += vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
-			this.posY += vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
-			this.posZ += vZ2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax * Panel.frameFrequency;
+
+			this.lastFinalVX = vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+			this.lastFinalVY = vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+			this.lastFinalVZ = vZ2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+
+			this.posX += this.lastFinalVX * Panel.frameFrequency;
+			this.posY += this.lastFinalVY * Panel.frameFrequency;
+			this.posZ += this.lastFinalVZ * Panel.frameFrequency;
 
 			this.canHide = false;
 		}
@@ -248,7 +258,13 @@ public abstract class Movable implements IDrawableForInterface
 		if (this.team != null)
 			Drawing.drawing.drawText(this.posX, this.posY + 35, this.team.name);
 	}
-	
+
+
+	public void addAttribute(AttributeModifier m)
+	{
+		this.attributes.add(m);
+	}
+
 	public void addUnduplicateAttribute(AttributeModifier m)
 	{
 		for (int i = 0; i < this.attributes.size(); i++)
@@ -280,7 +296,7 @@ public abstract class Movable implements IDrawableForInterface
 		this.posX = x1;
 		this.posY = y1;
 	}
-	
+
 	public void drawForInterface(double x, double y)
 	{	
 		this.drawAt(x, y);

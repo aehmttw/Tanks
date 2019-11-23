@@ -24,10 +24,15 @@ public class Obstacle implements IDrawableForInterface
 	public double colorG;
 	public double colorB;
 	public double colorA = 255;
+
 	public static double draw_size = 0;
 	public static double obstacle_size = Game.tank_size;
 
 	public String name;
+	public String description;
+
+	//public int[] aposX = new int[]{-17, 5, 0};
+	//public int[] aposY = new int[]{3, 30, 10};
 
 	public Obstacle(String name, double posX, double posY)
 	{
@@ -38,6 +43,8 @@ public class Obstacle implements IDrawableForInterface
 		this.colorR = col[0];
 		this.colorG = col[1];
 		this.colorB = col[2];
+
+		this.description = "A solid block which can---be destroyed by mines";
 	}
 	
 	@Override
@@ -51,6 +58,11 @@ public class Obstacle implements IDrawableForInterface
 			drawing.fillBox(this.posX, this.posY, (obstacle_size - draw_size) / 2, draw_size, draw_size, draw_size);
 		else
 			drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
+
+		/*for (int i = 0; i < aposX.length; i++)
+		{
+			drawing.fillRect(aposX[i], aposY[i], 10, 10);
+		}*/
 	}
 	
 	@Override
@@ -88,7 +100,13 @@ public class Obstacle implements IDrawableForInterface
 	{
 		
 	}
-	
+
+	/** Only for visual effects which are to be handled by each client separately*/
+	public void onObjectEntryLocal(Movable m)
+	{
+
+	}
+
 	public void update()
 	{
 		

@@ -41,12 +41,16 @@ public class ScreenOptions extends Screen
 			graphics3d.text = "3D graphics: on";
 		else
 			graphics3d.text = "3D graphics: off";
-		
-		
+
+		if (Drawing.drawing.enableStats)
+			showStats.text = "Info bar: on";
+		else
+			showStats.text = "Info bar: off";
+
 
 	}
 
-	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, 350, 40, "Graphics: fancy", new Runnable()
+	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -61,7 +65,7 @@ public class ScreenOptions extends Screen
 	},
 			"Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics may significantly reduce framerate"	);
 
-	Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "3D graphics: on", new Runnable()
+	Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "3D graphics: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -77,7 +81,7 @@ public class ScreenOptions extends Screen
 			"3D graphics may impact performance");
 
 	
-	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
+	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -105,7 +109,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Autostart: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -120,7 +124,7 @@ public class ScreenOptions extends Screen
 	},
 			"When enabled, levels will start playing---automatically 4 seconds after they are loaded---(if the play button isn't clicked earlier)");
 
-	Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "V-Sync: on", new Runnable()
+	Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "V-Sync: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -141,6 +145,28 @@ public class ScreenOptions extends Screen
 	},
 			"Limits framerate to your screen's refresh rate---May decrease battery consumption---Also, might fix issues with inconsistent game speed");
 
+	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Info bar: on", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Drawing.drawing.showStats(!Drawing.drawing.enableStats);
+
+			if (Drawing.drawing.enableStats)
+				showStats.text = "Info bar: on";
+			else
+				showStats.text = "Info bar: off";
+		}
+	},
+			"Shows the following information---" +
+					"at the bottom of the screen:---" +
+					"---" +
+					"Game version---" +
+					"Framerate---" +
+					"Network latency (if in a party)---" +
+					"Screen hints");
+
+
 	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Multiplayer options", new Runnable()
 	{
 		@Override
@@ -160,6 +186,7 @@ public class ScreenOptions extends Screen
 		graphics.update();
 		graphics3d.update();
 		vsync.update();
+		showStats.update();
 		multiplayerOptions.update();
 		back.update();
 	}
@@ -170,9 +197,10 @@ public class ScreenOptions extends Screen
 		this.drawDefaultBackground();
 		back.draw();
 		multiplayerOptions.draw();
+		showStats.draw();
 		vsync.draw();
-		autostart.draw();
 		mouseTarget.draw();
+		autostart.draw();
 		graphics3d.draw();
 		graphics.draw();
 		Drawing.drawing.setInterfaceFontSize(24);
@@ -213,6 +241,7 @@ public class ScreenOptions extends Screen
 			writer.println("mouse_target=" + Panel.showMouseTarget);
 			writer.println("auto_start=" + Game.autostart);
 			writer.println("vsync=" + Game.vsync);
+			writer.println("info_bar=" + Drawing.drawing.enableStats);
 			writer.println("port=" + Game.port);
 			writer.println("last_party=" + Game.lastParty);
 			writer.println("chat_filter=" + Game.enableChatFilter);
@@ -261,6 +290,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "auto_start":
 						Game.autostart = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "info_bar":
+						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));
 						break;
 					case "vsync":
 						Game.vsync = Boolean.parseBoolean(optionLine[1]);

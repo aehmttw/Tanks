@@ -10,6 +10,8 @@ public class TankDummy extends Tank
 		this.angle = angle;
 		
 		this.coinValue = 0;
+
+		this.description = "A dummy tank used to practice your aim";
 	}
 
     @Override

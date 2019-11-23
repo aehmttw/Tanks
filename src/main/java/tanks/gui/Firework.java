@@ -126,7 +126,7 @@ public class Firework extends Movable
 		else if (type == FireworkType.trail)
 		{	
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge))));
-			double s = Math.max(0, this.size - (int) (this.age * this.size / this.maxAge));
+			double s = Math.max(0, this.size - (this.age * this.size / this.maxAge));
 			Drawing.drawing.fillOval(posX, posY, s, s);
 			
 			if (this.age >= this.maxAge)

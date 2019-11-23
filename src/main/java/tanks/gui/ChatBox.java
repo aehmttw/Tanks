@@ -8,6 +8,8 @@ public class ChatBox extends TextBox
 {
 	public int key;
 	public String defaultText;
+	public String defaultTextColor = "\u00A7127127127255";
+
 	public boolean persistent = true;
 
 	public ChatBox(double x, double y, double sX, double sY, int key, String defaultText, Runnable f) 
@@ -50,7 +52,6 @@ public class ChatBox extends TextBox
 
 	public void update()
 	{
-		
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
@@ -116,8 +117,9 @@ public class ChatBox extends TextBox
 
 			drawing.setColor(0, 0, 0);
 			drawing.setInterfaceFontSize(24);
+
 			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, 
-					"\u00a7127127127255" + Game.username + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_", false);
+					this.defaultTextColor + Game.username + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_", false);
 		}
 		else if (this.persistent)
 		{
@@ -130,7 +132,11 @@ public class ChatBox extends TextBox
 			
 			drawing.setColor(0, 0, 0);
 			drawing.setInterfaceFontSize(24);
-			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, this.inputText, false);
+
+			if (this.inputText.equals(this.defaultText))
+				drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, this.defaultTextColor + this.defaultText, false);
+			else
+				drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, this.inputText, false);
 		}
 	}
 }

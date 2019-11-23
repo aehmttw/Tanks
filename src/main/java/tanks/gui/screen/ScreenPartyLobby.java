@@ -30,7 +30,7 @@ public class ScreenPartyLobby extends Screen
 	public static int username_x_offset = 0;
 
 	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T, 
-			"\u00A7127127127255Click here or press 'T' to send a chat message", new Runnable()
+			"Click here or press 'T' to send a chat message", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -97,7 +97,7 @@ public class ScreenPartyLobby extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(24);
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
+		//Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
 
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 4 - 40, "Players in this party:");
 

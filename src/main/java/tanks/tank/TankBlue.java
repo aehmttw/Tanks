@@ -24,6 +24,8 @@ public class TankBlue extends TankAIControlled
 		this.cooldownBase = 200;
 
 		this.coinValue = 4;
+
+		this.description = "A stationary tank which shoots---stunning electric bullets that arc---between up to 5 targets";
 	}
 
 	@Override
@@ -38,11 +40,11 @@ public class TankBlue extends TankAIControlled
 		if (this.cooldown > 0)
 			return;
 
-		BulletElectric b = new BulletElectric(this.posX, this.posY, 5, this, new ArrayList<Movable>());
+		BulletElectric b = new BulletElectric(this.posX, this.posY, 5, this);
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
-		Game.eventsOut.add(new EventShootBullet(b));
+		b.sendEvent();
 		Game.movables.add(b);
 		Drawing.drawing.pendingSounds.add("resources/laser.wav");
 		this.cooldown = this.cooldownBase;

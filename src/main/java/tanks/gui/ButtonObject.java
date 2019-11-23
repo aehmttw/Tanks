@@ -55,23 +55,28 @@ public class ButtonObject extends Button
 
 		drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 
-		if (enableHover)
+		if (this.enableHover && this.selected)
+			drawing.drawTooltip(this.hoverText);
+
+		/*if (enableHover)
 		{
 			if (selected)
 			{
 				drawing.setColor(0, 0, 255);
-				drawing.fillInterfaceOval(this.posX + this.sizeX / 2, this.posY + this.sizeY / 2, this.sizeY * 1 / 4, this.sizeY * 1 / 4);
+				drawing.fillInterfaceOval(this.posX + this.sizeX / 2, this.posY + this.sizeY / 2, 30, 30);
 				drawing.setColor(255, 255, 255);
+				drawing.setInterfaceFontSize(24);
 				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2, this.posY + this.sizeY / 2, "i");
 				drawing.drawTooltip(this.hoverText);
 			}
 			else
 			{
 				drawing.setColor(0, 150, 255);
-				drawing.fillInterfaceOval(this.posX + this.sizeX / 2, this.posY + this.sizeY / 2, this.sizeY * 1 / 4, this.sizeY * 1 / 4);
+				drawing.fillInterfaceOval(this.posX + this.sizeX / 2, this.posY + this.sizeY / 2, 30, 30);
 				drawing.setColor(255, 255, 255);
+				drawing.setInterfaceFontSize(24);
 				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2, this.posY + this.sizeY / 2, "i");
 			}
-		}
+		}*/
 	}
 }

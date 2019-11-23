@@ -7,7 +7,7 @@ import tanks.obstacle.ObstacleTeleporter;
 import tanks.tank.Tank;
 import tanks.tank.TeleporterOrb;
 
-public class EventTankTeleport implements INetworkEvent
+public class EventTankTeleport extends PersonalEvent
 {
 	public int tank;
 	
@@ -77,6 +77,9 @@ public class EventTankTeleport implements INetworkEvent
 	@Override
 	public void execute() 
 	{
+		if (this.clientID != null)
+			return;
+
 		TeleporterOrb t = new TeleporterOrb(this.fX, this.fY, this.iX, this.iY, this.dX, this.dY, Tank.idMap.get(this.tank));
 		t.age = this.age;
 		t.maxAge = this.maxAge;

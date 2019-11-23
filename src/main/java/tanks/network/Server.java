@@ -19,7 +19,7 @@ public class Server
 	public int port;
 	public EventLoopGroup bossGroup;
 	public EventLoopGroup workerGroup;
-	public ArrayList<ServerHandler> connections = new ArrayList<ServerHandler>();
+	public SynchronizedList<ServerHandler> connections = new SynchronizedList<ServerHandler>();
 
 	public Server instance = this;
 	public ChannelFuture channel;

@@ -12,5 +12,7 @@ public class ObstacleIndestructible extends Obstacle
 		this.colorR = col;
 		this.colorG = col;
 		this.colorB = col;
+
+		this.description = "A solid indestructible block";
 	}
 }

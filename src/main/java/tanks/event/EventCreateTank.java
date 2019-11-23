@@ -7,7 +7,7 @@ import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
-public class EventCreateTank implements INetworkEvent
+public class EventCreateTank extends PersonalEvent
 {
 	public String type;
 	public double posX;
@@ -38,6 +38,9 @@ public class EventCreateTank implements INetworkEvent
 	@Override
 	public void execute()
 	{
+		if (this.clientID != null)
+			return;
+
 		Tank t = Game.registryTank.getEntry(type).getTank(posX, posY, angle);
 
 		Team tm = Game.currentLevel.teamsMap.get(team);

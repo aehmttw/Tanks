@@ -1,12 +1,13 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Effect;
 import tanks.Game;
 import tanks.bullet.*;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
-public class EventShootBullet implements INetworkEvent
+public class EventShootBullet extends PersonalEvent
 {
 	public int tank;
 	public double posX;
@@ -45,6 +46,9 @@ public class EventShootBullet implements INetworkEvent
 	@Override
 	public void execute() 
 	{
+		if (this.clientID != null)
+			return;
+
 		Bullet bullet;
 		
 		Tank t = Tank.idMap.get(this.tank);
@@ -104,10 +108,8 @@ public class EventShootBullet implements INetworkEvent
 		bullet.size = this.size;
 		bullet.heavy = this.heavy;
 		
-		if (bullet instanceof BulletInstant)
-			((BulletInstant) bullet).shotQueued = true;
-		
-		Game.movables.add(bullet);
+		if (!(bullet instanceof BulletInstant))
+			Game.movables.add(bullet);
 	}
 
 	@Override

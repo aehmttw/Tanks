@@ -5,15 +5,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
+import tanks.Movable;
 import tanks.event.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankRemote;
 
 import java.util.UUID;
 
-/**
- * Handles a server-side channel.
- */
 public class ServerHandler extends ChannelInboundHandlerAdapter 
 {
 	public MessageReader reader = new MessageReader();
@@ -26,6 +27,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public UUID clientID;
 	public String rawUsername;
 	public String username;
+
+	public long lastMessage = 0;
+	public long latency = 0;
+
+	public long latencySum = 0;
+	public int latencyCount = 1;
+	public long lastLatencyTime = 0;
+	public long lastLatencyAverage = 0;
 
 	public ServerHandler(Server s)
 	{
@@ -43,23 +52,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public void channelInactive(ChannelHandlerContext ctx) 
 	{
 		ReferenceCountUtil.release(this.reader.queue);
-		synchronized(server.connections)
+
+		server.connections.remove(this);
+		ScreenPartyHost.readyPlayers.remove(this.clientID);
+		ScreenPartyHost.disconnectedPlayers.add(this.clientID);
+
+		if (this.clientID != null)
 		{
-			server.connections.remove(this);
+			Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+			Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(this.clientID, this.rawUsername), false));
+			Game.eventsOut.add(new EventChat("&000127255255" + this.username + " has left the party&000000000255"));
+
+			ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
 		}
-
-		synchronized(ScreenPartyHost.readyPlayers)
-		{
-			ScreenPartyHost.readyPlayers.remove(this.clientID);
-		}
-
-
-		Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
-		Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(this.clientID, this.rawUsername), false));
-
-		Game.eventsOut.add(new EventChat("&000127255255" + this.username + " has left the party&000000000255"));
-
-		ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
 	}
 
 	@Override
@@ -72,6 +77,22 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		if (reply)
 		{
+			long time = System.currentTimeMillis();
+			latency = time - lastMessage;
+			lastMessage = time;
+
+			latencyCount++;
+			latencySum += latency;
+
+			if (time / 1000 > lastLatencyTime)
+			{
+				lastLatencyTime = time / 1000;
+				lastLatencyAverage = latencySum / latencyCount;
+
+				latencySum = 0;
+				latencyCount = 0;
+			}
+
 			synchronized (this.events)
 			{
 				EventKeepConnectionAlive k = new EventKeepConnectionAlive();

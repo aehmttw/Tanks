@@ -34,6 +34,8 @@ public class TankMedic extends TankAIControlled
 		this.motionChangeChance = 0.001;
 
 		this.coinValue = 8;
+
+		this.description = "A tank which adds extra health---to its allies and becomes---explosive as a last stand";
 	}
 
 	@Override

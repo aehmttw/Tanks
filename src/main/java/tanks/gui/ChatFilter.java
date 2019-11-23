@@ -18,8 +18,8 @@ public class ChatFilter
 		if (msg == null)
 			return null;
 		
-		String rawMessage = msg.toLowerCase();
-		String message = msg.toLowerCase();
+		String rawMessage = msg.toLowerCase().replaceAll("_", " ");
+		String message = msg.toLowerCase().replaceAll("_", " ");
 		
 		for (String badword: this.badwords)
 		{

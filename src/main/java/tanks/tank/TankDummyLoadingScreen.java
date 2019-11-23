@@ -11,6 +11,8 @@ public class TankDummyLoadingScreen extends Tank
 		super("loadingscreendummy", x, y, Game.tank_size * size_multiplier, 0, 150, 255);
 		this.turret.length *= size_multiplier;
 		this.turret.size *= size_multiplier;
+
+		this.description = "A spinning tank shown on the loading screen";
 	}
 
 }

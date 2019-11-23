@@ -3,16 +3,15 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 import java.util.UUID;
 
-public class EventCreatePlayer implements INetworkEvent
+public class EventCreatePlayer extends PersonalEvent
 {
-	public UUID clientId;
+	public UUID clientIdTarget;
 	public String username;
 	public double posX;
 	public double posY;
@@ -26,7 +25,7 @@ public class EventCreatePlayer implements INetworkEvent
 	
 	public EventCreatePlayer(UUID id, String username, double x, double y, double angle, Team t)
 	{
-		this.clientId = id;
+		this.clientIdTarget = id;
 		this.posX = x;
 		this.posY = y;
 		this.angle = angle;
@@ -41,28 +40,36 @@ public class EventCreatePlayer implements INetworkEvent
 		this.username = username;
 	}
 	
-	
 	@Override
 	public void execute()
 	{
 		Tank t;
-		
-		if (clientId.equals(Game.clientID))
+
+		if (this.clientID != null)
+			return;
+
+		if (clientIdTarget.equals(Game.clientID))
 		{
-			t = new TankPlayer(posX, posY, angle, clientId);
-			Game.player = (TankPlayer) t;
+			if (ScreenPartyHost.isServer)
+				t = new TankPlayer(posX, posY, angle, clientIdTarget);
+			else
+				t = new TankPlayerController(posX, posY, angle, clientIdTarget);
+
+			Game.player = t;
 		}
 		else
 		{
-			t = new TankRemote(new TankPlayer(posX, posY, angle, clientId));
+			if (!ScreenPartyHost.isServer)
+				t = new TankRemote(new TankPlayer(posX, posY, angle, clientIdTarget));
+			else
+				t = new TankPlayerRemote(posX, posY, angle, clientIdTarget);
+
 			t.showName = true;
+			t.nameTag.name = this.username;
+
+			if (Game.enableChatFilter)
+				t.nameTag.name = Game.chatFilter.filterChat(t.nameTag.name);
 		}
-		
-		t.name = this.username;
-		t.nameTag.name = this.username;
-		
-		if (Game.enableChatFilter)
-			t.name = Game.chatFilter.filterChat(t.name);
 		
 		if (team.equals("**"))
 			t.team = Game.playerTeam;
@@ -77,7 +84,7 @@ public class EventCreatePlayer implements INetworkEvent
 	@Override
 	public void write(ByteBuf b) 
 	{
-		NetworkUtils.writeString(b, this.clientId.toString());
+		NetworkUtils.writeString(b, this.clientIdTarget.toString());
 		NetworkUtils.writeString(b, this.username);
 		b.writeDouble(this.posX);
 		b.writeDouble(this.posY);
@@ -88,7 +95,7 @@ public class EventCreatePlayer implements INetworkEvent
 	@Override
 	public void read(ByteBuf b) 
 	{
-		this.clientId = UUID.fromString(NetworkUtils.readString(b));
+		this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
 		this.username = NetworkUtils.readString(b);
 		this.posX = b.readDouble();
 		this.posY = b.readDouble();

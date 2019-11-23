@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyLobby;
 
-public class EventConnectionSuccess implements INetworkEvent
+public class EventConnectionSuccess extends PersonalEvent
 {	
 	public EventConnectionSuccess()
 	{
@@ -14,7 +14,8 @@ public class EventConnectionSuccess implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		Game.screen = new ScreenPartyLobby();
+		if (this.clientID == null)
+			Game.screen = new ScreenPartyLobby();
 	}
 
 	@Override

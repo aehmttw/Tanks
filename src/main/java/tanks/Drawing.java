@@ -24,7 +24,8 @@ public class Drawing
 	public boolean enableMovingCameraY = false;
 
 	public int statsHeight = 40;
-	
+	public boolean enableStats = true;
+
 	public boolean movingCamera = false;
 
 	public static Drawing drawing;
@@ -46,14 +47,15 @@ public class Drawing
 		initialized = true;
 	}
 
-	/*@Override
-	public void setSize(int x, int y)
+	public void showStats(boolean stats)
 	{
-		Panel.panel.setPreferredSize(new Dimension(x, (int) (y + statsHeight)));
-		this.getContentPane().remove(Panel.panel);
-		this.getContentPane().add(Panel.panel);
-		this.pack();
-	}*/
+		this.enableStats = stats;
+
+		if (this.enableStats)
+			this.statsHeight = 40;
+		else
+			this.statsHeight = 0;
+	}
 
 	public void setColor(double r, double g, double b)
 	{
@@ -156,7 +158,7 @@ public class Drawing
 	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -183,8 +185,13 @@ public class Drawing
 		
 		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
 	}
-	
+
 	public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ)
+	{
+		fillQuadBox(x1, y1, x2, y2, x3, y3, x4, y4, z, sZ, (byte) 0);
+	}
+
+	public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ, byte options)
 	{
 		double dX1 = getPointX(x1);
 		double dX2 = getPointX(x2);
@@ -199,7 +206,7 @@ public class Drawing
 		double dZ = z * scale / interfaceScale;
 		double dsZ = sZ * scale / interfaceScale;
 		
-		Game.game.window.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, (byte) 0);
+		Game.game.window.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, options);
 	}
 	
 	public void fillInterfaceQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)

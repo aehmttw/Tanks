@@ -3,6 +3,7 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.ChatMessage;
+import tanks.gui.screen.IPartyMenuScreen;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
@@ -10,7 +11,7 @@ import tanks.network.ServerHandler;
 
 import java.util.UUID;
 
-public class EventSendClientDetails implements INetworkEvent, IServerThreadEvent
+public class EventSendClientDetails extends PersonalEvent implements IServerThreadEvent
 {
 	public int version;
 	public UUID clientID;
@@ -53,6 +54,16 @@ public class EventSendClientDetails implements INetworkEvent, IServerThreadEvent
 	@Override
 	public void execute(ServerHandler s)
 	{
+		if (this.clientID == null)
+			return;
+
+		if (!(Game.screen instanceof IPartyMenuScreen))
+		{
+			s.sendEventAndClose(new EventKick("Please wait for the current game to finish!"));
+			return;
+		}
+
+
 		if (this.version != Game.network_protocol)
 		{
 			s.sendEventAndClose(new EventKick("You must be using " + Game.version + " to join this party!"));

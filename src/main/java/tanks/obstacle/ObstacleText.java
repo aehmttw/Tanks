@@ -19,6 +19,8 @@ public class ObstacleText extends Obstacle
 		this.colorB = 0;
 		this.colorA = 0;
 		this.text = text;
+
+		this.description = "A piece of text used---to instruct the player";
 	}
 	
 	@Override

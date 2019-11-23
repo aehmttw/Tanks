@@ -114,8 +114,6 @@ public class Ray
 						this.vX = -Math.abs(this.vX);
 						bouncy = o.bouncy;
 						collided = true;
-						bounceX.add(this.posX);
-						bounceY.add(this.posY);
 					}
 					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 					{
@@ -123,8 +121,6 @@ public class Ray
 						this.vY = -Math.abs(this.vY);
 						bouncy = o.bouncy;
 						collided = true;
-						bounceX.add(this.posX);
-						bounceY.add(this.posY);
 					}
 					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
 					{
@@ -132,8 +128,6 @@ public class Ray
 						this.vX = Math.abs(this.vX);
 						bouncy = o.bouncy;
 						collided = true;
-						bounceX.add(this.posX);
-						bounceY.add(this.posY);
 					}
 					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
 					{
@@ -141,8 +135,6 @@ public class Ray
 						this.vY = Math.abs(this.vY);
 						bouncy = o.bouncy;
 						collided = true;
-						bounceX.add(this.posX);
-						bounceY.add(this.posY);
 					}
 				}
 
@@ -175,15 +167,18 @@ public class Ray
 			
 			if (collided)
 			{
-				if (this.bounces <= 0 || this.bouncyBounces <= 0 || this.age <= 1)
-				{
-					return null;
-				}
-				
 				if (!bouncy || !enableBounciness)
 					this.bounces--;
 				else
 					this.bouncyBounces--;
+
+				if (this.bounces < 0 || this.bouncyBounces < 0 || this.age <= 1)
+				{
+					return null;
+				}
+
+				bounceX.add(this.posX);
+				bounceY.add(this.posY);
 			}
 			
 			for (int i = 0; i < Game.movables.size(); i++)

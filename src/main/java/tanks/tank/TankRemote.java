@@ -25,6 +25,7 @@ public class TankRemote extends Tank
 		this.turret.size = ts;
 		this.turret.length = tl;
 		this.invulnerable = true;
+		this.description = "A tank controlled by the server";
 	}
 	
 	public TankRemote(Tank t)
@@ -42,6 +43,7 @@ public class TankRemote extends Tank
 		this.invulnerable = true;
 		this.networkID = t.networkID;
 		this.texture = t.texture;
+		this.description = t.description;
 		Tank.idMap.put(this.networkID, this);
 	}
 

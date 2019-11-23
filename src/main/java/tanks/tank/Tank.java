@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.event.EventTankAddAttributeModifier;
 import tanks.event.EventTankUpdateHealth;
 import tanks.event.EventTankUpdate;
 import tanks.obstacle.Obstacle;
@@ -16,6 +17,8 @@ public abstract class Tank extends Movable
 
 	public double angle = 0;
 
+	public boolean depthTest = true;
+
 	public boolean invulnerable = false;
 	public boolean targetable = true;
 
@@ -24,9 +27,12 @@ public abstract class Tank extends Movable
 	public boolean functional = true;
 
 	public int coinValue = 0;
+
 	public int networkID;
 
 	public String name;
+
+	public String description = "";
 
 	public double accel = 0.1;
 	public double maxV = 2.5;
@@ -51,6 +57,8 @@ public abstract class Tank extends Movable
 
 	public Turret turret;
 
+	public boolean standardUpdateEvent = true;
+
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
 		super(x, y);
@@ -73,6 +81,7 @@ public abstract class Tank extends Movable
 				this.networkID = currentID;
 				currentID++;
 			}
+
 			idMap.put(this.networkID, this);
 		}
 		else
@@ -233,9 +242,7 @@ public abstract class Tank extends Movable
 
 	@Override
 	public void update()
-	{	
-		this.checkCollision();
-
+	{
 		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
 
 		if (this.treadAnimation > this.size * 4 / 5)
@@ -320,14 +327,16 @@ public abstract class Tank extends Movable
 				}
 			}
 		}
-
-		if (!this.isRemote)
-			Game.eventsOut.add(new EventTankUpdate(this));
 		
 		super.update();
 
 		if (this.lives <= 0)
 			this.destroy = true;
+
+		this.checkCollision();
+
+		if (!this.isRemote && this.standardUpdateEvent)
+			Game.eventsOut.add(new EventTankUpdate(this));
 	}
 
 	@Override
@@ -403,8 +412,12 @@ public abstract class Tank extends Movable
 			drawing.fillInterfaceRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
 		else
 		{
-			if (Game.enable3d)
-				drawing.fillBox(this.posX, this.posY, 0, s * sizeMod, s * sizeMod, s / 2);
+            byte options = 0;
+            if (!depthTest)
+                options = 64;
+
+            if (Game.enable3d)
+				drawing.fillBox(this.posX, this.posY, 0, s * sizeMod, s * sizeMod, s / 2, options);
 			else
 				drawing.fillRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
 
@@ -434,7 +447,7 @@ public abstract class Tank extends Movable
 			else
 			{
 				if (Game.enable3d)
-					drawing.drawImage(this.texture, this.posX, this.posY, this.size / 2 + 0.1, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.texture, this.posX, this.posY, s / 2 + 0.1, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
@@ -498,7 +511,6 @@ public abstract class Tank extends Movable
 			drawing.drawImage(this.texture, this.posX, this.posY, this.size, this.size);
 		}
 
-
 		this.turret.draw(angle, false, false);
 	}
 
@@ -511,5 +523,23 @@ public abstract class Tank extends Movable
 		this.drawTank(false);
 		this.posX = x1;
 		this.posY = y1;	
+	}
+
+	@Override
+	public void addAttribute(AttributeModifier m)
+	{
+		super.addAttribute(m);
+
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, false));
+	}
+
+	@Override
+	public void addUnduplicateAttribute(AttributeModifier m)
+	{
+		super.addUnduplicateAttribute(m);
+
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
 	}
 }

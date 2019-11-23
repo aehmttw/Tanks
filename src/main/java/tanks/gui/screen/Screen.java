@@ -15,6 +15,11 @@ public abstract class Screen
 
 	public abstract void draw();
 
+	public void drawPostMouse()
+	{
+
+	}
+
 	public void drawDefaultBackground()
 	{
 		this.drawDefaultBackground(1);
@@ -22,7 +27,7 @@ public abstract class Screen
 
 	public void drawDefaultBackground(double size)
 	{
-		if (!(Game.screen instanceof ScreenInterlevel))
+		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);

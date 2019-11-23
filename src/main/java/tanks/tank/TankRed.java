@@ -25,6 +25,8 @@ public class TankRed extends TankAIControlled
 		this.cooldown = 250;
 
 		this.coinValue = 3;
+
+		this.description = "A stationary tank which---shoots deadly lasers";
 	}
 
 	@Override

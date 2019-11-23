@@ -3,15 +3,18 @@ package tanks.bullet;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
+import tanks.event.EventBulletDestroyed;
+import tanks.event.EventBulletInstantWaypoint;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
+import tanks.tank.Ray;
 import tanks.tank.Tank;
 
 public class BulletLaser extends BulletInstant
 {
-	public BulletLaser(double x, double y, int bounces, Tank t) 
+	public BulletLaser(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
 	{
-		super(x, y, bounces, t, false);
+		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
 		this.playPopSound = false;
 		this.baseColorR = 255;
 		this.baseColorG = 0;
@@ -20,13 +23,17 @@ public class BulletLaser extends BulletInstant
 		this.effect = BulletEffect.none;
 	}
 
+	public BulletLaser(double x, double y, int bounces, Tank t)
+	{
+		this(x, y, bounces, t, false, null);
+	}
+
+
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
 	public BulletLaser(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
-		this(x, y, bounces, t);
-		this.item = ib;
-		this.item.liveBullets--;
+		this(x, y, bounces, t, false, ib);
 	}
 
 	@Override
@@ -37,17 +44,15 @@ public class BulletLaser extends BulletInstant
 		Game.removeMovables.add(this);
 	}
 
-	public void shoot()
+	@Override
+	public void addEffect()
 	{
-		while (!this.destroy)
-		{
-			if (ScreenGame.finished)
-				this.destroy = true;
+		Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.laser));
+	}
 
-			super.update();
-			Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.laser));
-		}
-
+	@Override
+	public void addDestroyEffect()
+	{
 		if (Game.fancyGraphics)
 		{
 			for (int i = 0; i < this.size * 4; i++)
@@ -58,7 +63,12 @@ public class BulletLaser extends BulletInstant
 				e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
 				e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
 				e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
-				e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+				if (Game.enable3d)
+					e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
+				else
+					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
 				Game.effects.add(e);
 			}
 		}
@@ -67,6 +77,6 @@ public class BulletLaser extends BulletInstant
 	@Override
 	public void draw()
 	{
-		
+
 	}
 }

@@ -15,5 +15,7 @@ public class ObstacleBouncy extends Obstacle
 		
 		if (!Game.fancyGraphics)
 			this.colorR = 191;
+
+		this.description = "A destructible block which---allows bullets to bounce more";
 	}
 }

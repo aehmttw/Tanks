@@ -3,10 +3,11 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.screen.ScreenPartyInterlevel;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 
-public class EventLevelEnd implements INetworkEvent
+public class EventLevelEnd extends PersonalEvent
 {	
 	public String winningTeam;
 	
@@ -23,9 +24,11 @@ public class EventLevelEnd implements INetworkEvent
 	@Override
 	public void execute() 
 	{
+		if (this.clientID != null)
+			return;
+
 		Game.cleanUp();
-		Game.screen = new ScreenPartyLobby();
-		
+
 		if (Game.clientID.toString().equals(winningTeam) || (Game.player.team != null && Game.player.team.name.equals(this.winningTeam)))
 		{
 			Panel.win = true;
@@ -36,7 +39,9 @@ public class EventLevelEnd implements INetworkEvent
 			Panel.win = false;
 			Panel.winlose = "You were destroyed!";
 		}
-		
+
+		Game.screen = new ScreenPartyInterlevel();
+
 		ScreenPartyLobby.readyPlayers = 0;
 			
 		System.gc();

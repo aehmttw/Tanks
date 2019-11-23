@@ -14,26 +14,22 @@ public class BulletFlame extends Bullet
 	
 	public BulletFlame(double x, double y, int bounces, Tank t) 
 	{
-		super(x, y, bounces, t);
-		t.liveBullets--;
-		this.useCustomWallCollision = true;
-		this.playPopSound = false;
-		this.name = "flame";
+		this(x, y, bounces, t, false, null);
 	}
 	
 	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
 	@Deprecated
 	public BulletFlame(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
-		this.item = ib;
-		this.item.liveBullets--;
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false, ib);
 	}
 	
-	public BulletFlame(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount) 
+	public BulletFlame(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
 	{
-		this(x, y, bounces, t);
-		this.affectsMaxLiveBullets = affectsLiveBulletCount;
+		super(x, y, bounces, t, affectsLiveBulletCount, ib);
+		this.useCustomWallCollision = true;
+		this.playPopSound = false;
+		this.name = "flame";
 	}
 	
 	@Override

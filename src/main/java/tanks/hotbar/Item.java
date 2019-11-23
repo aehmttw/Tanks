@@ -2,6 +2,8 @@ package tanks.hotbar;
 
 import tanks.bullet.*;
 
+import java.util.Arrays;
+
 public abstract class Item 
 {
 	public boolean isConsumable;
@@ -25,7 +27,8 @@ public abstract class Item
 	 * <br>if (type == bullet):-class-effect-speed-bounces-damage-max_on_screen-cooldown-size*/
 	public static Item parseItem(String s)
 	{
-		String[] p = s.split("-");
+		String[] p = s.split(",");
+
 		String name = p[0];
 		String image = p[1];
 		int price = Integer.parseInt(p[2]);
@@ -55,6 +58,9 @@ public abstract class Item
 					break;
 				case "electric":
 					i2.bulletClass = BulletElectric.class;
+					break;
+				case "healing":
+					i2.bulletClass = BulletHealing.class;
 					break;
 			}
 			
@@ -108,7 +114,7 @@ public abstract class Item
 	@Override
 	public String toString()
 	{
-		return name + "-" + icon + "-" + price + "-" + levelUnlock + "-" + stackSize + "-" + maxStackSize;
+		return name + "," + icon + "," + price + "," + levelUnlock + "," + stackSize + "," + maxStackSize;
 	}
 
 	public void attemptUse()

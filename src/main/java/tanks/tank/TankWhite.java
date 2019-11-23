@@ -17,6 +17,8 @@ public class TankWhite extends TankAIControlled
 
 		this.coinValue = 4;
 
+		this.description = "An invisible smart tank";
+
 		Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
 	}
 

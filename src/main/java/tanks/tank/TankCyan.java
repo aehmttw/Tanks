@@ -28,6 +28,8 @@ public class TankCyan extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		
 		this.coinValue = 5;
+
+		this.description = "A support tank which shoots freezing---bullets that deal low damage";
 	}
 	
 	/** Actually fire a bullet*/

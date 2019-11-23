@@ -15,6 +15,8 @@ public class ObstacleUnknown extends Obstacle
 		this.destructible = false;
 		this.tankCollision = false;
 		this.bulletCollision = false;
+
+		this.description = "A block which could not be identified";
 	}
 	
 	@Override

@@ -7,10 +7,10 @@ import tanks.network.NetworkUtils;
 
 import java.util.UUID;
 
-public class EventAnnounceConnection implements INetworkEvent
+public class EventAnnounceConnection extends PersonalEvent
 {
 	public String name;
-	public UUID clientId;
+	public UUID clientIdTarget;
 	public boolean joined;
 	
 	public EventAnnounceConnection()
@@ -21,22 +21,25 @@ public class EventAnnounceConnection implements INetworkEvent
 	public EventAnnounceConnection(ConnectedPlayer p, boolean joined)
 	{
 		this.name = p.rawUsername;
-		this.clientId = p.clientId;
+		this.clientIdTarget = p.clientId;
 		this.joined = joined;
 	}
 
 	@Override
 	public void execute() 
 	{
+		if (this.clientID != null)
+			return;
+
 		if (this.joined)
 		{
-			ScreenPartyLobby.connections.add(new ConnectedPlayer(this.clientId, this.name));
+			ScreenPartyLobby.connections.add(new ConnectedPlayer(this.clientIdTarget, this.name));
 		}
 		else
 		{
 			for (int i = 0; i < ScreenPartyLobby.connections.size(); i++)
 			{
-				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientId))
+				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))
 				{
 					ScreenPartyLobby.connections.remove(i);
 					i--;
@@ -49,7 +52,7 @@ public class EventAnnounceConnection implements INetworkEvent
 	public void read(ByteBuf b)
 	{
 		this.joined = b.readBoolean();
-		this.clientId = UUID.fromString(NetworkUtils.readString(b));
+		this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
 		this.name = NetworkUtils.readString(b);
 	}
 	
@@ -57,7 +60,7 @@ public class EventAnnounceConnection implements INetworkEvent
 	public void write(ByteBuf b)
 	{
 		b.writeBoolean(this.joined);
-		NetworkUtils.writeString(b, this.clientId.toString());
+		NetworkUtils.writeString(b, this.clientIdTarget.toString());
 		NetworkUtils.writeString(b, this.name);
 	}
 

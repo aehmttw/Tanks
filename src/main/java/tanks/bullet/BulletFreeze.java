@@ -10,27 +10,23 @@ public class BulletFreeze extends Bullet
 {
 	public BulletFreeze(double x, double y, int bounces, Tank t) 
 	{
-		super(x, y, bounces, t);
+		this(x, y, bounces, t, true, null);
+	}
+	
+	public BulletFreeze(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
+	{
+		super(x, y, bounces, t, affectsLiveBulletCount, ib);
 		this.outlineColorR = 255;
 		this.outlineColorG = 255;
 		this.outlineColorB = 255;
 		this.name = "freeze";
-	}
-	
-	public BulletFreeze(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount) 
-	{
-		this(x, y, bounces, t);
-		this.affectsMaxLiveBullets = affectsLiveBulletCount;
-		if (!this.affectsMaxLiveBullets)
-			this.tank.liveBullets--;
 	}
 
 	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
 	@Deprecated
 	public BulletFreeze(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
-		this.item = ib;
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
 	}
 	
 	@Override

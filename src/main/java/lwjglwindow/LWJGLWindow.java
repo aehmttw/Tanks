@@ -520,7 +520,7 @@ public class LWJGLWindow
 			glDepthFunc(GL_LESS);  
 		else
 			glDepthFunc(GL_ALWAYS);  
-		
+
 		if (options % 2 == 0)
 		{
 			GL11.glBegin(GL11.GL_TRIANGLE_FAN);    
@@ -681,13 +681,13 @@ public class LWJGLWindow
 		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
 		glTranslated(-absoluteWidth / 2, -absoluteHeight / 2, -absoluteDepth);
 	
-		//double ang1 = Math.PI / 4;
+		//double ang1 = Math.PI / 8;
 		//glMultMatrixd(new double[]{Math.cos(ang1), -Math.sin(ang1), 0, 0,  Math.sin(ang1), Math.cos(ang1), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1});
 
-		//double ang2 = -Math.PI * 6 / 16;
+		//double ang2 = -Math.PI * 2 / 16;
 		//glMultMatrixd(new double[]{1, 0, 0, 0,  0, Math.cos(ang2), -Math.sin(ang2), 0,  0, Math.sin(ang2), Math.cos(ang2), 0,  0, 0, 0, 1});
 
-		//double ang3 = Math.PI / 5;
+		//double ang3 = Math.PI / 8;
 		//glMultMatrixd(new double[]{Math.cos(ang3), 0, -Math.sin(ang3), 0,  0, 1, 0, 0,  Math.sin(ang3), 0, Math.cos(ang3), 0,  0, 0, 0, 1});
 
 		//glOrtho(0, absoluteWidth, absoluteHeight, 0, -1, 1);
@@ -705,7 +705,7 @@ public class LWJGLWindow
 		
 		glMatrixMode(GL_MODELVIEW);
 		//glLoadIdentity();
-		glEnable(GL_TEXTURE_2D); 
+		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -758,7 +758,7 @@ public class LWJGLWindow
 
 		glMatrixMode(GL_MODELVIEW);
 		//glLoadIdentity();
-		glEnable(GL_TEXTURE_2D); 
+		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

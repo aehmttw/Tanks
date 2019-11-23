@@ -101,6 +101,7 @@ public class TeleporterOrb extends Movable
 		
 		this.tank.posX = this.posX;
 		this.tank.posY = this.posY;
+		this.tank.posZ = this.posZ;
 		
 		double size = Math.max(-this.age / 100, Math.max((this.age - this.maxAge) / (this.endAge - this.maxAge), 0));
 		

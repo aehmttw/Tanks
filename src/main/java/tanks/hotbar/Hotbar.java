@@ -4,12 +4,14 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import org.lwjgl.glfw.GLFW;
+import tanks.tank.TankPlayer;
 
 public class Hotbar
 {
 	public ItemBar currentItemBar = new ItemBar(this);
 	public Coins currentCoins;
 
+	public boolean enabledAmmunitionBar = true;
 	public boolean enabledItemBar = false;
 	public boolean enabledHealthBar = true;
 	public boolean enabledCoins = false;
@@ -58,10 +60,10 @@ public class Hotbar
 		if (this.enabledHealthBar)
 		{
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.drawing.interfaceSizeY - 15 + bottomOffset);
-			Drawing.drawing.setColor(0, 0, 0, 128);
+			int y = (int) (Drawing.drawing.interfaceSizeY - 25 + bottomOffset);
+			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.bottomOffset) / 100.0);
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
-			Drawing.drawing.setColor(255, 128, 0);
+			Drawing.drawing.setColor(255, 128, 0, (100 - this.bottomOffset) * 2.55);
 
 			double lives = Game.player.lives % 1.0;
 			if (lives == 0 && Game.player.lives > 0)
@@ -76,19 +78,67 @@ public class Hotbar
 			
 			if (shields > 0)
 			{
-				Drawing.drawing.setColor(255, 0 , 0);
+				Drawing.drawing.setColor(255, 0 , 0, (100 - this.bottomOffset) * 2.55);
 				Drawing.drawing.fillInterfaceOval(x - 175, y, 18, 18);
-				Drawing.drawing.setFontSize(12);
-				Drawing.drawing.setColor(255, 255, 255);
-				Drawing.drawing.drawInterfaceText(x - 175, y, shields + "");
+				Drawing.drawing.setInterfaceFontSize(12);
+				Drawing.drawing.setColor(255, 255, 255, (100 - this.bottomOffset) * 2.55);
+				Drawing.drawing.drawInterfaceText(x - 174, y, shields + "");
+			}
+		}
+
+		if (this.enabledAmmunitionBar)
+		{
+			int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
+			int y = (int) (Drawing.drawing.interfaceSizeY - 10 + bottomOffset);
+
+			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.bottomOffset) / 100.0);
+			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
+			Drawing.drawing.setColor(0, 200, 255, (100 - this.bottomOffset) * 2.55);
+
+			int live = Game.player.liveBullets;
+			int max = Game.player.liveBulletMax;
+
+			if (this.enabledItemBar && this.currentItemBar.selected != -1 && this.currentItemBar.slots[this.currentItemBar.selected] instanceof ItemBullet)
+			{
+				ItemBullet ib = (ItemBullet) this.currentItemBar.slots[this.currentItemBar.selected];
+				live = ib.liveBullets;
+				max = ib.maxAmount;
+			}
+
+			double ammo = live * 1.0 / max;
+
+			if (max <= 0)
+				ammo = 0;
+
+			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, 1 - ammo);
+
+			Drawing.drawing.setColor(0, 0, 0, 127 * (100 - this.bottomOffset) / 100.0);
+
+			for (int i = 1; i < max; i++)
+			{
+				double frac = i * 1.0 / max;
+				Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
+			}
+
+			if (Game.player.liveMines < Game.player.liveMinesMax)
+			{
+				Drawing.drawing.setColor(255, 0 , 0, (100 - this.bottomOffset) * 2.55);
+				Drawing.drawing.fillInterfaceOval(x + 175, y, 18, 18);
+
+				Drawing.drawing.setColor(255, 255 , 0, (100 - this.bottomOffset) * 2.55);
+				Drawing.drawing.fillInterfaceOval(x + 175, y, 14, 14);
+
+				Drawing.drawing.setInterfaceFontSize(12);
+				Drawing.drawing.setColor(0, 0, 0, (100 - this.bottomOffset) * 2.55);
+				Drawing.drawing.drawInterfaceText(x + 176, y, Game.player.liveMinesMax - Game.player.liveMines + "");
 			}
 		}
 		
 		if (this.enabledCoins)
 		{
-			Drawing.drawing.setFontSize(18);
-			Drawing.drawing.setColor(0, 0, 0);
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 85 + bottomOffset, "Coins: " + currentCoins.coins);
+			Drawing.drawing.setInterfaceFontSize(18);
+			Drawing.drawing.setColor(0, 0, 0, (100 - this.bottomOffset) * 2.55);
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + bottomOffset, "Coins: " + currentCoins.coins);
 		}
 	}
 }

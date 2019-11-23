@@ -1,20 +1,23 @@
 package tanks.gui.screen;
 
+import org.lwjgl.glfw.GLFW;
 import tanks.*;
+import tanks.event.EventCreatePlayer;
+import tanks.event.INetworkEvent;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.TextBox;
+import tanks.network.ServerHandler;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
-import org.lwjgl.glfw.GLFW;
+import tanks.tank.TankSpawnMarker;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ScreenLevelBuilder extends Screen
 {
@@ -51,6 +54,7 @@ public class ScreenLevelBuilder extends Screen
 	public ArrayList<Button> teamSelectButtons = new ArrayList<Button>();
 	public ArrayList<ButtonObject> tankButtons = new ArrayList<ButtonObject>();
 	public ArrayList<ButtonObject> obstacleButtons = new ArrayList<ButtonObject>();
+	public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 	public int objectButtonRows = 3;
 	public int objectButtonCols = 10;
 	public int lastTeamButton;
@@ -63,7 +67,26 @@ public class ScreenLevelBuilder extends Screen
 	public int width = Game.currentSizeX;
 	public int height = Game.currentSizeY;
 	public String name;
-	public ButtonObject playerButton = new ButtonObject(new TankPlayer(0, 0, 0, Game.clientID), Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 75, 75);
+	public boolean movePlayer = true;
+
+	public ButtonObject movePlayerButton = new ButtonObject(new TankPlayer(0, 0, 0, Game.clientID), Drawing.drawing.interfaceSizeX / 2 - 50, Drawing.drawing.interfaceSizeY / 2, 75, 75, new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			movePlayer = true;
+		}
+	}, "Select this to move the player");
+
+	public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), Drawing.drawing.interfaceSizeX / 2 + 50, Drawing.drawing.interfaceSizeY / 2, 75, 75, new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			movePlayer = false;
+		}
+	}, "Select this to add multiple---player spawn points");
+
 	public Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Edit", new Runnable()
 	{
 		@Override
@@ -72,19 +95,20 @@ public class ScreenLevelBuilder extends Screen
 			clickCooldown = 20;
 			paused = false;
 		}
-	}
-			);
+	});
+
 	public Button play = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 - 120), 350, 40, "Play", new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			save();
-
-			Game.screen = new ScreenGame(name);
+			play();
 		}
 	}
 			);
+
+	public Button playUnavailable = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 - 120), 350, 40, "Play", "You must add a player---spawn point to play!");
+
 	public Button options = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 0), 350, 40, "Options", new Runnable()
 	{
 		@Override
@@ -218,7 +242,7 @@ public class ScreenLevelBuilder extends Screen
 		{
 			File file = new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name);
 
-			Game.exitToTitle();
+			Game.cleanUp();
 
 			while (file.exists())
 			{
@@ -236,7 +260,7 @@ public class ScreenLevelBuilder extends Screen
 		{
 			save();
 
-			Game.exitToTitle();
+			Game.cleanUp();
 			Game.screen = new ScreenSavedLevels();
 		}
 	}
@@ -507,7 +531,10 @@ public class ScreenLevelBuilder extends Screen
 		this.screenHint = "Press space to access the object menu";
 		this.reloadNewLevel = reload;
 
-		Arrays.fill(this.drawables, new ArrayList<IDrawable>());
+		for (int i = 0; i < drawables.length; i++)
+		{
+			drawables[i] = new ArrayList<IDrawable>();
+		}
 
 		Obstacle.draw_size = Obstacle.obstacle_size;
 
@@ -840,14 +867,19 @@ public class ScreenLevelBuilder extends Screen
 		teamBlue.checkMaxValue = true;
 
 		File file = new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + lvlName);
+
 		if (!file.exists() && reloadNewLevel)
 		{
 			this.teams.add(new Team("ally"));
 			this.teams.add(new Team("enemy"));
-			Game.player = new TankPlayer(Game.tank_size / 2, Game.tank_size / 2, 0, Game.clientID);
-			Game.player.team = this.teams.get(0);
-			Game.movables.add(Game.player);
+
+			TankSpawnMarker t = new TankSpawnMarker("player",Game.tank_size / 2, Game.tank_size / 2, 0);
+			t.team = this.teams.get(0);
+			Game.movables.add(t);
+			this.spawns.add(t);
+
 			this.reload();
+			ScreenLevelBuilder s = (ScreenLevelBuilder) Game.screen;
 		}
 
 		for (int i = 0; i < Game.registryTank.tankEntries.size(); i++)
@@ -859,10 +891,10 @@ public class ScreenLevelBuilder extends Screen
 			double y = Drawing.drawing.interfaceSizeY / 2 - 100 + 100 * ((index / cols) % rows);
 
 			final int j = i;
-			String name = Game.registryTank.getEntry(i).name;
-			name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase() + " Tank";
 
-			this.tankButtons.add(new ButtonObject(Game.registryTank.tankEntries.get(i).getTank(x, y, 0), x, y, 75, 75, new Runnable()
+			Tank t = Game.registryTank.tankEntries.get(i).getTank(x, y, 0);
+
+			ButtonObject b = new ButtonObject(t, x, y, 75, 75, new Runnable()
 			{
 				@Override
 				public void run()
@@ -871,7 +903,12 @@ public class ScreenLevelBuilder extends Screen
 					mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 				}
 			}
-					));
+					, t.description);
+
+			if (t.description.equals(""))
+				b.enableHover = false;
+
+			this.tankButtons.add(b);
 		}
 
 		for (int i = 0; i < Game.registryObstacle.obstacleEntries.size(); i++)
@@ -883,10 +920,9 @@ public class ScreenLevelBuilder extends Screen
 			double y = Drawing.drawing.interfaceSizeY / 2 - 100 + 100 * ((index / cols) % rows);
 
 			final int j = i;
-			String name = Game.registryObstacle.getEntry(i).name;
-			name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase() + " Block";
 
-			this.obstacleButtons.add(new ButtonObject(Game.registryObstacle.obstacleEntries.get(i).getObstacle(x, y), x, y, 75, 75, new Runnable()
+			Obstacle o = Game.registryObstacle.obstacleEntries.get(i).getObstacle(x, y);
+			ButtonObject b = new ButtonObject(o, x, y, 75, 75, new Runnable()
 			{
 				@Override
 				public void run()
@@ -895,7 +931,10 @@ public class ScreenLevelBuilder extends Screen
 					mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 				}
 			}
-					));
+				, o.description);
+
+			b.enableHover = !o.description.equals("");
+			this.obstacleButtons.add(b);
 		}
 	}
 
@@ -1078,7 +1117,13 @@ public class ScreenLevelBuilder extends Screen
 					}
 
 					if (currentPlaceable == Placeable.playerTank)
-						playerButton.update();
+					{
+						this.playerSpawnsButton.enabled = this.movePlayer;
+						this.movePlayerButton.enabled = !this.movePlayer;
+
+						this.playerSpawnsButton.update();
+						this.movePlayerButton.update();
+					}
 					else if (currentPlaceable == Placeable.enemyTank)
 					{
 						for (int i = 0; i < tankButtons.size(); i++)
@@ -1123,7 +1168,11 @@ public class ScreenLevelBuilder extends Screen
 
 				delete.update();
 				quit.update();
-				play.update();
+
+				if (spawns.size() > 0)
+					play.update();
+				else
+					playUnavailable.update();
 			}
 			else
 			{
@@ -1203,13 +1252,6 @@ public class ScreenLevelBuilder extends Screen
 			Game.effects.get(i).update();
 		}
 
-		for (int i = 0; i < Game.removeEffects.size(); i++)
-		{
-			Game.effects.remove(Game.removeEffects.get(i));
-		}
-
-		Game.removeEffects.clear();
-
 		boolean up = false;
 		boolean down = false;
 
@@ -1260,6 +1302,9 @@ public class ScreenLevelBuilder extends Screen
 			obstacleNum = ((obstacleNum - 1) + Game.registryObstacle.obstacleEntries.size()) % Game.registryObstacle.obstacleEntries.size();
 			mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 		}
+
+		if ((up || down) && !(up && down))
+			this.movePlayer = !this.movePlayer;
 
 		boolean right = false;
 		boolean left = false;
@@ -1389,10 +1434,12 @@ public class ScreenLevelBuilder extends Screen
 				for (int i = 0; i < Game.movables.size(); i++)
 				{
 					Movable m = Game.movables.get(i);
-					if (m.posX == mouseTank.posX && m.posY == mouseTank.posY && m instanceof Tank && m != Game.player)
+					if (m.posX == mouseTank.posX && m.posY == mouseTank.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() <= 1))
 					{
 						skip = true;
-						Game.movables.remove(i);
+						Game.removeMovables.add(m);
+
+						this.spawns.remove(m);
 
 						for (int z = 0; z < 100; z++)
 						{
@@ -1422,14 +1469,14 @@ public class ScreenLevelBuilder extends Screen
 				if (m.posX == mouseTank.posX && m.posY == mouseTank.posY)
 				{
 					skip = true;
-					Game.obstacles.remove(i);
+					Game.removeObstacles.add(m);
 					break;
 				}
 			}
 
 			if (!skip && (currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank) && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_2))
 			{
-				this.mouseTankOrientation += Math.PI / 2;
+				this.mouseTankOrientation += 1;
 				this.mouseTankOrientation = this.mouseTankOrientation % 4;
 			}
 
@@ -1447,10 +1494,10 @@ public class ScreenLevelBuilder extends Screen
 					Movable m = Game.movables.get(i);
 					if (m.posX == mouseTank.posX && m.posY == mouseTank.posY)
 					{
-						if (m == Game.player || !Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1))
+						if ((this.spawns.contains(m) && this.spawns.size() <= 1) || !Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1))
 							skip = true;
 						else
-							Game.movables.remove(i);
+							Game.removeMovables.add(m);
 
 						break;
 					}
@@ -1465,7 +1512,7 @@ public class ScreenLevelBuilder extends Screen
 					if (!Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_2))
 						skip = true;
 					else
-						Game.obstacles.remove(i);
+						Game.removeObstacles.add(m);
 
 					break;
 				}
@@ -1482,10 +1529,26 @@ public class ScreenLevelBuilder extends Screen
 				}
 				else if (currentPlaceable == Placeable.playerTank)
 				{
-					Game.player.posX = mouseTank.posX;
-					Game.player.posY = mouseTank.posY;
-					Game.player.angle = mouseTank.angle;
-					Game.player.team = mouseTank.team;
+					if (this.movePlayer)
+					{
+						for (int i = 0; i < Game.movables.size(); i++)
+						{
+							Movable m = Game.movables.get(i);
+
+							if (m instanceof TankSpawnMarker)
+								Game.removeMovables.add(m);
+						}
+
+						this.spawns.clear();
+					}
+
+					TankSpawnMarker t = new TankSpawnMarker("player", mouseTank.posX, mouseTank.posY, mouseTank.angle);
+					t.team = mouseTank.team;
+					this.spawns.add(t);
+					Game.movables.add(t);
+
+					if (this.movePlayer)
+						t.drawAge = 50;
 				}
 				else if (currentPlaceable == Placeable.obstacle)
 				{
@@ -1504,16 +1567,24 @@ public class ScreenLevelBuilder extends Screen
 			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_2);
 		}
 
-		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ENTER))
+		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ENTER) && this.spawns.size() > 0)
 		{
-			this.save();
-			Game.screen = new ScreenGame(this.name);
+			this.play();
 		}
 
 		if (mouseTank != null)
 		{
 			mouseTank.angle = Math.PI * this.mouseTankOrientation * 0.5;
 		}
+
+		Game.effects.removeAll(Game.removeEffects);
+		Game.removeEffects.clear();
+
+		Game.movables.removeAll(Game.removeMovables);
+		Game.removeMovables.clear();
+
+		Game.obstacles.removeAll(Game.removeObstacles);
+		Game.removeObstacles.clear();
 	}
 
 	public void save()
@@ -1709,8 +1780,10 @@ public class ScreenLevelBuilder extends Screen
 
 		Game.movables.clear();
 		Game.obstacles.clear();
+
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
 		Game.loadLevel(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+
 		s.optionsMenu = true;
 		s.tankNum = tankNum;
 		s.obstacleNum = obstacleNum;
@@ -1721,6 +1794,7 @@ public class ScreenLevelBuilder extends Screen
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
+
 			if (m instanceof Tank)
 				((Tank) m).drawAge = Game.tank_size;
 		}
@@ -1741,15 +1815,18 @@ public class ScreenLevelBuilder extends Screen
 	{
 		this.drawDefaultBackground();
 
-		Drawing.drawing.setColor(0, 0, 0);
-		//g.drawString(test, 20, 20);
-
 		if (!paused)
 		{
 			if (currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank)
 			{
 				mouseTank.drawOutline();
 				mouseTank.drawTeam();
+
+				if (currentPlaceable == Placeable.playerTank && !this.movePlayer)
+				{
+					Drawing.drawing.setColor(255, 255, 255, 127);
+					Drawing.drawing.drawImage("/player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size, mouseTank.size);
+				}
 			}
 			else if (currentPlaceable == Placeable.obstacle)
 				mouseObstacle.drawOutline();
@@ -1765,13 +1842,14 @@ public class ScreenLevelBuilder extends Screen
 			drawables[o.drawLevel].add(o);
 
 		for (Effect e: Game.effects)
-			drawables[6].add(e);
+			drawables[7].add(e);
 
 		for (int i = 0; i < this.drawables.length; i++)
 		{
 			for (IDrawable d: this.drawables[i])
 			{
 				d.draw();
+
 				if (d instanceof Movable)
 					((Movable) d).drawTeam();
 			}
@@ -1845,10 +1923,13 @@ public class ScreenLevelBuilder extends Screen
 					this.exitObjectMenu.draw();
 
 					if (currentPlaceable == Placeable.playerTank)
-						playerButton.draw();
+					{
+						this.playerSpawnsButton.draw();
+						this.movePlayerButton.draw();
+					}
 					else if (currentPlaceable == Placeable.enemyTank)
 					{
-						for (int i = 0; i < tankButtons.size(); i++)
+						for (int i = tankButtons.size() - 1; i >= 0; i--)
 						{
 							if (i / (objectButtonCols * objectButtonRows) == tankButtonPage)
 								tankButtons.get(i).draw();
@@ -1862,7 +1943,7 @@ public class ScreenLevelBuilder extends Screen
 					}
 					else if (currentPlaceable == Placeable.obstacle)
 					{
-						for (int i = 0; i < obstacleButtons.size(); i++)
+						for (int i = obstacleButtons.size() - 1; i >= 0; i--)
 						{
 							if (i / (objectButtonCols * objectButtonRows) == obstacleButtonPage)
 								obstacleButtons.get(i).draw();
@@ -1886,8 +1967,13 @@ public class ScreenLevelBuilder extends Screen
 
 				delete.draw();
 				quit.draw();
-				play.draw();
 
+				if (spawns.size() > 0)
+					play.draw();
+				else
+					playUnavailable.draw();
+
+				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.setColor(0, 0, 0);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Level menu");
 			}
@@ -1970,6 +2056,85 @@ public class ScreenLevelBuilder extends Screen
 					Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Level options");
 				}
 			}
+		}
+	}
+
+	public void play()
+	{
+		this.save();
+		this.replaceSpawns();
+		Game.screen = new ScreenGame(this.name);
+	}
+
+	public void replaceSpawns()
+	{
+		int playerCount = 1;
+		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
+			playerCount += ScreenPartyHost.server.connections.size();
+
+		ArrayList<Integer> availablePlayerSpawns = new ArrayList<Integer>();
+		ArrayList<INetworkEvent> playerEvents = new ArrayList<INetworkEvent>();
+
+		for (int i = 0; i < playerCount; i++)
+		{
+			if (availablePlayerSpawns.size() == 0)
+			{
+				for (int j = 0; j < this.spawns.size(); j++)
+				{
+					availablePlayerSpawns.add(j);
+				}
+			}
+
+			int spawn = availablePlayerSpawns.remove((int) (Math.random() * availablePlayerSpawns.size()));
+
+			double x = this.spawns.get(spawn).posX;
+			double y = this.spawns.get(spawn).posY;
+			double angle = this.spawns.get(spawn).angle;
+			Team team = this.spawns.get(spawn).team;
+
+			if (ScreenPartyHost.isServer)
+			{
+				if (i == 0)
+				{
+					EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
+					playerEvents.add(local);
+					Game.eventsOut.add(local);
+				}
+				else
+				{
+					synchronized (ScreenPartyHost.server.connections)
+					{
+						ServerHandler c = ScreenPartyHost.server.connections.get(i - 1);
+						EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
+						playerEvents.add(e);
+						Game.eventsOut.add(e);
+					}
+				}
+			}
+			else if (!ScreenPartyLobby.isClient)
+			{
+				TankPlayer tank = new TankPlayer(x, y, angle, Game.clientID);
+
+				if (spawns.size() <= 1)
+					tank.drawAge = Game.tank_size;
+
+				Game.player = tank;
+				tank.team = team;
+				Game.movables.add(tank);
+			}
+		}
+
+		for (INetworkEvent e: playerEvents)
+		{
+			e.execute();
+		}
+
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable m = Game.movables.get(i);
+
+			if (m instanceof TankSpawnMarker)
+				Game.removeMovables.add(m);
 		}
 	}
 

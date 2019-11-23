@@ -7,7 +7,7 @@ import tanks.gui.Firework;
 import java.io.File;
 import java.util.ArrayList;
 
-public class ScreenInterlevel extends Screen
+public class ScreenInterlevel extends Screen implements IDarkScreen
 {
 	public static boolean tutorialInitial = false;
 	public static boolean fromSavedLevels = false;
@@ -119,18 +119,6 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
-	Button newLevelVersus = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Generate a new level", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.cleanUp();
-			new Level(LevelGeneratorVersus.generateLevelString()).loadLevel();
-			Game.screen = new ScreenGame();
-		}
-	}
-	);
-
 	Button nextLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Next level", new Runnable()
 	{
 		@Override
@@ -144,7 +132,7 @@ public class ScreenInterlevel extends Screen
 	}
 			);
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusadeEnd = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Back to title", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -155,7 +143,17 @@ public class ScreenInterlevel extends Screen
 		}
 	}
 			);
-	
+
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Quit to title", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.exitToTitle();
+		}
+	}
+	);
+
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to my levels", new Runnable()
 	{
 		@Override
@@ -242,8 +240,10 @@ public class ScreenInterlevel extends Screen
 		{
 			save.update();
 
-			if (!Crusade.crusadeMode || skip)
+			if (!Crusade.crusadeMode)
 				quit.update();
+			else if (skip)
+				quitCrusadeEnd.update();
 		}
 
 		if (!skip)
@@ -276,7 +276,7 @@ public class ScreenInterlevel extends Screen
 			Crusade.currentCrusade.levelFinished(Panel.win);
 		}
 
-		if (Panel.win)
+		if (Panel.win && Game.fancyGraphics)
 		{
 			Drawing.drawing.playSound("/win.wav");
 			for (int i = 0; i < 5; i++)
@@ -290,7 +290,6 @@ public class ScreenInterlevel extends Screen
 		}
 		else
 			Drawing.drawing.playSound("/lose.wav");
-
 	}
 
 	@Override
@@ -330,8 +329,10 @@ public class ScreenInterlevel extends Screen
 		{
 			save.draw();
 
-			if (!Crusade.crusadeMode || skip)
+			if (!Crusade.crusadeMode)
 				quit.draw();
+			else if (skip)
+				quitCrusadeEnd.draw();
 		}
 
 		if (!skip)
@@ -384,7 +385,12 @@ public class ScreenInterlevel extends Screen
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, Panel.winlose);	
 
 		if (Crusade.crusadeMode)
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);	
+		{
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);
+
+			if (Crusade.currentCrusade.lifeGained)
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, "You gained a life for clearing Battle " + (Crusade.currentCrusade.currentLevel + 1) + "!");
+		}
 
 		if (Panel.win && Game.fancyGraphics)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
@@ -410,7 +416,5 @@ public class ScreenInterlevel extends Screen
 				fireworks.remove(removeFireworks.get(i));
 			}  
 		}
-
 	}
-
 }

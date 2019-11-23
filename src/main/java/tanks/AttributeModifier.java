@@ -22,7 +22,7 @@ public class AttributeModifier
 	
 	public Operation effect;
 	
-	protected double age;
+	public double age;
 	
 	public boolean expired = false;
 	

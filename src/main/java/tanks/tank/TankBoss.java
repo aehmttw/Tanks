@@ -31,6 +31,8 @@ public class TankBoss extends TankAIControlled
 		this.turret.length *= 3;
 		this.turret.size *= 3;
 		this.coinValue = 25;
+
+		this.description = "A big boss tank which spawns---other tanks and takes 5 regular---bullets to destroy";
 	}
 	
 	@Override

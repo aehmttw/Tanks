@@ -20,6 +20,8 @@ public class TankBlack extends TankAIControlled
 		this.aimTurretSpeed = 0.06;
 		
 		this.coinValue = 10;
+
+		this.description = "A smart, very fast tank---which fires rockets";
 	}
 	
 	@Override

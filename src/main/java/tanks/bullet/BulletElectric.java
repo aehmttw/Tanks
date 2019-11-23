@@ -2,9 +2,13 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.AttributeModifier.Operation;
+import tanks.event.EventBulletDestroyed;
+import tanks.event.EventBulletElectricStunEffect;
+import tanks.event.EventBulletInstantWaypoint;
 import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
+import tanks.tank.Ray;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;
@@ -16,33 +20,34 @@ public class BulletElectric extends BulletInstant
 	public ArrayList<Movable> targets;
 	public double invulnerability = 0;
 	public Movable target = null;
-	public boolean calcInvul = false;
 
 	public BulletElectric(double x, double y, int bounces, Tank t) 
 	{
-		this(x, y, bounces, t, new ArrayList<Movable>());
+		this(x, y, bounces, t, new ArrayList<Movable>(), false, null);
 	}
 	
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
 	public BulletElectric(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
-		this(x, y, bounces, t, new ArrayList<Movable>());
-		this.item = ib;
+		this(x, y, bounces, t, new ArrayList<Movable>(), false, ib);
 	}
 	
-	public BulletElectric(double x, double y, int bounces, Tank t, ArrayList<Movable> targets) 
+	public BulletElectric(double x, double y, int bounces, Tank t, ArrayList<Movable> targets, boolean affectsLiveBullets, ItemBullet ib)
 	{
-		super(x, y, 0, t, false);
+		super(x, y, 0, t, affectsLiveBullets, ib);
 		chain = bounces;
 		this.name = "electric";
-		
-		if (targets.size() == 0)
-			t.liveBullets--;
-		
+
 		this.targets = targets;
-		this.damage = 0.1000001;
+		this.damage = 0.125;
 		this.effect = BulletEffect.none;
+	}
+
+	public void sendEvent()
+	{
+		if (!this.tank.isRemote)
+			Game.eventsOut.add(new EventShootBullet(this));
 	}
 
 	public void shoot()
@@ -53,40 +58,37 @@ public class BulletElectric extends BulletInstant
 			this.addPolarMotion(angle, 25.0 / 4);
 		}
 
-		if (!tank.isRemote)
+		if (!this.tank.isRemote)
 		{
-			BulletElectric b = new BulletElectric(this.posX, this.posY, 0, this.tank);
-			b.vX = this.vX;
-			b.vY = this.vY;
-			b.damage = this.damage;
-			Game.eventsOut.add(new EventShootBullet(b));
+			this.saveTarget();
 		}
-		else
-			this.calcInvul = true;
-		
+
 		while (!this.destroy)
 		{
 			if (ScreenGame.finished)
 				this.destroy = true;
 
 			this.move();
-			
-			this.calcInvul = false;
 
-			Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.electric));
+			this.addEffect();
+		}
+
+		if (!this.tank.isRemote)
+		{
+			this.saveTarget();
+
+			for (int i = 0; i < this.xTargets.size(); i++)
+			{
+				Game.eventsOut.add(new EventBulletInstantWaypoint(this, this.xTargets.get(i), this.yTargets.get(i)));
+			}
+
+			Game.eventsOut.add(new EventBulletDestroyed(this));
 		}
 	}
 
 	@Override
 	public void update()
 	{
-		if (this.shotQueued)
-		{
-			this.shoot();
-			Game.removeMovables.add(this);
-			return;
-		}
-		
 		if (this.delay > 0)
 		{
 			this.delay -= Panel.frameFrequency;
@@ -99,10 +101,13 @@ public class BulletElectric extends BulletInstant
 				this.shoot();
 
 			Game.removeMovables.add(this);
+
+			if (!freeIDs.contains(this.networkID))
+			{
+				freeIDs.add(this.networkID);
+				idMap.remove(this.networkID);
+			}
 		}
-				
-		//if (this.destroy)
-		//	Game.removeMovables.add(this);
 	}
 
 	public void move()
@@ -114,12 +119,6 @@ public class BulletElectric extends BulletInstant
 	@Override
 	public void collidedWithTank(Tank t)
 	{
-		if (this.calcInvul)
-		{
-			this.invulnerability = 15;
-			return;
-		}
-		
 		if (this.invulnerability <= 0 && !this.destroy)
 		{
 			this.collided(t);
@@ -130,12 +129,6 @@ public class BulletElectric extends BulletInstant
 	@Override
 	public void collidedWithObject(Movable m)
 	{
-		if (this.calcInvul)
-		{
-			this.invulnerability = 1;
-			return;
-		}
-		
 		if (this.invulnerability <= 0 && !this.destroy)
 		{
 			this.collided(m);
@@ -159,7 +152,7 @@ public class BulletElectric extends BulletInstant
 
 		AttributeModifier a = new AttributeModifier("velocity", Operation.multiply, -1);
 		a.duration = 100;
-		movable.attributes.add(a);
+		movable.addAttribute(a);
 
 		if (chain > 0 && !this.tank.isRemote)
 		{
@@ -182,11 +175,10 @@ public class BulletElectric extends BulletInstant
 
 			if (n != null)
 			{
-				BulletElectric b = new BulletElectric(this.posX, this.posY, this.chain - 1, this.tank, this.targets);
+				BulletElectric b = new BulletElectric(this.posX, this.posY, this.chain - 1, this.tank, this.targets, this.affectsMaxLiveBullets, this.item);
 				b.iPosZ = this.posZ;
-				
+				b.damage = this.damage;
 				b.team = this.team;
-
 				b.delay = 10;
 
 				if (movable instanceof Tank)
@@ -196,20 +188,26 @@ public class BulletElectric extends BulletInstant
 
 				b.target = n;
 
+				b.sendEvent();
 				Game.movables.add(b);
 			}
 		}
 
-		if (Game.fancyGraphics && movable instanceof Tank)
+		if (movable instanceof Tank && !this.tank.isRemote)
 		{
-			for (int i = 0; i < 25; i++)
+			Game.eventsOut.add(new EventBulletElectricStunEffect(this.posX, this.posY, this.posZ));
+
+			if (Game.fancyGraphics)
 			{
-				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.stun);
-				double var = 50;
-				e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
-				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-				Game.effects.add(e);
+				for (int i = 0; i < 25; i++)
+				{
+					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.stun);
+					double var = 50;
+					e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+					Game.effects.add(e);
+				}
 			}
 		}
 	}
@@ -218,5 +216,17 @@ public class BulletElectric extends BulletInstant
 	public void draw()
 	{
 		
+	}
+
+	@Override
+	public void addEffect()
+	{
+		Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.electric));
+	}
+
+	@Override
+	public void addDestroyEffect()
+	{
+
 	}
 }

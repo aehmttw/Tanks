@@ -16,7 +16,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	public MessageReader reader = new MessageReader();
 	
 	public ChannelHandlerContext ctx;
-	
+
+	public static long lastMessage = 0;
+	public static long latency = 0;
+
+	public static long latencySum = 0;
+	public static int latencyCount = 1;
+	public static long lastLatencyTime = 0;
+	public static long lastLatencyAverage = 0;
+
 	@Override
     public void channelActive(ChannelHandlerContext ctx)
     {
@@ -65,6 +73,22 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
 		if (reply)
 		{
+			long time = System.currentTimeMillis();
+			latency = time - lastMessage;
+			lastMessage = time;
+
+			latencyCount++;
+			latencySum += latency;
+
+			if (time / 1000 > lastLatencyTime)
+			{
+				lastLatencyTime = time / 1000;
+				lastLatencyAverage = latencySum / latencyCount;
+
+				latencySum = 0;
+				latencyCount = 0;
+			}
+
 			synchronized (Game.eventsOut)
 			{
 				EventKeepConnectionAlive k = new EventKeepConnectionAlive();

@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 
-public class EventLayMine implements INetworkEvent
+public class EventLayMine extends PersonalEvent
 {
 	public int tank;
 	public double posX;
@@ -30,8 +30,11 @@ public class EventLayMine implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		Mine m = new Mine(this.posX, this.posY, this.timer, Tank.idMap.get(tank));
-		Game.movables.add(m);
+		if (clientID == null)
+		{
+			Mine m = new Mine(this.posX, this.posY, this.timer, Tank.idMap.get(tank));
+			Game.movables.add(m);
+		}
 	}
 
 	@Override

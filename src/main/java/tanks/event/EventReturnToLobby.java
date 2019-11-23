@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyLobby;
 
-public class EventReturnToLobby implements INetworkEvent
+public class EventReturnToLobby extends PersonalEvent
 {		
 	public EventReturnToLobby()
 	{
@@ -14,11 +14,14 @@ public class EventReturnToLobby implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		Game.cleanUp();
-		Game.screen = new ScreenPartyLobby();
-		ScreenPartyLobby.readyPlayers = 0;
-			
-		System.gc();
+		if (this.clientID == null)
+		{
+			Game.cleanUp();
+			Game.screen = new ScreenPartyLobby();
+			ScreenPartyLobby.readyPlayers = 0;
+
+			System.gc();
+		}
 	}
 
 	@Override

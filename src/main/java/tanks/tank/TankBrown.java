@@ -21,5 +21,7 @@ public class TankBrown extends TankAIControlled
 		this.aimAccuracyOffset = 0;
 		
 		this.coinValue = 1;
+
+		this.description = "A primitive stationary tank";
 	}
 }

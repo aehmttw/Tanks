@@ -28,6 +28,8 @@ public class ObstacleTeleporter extends Obstacle
 		this.colorG = 255;
 		this.colorB = 255;
 		this.draggable = false;
+
+		this.description = "A teleporter which randomly---transports you to another---teleporter in the level";
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class ObstacleTeleporter extends Obstacle
 			this.green = Math.max(0, this.green + 2.55 * Panel.frameFrequency);
 
 		Drawing.drawing.setColor(0, this.green, 255);
-		
+
 		Drawing.drawing.fillOval(this.posX, this.posY, draw_size / 2, draw_size / 2);
 	}
 	

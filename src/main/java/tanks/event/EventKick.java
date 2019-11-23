@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.gui.screen.ScreenKicked;
 import tanks.network.NetworkUtils;
 
-public class EventKick implements INetworkEvent
+public class EventKick extends PersonalEvent
 {	
 	public String reason;
 	
@@ -22,8 +22,11 @@ public class EventKick implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		Game.cleanUp();
-		Game.screen = new ScreenKicked(reason);
+		if (this.clientID == null)
+		{
+			Game.cleanUp();
+			Game.screen = new ScreenKicked(reason);
+		}
 	}
 
 	@Override

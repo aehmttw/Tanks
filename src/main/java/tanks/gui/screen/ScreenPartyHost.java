@@ -5,6 +5,7 @@ import tanks.event.EventPlayerChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
+import tanks.network.ClientHandler;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
 import org.lwjgl.glfw.GLFW;
@@ -19,7 +20,9 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	public static Server server;
 	public static boolean isServer = false;
 	public static SynchronizedList<UUID> readyPlayers = new SynchronizedList<UUID>();
+	public static SynchronizedList<UUID> disconnectedPlayers = new SynchronizedList<UUID>();
 	public static ScreenPartyHost activeScreen;
+
 	public String ip = "";
 
 	Button[] kickButtons = new Button[entries_per_page];
@@ -32,8 +35,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
-	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T, 
-			"\u00A7127127127255Click here or press 'T' to send a chat message", new Runnable()
+	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T,
+			"Click here or press 'T' to send a chat message", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -241,7 +244,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, this.ip);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
+		//Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
 
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 160, "Play:");
 
@@ -283,12 +286,26 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 				{
 					if (server.connections.get(i).username != null)
 					{
-						Drawing.drawing.setColor(0, 0, 0);
-						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190,
-								Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
-								server.connections.get(i).username);
+						try
+						{
+							Drawing.drawing.setInterfaceFontSize(24);
+							Drawing.drawing.setColor(0, 0, 0);
+							Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190,
+									Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
+									server.connections.get(i).username);
 
-						this.kickButtons[i - this.usernamePage * entries_per_page].draw();
+							this.kickButtons[i - this.usernamePage * entries_per_page].draw();
+
+							Drawing.drawing.setInterfaceFontSize(12);
+							Drawing.drawing.setColor(0, 0, 0);
+							Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 370,
+									Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
+									server.connections.get(i).lastLatencyAverage + "ms");
+						}
+						catch (Exception e)
+						{
+
+						}
 					}
 				}
 			}

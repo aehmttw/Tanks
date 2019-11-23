@@ -3,7 +3,7 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
 
-public class EventTankUpdate implements INetworkEvent
+public class EventTankUpdate extends PersonalEvent
 {
 	public int tank;
 	public double posX;
@@ -54,7 +54,7 @@ public class EventTankUpdate implements INetworkEvent
 	{
 		Tank t = Tank.idMap.get(this.tank);
 		
-		if (t != null)
+		if (t != null && this.clientID == null)
 		{
 			t.posX = this.posX;
 			t.posY = this.posY;

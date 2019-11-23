@@ -2,7 +2,11 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.event.EventLayMine;
+import tanks.event.EventMineExplode;
 import tanks.obstacle.Obstacle;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Mine extends Movable
 {
@@ -15,6 +19,12 @@ public class Mine extends Movable
 
 	public double radius = Game.tank_size * 2.5;
 	public Tank tank;
+
+	public int networkID;
+
+	public static int currentID = 0;
+	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
+	public static HashMap<Integer, Mine> idMap = new HashMap<Integer, Mine>();
 
 	public Mine(double x, double y, double timer, Tank t)
 	{
@@ -32,6 +42,16 @@ public class Mine extends Movable
 		
 		if (!t.isRemote)
 			Game.eventsOut.add(new EventLayMine(this));
+
+		if (freeIDs.size() > 0)
+			this.networkID = freeIDs.remove(0);
+		else
+		{
+			this.networkID = currentID;
+			currentID++;
+		}
+
+		idMap.put(this.networkID, this);
 	}
 	
 	public Mine(double x, double y, Tank t) 
@@ -58,11 +78,15 @@ public class Mine extends Movable
 	{
 		this.timer -= Panel.frameFrequency;
 
-		if (destroy)
+		if (this.timer < 0)
+			this.timer = 0;
+
+		if (destroy && !this.tank.isRemote)
 			this.explode();
 
-		if (this.timer <= 0)
+		if (this.timer <= 0 && !this.tank.isRemote)
 			this.explode();
+
 		super.update();
 
 		for (int i = 0; i < Game.movables.size(); i++)
@@ -103,32 +127,37 @@ public class Mine extends Movable
 
 		this.destroy = true;
 
-		for (int i = 0; i < Game.movables.size(); i++)
+		if (!this.tank.isRemote)
 		{
-			Movable o = Game.movables.get(i);
-			if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
+			Game.eventsOut.add(new EventMineExplode(this));
+
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable)
+				Movable o = Game.movables.get(i);
+				if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
 				{
-					if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
+					if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable)
 					{
-						((Tank) o).lives -= 2;
-						((Tank)o).flashAnimation = 1;
-
-						if (((Tank)o).lives <= 0)
+						if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
 						{
-							((Tank)o).flashAnimation = 0;
-							o.destroy = true;
+							((Tank) o).lives -= 2;
+							((Tank) o).flashAnimation = 1;
 
-							if (this.tank.equals(Game.player))
-								Panel.panel.hotbar.currentCoins.coins += ((Tank)o).coinValue;
-						}	
+							if (((Tank) o).lives <= 0)
+							{
+								((Tank) o).flashAnimation = 0;
+								o.destroy = true;
+
+								if (this.tank.equals(Game.player))
+									Panel.panel.hotbar.currentCoins.coins += ((Tank) o).coinValue;
+							}
+						}
 					}
-				}		
-				else if (o instanceof Mine && !o.destroy)
-				{
-					o.destroy = true;
-				}		
+					else if (o instanceof Mine && !o.destroy)
+					{
+						o.destroy = true;
+					}
+				}
 			}
 		}
 
@@ -199,6 +228,9 @@ public class Mine extends Movable
 		Game.effects.add(e);
 
 		Game.removeMovables.add(this);
+
+		freeIDs.add(this.networkID);
+		idMap.remove(this.networkID);
 	}
 
 }

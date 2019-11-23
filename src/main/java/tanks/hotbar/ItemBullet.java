@@ -3,6 +3,7 @@ package tanks.hotbar;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 
 public class ItemBullet extends Item
 {
@@ -44,9 +45,9 @@ public class ItemBullet extends Item
 			b.recoil = recoil;
 			
 			Game.player.cooldown = this.cooldown;
-			Game.player.fireBullet(b, speed);
 
-			this.liveBullets++;
+			if (Game.player instanceof TankPlayer)
+				((TankPlayer)Game.player).fireBullet(b, speed);
 
 			this.stackSize--;
 			
@@ -68,7 +69,7 @@ public class ItemBullet extends Item
 	@Override
 	public String toString()
 	{
-		return super.toString() + "-bullet-"
-				+ className + "-" + effect + "-" + speed + "-" + bounces + "-" + damage + "-" + maxAmount + "-" + cooldown + "-" + size + "-" + recoil + "-" + heavy;
+		return super.toString() + ",bullet,"
+				+ className + "," + effect + "," + speed + "," + bounces + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + recoil + "," + heavy;
 	}
 }

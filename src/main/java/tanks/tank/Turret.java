@@ -59,13 +59,18 @@ public class Turret extends Movable
 		double dy2 = x1 * Math.sin(angle) + y2 * Math.cos(angle);
 		double dy3 = x3 * Math.sin(angle) + y1 * Math.cos(angle);
 		double dy4 = x3 * Math.sin(angle) + y2 * Math.cos(angle);
-		
+
 		if (forInterface)
 			Drawing.drawing.fillInterfaceQuad(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3);
 		else
 		{
+			byte options = 0;
+
+			if (!this.tank.depthTest)
+				options = 64;
+
 			if (Game.enable3d && in3d)
-				Drawing.drawing.fillQuadBox(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3, this.tank.size * 0.5 * (s / this.size), s);
+				Drawing.drawing.fillQuadBox(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3, this.tank.size * 0.5 * (s / this.size), s, options);
 			else
 				Drawing.drawing.fillQuad(this.posX + dx1, this.posY + dy1, this.posX + dx2, this.posY + dy2, this.posX + dx4, this.posY + dy4, this.posX + dx3, this.posY + dy3);
 		}

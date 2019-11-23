@@ -1,6 +1,9 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.event.EventBulletAddAttributeModifier;
+import tanks.event.EventBulletDestroyed;
+import tanks.event.EventBulletUpdate;
 import tanks.event.EventTankUpdateHealth;
 import tanks.hotbar.ItemBullet;
 import tanks.obstacle.Obstacle;
@@ -8,19 +11,34 @@ import tanks.tank.Mine;
 import tanks.tank.Ray;
 import tanks.tank.Tank;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Bullet extends Movable implements IDrawable
 {
+	public static int currentID = 0;
+	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
+	public static HashMap<Integer, Bullet> idMap = new HashMap<Integer, Bullet>();
+
+	public int networkID;
+
 	public enum BulletEffect {none, fire, darkFire, fireTrail, ice, trail}
 
 	public static double bullet_size = 10;
 
 	public String name;
-	
+
+	public boolean enableExternalCollisions = true;
 	public boolean playPopSound = true;
 	public double age = 0;
 	public double size;
 	public int bounces;
 	public int bouncyBounces = 100;
+
+	public double ageFrac = 0;
+	public double quarterAgeFrac = 0;
+
+	public double sinceLastEffect = 0;
 	
 	public double baseColorR;
 	public double baseColorG;
@@ -46,20 +64,21 @@ public class Bullet extends Movable implements IDrawable
 
 	public Bullet(double x, double y, int bounces, Tank t)
 	{
-		this(x, y, bounces, t, true);
+		this(x, y, bounces, t, true, null);
 	}
 
 	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
 	@Deprecated
 	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false);
-		this.item = ib;
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false, ib);
 	}
 	
-	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets)
+	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet item)
 	{
 		super(x, y);
+
+		this.item = item;
 		this.vX = 0;
 		this.vY = 0;
 		this.size = bullet_size;
@@ -77,8 +96,6 @@ public class Bullet extends Movable implements IDrawable
 		this.team = t.team;
 		this.name = "normal";
 
-		t.liveBullets++;
-		
 		this.iPosZ = this.tank.size / 2 + this.tank.turret.size / 2;
 		
 		this.isRemote = t.isRemote;
@@ -88,8 +105,25 @@ public class Bullet extends Movable implements IDrawable
 		
 		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
 
-		if (!this.affectsMaxLiveBullets)
-			t.liveBullets--;
+		if (!this.tank.isRemote && this.affectsMaxLiveBullets)
+		{
+			if (this.item == null)
+				t.liveBullets++;
+			else
+				this.item.liveBullets++;
+		}
+
+		if (freeIDs.size() > 0)
+			this.networkID = freeIDs.remove(0);
+		else
+		{
+			this.networkID = currentID;
+			currentID++;
+		}
+
+		idMap.put(this.networkID, this);
+
+		this.drawLevel = 8;
 	}
 
 	public void moveOut(int amount)
@@ -127,7 +161,10 @@ public class Bullet extends Movable implements IDrawable
 	}
 
 	public void collidedWithObject(Movable o)
-	{		
+	{
+		if (o instanceof Bullet && !((Bullet) o).enableExternalCollisions)
+			return;
+
 		if (this.playPopSound)
 			Drawing.drawing.playSound("/bullet_explode.wav");
 		
@@ -149,6 +186,35 @@ public class Bullet extends Movable implements IDrawable
 
 		o.vX = 0;
 		o.vY = 0;
+	}
+
+	public void checkCollisionLocal()
+	{
+		if (this.destroy)
+			return;
+
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+
+			if (!o.checkForObjects)
+				continue;
+
+			double dx = this.posX - o.posX;
+			double dy = this.posY - o.posY;
+
+			double horizontalDist = Math.abs(dx);
+			double verticalDist = Math.abs(dy);
+
+			double s = this.size;
+			if (useCustomWallCollision)
+				s = this.wallCollisionSize;
+
+			double bound = s / 2 + Obstacle.obstacle_size / 2;
+
+			if (horizontalDist < bound && verticalDist < bound)
+				o.onObjectEntryLocal(this);
+		}
 	}
 
 	public void checkCollision()
@@ -298,7 +364,7 @@ public class Bullet extends Movable implements IDrawable
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
-					collidedWithObject(o);
+					this.collidedWithObject(o);
 				}
 			}
 
@@ -323,6 +389,8 @@ public class Bullet extends Movable implements IDrawable
 			}
 			else
 				Drawing.drawing.playSound("/bounce.wav");
+
+			Game.eventsOut.add(new EventBulletUpdate(this));
 		}
 	}
 
@@ -337,8 +405,27 @@ public class Bullet extends Movable implements IDrawable
 	@Override
 	public void update()
 	{
+		super.update();
+
 		if (destroy)
 		{
+			if (this.destroyTimer <= 0 && !freeIDs.contains(this.networkID))
+			{
+				if (!this.tank.isRemote)
+					Game.eventsOut.add(new EventBulletDestroyed(this));
+
+				freeIDs.add(this.networkID);
+				idMap.remove(this.networkID);
+
+				if (this.affectsMaxLiveBullets)
+				{
+					if (this.item == null)
+						this.tank.liveBullets--;
+					else
+						this.item.liveBullets--;
+				}
+			}
+
 			if (this.destroyTimer <= 0 && Game.fancyGraphics && !(this instanceof BulletFlame))
 			{
 				for (int i = 0; i < this.size * 4; i++)
@@ -367,63 +454,64 @@ public class Bullet extends Movable implements IDrawable
 		{
 			double frac = 1 / (1 + this.age / 100);
 			this.posZ = this.iPosZ * frac + (Game.tank_size / 4) * (1 - frac);
-			
+
+			this.ageFrac += Panel.frameFrequency;
+			this.quarterAgeFrac += Panel.frameFrequency;
+
 			if (Game.fancyGraphics)
 			{
-				if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.trail));
+				while (this.ageFrac >= 1)
+				{
+					this.ageFrac -= 1;
 
-				if (this.effect.equals(BulletEffect.fireTrail))
-				{	
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0.25 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0.50 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, this.posZ, Effect.EffectType.smokeTrail, 0.25, 0.75 * Panel.frameFrequency));
+					if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
+						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * ageFrac, this.posY - lastFinalVY * ageFrac, this.posZ - lastFinalVZ, Effect.EffectType.trail, ageFrac));
+
+					if (this.effect.equals(BulletEffect.ice))
+					{
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+						double var = 50;
+						e.maxAge /= 2;
+						e.colR = Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+
+						Game.effects.add(e);
+					}
 				}
 
-				if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
+				while (this.quarterAgeFrac >= 0.25)
 				{
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.fire, 0.25, 0));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, this.posZ, Effect.EffectType.fire, 0.25, 0.25 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, this.posZ, Effect.EffectType.fire, 0.25, 0.50 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX  * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, this.posZ, Effect.EffectType.fire, 0.25, 0.75 * Panel.frameFrequency));
-				}
+					this.quarterAgeFrac -= 0.25;
 
-				if (this.effect.equals(BulletEffect.darkFire))
-				{
-					Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.darkFire, 0.25, 0));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8, this.posY - this.vY * Panel.frameFrequency / 8, this.posZ, Effect.EffectType.darkFire, 0.25, 0.25 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 4, this.posY - this.vY * Panel.frameFrequency / 4, this.posZ, Effect.EffectType.darkFire, 0.25, 0.50 * Panel.frameFrequency));
-					Game.effects.add(Effect.createNewEffect(this.posX - this.vX * Panel.frameFrequency / 8 * 3, this.posY - this.vY * Panel.frameFrequency / 8 * 3, this.posZ, Effect.EffectType.darkFire, 0.25, 0.75 * Panel.frameFrequency));
-				}
+					if (this.effect.equals(BulletEffect.fireTrail))
+						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, quarterAgeFrac));
 
-				if (this.effect.equals(BulletEffect.ice))
-				{
-					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-					double var = 50;
-					e.maxAge /= 2;
-					e.colR = Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-					Game.effects.add(e);
+					if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
+						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.fire, quarterAgeFrac));
+
+					if (this.effect.equals(BulletEffect.darkFire))
+						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.darkFire, quarterAgeFrac));
 				}
 			}
 		}
 
 		if (this.destroyTimer >= 60)
 		{
-			if (this.affectsMaxLiveBullets)
-				this.tank.liveBullets--;
-
-			if (this.item != null)
-				this.item.liveBullets--;
-
 			Game.removeMovables.add(this);
 		}
 
-		super.update();
-		this.checkCollision();
+		if (!this.tank.isRemote)
+			this.checkCollision();
+		else
+			this.checkCollisionLocal();
+
 		this.age += Panel.frameFrequency;
 	}
 
@@ -446,6 +534,24 @@ public class Bullet extends Movable implements IDrawable
 		else
 			Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
+	}
+
+	@Override
+	public void addAttribute(AttributeModifier m)
+	{
+		super.addAttribute(m);
+
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, false));
+	}
+
+	@Override
+	public void addUnduplicateAttribute(AttributeModifier m)
+	{
+		super.addUnduplicateAttribute(m);
+
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, true));
 	}
 
 }

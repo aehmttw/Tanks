@@ -3,7 +3,7 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.gui.screen.ScreenPartyLobby;
 
-public class EventUpdateReadyCount implements INetworkEvent
+public class EventUpdateReadyCount extends PersonalEvent
 {
 	public int readyPlayers;
 	
@@ -20,7 +20,8 @@ public class EventUpdateReadyCount implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		ScreenPartyLobby.readyPlayers = readyPlayers;
+		if (this.clientID == null)
+			ScreenPartyLobby.readyPlayers = readyPlayers;
 	}
 
 	@Override

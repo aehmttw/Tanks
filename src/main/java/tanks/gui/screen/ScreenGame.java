@@ -184,7 +184,7 @@ public class ScreenGame extends Screen
 		@Override
 		public void run() 
 		{
-			Game.exitToTitle();
+			Game.cleanUp();
 			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
 			Game.loadLevel(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
 			Game.screen = s;
@@ -401,6 +401,21 @@ public class ScreenGame extends Screen
 		else if (ScreenPartyHost.isServer)
 			ScreenPartyHost.chatbox.update(false);
 
+		if (ScreenPartyHost.isServer)
+		{
+			for (int i = 0; i < ScreenPartyHost.disconnectedPlayers.size(); i++)
+			{
+				for (int j = 0; j < Game.movables.size(); j++)
+				{
+					Movable m = Game.movables.get(j);
+					if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
+						((TankPlayerRemote) m).lives = 0;
+				}
+			}
+
+			ScreenPartyHost.disconnectedPlayers.clear();
+		}
+
 		Panel.panel.hotbar.update();
 
 		if (Game.enable3d)
@@ -580,6 +595,11 @@ public class ScreenGame extends Screen
 			Obstacle.draw_size = Math.min(Obstacle.obstacle_size, Obstacle.draw_size);
 			ArrayList<Team> aliveTeams = new ArrayList<Team>();
 
+			for (int i = 0; i < Game.effects.size(); i++)
+			{
+				Game.effects.get(i).update();
+			}
+
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
@@ -591,8 +611,8 @@ public class ScreenGame extends Screen
 					{
 						if (m instanceof TankPlayer)
 							aliveTeams.add(new Team(Game.clientID.toString()));
-						else if (m instanceof TankRemote && ((TankRemote)m).tank != null && ((TankRemote)m).tank instanceof TankPlayer)
-							aliveTeams.add(new Team(((TankPlayer)((TankRemote)m).tank).clientID.toString()));
+						else if (m instanceof TankPlayerRemote)
+							aliveTeams.add(new Team(((TankPlayerRemote) m).clientID.toString()));
 						else
 							aliveTeams.add(new Team("*"));
 					}
@@ -609,12 +629,6 @@ public class ScreenGame extends Screen
 					o.update();
 			}
 
-
-			for (int i = 0; i < Game.effects.size(); i++)
-			{
-				Game.effects.get(i).update();
-			}
-
 			for (int i = 0; i < Game.belowEffects.size(); i++)
 			{
 				Game.belowEffects.get(i).update();
@@ -624,8 +638,6 @@ public class ScreenGame extends Screen
 
 			if (aliveTeams.size() <= 1)
 			{
-				versus = false;
-
 				ScreenGame.finished = true;
 				Game.bulletLocked = true;
 
@@ -671,9 +683,11 @@ public class ScreenGame extends Screen
 							if (ScreenPartyHost.isServer)
 							{
 								Game.cleanUp();
-								Game.screen = ScreenPartyHost.activeScreen;
+
+								Game.screen = new ScreenPartyInterlevel();
 
 								String s = "**";
+
 								if (aliveTeams.size() > 0)
 									s = aliveTeams.get(0).name;
 
@@ -729,7 +743,6 @@ public class ScreenGame extends Screen
 	{
 		this.drawDefaultBackground();
 
-
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 			drawables[0].add(Game.belowEffects.get(i));
 
@@ -770,13 +783,13 @@ public class ScreenGame extends Screen
 			if (Crusade.crusadeMode)
 			{
 				Drawing.drawing.setColor(0, 0, 0, 127);
-				Drawing.drawing.setFontSize(100);
+				Drawing.drawing.setInterfaceFontSize(100);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
 			}
 
 			if (shopScreen)
 			{		
-				Drawing.drawing.setFontSize(24);
+				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.setColor(0, 0, 0);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Shop");
 	
@@ -891,6 +904,7 @@ public class ScreenGame extends Screen
 		}
 
 		Drawing.drawing.setInterfaceFontSize(24);
+
 		if (ScreenPartyLobby.isClient)
 		{
 			ScreenPartyLobby.chatbox.draw(false);
@@ -919,7 +933,6 @@ public class ScreenGame extends Screen
 				}
 			}
 		}
-
 	}
 
 }

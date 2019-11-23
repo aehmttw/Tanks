@@ -15,7 +15,6 @@ public class Effect extends Movable
 
 	public double maxAge = 100;
 	public double size;
-	public double ffOpacityMultiplier = Math.min(1, Panel.frameFrequency);
 	public boolean removed = false;
 	public double radius;
 	public double angle;
@@ -43,16 +42,15 @@ public class Effect extends Movable
 		}
 	}
 	
-	public static Effect createNewEffect(double x, double y, EffectType type, double opacityMultiplier, double age)
+	public static Effect createNewEffect(double x, double y, EffectType type, double age)
 	{
-		return Effect.createNewEffect(x, y, 0, type, opacityMultiplier, age);
+		return Effect.createNewEffect(x, y, 0, type, age);
 	}
 	
-	public static Effect createNewEffect(double x, double y, double z, EffectType type, double opacityMultiplier, double age)
+	public static Effect createNewEffect(double x, double y, double z, EffectType type, double age)
 	{
 		Effect e = Effect.createNewEffect(x, y, z, type);
-		e.ffOpacityMultiplier = Math.min(1, Panel.frameFrequency * opacityMultiplier);
-		e.age = age * Panel.frameFrequency;
+		e.age = age;
 		return e;
 	}
 	
@@ -140,10 +138,10 @@ public class Effect extends Movable
 		this.colB = 0;
 		this.maxAge = Math.random() * 100 + 50;
 		this.size = 0;
-		this.ffOpacityMultiplier =  Math.min(1, Panel.frameFrequency);
 		this.removed = false;
 		this.angle = 0;
 		this.distance = 0;
+		this.radius = 0;
 	}
 
 	@Override
@@ -163,10 +161,10 @@ public class Effect extends Movable
 			double size = (this.age * 3 + 10);
 			double rawOpacity = (1.0 - (this.age)/20.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			double opacity = (rawOpacity * 255);
+			double opacity = (rawOpacity * 255) / 4;
 			
 			double green = Math.min(255, (255 - 255.0*(this.age / 20.0)));
-			drawing.setColor(255, green, 0,  Math.min(255, Math.max(0, (opacity * opacityMultiplier * ffOpacityMultiplier))));
+			drawing.setColor(255, green, 0,  Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 			
 			if (Game.enable3d)
 				drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -179,9 +177,9 @@ public class Effect extends Movable
 			int size = 20;
 			double rawOpacity = (1.0 - (this.age)/200.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			double opacity = (rawOpacity * 100);
+			double opacity = (rawOpacity * 100) / 4;
 			
-			drawing.setColor(0, 0, 0, Math.min(255, Math.max(0, (opacity * opacityMultiplier * opacityModifier * ffOpacityMultiplier))));
+			drawing.setColor(0, 0, 0, Math.min(255, Math.max(0, (opacity * opacityMultiplier * opacityModifier))));
 
 			if (Game.enable3d)
 				drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -191,11 +189,10 @@ public class Effect extends Movable
 		else if (this.type == EffectType.trail)
 		{
 			double size = Math.min(20, this.age / 20.0 + 10);
-			double rawOpacity = (1.0 - (this.age)/50.0);
+			double rawOpacity = (1.0 - (this.age) / 50.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			double opacity = (rawOpacity * 25);
-			
-			drawing.setColor(127, 127, 127, Math.min(255, Math.max(0, (opacity * opacityMultiplier * ffOpacityMultiplier))));
+			double opacity = (rawOpacity * 50);
+			drawing.setColor(127, 127, 127, Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 			
 			if (Game.enable3d)
 				drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -283,10 +280,10 @@ public class Effect extends Movable
 			double size = (this.age * 3 + 10);
 			double rawOpacity = (1.0 - (this.age)/20.0);
 			rawOpacity *= rawOpacity * rawOpacity;
-			double opacity = (rawOpacity * 255);
+			double opacity = (rawOpacity * 255) / 4;
 			
 			double red = Math.min(255, (128 - 128.0 * (this.age / 20.0)));
-			drawing.setColor(red / 2, 0, red,  Math.min(255, Math.max(0, (opacity * opacityMultiplier * ffOpacityMultiplier))));
+			drawing.setColor(red / 2, 0, red,  Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 			
 			if (Game.enable3d)
 				drawing.fillOval(this.posX, this.posY, this.posZ, size, size);

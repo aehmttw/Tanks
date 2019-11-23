@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 
-public class EventEnterLevel implements INetworkEvent
+public class EventEnterLevel extends PersonalEvent
 {	
 	public EventEnterLevel()
 	{
@@ -14,7 +14,8 @@ public class EventEnterLevel implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		Game.screen = new ScreenGame();
+		if (this.clientID == null)
+			Game.screen = new ScreenGame();
 	}
 
 	@Override

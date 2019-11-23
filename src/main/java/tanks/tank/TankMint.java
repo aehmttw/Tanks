@@ -24,5 +24,7 @@ public class TankMint extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		
 		this.coinValue = 2;
+
+		this.description = "A tank which shoots fast rocket bullets";
 	}
 }

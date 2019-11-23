@@ -18,6 +18,8 @@ public class Crusade
 
 	public boolean win = false;
 	public boolean lose = false;
+
+	public boolean lifeGained = false;
 	
 	public int currentLevel = 0;
 	public ArrayList<String> levels = new ArrayList<String>();
@@ -103,10 +105,15 @@ public class Crusade
 		}
 		
 		this.name = name;
+
+		if (this.levels.size() <= 0)
+			Game.exitToCrash(new RuntimeException("The crusade " + name + " has no levels!"));
 	}
 	
 	public void levelFinished(boolean win)
 	{
+		this.lifeGained = false;
+
 		if (!win)
 		{
 			remainingLives--;
@@ -115,13 +122,15 @@ public class Crusade
 				this.lose = true;
 		}
 		else
-		{			
-			if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0 && !replay)
-				remainingLives++;
-			
+		{
 			if (this.currentLevel >= levels.size() - 1)
 			{
 				this.win = true;
+			}
+			else if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0 && !replay)
+			{
+				this.lifeGained = true;
+				remainingLives++;
 			}
 		}
 	}

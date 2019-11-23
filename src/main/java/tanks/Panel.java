@@ -3,8 +3,10 @@ package tanks;
 import tanks.event.INetworkEvent;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.Coins;
 import tanks.hotbar.Hotbar;
+import tanks.network.ClientHandler;
 import tanks.tank.Tank;
 import tanks.tank.TankDummyLoadingScreen;
 
@@ -86,6 +88,7 @@ public class Panel
 			{
 				Game.eventsIn.get(i).execute();
 			}
+
 			Game.eventsIn.clear();
 		}
 
@@ -95,8 +98,8 @@ public class Panel
 		Panel.windowWidth = Game.game.window.absoluteWidth;
 		Panel.windowHeight = Game.game.window.absoluteHeight;
 
-		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - 40) / Game.currentSizeY) / 50.0;
-		Drawing.drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - 40) / 18) / 50.0;
+		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+		Drawing.drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
 
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
 
@@ -133,7 +136,7 @@ public class Panel
 			Drawing.drawing.enableMovingCameraX = true;
 		}
 
-		if (Panel.windowHeight - 40 > Game.currentSizeY * Game.tank_size * Drawing.drawing.scale)
+		if (Panel.windowHeight - Drawing.drawing.statsHeight > Game.currentSizeY * Game.tank_size * Drawing.drawing.scale)
 			Drawing.drawing.enableMovingCameraY = false;
 		else
 		{
@@ -220,7 +223,7 @@ public class Panel
 
 		this.drawMouseTarget();
 
-
+		Game.screen.drawPostMouse();
 	}
 
 	public void drawMouseTarget()
@@ -252,6 +255,9 @@ public class Panel
 
 	public void drawBar(double offset)
 	{
+		if (!Drawing.drawing.enableStats)
+			return;
+
 		Drawing.drawing.setColor(87, 46, 8);
 		Game.game.window.fillRect(0, offset + (int) (Panel.windowHeight - 40), (int) (Panel.windowWidth), 40);
 
@@ -263,5 +269,37 @@ public class Panel
 		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 
 		Game.game.window.fontRenderer.drawString(600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
+
+		if (ScreenPartyLobby.isClient)
+		{
+			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
+			Drawing.drawing.setColor(col[0], col[1], col[2]);
+			Game.game.window.fontRenderer.drawString(150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
+		}
+	}
+
+	public double[] getLatencyColor(long l)
+	{
+		double[] col = new double[3];
+
+		if (l <= 40)
+		{
+			col[1] = 255;
+			col[2] = 255 * (1 - l / 40.0);
+		}
+		else if (l <= 80)
+		{
+			col[0] = 255 * ((l - 40) / 40.0);
+			col[1] = 255;
+		}
+		else if (l <= 160)
+		{
+			col[0] = 255;
+			col[1] = 255 * (1 - (l - 80) / 80.0);
+		}
+		else
+			col[0] = 255;
+
+		return col;
 	}
 }

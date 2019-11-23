@@ -5,7 +5,7 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.tank.Tank;
 
-public class EventTankRedUpdateCharge implements INetworkEvent
+public class EventTankRedUpdateCharge extends PersonalEvent
 {
 	public int tank;
 	public double charge;
@@ -24,6 +24,9 @@ public class EventTankRedUpdateCharge implements INetworkEvent
 	@Override
 	public void execute() 
 	{
+		if (this.clientID != null)
+			return;
+
 		Tank t = Tank.idMap.get(this.tank);
 
 		t.colorR = Math.min((200 + charge * 55), 255);

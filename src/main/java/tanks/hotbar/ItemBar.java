@@ -10,7 +10,7 @@ public final class ItemBar
 	public static int count_margin_right = 26; // Item number's distance from right.
 	public static int count_margin_bottom = 35; // Item number's distance from bottom.
 	public static int gap = 75; // Gap between slots.
-	public static int bar_margin = 50; // Bar's distance from bottom.
+	public static int bar_margin = 60; // Bar's distance from bottom.
 
 	public static double slotBgR = 0;
 	public static double slotBgG = 0;
@@ -153,7 +153,7 @@ public final class ItemBar
 	{
 		for (int i = -2; i <= 2; i++)
 		{
-			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
+			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.hotbar.bottomOffset) / 100.0);
 
 			int x = (int) ((i * gap) + (Drawing.drawing.interfaceSizeX / 2));
 			int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.hotbar.bottomOffset);
@@ -162,12 +162,12 @@ public final class ItemBar
 
 			if (i + 2 == selected)
 			{
-				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB);
+				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.hotbar.bottomOffset) * 2.55);
 				Drawing.drawing.fillInterfaceRect(x, y, size, size);
 				Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
 			}
 			
-			Drawing.drawing.setColor(255, 255, 255);
+			Drawing.drawing.setColor(255, 255, 255, (100 - this.hotbar.bottomOffset) * 2.55);
 			if (slots[i + 2].icon != null)
 				Drawing.drawing.drawInterfaceImage("/" + slots[i + 2].icon, x, y, size, size);
 			
@@ -176,10 +176,10 @@ public final class ItemBar
 				Item item = slots[i + 2];
 				if (item.stackSize > 1)
 				{
-					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB);
+					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.hotbar.bottomOffset) * 2.55);
 					Drawing.drawing.setFontSize(18);
 					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
-					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
+					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.hotbar.bottomOffset) / 100.0);
 				}
 			}			
 		}

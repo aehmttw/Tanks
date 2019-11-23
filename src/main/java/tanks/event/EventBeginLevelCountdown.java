@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 
-public class EventBeginLevelCountdown implements INetworkEvent
+public class EventBeginLevelCountdown extends PersonalEvent
 {	
 	public EventBeginLevelCountdown()
 	{
@@ -14,7 +14,7 @@ public class EventBeginLevelCountdown implements INetworkEvent
 	@Override
 	public void execute() 
 	{
-		if (Game.screen instanceof ScreenGame)
+		if (Game.screen instanceof ScreenGame && this.clientID == null)
 		{
 			((ScreenGame)Game.screen).cancelCountdown = false;
 		}

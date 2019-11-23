@@ -1,5 +1,6 @@
 package tanks.network;
 
+import tanks.Game;
 import tanks.event.INetworkEvent;
 
 import java.util.HashMap;
@@ -19,11 +20,21 @@ public class NetworkEventMap
 	
 	public static int get(Class<? extends INetworkEvent> c)
 	{
-		return map2.get(c);
+		Integer n = map2.get(c);
+
+		if (n == null)
+			Game.exitToCrash(new RuntimeException("Invalid network event: " + c));
+
+		return n;
 	}
 	
 	public static Class<? extends INetworkEvent> get(int i)
 	{
-		return map1.get(i);
+		Class<? extends INetworkEvent> n = map1.get(i);
+
+		if (n == null)
+			Game.exitToCrash(new RuntimeException("Invalid network event: " + i));
+
+		return n;
 	}
 }

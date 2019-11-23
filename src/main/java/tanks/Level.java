@@ -16,6 +16,7 @@ import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
+import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,6 +99,11 @@ public class Level
 
 	public void loadLevel(ScreenLevelBuilder s, boolean remote)
 	{
+		if (s == null)
+			Obstacle.draw_size = 0;
+		else
+			Obstacle.draw_size = 50;
+
 		this.remote = remote;
 
 		if (!remote)
@@ -376,54 +382,69 @@ public class Level
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 			playerCount += ScreenPartyHost.server.connections.size();
 
-		for (int i = 0; i < playerCount; i++)
+		if (s == null)
 		{
-			if (this.availablePlayerSpawns.size() == 0)
+			for (int i = 0; i < playerCount; i++)
 			{
-				for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
+				if (this.availablePlayerSpawns.size() == 0)
 				{
-					this.availablePlayerSpawns.add(j);
-				}
-			}
-
-			int spawn = this.availablePlayerSpawns.remove((int) (Math.random() * this.availablePlayerSpawns.size()));
-
-			double x = this.playerSpawnsX.get(spawn);
-			double y = this.playerSpawnsY.get(spawn);
-			double angle = this.playerSpawnsAngle.get(spawn);
-			Team team = this.playerSpawnsTeam.get(spawn);
-
-			if (ScreenPartyHost.isServer)
-			{
-				if (i == 0)
-				{
-					EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
-					playerEvents.add(local);
-					Game.eventsOut.add(local);
-				}
-				else
-				{
-					synchronized (ScreenPartyHost.server.connections)
+					for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
 					{
-						ServerHandler c = ScreenPartyHost.server.connections.get(i - 1);
-
-						EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
-						playerEvents.add(e);
-						Game.eventsOut.add(e);
+						this.availablePlayerSpawns.add(j);
 					}
 				}
 
-				continue;
+				int spawn = this.availablePlayerSpawns.remove((int) (Math.random() * this.availablePlayerSpawns.size()));
+
+				double x = this.playerSpawnsX.get(spawn);
+				double y = this.playerSpawnsY.get(spawn);
+				double angle = this.playerSpawnsAngle.get(spawn);
+				Team team = this.playerSpawnsTeam.get(spawn);
+
+				if (ScreenPartyHost.isServer)
+				{
+					if (i == 0)
+					{
+						EventCreatePlayer local = new EventCreatePlayer(Game.clientID, Game.username, x, y, angle, team);
+						playerEvents.add(local);
+						Game.eventsOut.add(local);
+					}
+					else
+					{
+						synchronized (ScreenPartyHost.server.connections)
+						{
+							ServerHandler c = ScreenPartyHost.server.connections.get(i - 1);
+
+							EventCreatePlayer e = new EventCreatePlayer(c.clientID, c.rawUsername, x, y, angle, team);
+							playerEvents.add(e);
+							Game.eventsOut.add(e);
+						}
+					}
+
+					continue;
+				}
+				else if (remote)
+					continue;
+				else
+				{
+					TankPlayer tank = new TankPlayer(x, y, angle, Game.clientID);
+					Game.player = tank;
+					tank.team = team;
+					Game.movables.add(tank);
+				}
 			}
-			else if (remote)
-				continue;
-			else
+		}
+		else
+		{
+			for (int i = 0; i < playerSpawnsTeam.size(); i++)
 			{
-				Tank tank = new TankPlayer(x, y, angle, Game.clientID);
-				Game.player = (TankPlayer) tank;
-				tank.team = team;
-				Game.movables.add(tank);
+				TankSpawnMarker t = new TankSpawnMarker("player", this.playerSpawnsX.get(i), this.playerSpawnsY.get(i), this.playerSpawnsAngle.get(i));
+				t.team = this.playerSpawnsTeam.get(i);
+				Game.movables.add(t);
+				s.spawns.add(t);
 			}
+
+			s.movePlayer = (s.spawns.size() <= 1);
 		}
 
 		for (EventCreatePlayer e: playerEvents)

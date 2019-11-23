@@ -15,5 +15,7 @@ public class TankMagenta extends TankAIControlled
 		this.cooldownBase = 40;
 		
 		this.coinValue = 3;
+
+		this.description = "A medium-speed smart tank";
 	}
 }

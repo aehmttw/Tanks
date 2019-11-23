@@ -2,6 +2,7 @@ package tanks;
 
 import lwjglwindow.LWJGLWindow;
 
+import tanks.bullet.Bullet;
 import tanks.network.*;
 import tanks.event.*;
 import tanks.tank.*;
@@ -38,8 +39,8 @@ public class Game
 
 	public static ArrayList<Effect> recycleEffects = new ArrayList<Effect>();
 
-	public static SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<INetworkEvent>();
-	public static SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<INetworkEvent>();
+	public static final SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<INetworkEvent>();
+	public static final SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<INetworkEvent>();
 
 	//public static Team playerTeam = new Team(new Color(0, 0, 255));
 	//public static Team enemyTeam = new Team(new Color(255, 0, 0));
@@ -59,8 +60,8 @@ public class Game
 	
 	public static double[][] tilesDepth = new double[28][18];
 
-	public static final int network_protocol = 6;
-	public static final String version = "Tanks 0.7.3";
+	public static final int network_protocol = 8;
+	public static final String version = "Tanks 0.7.5";
 
 	public static int port = 8080;
 
@@ -68,7 +69,7 @@ public class Game
 
 	public static double levelSize = 1;
 	
-	public static TankPlayer player;
+	public static Tank player;
 	
 	public static boolean bulletLocked = false;
 		
@@ -143,15 +144,25 @@ public class Game
 		/* 12*/ NetworkEventMap.register(EventUpdateReadyCount.class);
 		/* 13*/ NetworkEventMap.register(EventBeginLevelCountdown.class);
 		/* 14*/ NetworkEventMap.register(EventTankUpdate.class);
-		/* 15*/ NetworkEventMap.register(EventCreatePlayer.class);
-		/* 16*/ NetworkEventMap.register(EventCreateTank.class);
-		/* 17*/ NetworkEventMap.register(EventCreateCustomTank.class);
-		/* 18*/ NetworkEventMap.register(EventTankUpdateHealth.class);
-		/* 19*/ NetworkEventMap.register(EventShootBullet.class);
-		/* 20*/ NetworkEventMap.register(EventLayMine.class);
-		/* 21*/ NetworkEventMap.register(EventTankTeleport.class);
-		/* 22*/ NetworkEventMap.register(EventTankUpdateVisibility.class);
-		/* 23*/ NetworkEventMap.register(EventTankRedUpdateCharge.class);
+		/* 15*/ NetworkEventMap.register(EventTankControllerUpdateS.class);
+		/* 16*/ NetworkEventMap.register(EventTankControllerUpdateC.class);
+		/* 17*/ NetworkEventMap.register(EventTankControllerUpdateAmmunition.class);
+		/* 18*/ NetworkEventMap.register(EventCreatePlayer.class);
+		/* 19*/ NetworkEventMap.register(EventCreateTank.class);
+		/* 20*/ NetworkEventMap.register(EventCreateCustomTank.class);
+		/* 21*/ NetworkEventMap.register(EventTankUpdateHealth.class);
+		/* 22*/ NetworkEventMap.register(EventShootBullet.class);
+		/* 23*/ NetworkEventMap.register(EventBulletUpdate.class);
+		/* 24*/ NetworkEventMap.register(EventBulletDestroyed.class);
+		/* 25*/ NetworkEventMap.register(EventBulletInstantWaypoint.class);
+		/* 26*/ NetworkEventMap.register(EventBulletAddAttributeModifier.class);
+		/* 27*/ NetworkEventMap.register(EventBulletElectricStunEffect.class);
+		/* 28*/ NetworkEventMap.register(EventLayMine.class);
+		/* 29*/ NetworkEventMap.register(EventMineExplode.class);
+		/* 30*/ NetworkEventMap.register(EventTankTeleport.class);
+		/* 31*/ NetworkEventMap.register(EventTankUpdateVisibility.class);
+		/* 32*/ NetworkEventMap.register(EventTankRedUpdateCharge.class);
+		/* 33*/ NetworkEventMap.register(EventTankAddAttributeModifier.class);
 
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
@@ -214,6 +225,7 @@ public class Game
 		
 		if (!Files.exists(Paths.get(homedir + tutorialPath))) 
 		{
+			Game.silentCleanUp();
 			Tutorial.loadTutorial(true);
 		}
 		
@@ -269,7 +281,7 @@ public class Game
 	public static void main(String[] args)
 	{		
 		Game.initScript();
-		Game.game.window = new LWJGLWindow("Tanks", 1400, 940, 1000, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
+		Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, 1000, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
 		Game.game.window.run();
 	}
 	
@@ -387,20 +399,33 @@ public class Game
 	{
 		resetTiles();
 
-		Drawing.drawing.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
-		obstacles.clear();
-		belowEffects.clear();
-		movables.clear();
-		effects.clear();
-		recycleEffects.clear();
-		removeEffects.clear();
-		removeBelowEffects.clear();
-		
-		Panel.panel.hotbar.currentCoins = new Coins();
-		Panel.panel.hotbar.enabledCoins = false;
-		Panel.panel.hotbar.currentItemBar = new ItemBar(Panel.panel.hotbar);
-		Panel.panel.hotbar.enabledItemBar = false;
+		silentCleanUp();
 	}
+
+	public static void silentCleanUp()
+    {
+        Drawing.drawing.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
+        obstacles.clear();
+        belowEffects.clear();
+        movables.clear();
+        effects.clear();
+        recycleEffects.clear();
+        removeEffects.clear();
+        removeBelowEffects.clear();
+
+        Tank.currentID = 0;
+        Tank.idMap.clear();
+        Tank.freeIDs.clear();
+
+		Bullet.currentID = 0;
+		Bullet.idMap.clear();
+		Bullet.freeIDs.clear();
+
+        Panel.panel.hotbar.currentCoins = new Coins();
+        Panel.panel.hotbar.enabledCoins = false;
+        Panel.panel.hotbar.currentItemBar = new ItemBar(Panel.panel.hotbar);
+        Panel.panel.hotbar.enabledItemBar = false;
+    }
 	
 	public static void loadLevel(File f)
 	{

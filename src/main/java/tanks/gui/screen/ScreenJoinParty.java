@@ -8,7 +8,7 @@ import tanks.network.Client;
 
 public class ScreenJoinParty extends Screen
 {
-	Thread clientThread;
+	public Thread clientThread;
 
 	public ScreenJoinParty()
 	{
@@ -43,7 +43,7 @@ public class ScreenJoinParty extends Screen
 				@Override
 				public void run() 
 				{
-					ScreenConnecting s = new ScreenConnecting();
+					ScreenConnecting s = new ScreenConnecting(clientThread);
 					Game.screen = s;
 						
 					try 

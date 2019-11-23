@@ -6,7 +6,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
-public class EventTankUpdateVisibility implements INetworkEvent
+public class EventTankUpdateVisibility extends PersonalEvent
 {
 	public int tank;
 	public boolean visible;
@@ -27,7 +27,7 @@ public class EventTankUpdateVisibility implements INetworkEvent
 	{
 		Tank t = Tank.idMap.get(this.tank);
 
-		if (t instanceof TankRemote)
+		if (t instanceof TankRemote && this.clientID == null)
 		{
 			((TankRemote) t).invisible = !visible;
 		}

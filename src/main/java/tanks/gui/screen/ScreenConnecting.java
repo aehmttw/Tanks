@@ -9,13 +9,20 @@ public class ScreenConnecting extends Screen
 	public String text = "Connecting...";
 	public String exception = "";
 	public boolean showBack = false;
-	
+	public Thread thread;
+
+	public ScreenConnecting(Thread t)
+	{
+		this.thread = t;
+	}
+
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
 			Game.screen = new ScreenJoinParty();
+			thread.stop();
 		}
 	}
 	);

@@ -37,6 +37,8 @@ public class ObstacleShrubbery extends Obstacle
 			this.colorB = 10;
 			this.heightMultiplier = 1;
 		}
+
+		this.description = "A destructible bush in which you---can hide by standing still";
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public class ObstacleShrubbery extends Obstacle
 			this.opacity = 127;
 		}
 		
-		if (Game.player.destroy)
+		if (Game.player == null || Game.player.destroy)
 			this.opacity = Math.max(127, this.opacity - Panel.frameFrequency * 2);
 		
 		if (Game.enable3d)
@@ -79,12 +81,18 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntry(Movable m)
 	{
-		this.opacity = Math.max(this.opacity - Panel.frameFrequency * Math.pow(Math.abs(m.vX) + Math.abs(m.vY), 2), 127);
 		m.hiddenTimer = Math.min(100, m.hiddenTimer + (this.opacity - 127) / 255);
 		m.canHide = true;
-		
+
 		if (m instanceof BulletFlame)
 			Game.removeObstacles.add(this);
+
+		this.onObjectEntryLocal(m);
 	}
 
+	@Override
+	public void onObjectEntryLocal(Movable m)
+	{
+		this.opacity = Math.max(this.opacity - Panel.frameFrequency * Math.pow(Math.abs(m.vX) + Math.abs(m.vY), 2), 127);
+	}
 }

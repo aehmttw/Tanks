@@ -7,10 +7,10 @@
 	<version>0.7</version>
 	
 	<name>Tanks</name>
-	<description>A game where you shoot other tanks</description>
+	<description>A game where you shoot other main.java.tanks</description>
 	
 	<properties>
-		<netty.version>4.1.42.Final</netty.version>
+		<netty.version>4.1.39.Final</netty.version>
 		<lwjgl.version>3.2.0</lwjgl.version>
 		<pngdecoder.version>1.0</pngdecoder.version>
 		<mavennatives.version>0.0.3</mavennatives.version>
@@ -73,6 +73,12 @@
 			<groupId>org.l33tlabs.twl</groupId>
 			<artifactId>pngdecoder</artifactId>
 			<version>${pngdecoder.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
 		</dependency>
 	</dependencies>
 </project>

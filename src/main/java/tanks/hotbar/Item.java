@@ -1,5 +1,6 @@
 package tanks.hotbar;
 
+import tanks.Player;
 import tanks.bullet.*;
 
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public abstract class Item
 	
 	/**name-image-price-level-quantity-max_quantity-type
 	 * <br>if (type == bullet):-class-effect-speed-bounces-damage-max_on_screen-cooldown-size*/
-	public static Item parseItem(String s)
+	public static Item parseItem(Player pl, String s)
 	{
 		String[] p = s.split(",");
 
@@ -36,11 +37,11 @@ public abstract class Item
 		int quantity = Integer.parseInt(p[4]);
 		int maxStack = Integer.parseInt(p[5]);
 		
-		Item i = new ItemBullet();
+		Item i = new ItemBullet(pl);
 		
 		if (p[6].equals("bullet"))
 		{
-			ItemBullet i2 = new ItemBullet();
+			ItemBullet i2 = new ItemBullet(pl);
 
 			switch (p[7])
 			{

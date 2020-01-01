@@ -10,7 +10,7 @@ public class TankYellow extends TankAIControlled
 
 		this.liveBulletMax = 1;
 		this.mineTimerBase = 200;
-		this.mineTimerRandom = 600;
+		this.mineTimerRandom = 400;
 		this.mineTimer = this.mineTimerBase + this.mineTimerRandom * Math.random();
 		
 		this.coinValue = 2;

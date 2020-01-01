@@ -11,7 +11,7 @@ public class GameDrawer implements IDrawer
 		{
 			Panel.panel.draw();
 		}
-		catch(Exception e)
+		catch (Throwable e)
 		{
 			Game.exitToCrash(e);
 		}

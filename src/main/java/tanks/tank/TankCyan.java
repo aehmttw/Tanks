@@ -36,7 +36,7 @@ public class TankCyan extends TankAIControlled
 	@Override
 	public void launchBullet(double offset)
 	{
-		Drawing.drawing.playSound("/shoot.wav");
+		Drawing.drawing.playGlobalSound("shoot.ogg");
 
 		Bullet b = new BulletFreeze(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);

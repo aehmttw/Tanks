@@ -12,7 +12,7 @@ public class ScreenUsernameInvalid extends Screen
 		@Override
 		public void run() 
 		{
-			Game.username = "";
+			Game.player.username = "";
 			Game.screen = new ScreenTitle();
 		}
 	}

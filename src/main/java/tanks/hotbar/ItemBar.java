@@ -3,8 +3,12 @@ package tanks.hotbar;
 import tanks.Drawing;
 import tanks.Game;
 import org.lwjgl.glfw.GLFW;
+import tanks.Player;
+import tanks.event.EventSetItem;
+import tanks.event.EventSetItemBarSlot;
+import tanks.gui.screen.ScreenPartyLobby;
 
-public final class ItemBar
+public class ItemBar
 {
 	public static int size = 50; // The slot size.
 	public static int count_margin_right = 26; // Item number's distance from right.
@@ -29,17 +33,26 @@ public final class ItemBar
 	public int selected = -1;
 		
 	public Hotbar hotbar;
-	
-	public ItemBar(Hotbar h)
+
+	public Player player;
+
+	public ItemBar(Player p)
 	{
-		this.hotbar = h;
 		for (int i = 0; i < slots.length; i++)
 			slots[i] = new ItemEmpty();
+
+		this.player = p;
+	}
+
+	public ItemBar(Player p, Hotbar h)
+	{
+		this(p);
+		this.hotbar = h;
 	}
 	
 	public boolean addItem(Item item)
 	{
-		Item i = Item.parseItem(item.toString());
+		Item i = Item.parseItem(this.player, item.toString());
 		int emptyAmount = 0;
 		for (int x = 0; x < this.slots.length; x++)
 		{
@@ -60,6 +73,10 @@ public final class ItemBar
 				if (this.slots[x].stackSize + i.stackSize <= this.slots[x].maxStackSize)
 				{
 					this.slots[x].stackSize += i.stackSize;
+
+					if (this.player != Game.player)
+						Game.eventsOut.add(new EventSetItem(this.player, x, this.slots[x]));
+
 					return true;
 				}
 				else
@@ -67,6 +84,10 @@ public final class ItemBar
 					int remaining = this.slots[x].stackSize + i.stackSize - this.slots[x].maxStackSize;
 					this.slots[x].stackSize = this.slots[x].maxStackSize;
 					i.stackSize = remaining;
+
+					if (this.player != Game.player)
+						Game.eventsOut.add(new EventSetItem(this.player, x, this.slots[x]));
+
 					this.addItem(i);
 					return true;
 				}
@@ -76,14 +97,22 @@ public final class ItemBar
 				if (i.stackSize <= i.maxStackSize)
 				{
 					this.slots[x] = i;
+
+					if (this.player != Game.player)
+						Game.eventsOut.add(new EventSetItem(this.player, x, this.slots[x]));
+
 					return true;
 				}
 				else
 				{
 					int remaining = i.stackSize - i.maxStackSize;
-					this.slots[x] = Item.parseItem(i.toString());
+					this.slots[x] = Item.parseItem(this.player, i.toString());
 					this.slots[x].stackSize = this.slots[x].maxStackSize;					
 					i.stackSize = remaining;
+
+					if (this.player != Game.player)
+						Game.eventsOut.add(new EventSetItem(this.player, x, this.slots[x]));
+
 					this.addItem(i);
 					return true;
 				}
@@ -107,7 +136,10 @@ public final class ItemBar
 		
 		if (slots[selected].destroy)
 			slots[selected] = new ItemEmpty();
-		
+
+		if (this.player != Game.player)
+			Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
+
 		return true;
 	}
 	
@@ -138,15 +170,21 @@ public final class ItemBar
 		{
 			this.setItem(index);
 			Game.game.window.validPressedKeys.remove((Integer) key);
-
 		}
 	}
 	
 	public void setItem(int index)
 	{
-		this.hotbar.hidden = false;
-		this.hotbar.hideTimer = 500;
-		selected = (selected == index ? -1 : index);
+		if (this.hotbar != null)
+		{
+			this.hotbar.hidden = false;
+			this.hotbar.hideTimer = 500;
+		}
+
+		this.selected = (this.selected == index ? -1 : index);
+
+		if (ScreenPartyLobby.isClient)
+			Game.eventsOut.add(new EventSetItemBarSlot(this.selected));
 	}
 
 	public void draw()

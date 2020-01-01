@@ -30,6 +30,7 @@ public class BulletFlame extends Bullet
 		this.useCustomWallCollision = true;
 		this.playPopSound = false;
 		this.name = "flame";
+		this.itemSound = "flame.ogg";
 	}
 	
 	@Override

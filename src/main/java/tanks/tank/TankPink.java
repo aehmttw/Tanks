@@ -3,6 +3,8 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateCustomTank;
+import tanks.event.EventCreateTank;
+import tanks.registry.RegistryTank;
 
 public class TankPink extends TankAIControlled
 {
@@ -50,7 +52,29 @@ public class TankPink extends TankAIControlled
 	
 	public void spawnTank()
 	{
-		TankMini t = new TankMini("mini", this.posX, this.posY, this.angle, this);
+		double pos = Math.random() * 100 - 50;
+		int side = (int) (Math.random() * 4);
+
+		double x = pos;
+		double y = pos;
+
+		if (side == 0)
+			x = -50;
+		else if (side == 1)
+			x = 50;
+		else if (side == 2)
+			y = -50;
+		else if (side == 3)
+			y = 50;
+
+		RegistryTank.TankEntry e = Game.registryTank.getEntry(this.name);
+
+		while (e.name.equals(this.name))
+		{
+			e = Game.registryTank.getRandomTank();
+		}
+
+		TankMini t = new TankMini("mini", this.posX + x, this.posY + y, this.angle, this);
 		Game.eventsOut.add(new EventCreateCustomTank(t));
 		Game.movables.add(t);
 	}

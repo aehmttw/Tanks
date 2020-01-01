@@ -38,7 +38,7 @@ public class TankOrange extends TankAIControlled
 			{
 				if(m.equals(this.targetEnemy))
 				{
-					Drawing.drawing.playSound("resources/flame.wav");
+					Drawing.drawing.playGlobalSound("flame.ogg");
 
 					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
 					b.setPolarMotion(this.angle, 25.0/4);

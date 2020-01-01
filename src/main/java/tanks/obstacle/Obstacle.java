@@ -31,9 +31,6 @@ public class Obstacle implements IDrawableForInterface
 	public String name;
 	public String description;
 
-	//public int[] aposX = new int[]{-17, 5, 0};
-	//public int[] aposY = new int[]{3, 30, 10};
-
 	public Obstacle(String name, double posX, double posY)
 	{
 		this.name = name;
@@ -55,14 +52,9 @@ public class Obstacle implements IDrawableForInterface
 		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (Game.enable3d)
-			drawing.fillBox(this.posX, this.posY, (obstacle_size - draw_size) / 2, draw_size, draw_size, draw_size);
+			drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, draw_size);
 		else
 			drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
-
-		/*for (int i = 0; i < aposX.length; i++)
-		{
-			drawing.fillRect(aposX[i], aposY[i], 10, 10);
-		}*/
 	}
 	
 	@Override
@@ -168,7 +160,11 @@ public class Obstacle implements IDrawableForInterface
 	
 	public void postOverride() 
 	{
-		Game.tileDrawables[(int) (this.posX / obstacle_size)][(int) (this.posY / obstacle_size)] = this;
+		int x = (int)(this.posX / obstacle_size);
+		int y = (int)(this.posY / obstacle_size);
+
+		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
+			Game.tileDrawables[x][y] = this;
 	}
 	
 	public static double[] getRandomColor()

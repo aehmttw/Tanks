@@ -9,6 +9,7 @@ import tanks.network.ClientHandler;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
 import org.lwjgl.glfw.GLFW;
+import tanks.tank.TankPlayerRemote;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -19,6 +20,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	Thread serverThread;
 	public static Server server;
 	public static boolean isServer = false;
+	public static SynchronizedList<UUID> includedPlayers = new SynchronizedList<UUID>();
 	public static SynchronizedList<UUID> readyPlayers = new SynchronizedList<UUID>();
 	public static SynchronizedList<UUID> disconnectedPlayers = new SynchronizedList<UUID>();
 	public static ScreenPartyHost activeScreen;
@@ -41,8 +43,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 		@Override
 		public void run() 
 		{
-			chat.add(0, new ChatMessage(Game.username, chatbox.inputText));
-			Game.eventsOut.add(new EventPlayerChat(Game.username, chatbox.inputText));
+			chat.add(0, new ChatMessage(Game.player.username, chatbox.inputText));
+			Game.eventsOut.add(new EventPlayerChat(Game.player.username, chatbox.inputText));
 		}
 
 	});
@@ -96,7 +98,18 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	}
 			, "Fight other players in this party---in a randomly generated level");
 
-	Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Crusades", "Crusades are not yet---supported in party mode");
+	Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Crusades", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			if (Crusade.currentCrusade == null)
+				Game.screen = new ScreenPartyCrusades();
+			else
+				Game.screen = new ScreenPartyResumeCrusade();
+		}
+	},
+			"Fight battles in an order,---and see how long you can survive!");
 
 	Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "My levels", new Runnable()
 	{
@@ -117,6 +130,14 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 			server.close();
 			activeScreen = null;
 			Game.screen = new ScreenParty();
+			includedPlayers.clear();
+			readyPlayers.clear();
+			activeScreen = null;
+
+			Game.players.clear();
+			Game.players.add(Game.player);
+
+			disconnectedPlayers.clear();
 		}
 	}
 			);
@@ -271,7 +292,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 			if (this.usernamePage <= 0)
 			{
-				String n = Game.username;
+				String n = Game.player.username;
 				if (Game.enableChatFilter)
 					n = Game.chatFilter.filterChat(n);
 

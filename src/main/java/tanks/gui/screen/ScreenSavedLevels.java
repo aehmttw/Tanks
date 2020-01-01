@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -82,7 +83,8 @@ public class ScreenSavedLevels extends Screen
 		{
 			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(Game.homedir + levelDir));
 
-			for (Path p : ds) {
+			for (Path p : ds)
+			{
 				if (p.toString().endsWith(".tanks"))
 					levels.add(p);
 			}
@@ -118,7 +120,7 @@ public class ScreenSavedLevels extends Screen
 					}
 				}
 			}
-					));
+					, "Last opened---" + ScreenSavedLevels.lastOpened(l.toFile().lastModified()) + " ago"));
 
 		}
 
@@ -169,7 +171,7 @@ public class ScreenSavedLevels extends Screen
 	{
 		this.drawDefaultBackground();
 
-		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, buttons.size()); i++)
+		for (int i = Math.min(page * rows * 3 + rows * 3, buttons.size()) - 1; i >= page * rows * 3; i--)
 		{
 			buttons.get(i).draw();
 		}
@@ -185,6 +187,25 @@ public class ScreenSavedLevels extends Screen
 		if (buttons.size() > (1 + page) * rows * 3)
 			next.draw();
 
+	}
+
+	public static String lastOpened(long time)
+	{
+		long secs = (System.currentTimeMillis() - time) / 1000;
+		long mins = secs / 60;
+		long hours = mins / 60;
+		long days = hours / 24;
+
+		if (days > 7)
+			return days + "d";
+		else if (days > 0)
+			return days + "d " + hours % 24 + "h";
+		else if (hours > 0)
+			return hours % 24 + "h " + mins % 60 + "m";
+		else if (mins > 0)
+			return mins % 60 + "m";
+		else
+			return "less than 1m";
 	}
 
 }

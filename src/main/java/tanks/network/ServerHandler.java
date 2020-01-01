@@ -28,13 +28,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public String rawUsername;
 	public String username;
 
-	public long lastMessage = 0;
+	public long lastMessage = -1;
 	public long latency = 0;
 
 	public long latencySum = 0;
 	public int latencyCount = 1;
 	public long lastLatencyTime = 0;
 	public long lastLatencyAverage = 0;
+
+	public boolean closed = false;
 
 	public ServerHandler(Server s)
 	{
@@ -54,22 +56,30 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		ReferenceCountUtil.release(this.reader.queue);
 
 		server.connections.remove(this);
-		ScreenPartyHost.readyPlayers.remove(this.clientID);
-		ScreenPartyHost.disconnectedPlayers.add(this.clientID);
 
-		if (this.clientID != null)
+		if (ScreenPartyHost.isServer)
 		{
-			Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
-			Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(this.clientID, this.rawUsername), false));
-			Game.eventsOut.add(new EventChat("&000127255255" + this.username + " has left the party&000000000255"));
+			ScreenPartyHost.includedPlayers.remove(this.clientID);
+			ScreenPartyHost.readyPlayers.remove(this.clientID);
+			ScreenPartyHost.disconnectedPlayers.add(this.clientID);
 
-			ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
+			if (this.clientID != null)
+			{
+				Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+				Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(this.clientID, this.rawUsername), false));
+				Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
+
+				ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
+			}
 		}
 	}
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) 
 	{
+		if (closed)
+			return;
+
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
 		boolean reply = this.reader.queueMessage(this, buffy, this.clientID);
@@ -77,6 +87,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		if (reply)
 		{
+			this.reader.frame++;
+
+			if (lastMessage < 0)
+				lastMessage = System.currentTimeMillis();
+
 			long time = System.currentTimeMillis();
 			latency = time - lastMessage;
 			lastMessage = time;
@@ -125,6 +140,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	
 	public void sendEventAndClose(INetworkEvent e)
 	{
+		this.closed = true;
 		this.sendEvent(e);
 		ctx.close();
 	}
@@ -133,6 +149,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) 
 	{
 		cause.printStackTrace();
+
 		ctx.close();
 	}
 }

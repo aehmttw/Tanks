@@ -62,9 +62,6 @@ public class ObstacleTeleporter extends Obstacle
 	@Override
 	public void update()
 	{
-		//if (this.isRemote)
-		//	return;
-		
 		ArrayList<ObstacleTeleporter> teleporters = new ArrayList<ObstacleTeleporter>(); 
 		Tank t = null;
 

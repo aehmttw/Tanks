@@ -1,4 +1,6 @@
 package tanks;
+import tanks.event.EventPlaySound;
+
 import java.util.ArrayList;
 
 public class Drawing
@@ -33,8 +35,6 @@ public class Drawing
 	public int mouseXoffset = 0;
 	public int mouseYoffset = 0;
 
-	public ArrayList<String> pendingSounds = new ArrayList<String>();
-	
 	public double fontSize = 1;
 
 	private Drawing() {}
@@ -83,10 +83,10 @@ public class Drawing
 
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
 	{
-		this.fillOval(x, y, z, sizeX, sizeY, true);
+		this.fillOval(x, y, z, sizeX, sizeY, true, true);
 	}
 
-	public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest)
+	public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
@@ -97,9 +97,12 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		double dZ = z * scale / interfaceScale;
+		double dZ = z * scale;
 
-		Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+		if (facing && Game.game.window.angled)
+			Game.game.window.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+		else
+			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
 	
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
@@ -166,7 +169,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 		
-		double drawZ = z * scale / interfaceScale;
+		double drawZ = z * scale;
 
 		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, false);
 	}
@@ -203,8 +206,8 @@ public class Drawing
 		double dY3 = getPointY(y3);
 		double dY4 = getPointY(y4);
 		
-		double dZ = z * scale / interfaceScale;
-		double dsZ = sZ * scale / interfaceScale;
+		double dZ = z * scale;
+		double dsZ = sZ * scale;
 		
 		Game.game.window.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, options);
 	}
@@ -277,14 +280,27 @@ public class Drawing
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
-		double drawZ = z * scale / interfaceScale;
+		double drawZ = z * scale;
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
 
 		double drawSizeX = sizeX * scale;
 		double drawSizeY = sizeY * scale;
-		double drawSizeZ = sizeZ * scale / interfaceScale;
+		double drawSizeZ = sizeZ * scale;
+
+		Game.game.window.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
+	}
+
+	public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
+	{
+		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawZ = z * scale;
+
+		double drawSizeX = sizeX * scale;
+		double drawSizeY = sizeY * scale;
+		double drawSizeZ = sizeZ * scale;
 
 		Game.game.window.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
 	}
@@ -381,7 +397,7 @@ public class Drawing
 
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
-		double drawZ = z * scale / interfaceScale;
+		double drawZ = z * scale;
 
 		Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text);
 	}
@@ -464,9 +480,37 @@ public class Drawing
 
 	public void playSound(String sound)
 	{
-		pendingSounds.add(sound);
+		Game.game.window.soundPlayer.playSound("/sounds/" + sound);
 	}
-	
+
+	public void playGlobalSound(String sound)
+	{
+		this.playSound(sound);
+		Game.eventsOut.add(new EventPlaySound(sound, 1, 1));
+	}
+
+	public void playSound(String sound, float pitch)
+	{
+		Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch);
+	}
+
+	public void playGlobalSound(String sound, float pitch)
+	{
+		this.playSound(sound, pitch);
+		Game.eventsOut.add(new EventPlaySound(sound, pitch, 1));
+	}
+
+	public void playSound(String sound, float pitch, float volume)
+	{
+		Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch, volume);
+	}
+
+	public void playGlobalSound(String sound, float pitch, float volume)
+	{
+		this.playSound(sound, pitch, volume);
+		Game.eventsOut.add(new EventPlaySound(sound, pitch, volume));
+	}
+
 	public double toGameCoordsX(double x)
 	{
 		double x1 = x;

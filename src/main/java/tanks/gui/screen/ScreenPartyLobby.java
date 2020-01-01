@@ -18,8 +18,10 @@ public class ScreenPartyLobby extends Screen
 {
 	public static ArrayList<ConnectedPlayer> connections = new ArrayList<ConnectedPlayer>();
 	public static boolean isClient = false;
+	public static ArrayList<UUID> includedPlayers = new ArrayList<UUID>();
 	public static int readyPlayers = 0;
-	
+	public static int remainingLives = 0;
+
 	public static ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
 
 	public int usernamePage = 0;
@@ -46,6 +48,7 @@ public class ScreenPartyLobby extends Screen
 		@Override
 		public void run() 
 		{
+			isClient = false;
 			Client.handler.ctx.close();
 			Game.screen = new ScreenJoinParty();
 			connections.clear();

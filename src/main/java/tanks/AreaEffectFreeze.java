@@ -1,6 +1,8 @@
 package tanks;
 
 import tanks.AttributeModifier.Operation;
+import tanks.event.EventCreateFreezeEffect;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class AreaEffectFreeze extends AreaEffect
 {
@@ -8,9 +10,14 @@ public class AreaEffectFreeze extends AreaEffect
 	public AreaEffectFreeze(double x, double y)
 	{
 		super(x, y);
+		this.isRemote = ScreenPartyLobby.isClient;
 		this.constantlyImbue = false;
 		this.imbueEffects();
 		this.maxAge = 600;
+		this.drawLevel = 9;
+
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventCreateFreezeEffect(this));
 	}
 
 	@Override
@@ -42,7 +49,7 @@ public class AreaEffectFreeze extends AreaEffect
 			{
 				Movable m = Game.movables.get(i);
 
-				if (Movable.distanceBetween(this, m) <= this.size / 2)
+				if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
 				{
 					AttributeModifier a = new AttributeModifier("freeze", "velocity", Operation.multiply, -1);
 					a.duration = 600;
@@ -57,11 +64,15 @@ public class AreaEffectFreeze extends AreaEffect
 	@Override
 	public void draw()
 	{
-		double size = Math.min(this.size + Game.tank_size / 2, this.age * 8); 
+		double size = Math.min(this.size + Game.tank_size / 2, this.age * 8);
 		for (int i = (int) Math.max(0, size - ((int) (50 * Math.min(100, 600 - this.age) / 100.0))); i < size; i += 2)
 		{
 			Drawing.drawing.setColor(200, 255, 255, 10);
-			Drawing.drawing.fillOval(this.posX, this.posY, i, i);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillOval(this.posX, this.posY, (size - i) + Game.tank_size / 4, i, i, true, false);
+			else
+				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 		}
 	}
 

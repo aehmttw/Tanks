@@ -26,11 +26,15 @@ public class EventLoadLevel extends PersonalEvent
 	{		
 		if (this.clientID != null)
 			return;
+
+		if (Game.playerTank != null)
+			Game.playerTank.team = null;
 			
 		try
 		{
 			ScreenPartyLobby.readyPlayers = 0;
-			Game.exit();
+			ScreenPartyLobby.includedPlayers.clear();
+			Game.cleanUp();
 			Game.currentLevel = new Level(level);
 			Game.currentLevel.loadLevel(true);
 		}

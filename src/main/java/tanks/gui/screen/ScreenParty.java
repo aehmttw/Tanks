@@ -35,6 +35,16 @@ public class ScreenParty extends Screen
 		@Override
 		public void run() 
 		{
+			ScreenPartyHost.isServer = false;
+			ScreenPartyHost.includedPlayers.clear();
+			ScreenPartyHost.readyPlayers.clear();
+			ScreenPartyHost.activeScreen = null;
+
+			Game.players.clear();
+			Game.players.add(Game.player);
+
+			ScreenPartyHost.disconnectedPlayers.clear();
+
 			Game.screen = new ScreenPartyHost();
 		}
 	}

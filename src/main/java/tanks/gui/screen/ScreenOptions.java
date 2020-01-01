@@ -42,15 +42,23 @@ public class ScreenOptions extends Screen
 		else
 			graphics3d.text = "3D graphics: off";
 
+		if (Game.enable3dBg)
+			ground3d.text = "3D ground: on";
+		else
+			ground3d.text = "3D ground: off";
+
 		if (Drawing.drawing.enableStats)
 			showStats.text = "Info bar: on";
 		else
 			showStats.text = "Info bar: off";
 
-
+		if (Game.angledView)
+			altPerspective.text = "View: angled";
+		else
+			altPerspective.text = "View: bird's-eye";
 	}
 
-	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Graphics: fancy", new Runnable()
+	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Graphics: fancy", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -65,7 +73,7 @@ public class ScreenOptions extends Screen
 	},
 			"Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics may significantly reduce framerate"	);
 
-	Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "3D graphics: on", new Runnable()
+	Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "3D graphics: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -80,8 +88,40 @@ public class ScreenOptions extends Screen
 	},
 			"3D graphics may impact performance");
 
-	
-	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Mouse target: on", new Runnable()
+	Button ground3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "3D ground: on", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.enable3dBg = !Game.enable3dBg;
+
+			if (Game.enable3dBg)
+				ground3d.text = "3D ground: on";
+			else
+				ground3d.text = "3D ground: off";
+		}
+	},
+			"Enabling 3D ground may impact---performance in large levels------Requires 3D and fancy---graphics to take effect");
+
+
+	Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "View: bird's-eye", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.angledView = !Game.angledView;
+
+			if (Game.angledView)
+				altPerspective.text = "View: angled";
+			else
+				altPerspective.text = "View: bird's-eye";
+
+		}
+	},
+			"Changes the angle at which---you view the game field");
+
+
+	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Mouse target: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -109,7 +149,7 @@ public class ScreenOptions extends Screen
 	}
 			);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Autostart: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -124,7 +164,7 @@ public class ScreenOptions extends Screen
 	},
 			"When enabled, levels will start playing---automatically 4 seconds after they are loaded---(if the play button isn't clicked earlier)");
 
-	Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "V-Sync: on", new Runnable()
+	Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "V-Sync: on", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -145,7 +185,7 @@ public class ScreenOptions extends Screen
 	},
 			"Limits framerate to your screen's refresh rate---May decrease battery consumption---Also, might fix issues with inconsistent game speed");
 
-	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Info bar: on", new Runnable()
+	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Info bar: on", new Runnable()
 	{
 		@Override
 		public void run()
@@ -164,7 +204,8 @@ public class ScreenOptions extends Screen
 					"Game version---" +
 					"Framerate---" +
 					"Network latency (if in a party)---" +
-					"Screen hints");
+					"Screen hints---" +
+					"Memory usage");
 
 
 	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Multiplayer options", new Runnable()
@@ -175,7 +216,7 @@ public class ScreenOptions extends Screen
 			Game.screen = new ScreenMultiplayerOptions();
 		}
 	}
-			);
+			, "Options for username and chat filter");
 	
 	
 	@Override
@@ -185,6 +226,8 @@ public class ScreenOptions extends Screen
 		mouseTarget.update();
 		graphics.update();
 		graphics3d.update();
+		ground3d.update();
+		altPerspective.update();
 		vsync.update();
 		showStats.update();
 		multiplayerOptions.update();
@@ -198,10 +241,12 @@ public class ScreenOptions extends Screen
 		back.draw();
 		multiplayerOptions.draw();
 		showStats.draw();
-		vsync.draw();
-		mouseTarget.draw();
 		autostart.draw();
+		mouseTarget.draw();
+		vsync.draw();
+		altPerspective.draw();
 		graphics3d.draw();
+		ground3d.draw();
 		graphics.draw();
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
@@ -235,9 +280,11 @@ public class ScreenOptions extends Screen
 		{
 			writer = new PrintStream(new File(path));
 			writer.println("# This file stores game settings that you have set");
-			writer.println("username=" + Game.username);
+			writer.println("username=" + Game.player.username);
 			writer.println("fancy_graphics=" + Game.fancyGraphics);
 			writer.println("3d=" + Game.enable3d);
+			writer.println("3d_ground=" + Game.enable3dBg);
+			writer.println("angled_perspective=" + Game.angledView);
 			writer.println("mouse_target=" + Panel.showMouseTarget);
 			writer.println("auto_start=" + Game.autostart);
 			writer.println("vsync=" + Game.vsync);
@@ -275,15 +322,18 @@ public class ScreenOptions extends Screen
 				{
 					case "username":
 						if (optionLine.length >= 2)
-							Game.username = optionLine[1];
+							Game.player.username = optionLine[1];
 						else
-							Game.username = "";
+							Game.player.username = "";
 						break;
 					case "fancy_graphics":
 						Game.fancyGraphics = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "3d":
 						Game.enable3d = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "3d_ground":
+						Game.enable3dBg = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "mouse_target":
 						Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
@@ -293,6 +343,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "info_bar":
 						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));
+						break;
+					case "angled_perspective":
+						Game.angledView = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "vsync":
 						Game.vsync = Boolean.parseBoolean(optionLine[1]);

@@ -29,7 +29,7 @@ public class Mine extends Movable
 	public Mine(double x, double y, double timer, Tank t)
 	{
 		super(x, y);
-		
+
 		this.timer = timer;
 		this.drawLevel = 2;
 		tank = t;
@@ -104,7 +104,7 @@ public class Mine extends Movable
 
 	public void explode()
 	{		
-		Drawing.drawing.playSound("/explosion.wav");
+		Drawing.drawing.playSound("explosion.ogg");
 
 		if (Game.fancyGraphics)
 		{
@@ -148,7 +148,7 @@ public class Mine extends Movable
 								((Tank) o).flashAnimation = 0;
 								o.destroy = true;
 
-								if (this.tank.equals(Game.player))
+								if (this.tank.equals(Game.playerTank))
 									Panel.panel.hotbar.currentCoins.coins += ((Tank) o).coinValue;
 							}
 						}

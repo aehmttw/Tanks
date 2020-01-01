@@ -34,6 +34,12 @@ public class ScreenTutorialGame extends ScreenGame
 	});
 
 	@Override
+	public void setPerspective()
+	{
+
+	}
+
+	@Override
 	public void update() 
 	{
 		super.update();

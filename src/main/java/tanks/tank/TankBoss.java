@@ -15,7 +15,7 @@ public class TankBoss extends TankAIControlled
 	{
 		super(name, x, y, Game.tank_size * 3, 255, 0, 0, angle, ShootAI.alternate);
 
-		this.enableMovement = true;
+		this.enableMovement = false;
 		this.enableMineLaying = false;
 		this.liveBulletMax = 4;
 		this.cooldownRandom = 200;
@@ -69,7 +69,7 @@ public class TankBoss extends TankAIControlled
 	
 	public void spawnTank()
 	{
-		double pos = Math.random() * 250;
+		double pos = Math.random() * 200 - 100;
 		int side = (int) (Math.random() * 4);
 		
 		double x = pos;

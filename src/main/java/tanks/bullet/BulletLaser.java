@@ -3,6 +3,7 @@ package tanks.bullet;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
+import tanks.Movable;
 import tanks.event.EventBulletDestroyed;
 import tanks.event.EventBulletInstantWaypoint;
 import tanks.gui.screen.ScreenGame;
@@ -21,13 +22,13 @@ public class BulletLaser extends BulletInstant
 		this.baseColorB = 0;
 		this.name = "laser";
 		this.effect = BulletEffect.none;
+		this.itemSound = "laser.ogg";
 	}
 
 	public BulletLaser(double x, double y, int bounces, Tank t)
 	{
 		this(x, y, bounces, t, false, null);
 	}
-
 
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
@@ -40,8 +41,15 @@ public class BulletLaser extends BulletInstant
 	public void update()
 	{
 		this.shoot();
-		Drawing.drawing.playSound("/laser.wav");
 		Game.removeMovables.add(this);
+	}
+
+	@Override
+	public void collidedWithObject(Movable m)
+	{
+		this.playPopSound = true;
+		super.collidedWithObject(m);
+		this.playPopSound = false;
 	}
 
 	@Override

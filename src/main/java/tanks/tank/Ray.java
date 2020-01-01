@@ -237,7 +237,6 @@ public class Ray
 		{
 			age++;
 
-			//Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.ray));
 			this.posX += this.vX;
 			this.posY += this.vY;
 

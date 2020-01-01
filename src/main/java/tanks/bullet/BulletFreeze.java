@@ -20,6 +20,8 @@ public class BulletFreeze extends Bullet
 		this.outlineColorG = 255;
 		this.outlineColorB = 255;
 		this.name = "freeze";
+
+		this.playPopSound = false;
 	}
 
 	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
@@ -30,16 +32,11 @@ public class BulletFreeze extends Bullet
 	}
 	
 	@Override
-	public void update()
+	public void onDestroy()
 	{
-		if (this.destroy && this.destroyTimer == 0)
-		{
-			Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
-			Drawing.drawing.playSound("/freeze.wav");
-		}
-
-		super.update();
-	}	
+		Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
+		Drawing.drawing.playGlobalSound("freeze.ogg");
+	}
 
 	@Override
 	public void draw()
@@ -49,7 +46,11 @@ public class BulletFreeze extends Bullet
 			for (int i = 0; i < 30 - 10 * Math.sin(this.age / 12.0); i++)
 			{
 				Drawing.drawing.setColor(255, 255, 255, 20);
-				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i);
+
+				if (Game.enable3d)
+					Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i);
+				else
+					Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
 

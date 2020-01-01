@@ -27,6 +27,6 @@ public class TankDarkGreen extends TankAIControlled
 	@Override
 	public void reactToTargetEnemySight()
 	{
-		this.setMotionAwayFromDirection(Game.player.posX, Game.player.posY, speed);
+		this.setMotionAwayFromDirection(Game.playerTank.posX, Game.playerTank.posY, speed);
 	}
 }

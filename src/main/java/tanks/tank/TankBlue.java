@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.BulletElectric;
+import tanks.event.EventPlaySound;
 import tanks.event.EventShootBullet;
 
 import java.util.ArrayList;
@@ -40,13 +41,14 @@ public class TankBlue extends TankAIControlled
 		if (this.cooldown > 0)
 			return;
 
+		Drawing.drawing.playGlobalSound("laser.ogg");
+
 		BulletElectric b = new BulletElectric(this.posX, this.posY, 5, this);
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		b.sendEvent();
 		Game.movables.add(b);
-		Drawing.drawing.pendingSounds.add("resources/laser.wav");
 		this.cooldown = this.cooldownBase;
 
 	}

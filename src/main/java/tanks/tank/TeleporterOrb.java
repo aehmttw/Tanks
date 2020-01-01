@@ -26,7 +26,7 @@ public class TeleporterOrb extends Movable
 		this.tank = t;
 		this.size = t.size;
 		this.tSize = t.turret.size;
-		this.drawLevel = 6;
+		this.drawLevel = 9;
 		t.invulnerable = true;
 		t.targetable = false;
 		this.fX = x;
@@ -48,7 +48,7 @@ public class TeleporterOrb extends Movable
 			Drawing.drawing.setColor(255, 255, 255, 20);
 
 			if (Game.enable3d)
-				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i, false);
+				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i, false, true);
 			else
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 		}
@@ -111,7 +111,8 @@ public class TeleporterOrb extends Movable
 		
 		this.tank.disabled = this.tank.size <= 0;
 
-			
+		//Drawing.drawing.playSound("square.ogg", (float) (this.posZ / 200 + 1), (float) (1 - size) / 10);
+
 		this.createEffect();
 
 		super.update();

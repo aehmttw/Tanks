@@ -82,7 +82,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			Crusade.currentCrusade.replay = true;
 		}
 	}
-	, "You will not gain extra live---"
+	, "You will not gain extra lives---"
 			+ "from replaying a level you've already beaten.---"
 			+ "However, you can still earn coins!---"
 			+ "You will still lose a life if you die.");
@@ -96,7 +96,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 			if (Crusade.currentCrusade != null)
 			{
-				if (Crusade.currentCrusade.remainingLives <= 0)
+				if (Crusade.currentCrusade.lose)
 					Crusade.currentCrusade = null;
 			}
 
@@ -250,7 +250,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			if (Crusade.crusadeMode)
 			{
-				if (Panel.win)
+				if (Panel.win || Crusade.currentCrusade.replay)
 				{
 					nextLevel.update();
 					replayCrusadeWin.update();
@@ -271,14 +271,19 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public ScreenInterlevel()
 	{
 		Panel.panel.hotbar.bottomOffset = 100;
+
 		if (Crusade.crusadeMode)
 		{
 			Crusade.currentCrusade.levelFinished(Panel.win);
 		}
 
+		if (Panel.win)
+			Drawing.drawing.playSound("win.ogg");
+		else
+			Drawing.drawing.playSound("lose.ogg");
+
 		if (Panel.win && Game.fancyGraphics)
 		{
-			Drawing.drawing.playSound("/win.wav");
 			for (int i = 0; i < 5; i++)
 			{
 				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
@@ -288,8 +293,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				fireworks.add(f);
 			}
 		}
-		else
-			Drawing.drawing.playSound("/lose.wav");
+
 	}
 
 	@Override
@@ -339,7 +343,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			if (Crusade.crusadeMode)
 			{
-				if (Panel.win)
+				if (Panel.win || Crusade.currentCrusade.replay)
 				{
 					nextLevel.draw();
 					replayCrusadeWin.draw();
@@ -386,7 +390,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 		if (Crusade.crusadeMode)
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Crusade.currentCrusade.remainingLives);
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Game.player.remainingLives);
 
 			if (Crusade.currentCrusade.lifeGained)
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, "You gained a life for clearing Battle " + (Crusade.currentCrusade.currentLevel + 1) + "!");

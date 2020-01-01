@@ -6,7 +6,7 @@ import tanks.obstacle.Obstacle;
 
 public class Effect extends Movable
 {
-	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun}
+	public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn}
 	public EffectType type;
 	double age = 0;
 	public double colR;
@@ -120,7 +120,9 @@ public class Effect extends Movable
 			this.distance = Math.random() * 50 + 25;
 		}
 		else if (type == EffectType.healing)
-			this.maxAge = 21;		
+			this.maxAge = 21;
+		else if (type == EffectType.bushBurn)
+			this.maxAge = this.posZ * 2;
 	}
 	
 	protected void refurbish()
@@ -323,6 +325,24 @@ public class Effect extends Movable
 				drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
 			else
 				drawing.fillOval(this.posX, this.posY, size, size);
+		}
+		else if (this.type == EffectType.bushBurn)
+		{
+			if (Game.enable3d)
+			{
+				Drawing.drawing.setColor(this.colR, this.colG, this.colB);
+				Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, this.posZ);
+			}
+			else
+			{
+				Drawing.drawing.setColor(this.colR, this.colG, this.colB, this.posZ);
+				Drawing.drawing.fillRect(this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
+			}
+
+			this.posZ -= Panel.frameFrequency / 2;
+			this.colR = Math.max(this.colR - Panel.frameFrequency, 0);
+			this.colG = Math.max(this.colG - Panel.frameFrequency, 0);
+			this.colB = Math.max(this.colB - Panel.frameFrequency, 0);
 		}
 		else
 		{

@@ -51,6 +51,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
         {
             Game.screen = ScreenPartyHost.activeScreen;
             ScreenGame.versus = false;
+            ScreenInterlevel.fromSavedLevels = false;
         }
     }
         );
@@ -74,6 +75,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
         {
             Game.screen = ScreenPartyHost.activeScreen;
             ScreenGame.versus = false;
+            ScreenInterlevel.fromSavedLevels = false;
         }
     }
     );
@@ -93,9 +95,13 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     {
         Panel.panel.hotbar.bottomOffset = 100;
 
+        if (Panel.win)
+            Drawing.drawing.playSound("win.ogg");
+        else
+            Drawing.drawing.playSound("lose.ogg");
+
         if (Panel.win && Game.fancyGraphics)
         {
-            Drawing.drawing.playSound("/win.wav");
             for (int i = 0; i < 5; i++)
             {
                 Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
@@ -105,8 +111,6 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
                 fireworks.add(f);
             }
         }
-        else
-            Drawing.drawing.playSound("/lose.wav");
     }
 
 

@@ -15,6 +15,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
     public double angle;
     public boolean action1;
     public boolean action2;
+    public long time;
 
     public EventTankControllerUpdateC()
     {
@@ -31,6 +32,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.angle = t.angle;
         this.action1 = t.action1;
         this.action2 = t.action2;
+        this.time = System.currentTimeMillis();
     }
 
     @Override
@@ -44,6 +46,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
         b.writeDouble(this.angle);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
+        b.writeLong(this.time);
     }
 
     @Override
@@ -57,6 +60,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.angle = b.readDouble();
         this.action1 = b.readBoolean();
         this.action2 = b.readBoolean();
+        this.time = b.readLong();
     }
 
     @Override
@@ -64,9 +68,9 @@ public class EventTankControllerUpdateC extends PersonalEvent
     {
         Tank t = Tank.idMap.get(this.tank);
 
-        if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).clientID.equals(this.clientID))
+        if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
-            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.action1, this.action2);
+            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.action1, this.action2, this.frame, this.time);
         }
     }
 

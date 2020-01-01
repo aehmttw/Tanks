@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
@@ -11,7 +12,7 @@ import tanks.tank.TankPlayer;
 public class ScreenTitle extends Screen
 {
 	boolean controlPlayer = false;
-	TankPlayer logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250, 0, Game.clientID);
+	TankPlayer logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250, 0);
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
 	{
@@ -64,6 +65,8 @@ public class ScreenTitle extends Screen
 		{
 			if (Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_RIGHT_SHIFT))
 			{
+				Game.bulletLocked = false;
+				ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 				logo.depthTest = true;
 				controlPlayer = true;
 			}

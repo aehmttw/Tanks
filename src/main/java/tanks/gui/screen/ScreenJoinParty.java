@@ -66,7 +66,7 @@ public class ScreenJoinParty extends Screen
 					{
 						s.text = "Failed to connect";
 						s.exception = e.getLocalizedMessage();
-						s.showBack = true;
+						s.finished = true;
 
 						e.printStackTrace(Game.logger);
 						e.printStackTrace();

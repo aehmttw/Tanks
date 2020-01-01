@@ -3,6 +3,9 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenKicked;
+import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.Client;
+import tanks.network.ClientHandler;
 import tanks.network.NetworkUtils;
 
 public class EventKick extends PersonalEvent
@@ -25,6 +28,8 @@ public class EventKick extends PersonalEvent
 		if (this.clientID == null)
 		{
 			Game.cleanUp();
+			ScreenPartyLobby.isClient = false;
+			Client.handler.ctx.close();
 			Game.screen = new ScreenKicked(reason);
 		}
 	}

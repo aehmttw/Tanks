@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 public abstract class Screen
 {
 	public String screenHint = "";
+	public boolean showDefaultMouse = true;
 
 	public abstract void update();
 
@@ -43,9 +44,17 @@ public abstract class Screen
 
 					if (Game.enable3d)
 					{
+						double z1 = 0;
+						if (Game.enable3dBg)
+							z1 = Game.tilesDepth[i][j];
+
+						byte o = 61;
+						if (Game.enable3dBg)
+							o = 0;
+
 						if (Game.tileDrawables[i][j] != null)
 						{
-							Game.tileDrawables[i][j].drawTile(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j], Game.tilesDepth[i][j]);
+							Game.tileDrawables[i][j].drawTile(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j], z1);
 							Game.tileDrawables[i][j] = null;
 						}
 						else
@@ -54,18 +63,20 @@ public abstract class Screen
 								Drawing.drawing.fillBox( 
 										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
 										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-										Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Obstacle.obstacle_size + Game.tilesDepth[i][j],
+										Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Obstacle.obstacle_size + z1,
 										Obstacle.obstacle_size / Game.bgResMultiplier, 
 										Obstacle.obstacle_size / Game.bgResMultiplier,
 										Obstacle.obstacle_size);
 							else
-								Drawing.drawing.fillBox( 
-										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
+							{
+								Drawing.drawing.fillBox(
+										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
 										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
 										0,
-										Obstacle.obstacle_size / Game.bgResMultiplier, 
 										Obstacle.obstacle_size / Game.bgResMultiplier,
-										Game.tilesDepth[i][j]);
+										Obstacle.obstacle_size / Game.bgResMultiplier,
+										z1, o);
+							}
 						}
 					}
 					else
@@ -77,7 +88,7 @@ public abstract class Screen
 				}
 			}
 
-			Drawing.drawing.setColor(0, 0, 0, Math.max(0, (int) Panel.darkness));
+			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 2, Drawing.drawing.sizeY * 2);
 		}
 		else if (Game.enable3d)

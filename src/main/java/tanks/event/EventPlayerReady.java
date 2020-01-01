@@ -15,19 +15,20 @@ public class EventPlayerReady extends PersonalEvent
 	@Override
 	public void execute() 
 	{
+		if (!ScreenPartyHost.includedPlayers.contains(this.clientID))
+			return;
+
 		if (!ScreenPartyHost.readyPlayers.contains(this.clientID))
 			ScreenPartyHost.readyPlayers.add(this.clientID);
 
 		Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
 
-		//synchronized(ScreenPartyHost.server.connections)
+		if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
 		{
-			if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.server.connections.size() + 1 && Game.screen instanceof ScreenGame)
-			{
-				Game.eventsOut.add(new EventBeginLevelCountdown());
-				((ScreenGame)Game.screen).cancelCountdown = false;
-			}
+			Game.eventsOut.add(new EventBeginLevelCountdown());
+			((ScreenGame)Game.screen).cancelCountdown = false;
 		}
+
 	}
 
 	@Override

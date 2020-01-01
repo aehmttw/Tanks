@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import tanks.Game;
 import tanks.event.EventKick;
 import tanks.gui.screen.ScreenHostingEnded;
+import tanks.gui.screen.ScreenPartyHost;
 
 import java.util.ArrayList;
 
@@ -29,38 +30,38 @@ public class Server
 		this.port = port;
 	}
 
-	public void run() {
-		bossGroup = new NioEventLoopGroup(); // (1)
+	public void run()
+	{
+		bossGroup = new NioEventLoopGroup();
 		workerGroup = new NioEventLoopGroup();
 
 		try
 		{
-			ServerBootstrap b = new ServerBootstrap(); // (2)
+			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup)
-			.channel(NioServerSocketChannel.class) // (3)
+			.channel(NioServerSocketChannel.class)
 			.childHandler(new ChannelInitializer<SocketChannel>()
-			{ // (4)
+			{
 				@Override
 				public void initChannel(SocketChannel ch) {
 					ch.pipeline().addLast(new ServerHandler(instance));
 				}
 			})
-			.option(ChannelOption.SO_BACKLOG, 128)          // (5)
-			.childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
+			.option(ChannelOption.SO_BACKLOG, 128)
+			.childOption(ChannelOption.SO_KEEPALIVE, true);
 
-			// Bind and start to accept incoming connections.
-			channel = b.bind(port).sync(); // (7)
+			channel = b.bind(port).sync();
 
-			// Wait until the server socket is closed.
-			// In this example, this does not happen, but you can do that to gracefully
-			// shut down your server.
 			channel.channel().closeFuture().sync();
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace(Game.logger);
-			e.printStackTrace();
-			Game.screen = new ScreenHostingEnded(e.getLocalizedMessage());
+			if (ScreenPartyHost.isServer)
+			{
+				e.printStackTrace(Game.logger);
+				e.printStackTrace();
+				Game.screen = new ScreenHostingEnded(e.getLocalizedMessage());
+			}
 		}
 		finally 
 		{

@@ -1,15 +1,13 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.event.EventBulletAddAttributeModifier;
-import tanks.event.EventBulletDestroyed;
-import tanks.event.EventBulletUpdate;
-import tanks.event.EventTankUpdateHealth;
+import tanks.event.*;
 import tanks.hotbar.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Mine;
 import tanks.tank.Ray;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayerRemote;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +28,7 @@ public class Bullet extends Movable implements IDrawable
 
 	public boolean enableExternalCollisions = true;
 	public boolean playPopSound = true;
+	public boolean playBounceSound = true;
 	public double age = 0;
 	public double size;
 	public int bounces;
@@ -61,6 +60,8 @@ public class Bullet extends Movable implements IDrawable
 	public double recoil = 1.0;
 
 	public boolean affectsMaxLiveBullets;
+
+	public String itemSound = "shoot.ogg";
 
 	public Bullet(double x, double y, int bounces, Tank t)
 	{
@@ -126,7 +127,7 @@ public class Bullet extends Movable implements IDrawable
 		this.drawLevel = 8;
 	}
 
-	public void moveOut(int amount)
+	public void moveOut(double amount)
 	{
 		this.moveInDirection(vX, vY, amount);
 	}
@@ -154,9 +155,22 @@ public class Bullet extends Movable implements IDrawable
 				t.flashAnimation = 0;
 				t.destroy = true;
 
-				if (this.tank.equals(Game.player))
+				if (this.tank.equals(Game.playerTank))
 					Panel.panel.hotbar.currentCoins.coins += t.coinValue;
+				else if (this.tank instanceof TankPlayerRemote && Crusade.crusadeMode)
+				{
+					((TankPlayerRemote) this.tank).player.coins.coins += t.coinValue;
+					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+				}
 			}
+			else if (this.playPopSound)
+			{
+				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			}
+		}
+		else if (this.playPopSound)
+		{
+			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
 		}
 	}
 
@@ -165,11 +179,17 @@ public class Bullet extends Movable implements IDrawable
 		if (o instanceof Bullet && !((Bullet) o).enableExternalCollisions)
 			return;
 
-		if (this.playPopSound)
-			Drawing.drawing.playSound("/bullet_explode.wav");
+		if (o instanceof Bullet)
+		{
+			if (this.playPopSound)
+				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / ((Bullet) o).size));
+		}
 		
 		if (!heavy)
 		{
+			if (this.playPopSound)
+				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+
 			this.destroy = true;
 			this.vX = 0;
 			this.vY = 0;
@@ -177,6 +197,9 @@ public class Bullet extends Movable implements IDrawable
 		
 		if (heavy && o instanceof Bullet && ((Bullet)o).heavy)
 		{
+			if (this.playPopSound)
+				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+
 			this.destroy = true;
 			this.vX = 0;
 			this.vY = 0;
@@ -381,14 +404,14 @@ public class Bullet extends Movable implements IDrawable
 			if (this.bounces < 0 || this.bouncyBounces < 0)
 			{
 				if (this.playPopSound)
-					Drawing.drawing.playSound("/bullet_explode.wav");
+					Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 				this.destroy = true;
 				this.vX = 0;
 				this.vY = 0;
 			}
-			else
-				Drawing.drawing.playSound("/bounce.wav");
+			else if (this.playBounceSound)
+				Drawing.drawing.playGlobalSound("bounce.ogg", (float) (bullet_size / size));
 
 			Game.eventsOut.add(new EventBulletUpdate(this));
 		}
@@ -424,6 +447,8 @@ public class Bullet extends Movable implements IDrawable
 					else
 						this.item.liveBullets--;
 				}
+
+				this.onDestroy();
 			}
 
 			if (this.destroyTimer <= 0 && Game.fancyGraphics && !(this instanceof BulletFlame))
@@ -554,4 +579,8 @@ public class Bullet extends Movable implements IDrawable
 			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, true));
 	}
 
+	public void onDestroy()
+	{
+
+	}
 }

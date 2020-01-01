@@ -100,7 +100,7 @@ public class TankRed extends TankAIControlled
 			Game.eventsOut.add(new EventShootBullet(b));
 			b.shoot();
 
-			Drawing.drawing.playSound("resources/laser.wav");
+			Drawing.drawing.playGlobalSound("laser.ogg");
 
 			if (this.targetEnemy.destroy)
 				this.maxCooldown = 100;

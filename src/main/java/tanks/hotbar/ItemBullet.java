@@ -1,9 +1,12 @@
 package tanks.hotbar;
 
 import tanks.Game;
+import tanks.Movable;
+import tanks.Player;
 import tanks.bullet.Bullet;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
+import tanks.tank.TankPlayerRemote;
 
 public class ItemBullet extends Item
 {
@@ -17,6 +20,8 @@ public class ItemBullet extends Item
 	public double recoil = 1.0;
 	public boolean heavy = false;
 
+	public Player player;
+
 	public int liveBullets;
 
 	public String name;
@@ -25,8 +30,9 @@ public class ItemBullet extends Item
 
 	public Class<? extends Bullet> bulletClass = Bullet.class;
 
-	public ItemBullet()
+	public ItemBullet(Player p)
 	{
+		this.player = p;
 		this.rightClick = false;
 		this.isConsumable = true;
 	}
@@ -36,18 +42,41 @@ public class ItemBullet extends Item
 	{
 		try
 		{
-			Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(Game.player.posX, Game.player.posY, bounces, Game.player, this);
+			if (this.player == Game.player)
+			{
+				Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(Game.playerTank.posX, Game.playerTank.posY, bounces, Game.playerTank, this);
 
-			b.damage = this.damage;
-			b.effect = this.effect;
-			b.size = this.size;
-			b.heavy = heavy;
-			b.recoil = recoil;
-			
-			Game.player.cooldown = this.cooldown;
+				b.damage = this.damage;
+				b.effect = this.effect;
+				b.size = this.size;
+				b.heavy = heavy;
+				b.recoil = recoil;
 
-			if (Game.player instanceof TankPlayer)
-				((TankPlayer)Game.player).fireBullet(b, speed);
+				Game.playerTank.cooldown = this.cooldown;
+
+				if (Game.playerTank instanceof TankPlayer)
+					((TankPlayer) Game.playerTank).fireBullet(b, speed);
+			}
+			else
+			{
+				for (int i = 0; i < Game.movables.size(); i++)
+				{
+					Movable m = Game.movables.get(i);
+					if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == this.player)
+					{
+						Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, (Tank) m, this);
+
+						b.damage = this.damage;
+						b.effect = this.effect;
+						b.size = this.size;
+						b.heavy = heavy;
+						b.recoil = recoil;
+
+						m.cooldown = this.cooldown;
+						((TankPlayerRemote) m).fireBullet(b, speed);
+					}
+				}
+			}
 
 			this.stackSize--;
 			
@@ -63,7 +92,7 @@ public class ItemBullet extends Item
 	@Override
 	public boolean usable()
 	{
-		return (this.maxAmount <= 0 || this.liveBullets < this.maxAmount) && !(Game.player.cooldown > 0) && this.stackSize > 0;
+		return (this.maxAmount <= 0 || this.liveBullets < this.maxAmount) && !(Game.playerTank.cooldown > 0) && this.stackSize > 0;
 	}
 
 	@Override

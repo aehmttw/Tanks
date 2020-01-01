@@ -1,7 +1,9 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Crusade;
 import tanks.Game;
+import tanks.Player;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.IPartyMenuScreen;
 import tanks.gui.screen.ScreenPartyHost;
@@ -75,7 +77,6 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			s.sendEventAndClose(new EventKick("Invalid username!"));
 			return;
 		}
-
 		
 		s.clientID = this.clientID;
 	
@@ -85,7 +86,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			s.username = this.username;
 		
 		s.rawUsername = this.username;
-		
+
 		synchronized (s.server.connections)
 		{
 			for (int i = 0; i < s.server.connections.size(); i++)
@@ -99,10 +100,24 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			
 			s.server.connections.add(s);
 		}
-		
+
+		synchronized (ScreenPartyHost.disconnectedPlayers)
+		{
+			for (int i = 0; i < ScreenPartyHost.disconnectedPlayers.size(); i++)
+			{
+				if (ScreenPartyHost.disconnectedPlayers.get(i).equals(this.clientID))
+				{
+					ScreenPartyHost.disconnectedPlayers.remove(i);
+					i--;
+				}
+			}
+		}
+
+		Game.players.add(new Player(this.clientID, this.username));
+
 		s.sendEvent(new EventConnectionSuccess());
 		
-		s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.username), true));
+		s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.player.username), true));
 		
 		ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
 
@@ -111,7 +126,11 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		for (int i = 0; i < s.server.connections.size(); i++)
 		{
 			ServerHandler h = s.server.connections.get(i);
-			s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(h.clientID, h.rawUsername), true));
+
+			if (h != s)
+				s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(h.clientID, h.rawUsername), true));
 		}
+
+		Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(s.clientID, s.rawUsername), true));
 	}
 }

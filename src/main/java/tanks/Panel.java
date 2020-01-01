@@ -2,6 +2,7 @@ package tanks;
 
 import tanks.event.INetworkEvent;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.Coins;
@@ -9,8 +10,7 @@ import tanks.hotbar.Hotbar;
 import tanks.network.ClientHandler;
 import tanks.tank.Tank;
 import tanks.tank.TankDummyLoadingScreen;
-
-import javax.swing.*;
+import tanks.tank.TankPlayerRemote;
 
 public class Panel
 {
@@ -19,13 +19,13 @@ public class Panel
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
 
-
 	public static boolean showMouseTarget = true;
 
 	public static Panel panel;
 
 	public static String winlose = "";
 	public static boolean win = false;
+	public static boolean levelPassed = false;
 
 	public static double darkness = 0;
 
@@ -47,7 +47,6 @@ public class Panel
 
 	public int lastFPS = 0;
 
-	public static boolean pausePressed = false;
 	protected static boolean initialized = false;
 
 	public Tank dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
@@ -67,7 +66,7 @@ public class Panel
 	}
 
 	public void update()
-	{	
+	{
 		Panel.frameFrequency = Game.game.window.frameFrequency;
 
 		double introTime = 1000;
@@ -92,6 +91,27 @@ public class Panel
 			Game.eventsIn.clear();
 		}
 
+		if (ScreenPartyHost.isServer)
+		{
+			synchronized (ScreenPartyHost.disconnectedPlayers)
+			{
+				for (int i = 0; i < ScreenPartyHost.disconnectedPlayers.size(); i++)
+				{
+					for (int j = 0; j < Game.movables.size(); j++)
+					{
+						Movable m = Game.movables.get(j);
+						if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
+							((TankPlayerRemote) m).lives = 0;
+					}
+
+					ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
+					Game.removePlayer(ScreenPartyHost.disconnectedPlayers.get(i));
+				}
+
+				ScreenPartyHost.disconnectedPlayers.clear();
+			}
+		}
+
 		if (Panel.panel.hotbar.currentCoins.coins < 0)
 			Panel.panel.hotbar.currentCoins.coins = 0;
 
@@ -100,20 +120,21 @@ public class Panel
 
 		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
 		Drawing.drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
 
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
-		if (Game.player != null && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
+		if (Game.playerTank != null && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
 				&& Game.screen instanceof ScreenGame && ((ScreenGame) (Game.screen)).playing)
 		{
 			Drawing.drawing.enableMovingCamera = true;
 
 			if (Drawing.drawing.movingCamera)
 			{
-				Drawing.drawing.playerX = Game.player.posX;
-				Drawing.drawing.playerY = Game.player.posY;
+				Drawing.drawing.playerX = Game.playerTank.posX;
+				Drawing.drawing.playerY = Game.playerTank.posY;
 				this.zoomTimer += 0.04 * Panel.frameFrequency;
 
 				//Drawing.drawing.scale = Drawing.drawing.interfaceScale;
@@ -155,8 +176,7 @@ public class Panel
 					{
 						INetworkEvent e = Game.eventsOut.get(i);
 
-						if (e instanceof INetworkEvent)
-							ScreenPartyHost.server.connections.get(j).events.add(e);
+						ScreenPartyHost.server.connections.get(j).events.add(e);
 					}
 				}
 			}
@@ -221,12 +241,18 @@ public class Panel
 
 		this.drawBar();
 
-		this.drawMouseTarget();
+		if (Game.screen.showDefaultMouse)
+			this.drawMouseTarget();
 
 		Game.screen.drawPostMouse();
 	}
 
 	public void drawMouseTarget()
+	{
+		drawMouseTarget(false);
+	}
+
+	public void drawMouseTarget(boolean force)
 	{
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
@@ -234,7 +260,7 @@ public class Panel
 		//double mx2 = Drawing.drawing.getMouseX();
 		//double my2 = Drawing.drawing.getMouseY();
 
-		if (showMouseTarget)
+		if (showMouseTarget || force)
 		{
 			Drawing.drawing.setColor(0, 0, 0);
 			/*Drawing.drawing.drawInterfaceOval(mx, my, 8, 8);
@@ -269,6 +295,15 @@ public class Panel
 		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 
 		Game.game.window.fontRenderer.drawString(600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
+
+		long free = Runtime.getRuntime().freeMemory();
+		long total = Runtime.getRuntime().totalMemory();
+		long used = total - free;
+
+		if (free < 1048576 * 5)
+			Drawing.drawing.setColor(255, 127, 0);
+
+		Game.game.window.fontRenderer.drawString(150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB");
 
 		if (ScreenPartyLobby.isClient)
 		{

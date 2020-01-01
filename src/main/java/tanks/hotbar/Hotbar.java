@@ -4,11 +4,11 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import org.lwjgl.glfw.GLFW;
-import tanks.tank.TankPlayer;
+import tanks.gui.screen.ScreenGame;
 
 public class Hotbar
 {
-	public ItemBar currentItemBar = new ItemBar(this);
+	public ItemBar currentItemBar;
 	public Coins currentCoins;
 
 	public boolean enabledAmmunitionBar = true;
@@ -28,7 +28,7 @@ public class Hotbar
 		if (this.persistent)
 			this.hidden = false;
 		
-		if (Game.player.destroy)
+		if (Game.playerTank.destroy)
 			this.hidden = true;
 		
 		this.hideTimer = Math.max(0, this.hideTimer - Panel.frameFrequency);
@@ -65,14 +65,14 @@ public class Hotbar
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(255, 128, 0, (100 - this.bottomOffset) * 2.55);
 
-			double lives = Game.player.lives % 1.0;
-			if (lives == 0 && Game.player.lives > 0)
+			double lives = Game.playerTank.lives % 1.0;
+			if (lives == 0 && Game.playerTank.lives > 0)
 				lives = 1;
 
-			if (Game.player.destroy && Game.player.lives < 1)
+			if (Game.playerTank.destroy && Game.playerTank.lives < 1)
 				lives = 0;
 
-			int shields = (int) (Game.player.lives - lives);
+			int shields = (int) (Game.playerTank.lives - lives);
 		
 			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, lives);
 			
@@ -95,8 +95,8 @@ public class Hotbar
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(0, 200, 255, (100 - this.bottomOffset) * 2.55);
 
-			int live = Game.player.liveBullets;
-			int max = Game.player.liveBulletMax;
+			int live = Game.playerTank.liveBullets;
+			int max = Game.playerTank.liveBulletMax;
 
 			if (this.enabledItemBar && this.currentItemBar.selected != -1 && this.currentItemBar.slots[this.currentItemBar.selected] instanceof ItemBullet)
 			{
@@ -120,7 +120,7 @@ public class Hotbar
 				Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
 			}
 
-			if (Game.player.liveMines < Game.player.liveMinesMax)
+			if (Game.playerTank.liveMines < Game.playerTank.liveMinesMax)
 			{
 				Drawing.drawing.setColor(255, 0 , 0, (100 - this.bottomOffset) * 2.55);
 				Drawing.drawing.fillInterfaceOval(x + 175, y, 18, 18);
@@ -130,7 +130,7 @@ public class Hotbar
 
 				Drawing.drawing.setInterfaceFontSize(12);
 				Drawing.drawing.setColor(0, 0, 0, (100 - this.bottomOffset) * 2.55);
-				Drawing.drawing.drawInterfaceText(x + 176, y, Game.player.liveMinesMax - Game.player.liveMines + "");
+				Drawing.drawing.drawInterfaceText(x + 176, y, Game.playerTank.liveMinesMax - Game.playerTank.liveMines + "");
 			}
 		}
 		

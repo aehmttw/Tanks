@@ -29,10 +29,9 @@ public abstract class Movable implements IDrawableForInterface
 	public int drawLevel = 3;
 	//public boolean drawBelow = false;
 	//public boolean drawAbove = false;
-	public boolean canHide = false;
 	public boolean isRemote = false;
 	
-	public double hiddenTimer = 0; 
+	//public double hiddenTimer = 0;
 
 	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>();
 	
@@ -48,7 +47,7 @@ public abstract class Movable implements IDrawableForInterface
 	{
 		if (!destroy)
 		{
-			this.hiddenTimer = Math.max(0, this.hiddenTimer - Panel.frameFrequency);
+			//this.hiddenTimer = Math.max(0, this.hiddenTimer - Panel.frameFrequency);
 			
 			double vX2 = this.vX;
 			double vY2 = this.vY;
@@ -86,8 +85,6 @@ public abstract class Movable implements IDrawableForInterface
 			this.posX += this.lastFinalVX * Panel.frameFrequency;
 			this.posY += this.lastFinalVY * Panel.frameFrequency;
 			this.posZ += this.lastFinalVZ * Panel.frameFrequency;
-
-			this.canHide = false;
 		}
 	}
 

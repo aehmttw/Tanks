@@ -12,14 +12,14 @@ public class ScreenMultiplayerOptions extends Screen
 		@Override
 		public void run() 
 		{
-			Game.username = username.inputText;
-			username.inputText = Game.username + "";
+			Game.player.username = username.inputText;
+			username.inputText = Game.player.username + "";
 			
-			if (!Game.username.equals(Game.chatFilter.filterChat(Game.username)))
+			if (!Game.player.username.equals(Game.chatFilter.filterChat(Game.player.username)))
 				Game.screen = new ScreenUsernameWarning();
 		}
 	},
-			Game.username, "Pick a username that players---will see in multiplayer");
+			Game.player.username, "Pick a username that players---will see in multiplayer");
 	
 	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Chat filter: on", new Runnable()
 	{

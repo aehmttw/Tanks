@@ -234,7 +234,7 @@ public class TankAIControlled extends Tank
 			Ray a2 = new Ray(this.posX, this.posY, an, this.bulletBounces, this);
 
 			a2.getTarget();
-			
+
 			int dist = a2.age;
 			// Cancels if the bullet will hit another enemy
 			double offset = (Math.random() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((dist / 100.0), 2);
@@ -246,7 +246,7 @@ public class TankAIControlled extends Tank
 			}
 
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this, 2.5);
-			a.moveOut(20);
+			a.moveOut(this.size / 2.5);
 
 			Movable m = a.getTarget();
 
@@ -260,7 +260,7 @@ public class TankAIControlled extends Tank
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Drawing.drawing.playSound("/shoot.wav");
+		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bulletSize));
 
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
@@ -289,7 +289,7 @@ public class TankAIControlled extends Tank
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && !Team.isAllied(this, m) && m.hiddenTimer <= 0 && ((Tank) m).targetable)
+			if (m instanceof Tank && !Team.isAllied(this, m) && !((Tank) m).hidden && ((Tank) m).targetable)
 			{				
 				double dist = Movable.distanceBetween(this, m);
 				if (dist < nearestDist)
@@ -483,12 +483,12 @@ public class TankAIControlled extends Tank
 	public void updateTurretWander()
 	{
 		Ray a = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
-		a.moveOut(5);
+		a.moveOut(this.size / 10);
 
 		Movable m = a.getTarget();
 
 		if (!(m == null))
-			if (!Team.isAllied(m, this) && m instanceof Tank && m.hiddenTimer <= 0)
+			if (!Team.isAllied(m, this) && m instanceof Tank && !((Tank) m).hidden)
 				this.shoot();
 
 		if (this.idlePhase == RotationPhase.clockwise)
@@ -548,7 +548,7 @@ public class TankAIControlled extends Tank
 		double a = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
 
 		Ray r = new Ray(this.posX, this.posY, a, 0, this);
-		r.moveOut(5);
+		r.moveOut(this.size / 10);
 
 		Movable m = r.getTarget();
 
@@ -627,9 +627,10 @@ public class TankAIControlled extends Tank
 		}
 
 		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, this.bulletBounces, this);
-		ray.moveOut(5);
+		ray.moveOut(this.size / 10);
 
 		Movable target = ray.getTarget();
+
 		if (target != null)
 		{
 			if (target.equals(this.targetEnemy))
@@ -639,7 +640,7 @@ public class TankAIControlled extends Tank
 				this.aim = true;
 				this.aimAngle = this.searchAngle % (Math.PI * 2);
 			}
-			else if (target instanceof Tank && target.hiddenTimer <= 0 && !Team.isAllied(target, this))
+			else if (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this))
 			{
 				this.targetEnemy = target;
 				this.lockedAngle = this.angle;
@@ -663,7 +664,7 @@ public class TankAIControlled extends Tank
 			a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 		Ray rayToTarget = new Ray(this.posX, this.posY, a, 0, this);
-		rayToTarget.moveOut(5);
+		rayToTarget.moveOut(this.size / 10);
 		Movable target = rayToTarget.getTarget();
 
 		if (target != null)
@@ -813,7 +814,7 @@ public class TankAIControlled extends Tank
 
 				if (layMine)
 				{
-					Drawing.drawing.playSound("/lay-mine.wav");
+					Drawing.drawing.playGlobalSound("lay_mine.ogg");
 
 					Game.movables.add(new Mine(this.posX, this.posY, this));
 					this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);

@@ -42,6 +42,7 @@ public class BulletElectric extends BulletInstant
 		this.targets = targets;
 		this.damage = 0.125;
 		this.effect = BulletEffect.none;
+		this.itemSound = "laser.ogg";
 	}
 
 	public void sendEvent()
@@ -132,7 +133,9 @@ public class BulletElectric extends BulletInstant
 		if (this.invulnerability <= 0 && !this.destroy)
 		{
 			this.collided(m);
+			this.playPopSound = true;
 			super.collidedWithObject(m);
+			this.playPopSound = false;
 		}
 	}
 

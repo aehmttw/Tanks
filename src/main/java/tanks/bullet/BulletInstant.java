@@ -19,6 +19,7 @@ public abstract class BulletInstant extends Bullet
 	{
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
 		this.enableExternalCollisions = false;
+		this.playPopSound = false;
 	}
 
 	public void saveTarget()

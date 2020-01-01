@@ -37,6 +37,8 @@ public class EventAnnounceConnection extends PersonalEvent
 		}
 		else
 		{
+			ScreenPartyLobby.includedPlayers.remove(this.clientIdTarget);
+
 			for (int i = 0; i < ScreenPartyLobby.connections.size(); i++)
 			{
 				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))

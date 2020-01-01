@@ -20,6 +20,8 @@ public class BulletHealing extends BulletInstant
 		this.name = "heal";
 		this.effect = BulletEffect.none;
 		this.damage = -0.01 * Panel.frameFrequency;
+
+		this.itemSound = null;
 	}
 
 	public BulletHealing(double x, double y, int bounces, Tank t)

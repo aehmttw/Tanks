@@ -8,6 +8,9 @@ import tanks.Game;
 import tanks.event.EventKeepConnectionAlive;
 import tanks.event.EventSendClientDetails;
 import tanks.event.INetworkEvent;
+import tanks.gui.screen.ScreenKicked;
+import tanks.gui.screen.ScreenParty;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter 
@@ -17,7 +20,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	
 	public ChannelHandlerContext ctx;
 
-	public static long lastMessage = 0;
+	public static long lastMessage = -1;
 	public static long latency = 0;
 
 	public static long latencySum = 0;
@@ -30,7 +33,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     {
 		this.reader.queue = ctx.channel().alloc().buffer();
 		this.ctx = ctx;
-		this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.username));
+		this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
 		this.sendEvent(new EventKeepConnectionAlive());
 		ScreenPartyLobby.isClient = true;
     }
@@ -52,6 +55,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	public void sendEventAndClose(INetworkEvent e)
 	{
 		this.sendEvent(e);
+		ScreenPartyLobby.isClient = false;
 		ctx.close();
 	}
 
@@ -59,6 +63,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	@Override
     public void channelInactive(ChannelHandlerContext ctx)
     {
+    	if (ScreenPartyLobby.isClient)
+		{
+			Game.screen = new ScreenKicked("You have lost connection to the party");
+			Game.cleanUp();
+		}
+
 		ScreenPartyLobby.isClient = false;
 		ReferenceCountUtil.release(this.reader.queue);
     }
@@ -73,6 +83,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
 		if (reply)
 		{
+			if (lastMessage < 0)
+				lastMessage = System.currentTimeMillis();
+
 			long time = System.currentTimeMillis();
 			latency = time - lastMessage;
 			lastMessage = time;
@@ -106,9 +119,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     }
     
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
     {
-        cause.printStackTrace();
+		System.err.println("A network exception has occurred: " + e.toString());
+		Game.logger.println("A network exception has occurred: " + e.toString());
+		e.printStackTrace();
+		e.printStackTrace(Game.logger);
+		Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
+		ScreenPartyLobby.isClient = false;
         ctx.close();
     }
 }

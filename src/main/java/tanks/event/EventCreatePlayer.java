@@ -2,8 +2,10 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.Player;
 import tanks.Team;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
 
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 public class EventCreatePlayer extends PersonalEvent
 {
+	public Player player;
+
 	public UUID clientIdTarget;
 	public String username;
 	public double posX;
@@ -23,9 +27,10 @@ public class EventCreatePlayer extends PersonalEvent
 	
 	}
 	
-	public EventCreatePlayer(UUID id, String username, double x, double y, double angle, Team t)
+	public EventCreatePlayer(Player p, double x, double y, double angle, Team t)
 	{
-		this.clientIdTarget = id;
+		this.player = p;
+		this.clientIdTarget = p.clientID;
 		this.posX = x;
 		this.posY = y;
 		this.angle = angle;
@@ -37,7 +42,7 @@ public class EventCreatePlayer extends PersonalEvent
 		else
 			this.team = t.name;
 		
-		this.username = username;
+		this.username = p.username;
 	}
 	
 	@Override
@@ -48,21 +53,30 @@ public class EventCreatePlayer extends PersonalEvent
 		if (this.clientID != null)
 			return;
 
+		if (ScreenPartyHost.isServer)
+			ScreenPartyHost.includedPlayers.add(this.clientIdTarget);
+		else
+			ScreenPartyLobby.includedPlayers.add(this.clientIdTarget);
+
 		if (clientIdTarget.equals(Game.clientID))
 		{
 			if (ScreenPartyHost.isServer)
-				t = new TankPlayer(posX, posY, angle, clientIdTarget);
+				t = new TankPlayer(posX, posY, angle);
 			else
 				t = new TankPlayerController(posX, posY, angle, clientIdTarget);
 
-			Game.player = t;
+			Game.playerTank = t;
 		}
 		else
 		{
 			if (!ScreenPartyHost.isServer)
-				t = new TankRemote(new TankPlayer(posX, posY, angle, clientIdTarget));
+			{
+				TankPlayer t2 = new TankPlayer(posX, posY, angle);
+				t2.player = new Player(clientIdTarget, "");
+				t = new TankRemote(t2);
+			}
 			else
-				t = new TankPlayerRemote(posX, posY, angle, clientIdTarget);
+				t = new TankPlayerRemote(posX, posY, angle, this.player);
 
 			t.showName = true;
 			t.nameTag.name = this.username;

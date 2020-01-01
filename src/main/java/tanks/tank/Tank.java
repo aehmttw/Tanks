@@ -55,6 +55,12 @@ public abstract class Tank extends Movable
 	public double baseLives = 1;
 	public double lives = 1;
 
+	public boolean[][] hiddenPoints = new boolean[3][3];
+	public boolean hidden = false;
+
+	public boolean[][] canHidePoints = new boolean[3][3];
+	public boolean canHide = false;
+
 	public Turret turret;
 
 	public boolean standardUpdateEvent = true;
@@ -257,7 +263,7 @@ public abstract class Tank extends Movable
 		{
 			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
-				Drawing.drawing.playSound("/destroy.wav");
+				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tank_size / this.size));
 
 				if (!freeIDs.contains(this.networkID))
 				{
@@ -267,6 +273,8 @@ public abstract class Tank extends Movable
 					freeIDs.add(this.networkID);
 					idMap.remove(this.networkID);
 				}
+
+				this.onDestroy();
 
 				if (Game.fancyGraphics)
 				{
@@ -337,6 +345,26 @@ public abstract class Tank extends Movable
 
 		if (!this.isRemote && this.standardUpdateEvent)
 			Game.eventsOut.add(new EventTankUpdate(this));
+
+		this.canHide = true;
+		for (int i = 0; i < this.canHidePoints.length; i++)
+		{
+			for (int j = 0; j < this.canHidePoints[i].length; j++)
+			{
+				canHide = canHide && canHidePoints[i][j];
+				canHidePoints[i][j] = false;
+			}
+		}
+
+		this.hidden = true;
+		for (int i = 0; i < this.hiddenPoints.length; i++)
+		{
+			for (int j = 0; j < this.hiddenPoints[i].length; j++)
+			{
+				hidden = hidden && hiddenPoints[i][j];
+				hiddenPoints[i][j] = false;
+			}
+		}
 	}
 
 	@Override
@@ -447,7 +475,7 @@ public abstract class Tank extends Movable
 			else
 			{
 				if (Game.enable3d)
-					drawing.drawImage(this.texture, this.posX, this.posY, s / 2 + 0.1, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.texture, this.posX, this.posY, s / 2 + 1, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
@@ -541,5 +569,10 @@ public abstract class Tank extends Movable
 
 		if (!this.isRemote)
 			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
+	}
+
+	public void onDestroy()
+	{
+
 	}
 }

@@ -126,12 +126,14 @@ public class Button
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
+		boolean prevSel = selected;
 		selected = (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
 		infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
 
 		if (selected && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !clicked && enabled)
 		{
 			function.run();
+			Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
 			clicked = true;
 			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_1);
 		}

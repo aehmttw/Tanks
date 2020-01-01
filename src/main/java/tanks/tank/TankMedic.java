@@ -61,7 +61,7 @@ public class TankMedic extends TankAIControlled
 		if (this.suicidal)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
-			this.speed = 3 - 2 * Math.min(this.timeUntilDeath, 500) / 500;
+			this.speed = 6 - 4 * Math.min(this.timeUntilDeath, 500) / 500;
 			this.enableBulletAvoidance = false;
 			this.enableMineAvoidance = false;
 		}
@@ -125,7 +125,7 @@ public class TankMedic extends TankAIControlled
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && m != this && Team.isAllied(this, m) && m.hiddenTimer <= 0 && !((Tank) m).invulnerable && ((Tank) m).lives - ((Tank) m).baseLives < 1)
+			if (m instanceof Tank && m != this && Team.isAllied(this, m) && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).lives - ((Tank) m).baseLives < 1)
 			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 				r.moveOut(5);

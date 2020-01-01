@@ -22,10 +22,11 @@ public class ObstacleUnknown extends Obstacle
 	@Override
 	public void draw()
 	{
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 		Drawing.drawing.setFontSize(12);
-		Drawing.drawing.drawText(this.posX, this.posY + 32, this.name);
-		
-		super.draw();
+		Drawing.drawing.drawText(this.posX, this.posY, this.name);
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 64);
+		Drawing.drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 	}
 
 }

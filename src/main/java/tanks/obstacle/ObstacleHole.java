@@ -52,7 +52,6 @@ public class ObstacleHole extends Obstacle
 			Drawing.drawing.setColor(r, g, b);
 
 			Drawing.drawing.fillBox(this.posX, this.posY, -draw_size / 2 + d, obstacle_size, obstacle_size, draw_size / 2, (byte) 3);
-
 			
 			Drawing.drawing.fillBox(this.posX - 3 * obstacle_size / 8, this.posY, -obstacle_size / 2 + d, obstacle_size / 4, obstacle_size, obstacle_size / 2, (byte) 17);
 			Drawing.drawing.fillBox(this.posX + 3 * obstacle_size / 8, this.posY, -obstacle_size / 2 + d, obstacle_size / 4, obstacle_size, obstacle_size / 2, (byte) 33);

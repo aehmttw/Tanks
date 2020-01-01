@@ -30,6 +30,6 @@ public class TankBlack extends TankAIControlled
 		if (Math.random() < 0.01)
 			strafeDirection = -strafeDirection;
 
-		this.setMotionInDirectionWithOffset(Game.player.posX, Game.player.posY, 3.5, strafeDirection);
+		this.setMotionInDirectionWithOffset(Game.playerTank.posX, Game.playerTank.posY, 3.5, strafeDirection);
 	}
 }

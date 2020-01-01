@@ -18,6 +18,7 @@ public class MessageReader
 	public ByteBuf queue;
 	protected boolean reading = false;
 	protected int endpoint;
+	protected int frame = 0;
 
 	public boolean queueMessage(ByteBuf m, UUID clientID)
 	{
@@ -59,16 +60,16 @@ public class MessageReader
 		}
 		catch (Exception e)
 		{
-			System.err.println("A network exception has occurred: " + m);
-			Game.logger.println("A network exception has occurred: " + m);
+			System.err.println("A network exception has occurred: " + e.toString());
+			Game.logger.println("A network exception has occurred: " + e.toString());
 			e.printStackTrace();
 			e.printStackTrace(Game.logger);
 
 			if (ScreenPartyHost.isServer)
-				Game.screen = new ScreenHostingEnded("A network exception has occurred: " + m);
+				Game.screen = new ScreenHostingEnded("A network exception has occurred: " + e.toString());
 			else if (ScreenPartyLobby.isClient)
 			{
-				Game.screen = new ScreenKicked("A network exception has occurred: " + m);
+				Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
 				Client.handler.ctx.close();
 				ScreenPartyLobby.connections.clear();
 			}
@@ -86,7 +87,10 @@ public class MessageReader
 		e.read(m);
 
 		if (e instanceof PersonalEvent)
-			((PersonalEvent)e).clientID = clientID;
+		{
+			((PersonalEvent) e).clientID = clientID;
+			((PersonalEvent) e).frame = frame;
+		}
 
 		if (e instanceof EventKeepConnectionAlive)
 			return true;

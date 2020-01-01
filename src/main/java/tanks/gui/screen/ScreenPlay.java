@@ -32,26 +32,25 @@ public class ScreenPlay extends Screen
 				Game.screen = new ScreenCrusades();
 			else
 				Game.screen = new ScreenResumeCrusade();
-
 		}
 	}
 			, "Fight battles in an order,---and see how long you can survive!");
 	
-	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Online", "Online mode is coming soon!");
-	
-	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Party", new Runnable() 
+	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Party", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			if (!Game.username.equals(""))
+			if (!Game.player.username.equals(""))
 				Game.screen = new ScreenParty();
 			else
 				Game.screen = new ScreenUsernamePrompt();
 		}
 	},
-	"Play with other people who are---connected to your local network");
-		
+	"Play with other people who are---connected to your local network---(or who are port forwarding)");
+
+	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Online", "Online mode is coming soon!");
+
 	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Tutorial", new Runnable()
 	{
 		@Override
@@ -77,8 +76,8 @@ public class ScreenPlay extends Screen
 	{
 		newLevel.update();
 		crusade.update();
-		online.update();
 		party.update();
+		online.update();
 		tutorial.update();
 		back.update();
 	}
@@ -92,8 +91,8 @@ public class ScreenPlay extends Screen
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Select a game mode");
 		back.draw();
 		tutorial.draw();
-		party.draw();
 		online.draw();
+		party.draw();
 		crusade.draw();
 		newLevel.draw();
 	}

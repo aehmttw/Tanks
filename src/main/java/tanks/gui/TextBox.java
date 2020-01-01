@@ -12,6 +12,8 @@ public class TextBox
 	public double sizeX;
 	public double sizeY;
 	public String labelText;
+
+	public String previousInputText;
 	public String inputText;
 
 	public boolean enableHover = false;
@@ -67,6 +69,7 @@ public class TextBox
 		this.labelText = text;
 
 		this.inputText = defaultText;
+		this.previousInputText = defaultText;
 	}
 
 	public TextBox(double x, double y, double sX, double sY, String text, Runnable f, String defaultText, String hoverText)
@@ -153,6 +156,7 @@ public class TextBox
 		{
 			this.inputText = "";
 			selected = true;
+			Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
 			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_1);
 		}
 
@@ -162,7 +166,17 @@ public class TextBox
 
 			this.performValueCheck();
 			function.run();
+			this.previousInputText = this.inputText;
+			Drawing.drawing.playSound("destroy.ogg", 2f);
 			selected = false;
+		}
+
+		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ESCAPE) && selected)
+		{
+			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_ESCAPE);
+			selected = false;
+			this.inputText = this.previousInputText;
+			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
 		}
 
 		if (selected)
@@ -174,7 +188,6 @@ public class TextBox
 
 	public void checkKeys()
 	{
-
 		boolean caps = false;
 
 		if (this.enableCaps && (Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_RIGHT_SHIFT)))

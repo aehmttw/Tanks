@@ -11,7 +11,7 @@ public class GameUpdater implements IUpdater
 		{
 			Panel.panel.update();
 		}
-		catch(Exception e)
+		catch (Throwable e)
 		{
 			Game.exitToCrash(e);
 		}

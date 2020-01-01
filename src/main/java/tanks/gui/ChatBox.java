@@ -17,7 +17,7 @@ public class ChatBox extends TextBox
 		super(x, y, sX, sY, "", f, "");
 		this.enableCaps = true;
 		this.enablePunctuation = true;
-		this.maxChars = 84 - Game.username.length();
+		this.maxChars = 84 - Game.player.username.length();
 
 		this.colorR = 200;
 		this.colorG = 200;
@@ -119,7 +119,7 @@ public class ChatBox extends TextBox
 			drawing.setInterfaceFontSize(24);
 
 			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, 
-					this.defaultTextColor + Game.username + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_", false);
+					this.defaultTextColor + Game.player.username + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_", false);
 		}
 		else if (this.persistent)
 		{

@@ -4,6 +4,8 @@ Tanks is a game written in Java inspired by a minigame of the same name on the W
 There are 18 unique enemies you can fight, but you can add more of your own too.
 The game works in Windows, Mac or Linux.
 
+Here is a technical demonstration video of Tanks: https://www.youtube.com/embed/iv6r5ioHpTc
+
 ## How to play
 
 Controls: <br>

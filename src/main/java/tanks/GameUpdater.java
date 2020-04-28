@@ -1,6 +1,6 @@
 package tanks;
 
-import lwjglwindow.IUpdater;
+import basewindow.IUpdater;
 
 public class GameUpdater implements IUpdater
 {

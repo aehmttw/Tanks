@@ -12,7 +12,7 @@ public class ScreenUsernameWarning extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenMultiplayerOptions();
+			Game.screen = new ScreenOptionsMultiplayer();
 		}
 	}
 			);

@@ -14,6 +14,11 @@ public class SynchronizedList<T> extends ArrayList<T>
 	{
 		super.add(i, e);
 	}
+
+	public synchronized T get(int i)
+	{
+		return super.get(i);
+	}
 	
 	public synchronized T remove(int i)
 	{

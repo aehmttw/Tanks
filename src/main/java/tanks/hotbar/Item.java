@@ -3,8 +3,6 @@ package tanks.hotbar;
 import tanks.Player;
 import tanks.bullet.*;
 
-import java.util.Arrays;
-
 public abstract class Item 
 {
 	public boolean isConsumable;

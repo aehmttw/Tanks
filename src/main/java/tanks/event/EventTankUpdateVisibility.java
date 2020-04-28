@@ -1,8 +1,6 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.gui.screen.ScreenPartyLobby;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 

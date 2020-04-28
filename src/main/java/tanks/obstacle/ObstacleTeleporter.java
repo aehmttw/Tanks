@@ -39,9 +39,9 @@ public class ObstacleTeleporter extends Obstacle
 		Drawing.drawing.fillOval(this.posX, this.posY, draw_size, draw_size);
 
 		if (this.cooldown > 0)
-			this.green = Math.min(255, this.green - 2.55 * Panel.frameFrequency);
+			this.green = Math.max(0, this.green - 2.55 * Panel.frameFrequency);
 		else
-			this.green = Math.max(0, this.green + 2.55 * Panel.frameFrequency);
+			this.green = Math.min(255, this.green + 2.55 * Panel.frameFrequency);
 
 		Drawing.drawing.setColor(0, this.green, 255);
 

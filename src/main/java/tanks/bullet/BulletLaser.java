@@ -1,14 +1,9 @@
 package tanks.bullet;
 
-import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
-import tanks.event.EventBulletDestroyed;
-import tanks.event.EventBulletInstantWaypoint;
-import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
-import tanks.tank.Ray;
 import tanks.tank.Tank;
 
 public class BulletLaser extends BulletInstant

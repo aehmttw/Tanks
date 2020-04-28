@@ -1,7 +1,6 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.ChatMessage;
@@ -56,7 +55,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 	@Override
 	public void execute(ServerHandler s)
 	{
-		if (this.clientID == null)
+		if (this.clientID == null || Game.isOnlineServer || !ScreenPartyHost.isServer)
 			return;
 
 		if (!(Game.screen instanceof IPartyMenuScreen))

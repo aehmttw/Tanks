@@ -2,8 +2,8 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.event.EventTankAddAttributeModifier;
-import tanks.event.EventTankUpdateHealth;
 import tanks.event.EventTankUpdate;
+import tanks.event.EventTankUpdateHealth;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
@@ -400,7 +400,7 @@ public abstract class Tank extends Movable
 			else
 			{
 				if (Game.enable3d)
-					drawing.fillBox(this.posX, this.posY, 0, s, s, s / 2 - 0.1);
+					drawing.fillBox(this.posX, this.posY, 0, s, s, s / 2 - 1);
 				else
 					drawing.fillRect(this.posX, this.posY, s, s);
 			}
@@ -495,7 +495,7 @@ public abstract class Tank extends Movable
 					{
 						if (Game.enable3d)
 						{
-							drawing.fillBox(this.posX, this.posY, 0, s * mod, s * mod, s / 2 - 0.2);
+							drawing.fillBox(this.posX, this.posY, 0, s * mod, s * mod, s / 2 - 2);
 						}
 					}
 				}

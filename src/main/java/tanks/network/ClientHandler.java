@@ -5,12 +5,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
+import tanks.Panel;
 import tanks.event.EventKeepConnectionAlive;
 import tanks.event.EventSendClientDetails;
 import tanks.event.INetworkEvent;
+import tanks.event.online.EventSendOnlineClientDetails;
 import tanks.gui.screen.ScreenKicked;
-import tanks.gui.screen.ScreenParty;
-import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenOverlayOnline;
 import tanks.gui.screen.ScreenPartyLobby;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter 
@@ -28,17 +29,36 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	public static long lastLatencyTime = 0;
 	public static long lastLatencyAverage = 0;
 
+	public boolean online;
+
+	public ClientHandler(boolean online)
+	{
+		this.online = online;
+	}
+
 	@Override
     public void channelActive(ChannelHandlerContext ctx)
     {
+    	if (this.online)
+		{
+			Game.connectedToOnline = true;
+			Panel.panel.onlineOverlay = new ScreenOverlayOnline();
+		}
+
 		this.reader.queue = ctx.channel().alloc().buffer();
 		this.ctx = ctx;
-		this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
-		this.sendEvent(new EventKeepConnectionAlive());
+
+		if (online)
+			this.sendEvent(new EventSendOnlineClientDetails(Game.network_protocol, Game.clientID, Game.player.username, Game.computerID));
+		else
+			this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
+
 		ScreenPartyLobby.isClient = true;
+
+		this.sendEvent(new EventKeepConnectionAlive());
     }
 	
-	public void sendEvent(INetworkEvent e)
+	public synchronized void sendEvent(INetworkEvent e)
 	{
 		ByteBuf b = ctx.channel().alloc().buffer();
 		b.writeInt(NetworkEventMap.get(e.getClass()));
@@ -52,7 +72,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		ReferenceCountUtil.release(b);
 	}
 	
-	public void sendEventAndClose(INetworkEvent e)
+	public synchronized void sendEventAndClose(INetworkEvent e)
 	{
 		this.sendEvent(e);
 		ScreenPartyLobby.isClient = false;
@@ -65,11 +85,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     {
     	if (ScreenPartyLobby.isClient)
 		{
-			Game.screen = new ScreenKicked("You have lost connection to the party");
-			Game.cleanUp();
+			Game.screen = new ScreenKicked("You have lost connection");
 		}
 
 		ScreenPartyLobby.isClient = false;
+    	Game.connectedToOnline = false;
 		ReferenceCountUtil.release(this.reader.queue);
     }
 	
@@ -102,21 +122,26 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 				latencyCount = 0;
 			}
 
-			synchronized (Game.eventsOut)
-			{
-				EventKeepConnectionAlive k = new EventKeepConnectionAlive();
-				Game.eventsOut.add(k);
-
-				for (int i = 0; i < Game.eventsOut.size(); i++)
-				{
-					INetworkEvent e = Game.eventsOut.get(i); 
-					this.sendEvent(e);
-				}
-				
-				Game.eventsOut.clear();
-			}
+			reply();
 		}	
     }
+
+    public void reply()
+	{
+		synchronized (Game.eventsOut)
+		{
+			EventKeepConnectionAlive k = new EventKeepConnectionAlive();
+			Game.eventsOut.add(k);
+
+			for (int i = 0; i < Game.eventsOut.size(); i++)
+			{
+				INetworkEvent e = Game.eventsOut.get(i);
+				this.sendEvent(e);
+			}
+
+			Game.eventsOut.clear();
+		}
+	}
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)

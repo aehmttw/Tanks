@@ -1,6 +1,6 @@
 package tanks;
 
-import lwjglwindow.IDrawer;
+import basewindow.IDrawer;
 
 public class GameDrawer implements IDrawer
 {

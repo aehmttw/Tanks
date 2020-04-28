@@ -36,9 +36,10 @@ public class Bullet extends Movable implements IDrawable
 
 	public double ageFrac = 0;
 	public double quarterAgeFrac = 0;
+	public double halfAgeFrac = 0;
 
 	public double sinceLastEffect = 0;
-	
+
 	public double baseColorR;
 	public double baseColorG;
 	public double baseColorB;
@@ -46,9 +47,9 @@ public class Bullet extends Movable implements IDrawable
 	public double outlineColorR;
 	public double outlineColorG;
 	public double outlineColorB;
-	
+
 	public double iPosZ;
-	
+
 	public double destroyTimer = 0;
 	public Tank tank;
 	public double damage = 1;
@@ -70,11 +71,11 @@ public class Bullet extends Movable implements IDrawable
 
 	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
 	@Deprecated
-	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
 	{
 		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false, ib);
 	}
-	
+
 	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet item)
 	{
 		super(x, y);
@@ -98,12 +99,12 @@ public class Bullet extends Movable implements IDrawable
 		this.name = "normal";
 
 		this.iPosZ = this.tank.size / 2 + this.tank.turret.size / 2;
-		
+
 		this.isRemote = t.isRemote;
-		
+
 		//if (!t.isRemote && fireEvent)
 		//	Game.eventsOut.add(new EventShootBullet(this));
-		
+
 		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
 
 		if (!this.tank.isRemote && this.affectsMaxLiveBullets)
@@ -136,7 +137,7 @@ public class Bullet extends Movable implements IDrawable
 	{
 		if (!heavy)
 			this.destroy = true;
-				
+
 		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable)
 		{
 			t.flashAnimation = 1;
@@ -145,7 +146,7 @@ public class Bullet extends Movable implements IDrawable
 				this.vX = 0;
 				this.vY = 0;
 			}
-			
+
 			t.lives -= this.damage;
 
 			Game.eventsOut.add(new EventTankUpdateHealth(t));
@@ -184,7 +185,7 @@ public class Bullet extends Movable implements IDrawable
 			if (this.playPopSound)
 				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / ((Bullet) o).size));
 		}
-		
+
 		if (!heavy)
 		{
 			if (this.playPopSound)
@@ -194,7 +195,7 @@ public class Bullet extends Movable implements IDrawable
 			this.vX = 0;
 			this.vY = 0;
 		}
-		
+
 		if (heavy && o instanceof Bullet && ((Bullet)o).heavy)
 		{
 			if (this.playPopSound)
@@ -246,7 +247,7 @@ public class Bullet extends Movable implements IDrawable
 			return;
 
 		boolean bouncy = false;
-		
+
 		boolean collided = false;
 
 		double prevX = this.posX;
@@ -264,8 +265,9 @@ public class Bullet extends Movable implements IDrawable
 
 			double horizontalDist = Math.abs(dx);
 			double verticalDist = Math.abs(dy);
-			
+
 			double s = this.size;
+
 			if (useCustomWallCollision)
 				s = this.wallCollisionSize;
 
@@ -275,10 +277,10 @@ public class Bullet extends Movable implements IDrawable
 			{
 				if (o.checkForObjects)
 					o.onObjectEntry(this);
-				
+
 				if (!o.bulletCollision)
 					continue;
-				
+
 				boolean left = o.hasLeftNeighbor();
 				boolean right = o.hasRightNeighbor();
 				boolean up = o.hasUpperNeighbor();
@@ -286,37 +288,37 @@ public class Bullet extends Movable implements IDrawable
 
 				if (left && dx <= 0)
 					horizontalDist = 0;
-				
+
 				if (right && dx >= 0)
 					horizontalDist = 0;
-				
+
 				if (up && dy <= 0)
 					verticalDist = 0;
-				
+
 				if (down && dy >= 0)
 					verticalDist = 0;
-				
+
 				bouncy = o.bouncy;
 				collided = true;
-				
+
 				if (!left && dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
-					this.posX += horizontalDist - bound;
+					this.posX += 2 * (horizontalDist - bound);
 					this.vX = -Math.abs(this.vX);
 				}
 				else if (!up && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 				{
-					this.posY += verticalDist - bound;
+					this.posY += 2 * (verticalDist - bound);
 					this.vY = -Math.abs(this.vY);
 				}
 				else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
 				{
-					this.posX -= horizontalDist - bound;
+					this.posX -= 2 * (horizontalDist - bound);
 					this.vX = Math.abs(this.vX);
 				}
 				else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
 				{
-					this.posY -= verticalDist - bound;
+					this.posY -= 2 * (verticalDist - bound);
 					this.vY = Math.abs(this.vY);
 				}
 			}
@@ -339,7 +341,7 @@ public class Bullet extends Movable implements IDrawable
 		{
 			collided = true;
 			this.posY = Drawing.drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.drawing.sizeY);
-			this.vY = -Math.abs(this.vY); 
+			this.vY = -Math.abs(this.vY);
 		}
 		if (this.posY - this.size/2 < 0)
 		{
@@ -361,16 +363,16 @@ public class Bullet extends Movable implements IDrawable
 			Movable o = Game.movables.get(i);
 
 			if (o instanceof Tank && !o.destroy)
-			{	
+			{
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
 
 				Tank t = ((Tank) o);
 
 				double bound = this.size / 2 + t.size / 2;
-				
+
 				if (horizontalDist < bound && verticalDist < bound)
-				{	
+				{
 					this.collidedWithTank(t);
 				}
 			}
@@ -400,7 +402,7 @@ public class Bullet extends Movable implements IDrawable
 				this.bounces--;
 			else
 				this.bouncyBounces--;
-			
+
 			if (this.bounces < 0 || this.bouncyBounces < 0)
 			{
 				if (this.playPopSound)
@@ -481,6 +483,7 @@ public class Bullet extends Movable implements IDrawable
 			this.posZ = this.iPosZ * frac + (Game.tank_size / 4) * (1 - frac);
 
 			this.ageFrac += Panel.frameFrequency;
+			this.halfAgeFrac += Panel.frameFrequency;
 			this.quarterAgeFrac += Panel.frameFrequency;
 
 			if (Game.fancyGraphics)
@@ -515,14 +518,22 @@ public class Bullet extends Movable implements IDrawable
 				{
 					this.quarterAgeFrac -= 0.25;
 
-					if (this.effect.equals(BulletEffect.fireTrail))
-						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, quarterAgeFrac));
+					//if (this.effect.equals(BulletEffect.fireTrail))
+					//	Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, quarterAgeFrac));
 
 					if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
 						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.fire, quarterAgeFrac));
 
 					if (this.effect.equals(BulletEffect.darkFire))
 						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.darkFire, quarterAgeFrac));
+				}
+
+				while (this.halfAgeFrac >= 0.5)
+				{
+					this.halfAgeFrac -= 0.5;
+
+					if (this.effect.equals(BulletEffect.fireTrail))
+						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * halfAgeFrac, this.posY - lastFinalVY * halfAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, halfAgeFrac));
 				}
 			}
 		}
@@ -541,19 +552,19 @@ public class Bullet extends Movable implements IDrawable
 	}
 
 	@Override
-	public void draw() 
+	public void draw()
 	{
 		double opacity = ((60 - destroyTimer) / 60.0);
 		double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
 		Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, (int)(opacity * opacity * opacity * 255.0));
-		
+
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
 		else
 			Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
 
 		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int)(opacity * opacity * opacity * 255.0));
-		
+
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(posX, posY, posZ + 1, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 		else

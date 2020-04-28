@@ -5,7 +5,6 @@ import tanks.Game;
 import tanks.Level;
 import tanks.Panel;
 import tanks.obstacle.Obstacle;
-import org.lwjgl.opengl.GL11;
 
 public abstract class Screen
 {
@@ -106,13 +105,11 @@ public abstract class Screen
 					}
 					else
 					{
-						GL11.glEnable(GL11.GL_DEPTH_TEST);
-						Drawing.drawing.fillRect( 
+						Drawing.drawing.fillBox(
 								(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
-								(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
+								(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 0,
 								Obstacle.obstacle_size * size / Game.bgResMultiplier, 
-								Obstacle.obstacle_size * size / Game.bgResMultiplier);
-						GL11.glDisable(GL11.GL_DEPTH_TEST);
+								Obstacle.obstacle_size * size / Game.bgResMultiplier, 0, (byte) 61);
 					}
 				}
 			}

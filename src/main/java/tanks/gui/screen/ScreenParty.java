@@ -25,7 +25,7 @@ public class ScreenParty extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenPlay();
+			Game.screen = new ScreenPlayMultiplayer();
 		}
 	}
 	);

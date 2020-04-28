@@ -2,10 +2,8 @@ package tanks.network;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.event.EventKeepConnectionAlive;
-import tanks.event.INetworkEvent;
-import tanks.event.IServerThreadEvent;
-import tanks.event.PersonalEvent;
+import tanks.event.*;
+import tanks.event.online.IOnlineServerEvent;
 import tanks.gui.screen.ScreenHostingEnded;
 import tanks.gui.screen.ScreenKicked;
 import tanks.gui.screen.ScreenPartyHost;
@@ -94,6 +92,8 @@ public class MessageReader
 
 		if (e instanceof EventKeepConnectionAlive)
 			return true;
+		else if (e instanceof IOnlineServerEvent)
+			s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));
 		else if (e instanceof IServerThreadEvent)
 			((IServerThreadEvent) e).execute(s);
 		else

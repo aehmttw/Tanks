@@ -52,13 +52,16 @@ public class TeleporterOrb extends Movable
 			else
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 		}
+
+		//if (this.tank.size == 0)
+		//	Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.glow));
 	}
 	
 	@Override
 	public void update()
 	{
 		this.age += Panel.frameFrequency;
-	
+
 		if (this.age > this.endAge)
 		{
 			Game.removeMovables.add(this);
@@ -69,7 +72,7 @@ public class TeleporterOrb extends Movable
 			{
 				this.createEffect();
 			}
-			
+
 			this.tank.size = this.size;
 			this.tank.turret.size = this.tSize;
 			return;
@@ -83,10 +86,17 @@ public class TeleporterOrb extends Movable
 				Math.sqrt(Math.pow(this.dX - this.iX, 2) + Math.pow(this.dY - this.iY, 2)) / 2;
 
 		if (this.age <= 0)
+		{
+			Drawing.drawing.playGlobalSound("heal1.ogg", 1, 0.25f);
 			frac = 1;
-				
-		if (this.age >= this.maxAge)
+		}
+		else if (this.age >= this.maxAge)
+		{
+			Drawing.drawing.playGlobalSound("heal1.ogg", 1, 0.25f);
 			frac = 0;
+		}
+
+		Drawing.drawing.playGlobalSound("heal.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5), (1 - (float) (tank.size / size)) / 4f);
 		
 		if (this.age <= -50)
 		{
@@ -110,8 +120,6 @@ public class TeleporterOrb extends Movable
 		this.tank.turret.length = (int) this.tank.size;
 		
 		this.tank.disabled = this.tank.size <= 0;
-
-		//Drawing.drawing.playSound("square.ogg", (float) (this.posZ / 200 + 1), (float) (1 - size) / 10);
 
 		this.createEffect();
 

@@ -2,7 +2,6 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.Panel;
 import tanks.Player;
 import tanks.gui.screen.ScreenGame;
 

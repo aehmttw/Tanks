@@ -8,7 +8,6 @@ import tanks.event.EventBulletInstantWaypoint;
 import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
-import tanks.tank.Ray;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;

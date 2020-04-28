@@ -1,15 +1,14 @@
 package tanks.gui.screen;
 
+import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.event.EventChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -31,22 +30,20 @@ public class ScreenPartyLobby extends Screen
 	public static int username_y_offset = -230;
 	public static int username_x_offset = 0;
 
-	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T, 
-			"Click here or press 'T' to send a chat message", new Runnable()
+	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, InputCodes.KEY_T, new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.eventsOut.add(new EventChat(chatbox.inputText));
 		}
-		
+
 	});
-	
-	
+
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Leave party", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			isClient = false;
 			Client.handler.ctx.close();
@@ -77,9 +74,9 @@ public class ScreenPartyLobby extends Screen
 		}
 	}
 	);
-	
+
 	@Override
-	public void update() 
+	public void update()
 	{
 		exit.update();
 

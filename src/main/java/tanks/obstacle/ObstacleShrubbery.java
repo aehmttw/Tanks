@@ -3,8 +3,8 @@ package tanks.obstacle;
 import tanks.*;
 import tanks.bullet.BulletFlame;
 import tanks.event.EventObstacleShrubberyBurn;
+import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenLevelBuilder;
 import tanks.tank.Tank;
 
 public class ObstacleShrubbery extends Obstacle
@@ -45,7 +45,7 @@ public class ObstacleShrubbery extends Obstacle
 	{
 		this.opacity = Math.min(this.opacity + Panel.frameFrequency, 255);
 		
-		if (Game.screen instanceof ScreenLevelBuilder || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+		if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
 		{
 			this.opacity = 127;
 		}

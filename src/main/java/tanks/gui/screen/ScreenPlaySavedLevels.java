@@ -1,19 +1,14 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 {
@@ -31,7 +26,7 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 			if (ScreenPartyHost.isServer)
 				Game.screen = ScreenPartyHost.activeScreen;
 			else
-				Game.screen = new ScreenPlay();
+				Game.screen = new ScreenPlaySingleplayer();
 		}
 	}
 			);
@@ -60,32 +55,32 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 	public ScreenPlaySavedLevels()
 	{
-		if (!Files.exists(Paths.get(Game.homedir + levelDir)))
+		BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
+		if (!savedLevelsFile.exists())
 		{
-			new File(Game.homedir + levelDir).mkdir();
+			savedLevelsFile.mkdirs();
 		}
 
-		ArrayList<Path> levels = new ArrayList<Path>();
+		ArrayList<String> levels = new ArrayList<String>();
 
 		try
 		{
-			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(Game.homedir + levelDir));
+			ArrayList<String> ds = savedLevelsFile.getSubfiles();
 
-			for (Path p : ds) {
-				if (p.toString().endsWith(".tanks"))
+			for (String p : ds)
+			{
+				if (p.endsWith(".tanks"))
 					levels.add(p);
 			}
-
-			ds.close();
 		}
 		catch (IOException e)
 		{
 			Game.exitToCrash(e);
 		}
 
-		for (Path l: levels)
+		for (String l: levels)
 		{
-			String[] pathSections = l.toString().replaceAll("\\\\", "/").split("/");
+			String[] pathSections = l.replaceAll("\\\\", "/").split("/");
 
 			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
 			{
@@ -94,16 +89,16 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 				{
 					try
 					{
-						Game.loadLevel(l.toFile());
+						Game.loadLevel(Game.game.fileManager.getFile(l));
 						Game.screen = new ScreenGame();
 						ScreenInterlevel.fromSavedLevels = true;
 					}
 					catch (Exception e)
 					{
-						Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l.toString());
+						Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l);
 						e.printStackTrace();
 						e.printStackTrace(Game.logger);
-						Game.screen = new ScreenFailedToLoadLevel(l.toString(), Game.screen);
+						Game.screen = new ScreenFailedToLoadLevel(l, Game.screen);
 					}
 				}
 			}

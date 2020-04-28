@@ -1,8 +1,11 @@
 package tanks;
 
-import lwjglwindow.LWJGLWindow;
+import basewindow.BaseFile;
+import basewindow.BaseFileManager;
+import basewindow.BaseWindow;
 import tanks.bullet.Bullet;
 import tanks.event.*;
+import tanks.event.online.*;
 import tanks.gui.ChatFilter;
 import tanks.gui.screen.*;
 import tanks.hotbar.Coins;
@@ -15,18 +18,24 @@ import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 import java.util.UUID;
 
 public class Game 
 {
+	public enum Framework {lwjgl, swing, libgdx}
+	public static Framework framework;
+
 	public static final double tank_size = 50;
+
+	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
+
 	public static final int absoluteDepthBase = 1000;
 	
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
@@ -61,12 +70,14 @@ public class Game
 	
 	public static double[][] tilesDepth = new double[28][18];
 
-	public static final int network_protocol = 10;
-	public static final String version = "Tanks 0.7.6";
+	public static final int network_protocol = 12;
+	public static final String version = "Tanks 0.8.g";
+	public static boolean debug = false;
 
 	public static int port = 8080;
 
 	public static String lastParty = "";
+	public static String lastOnlineServer = "";
 
 	public static double levelSize = 1;
 	
@@ -75,10 +86,12 @@ public class Game
 	public static boolean bulletLocked = false;
 		
 	public static boolean vsync = true;
-	
+
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
+
+	public static boolean enableVibrations = true;
 
 	public static boolean enableChatFilter = true;
 	
@@ -93,14 +106,18 @@ public class Game
 	public static boolean autostart = true;
 	public static double startTime = 400;
 
+	public static Screen lastOfflineScreen = null;
+
 	public static boolean enableCustomTankRegistry = false;
 	public static boolean enableCustomObstacleRegistry = false;
 
 	public static RegistryTank registryTank = new RegistryTank();
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
 
-	public LWJGLWindow window;
-	
+	public BaseWindow window;
+
+	public BaseFileManager fileManager;
+
 	public static Level currentLevel = null;	
 	public static String currentLevelString = "";	
 	
@@ -108,12 +125,13 @@ public class Game
 	
 	public static PrintStream logger = System.err;
 	
-	public static final String directoryPath = "/.tanks";
+	public static String directoryPath = "/.tanks";
 	public static final String logPath = directoryPath + "/logfile.txt";
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
 	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
 	public static final String optionsPath = directoryPath + "/options.txt";
 	public static final String tutorialPath = directoryPath + "/tutorial.txt";
+	public static final String uuidPath = directoryPath + "/uuid";
 
 	public static String homedir;
 	
@@ -121,18 +139,14 @@ public class Game
 	public static ArrayList<RegistryObstacle.DefaultObstacleEntry> defaultObstacles = new ArrayList<RegistryObstacle.DefaultObstacleEntry>();
 
 	public static Game game = new Game();
-	
-	private Game() {}
-	
-	public static void initScript()
-	{
-		player = new Player(clientID, "");
-		Game.players.add(player);
 
-		Drawing.initialize();
-		Panel.initialize();
-		Game.exitToTitle();
-		
+	public static boolean isOnlineServer;
+	public static boolean connectedToOnline = false;
+
+	private Game() {}
+
+	public static void registerEvents()
+	{
 		NetworkEventMap.register(EventSendClientDetails.class);
 		NetworkEventMap.register(EventKeepConnectionAlive.class);
 		NetworkEventMap.register(EventConnectionSuccess.class);
@@ -181,6 +195,40 @@ public class Game
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
 		NetworkEventMap.register(EventPlaySound.class);
 
+		NetworkEventMap.register(EventSendOnlineClientDetails.class);
+		NetworkEventMap.register(EventSilentDisconnect.class);
+		NetworkEventMap.register(EventNewScreen.class);
+		NetworkEventMap.register(EventSetScreen.class);
+		NetworkEventMap.register(EventAddShape.class);
+		NetworkEventMap.register(EventAddText.class);
+		NetworkEventMap.register(EventAddButton.class);
+		NetworkEventMap.register(EventAddTextBox.class);
+		NetworkEventMap.register(EventAddMenuButton.class);
+		NetworkEventMap.register(EventAddUUIDTextBox.class);
+		NetworkEventMap.register(EventRemoveShape.class);
+		NetworkEventMap.register(EventRemoveText.class);
+		NetworkEventMap.register(EventRemoveButton.class);
+		NetworkEventMap.register(EventRemoveTextBox.class);
+		NetworkEventMap.register(EventRemoveMenuButton.class);
+		NetworkEventMap.register(EventSetPauseScreenTitle.class);
+		NetworkEventMap.register(EventPressedButton.class);
+		NetworkEventMap.register(EventSetTextBox.class);
+		NetworkEventMap.register(EventUploadLevel.class);
+		NetworkEventMap.register(EventSendLevelToDownload.class);
+		NetworkEventMap.register(EventCleanUp.class);
+	}
+
+	public static void initScript()
+	{
+		player = new Player(clientID, "");
+		Game.players.add(player);
+
+		Drawing.initialize();
+		Panel.initialize();
+		Game.exitToTitle();
+
+		registerEvents();
+
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
@@ -208,30 +256,20 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
 
 		homedir = System.getProperty("user.home");
-		
-		if (Files.exists(Paths.get(homedir + "/.tanks.d")) && !Files.exists(Paths.get(homedir + directoryPath)))
+
+		if (Game.framework == Framework.libgdx)
+			homedir = "";
+
+		BaseFile directoryFile = game.fileManager.getFile(homedir + directoryPath);
+		if (!directoryFile.exists() && Game.framework != Framework.libgdx)
 		{
-			try
-			{
-				Files.move(Paths.get(homedir + "/.tanks.d"), Paths.get(homedir + directoryPath));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				System.exit(1);
-			}
-			
-		}
-		
-		if (!Files.exists(Paths.get(directoryPath))) 
-		{
-			new File(homedir + directoryPath).mkdir();
-			new File(homedir + directoryPath + ScreenSavedLevels.levelDir).mkdir();
+			directoryFile.mkdirs();
+			game.fileManager.getFile(homedir + directoryPath + ScreenSavedLevels.levelDir).mkdirs();
 
 			try 
 			{
-				new File(homedir + logPath).createNewFile();
-				Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
+				game.fileManager.getFile(homedir + logPath).create();
+				Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
 			} 
 			catch (IOException e) 
 			{
@@ -239,28 +277,64 @@ public class Game
 				System.exit(1);
 			}
 		}
-		
-		if (!Files.exists(Paths.get(homedir + tutorialPath))) 
+
+		BaseFile tutorialFile = game.fileManager.getFile(homedir + tutorialPath);
+		if (!tutorialFile.exists())
 		{
 			Game.silentCleanUp();
-			Tutorial.loadTutorial(true);
+			Tutorial.loadTutorial(true, Game.framework == Framework.libgdx);
 		}
-		
-		if (!Files.exists(Paths.get(homedir + tankRegistryPath)))
+
+		BaseFile tankRegistryFile = game.fileManager.getFile(homedir + tankRegistryPath);
+		if (!tankRegistryFile.exists())
 		{
 			RegistryTank.initRegistry(homedir);
 		}
-		
-		if (!Files.exists(Paths.get(homedir + obstacleRegistryPath)))
+
+		BaseFile obstacleRegistryFile = game.fileManager.getFile(homedir + obstacleRegistryPath);
+		if (!obstacleRegistryFile.exists())
 		{
 			RegistryObstacle.initRegistry(homedir);
 		}
-		
-		if (!Files.exists(Paths.get(homedir + optionsPath)))
+
+		BaseFile optionsFile = game.fileManager.getFile(homedir + optionsPath);
+		if (!optionsFile.exists())
 		{
 			ScreenOptions.initOptions(homedir);
 		}
-		
+
+		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
+		if (!uuidFile.exists())
+		{
+			try
+			{
+				uuidFile.create();
+				uuidFile.startWriting();
+				uuidFile.println(UUID.randomUUID().toString());
+				uuidFile.println("IMPORTANT: This file contains an ID unique to your computer.");
+				uuidFile.println("The file can be used by online services. Deleting or modifying");
+				uuidFile.println("the file or its contents can cause loss of online data.");
+				uuidFile.stopWriting();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+
+		try
+		{
+			uuidFile.startReading();
+			Game.computerID = UUID.fromString(uuidFile.nextLine());
+			uuidFile.stopReading();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+
 		try 
 		{
 			Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
@@ -277,6 +351,14 @@ public class Game
 
 		if (Game.usernameInvalid(Game.player.username))
 			Game.screen = new ScreenUsernameInvalid();
+
+		TankPlayer.shootStick.clickIntensities[0] = 1.0;
+		TankPlayer.shootStick.mobile = false;
+		TankPlayer.shootStick.snap = true;
+		TankPlayer.shootStick.colorR = 255;
+		TankPlayer.shootStick.colorB = 0;
+		TankPlayer.shootStick.name = "aim";
+		TankPlayer.mineButton.silent = true;
 	}
 	
 	public static boolean usernameInvalid(String username)
@@ -284,9 +366,9 @@ public class Game
 		if (username.length() > 18)
 			return true;
 			
-		for (int i = 0; i < Game.player.username.length(); i++)
+		for (int i = 0; i < username.length(); i++)
 		{
-			if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(Game.player.username.toLowerCase().substring(i, i+1)))
+			if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i+1)))
 			{
 				return true;
 			}
@@ -306,12 +388,24 @@ public class Game
 			}
 		}
 	}
-	
-	public static void main(String[] args)
+
+	public static String timeInterval(long time1, long time2)
 	{
-		Game.initScript();
-		Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
-		Game.game.window.run();
+		long secs = (time2 - time1) / 1000;
+		long mins = secs / 60;
+		long hours = mins / 60;
+		long days = hours / 24;
+
+		if (days > 7)
+			return days + "d";
+		else if (days > 0)
+			return days + "d " + hours % 24 + "h";
+		else if (hours > 0)
+			return hours % 24 + "h " + mins % 60 + "m";
+		else if (mins > 0)
+			return mins % 60 + "m";
+		else
+			return "less than 1m";
 	}
 	
 	public static void reset()
@@ -360,7 +454,7 @@ public class Game
 		System.gc();
 		
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-		Game.loadLevel(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+		Game.loadLevel(game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
 		Game.screen = s;	
 	}
 	
@@ -376,13 +470,16 @@ public class Game
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 			ScreenPartyHost.server.close("The party has ended because the host crashed");
 		
-		if (ScreenPartyLobby.isClient)
+		if (ScreenPartyLobby.isClient || Game.connectedToOnline)
 			Client.handler.ctx.close();
 
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();
 		effects.clear();
+		eventsIn.clear();
+		eventsOut.clear();
+
 		Game.crashMessage = e.toString();
 		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
@@ -471,32 +568,30 @@ public class Game
 		Mine.freeIDs.clear();
 	}
 	
-	public static void loadLevel(File f)
+	public static void loadLevel(BaseFile f)
 	{
 		Game.loadLevel(f, null);
 	}
 	
-	public static void loadLevel(File f, ScreenLevelBuilder s)
+	public static void loadLevel(BaseFile f, ILevelPreviewScreen s)
 	{
-		Scanner in = null;
 		try
 		{
-			in = new Scanner(f);
-			
-			while (in.hasNextLine()) 
+			f.startReading();
+
+			while (f.hasNextLine())
 			{
-				String line = in.nextLine();
+				String line = f.nextLine();
 				Level l = new Level(line);
 				l.loadLevel(s);
 			}
+
+			f.stopReading();
 		}
 		catch (FileNotFoundException e)
 		{
 			Game.exitToCrash(e);
 		}
-
-		if (in != null)
-			in.close();
 	}
 	
 	public static void start()

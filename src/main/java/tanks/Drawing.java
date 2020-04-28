@@ -1,7 +1,6 @@
 package tanks;
-import tanks.event.EventPlaySound;
 
-import java.util.ArrayList;
+import tanks.event.EventPlaySound;
 
 public class Drawing
 {
@@ -26,9 +25,9 @@ public class Drawing
 	public boolean enableMovingCameraY = false;
 
 	public int statsHeight = 40;
-	public boolean enableStats = true;
+	public boolean enableStats = false;
 
-	public boolean movingCamera = false;
+	public boolean movingCamera = true;
 
 	public static Drawing drawing;
 
@@ -99,7 +98,7 @@ public class Drawing
 
 		double dZ = z * scale;
 
-		if (facing && Game.game.window.angled)
+		if (Game.game.window.angled)
 			Game.game.window.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 		else
 			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
@@ -463,8 +462,8 @@ public class Drawing
 
 		double sizeY = 14;
 
-		double drawX = x + sizeX / 2 + xPadding;
-		double drawY = y + sizeY / 2 + yPadding * text.length;
+		double drawX = x + sizeX / 2.0 + xPadding;
+		double drawY = y + sizeY / 2.0 + yPadding * text.length;
 
 		setColor(0, 0, 0, 127);
 		fillInterfaceRect(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length);
@@ -480,7 +479,8 @@ public class Drawing
 
 	public void playSound(String sound)
 	{
-		Game.game.window.soundPlayer.playSound("/sounds/" + sound);
+		if (Game.game.window.soundsEnabled)
+			Game.game.window.soundPlayer.playSound("/sounds/" + sound);
 	}
 
 	public void playGlobalSound(String sound)
@@ -491,7 +491,8 @@ public class Drawing
 
 	public void playSound(String sound, float pitch)
 	{
-		Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch);
+		if (Game.game.window.soundsEnabled)
+			Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch);
 	}
 
 	public void playGlobalSound(String sound, float pitch)
@@ -502,13 +503,33 @@ public class Drawing
 
 	public void playSound(String sound, float pitch, float volume)
 	{
-		Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch, volume);
+		if (Game.game.window.soundsEnabled)
+			Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch, volume);
 	}
 
 	public void playGlobalSound(String sound, float pitch, float volume)
 	{
 		this.playSound(sound, pitch, volume);
 		Game.eventsOut.add(new EventPlaySound(sound, pitch, volume));
+	}
+
+	public void playVibration(String vibration)
+	{
+		if (!Game.game.window.vibrationsEnabled || !Game.enableVibrations)
+			return;
+
+		switch (vibration)
+		{
+			case "click":
+				Game.game.window.vibrationPlayer.click();
+				break;
+			case "heavyClick":
+				Game.game.window.vibrationPlayer.heavyClick();
+				break;
+			case "selectionChanged":
+				Game.game.window.vibrationPlayer.selectionChanged();
+				break;
+		}
 	}
 
 	public double toGameCoordsX(double x)
@@ -529,7 +550,7 @@ public class Drawing
 	{
 		double y1 = y;
 
-		if (enableMovingCamera && movingCamera && enableMovingCameraX)
+		if (enableMovingCamera && movingCamera && enableMovingCameraY)
 			y1 += (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
 		
 		double rawY = interfaceScale * (y1);
@@ -537,6 +558,30 @@ public class Drawing
 		rawY -= (900 - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
 		return (rawY) / scale - getPlayerMouseOffsetY();
+	}
+
+	public double toInterfaceCoordsX(double x)
+	{
+		double rawX = (x + getPlayerMouseOffsetX()) * scale;
+		rawX += (1400 - sizeX * scale / interfaceScale) / 2 * interfaceScale;
+		double x1 = rawX / interfaceScale;
+
+		if (enableMovingCamera && movingCamera && enableMovingCameraX)
+			x1 -= (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
+
+		return x1;
+	}
+
+	public double toInterfaceCoordsY(double y)
+	{
+		double rawY = (y + getPlayerMouseOffsetY()) * scale;
+		rawY += (900 - sizeY * scale / interfaceScale) / 2 * interfaceScale;
+		double y1 = rawY / interfaceScale;
+
+		if (enableMovingCamera && movingCamera && enableMovingCameraY)
+			y1 -= (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
+
+		return y1;
 	}
 
 	public double getMouseX()
@@ -557,6 +602,16 @@ public class Drawing
 	public double getInterfaceMouseY()
 	{
 		return (Game.game.window.absoluteMouseY - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale + mouseYoffset / interfaceScale;
+	}
+
+	public double getInterfacePointerX(double x)
+	{
+		return (x - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale + mouseXoffset / interfaceScale;
+	}
+
+	public double getInterfacePointerY(double y)
+	{
+		return (y - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale + mouseYoffset / interfaceScale;
 	}
 
 	/*public void setScreenSize(int x, int y)

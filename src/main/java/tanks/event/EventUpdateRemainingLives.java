@@ -3,7 +3,6 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
-import tanks.gui.screen.ScreenPartyCrusadeInterlevel;
 import tanks.network.NetworkUtils;
 
 import java.util.UUID;

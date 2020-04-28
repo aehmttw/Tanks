@@ -24,7 +24,7 @@ public class ScreenConnectionCheck extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenPlay();
+			Game.screen = new ScreenPlayMultiplayer();
 		}
 	}
 			);

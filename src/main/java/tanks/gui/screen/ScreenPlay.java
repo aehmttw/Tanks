@@ -1,67 +1,12 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 
 public class ScreenPlay extends Screen
 {
-	public ScreenPlay()
-	{
-
-	}
-	
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Random level", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.reset();
-			Game.screen = new ScreenGame();
-		}
-	}
-			, "Generate a random level to play");
-	
-	Button crusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Crusades", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			if (Crusade.currentCrusade == null)
-				Game.screen = new ScreenCrusades();
-			else
-				Game.screen = new ScreenResumeCrusade();
-		}
-	}
-			, "Fight battles in an order,---and see how long you can survive!");
-	
-	Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Party", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			if (!Game.player.username.equals(""))
-				Game.screen = new ScreenParty();
-			else
-				Game.screen = new ScreenUsernamePrompt();
-		}
-	},
-	"Play with other people who are---connected to your local network---(or who are port forwarding)");
-
-	Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Online", "Online mode is coming soon!");
-
-	Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Tutorial", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Tutorial.loadTutorial(false);
-		}
-	}, "Learn how to play Tanks!"
-	);
-
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -70,15 +15,35 @@ public class ScreenPlay extends Screen
 		}
 	}
 	);
+
+	Button singleplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Single-player", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenPlaySingleplayer();
+		}
+	}
+	, "Play random levels, crusades,---the tutorial, or make your own levels!");
+
+	Button multiplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Multi-player", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			if (!Game.player.username.equals(""))
+				Game.screen = new ScreenPlayMultiplayer();
+			else
+				Game.screen = new ScreenUsernamePrompt();
+		}
+	}
+	, "Play in a party with others---who are on your local---network or port forwarding---or play on the online server!");
 	
 	@Override
 	public void update() 
 	{
-		newLevel.update();
-		crusade.update();
-		party.update();
-		online.update();
-		tutorial.update();
+		singleplayer.update();
+		multiplayer.update();
 		back.update();
 	}
 
@@ -88,13 +53,10 @@ public class ScreenPlay extends Screen
 		this.drawDefaultBackground();
 		Drawing.drawing.setFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Select a game mode");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, "Select a game mode");
 		back.draw();
-		tutorial.draw();
-		online.draw();
-		party.draw();
-		crusade.draw();
-		newLevel.draw();
+		multiplayer.draw();
+		singleplayer.draw();
 	}
 
 }

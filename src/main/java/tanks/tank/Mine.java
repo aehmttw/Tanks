@@ -232,5 +232,4 @@ public class Mine extends Movable
 		freeIDs.add(this.networkID);
 		idMap.remove(this.networkID);
 	}
-
 }

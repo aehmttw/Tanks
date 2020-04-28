@@ -1,191 +1,65 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
-import org.lwjgl.glfw.GLFW;
+import tanks.tank.TankPlayer;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Date;
-import java.util.Scanner;
 
 public class ScreenOptions extends Screen
 {
+	public static final String autostartText = "Autostart: ";
+	public static final String infoBarText = "Info bar: ";
+
+	public static final String onText = "\u00A7000200000255on";
+	public static final String offText = "\u00A7200000000255off";
+
 	public ScreenOptions()
 	{
-		if (Game.fancyGraphics)
-			graphics.text = "Graphics: fancy";
-		else
-			graphics.text = "Graphics: fast";
-
-		if (Panel.showMouseTarget)
-			mouseTarget.text = "Mouse target: on";
-		else
-			mouseTarget.text = "Mouse target: off";
-
 		if (Game.autostart)
-			autostart.text = "Autostart: on";
+			autostart.text = autostartText + onText;
 		else
-			autostart.text = "Autostart: off";
-		
-		if (Game.vsync)
-			vsync.text = "V-Sync: on";
-		else
-			vsync.text = "V-Sync: off";
-		
-		if (Game.enable3d)
-			graphics3d.text = "3D graphics: on";
-		else
-			graphics3d.text = "3D graphics: off";
-
-		if (Game.enable3dBg)
-			ground3d.text = "3D ground: on";
-		else
-			ground3d.text = "3D ground: off";
+			autostart.text = autostartText + offText;
 
 		if (Drawing.drawing.enableStats)
-			showStats.text = "Info bar: on";
+			showStats.text = infoBarText + onText;
 		else
-			showStats.text = "Info bar: off";
-
-		if (Game.angledView)
-			altPerspective.text = "View: angled";
-		else
-			altPerspective.text = "View: bird's-eye";
+			showStats.text = infoBarText + offText;
 	}
-
-	Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Graphics: fancy", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.fancyGraphics = !Game.fancyGraphics;
-
-			if (Game.fancyGraphics)
-				graphics.text = "Graphics: fancy";
-			else
-				graphics.text = "Graphics: fast";
-		}
-	},
-			"Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics may significantly reduce framerate"	);
-
-	Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "3D graphics: on", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.enable3d = !Game.enable3d;
-
-			if (Game.enable3d)
-				graphics3d.text = "3D graphics: on";
-			else
-				graphics3d.text = "3D graphics: off";
-		}
-	},
-			"3D graphics may impact performance");
-
-	Button ground3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "3D ground: on", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.enable3dBg = !Game.enable3dBg;
-
-			if (Game.enable3dBg)
-				ground3d.text = "3D ground: on";
-			else
-				ground3d.text = "3D ground: off";
-		}
-	},
-			"Enabling 3D ground may impact---performance in large levels------Requires 3D and fancy---graphics to take effect");
-
-
-	Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "View: bird's-eye", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.angledView = !Game.angledView;
-
-			if (Game.angledView)
-				altPerspective.text = "View: angled";
-			else
-				altPerspective.text = "View: bird's-eye";
-
-		}
-	},
-			"Changes the angle at which---you view the game field");
-
-
-	Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Mouse target: on", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Panel.showMouseTarget = !Panel.showMouseTarget;
-
-			if (Panel.showMouseTarget)
-				mouseTarget.text = "Mouse target: on";
-			else
-				mouseTarget.text = "Mouse target: off";
-			
-			Game.game.window.setShowCursor(!Panel.showMouseTarget);
-		}
-	},
-			"When enabled, your mouse pointer---will be replaced by a target");
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			saveOptions(Game.homedir);
 			Game.screen = new ScreenTitle();
 		}
 	}
-			);
+	);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Autostart: on", new Runnable()
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.autostart = !Game.autostart;
 
 			if (Game.autostart)
-				autostart.text = "Autostart: on";
+				autostart.text = autostartText + onText;
 			else
-				autostart.text = "Autostart: off";
+				autostart.text = autostartText + offText;
 		}
 	},
 			"When enabled, levels will start playing---automatically 4 seconds after they are loaded---(if the play button isn't clicked earlier)");
 
-	Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "V-Sync: on", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.vsync = !Game.vsync;
 
-			if (Game.vsync)
-			{
-				GLFW.glfwSwapInterval(1);
-				vsync.text = "V-Sync: on";
-			}
-			else
-			{
-				GLFW.glfwSwapInterval(0);
-				vsync.text = "V-Sync: off";
-			}
-		}
-	},
-			"Limits framerate to your screen's refresh rate---May decrease battery consumption---Also, might fix issues with inconsistent game speed");
-
-	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Info bar: on", new Runnable()
+	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -193,9 +67,9 @@ public class ScreenOptions extends Screen
 			Drawing.drawing.showStats(!Drawing.drawing.enableStats);
 
 			if (Drawing.drawing.enableStats)
-				showStats.text = "Info bar: on";
+				showStats.text = infoBarText + onText;
 			else
-				showStats.text = "Info bar: off";
+				showStats.text = infoBarText + offText;
 		}
 	},
 			"Shows the following information---" +
@@ -208,29 +82,50 @@ public class ScreenOptions extends Screen
 					"Memory usage");
 
 
-	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Multiplayer options", new Runnable()
+	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Multiplayer options", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
-			Game.screen = new ScreenMultiplayerOptions();
+			Game.screen = new ScreenOptionsMultiplayer();
 		}
 	}
-			, "Options for username and chat filter");
-	
-	
+			);
+
+	Button graphicsOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Graphics options", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenOptionsGraphics();
+		}
+	}
+			);
+
+	Button inputOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Input options", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			if (Game.game.window.touchscreen)
+				Game.screen = new ScreenOptionsInputTouchscreen();
+			else
+				Game.screen = new ScreenOptionsInputDesktop();
+		}
+	}
+	);
+
+
 	@Override
 	public void update()
 	{
 		autostart.update();
-		mouseTarget.update();
-		graphics.update();
-		graphics3d.update();
-		ground3d.update();
-		altPerspective.update();
-		vsync.update();
 		showStats.update();
+
+		graphicsOptions.update();
+		inputOptions.update();
 		multiplayerOptions.update();
+
 		back.update();
 	}
 
@@ -240,14 +135,11 @@ public class ScreenOptions extends Screen
 		this.drawDefaultBackground();
 		back.draw();
 		multiplayerOptions.draw();
+		inputOptions.draw();
+		graphicsOptions.draw();
 		showStats.draw();
 		autostart.draw();
-		mouseTarget.draw();
-		vsync.draw();
-		altPerspective.draw();
-		graphics3d.draw();
-		ground3d.draw();
-		graphics.draw();
+
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "Options");
@@ -257,65 +149,71 @@ public class ScreenOptions extends Screen
 	{
 		String path = homedir + Game.optionsPath;
 
-		try 
+		try
 		{
-			new File(path).createNewFile();
+			Game.game.fileManager.getFile(path).create();
 		}
-		catch (IOException e) 
+		catch (IOException e)
 		{
 			Game.logger.println (new Date().toString() + " (syserr) file permissions are broken! cannot initialize options file.");
 			System.exit(1);
 		}
-		
+
 		saveOptions(homedir);
 	}
 
-	public static void saveOptions(String homedir) 
+	public static void saveOptions(String homedir)
 	{
 		String path = homedir + Game.optionsPath;
 
-		PrintStream writer;
-		
 		try
 		{
-			writer = new PrintStream(new File(path));
-			writer.println("# This file stores game settings that you have set");
-			writer.println("username=" + Game.player.username);
-			writer.println("fancy_graphics=" + Game.fancyGraphics);
-			writer.println("3d=" + Game.enable3d);
-			writer.println("3d_ground=" + Game.enable3dBg);
-			writer.println("angled_perspective=" + Game.angledView);
-			writer.println("mouse_target=" + Panel.showMouseTarget);
-			writer.println("auto_start=" + Game.autostart);
-			writer.println("vsync=" + Game.vsync);
-			writer.println("info_bar=" + Drawing.drawing.enableStats);
-			writer.println("port=" + Game.port);
-			writer.println("last_party=" + Game.lastParty);
-			writer.println("chat_filter=" + Game.enableChatFilter);
-			writer.println("use_custom_tank_registry=" + Game.enableCustomTankRegistry);
-			writer.println("use_custom_obstacle_registry=" + Game.enableCustomObstacleRegistry);
+			BaseFile f = Game.game.fileManager.getFile(path);
+			f.startWriting();
+			f.println("# This file stores game settings that you have set");
+			f.println("username=" + Game.player.username);
+			f.println("fancy_graphics=" + Game.fancyGraphics);
+			f.println("3d=" + Game.enable3d);
+			f.println("3d_ground=" + Game.enable3dBg);
+			f.println("angled_perspective=" + Game.angledView);
+			f.println("mouse_target=" + Panel.showMouseTarget);
+			f.println("vibrations=" + Game.enableVibrations);
+			f.println("mobile_joystick=" + TankPlayer.controlStick.mobile);
+			f.println("snap_joystick=" + TankPlayer.controlStick.snap);
+			f.println("dual_joystick=" + TankPlayer.shootStickEnabled);
+			f.println("auto_start=" + Game.autostart);
+			f.println("vsync=" + Game.vsync);
+			f.println("info_bar=" + Drawing.drawing.enableStats);
+			f.println("port=" + Game.port);
+			f.println("last_party=" + Game.lastParty);
+			f.println("last_online_server=" + Game.lastOnlineServer);
+			f.println("chat_filter=" + Game.enableChatFilter);
+			f.println("use_custom_tank_registry=" + Game.enableCustomTankRegistry);
+			f.println("use_custom_obstacle_registry=" + Game.enableCustomObstacleRegistry);
+			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
 		{
 			Game.exitToCrash(e);
 		}
 	}
-	
-	public static void loadOptions(String homedir) 
+
+	public static void loadOptions(String homedir)
 	{
 		String path = homedir + Game.optionsPath;
 
-		try 
+		try
 		{
-			Scanner in = new Scanner(new File(path));
-			while (in.hasNextLine()) 
+			BaseFile f = Game.game.fileManager.getFile(path);
+			f.startReading();
+			while (f.hasNextLine())
 			{
-				String line = in.nextLine();
+				String line = f.nextLine();
 				String[] optionLine = line.split("=");
 
-				if (optionLine[0].charAt(0) == '#') 
-				{ 
-					continue; 
+				if (optionLine[0].charAt(0) == '#')
+				{
+					continue;
 				}
 
 				switch (optionLine[0].toLowerCase())
@@ -338,6 +236,18 @@ public class ScreenOptions extends Screen
 					case "mouse_target":
 						Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "enable_vibrations":
+						Game.enableVibrations = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "mobile_joystick":
+						TankPlayer.controlStick.mobile = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "snap_joystick":
+						TankPlayer.controlStick.snap = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "dual_joystick":
+						TankPlayer.setShootStick(Boolean.parseBoolean(optionLine[1]));
+						break;
 					case "auto_start":
 						Game.autostart = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -359,6 +269,12 @@ public class ScreenOptions extends Screen
 						else
 							Game.lastParty = "";
 						break;
+					case "last_online_server":
+						if (optionLine.length >= 2)
+							Game.lastOnlineServer = optionLine[1];
+						else
+							Game.lastOnlineServer = "";
+						break;
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -370,8 +286,23 @@ public class ScreenOptions extends Screen
 						break;
 				}
 			}
-			in.close();
-		} 
+			f.stopReading();
+
+			if (Game.framework == Game.Framework.swing)
+			{
+				Game.vsync = false;
+				Game.angledView = false;
+				Game.enable3d = false;
+				Game.enable3dBg = false;
+			}
+
+			if (Game.framework == Game.Framework.libgdx)
+			{
+				Game.angledView = false;
+				Panel.showMouseTarget = false;
+				Game.vsync = true;
+			}
+		}
 		catch (Exception e)
 		{
 			Game.logger.println (new Date().toString() + " (syswarn) options file is nonexistent or broken, using default:");

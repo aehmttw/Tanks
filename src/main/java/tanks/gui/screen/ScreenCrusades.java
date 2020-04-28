@@ -1,20 +1,13 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Scanner;
 
 public class ScreenCrusades extends Screen
 {
@@ -27,123 +20,106 @@ public class ScreenCrusades extends Screen
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
-			Game.screen = new ScreenPlay();
+			Game.screen = new ScreenPlaySingleplayer();
 		}
 	}
-			);
+	);
 
 	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			page++;
 		}
 	}
-			);
+	);
 
 	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			page--;
 		}
 	}
-			);
+	);
 
 	ArrayList<Button> buttons = new ArrayList<Button>();
 
 
 	public ScreenCrusades()
 	{
-		if (!Files.exists(Paths.get(Game.homedir + crusadeDir)))
+		BaseFile crusadeDirFile = Game.game.fileManager.getFile(Game.homedir + crusadeDir);
+		if (!crusadeDirFile.exists())
 		{
-			new File(Game.homedir + crusadeDir).mkdir();
+			crusadeDirFile.mkdirs();
 		}
 
-		ArrayList<Path> levels = new ArrayList<Path>();
+		ArrayList<String> levels = new ArrayList<String>();
 
 		try
 		{
-			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(Game.homedir + crusadeDir));
+			ArrayList<String> ds = crusadeDirFile.getSubfiles();
 
-			for (Path p : ds) {
-				if (p.toString().endsWith(".tanks"))
+			for (String p : ds)
+			{
+				if (p.endsWith(".tanks"))
 					levels.add(p);
 			}
-
-			ds.close();
 		}
 		catch (IOException e)
 		{
 			Game.exitToCrash(e);
 		}
-		
+
 		buttons.add(new Button(0, 0, 350, 40, "Classic crusade", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
-				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("/classic_crusade.tanks")));
-				ArrayList<String> al = new ArrayList<String>();
-				
-				while (s.hasNext())
-				{
-					al.add(s.nextLine());
-				}
-				
-				s.close();
-				
+				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/classic_crusade.tanks");
+
 				Crusade.currentCrusade = new Crusade(al, "Classic Crusade");
 				Crusade.crusadeMode = true;
 				Crusade.currentCrusade.begin();
 				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 			}
 		}
-				));
-		
+		));
+
 		buttons.add(new Button(0, 0, 350, 40, "Wii crusade", new Runnable()
 		{
 			@Override
-			public void run() 
+			public void run()
 			{
-				Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream("/wii_crusade.tanks")));
-				ArrayList<String> al = new ArrayList<String>();
-				
-				while (s.hasNext())
-				{
-					al.add(s.nextLine());
-				}
-				
-				s.close();
-				
+				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/wii_crusade.tanks");
 				Crusade.currentCrusade = new Crusade(al, "Wii Crusade");
 				Crusade.crusadeMode = true;
 				Crusade.currentCrusade.begin();
 				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 			}
 		}
-				));
-		
-		for (Path l: levels)
+		));
+
+		for (String l: levels)
 		{
 			String[] pathSections = l.toString().replaceAll("\\\\", "/").split("/");
 
 			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
 			{
 				@Override
-				public void run() 
+				public void run()
 				{
-					Crusade.currentCrusade = new Crusade(l.toFile(), pathSections[pathSections.length - 1].split("\\.")[0]);
+					Crusade.currentCrusade = new Crusade(Game.game.fileManager.getFile(l), pathSections[pathSections.length - 1].split("\\.")[0]);
 					Crusade.crusadeMode = true;
 					Crusade.currentCrusade.begin();
 					Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 				}
 			}
-					));
+			));
 
 		}
 
@@ -173,7 +149,7 @@ public class ScreenCrusades extends Screen
 
 	@Override
 	public void update()
-	{		
+	{
 		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, buttons.size()); i++)
 		{
 			buttons.get(i).update();

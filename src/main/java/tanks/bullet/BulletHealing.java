@@ -2,14 +2,14 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.AttributeModifier.Operation;
-import tanks.event.EventShootBullet;
 import tanks.event.EventTankUpdateHealth;
-import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletHealing extends BulletInstant
 {
+	public boolean hitTank = false;
+
 	public BulletHealing(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
@@ -19,9 +19,10 @@ public class BulletHealing extends BulletInstant
 		this.baseColorB = 0;
 		this.name = "heal";
 		this.effect = BulletEffect.none;
-		this.damage = -0.01 * Panel.frameFrequency;
+		this.damage = -0.01;
 
 		this.itemSound = null;
+		// this.itemSound = "heal.ogg";
 	}
 
 	public BulletHealing(double x, double y, int bounces, Tank t)
@@ -41,6 +42,9 @@ public class BulletHealing extends BulletInstant
 	{
 		this.shoot();
 		Game.removeMovables.add(this);
+
+		if (!hitTank)
+			Drawing.drawing.playGlobalSound("heal1.ogg");
 	}
 
 	@Override
@@ -48,8 +52,11 @@ public class BulletHealing extends BulletInstant
 	{
 		if (!heavy)
 			this.destroy = true;
+
+		hitTank = true;
 		
-		t.lives = Math.min(t.baseLives + 1, t.lives - this.damage);
+		t.lives = Math.min(t.baseLives + 1, t.lives - this.damage * Panel.frameFrequency);
+		Drawing.drawing.playGlobalSound("heal.ogg", (float) ((t.lives / (t.baseLives + 1) / 2) + 1f) / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 

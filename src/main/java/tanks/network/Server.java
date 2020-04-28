@@ -13,8 +13,6 @@ import tanks.event.EventKick;
 import tanks.gui.screen.ScreenHostingEnded;
 import tanks.gui.screen.ScreenPartyHost;
 
-import java.util.ArrayList;
-
 public class Server
 {
 	public int port;

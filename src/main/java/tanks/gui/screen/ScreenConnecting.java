@@ -12,6 +12,8 @@ public class ScreenConnecting extends Screen
 	public boolean finished = false;
 	public Thread thread;
 
+	double time = 0;
+
 	public ScreenConnecting(Thread t)
 	{
 		this.thread = t;
@@ -22,8 +24,15 @@ public class ScreenConnecting extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenJoinParty();
-			thread.stop();
+			Game.screen = Game.lastOfflineScreen;
+			try
+			{
+				thread.stop();
+			}
+			catch (Exception ignored)
+			{
+
+			}
 		}
 	}
 	);
@@ -32,6 +41,7 @@ public class ScreenConnecting extends Screen
 	public void update() 
 	{
 		back.update();
+		time += Panel.frameFrequency;
 	}
 
 	@Override
@@ -41,15 +51,19 @@ public class ScreenConnecting extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setFontSize(24);
 
+		double size = Math.min(1, time / 50);
+		double size2 = Math.min(1, Math.max(0, time / 50 - 0.25));
+		double size3 = Math.min(1, Math.max(0, time / 50 - 0.5));
+
 		if (!this.finished)
 		{
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.text);
 
 			Drawing.drawing.setColor(0, 0, 0);
 
-			drawSpinny(100, 4, 0.3, 45, 1);
-			drawSpinny(99, 3, 0.5, 30, 0.75);
-			drawSpinny(100, 2, 0.7, 15, 0.5);
+			drawSpinny(100, 4, 0.3, 45 * size, 1 * size);
+			drawSpinny(99, 3, 0.5, 30 * size2, 0.75 * size2);
+			drawSpinny(100, 2, 0.7, 15 * size3, 0.5 * size3);
 		}
 		else
 		{

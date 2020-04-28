@@ -1,11 +1,10 @@
 package tanks;
 
-import lwjglwindow.IWindowHandler;
+import basewindow.IWindowHandler;
 import tanks.gui.screen.ScreenPartyHost;
 
 public class GameWindowHandler implements IWindowHandler
 {
-
 	@Override
 	public void onWindowClose() 
 	{

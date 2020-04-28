@@ -5,7 +5,6 @@ import tanks.Game;
 import tanks.gui.screen.ScreenKicked;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.Client;
-import tanks.network.ClientHandler;
 import tanks.network.NetworkUtils;
 
 public class EventKick extends PersonalEvent

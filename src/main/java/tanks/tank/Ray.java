@@ -18,11 +18,13 @@ public class Ray
 	public double posY;
 	public double vX;
 	public double vY;
-	
+
 	public boolean enableBounciness = true;
-	
+
 	public boolean trace = false;
 	public boolean dotted = false;
+
+	public boolean highAccuracy = false;
 
 	public double xMul = 0;
 	public double yMul = 0;
@@ -35,7 +37,7 @@ public class Ray
 
 	public Tank tank;
 	public Tank targetTank;
-	
+
 	public boolean enableBullet = false;
 
 	public ArrayList<Double> bounceX = new ArrayList<Double>();
@@ -44,7 +46,7 @@ public class Ray
 	public double targetX;
 	public double targetY;
 
-	public Ray(double x, double y, double angle, int bounces, Tank tank) 
+	public Ray(double x, double y, double angle, int bounces, Tank tank)
 	{
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);
@@ -56,7 +58,7 @@ public class Ray
 		this.tank = tank;
 	}
 
-	public Ray(double x, double y, double angle, int bounces, Tank tank, double speed) 
+	public Ray(double x, double y, double angle, int bounces, Tank tank, double speed)
 	{
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);
@@ -76,95 +78,189 @@ public class Ray
 		return this.getTarget();
 	}
 
-	public Movable getTarget() 
-	{ 
+	public Movable getTarget()
+	{
+		double smallestDist = 0;
+
 		while (true)
 		{
 			age++;
-			
+
 			if (trace && (!dotted || (this.age % 2 == 0)))
 				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tank_size / 4, Effect.EffectType.ray));
-			
+
 			this.posX += this.vX;
 			this.posY += this.vY;
 
 			boolean collided = false;
 			boolean bouncy = false;
 
-			for (int i = 0; i < Game.obstacles.size(); i++)
+			double sqVel = Math.pow(this.vX, 2) + Math.pow(this.vY, 2);
+
+			if (sqVel >= Math.pow(smallestDist, 2))
 			{
-				Obstacle o = Game.obstacles.get(i);
-				
-				if (!o.bulletCollision)
-					continue;
-
-				double horizontalDist = Math.abs(this.posX - o.posX);
-				double verticalDist = Math.abs(this.posY - o.posY);
-
-				double dx = this.posX - o.posX;
-				double dy = this.posY - o.posY;
-
-				double bound = this.size / 2 + Obstacle.obstacle_size / 2;
-
-				if (horizontalDist < bound && verticalDist < bound)
+				double smallestDistSq = Double.MAX_VALUE;
+				for (int i = 0; i < Game.obstacles.size(); i++)
 				{
-					if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
+					Obstacle o = Game.obstacles.get(i);
+
+					if (!o.bulletCollision)
+						continue;
+
+					double dx = this.posX - o.posX;
+					double dy = this.posY - o.posY;
+
+					double horizontalDist = Math.abs(dx);
+					double verticalDist = Math.abs(dy);
+
+					double s = this.size;
+
+					double bound = s / 2 + Obstacle.obstacle_size / 2;
+
+					smallestDistSq = Math.min(smallestDistSq, Math.pow(Math.max(horizontalDist - bound, 0), 2) + Math.pow(Math.max(verticalDist - bound, 0), 2));
+
+					if (horizontalDist < bound && verticalDist < bound)
 					{
-						this.posX += horizontalDist - bound;
-						this.vX = -Math.abs(this.vX);
+						boolean left = this.vX <= 0;
+						boolean right = this.vX >= 0;
+						boolean up = this.vY <= 0;
+						boolean down = this.vY >= 0;
+
+						if (this.highAccuracy)
+						{
+							left = left || o.hasLeftNeighbor();
+							right = right || o.hasRightNeighbor();
+							up = up || o.hasUpperNeighbor();
+							down = down || o.hasLowerNeighbor();
+						}
+
+						if (left && dx <= 0)
+							horizontalDist = 0;
+
+						if (right && dx >= 0)
+							horizontalDist = 0;
+
+						if (up && dy <= 0)
+							verticalDist = 0;
+
+						if (down && dy >= 0)
+							verticalDist = 0;
+
 						bouncy = o.bouncy;
 						collided = true;
-					}
-					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
-					{
-						this.posY += verticalDist - bound;
-						this.vY = -Math.abs(this.vY);
-						bouncy = o.bouncy;
-						collided = true;
-					}
-					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
-					{
-						this.posX -= horizontalDist - bound;
-						this.vX = Math.abs(this.vX);
-						bouncy = o.bouncy;
-						collided = true;
-					}
-					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
-					{
-						this.posY -= verticalDist - bound;
-						this.vY = Math.abs(this.vY);
-						bouncy = o.bouncy;
-						collided = true;
+
+						if (!left && dx <= 0 && dx > -bound && horizontalDist > verticalDist)
+						{
+							this.posX += 2 * (horizontalDist - bound);
+							this.vX = -Math.abs(this.vX);
+						}
+						else if (!up && dy <= 0 && dy > -bound && horizontalDist < verticalDist)
+						{
+							this.posY += 2 * (verticalDist - bound);
+							this.vY = -Math.abs(this.vY);
+						}
+						else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
+						{
+							this.posX -= 2 * (horizontalDist - bound);
+							this.vX = Math.abs(this.vX);
+						}
+						else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
+						{
+							this.posY -= 2 * (verticalDist - bound);
+							this.vY = Math.abs(this.vY);
+						}
 					}
 				}
 
+				for (int i = 0; i < Game.movables.size(); i++)
+				{
+					if (Game.movables.get(i) instanceof Tank)
+					{
+						Tank t = (Tank) (Game.movables.get(i));
+
+						double xMult = 1;
+						double yMult = 1;
+
+						if (this.targetTank != null)
+							if (t.equals(this.targetTank))
+							{
+								xMult = xMul;
+								yMult = yMul;
+							}
+
+						double horizontalDist = Math.abs(this.posX - t.posX);
+						double verticalDist = Math.abs(this.posY - t.posY);
+						double xBound = (t.size * xMult + this.size) / 2;
+						double yBound = (t.size * yMult + this.size) / 2;
+
+						smallestDistSq = Math.min(smallestDistSq, Math.pow(horizontalDist - xBound, 2) + Math.pow(verticalDist - yBound, 2));
+
+						if (horizontalDist < xBound && verticalDist < yBound)
+						{
+							if (!Game.movables.get(i).equals(tank))
+							{
+								this.inShooter = false;
+							}
+							if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
+							{
+								this.targetX = this.posX;
+								this.targetY = this.posY;
+								return Game.movables.get(i);
+							}
+						}
+					}
+					else if (Game.movables.get(i) instanceof Bullet && enableBullet)
+					{
+						Bullet t = (Bullet) (Game.movables.get(i));
+
+						if (Math.abs(this.posX - t.posX) < (t.size + this.size) / 2 &&
+								Math.abs(this.posY - t.posY) < (t.size + this.size) / 2)
+						{
+							if (age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
+							{
+								this.targetX = this.posX;
+								this.targetY = this.posY;
+								return Game.movables.get(i);
+							}
+						}
+					}
+				}
+
+				smallestDist = Math.sqrt(smallestDistSq);
+			}
+			else
+			{
+				smallestDist -= Math.sqrt(sqVel);
 			}
 
-			if (this.posX + this.size/2 > Drawing.drawing.sizeX)
+			if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
 			{
 				collided = true;
-				this.posX = Drawing.drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.drawing.sizeX);
+				this.posX = Drawing.drawing.sizeX - this.size / 2 - (this.posX + this.size / 2 - Drawing.drawing.sizeX);
 				this.vX = -Math.abs(this.vX);
 			}
-			if (this.posX - this.size/2 < 0)
+
+			if (this.posX - this.size / 2 < 0)
 			{
 				collided = true;
-				this.posX = this.size/2 - (this.posX - this.size / 2);
+				this.posX = this.size / 2 - (this.posX - this.size / 2);
 				this.vX = Math.abs(this.vX);
 			}
-			if (this.posY + this.size/2 > Drawing.drawing.sizeY)
+
+			if (this.posY + this.size / 2 > Drawing.drawing.sizeY)
 			{
 				collided = true;
-				this.posY = Drawing.drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.drawing.sizeY);
-				this.vY = -Math.abs(this.vY); 
+				this.posY = Drawing.drawing.sizeY - this.size / 2 - (this.posY + this.size / 2 - Drawing.drawing.sizeY);
+				this.vY = -Math.abs(this.vY);
 			}
-			if (this.posY - this.size/2 < 0)
+
+			if (this.posY - this.size / 2 < 0)
 			{
 				collided = true;
-				this.posY = this.size/2 - (this.posY - this.size / 2);
+				this.posY = this.size / 2 - (this.posY - this.size / 2);
 				this.vY = Math.abs(this.vY);
 			}
-			
+
 			if (collided)
 			{
 				if (!bouncy || !enableBounciness)
@@ -180,58 +276,10 @@ public class Ray
 				bounceX.add(this.posX);
 				bounceY.add(this.posY);
 			}
-			
-			for (int i = 0; i < Game.movables.size(); i++)
-			{
-				if (Game.movables.get(i) instanceof Tank)
-				{
-					Tank t = (Tank)(Game.movables.get(i));
-
-					double xMult = 1;
-					double yMult = 1;
-
-					if (this.targetTank != null)
-						if (t.equals(this.targetTank))
-						{
-							xMult = xMul;
-							yMult = yMul;
-						}
-
-					if (Math.abs(this.posX - t.posX) < (t.size * xMult + this.size) / 2 &&
-							Math.abs(this.posY - t.posY) < (t.size * yMult + this.size) / 2)
-					{
-						if (!Game.movables.get(i).equals(tank))
-						{
-							this.inShooter = false;
-						}
-						if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
-						{
-							this.targetX = this.posX;
-							this.targetY = this.posY;
-							return Game.movables.get(i);
-						}
-					}				
-				}
-				else if (Game.movables.get(i) instanceof Bullet && enableBullet)
-				{
-					Bullet t = (Bullet)(Game.movables.get(i));
-
-					if (Math.abs(this.posX - t.posX) < (t.size + this.size) / 2 &&
-							Math.abs(this.posY - t.posY) < (t.size + this.size) / 2)
-					{
-						if (age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
-						{
-							this.targetX = this.posX;
-							this.targetY = this.posY;
-							return Game.movables.get(i);
-						}
-					}				
-				}
-			}
 		}
 	}
 
-	public int getDist() 
+	public int getDist()
 	{
 		while (true)
 		{
@@ -243,10 +291,10 @@ public class Ray
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
-				
+
 				if (!o.tankCollision)
 					continue;
-					
+
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
 
@@ -277,7 +325,6 @@ public class Ray
 
 			}
 
-
 			if (this.posX + this.size/2 > Drawing.drawing.sizeX)
 			{
 				return this.age;
@@ -296,7 +343,7 @@ public class Ray
 			}
 		}
 	}
-	
+
 	public void moveOut(double amount)
 	{
 		this.posX += this.vX * amount;

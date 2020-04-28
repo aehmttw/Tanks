@@ -1,19 +1,13 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -28,7 +22,7 @@ public class ScreenSavedLevels extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenTitle();
+			Game.screen = new ScreenPlaySingleplayer();
 		}
 	}
 			);
@@ -72,43 +66,42 @@ public class ScreenSavedLevels extends Screen
 
 	public ScreenSavedLevels()
 	{
-		if (!Files.exists(Paths.get(Game.homedir + levelDir)))
+		BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
+		if (!savedLevelsFile.exists())
 		{
-			new File(Game.homedir + levelDir).mkdir();
+			savedLevelsFile.mkdirs();
 		}
 
-		ArrayList<Path> levels = new ArrayList<Path>();
+		ArrayList<String> levels = new ArrayList<String>();
 
 		try
 		{
-			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(Game.homedir + levelDir));
+			ArrayList<String> ds = savedLevelsFile.getSubfiles();
 
-			for (Path p : ds)
+			for (String p : ds)
 			{
-				if (p.toString().endsWith(".tanks"))
+				if (p.endsWith(".tanks"))
 					levels.add(p);
 			}
-
-			ds.close();
 		}
 		catch (IOException e)
 		{
 			Game.exitToCrash(e);
 		}
 
-		for (Path l: levels)
+		for (String l: levels)
 		{
-			String[] pathSections = l.toString().replaceAll("\\\\", "/").split("/");
+			String[] pathSections = l.replaceAll("\\\\", "/").split("/");
 
 			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
 			{
 				@Override
-				public void run() 
+				public void run()
 				{
 					try
 					{
 						ScreenLevelBuilder s = new ScreenLevelBuilder(pathSections[pathSections.length - 1]);
-						Game.loadLevel(l.toFile(), s);
+						Game.loadLevel(Game.game.fileManager.getFile(l), s);
 						Game.screen = s;
 					}
 					catch (Exception e)
@@ -120,7 +113,7 @@ public class ScreenSavedLevels extends Screen
 					}
 				}
 			}
-					, "Last opened---" + ScreenSavedLevels.lastOpened(l.toFile().lastModified()) + " ago"));
+					, "Last opened---" + Game.timeInterval(Game.game.fileManager.getFile(l).lastModified(), System.currentTimeMillis()) + " ago"));
 
 		}
 
@@ -188,24 +181,4 @@ public class ScreenSavedLevels extends Screen
 			next.draw();
 
 	}
-
-	public static String lastOpened(long time)
-	{
-		long secs = (System.currentTimeMillis() - time) / 1000;
-		long mins = secs / 60;
-		long hours = mins / 60;
-		long days = hours / 24;
-
-		if (days > 7)
-			return days + "d";
-		else if (days > 0)
-			return days + "d " + hours % 24 + "h";
-		else if (hours > 0)
-			return hours % 24 + "h " + mins % 60 + "m";
-		else if (mins > 0)
-			return mins % 60 + "m";
-		else
-			return "less than 1m";
-	}
-
 }

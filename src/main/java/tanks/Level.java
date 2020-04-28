@@ -4,10 +4,7 @@ import tanks.event.EventCreatePlayer;
 import tanks.event.EventEnterLevel;
 import tanks.event.EventLoadLevel;
 import tanks.gui.Button;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenLevelBuilder;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
@@ -38,6 +35,7 @@ public class Level
 
 	public boolean editable = true;
 	public boolean remote = false;
+	public boolean preview = false;
 
 	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
 
@@ -63,7 +61,7 @@ public class Level
 	{
 		this.levelString = level.replaceAll("\u0000", "");
 
-		preset = this.levelString.split("\\{")[1].split("}")[0].split("\\|");
+		preset = this.levelString.substring(this.levelString.indexOf('{') + 1, this.levelString.indexOf('}')).split("\\|");
 
 		screen = preset[0].split(",");
 		obstaclesPos = preset[1].split(",");
@@ -92,19 +90,19 @@ public class Level
 		loadLevel(null, remote);
 	}
 
-	public void loadLevel(ScreenLevelBuilder s)
+	public void loadLevel(ILevelPreviewScreen s)
 	{
 		loadLevel(s, false);
 	}
 
-	public void loadLevel(ScreenLevelBuilder s, boolean remote)
+	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
 	{
 		if (ScreenPartyHost.isServer)
 			ScreenPartyHost.includedPlayers.clear();
 		else if (ScreenPartyLobby.isClient)
 			ScreenPartyLobby.includedPlayers.clear();
 
-		if (s == null)
+		if (sc == null)
 			Obstacle.draw_size = 0;
 		else
 			Obstacle.draw_size = 50;
@@ -179,8 +177,10 @@ public class Level
 			}
 		}
 
-		if (s != null)
+		if (sc instanceof ScreenLevelBuilder)
 		{
+			ScreenLevelBuilder s = (ScreenLevelBuilder) sc;
+
 			s.sizeX.inputText = sX + "";
 			s.sizeY.inputText = sY + "";
 
@@ -234,9 +234,9 @@ public class Level
 						s.editTeamMenu = true;
 						s.selectedTeam = t;
 						if (s.selectedTeam.friendlyFire)
-							s.teamFriendlyFire.text = "Friendly fire: on";
+							s.teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.onText;
 						else
-							s.teamFriendlyFire.text = "Friendly fire: off";
+							s.teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.offText;
 					}
 				}
 						);
@@ -394,7 +394,7 @@ public class Level
 			this.includedPlayers.addAll(Game.players);
 		}
 
-		if (s == null)
+		if (sc == null && !preview)
 		{
 			for (int i = 0; i < playerCount; i++)
 			{
@@ -435,10 +435,13 @@ public class Level
 				TankSpawnMarker t = new TankSpawnMarker("player", this.playerSpawnsX.get(i), this.playerSpawnsY.get(i), this.playerSpawnsAngle.get(i));
 				t.team = this.playerSpawnsTeam.get(i);
 				Game.movables.add(t);
-				s.spawns.add(t);
+
+				if (sc != null)
+					sc.getSpawns().add(t);
 			}
 
-			s.movePlayer = (s.spawns.size() <= 1);
+			if (sc instanceof ScreenLevelBuilder)
+				((ScreenLevelBuilder) sc).movePlayer = (sc.getSpawns().size() <= 1);
 		}
 
 		for (EventCreatePlayer e: playerEvents)

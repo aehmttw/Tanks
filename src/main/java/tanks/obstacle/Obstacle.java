@@ -1,6 +1,9 @@
 package tanks.obstacle;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.IDrawableForInterface;
+import tanks.Movable;
 
 public class Obstacle implements IDrawableForInterface
 {
@@ -9,7 +12,7 @@ public class Obstacle implements IDrawableForInterface
 	public boolean bulletCollision = true;
 	//public boolean drawBelow = false;
 	//public boolean drawAbove = false;
-	
+
 	public int drawLevel = 5;
 	
 	public boolean checkForObjects = false;

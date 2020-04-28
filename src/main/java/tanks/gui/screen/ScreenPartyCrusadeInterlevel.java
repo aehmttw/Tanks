@@ -1,6 +1,9 @@
 package tanks.gui.screen;
 
-import tanks.*;
+import tanks.Crusade;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
@@ -102,7 +105,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
 
     public ScreenPartyCrusadeInterlevel()
     {
-        Panel.panel.hotbar.bottomOffset = 100;
+        Panel.panel.hotbar.percentHidden = 100;
 
         if (ScreenPartyHost.isServer)
         {

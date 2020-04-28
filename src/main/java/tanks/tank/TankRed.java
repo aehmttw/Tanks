@@ -2,7 +2,6 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.BulletLaser;
-import tanks.Panel;
 import tanks.event.EventShootBullet;
 import tanks.event.EventTankRedUpdateCharge;
 

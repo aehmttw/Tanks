@@ -19,7 +19,7 @@ public class ScreenKicked extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenJoinParty();
+			Game.screen = Game.lastOfflineScreen;
 		}
 	}
 	);

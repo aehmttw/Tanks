@@ -29,6 +29,7 @@ public class TankMini extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		this.enableBulletAvoidance = false;
 		this.lives = 0.25;
+		this.baseLives = 0.25;
 
 		this.description = "A small, primitive tank which---shoots tiny, low damage bullets";
 	}

@@ -3,7 +3,6 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
-import tanks.tank.Tank;
 
 public class EventBulletElectricStunEffect extends PersonalEvent
 {

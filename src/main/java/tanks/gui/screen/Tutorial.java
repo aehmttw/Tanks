@@ -9,8 +9,14 @@ import tanks.tank.TankDummy;
 
 public class Tutorial 
 {
-	public static void loadTutorial(boolean initial)
+	public static void loadTutorial(boolean initial, boolean touchscreen)
 	{
+		if (touchscreen)
+		{
+			TouchscreenTutorial.loadTutorial(initial);
+			return;
+		}
+
 		Level l = new Level("{48,18,235,207,166,20,20,20"
 				+ "|38-6...11,19-4...17-hard,24-0...5-hard,38-0...5-hard,38-12...17-hard"
 				+ "|4-6-player-0-ally,25-13-brown-0,46-13-gray-2}");
@@ -23,7 +29,7 @@ public class Tutorial
 		Game.obstacles.add(new ObstacleText("text", "Welcome to Tanks!", 4, 2));
 		Game.obstacles.add(new ObstacleText("text", "You control this blue tank", 4, 3));
 		Game.obstacles.add(new ObstacleText("text", "Move it with WASD or the arrow keys", 4, 4));
-		
+
 		Game.obstacles.add(new ObstacleText("text", "This is an enemy tank", 13, 9));
 		Game.obstacles.add(new ObstacleText("text", "Put your cursor on it to aim", 13, 11));
 		Game.obstacles.add(new ObstacleText("text", "and left click or press space to shoot.", 13, 12));

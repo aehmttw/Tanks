@@ -1,15 +1,13 @@
 package tanks.gui.screen;
 
+import basewindow.InputCodes;
 import tanks.*;
 import tanks.event.EventPlayerChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
-import tanks.network.ClientHandler;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
-import org.lwjgl.glfw.GLFW;
-import tanks.tank.TankPlayerRemote;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -37,11 +35,10 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
-	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, GLFW.GLFW_KEY_T,
-			"Click here or press 'T' to send a chat message", new Runnable()
+	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, InputCodes.KEY_T, new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			chat.add(0, new ChatMessage(Game.player.username, chatbox.inputText));
 			Game.eventsOut.add(new EventPlayerChat(Game.player.username, chatbox.inputText));
@@ -52,13 +49,13 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.reset();
 			Game.screen = new ScreenGame();
 		}
 	}
-	, "Generate a random level to play");
+			, "Generate a random level to play");
 
 	Button nextUsernamePage = new Button(Drawing.drawing.interfaceSizeX / 2 - 190,
 			Drawing.drawing.interfaceSizeY / 2 + username_y_offset + username_spacing * (1 + entries_per_page), 300, 30, "Next page", new Runnable()
@@ -114,17 +111,17 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "My levels", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.screen = new ScreenPlaySavedLevels();
 		}
 	}
-	, "Play levels you have created");
+			, "Play levels you have created");
 
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "End party", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			isServer = false;
 			server.close();
@@ -140,10 +137,13 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 			disconnectedPlayers.clear();
 		}
 	}
-			);
+	);
 
 	public ScreenPartyHost()
 	{
+		if (Game.game.window.touchscreen)
+			chatbox.defaultText = "Click here to send a chat message";
+
 		for (int i = 0; i < this.kickButtons.length; i++)
 		{
 			final int j = i;
@@ -179,14 +179,14 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 		{
 
 			@Override
-			public void run() 
+			public void run()
 			{
-				try 
+				try
 				{
 					server = new Server(Game.port);
 					server.run();
-				} 
-				catch (Exception e) 
+				}
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -201,14 +201,14 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 		{
 
 			@Override
-			public void run() 
+			public void run()
 			{
 				ip = "Getting your IP Address...";
-				try 
+				try
 				{
 					ip = "Your Local IP Address: " + Inet4Address.getLocalHost().getHostAddress() + " (Port: " + Game.port + ")";
-				} 
-				catch (UnknownHostException e) 
+				}
+				catch (UnknownHostException e)
 				{
 					ip = "Failed to get your IP Address";
 				}
@@ -218,8 +218,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 			}
 		}
-				).start();
-	}	
+		).start();
+	}
 
 	@Override
 	public void update()
@@ -251,14 +251,14 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	}
 
 	@Override
-	public void draw() 
+	public void draw()
 	{
 		this.drawDefaultBackground();
 
-		myLevels.draw();
 		crusades.draw();
-		newLevel.draw();
+		myLevels.draw();
 		versus.draw();
+		newLevel.draw();
 		quit.draw();
 
 		chatbox.draw();

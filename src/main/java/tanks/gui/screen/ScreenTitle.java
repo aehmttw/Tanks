@@ -1,10 +1,8 @@
 package tanks.gui.screen;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
+import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
@@ -19,7 +17,15 @@ public class ScreenTitle extends Screen
 		@Override
 		public void run() 
 		{
-			System.exit(0);
+			if (Game.framework == Game.Framework.libgdx)
+				Game.screen = new ScreenExit();
+			else
+			{
+				if (Game.game.window.soundsEnabled)
+					Game.game.window.soundPlayer.exit();
+
+				System.exit(0);
+			}
 		}
 	}
 			);
@@ -27,25 +33,24 @@ public class ScreenTitle extends Screen
 	Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Options", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.silentCleanUp();
 			Game.screen = new ScreenOptions();
 		}
 	}
 			);
-	
-	Button create = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Create levels", new Runnable()
+
+	Button debug = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Debug menu", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.silentCleanUp();
-			Game.screen = new ScreenSavedLevels();
+			Game.screen = new ScreenDebug();
 		}
 	}
-			);
-	
+	);
 	
 	Button play = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Play!", new Runnable()
 	{
@@ -63,7 +68,7 @@ public class ScreenTitle extends Screen
 		@Override
 		public void run()
 		{
-			if (Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_RIGHT_SHIFT))
+			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT))
 			{
 				Game.bulletLocked = false;
 				ScreenGame.finishTimer = ScreenGame.finishTimerMax;
@@ -91,9 +96,11 @@ public class ScreenTitle extends Screen
 	{
 		play.update();
 		exit.update();
-		create.update();
 		options.update();
 		takeControl.update();
+
+		if (Game.debug)
+			debug.update();
 
 		if (this.controlPlayer)
 		{
@@ -146,8 +153,10 @@ public class ScreenTitle extends Screen
 
 		play.draw();
 		exit.draw();
-		create.draw();
 		options.draw();
+
+		if (Game.debug)
+			debug.draw();
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(60);
@@ -157,7 +166,7 @@ public class ScreenTitle extends Screen
 	@Override
 	public void drawPostMouse()
 	{
-		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(GLFW.GLFW_KEY_RIGHT_SHIFT)))
+		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)))
 		{
 			this.logo.draw();
 		}

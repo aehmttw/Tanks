@@ -1,4 +1,4 @@
-package lwjglwindow;
+package basewindow;
 
 public interface IWindowHandler 
 {

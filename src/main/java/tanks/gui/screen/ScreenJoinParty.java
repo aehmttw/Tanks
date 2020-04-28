@@ -36,6 +36,8 @@ public class ScreenJoinParty extends Screen
 		@Override
 		public void run() 
 		{
+			Game.lastOfflineScreen = Game.screen;
+
 			Game.eventsOut.clear();
 			clientThread = new Thread(new Runnable()
 			{
@@ -53,14 +55,15 @@ public class ScreenJoinParty extends Screen
 						
 						if (ip.inputText.contains(":"))
 						{
-							ipaddress = ip.inputText.split(":")[0];
-							port = Integer.parseInt(ip.inputText.split(":")[1]);
+							int colon = ip.inputText.lastIndexOf(":");
+							ipaddress = ip.inputText.substring(0, colon);
+							port = Integer.parseInt(ip.inputText.substring(colon + 1));
 						}
 						
 						if (ip.inputText.equals(""))
-							Client.connect("localhost", Game.port);
+							Client.connect("localhost", Game.port, false);
 						else
-							Client.connect(ipaddress, port);
+							Client.connect(ipaddress, port, false);
 					} 
 					catch (Exception e) 
 					{

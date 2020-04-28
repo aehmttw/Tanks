@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import tanks.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
 
 public class EventBulletAddAttributeModifier extends PersonalEvent
 {

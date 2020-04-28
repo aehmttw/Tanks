@@ -1,18 +1,17 @@
 package tanks.registry;
 
+import basewindow.BaseFile;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 
 public class RegistryObstacle 
 {
@@ -30,7 +29,8 @@ public class RegistryObstacle
 		{
 			try 
 			{
-				Scanner in = new Scanner(new File(path));
+				BaseFile in = Game.game.fileManager.getFile(path);
+				in.startReading();
 				while (in.hasNextLine()) 
 				{
 					String line = in.nextLine();
@@ -64,7 +64,7 @@ public class RegistryObstacle
 							ClassLoader loader = new URLClassLoader( new URL[] { new File(obstacleLine[2]).toURI().toURL() }); // super messy
 							@SuppressWarnings("unchecked")
 							Class<? extends Obstacle> clasz = (Class<? extends Obstacle>) loader.loadClass(obstacleLine[3]);
-							new RegistryObstacle.ObstacleEntry(Game.registryObstacle, clasz, obstacleLine[0]);
+							new ObstacleEntry(Game.registryObstacle, clasz, obstacleLine[0]);
 						}
 						catch (Exception e) 
 						{
@@ -73,7 +73,7 @@ public class RegistryObstacle
 						}
 					}
 				}
-				in.close();
+				in.stopReading();
 			} 
 			catch (Exception e)
 			{
@@ -98,7 +98,7 @@ public class RegistryObstacle
 		String path = homedir + Game.obstacleRegistryPath;
 		try 
 		{
-			new File(path).createNewFile();
+			Game.game.fileManager.getFile(path).create();
 		}
 		catch (IOException e) 
 		{
@@ -107,28 +107,31 @@ public class RegistryObstacle
 		}
 		try 
 		{
-			PrintStream writer = new PrintStream(new File(path));
-			writer.println("# Warning! To use a custom Obstacle Registry, you MUST set use-custom-obstacle-registry ");
-			writer.println("# in options.txt from false to true!");
-			writer.println("# ");
-			writer.println("# This is the Obstacle Registry file!");
-			writer.println("# A registry entry is a line in the file");
-			writer.println("# The parameters are name, custom/default, jar location, and class");
-			writer.println("# Built in obstacles do not use the last 2 parameters");
-			writer.println("# and have 'default' written for the third parameter");
-			writer.println("# To make a custom obstacle, import the 'Tanks' jar into a java project,");
-			writer.println("# write a class extending Obstacle, and export as a jar file.");
-			writer.println("# To import a custom obstacle, put the jar file somewhere on your computer,");
-			writer.println("# put 'custom' for parameter 2");
-			writer.println("# and put its absolute file path as parameter 3 in this file.");
-			writer.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
-			writer.println("# Example custom obstacle entry: 'myobstacle,1,custom,C:\\Users\\potato\\.tanks.d\\MyObstacle.jar,com.potato.MyObstacle'");
-			writer.println("# Don't leave any blank lines!");
+			BaseFile f = Game.game.fileManager.getFile(path);
+			f.startWriting();
+			f.println("# Warning! To use a custom Obstacle Registry, you MUST set use-custom-obstacle-registry ");
+			f.println("# in options.txt from false to true!");
+			f.println("# ");
+			f.println("# This is the Obstacle Registry file!");
+			f.println("# A registry entry is a line in the file");
+			f.println("# The parameters are name, custom/default, jar location, and class");
+			f.println("# Built in obstacles do not use the last 2 parameters");
+			f.println("# and have 'default' written for the third parameter");
+			f.println("# To make a custom obstacle, import the 'Tanks' jar into a java project,");
+			f.println("# write a class extending Obstacle, and export as a jar file.");
+			f.println("# To import a custom obstacle, put the jar file somewhere on your computer,");
+			f.println("# put 'custom' for parameter 2");
+			f.println("# and put its absolute file path as parameter 3 in this file.");
+			f.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
+			f.println("# Example custom obstacle entry: 'myobstacle,1,custom,C:\\Users\\potato\\.tanks.d\\MyObstacle.jar,com.potato.MyObstacle'");
+			f.println("# Don't leave any blank lines!");
 
 			for (int i = 0; i < Game.defaultObstacles.size(); i++)
 			{
-				writer.println(Game.defaultObstacles.get(i).getString());
+				f.println(Game.defaultObstacles.get(i).getString());
 			}
+
+			f.stopWriting();
 		} 
 		catch (Exception e)
 		{

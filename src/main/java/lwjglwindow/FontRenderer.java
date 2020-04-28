@@ -1,23 +1,28 @@
 package lwjglwindow;
 
+import basewindow.BaseFontRenderer;
 import org.lwjgl.opengl.GL11;
 
-public class FontRenderer
+public class FontRenderer extends BaseFontRenderer
 {
-	public LWJGLWindow home;
-	String chars; 
+	String chars;
 	int[] charSizes;
 	String image;
 			
 	public FontRenderer(LWJGLWindow h, String fontFile)
 	{
-		this.home = h;
-		this.chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'abcdefghijklmnopqrstuvwxyz{|}~`";
+		super(h);
+		this.chars = " !\"#$%&'()*+,-./" +
+				"0123456789:;<=>?" +
+				"@ABCDEFGHIJKLMNO" +
+				"PQRSTUVWXYZ[\\]^_" +
+				"'abcdefghijklmno" +
+				"pqrstuvwxyz{|}~`";
 		this.charSizes = new int[]
 				{
 						3, 2, 4, 5, 5, 5, 5, 2, 4, 4, 4, 5, 1, 5, 1, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5,
-						6, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
+						7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5,
 						2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
 						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2
@@ -25,7 +30,7 @@ public class FontRenderer
 		this.image = fontFile;
 	}
 	
-	public int drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
+	protected int drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
 	{
 		int i = this.chars.indexOf(c);
 		

@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.Item;
 import tanks.network.NetworkUtils;
 
 public class EventAddShopItem extends PersonalEvent

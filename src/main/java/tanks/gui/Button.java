@@ -1,10 +1,13 @@
 package tanks.gui;
 
+import basewindow.InputCodes;
+import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
-import org.lwjgl.glfw.GLFW;
+import tanks.IDrawable;
+import tanks.gui.screen.ScreenInfo;
 
-public class Button 
+public class Button implements IDrawable
 {
 	public Runnable function;
 	public double posX;
@@ -15,12 +18,13 @@ public class Button
 
 	public boolean enableHover = false;
 	public String[] hoverText;
+	public String hoverTextRaw = "";
 
 	public boolean selected = false;
 	public boolean infoSelected = false;
 
-	public boolean clicked = false;
-	
+	public boolean justPressed = false;
+
 	public boolean enabled = true;
 
 	public double disabledColR = 200;
@@ -42,6 +46,11 @@ public class Button
 	public double textOffsetX = 0;
 	public double textOffsetY = 0;
 
+	public boolean silent = false;
+
+	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
+	public boolean wait = false;
+
 	public Button(double x, double y, double sX, double sY, String text, Runnable f)
 	{
 		this.function = f;
@@ -58,8 +67,9 @@ public class Button
 		this(x, y, sX, sY, text, f);
 		this.enableHover = true;
 		this.hoverText = hoverText.split("---");
+		this.hoverTextRaw = hoverText;
 	}
-	
+
 	public Button(double x, double y, double sX, double sY, String text)
 	{
 		this.posX = x;
@@ -67,27 +77,28 @@ public class Button
 		this.sizeX = sX;
 		this.sizeY = sY;
 		this.text = text;
-		
+
 		this.enabled = false;
 	}
-	
+
 	public Button(double x, double y, double sX, double sY, String text, String hoverText)
 	{
 		this(x, y, sX, sY, text);
-		
+
 		this.enableHover = true;
-		this.hoverText = hoverText.split("---");		
+		this.hoverText = hoverText.split("---");
+		this.hoverTextRaw = hoverText;
 	}
 
 	public void draw()
 	{
 		Drawing drawing = Drawing.drawing;
 		drawing.setInterfaceFontSize(24);
-		
+
 		if (!enabled)
-			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB);	
-		
-		else if (selected)
+			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB);
+
+		else if (selected && !Game.game.window.touchscreen)
 			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB);
 		else
 			drawing.setColor(this.unselectedColR, this.unselectedColG, this.unselectedColB);
@@ -97,13 +108,13 @@ public class Button
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
-		 
+
 		drawing.setColor(this.textColR, this.textColG, this.textColB);
 		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, text);
 
 		if (enableHover)
 		{
-			if (infoSelected)
+			if (infoSelected && !Game.game.window.touchscreen)
 			{
 				drawing.setColor(0, 0, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
@@ -123,22 +134,80 @@ public class Button
 
 	public void update()
 	{
-		double mx = Drawing.drawing.getInterfaceMouseX();
-		double my = Drawing.drawing.getInterfaceMouseY();
+		this.justPressed = false;
 
-		boolean prevSel = selected;
+		if (!Game.game.window.touchscreen)
+		{
+			double mx = Drawing.drawing.getInterfaceMouseX();
+			double my = Drawing.drawing.getInterfaceMouseY();
+
+			boolean handled = checkMouse(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+
+			if (handled)
+				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
+		}
+		else
+		{
+			for (int i: Game.game.window.touchPoints.keySet())
+			{
+				InputPoint p = Game.game.window.touchPoints.get(i);
+
+				if (p.tag.equals(""))
+				{
+					double mx = Drawing.drawing.getInterfacePointerX(p.x);
+					double my = Drawing.drawing.getInterfacePointerY(p.y);
+
+					boolean handled = checkMouse(mx, my, p.valid);
+
+					if (handled)
+						p.tag = "button";
+				}
+			}
+		}
+	}
+
+	public boolean checkMouse(double mx, double my, boolean valid)
+	{
+		boolean handled = false;
+
+		if (Game.game.window.touchscreen)
+		{
+			sizeX += 20;
+			sizeY += 20;
+		}
+
 		selected = (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
 		infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
 
-		if (selected && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !clicked && enabled)
+		if (selected && valid)
 		{
-			function.run();
-			Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
-			clicked = true;
-			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_1);
+			if (infoSelected && this.enableHover && Game.game.window.touchscreen)
+			{
+				handled = true;
+				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
+				Drawing.drawing.playVibration("click");
+				Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
+			}
+			else if (enabled)
+			{
+				handled = true;
+				function.run();
+				this.justPressed = true;
+
+				if (!this.silent)
+				{
+					Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
+					Drawing.drawing.playVibration("click");
+				}
+			}
 		}
 
-		if (!(selected && Game.game.window.pressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1)))
-			clicked = false;
+		if (Game.game.window.touchscreen)
+		{
+			sizeX -= 20;
+			sizeY -= 20;
+		}
+
+		return handled;
 	}
 }

@@ -1,5 +1,6 @@
 package tanks;
 
+import basewindow.BaseFile;
 import tanks.event.EventBeginCrusade;
 import tanks.event.EventLoadCrusadeHotbar;
 import tanks.hotbar.Coins;
@@ -8,10 +9,8 @@ import tanks.hotbar.ItemBar;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Crusade 
 {
@@ -40,16 +39,16 @@ public class Crusade
 		this.initialize(levelArray, name);
 	}
 	
-	public Crusade(File f, String name)
+	public Crusade(BaseFile f, String name)
 	{
 		try 
 		{
-			Scanner in = new Scanner(f);
+			f.startReading();
 			ArrayList<String> list = new ArrayList<String>();
 			
-			while (in.hasNextLine())
+			while (f.hasNextLine())
 			{
-				String s = in.nextLine();
+				String s = f.nextLine();
 				
 				if (!s.equals(""))
 					list.add(s);
@@ -57,7 +56,7 @@ public class Crusade
 			
 			this.initialize(list, name);
 			
-			in.close();		
+			f.stopReading();
 		}
 		catch (FileNotFoundException e) 
 		{

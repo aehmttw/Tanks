@@ -5,8 +5,10 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 
-public class ScreenMultiplayerOptions extends Screen
+public class ScreenOptionsMultiplayer extends Screen
 {
+	public static final String chatFilterText = "Chat filter: ";
+
 	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Username", new Runnable()
 	{
 		@Override
@@ -20,8 +22,8 @@ public class ScreenMultiplayerOptions extends Screen
 		}
 	},
 			Game.player.username, "Pick a username that players---will see in multiplayer");
-	
-	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Chat filter: on", new Runnable()
+
+	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -29,9 +31,9 @@ public class ScreenMultiplayerOptions extends Screen
 			Game.enableChatFilter = !Game.enableChatFilter;
 
 			if (Game.enableChatFilter)
-				chatFilter.text = "Chat filter: on";
+				chatFilter.text = chatFilterText + ScreenOptions.onText;
 			else
-				chatFilter.text = "Chat filter: off";
+				chatFilter.text = chatFilterText + ScreenOptions.offText;
 		}
 	},
 			"Filters chat of potentially---inappropriate words");
@@ -47,15 +49,15 @@ public class ScreenMultiplayerOptions extends Screen
 	}
 			);
 	
-	public ScreenMultiplayerOptions()
+	public ScreenOptionsMultiplayer()
 	{
 		username.enableCaps = true;
 		username.enableSpaces = false;
-		
+
 		if (Game.enableChatFilter)
-			chatFilter.text = "Chat filter: on";
+			chatFilter.text = chatFilterText + ScreenOptions.onText;
 		else
-			chatFilter.text = "Chat filter: off";
+			chatFilter.text = chatFilterText + ScreenOptions.offText;
 	}
 	
 	@Override
@@ -64,7 +66,6 @@ public class ScreenMultiplayerOptions extends Screen
 		chatFilter.update();
 		back.update();
 		username.update();
-
 	}
 
 	@Override
@@ -73,9 +74,8 @@ public class ScreenMultiplayerOptions extends Screen
 		this.drawDefaultBackground();
 		back.draw();
 		chatFilter.draw();
-		
 		username.draw();
-		
+
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "Multiplayer options");

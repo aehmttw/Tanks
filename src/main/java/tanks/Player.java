@@ -3,7 +3,6 @@ package tanks;
 import tanks.hotbar.Coins;
 import tanks.hotbar.ItemBar;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 
 import java.util.UUID;
 

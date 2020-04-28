@@ -93,7 +93,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
 
     public ScreenPartyInterlevel()
     {
-        Panel.panel.hotbar.bottomOffset = 100;
+        Panel.panel.hotbar.percentHidden = 100;
 
         if (Panel.win)
             Drawing.drawing.playSound("win.ogg");

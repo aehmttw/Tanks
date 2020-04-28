@@ -1,9 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.bullet.Bullet;
 import tanks.tank.Mine;
-import tanks.tank.Tank;
 
 public class EventMineExplode extends PersonalEvent
 {

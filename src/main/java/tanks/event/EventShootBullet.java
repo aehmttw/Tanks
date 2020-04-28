@@ -1,8 +1,6 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.bullet.*;
 import tanks.network.NetworkUtils;

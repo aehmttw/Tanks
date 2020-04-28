@@ -105,6 +105,8 @@ public class TankMedic extends TankAIControlled
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
 
+		//Drawing.drawing.playGlobalSound("heal.ogg", 0.75f);
+
 		this.cooldown = this.cooldownBase;
 	}
 

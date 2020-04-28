@@ -1,10 +1,12 @@
 package tanks.obstacle;
 
 import tanks.Drawing;
+import tanks.Game;
 
 public class ObstacleText extends Obstacle
 {
-	String text;
+	public String text;
+	public double fontSize = 16;
 	
 	public ObstacleText(String name, String text, double posX, double posY) 
 	{
@@ -21,12 +23,15 @@ public class ObstacleText extends Obstacle
 		this.text = text;
 
 		this.description = "A piece of text used---to instruct the player";
+
+		if (Game.framework == Game.Framework.libgdx)
+			this.fontSize = 24;
 	}
 	
 	@Override
 	public void draw()
-	{	
-		Drawing.drawing.setFontSize(16);
+	{
+		Drawing.drawing.setFontSize(this.fontSize);
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.drawText(this.posX, this.posY, this.text);
 	}
@@ -34,7 +39,7 @@ public class ObstacleText extends Obstacle
 	@Override
 	public void drawForInterface(double x, double y)
 	{	
-		Drawing.drawing.setFontSize(16);
+		Drawing.drawing.setFontSize(this.fontSize);
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.drawInterfaceText(this.posX, this.posY, this.text);
 	}

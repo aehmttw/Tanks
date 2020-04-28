@@ -35,7 +35,7 @@ public class ScreenResumeCrusade extends Screen
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenPlay();
+			Game.screen = new ScreenPlaySingleplayer();
 		}
 	}
 			);

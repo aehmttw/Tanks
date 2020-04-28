@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.gui.screen.ScreenLevelBuilder;
+import tanks.gui.screen.ILevelPreviewScreen;
 
 public class TankSpawnMarker extends Tank
 {
@@ -16,7 +16,7 @@ public class TankSpawnMarker extends Tank
     @Override
     public void draw()
     {
-        if (Game.screen instanceof ScreenLevelBuilder && ((ScreenLevelBuilder) Game.screen).spawns.size() > 1)
+        if (Game.screen instanceof ILevelPreviewScreen && ((ILevelPreviewScreen) Game.screen).getSpawns().size() > 1)
             this.texture = this.defaultTexture;
         else
             this.texture = null;

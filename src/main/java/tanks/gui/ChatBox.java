@@ -1,8 +1,10 @@
 package tanks.gui;
 
+import basewindow.InputCodes;
+import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
-import org.lwjgl.glfw.GLFW;
+import tanks.Panel;
 
 public class ChatBox extends TextBox
 {
@@ -12,7 +14,7 @@ public class ChatBox extends TextBox
 
 	public boolean persistent = true;
 
-	public ChatBox(double x, double y, double sX, double sY, int key, String defaultText, Runnable f) 
+	public ChatBox(double x, double y, double sX, double sY, int key, Runnable f)
 	{
 		super(x, y, sX, sY, "", f, "");
 		this.enableCaps = true;
@@ -35,6 +37,10 @@ public class ChatBox extends TextBox
 		this.selectedFullColorG = 0;
 		this.selectedFullColorB = 0;
 
+		String defaultText = "Click here or press 'T' to send a chat message";
+		if (Game.game.window.touchscreen)
+			defaultText = "Click here to send a chat message";
+
 		this.inputText = defaultText;
 		this.defaultText = defaultText;
 
@@ -47,59 +53,130 @@ public class ChatBox extends TextBox
 		boolean prevPersistent = this.persistent;
 		this.persistent = persistent;
 		this.update();
-		this.persistent = prevPersistent;	
+		this.persistent = prevPersistent;
 	}
 
 	public void update()
 	{
-		double mx = Drawing.drawing.getInterfaceMouseX();
-		double my = Drawing.drawing.getInterfaceMouseY();
-
-		hover = this.persistent && mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
-
-		if (hover && Game.game.window.validPressedButtons.contains(GLFW.GLFW_MOUSE_BUTTON_1) && !selected)
+		if (!Game.game.window.touchscreen)
 		{
-			this.inputText = "";
-			selected = true;
-			Game.game.window.validPressedButtons.remove((Integer)GLFW.GLFW_MOUSE_BUTTON_1);
+			double mx = Drawing.drawing.getInterfaceMouseX();
+			double my = Drawing.drawing.getInterfaceMouseY();
+
+			boolean handled = checkMouse(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+
+			if (handled)
+				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
+		}
+		else
+		{
+			for (int i: Game.game.window.touchPoints.keySet())
+			{
+				InputPoint p = Game.game.window.touchPoints.get(i);
+
+				double mx = Drawing.drawing.getInterfacePointerX(p.x);
+				double my = Drawing.drawing.getInterfacePointerY(p.y);
+
+				if (p.tag.equals(""))
+				{
+					boolean handled = checkMouse(mx, my, p.valid);
+
+					if (handled)
+						p.tag = "textbox";
+				}
+			}
 		}
 
 		if (!this.selected && Game.game.window.validPressedKeys.contains(key))
 		{
 			Game.game.window.validPressedKeys.remove((Integer)key);
+			Game.game.window.getRawTextKeys().clear();
+
 			this.selected = true;
 			this.inputText = "";
+
+			Drawing.drawing.playVibration("click");
+			Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
 		}
 
-		if (this.selected && Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ESCAPE))
+		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
 		{
-			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
 			this.selected = false;
 			this.inputText = this.defaultText;
+			Game.game.window.showKeyboard = false;
+
+			Drawing.drawing.playVibration("click");
+			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
 		}
 
-		if (this.selected && Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ENTER))
+		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
 		{
 			if (this.inputText.length() > 0)
 				this.function.run();
 
-			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_ENTER);
-			Game.game.window.pressedKeys.remove((Integer)GLFW.GLFW_KEY_ENTER);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ENTER);
+			Game.game.window.pressedKeys.remove((Integer)InputCodes.KEY_ENTER);
 
 			this.selected = false;
 			this.inputText = this.defaultText;
+			Game.game.window.showKeyboard = false;
+
+			Drawing.drawing.playVibration("click");
+			Drawing.drawing.playSound("destroy.ogg", 2f);
 		}
 
 		if (this.selected)
+		{
+			double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight
+					- Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction)
+					/ Game.game.window.absoluteHeight;
+			Game.game.window.keyboardOffset = Math.min(frac, Game.game.window.keyboardOffset + 0.04 * Panel.frameFrequency * frac);
+			Game.game.window.showKeyboard = true;
 			this.checkKeys();
+		}
 	}
-	
+
+	public boolean checkMouse(double mx, double my, boolean valid)
+	{
+		boolean handled = false;
+		hover = this.persistent && mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
+		clearSelected = selected && mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
+
+		if (Game.game.window.touchscreen)
+			hover = hover || mx > posX - sizeX / 2 && mx < posX - sizeX / 2 + sizeY && my > posY - sizeY / 2 && my < posY + sizeY / 2;
+
+		if (hover && valid && Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1) && !selected)
+		{
+			this.inputText = "";
+			selected = true;
+			handled = true;
+			Game.game.window.validPressedButtons.remove((Integer)InputCodes.MOUSE_BUTTON_1);
+			Game.game.window.getRawTextKeys().clear();
+			Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
+			Drawing.drawing.playVibration("click");
+		}
+
+		if (clearSelected && valid)
+		{
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			this.selected = false;
+			this.inputText = this.defaultText;
+			handled = true;
+			Game.game.window.showKeyboard = false;
+			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
+			Drawing.drawing.playVibration("click");
+		}
+
+		return handled;
+	}
+
 	public void draw(boolean persistent)
 	{
 		boolean prevPersistent = this.persistent;
 		this.persistent = persistent;
 		this.draw();
-		this.persistent = prevPersistent;	
+		this.persistent = prevPersistent;
 	}
 
 	public void draw()
@@ -107,7 +184,7 @@ public class ChatBox extends TextBox
 		Drawing drawing = Drawing.drawing;
 
 		if (this.selected)
-		{	
+		{
 			if (this.inputText.length() >= this.maxChars)
 				drawing.setColor(this.selectedFullColorR, this.selectedFullColorG, this.selectedFullColorB, 127);
 			else
@@ -118,18 +195,27 @@ public class ChatBox extends TextBox
 			drawing.setColor(0, 0, 0);
 			drawing.setInterfaceFontSize(24);
 
-			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, 
+			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY,
 					this.defaultTextColor + Game.player.username + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_", false);
+
+			if (!clearSelected || Game.game.window.touchscreen)
+				drawing.setColor(255, 0, 0);
+			else
+				drawing.setColor(255, 127, 127);
+
+			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+			drawing.setColor(255, 255, 255);
+			drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2 - 1, this.posY - 1, "x");
 		}
 		else if (this.persistent)
 		{
-			if (this.hover)
+			if (this.hover && !Game.game.window.touchscreen)
 				drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB, 127);
 			else
 				drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
 
 			drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX, this.sizeY);
-			
+
 			drawing.setColor(0, 0, 0);
 			drawing.setInterfaceFontSize(24);
 
@@ -137,6 +223,12 @@ public class ChatBox extends TextBox
 				drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, this.defaultTextColor + this.defaultText, false);
 			else
 				drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, this.inputText, false);
+		}
+		else if (Game.game.window.touchscreen)
+		{
+			drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
+			drawing.fillInterfaceRect(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY, this.sizeY);
+			drawing.drawInterfaceImage("/chat.png", this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, 0.8 * this.sizeY, 0.8 * this.sizeY);
 		}
 	}
 }

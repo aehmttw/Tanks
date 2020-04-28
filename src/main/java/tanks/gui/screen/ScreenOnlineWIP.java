@@ -1,18 +1,17 @@
 package tanks.gui.screen;
 
-import org.lwjgl.system.CallbackI;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 
-public class ScreenOnlinePortal extends Screen
+public class ScreenOnlineWIP extends Screen
 {
     public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenPlay();
+            Game.screen = new ScreenPlayMultiplayer();
         }
     });
 

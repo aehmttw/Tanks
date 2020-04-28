@@ -1,5 +1,9 @@
 package tanks.gui.screen;
 
+import basewindow.InputCodes;
+import basewindow.transformation.RotationAboutPoint;
+import basewindow.transformation.Transformation;
+import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.*;
@@ -9,9 +13,7 @@ import tanks.hotbar.Item;
 import tanks.network.Client;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
-import org.lwjgl.glfw.GLFW;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class ScreenGame extends Screen
@@ -41,24 +43,28 @@ public class ScreenGame extends Screen
 	public static boolean versus = false;
 	public String title = "";
 
+	public RotationAboutPoint slantRotation;
+	public Translation slantTranslation;
+	public ArrayList<Transformation> transformations = new ArrayList<Transformation>();
+
 	@SuppressWarnings("unchecked")
 	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
-	
+
 	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			playing = true;
 			Game.playerTank.cooldown = 20;
 		}
 	}
-			);
+	);
 
 	Button readyButton = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Ready", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			if (ScreenPartyLobby.isClient)
 				Game.eventsOut.add(new EventPlayerReady());
@@ -79,12 +85,12 @@ public class ScreenGame extends Screen
 			ready = true;
 		}
 	}
-			);
+	);
 
 	Button startNow = new Button(Drawing.drawing.interfaceSizeX-580, Drawing.drawing.interfaceSizeY-50, 350, 40, "Start now", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			if (ScreenPartyHost.isServer)
 			{
@@ -94,68 +100,89 @@ public class ScreenGame extends Screen
 			ready = true;
 		}
 	}
-			);
+	);
 
 
 	Button enterShop = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-110, 350, 40, "Shop", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			cancelCountdown = true;
 			shopScreen = true;
 		}
 	}
-			);
+	);
+
+	Button pause = new Button(0, -1000, 70, 70, "", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			paused = true;
+			Game.playerTank.cooldown = 20;
+		}
+	}
+	);
+
+	Button zoom = new Button(0, -1000, 70, 70, "", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+		}
+	}
+	);
 
 	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Continue playing", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			paused = false;
 			Game.playerTank.cooldown = 20;
 		}
 	}
-			);
+	);
 
 	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			paused = false;
 			Game.playerTank.cooldown = 20;
 		}
 	}
-			);
+	);
 
 	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Close menu", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			paused = false;
 			Game.playerTank.cooldown = 20;
 		}
 	}
-			);
+	);
 
 	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Close menu", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			paused = false;
 			Game.playerTank.cooldown = 20;
 		}
 	}
-			);
+	);
 
 	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			playing = false;
 			Game.startTime = 400;
@@ -179,46 +206,46 @@ public class ScreenGame extends Screen
 				Game.reset();
 		}
 	}
-			);
+	);
 
 	Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.cleanUp();
 			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-			Game.loadLevel(new File(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+			Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
 			Game.screen = s;
 		}
 	}
-			);
+	);
 
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.exitToTitle();
 		}
 	}
-			);
-	
+	);
+
 	Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.exitToTitle();
 			ScreenInterlevel.tutorial = false;
 		}
 	}
-			);
+	);
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to my levels", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.cleanUp();
 			System.gc();
@@ -233,28 +260,28 @@ public class ScreenGame extends Screen
 			}
 		}
 	}
-			);
+	);
 
 	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to party", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.cleanUp();
 			System.gc();
-			Game.screen = ScreenPartyHost.activeScreen;	
+			Game.screen = ScreenPartyHost.activeScreen;
 			ScreenPartyHost.readyPlayers.clear();
 			ScreenPartyHost.includedPlayers.clear();
 			Game.eventsOut.add(new EventReturnToLobby());
 			versus = false;
 		}
 	}
-			);
+	);
 
 	Button exitParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Leave party", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.cleanUp();
 			System.gc();
@@ -264,12 +291,12 @@ public class ScreenGame extends Screen
 			ScreenPartyLobby.connections.clear();
 		}
 	}
-			);
+	);
 
 	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Crusade.crusadeMode = false;
 
@@ -284,19 +311,19 @@ public class ScreenGame extends Screen
 			Game.exitToTitle();
 		}
 	}
-	, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
+			, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
 
 	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Crusade.crusadeMode = false;
 			Crusade.currentCrusade = null;
 			Game.exitToTitle();
 		}
 	}
-	, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
+			, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 
 	Button quitCrusadeParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to party", new Runnable()
 	{
@@ -345,32 +372,32 @@ public class ScreenGame extends Screen
 	Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit shop", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			shopScreen = false;
 		}
 	}
-			);
+	);
 
 	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			shopPage++;
 		}
 	}
-			);
+	);
 
 	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			shopPage--;
 		}
 	}
-			);
+	);
 
 	public ArrayList<Button> shopItemButtons = new ArrayList<Button>();
 
@@ -387,6 +414,10 @@ public class ScreenGame extends Screen
 		{
 			this.drawables[i] = new ArrayList<IDrawable>();
 		}
+
+
+		slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0.5, 0.5, -1);
+		slantTranslation = new Translation(Game.game.window, 0, 0, 0);
 	}
 
 	public ScreenGame(String s)
@@ -415,7 +446,7 @@ public class ScreenGame extends Screen
 			this.shopItemButtons.add(new Button(0, 0, 350, 40, item.name, new Runnable()
 			{
 				@Override
-				public void run() 
+				public void run()
 				{
 					int pr = shop.get(j).price;
 					if (Panel.panel.hotbar.currentCoins.coins >= pr)
@@ -425,7 +456,7 @@ public class ScreenGame extends Screen
 					}
 				}
 			}, price
-					));
+			));
 
 			Game.eventsOut.add(new EventAddShopItem(i, item.name, price));
 		}
@@ -473,26 +504,31 @@ public class ScreenGame extends Screen
 					o.postOverride();
 			}
 
-		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_ESCAPE))
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
 		{
-				if (shopScreen)
-					shopScreen = false;
-				else
-					this.paused = !this.paused;
+			if (shopScreen)
+				shopScreen = false;
+			else
+				this.paused = !this.paused;
 
-			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 		}
 
-		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_F1))
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F1))
 		{
 			this.screenshotMode = !this.screenshotMode;
-			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_F1);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_F1);
 		}
 
-		if (Game.game.window.validPressedKeys.contains(GLFW.GLFW_KEY_I))
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_I))
 		{
 			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-			Game.game.window.validPressedKeys.remove((Integer)GLFW.GLFW_KEY_I);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_I);
+		}
+
+		if (!finished)
+		{
+			Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
 		}
 
 		if (paused)
@@ -568,6 +604,31 @@ public class ScreenGame extends Screen
 			if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 				return;
 		}
+		else if (Game.game.window.touchscreen)
+		{
+			boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight;
+			double vStep = 0;
+			double hStep = 0;
+
+			if (vertical)
+				vStep = 100;
+			else
+				hStep = 100;
+
+			pause.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+					+ Drawing.drawing.interfaceSizeX - 50 - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+			pause.posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
+			pause.update();
+
+			zoom.posX = pause.posX - hStep;
+			zoom.posY = pause.posY + vStep;
+
+			if (Drawing.drawing.enableMovingCamera)
+				zoom.update();
+
+			TankPlayer.controlStick.update();
+		}
+
 
 		if (!playing && Game.startTime >= 0)
 		{
@@ -642,11 +703,6 @@ public class ScreenGame extends Screen
 				{
 					startNow.update();
 				}
-			}
-
-			if (!finished)
-			{
-				Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
 			}
 		}
 		else
@@ -736,7 +792,7 @@ public class ScreenGame extends Screen
 
 							for (int i = 0; i < Game.players.size(); i++)
 							{
-								if (aliveTeams.contains(Game.players.get(i).tank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.players.get(i).clientID.toString())))
+								if (Game.players.get(i) != null && Game.players.get(i).tank != null && aliveTeams.contains(Game.players.get(i).tank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.players.get(i).clientID.toString())))
 								{
 									Panel.levelPassed = true;
 
@@ -839,15 +895,25 @@ public class ScreenGame extends Screen
 
 	public void setPerspective()
 	{
-		if (Game.angledView)
+		if (Game.angledView && Game.framework == Game.Framework.lwjgl)
 		{
 			if (this.playing && !this.paused && !ScreenGame.finished)
 				slant = Math.min(1, slant + 0.01 * Panel.frameFrequency);
 			else if (ScreenGame.finished)
 				slant = Math.max(0, slant - 0.01 * Panel.frameFrequency);
 
-			Game.game.window.setAngles(0, this.slant * -Math.PI / 16, 0);
-			Game.game.window.setOffsets(0, this.slant * -0.05, this.slant * -0.1);
+			this.slantRotation.pitch = this.slant * -Math.PI / 16;
+			this.slantTranslation.y = -this.slant * 0.05;
+
+			Game.game.window.transformations.add(this.slantTranslation);
+			Game.game.window.transformations.add(this.slantRotation);
+
+			/*Game.game.window.addOffset(true,  -(Game.playerTank.posX + 200 * Math.cos(Game.playerTank.angle)) / Drawing.drawing.sizeX,  -(Game.playerTank.posY + 200 * Math.sin(Game.playerTank.angle)) / Drawing.drawing.sizeY, -0.3);
+			Game.game.window.addAngle(true, 0, 0, Game.playerTank.angle + Math.PI / 2);
+			Game.game.window.addOffset(true, 0.5, 0.5, 0);
+			Game.game.window.addAngle(true, 0, -Math.PI * 0.4, 0);*/
+
+			Game.game.window.loadPerspective();
 		}
 	}
 
@@ -884,6 +950,14 @@ public class ScreenGame extends Screen
 		for (int i = 0; i < Game.effects.size(); i++)
 			drawables[7].add(Game.effects.get(i));
 
+		if (Game.game.window.touchscreen)
+		{
+			drawables[9].add(TankPlayer.controlStick);
+
+			if (TankPlayer.shootStickEnabled)
+				drawables[9].add(TankPlayer.shootStick);
+		}
+
 		for (int i = 0; i < this.drawables.length; i++)
 		{
 			if (i == 5 && Game.enable3d)
@@ -903,16 +977,59 @@ public class ScreenGame extends Screen
 					d.draw();
 			}
 
+			if (i == 9 && (Game.playerTank instanceof IPlayerTank && ((IPlayerTank) Game.playerTank).showTouchCircle()))
+			{
+				Drawing.drawing.setColor(255, 127, 0, 63);
+				Drawing.drawing.fillInterfaceOval(Drawing.drawing.toInterfaceCoordsX(Game.playerTank.posX),
+						Drawing.drawing.toInterfaceCoordsY(Game.playerTank.posY),
+						((IPlayerTank) Game.playerTank).getTouchCircleSize(), ((IPlayerTank) Game.playerTank).getTouchCircleSize());
+			}
+
 			drawables[i].clear();
+		}
+
+		if (Game.game.window.touchscreen && TankPlayer.shootStickEnabled)
+		{
+			double size = TankPlayer.mineButton.sizeX * Obstacle.draw_size / Obstacle.obstacle_size;
+			Drawing.drawing.setColor(255, 127, 0, 64);
+			Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size, size);
+
+			Drawing.drawing.setColor(255, 255, 0, 64);
+			Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size * 0.8, size * 0.8);
+
+			//Drawing.drawing.setColor(255, 255, 255, 64);
+			//Drawing.drawing.drawInterfaceImage("/mine.png", TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, TankPlayer.mineButton.sizeX, TankPlayer.mineButton.sizeY);
 		}
 
 		if (!this.showDefaultMouse)
 			Panel.panel.drawMouseTarget(true);
 
-		Game.game.window.setAngles(0, 0, 0);
-		Game.game.window.setOffsets(0,  0, 0);
+		if (Game.framework == Game.Framework.lwjgl)
+		{
+			Game.game.window.transformations.clear();
+			Game.game.window.loadPerspective();
+		}
 
-		if (!playing) 
+		//Game.game.window.setAngles(0, 0, 0);
+		//Game.game.window.setOffsets(0,  0, 0);
+
+		if (!paused && Game.game.window.touchscreen)
+		{
+			pause.draw();
+			Drawing.drawing.drawInterfaceImage("/pause.png", pause.posX, pause.posY, 40, 40);
+
+			if (Drawing.drawing.enableMovingCamera)
+			{
+				zoom.draw();
+
+				if (Drawing.drawing.movingCamera)
+					Drawing.drawing.drawInterfaceImage("/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
+				else
+					Drawing.drawing.drawInterfaceImage("/zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+			}
+		}
+
+		if (!playing)
 		{
 			if (Crusade.crusadeMode)
 			{
@@ -929,11 +1046,11 @@ public class ScreenGame extends Screen
 			}
 
 			if (shopScreen)
-			{		
+			{
 				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.setColor(0, 0, 0);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Shop");
-	
+
 				this.exitShop.draw();
 
 				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)

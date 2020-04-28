@@ -13,7 +13,7 @@ public class Client
 {
 	public static ClientHandler handler;
 	
-    public static void connect(String host, int port) throws Exception 
+    public static void connect(String host, int port, boolean online) throws Exception
     {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         
@@ -28,7 +28,7 @@ public class Client
                 @Override
                 public void initChannel(SocketChannel ch)
                 {
-                	handler = new ClientHandler();
+                	handler = new ClientHandler(online);
                     ch.pipeline().addLast(handler);
                 }
             });

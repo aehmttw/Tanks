@@ -44,7 +44,7 @@ public class ScreenFailedToLoadLevel extends Screen
 
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Tanks failed to load the level!");
 
-		if (!ScreenPartyLobby.isClient)
+		if (!ScreenPartyLobby.isClient || Game.connectedToOnline)
 		{
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "This could be caused by a glitch in the editor,");
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "or by corruption of the level file.");

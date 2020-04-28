@@ -1,18 +1,17 @@
 package tanks.registry;
 
+import basewindow.BaseFile;
 import tanks.Game;
 import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 
 public class RegistryTank 
 {
@@ -32,8 +31,9 @@ public class RegistryTank
 		{
 			try 
 			{
-				Scanner in = new Scanner(new File(path));
-				while (in.hasNextLine()) 
+				BaseFile in = Game.game.fileManager.getFile(path);
+				in.startReading();
+				while (in.hasNextLine())
 				{
 					String line = in.nextLine();
 					String[] tankLine = line.split(",");
@@ -66,7 +66,7 @@ public class RegistryTank
 							ClassLoader loader = new URLClassLoader( new URL[] { new File(tankLine[3]).toURI().toURL() }); // super messy
 							@SuppressWarnings("unchecked")
 							Class<? extends Tank> clasz = (Class<? extends Tank>) loader.loadClass(tankLine[4]);
-							new RegistryTank.TankEntry(Game.registryTank, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
+							new TankEntry(Game.registryTank, clasz, tankLine[0], Double.parseDouble(tankLine[1]));
 						}
 						catch (Exception e) 
 						{
@@ -75,7 +75,7 @@ public class RegistryTank
 						}
 					}
 				}
-				in.close();
+				in.stopReading();
 			} 
 			catch (Exception e)
 			{
@@ -99,7 +99,7 @@ public class RegistryTank
 		String path = homedir + Game.tankRegistryPath;
 		try 
 		{
-			new File(path).createNewFile();
+			Game.game.fileManager.getFile(path).create();
 		}
 		catch (IOException e) 
 		{
@@ -108,28 +108,31 @@ public class RegistryTank
 		}
 		try 
 		{
-			PrintStream writer = new PrintStream(new File(path));
-			writer.println("# Warning! To use a custom Tank Registry, you MUST set use-custom-tank-registry ");
-			writer.println("# in options.txt from false to true!");
-			writer.println("# ");
-			writer.println("# This is the Tank Registry file!");
-			writer.println("# A registry entry is a line in the file");
-			writer.println("# The parameters are name, rarity, custom/default, jar location, and class");
-			writer.println("# Built in tanks do not use the last 2 parameters");
-			writer.println("# and have 'default' written for the third parameter");
-			writer.println("# To make a custom tank, import the 'Tanks' jar into a java project,");
-			writer.println("# write a class extending Tank or EnemyTank, and export as a jar file.");
-			writer.println("# To import a custom tank, put the jar file somewhere on your computer,");
-			writer.println("# put 'custom' for parameter 3");
-			writer.println("# and put its absolute file path as parameter 4 in this file.");
-			writer.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
-			writer.println("# Example custom tank entry: 'mytank,1,custom,C:\\Users\\potato\\.tanks.d\\MyTank.jar,com.potato.MyTank'");
-			writer.println("# Don't leave any blank lines!");
+			BaseFile f = Game.game.fileManager.getFile(path);
+			f.startWriting();
+			f.println("# Warning! To use a custom Tank Registry, you MUST set use-custom-tank-registry ");
+			f.println("# in options.txt from false to true!");
+			f.println("# ");
+			f.println("# This is the Tank Registry file!");
+			f.println("# A registry entry is a line in the file");
+			f.println("# The parameters are name, rarity, custom/default, jar location, and class");
+			f.println("# Built in tanks do not use the last 2 parameters");
+			f.println("# and have 'default' written for the third parameter");
+			f.println("# To make a custom tank, import the 'Tanks' jar into a java project,");
+			f.println("# write a class extending Tank or EnemyTank, and export as a jar file.");
+			f.println("# To import a custom tank, put the jar file somewhere on your computer,");
+			f.println("# put 'custom' for parameter 3");
+			f.println("# and put its absolute file path as parameter 4 in this file.");
+			f.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
+			f.println("# Example custom tank entry: 'mytank,1,custom,C:\\Users\\potato\\.tanks.d\\MyTank.jar,com.potato.MyTank'");
+			f.println("# Don't leave any blank lines!");
 
 			for (int i = 0; i < Game.defaultTanks.size(); i++)
 			{
-				writer.println(Game.defaultTanks.get(i).getString());
+				f.println(Game.defaultTanks.get(i).getString());
 			}
+
+			f.stopWriting();
 		} 
 		catch (Exception e)
 		{

@@ -5,8 +5,6 @@ import tanks.Crusade;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenPartyCrusadeInterlevel;
-import tanks.gui.screen.ScreenPartyInterlevel;
-import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 
 public class EventReturnToCrusade extends PersonalEvent

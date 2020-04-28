@@ -9,7 +9,6 @@ import tanks.hotbar.ItemBar;
 import tanks.hotbar.ItemBullet;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class TankPlayerRemote extends Tank
 {
@@ -163,7 +162,8 @@ public class TankPlayerRemote extends Tank
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);
 
-        this.forceMotion = true;
+        if (b.recoil != 0)
+            this.forceMotion = true;
     }
 
     @Override

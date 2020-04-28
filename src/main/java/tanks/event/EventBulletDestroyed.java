@@ -1,10 +1,8 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
-import tanks.tank.Tank;
 
 public class EventBulletDestroyed extends PersonalEvent
 {

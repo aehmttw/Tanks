@@ -2,12 +2,7 @@ package tanks.tank;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Movable;
 import tanks.bullet.BulletElectric;
-import tanks.event.EventPlaySound;
-import tanks.event.EventShootBullet;
-
-import java.util.ArrayList;
 
 public class TankBlue extends TankAIControlled
 {

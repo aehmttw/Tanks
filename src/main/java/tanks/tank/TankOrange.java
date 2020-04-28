@@ -36,7 +36,7 @@ public class TankOrange extends TankAIControlled
 
 			if (!(m == null))
 			{
-				if(m.equals(this.targetEnemy))
+				if (m.equals(this.targetEnemy))
 				{
 					Drawing.drawing.playGlobalSound("flame.ogg");
 

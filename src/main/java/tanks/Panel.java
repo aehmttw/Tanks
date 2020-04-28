@@ -1,10 +1,8 @@
 package tanks;
 
-import tanks.event.INetworkEvent;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenParty;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import basewindow.InputCodes;
+import tanks.event.online.IOnlineServerEvent;
+import tanks.gui.screen.*;
 import tanks.hotbar.Coins;
 import tanks.hotbar.Hotbar;
 import tanks.network.ClientHandler;
@@ -14,6 +12,8 @@ import tanks.tank.TankPlayerRemote;
 
 public class Panel
 {
+	public static boolean onlinePaused;
+
 	double zoomTimer = 0;
 
 	public static double windowWidth = 1400;
@@ -32,7 +32,7 @@ public class Panel
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
 	public static double frameFrequency = 1;
 
-	public Hotbar hotbar = new Hotbar(); 
+	public Hotbar hotbar = new Hotbar();
 
 	//ArrayList<Double> frameFrequencies = new ArrayList<Double>();
 
@@ -47,6 +47,8 @@ public class Panel
 
 	public int lastFPS = 0;
 
+	public ScreenOverlayOnline onlineOverlay;
+
 	protected static boolean initialized = false;
 
 	public Tank dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
@@ -60,14 +62,25 @@ public class Panel
 	}
 
 	private Panel()
-	{		
+	{
 		this.hotbar.enabledItemBar = false;
 		this.hotbar.currentCoins = new Coins();
 	}
 
 	public void update()
 	{
+		Panel.windowWidth = Game.game.window.absoluteWidth;
+		Panel.windowHeight = Game.game.window.absoluteHeight;
+
+		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+		Drawing.drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
+
+		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
+
 		Panel.frameFrequency = Game.game.window.frameFrequency;
+
+		Game.game.window.showKeyboard = false;
 
 		double introTime = 1000;
 		double introAnimationTime = 500;
@@ -75,7 +88,7 @@ public class Panel
 		if (Game.fancyGraphics && Game.enable3d)
 			introAnimationTime = 1000;
 
-		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime) 
+		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{
 			dummySpin.angle += 0.02 * frameFrequency;
 			return;
@@ -85,7 +98,8 @@ public class Panel
 		{
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
-				Game.eventsIn.get(i).execute();
+				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
+					Game.eventsIn.get(i).execute();
 			}
 
 			Game.eventsIn.clear();
@@ -115,18 +129,9 @@ public class Panel
 		if (Panel.panel.hotbar.currentCoins.coins < 0)
 			Panel.panel.hotbar.currentCoins.coins = 0;
 
-		Panel.windowWidth = Game.game.window.absoluteWidth;
-		Panel.windowHeight = Game.game.window.absoluteHeight;
-
-		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
-		Drawing.drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
-		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
-
-		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
-
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
-		if (Game.playerTank != null && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
+		if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
 				&& Game.screen instanceof ScreenGame && ((ScreenGame) (Game.screen)).playing)
 		{
 			Drawing.drawing.enableMovingCamera = true;
@@ -148,7 +153,7 @@ public class Panel
 
 		this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
 
-		Drawing.drawing.scale = Drawing.drawing.scale * (1 - zoomTimer) + Drawing.drawing.interfaceScale * zoomTimer; 
+		Drawing.drawing.scale = Drawing.drawing.scale * (1 - zoomTimer) + Drawing.drawing.interfaceScale * zoomTimer;
 
 		if (Panel.windowWidth > Game.currentSizeX * Game.tank_size * Drawing.drawing.scale)
 			Drawing.drawing.enableMovingCameraX = false;
@@ -164,64 +169,83 @@ public class Panel
 			Drawing.drawing.enableMovingCameraY = true;
 		}
 
-		Game.screen.update();
+		if (Game.connectedToOnline)
+		{
+			if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
+			{
+				Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+
+				onlinePaused = !onlinePaused;
+			}
+		}
+		else
+			onlinePaused = false;
+
+		if (!onlinePaused)
+			Game.screen.update();
+		else
+			this.onlineOverlay.update();
 
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 		{
-			for (int i = 0; i < Game.eventsOut.size(); i++)
+			synchronized (ScreenPartyHost.server.connections)
 			{
-				//synchronized(ScreenPartyHost.server.connections)
+				for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
 				{
-					for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
+					synchronized (ScreenPartyHost.server.connections.get(j).events)
 					{
-						INetworkEvent e = Game.eventsOut.get(i);
-
-						ScreenPartyHost.server.connections.get(j).events.add(e);
+						ScreenPartyHost.server.connections.get(j).events.addAll(Game.eventsOut);
 					}
+
+					//ScreenPartyHost.server.connections.get(j).reply();
 				}
 			}
 
 			Game.eventsOut.clear();
 		}
 
-		//long end = System.nanoTime();
-		//System.out.println("Updating took: " + (end - start));
-		//System.out.println(Game.effects.size());
-		//System.out.println(Game.recycleEffects.size());
-
-		//repaint();
+		/*if (ScreenPartyLobby.isClient)
+		{
+			Client.handler.reply();
+		}*/
 	}
 
 	public void draw()
-	{	
+	{
 		double introTime = 1000;
 		double introAnimationTime = 500;
-		
+
 		if (Game.fancyGraphics && Game.enable3d)
 			introAnimationTime = 1000;
-		
+
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
-		{	
-			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
-			Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);	
-			
+		{
+			double frac = ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
+			double frac2 = Math.max(0, frac);
+
+			Drawing.drawing.setColor(Level.currentColorR * (1 - frac2) + 174 * frac2, Level.currentColorG * (1 - frac2) + 92 * frac2, Level.currentColorB * (1 - frac2) + 16 * frac2);
+			Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);
+
 			/*Drawing.drawing.setColor(255, 255, 255);
 			Drawing.drawing.drawInterfaceImage("/tanks//loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
 			*/
-			
+
 			if (System.currentTimeMillis() - startTime > introTime)
 			{
-				Game.screen.drawDefaultBackground((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
-				drawBar(80 - ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime) * 40);
+				Game.screen.drawDefaultBackground(frac);
+				drawBar(40 - frac * 40);
 			}
-			
+
 			dummySpin.draw();
 			drawMouseTarget();
 			return;
 		}
 
-		Drawing.drawing.setColor(174, 92, 16);
-		Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 4, Drawing.drawing.interfaceSizeY * 4);				
+		if (!(Game.screen instanceof ScreenExit))
+		{
+			Drawing.drawing.setColor(174, 92, 16);
+			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 4, Drawing.drawing.interfaceSizeY * 4);
+		}
 
 		long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
 		if (lastFrameSec < time && lastFrameSec != firstFrameSec)
@@ -231,15 +255,20 @@ public class Panel
 		}
 
 
-		lastFrameSec = time;	
+		lastFrameSec = time;
 		frames++;
 
 		//g.setColor(new Color(255, 227, 186));
 		//g.fillRect(0, 0, (int) (Screen.sizeX * Screen.scale), (int) (Screen.sizeY * Screen.scale));
 
-		Game.screen.draw();
 
-		this.drawBar();
+		if (onlinePaused)
+			this.onlineOverlay.draw();
+		else
+			Game.screen.draw();
+
+		if (!(Game.screen instanceof ScreenExit))
+			this.drawBar();
 
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
@@ -254,6 +283,9 @@ public class Panel
 
 	public void drawMouseTarget(boolean force)
 	{
+		if (Game.game.window.touchscreen)
+			return;
+
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
@@ -291,10 +323,12 @@ public class Panel
 
 		Drawing.drawing.setFontSize(12);
 
-		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
-		Game.game.window.fontRenderer.drawString(2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
+		double boundary = Game.game.window.getEdgeBounds();
 
-		Game.game.window.fontRenderer.drawString(600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
+		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
+		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
+
+		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
 
 		long free = Runtime.getRuntime().freeMemory();
 		long total = Runtime.getRuntime().totalMemory();
@@ -303,13 +337,13 @@ public class Panel
 		if (free < 1048576 * 5)
 			Drawing.drawing.setColor(255, 127, 0);
 
-		Game.game.window.fontRenderer.drawString(150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB");
+		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB");
 
-		if (ScreenPartyLobby.isClient)
+		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
 			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
 			Drawing.drawing.setColor(col[0], col[1], col[2]);
-			Game.game.window.fontRenderer.drawString(150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
+			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
 		}
 	}
 

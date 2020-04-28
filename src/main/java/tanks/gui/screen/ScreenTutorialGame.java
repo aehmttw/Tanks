@@ -4,8 +4,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 
-import java.io.File;
-
 public class ScreenTutorialGame extends ScreenGame
 {
 	public ScreenTutorialGame()
@@ -20,7 +18,7 @@ public class ScreenTutorialGame extends ScreenGame
 		{
 			try 
 			{
-				new File(Game.homedir + Game.tutorialPath).createNewFile();
+				Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath).create();
 			} 
 			catch (Exception e)
 			{

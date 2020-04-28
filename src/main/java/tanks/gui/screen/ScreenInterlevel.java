@@ -4,7 +4,6 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class ScreenInterlevel extends Screen implements IDarkScreen
@@ -45,7 +44,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run() 
 		{
-			Tutorial.loadTutorial(!Panel.win && tutorialInitial);
+			Tutorial.loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen);
 		}
 	}
 			);
@@ -55,7 +54,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run() 
 		{
-			Tutorial.loadTutorial(!Panel.win && tutorialInitial);
+			Tutorial.loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen);
 		}
 	}
 			);
@@ -178,7 +177,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			Game.exitToTitle();
 			try 
 			{
-				new File(Game.homedir + Game.tutorialPath).createNewFile();
+				Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath).create();
 			} 
 			catch (Exception e)
 			{
@@ -270,7 +269,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	public ScreenInterlevel()
 	{
-		Panel.panel.hotbar.bottomOffset = 100;
+		Panel.panel.hotbar.percentHidden = 100;
 
 		if (Crusade.crusadeMode)
 		{

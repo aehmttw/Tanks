@@ -86,6 +86,12 @@ public class Panel
 
 			Drawing.drawing.setInterfaceScaleZoom(scale);
 
+			BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
+			if (!optionsFile.exists())
+			{
+				ScreenOptions.initOptions(Game.homedir);
+			}
+
 			ScreenOptions.loadOptions(Game.homedir);
 
 			this.hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;

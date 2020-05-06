@@ -294,12 +294,6 @@ public class Game
 			RegistryObstacle.initRegistry(homedir);
 		}
 
-		BaseFile optionsFile = game.fileManager.getFile(homedir + optionsPath);
-		if (!optionsFile.exists())
-		{
-			ScreenOptions.initOptions(homedir);
-		}
-
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
 		if (!uuidFile.exists())
 		{

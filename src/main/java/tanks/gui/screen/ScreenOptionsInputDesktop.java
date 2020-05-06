@@ -61,7 +61,7 @@ public class ScreenOptionsInputDesktop extends Screen
 
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "Input options");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Input options");
     }
 
 }

@@ -293,7 +293,8 @@ public class TextBox implements IDrawable
 
 	public void submit()
 	{
-		Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ENTER);
+		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 
 		this.performValueCheck();
 		function.run();
@@ -314,7 +315,7 @@ public class TextBox implements IDrawable
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE) && selected)
 		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 			selected = false;
 			this.inputText = this.previousInputText;
 			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);

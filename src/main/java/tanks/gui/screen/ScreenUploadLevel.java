@@ -141,7 +141,7 @@ public class ScreenUploadLevel extends ScreenOnline
             buttons.get(i).draw();
         }
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "Select a level to upload...");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Select a level to upload...");
 
         if (page > 0)
             previous.draw();

@@ -24,7 +24,7 @@ public class Hotbar
 
 	public double hideTimer = 0;
 
-	Button toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", new Runnable()
+	public Button toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", new Runnable()
 	{
 		@Override
 		public void run()

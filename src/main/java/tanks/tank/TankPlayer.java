@@ -10,16 +10,9 @@ import tanks.gui.Joystick;
 
 public class TankPlayer extends Tank implements IPlayerTank
 {
-	public static Joystick controlStick = new Joystick(150, Drawing.drawing.interfaceSizeY - 150, 200);
-	public static Joystick shootStick = new Joystick(Drawing.drawing.interfaceSizeX - 150, Drawing.drawing.interfaceSizeY - 150, 200);
-	public static Button mineButton = new Button(Drawing.drawing.interfaceSizeX - 300, Drawing.drawing.interfaceSizeY - 75, 60, 60, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Drawing.drawing.playVibration("heavyClick");
-		}
-	});
+	public static Joystick controlStick;
+	public static Joystick shootStick;
+	public static Button mineButton;
 
 	public Player player = Game.player;
 	public boolean enableDestroyCheat = false;

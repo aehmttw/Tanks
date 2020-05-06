@@ -146,7 +146,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			if (teams.size() != teamEditButtons.size())
 			{
 				reload();
-				((ScreenLevelBuilder) Game.screen).teamsMenu = true;
+				((ScreenLevelBuilder)Game.screen).teamsMenu = true;
 			}
 
 			teamsMenu = true;
@@ -200,9 +200,9 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			reload();
-			((ScreenLevelBuilder) Game.screen).optionsMenu = true;
-			((ScreenLevelBuilder) Game.screen).teamsMenu = true;
-			((ScreenLevelBuilder) Game.screen).selectedTeam = null;
+			((ScreenLevelBuilder)Game.screen).optionsMenu = true;
+			((ScreenLevelBuilder)Game.screen).teamsMenu = true;
+			((ScreenLevelBuilder)Game.screen).selectedTeam = null;
 		}
 	}
 	);
@@ -371,7 +371,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				reload();
 			}
 
-			ScreenLevelBuilder s = ((ScreenLevelBuilder) Game.screen);
+			ScreenLevelBuilder s = ((ScreenLevelBuilder)Game.screen);
 			s.currentPlaceable = currentPlaceable;
 			s.objectMenu = true;
 			s.selectTeamMenu = true;
@@ -390,9 +390,9 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		{
 			teams.remove(selectedTeam);
 			reload();
-			((ScreenLevelBuilder) Game.screen).paused = true;
-			((ScreenLevelBuilder) Game.screen).optionsMenu = true;
-			((ScreenLevelBuilder) Game.screen).teamsMenu = true;
+			((ScreenLevelBuilder)Game.screen).paused = true;
+			((ScreenLevelBuilder)Game.screen).optionsMenu = true;
+			((ScreenLevelBuilder)Game.screen).teamsMenu = true;
 		}
 	}
 	);
@@ -567,10 +567,10 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			Team t = new Team(System.currentTimeMillis() + "");
 			teams.add(t);
 			reload();
-			((ScreenLevelBuilder) Game.screen).teamsMenu = true;
-			((ScreenLevelBuilder) Game.screen).editTeamMenu = true;
-			((ScreenLevelBuilder) Game.screen).teamName.inputText = t.name;
-			((ScreenLevelBuilder) Game.screen).selectedTeam = ((ScreenLevelBuilder) Game.screen).teams.get(teams.size() - 1);
+			((ScreenLevelBuilder)Game.screen).teamsMenu = true;
+			((ScreenLevelBuilder)Game.screen).editTeamMenu = true;
+			((ScreenLevelBuilder)Game.screen).teamName.inputText = t.name;
+			((ScreenLevelBuilder)Game.screen).selectedTeam = ((ScreenLevelBuilder)Game.screen).teams.get(teams.size() - 1);
 		}
 	}
 	);
@@ -670,7 +670,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 					width = Integer.parseInt(sizeX.inputText);
 
 				reload();
-				((ScreenLevelBuilder) Game.screen).sizeMenu = true;
+				((ScreenLevelBuilder)Game.screen).sizeMenu = true;
 			}
 
 		}
@@ -684,9 +684,6 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		sizeX.checkMaxValue = true;
 		sizeX.checkMinValue = true;
 
-		if (Game.framework == Game.Framework.libgdx)
-			sizeX.maxValue = 60;
-
 		sizeY = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Height", new Runnable()
 		{
 			@Override
@@ -698,7 +695,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 					height = Integer.parseInt(sizeY.inputText);
 
 				reload();
-				((ScreenLevelBuilder) Game.screen).sizeMenu = true;
+				((ScreenLevelBuilder)Game.screen).sizeMenu = true;
 			}
 
 		}
@@ -711,9 +708,6 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		sizeY.minValue = 1;
 		sizeY.checkMaxValue = true;
 		sizeY.checkMinValue = true;
-
-		if (Game.framework == Game.Framework.libgdx)
-			sizeY.maxValue = 60;
 
 		colorRed = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Red", new Runnable()
 		{
@@ -729,7 +723,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				colorVarRed.performValueCheck();
 
 				reload(true);
-				((ScreenLevelBuilder) Game.screen).colorMenu = true;
+				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
 		}
@@ -755,7 +749,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				colorVarGreen.performValueCheck();
 
 				reload(true);
-				((ScreenLevelBuilder) Game.screen).colorMenu = true;
+				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
 		}
@@ -781,7 +775,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				colorVarBlue.performValueCheck();
 
 				reload(true);
-				((ScreenLevelBuilder) Game.screen).colorMenu = true;
+				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
 		}
@@ -804,7 +798,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				dr = Integer.parseInt(colorVarRed.inputText);
 
 				reload(true);
-				((ScreenLevelBuilder) Game.screen).colorMenu = true;
+				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
 		}
@@ -826,7 +820,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				dg = Integer.parseInt(colorVarGreen.inputText);
 
 				reload(true);
-				((ScreenLevelBuilder) Game.screen).colorMenu = true;
+				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
 		}
@@ -848,7 +842,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				db = Integer.parseInt(colorVarBlue.inputText);
 
 				reload(true);
-				((ScreenLevelBuilder) Game.screen).colorMenu = true;
+				((ScreenLevelBuilder)Game.screen).colorMenu = true;
 			}
 
 		}
@@ -956,7 +950,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			this.teams.add(new Team("ally"));
 			this.teams.add(new Team("enemy"));
 
-			TankSpawnMarker t = new TankSpawnMarker("player", Game.tank_size / 2, Game.tank_size / 2, 0);
+			TankSpawnMarker t = new TankSpawnMarker("player",Game.tank_size / 2, Game.tank_size / 2, 0);
 			t.team = this.teams.get(0);
 			Game.movables.add(t);
 			this.spawns.add(t);
@@ -1886,7 +1880,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		{
 			if (Game.movables.get(i) instanceof Tank)
 			{
-				Tank t = (Tank) Game.movables.get(i);
+				Tank t = (Tank)Game.movables.get(i);
 				int x = (int) (t.posX / Game.tank_size);
 				int y = (int) (t.posY / Game.tank_size);
 				int angle = (int) (t.angle * 2 / Math.PI);
@@ -2375,7 +2369,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			return;
 
 		Drawing.drawing.setColor(0, 0, 0, 127);
-		Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, 1300, 60);
+		Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, 1120, 60);
 
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(255, 255, 255);

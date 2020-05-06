@@ -12,6 +12,9 @@ public abstract class BaseWindow
 
     public boolean angled = false;
 
+    public double pointWidth = -1;
+    public double pointHeight = -1;
+
     public double absoluteWidth;
     public double absoluteHeight;
     public double absoluteDepth;

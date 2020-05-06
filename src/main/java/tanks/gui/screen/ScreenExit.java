@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Level;
 import tanks.Panel;
 
 public class ScreenExit extends Screen
@@ -41,8 +42,8 @@ public class ScreenExit extends Screen
             double frac = ((System.currentTimeMillis() - startTime) / outroAnimationTime);
             double frac2 = Math.min(1, frac);
 
-            Drawing.drawing.setColor(174 * (1 - frac2), 92 * (1 - frac2), 16 * (1 - frac2));
-            Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);
+            Drawing.drawing.setColor(Level.currentColorR * (1 - frac2), Level.currentColorG * (1 - frac2), Level.currentColorB * (1 - frac2));
+            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth * 1.2 / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight * 1.2 / Drawing.drawing.interfaceScale);
 
             Drawing.drawing.setInterfaceFontSize(48);
             Drawing.drawing.setColor(255, 255, 255, 255 * Math.max(0, Math.min(1 - ((System.currentTimeMillis() - startTime - outroAnimationTime) / outroTime), 1)));

@@ -24,8 +24,13 @@ public class ScreenJoinParty extends Screen
 		@Override
 		public void run() 
 		{
-			if (clientThread != null && clientThread.isAlive())
-				clientThread.stop();
+			try
+			{
+				if (clientThread != null && clientThread.isAlive())
+					clientThread.stop();
+			}
+			catch (Exception ignored) {}
+
 			Game.screen = new ScreenParty();
 		}
 	}
@@ -115,6 +120,6 @@ public class ScreenJoinParty extends Screen
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(24);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "Join a party");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Join a party");
 	}
 }

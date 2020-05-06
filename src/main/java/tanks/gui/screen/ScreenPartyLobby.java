@@ -1,9 +1,7 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.event.EventChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
@@ -30,15 +28,7 @@ public class ScreenPartyLobby extends Screen
 	public static int username_y_offset = -230;
 	public static int username_x_offset = 0;
 
-	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, InputCodes.KEY_T, new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.eventsOut.add(new EventChat(chatbox.inputText));
-		}
-
-	});
+	public static ChatBox chatbox;
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Leave party", new Runnable()
 	{

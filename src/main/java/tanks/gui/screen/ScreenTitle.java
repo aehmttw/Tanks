@@ -10,7 +10,7 @@ import tanks.tank.TankPlayer;
 public class ScreenTitle extends Screen
 {
 	boolean controlPlayer = false;
-	TankPlayer logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250, 0);
+	TankPlayer logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
 	{
@@ -82,13 +82,15 @@ public class ScreenTitle extends Screen
 	public ScreenTitle()
 	{
 		Game.movables.clear();
-		this.logo.size *= 1.5;
-		this.logo.turret.length *= 1.5;
-		this.logo.turret.size *= 1.5;
+		this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
+		this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom;
+		this.logo.turret.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
 		this.logo.invulnerable = true;
 		this.logo.drawAge = 50;
 		this.logo.depthTest = false;
 		Game.movables.add(logo);
+
+		takeControl.silent = true;
 	}
 	
 	@Override
@@ -160,7 +162,7 @@ public class ScreenTitle extends Screen
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(60);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 150, "Tanks");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Tanks");
 	}
 
 	@Override

@@ -38,6 +38,7 @@ public class ChatBox extends TextBox
 		this.selectedFullColorB = 0;
 
 		String defaultText = "Click here or press 'T' to send a chat message";
+
 		if (Game.game.window.touchscreen)
 			defaultText = "Click here to send a chat message";
 
@@ -99,24 +100,14 @@ public class ChatBox extends TextBox
 			Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
 		}
 
-		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
-		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
-			this.selected = false;
-			this.inputText = this.defaultText;
-			Game.game.window.showKeyboard = false;
-
-			Drawing.drawing.playVibration("click");
-			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
-		}
-
 		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
 		{
 			if (this.inputText.length() > 0)
 				this.function.run();
 
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ENTER);
-			Game.game.window.pressedKeys.remove((Integer)InputCodes.KEY_ENTER);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+			Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 
 			this.selected = false;
 			this.inputText = this.defaultText;
@@ -124,6 +115,17 @@ public class ChatBox extends TextBox
 
 			Drawing.drawing.playVibration("click");
 			Drawing.drawing.playSound("destroy.ogg", 2f);
+		}
+
+		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
+		{
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+			this.selected = false;
+			this.inputText = this.defaultText;
+			Game.game.window.showKeyboard = false;
+
+			Drawing.drawing.playVibration("click");
+			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
 		}
 
 		if (this.selected)
@@ -151,7 +153,7 @@ public class ChatBox extends TextBox
 			this.inputText = "";
 			selected = true;
 			handled = true;
-			Game.game.window.validPressedButtons.remove((Integer)InputCodes.MOUSE_BUTTON_1);
+			Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
 			Game.game.window.getRawTextKeys().clear();
 			Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
 			Drawing.drawing.playVibration("click");
@@ -159,7 +161,7 @@ public class ChatBox extends TextBox
 
 		if (clearSelected && valid)
 		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 			this.selected = false;
 			this.inputText = this.defaultText;
 			handled = true;

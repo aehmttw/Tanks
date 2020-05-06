@@ -49,7 +49,7 @@ public class ScreenConnecting extends Screen
 	{
 		this.drawDefaultBackground();
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(24);
 
 		double size = Math.min(1, time / 50);
 		double size2 = Math.min(1, Math.max(0, time / 50 - 0.25));
@@ -80,7 +80,7 @@ public class ScreenConnecting extends Screen
 		{
 			double frac = (System.currentTimeMillis() / 1000.0 * speed + i / 100.0) % 1;
 			double s = (i % (max * 1.0 / parts)) / 10.0 * parts;
-			Drawing.drawing.fillOval(Drawing.drawing.interfaceSizeX / 2 + size * Math.cos(frac * Math.PI * 2),
+			Drawing.drawing.fillInterfaceOval(Drawing.drawing.interfaceSizeX / 2 + size * Math.cos(frac * Math.PI * 2),
 					Drawing.drawing.interfaceSizeY / 2 - 25 + size * Math.sin(frac * Math.PI * 2),
 					s * dotSize, s * dotSize);
 		}

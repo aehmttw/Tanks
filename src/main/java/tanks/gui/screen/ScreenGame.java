@@ -249,6 +249,7 @@ public class ScreenGame extends Screen
 		{
 			Game.cleanUp();
 			System.gc();
+			Panel.panel.zoomTimer = 0;
 			Game.screen = new ScreenPlaySavedLevels();
 			ScreenInterlevel.fromSavedLevels = false;
 
@@ -269,6 +270,7 @@ public class ScreenGame extends Screen
 		{
 			Game.cleanUp();
 			System.gc();
+			Panel.panel.zoomTimer = 0;
 			Game.screen = ScreenPartyHost.activeScreen;
 			ScreenPartyHost.readyPlayers.clear();
 			ScreenPartyHost.includedPlayers.clear();
@@ -285,6 +287,7 @@ public class ScreenGame extends Screen
 		{
 			Game.cleanUp();
 			System.gc();
+			Panel.panel.zoomTimer = 0;
 			ScreenPartyLobby.isClient = false;
 			Game.screen = new ScreenJoinParty();
 			Client.handler.ctx.close();
@@ -340,6 +343,7 @@ public class ScreenGame extends Screen
 					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
 			}
 
+			Panel.panel.zoomTimer = 0;
 			Game.cleanUp();
 			System.gc();
 			Game.screen = ScreenPartyHost.activeScreen;
@@ -358,6 +362,7 @@ public class ScreenGame extends Screen
 			Crusade.crusadeMode = false;
 			Crusade.currentCrusade = null;
 
+			Panel.panel.zoomTimer = 0;
 			Game.cleanUp();
 			System.gc();
 			Game.screen = ScreenPartyHost.activeScreen;
@@ -517,13 +522,13 @@ public class ScreenGame extends Screen
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F1))
 		{
 			this.screenshotMode = !this.screenshotMode;
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_F1);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_F1);
 		}
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_I))
 		{
 			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_I);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_I);
 		}
 
 		if (!finished)

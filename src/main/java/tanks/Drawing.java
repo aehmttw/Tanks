@@ -1,6 +1,10 @@
 package tanks;
 
 import tanks.event.EventPlaySound;
+import tanks.gui.Button;
+import tanks.gui.Joystick;
+import tanks.obstacle.Obstacle;
+import tanks.tank.TankPlayer;
 
 public class Drawing
 {
@@ -12,8 +16,13 @@ public class Drawing
 	public double playerX = sizeX / 2;
 	public double playerY = sizeY / 2;
 
-	public double interfaceSizeX = 1400;
-	public double interfaceSizeY = 900;
+	public double interfaceScaleZoom = 1;
+
+	public double baseInterfaceSizeX = 1400;
+	public double baseInterfaceSizeY = 900;
+
+	public double interfaceSizeX = baseInterfaceSizeX / interfaceScaleZoom;
+	public double interfaceSizeY = baseInterfaceSizeY / interfaceScaleZoom;
 
 	public double scale = 1;
 	public double unzoomedScale = 1;
@@ -54,6 +63,32 @@ public class Drawing
 			this.statsHeight = 40;
 		else
 			this.statsHeight = 0;
+	}
+
+	public void setInterfaceScaleZoom(double value)
+	{
+		this.interfaceScaleZoom = value;
+		this.interfaceSizeX = baseInterfaceSizeX / interfaceScaleZoom;
+		this.interfaceSizeY = baseInterfaceSizeY / interfaceScaleZoom;
+
+		TankPlayer.controlStick = new Joystick(150, Drawing.drawing.interfaceSizeY - 150, 200);
+		TankPlayer.shootStick = new Joystick(Drawing.drawing.interfaceSizeX - 150, Drawing.drawing.interfaceSizeY - 150, 200);
+		TankPlayer.mineButton = new Button(Drawing.drawing.interfaceSizeX - 300, Drawing.drawing.interfaceSizeY - 75, 60, 60, "", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Drawing.drawing.playVibration("heavyClick");
+			}
+		});
+
+		TankPlayer.shootStick.clickIntensities[0] = 1.0;
+		TankPlayer.shootStick.mobile = false;
+		TankPlayer.shootStick.snap = true;
+		TankPlayer.shootStick.colorR = 255;
+		TankPlayer.shootStick.colorB = 0;
+		TankPlayer.shootStick.name = "aim";
+		TankPlayer.mineButton.silent = true;
 	}
 
 	public void setColor(double r, double g, double b)
@@ -98,7 +133,7 @@ public class Drawing
 
 		double dZ = z * scale;
 
-		if (Game.game.window.angled)
+		if (Game.game.window.angled && facing)
 			Game.game.window.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 		else
 			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
@@ -541,7 +576,7 @@ public class Drawing
 		
 		double rawX = interfaceScale * (x1);
 
-		rawX -= (1400 - sizeX * scale / interfaceScale) / 2 * interfaceScale;
+		rawX -= (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 
 		return (rawX) / scale - getPlayerMouseOffsetX();
 	}
@@ -555,7 +590,7 @@ public class Drawing
 		
 		double rawY = interfaceScale * (y1);
 		
-		rawY -= (900 - sizeY * scale / interfaceScale) / 2 * interfaceScale;
+		rawY -= (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
 		return (rawY) / scale - getPlayerMouseOffsetY();
 	}
@@ -563,7 +598,7 @@ public class Drawing
 	public double toInterfaceCoordsX(double x)
 	{
 		double rawX = (x + getPlayerMouseOffsetX()) * scale;
-		rawX += (1400 - sizeX * scale / interfaceScale) / 2 * interfaceScale;
+		rawX += (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 		double x1 = rawX / interfaceScale;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
@@ -575,7 +610,7 @@ public class Drawing
 	public double toInterfaceCoordsY(double y)
 	{
 		double rawY = (y + getPlayerMouseOffsetY()) * scale;
-		rawY += (900 - sizeY * scale / interfaceScale) / 2 * interfaceScale;
+		rawY += (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 		double y1 = rawY / interfaceScale;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraY)
@@ -636,12 +671,29 @@ public class Drawing
 
 		double result = (playerX - (Panel.windowWidth) / scale / 2);
 
-		if (result < 0)
-			return 0;
-		else if (result + (Panel.windowWidth) / scale > sizeX)
-			return 0 - (sizeX - (Panel.windowWidth) / scale);
+		double margin = Math.max(0, Math.min(Game.tank_size * 2, Game.currentSizeX * Obstacle.obstacle_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
+
+		boolean less = result < -margin;
+		boolean greater = result + (Panel.windowWidth) / scale > sizeX + margin;
+
+		if (scale * Game.currentSizeX * Game.tank_size + margin > Panel.windowWidth)
+		{
+			if (less && !greater)
+				return margin;
+			else if (greater && !less)
+				return -margin - (sizeX - (Panel.windowWidth) / scale);
+			else
+				return 0 - result;
+		}
 		else
-			return 0 - result;
+		{
+			if (less && !greater)
+				return margin;
+			else if (greater && !less)
+				return -margin;
+			else
+				return 0;
+		}
 	}
 
 	public double getPlayerOffsetY()
@@ -649,14 +701,31 @@ public class Drawing
 		if (!enableMovingCameraY)
 			return 0;
 
-		double result = (playerY - Panel.windowHeight / scale / 2);
+		double result = (playerY - (Panel.windowHeight - statsHeight) / scale / 2);
 
-		if (result < 0)
-			return 0;
-		else if (result + (Panel.windowHeight - statsHeight) / scale > sizeY)
-			return 0 - (sizeY - (Panel.windowHeight - statsHeight) / scale);
+		double margin = Math.max(0, Math.min(Game.tank_size * 2, Game.currentSizeY * Obstacle.obstacle_size * Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
+
+		boolean less = result < -margin;
+		boolean greater = result + (Panel.windowHeight - statsHeight) / scale > sizeY + margin;
+
+		if (scale * Game.currentSizeY * Game.tank_size + margin > Panel.windowHeight - statsHeight)
+		{
+			if (less && !greater)
+				return margin;
+			else if (greater && !less)
+				return -margin - (sizeY - (Panel.windowHeight - statsHeight) / scale);
+			else
+				return 0 - result;
+		}
 		else
-			return 0 - result;
+		{
+			if (less && !greater)
+				return margin;
+			else if (greater && !less)
+				return -margin;
+			else
+				return 0;
+		}
 	}
 	
 	public double getPlayerMouseOffsetX()
@@ -664,7 +733,7 @@ public class Drawing
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
 			return 0;
 
-		return getPlayerOffsetX() + (Game.currentSizeX / 28.0 - 1) * interfaceSizeX / 2;
+		return getPlayerOffsetX() + (Game.currentSizeX * Drawing.drawing.interfaceScaleZoom / 28.0 - 1) * interfaceSizeX / 2;
 	}
 
 	public double getPlayerMouseOffsetY()
@@ -672,6 +741,16 @@ public class Drawing
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
 			return 0;
 
-		return getPlayerOffsetY() + (Game.currentSizeY / 18.0 - 1) * interfaceSizeY / 2;
+		return getPlayerOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2;
+	}
+
+	public double getHorizontalMargin()
+	{
+		return (Game.game.window.absoluteWidth - sizeX / scale) / 2;
+	}
+
+	public double getVerticalMargin()
+	{
+		return (Game.game.window.absoluteHeight - statsHeight - sizeY / scale) / 2;
 	}
 }

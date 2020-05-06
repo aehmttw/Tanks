@@ -70,7 +70,7 @@ public class ScreenConnectionCheck extends Screen
 		this.drawDefaultBackground();
 
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(24);
 
 		if (!this.connecting)
 		{

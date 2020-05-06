@@ -48,7 +48,7 @@ public class ItemBar
 
 		for (int i = 0; i < this.slotButtons.length; i++)
 		{
-			int j = i;
+			final int j = i;
 			this.slotButtons[i] = new Button(0, 0, size + 2.5, size * 1.5, "", new Runnable()
 			{
 				@Override
@@ -244,7 +244,7 @@ public class ItemBar
 				if (item.stackSize > 1)
 				{
 					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.hotbar.percentHidden) * 2.55);
-					Drawing.drawing.setFontSize(18);
+					Drawing.drawing.setInterfaceFontSize(18);
 					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
 					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.hotbar.percentHidden) / 100.0);
 				}

@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import tanks.*;
-import tanks.event.EventPlayerChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
@@ -35,16 +33,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
-	public static ChatBox chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, 1380, 40, InputCodes.KEY_T, new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			chat.add(0, new ChatMessage(Game.player.username, chatbox.inputText));
-			Game.eventsOut.add(new EventPlayerChat(Game.player.username, chatbox.inputText));
-		}
-
-	});
+	public static ChatBox chatbox;
 
 	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
 	{
@@ -142,7 +131,10 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 	public ScreenPartyHost()
 	{
 		if (Game.game.window.touchscreen)
+		{
 			chatbox.defaultText = "Click here to send a chat message";
+			quit.posY -= 30;
+		}
 
 		for (int i = 0; i < this.kickButtons.length; i++)
 		{

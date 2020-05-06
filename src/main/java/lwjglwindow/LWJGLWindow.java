@@ -94,6 +94,7 @@ public class LWJGLWindow extends BaseWindow
 		// after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
 		// resizable
+		//glfwWindowHint(GLFW_SAMPLES, 4);
 
 		// Create the window
 		window = glfwCreateWindow((int)this.absoluteWidth, (int)this.absoluteHeight, this.name, NULL, NULL);
@@ -705,6 +706,7 @@ public class LWJGLWindow extends BaseWindow
 		glMatrixMode(GL_MODELVIEW);
 		//glLoadIdentity();
 		glEnable(GL_TEXTURE_2D);
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

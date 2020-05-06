@@ -30,16 +30,56 @@ public abstract class Screen
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
-		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
-		Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
+		double frac = 0;
+
+		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen)
+			frac = Obstacle.draw_size / Obstacle.obstacle_size;
+
+		if (!(Game.screen instanceof ScreenExit))
+		{
+			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG,16 * frac + (1 - frac) * Level.currentColorB);
+			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+
+			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
+			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
+		}
 
 		if (Game.fancyGraphics)
 		{
-			for (int i = 0; i < Game.currentSizeX; i++)
+			int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Obstacle.obstacle_size);
+			int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Obstacle.obstacle_size);
+
+			for (int i1 = (Game.currentSizeX - width) / 2 - 1; i1 < width + 1; i1++)
 			{
-				for (int j = 0; j < Game.currentSizeY; j++)
-				{				
-					Drawing.drawing.setColor(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j]);
+				int i = i1;
+				while (i < 0)
+					i += Game.currentSizeX;
+
+				i = i % Game.currentSizeX;
+
+				for (int j1 = (Game.currentSizeY - height) / 2 - 1; j1 < height + 1; j1++)
+				{
+					boolean inBounds = true;
+
+					int j = j1;
+					while (j < 0)
+						j += Game.currentSizeY;
+
+					j = j % Game.currentSizeY;
+
+					double frac2 = 0;
+					if (i1 >= 0 && i1 < Game.currentSizeX && j1 >= 0 && j1 < Game.currentSizeY)
+						Drawing.drawing.setColor(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j]);
+					else
+					{
+						inBounds = false;
+						frac2 = frac;
+
+						if (frac == 1)
+							continue;
+
+						Drawing.drawing.setColor(174 * frac + (1 - frac) * Game.tilesR[i][j], 92 * frac + (1 - frac) * Game.tilesG[i][j],16 * frac + (1 - frac) * Game.tilesB[i][j]);
+					}
 
 					if (Game.enable3d)
 					{
@@ -51,7 +91,7 @@ public abstract class Screen
 						if (Game.enable3dBg)
 							o = 0;
 
-						if (Game.tileDrawables[i][j] != null)
+						if (Game.tileDrawables[i][j] != null && inBounds)
 						{
 							Game.tileDrawables[i][j].drawTile(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j], z1);
 							Game.tileDrawables[i][j] = null;
@@ -60,8 +100,8 @@ public abstract class Screen
 						{
 							if (size != 1)
 								Drawing.drawing.fillBox( 
-										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
-										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										(i1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										(j1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
 										Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Obstacle.obstacle_size + z1,
 										Obstacle.obstacle_size / Game.bgResMultiplier, 
 										Obstacle.obstacle_size / Game.bgResMultiplier,
@@ -69,19 +109,19 @@ public abstract class Screen
 							else
 							{
 								Drawing.drawing.fillBox(
-										(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-										(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										(i1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										(j1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
 										0,
 										Obstacle.obstacle_size / Game.bgResMultiplier,
 										Obstacle.obstacle_size / Game.bgResMultiplier,
-										z1, o);
+										z1 * (1 - frac2), o);
 							}
 						}
 					}
 					else
 						Drawing.drawing.fillRect( 
-								(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
-								(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
+								(i1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+								(j1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
 								Obstacle.obstacle_size * size / Game.bgResMultiplier, 
 								Obstacle.obstacle_size * size / Game.bgResMultiplier);
 				}

@@ -1,7 +1,12 @@
 package tanks;
 
+import basewindow.BaseFile;
 import basewindow.InputCodes;
+import tanks.event.EventChat;
+import tanks.event.EventPlayerChat;
 import tanks.event.online.IOnlineServerEvent;
+import tanks.gui.ChatBox;
+import tanks.gui.ChatMessage;
 import tanks.gui.screen.*;
 import tanks.hotbar.Coins;
 import tanks.hotbar.Hotbar;
@@ -14,7 +19,7 @@ public class Panel
 {
 	public static boolean onlinePaused;
 
-	double zoomTimer = 0;
+	public double zoomTimer = 0;
 
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
@@ -53,6 +58,10 @@ public class Panel
 
 	public Tank dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
 
+	public boolean firstFrame = true;
+
+	protected Screen currentScreen;
+
 	public static void initialize()
 	{
 		if (!initialized)
@@ -69,11 +78,62 @@ public class Panel
 
 	public void update()
 	{
+		if (firstFrame)
+		{
+			double scale = 1;
+			if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
+				scale = 1.25;
+
+			Drawing.drawing.setInterfaceScaleZoom(scale);
+
+			ScreenOptions.loadOptions(Game.homedir);
+
+			this.hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
+			this.hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
+
+			if (Game.usernameInvalid(Game.player.username))
+				Game.screen = new ScreenUsernameInvalid();
+			else
+				Game.screen = new ScreenTitle();
+
+			BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
+			if (!tutorialFile.exists())
+			{
+				Game.silentCleanUp();
+				Tutorial.loadTutorial(true, Game.game.window.touchscreen);
+			}
+
+			ScreenPartyHost.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, InputCodes.KEY_T, new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					ScreenPartyHost.chat.add(0, new ChatMessage(Game.player.username, ScreenPartyHost.chatbox.inputText));
+					Game.eventsOut.add(new EventPlayerChat(Game.player.username, ScreenPartyHost.chatbox.inputText));
+				}
+
+			});
+
+			ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, InputCodes.KEY_T, new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText));
+				}
+
+			});
+		}
+
+		this.currentScreen = Game.screen;
+
+		firstFrame = false;
+
 		Panel.windowWidth = Game.game.window.absoluteWidth;
 		Panel.windowHeight = Game.game.window.absoluteHeight;
 
 		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
-		Drawing.drawing.interfaceScale = Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
@@ -90,7 +150,9 @@ public class Panel
 
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{
-			dummySpin.angle += 0.02 * frameFrequency;
+			dummySpin.posX = Drawing.drawing.sizeX / 2;
+			dummySpin.posY = Drawing.drawing.sizeY / 2;
+			dummySpin.angle = Math.PI * 2 * (System.currentTimeMillis() - startTime) / (introTime + introAnimationTime);
 			return;
 		}
 
@@ -132,18 +194,17 @@ public class Panel
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
 		if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
-				&& Game.screen instanceof ScreenGame && ((ScreenGame) (Game.screen)).playing)
+				&& this.currentScreen instanceof ScreenGame && ((ScreenGame) (this.currentScreen)).playing)
 		{
-			Drawing.drawing.enableMovingCamera = true;
+			Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
+
+			Drawing.drawing.playerX = Game.playerTank.posX;
+			Drawing.drawing.playerY = Game.playerTank.posY;
 
 			if (Drawing.drawing.movingCamera)
 			{
-				Drawing.drawing.playerX = Game.playerTank.posX;
-				Drawing.drawing.playerY = Game.playerTank.posY;
 				this.zoomTimer += 0.04 * Panel.frameFrequency;
-
 				//Drawing.drawing.scale = Drawing.drawing.interfaceScale;
-				Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
 			}
 		}
 		else
@@ -155,19 +216,8 @@ public class Panel
 
 		Drawing.drawing.scale = Drawing.drawing.scale * (1 - zoomTimer) + Drawing.drawing.interfaceScale * zoomTimer;
 
-		if (Panel.windowWidth > Game.currentSizeX * Game.tank_size * Drawing.drawing.scale)
-			Drawing.drawing.enableMovingCameraX = false;
-		else
-		{
-			Drawing.drawing.enableMovingCameraX = true;
-		}
-
-		if (Panel.windowHeight - Drawing.drawing.statsHeight > Game.currentSizeY * Game.tank_size * Drawing.drawing.scale)
-			Drawing.drawing.enableMovingCameraY = false;
-		else
-		{
-			Drawing.drawing.enableMovingCameraY = true;
-		}
+		Drawing.drawing.enableMovingCameraX = (Panel.windowWidth < Game.currentSizeX * Game.tank_size * Drawing.drawing.interfaceScale * Drawing.drawing.interfaceScaleZoom);
+		Drawing.drawing.enableMovingCameraY = ((Panel.windowHeight - Drawing.drawing.statsHeight) < Game.currentSizeY * Game.tank_size * Drawing.drawing.interfaceScale * Drawing.drawing.interfaceScaleZoom);
 
 		if (Game.connectedToOnline)
 		{
@@ -182,7 +232,7 @@ public class Panel
 			onlinePaused = false;
 
 		if (!onlinePaused)
-			Game.screen.update();
+			this.currentScreen.update();
 		else
 			this.onlineOverlay.update();
 
@@ -221,10 +271,9 @@ public class Panel
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{
 			double frac = ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
-			double frac2 = Math.max(0, frac);
 
-			Drawing.drawing.setColor(Level.currentColorR * (1 - frac2) + 174 * frac2, Level.currentColorG * (1 - frac2) + 92 * frac2, Level.currentColorB * (1 - frac2) + 16 * frac2);
-			Drawing.drawing.fillInterfaceRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 1.2, Drawing.drawing.sizeY * 1.2);
+			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
+			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth * 1.2 / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight * 1.2 / Drawing.drawing.interfaceScale);
 
 			/*Drawing.drawing.setColor(255, 255, 255);
 			Drawing.drawing.drawInterfaceImage("/tanks//loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
@@ -241,10 +290,10 @@ public class Panel
 			return;
 		}
 
-		if (!(Game.screen instanceof ScreenExit))
+		if (!(this.currentScreen instanceof ScreenExit))
 		{
 			Drawing.drawing.setColor(174, 92, 16);
-			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 4, Drawing.drawing.interfaceSizeY * 4);
+			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 		}
 
 		long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
@@ -265,15 +314,15 @@ public class Panel
 		if (onlinePaused)
 			this.onlineOverlay.draw();
 		else
-			Game.screen.draw();
+			this.currentScreen.draw();
 
-		if (!(Game.screen instanceof ScreenExit))
+		if (!(this.currentScreen instanceof ScreenExit))
 			this.drawBar();
 
-		if (Game.screen.showDefaultMouse)
+		if (this.currentScreen.showDefaultMouse)
 			this.drawMouseTarget();
 
-		Game.screen.drawPostMouse();
+		this.currentScreen.drawPostMouse();
 	}
 
 	public void drawMouseTarget()
@@ -328,14 +377,11 @@ public class Panel
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 
-		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
+		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, this.currentScreen.screenHint);
 
 		long free = Runtime.getRuntime().freeMemory();
 		long total = Runtime.getRuntime().totalMemory();
 		long used = total - free;
-
-		if (free < 1048576 * 5)
-			Drawing.drawing.setColor(255, 127, 0);
 
 		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB");
 

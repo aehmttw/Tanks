@@ -2,6 +2,9 @@ package basewindow;
 
 public class InputPoint
 {
+    public double startX;
+    public double startY;
+
     public double x;
     public double y;
     public String tag = "";
@@ -11,6 +14,8 @@ public class InputPoint
     {
         this.x = x;
         this.y = y;
+        this.startX = x;
+        this.startY = y;
     }
 
 }

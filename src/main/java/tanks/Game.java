@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 import java.util.UUID;
 
 public class Game 
@@ -70,8 +71,9 @@ public class Game
 	
 	public static double[][] tilesDepth = new double[28][18];
 
+	//Remember to change the version in android's build.gradle and ios's robovm.properties
+	public static final String version = "Tanks 0.8.h";
 	public static final int network_protocol = 12;
-	public static final String version = "Tanks 0.8.g";
 	public static boolean debug = false;
 
 	public static int port = 8080;
@@ -96,7 +98,8 @@ public class Game
 	public static boolean enableChatFilter = true;
 	
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
-	
+	public static long crashTime = 0;
+
 	public static Screen screen;
 
 	public static String ip = "";
@@ -127,6 +130,7 @@ public class Game
 	
 	public static String directoryPath = "/.tanks";
 	public static final String logPath = directoryPath + "/logfile.txt";
+	public static final String crashesPath = directoryPath + "/crashes/";
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
 	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
 	public static final String optionsPath = directoryPath + "/options.txt";
@@ -278,13 +282,6 @@ public class Game
 			}
 		}
 
-		BaseFile tutorialFile = game.fileManager.getFile(homedir + tutorialPath);
-		if (!tutorialFile.exists())
-		{
-			Game.silentCleanUp();
-			Tutorial.loadTutorial(true, Game.framework == Framework.libgdx);
-		}
-
 		BaseFile tankRegistryFile = game.fileManager.getFile(homedir + tankRegistryPath);
 		if (!tankRegistryFile.exists())
 		{
@@ -345,20 +342,8 @@ public class Game
 			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 
-		ScreenOptions.loadOptions(homedir);
 		RegistryTank.loadRegistry(homedir);
 		RegistryObstacle.loadRegistry(homedir);
-
-		if (Game.usernameInvalid(Game.player.username))
-			Game.screen = new ScreenUsernameInvalid();
-
-		TankPlayer.shootStick.clickIntensities[0] = 1.0;
-		TankPlayer.shootStick.mobile = false;
-		TankPlayer.shootStick.snap = true;
-		TankPlayer.shootStick.colorR = 255;
-		TankPlayer.shootStick.colorB = 0;
-		TankPlayer.shootStick.name = "aim";
-		TankPlayer.mineButton.silent = true;
 	}
 	
 	public static boolean usernameInvalid(String username)
@@ -455,7 +440,7 @@ public class Game
 		
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
 		Game.loadLevel(game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
-		Game.screen = s;	
+		Game.screen = s;
 	}
 	
 	public static void exitToCrash(Throwable e)
@@ -464,14 +449,14 @@ public class Game
 
 		e.printStackTrace();
 
-		ScreenPartyHost.isServer = false;
-		ScreenPartyLobby.isClient = false;
-
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 			ScreenPartyHost.server.close("The party has ended because the host crashed");
 		
 		if (ScreenPartyLobby.isClient || Game.connectedToOnline)
 			Client.handler.ctx.close();
+
+		ScreenPartyHost.isServer = false;
+		ScreenPartyLobby.isClient = false;
 
 		obstacles.clear();
 		belowEffects.clear();
@@ -481,8 +466,39 @@ public class Game
 		eventsOut.clear();
 
 		Game.crashMessage = e.toString();
+		Game.crashTime = System.currentTimeMillis();
 		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
+
+		if (!(Game.screen instanceof ScreenCrashed) && !(Game.screen instanceof ScreenOutOfMemory))
+		{
+			try
+			{
+				BaseFile dir = Game.game.fileManager.getFile(Game.homedir + Game.crashesPath);
+				if (!dir.exists())
+					dir.mkdirs();
+
+				BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crashesPath + Game.crashTime + ".crash");
+				f.create();
+
+				f.startWriting();
+				f.println("Tanks crash report: " + Game.version + " - " + new Date().toString() + "\n");
+
+				f.println(e.toString());
+				for (StackTraceElement el: e.getStackTrace())
+				{
+					f.println("at " + el.toString());
+				}
+
+				f.println("\nSystem properties:");
+				Properties p = System.getProperties();
+				for (Object s: p.keySet())
+					f.println(s + ": " + p.get(s));
+
+				f.stopWriting();
+			}
+			catch (Exception ex) {ex.printStackTrace();}
+		}
 
 		if (e instanceof OutOfMemoryError)
 			screen = new ScreenOutOfMemory();
@@ -523,6 +539,7 @@ public class Game
 	public static void exitToTitle()
 	{
 		cleanUp();
+		Panel.panel.zoomTimer = 0;
 		screen = new ScreenTitle();
 		System.gc();
 	}

@@ -49,7 +49,7 @@ public class ScreenPartyKick extends Screen implements IPartyMenuScreen
     {
         this.drawDefaultBackground();
 
-        Drawing.drawing.setFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "Would you like to kick " + handler.username + " from the party?");
 

@@ -161,7 +161,7 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 		quit.draw();
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 210, "My levels");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "My levels");
 
 		if (page > 0)
 			previous.draw();

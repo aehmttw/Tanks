@@ -79,6 +79,10 @@ public class ScreenInsertAccessCode extends ScreenLayout
     public ScreenInsertAccessCode(TanksOnlineServerHandler player)
     {
         super(player);
+
+        this.music = "tomato_feast_2.ogg";
+        this.musicID = "menu";
+
         this.textBoxes.add(idBox);
         this.texts.add(new ScreenOnline.Text("Please insert an access code to continue", sizeX / 2, sizeY / 2 - 120, 24, 0));
         confirm.wait = true;

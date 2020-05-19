@@ -23,6 +23,12 @@ public class UUIDTextBox extends TextBox
     @Override
     public void checkKeys()
     {
+        if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
+        {
+            this.submit();
+            return;
+        }
+
         if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
         {
             if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_C))

@@ -24,6 +24,9 @@ public class ScreenPartyKick extends Screen implements IPartyMenuScreen
 
     public ScreenPartyKick(ServerHandler h)
     {
+        this.music = "tomato_feast_2.ogg";
+        this.musicID = "menu";
+
         handler = h;
         kick = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, 360, 40, "Kick " + handler.username, new Runnable()
         {

@@ -52,6 +52,9 @@ public class ScreenCrusades extends Screen
 
 	public ScreenCrusades()
 	{
+		this.music = "tomato_feast_4.ogg";
+		this.musicID = "menu";
+
 		BaseFile crusadeDirFile = Game.game.fileManager.getFile(Game.homedir + crusadeDir);
 		if (!crusadeDirFile.exists())
 		{

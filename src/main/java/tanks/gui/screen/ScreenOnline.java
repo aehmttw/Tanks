@@ -5,6 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -20,6 +21,15 @@ public class ScreenOnline extends Screen
     public ArrayList<Integer> textKeys = new ArrayList<Integer>();
     public ArrayList<Integer> shapeKeys = new ArrayList<Integer>();
 
+    public Comparator<Integer> intComparator = new Comparator<Integer>()
+    {
+        @Override
+        public int compare(Integer o1, Integer o2)
+        {
+            return o1 - o2;
+        }
+    };
+
     public static class Text
     {
         public String text;
@@ -27,6 +37,8 @@ public class ScreenOnline extends Screen
         public double posY;
         public double size;
         public int alignment;
+        public int xAlignment;
+        public int yAlignment;
 
         public Text(String text, double posX, double posY, double size, int alignment)
         {
@@ -55,6 +67,9 @@ public class ScreenOnline extends Screen
         public double sizeX;
         public double sizeY;
         public int type;
+
+        public int xAlignment = 0;
+        public int yAlignment = 0;
 
         public double colorR;
         public double colorG;
@@ -124,7 +139,7 @@ public class ScreenOnline extends Screen
         this.buttonKeys.remove((Integer)id);
         this.buttonKeys.add(id);
         this.buttons.put(id, b);
-        this.buttonKeys.sort(Comparator.naturalOrder());
+        Collections.sort(this.buttonKeys, intComparator);
     }
 
     public void removeButton(int id)
@@ -138,7 +153,7 @@ public class ScreenOnline extends Screen
         this.textboxKeys.remove((Integer)id);
         this.textboxKeys.add(id);
         this.textboxes.put(id, b);
-        this.textboxKeys.sort(Comparator.naturalOrder());
+        Collections.sort(this.textboxKeys, intComparator);
     }
 
     public void removeTextbox(int id)
@@ -152,7 +167,7 @@ public class ScreenOnline extends Screen
         this.textKeys.remove((Integer)id);
         this.textKeys.add(id);
         this.texts.put(id, t);
-        this.textKeys.sort(Comparator.naturalOrder());
+        Collections.sort(this.textKeys, intComparator);
     }
 
     public void removeText(int id)
@@ -166,7 +181,7 @@ public class ScreenOnline extends Screen
         this.shapeKeys.remove((Integer)id);
         this.shapeKeys.add(id);
         this.shapes.put(id, s);
-        this.shapeKeys.sort(Comparator.naturalOrder());
+        Collections.sort(this.shapeKeys, intComparator);
     }
 
     public void removeShape(int id)

@@ -62,8 +62,8 @@ public class Hotbar
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT) || Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT))
 		{
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_RIGHT_SHIFT);
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_LEFT_SHIFT);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_RIGHT_SHIFT);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_LEFT_SHIFT);
 			this.persistent = !this.persistent;
 		}
 

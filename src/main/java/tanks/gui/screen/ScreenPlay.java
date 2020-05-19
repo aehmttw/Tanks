@@ -38,7 +38,13 @@ public class ScreenPlay extends Screen
 		}
 	}
 	, "Play in a party with others---who are on your local---network or port forwarding---or play on the online server!");
-	
+
+	public ScreenPlay()
+	{
+		this.music = "tomato_feast_2.ogg";
+		this.musicID = "menu";
+	}
+
 	@Override
 	public void update() 
 	{

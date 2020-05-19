@@ -12,6 +12,9 @@ public class ScreenJoinParty extends Screen
 
 	public ScreenJoinParty()
 	{
+		this.music = "tomato_feast_3.ogg";
+		this.musicID = "menu";
+
 		ip.allowDots = true;
 		ip.maxChars = 43;
 		ip.allowColons = true;

@@ -1,6 +1,7 @@
 package tanks.event.online;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.event.PersonalEvent;
 import tanks.gui.TextBox;
@@ -38,6 +39,9 @@ public class EventAddTextBox extends PersonalEvent
     public int maxValue;
     public int minValue;
 
+    public int xAlignment;
+    public int yAlignment;
+
     public boolean wait;
 
     public EventAddTextBox()
@@ -70,6 +74,8 @@ public class EventAddTextBox extends PersonalEvent
         this.maxChars = t.maxChars;
         this.maxValue = t.maxValue;
         this.minValue = t.minValue;
+        this.xAlignment = t.xAlignment;
+        this.yAlignment = t.yAlignment;
         this.wait = t.wait;
     }
 
@@ -104,6 +110,9 @@ public class EventAddTextBox extends PersonalEvent
         b.writeInt(maxValue);
         b.writeInt(minValue);
 
+        b.writeInt(xAlignment);
+        b.writeInt(yAlignment);
+
         b.writeBoolean(wait);
     }
 
@@ -137,6 +146,9 @@ public class EventAddTextBox extends PersonalEvent
         maxChars = b.readInt();
         maxValue = b.readInt();
         minValue = b.readInt();
+
+        xAlignment = b.readInt();
+        yAlignment = b.readInt();
 
         wait = b.readBoolean();
     }
@@ -182,7 +194,8 @@ public class EventAddTextBox extends PersonalEvent
             t.maxChars = this.maxChars;
             t.maxValue = this.maxValue;
             t.minValue = this.minValue;
-
+            t.posX -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeX * (xAlignment + 1) / 2.0;
+            t.posY -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeY * (yAlignment + 1) / 2.0;
             s.addTextbox(this.id, t);
         }
     }

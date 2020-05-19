@@ -130,6 +130,9 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
 	public ScreenPartyHost()
 	{
+		this.music = "tomato_feast_3.ogg";
+		this.musicID = "menu";
+
 		if (Game.game.window.touchscreen)
 		{
 			chatbox.defaultText = "Click here to send a chat message";
@@ -202,7 +205,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 				}
 				catch (UnknownHostException e)
 				{
-					ip = "Failed to get your IP Address";
+					ip = "You are not connected to a network; connect to one to play with others! (Cellular data will not work)";
 				}
 
 				if (ip.contains("%"))

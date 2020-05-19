@@ -12,6 +12,9 @@ public class ScreenHostingEnded extends Screen
 
 	public ScreenHostingEnded(String reason)
 	{
+		this.music = "tomato_feast_2.ogg";
+		this.musicID = "menu";
+
 		this.reason = reason;
 
 		//synchronized(ScreenPartyHost.server.connections)

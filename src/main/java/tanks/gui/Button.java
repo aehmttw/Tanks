@@ -51,6 +51,18 @@ public class Button implements IDrawable
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
 	public boolean wait = false;
 
+	/** For online service use with changing interface scales
+	 * -1 = left
+	 * 0 = middle
+	 * 1 = right*/
+	public int xAlignment = 0;
+
+	/** For online service use with changing interface scales
+	 * -1 = top
+	 * 0 = middle
+	 * 1 = bottom*/
+	public int yAlignment = 0;
+
 	public Button(double x, double y, double sX, double sY, String text, Runnable f)
 	{
 		this.function = f;

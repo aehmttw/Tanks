@@ -8,7 +8,6 @@ import tanks.gui.ChatMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 {
@@ -55,6 +54,9 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 	public ScreenPlaySavedLevels()
 	{
+		this.music = "tomato_feast_4.ogg";
+		this.musicID = "menu";
+
 		BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
 		if (!savedLevelsFile.exists())
 		{
@@ -85,20 +87,12 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
 			{
 				@Override
-				public void run() 
+				public void run()
 				{
-					try
+					if (Game.loadLevel(Game.game.fileManager.getFile(l)))
 					{
-						Game.loadLevel(Game.game.fileManager.getFile(l));
 						Game.screen = new ScreenGame();
 						ScreenInterlevel.fromSavedLevels = true;
-					}
-					catch (Exception e)
-					{
-						Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l);
-						e.printStackTrace();
-						e.printStackTrace(Game.logger);
-						Game.screen = new ScreenFailedToLoadLevel(l, Game.screen);
 					}
 				}
 			}

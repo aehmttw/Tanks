@@ -38,7 +38,10 @@ public class Tanks
             Game.initScript();
 
             if (Game.framework == Game.Framework.lwjgl)
+            {
                 Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
+                ((LWJGLWindow)Game.game.window).antialiasingEnabled = Game.antialiasing;
+            }
             else if (Game.framework == Game.Framework.swing)
                 Game.game.window = new SwingWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
 

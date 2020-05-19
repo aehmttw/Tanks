@@ -6,6 +6,11 @@ import tanks.gui.Button;
 
 public class ScreenUsernamePrompt extends Screen
 {
+	public ScreenUsernamePrompt()
+	{
+		this.music = "tomato_feast_2.ogg";
+		this.musicID = "menu";
+	}
 
 	Button gotoOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Multiplayer options", new Runnable()
 	{

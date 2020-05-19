@@ -49,6 +49,9 @@ public class ScreenConfirmRemoveLevel extends ScreenLayout
         this.buttons.add(confirmDelete);
         this.buttons.add(cancelDelete);
 
+        this.music = "tomato_feast_4.ogg";
+        this.musicID = "menu";
+
         this.texts.add(new ScreenOnline.Text("Would you like to remove the level \"" + level.name + "\" from Tanks Online?",
                 sizeX / 2, sizeY / 2 - 90, 24, 0));
     }

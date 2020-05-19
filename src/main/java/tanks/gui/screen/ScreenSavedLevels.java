@@ -7,7 +7,6 @@ import tanks.gui.Button;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -66,6 +65,9 @@ public class ScreenSavedLevels extends Screen
 
 	public ScreenSavedLevels()
 	{
+		this.music = "tomato_feast_4.ogg";
+		this.musicID = "menu";
+
 		BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
 		if (!savedLevelsFile.exists())
 		{
@@ -98,19 +100,9 @@ public class ScreenSavedLevels extends Screen
 				@Override
 				public void run()
 				{
-					try
-					{
-						ScreenLevelBuilder s = new ScreenLevelBuilder(pathSections[pathSections.length - 1]);
-						Game.loadLevel(Game.game.fileManager.getFile(l), s);
+					ScreenLevelBuilder s = new ScreenLevelBuilder(pathSections[pathSections.length - 1]);
+					if (Game.loadLevel(Game.game.fileManager.getFile(l), s))
 						Game.screen = s;
-					}
-					catch (Exception e)
-					{
-						Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l.toString());
-						e.printStackTrace();
-						e.printStackTrace(Game.logger);
-						Game.screen = new ScreenFailedToLoadLevel(l.toString(), Game.screen);
-					}
 				}
 			}
 					, "Last opened---" + Game.timeInterval(Game.game.fileManager.getFile(l).lastModified(), System.currentTimeMillis()) + " ago"));

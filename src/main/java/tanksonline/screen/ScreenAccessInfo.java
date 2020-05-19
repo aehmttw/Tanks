@@ -37,6 +37,9 @@ public class ScreenAccessInfo extends ScreenLayout
         super(player);
         this.accessCode = accessCode;
 
+        this.music = "tomato_feast_3.ogg";
+        this.musicID = "menu";
+
         this.texts.add(new ScreenOnline.Text("My account", sizeX / 2, sizeY / 2 - 120, 24, 0));
 
         this.texts.add(new ScreenOnline.Text("Your access code:", sizeX / 2, sizeY / 2 - 60, 24, 0));

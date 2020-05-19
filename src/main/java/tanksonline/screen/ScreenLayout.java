@@ -1,5 +1,6 @@
 package tanksonline.screen;
 
+import tanks.Game;
 import tanks.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
@@ -21,6 +22,9 @@ public abstract class ScreenLayout
     public ArrayList<TextBox> textBoxes = new ArrayList<TextBox>();
 
     public TanksOnlineServerHandler player;
+
+    public String music = "";
+    public String musicID = "";
 
     public final ScreenLayout instance = this;
 
@@ -58,6 +62,7 @@ public abstract class ScreenLayout
         this.player.screen = this;
 
         this.player.sendEvent(new EventNewScreen());
+        this.player.sendEvent(new EventSetMusic(this.music, Game.musicVolume, true, musicID, 500));
 
         for (int i = 0; i < this.shapes.size(); i++)
         {

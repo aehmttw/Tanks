@@ -1,6 +1,7 @@
 package tanks.event.online;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.event.PersonalEvent;
 import tanks.gui.Button;
@@ -20,6 +21,9 @@ public class EventAddButton extends PersonalEvent
     public boolean enabled;
     public String hover;
 
+    public int xAlignment;
+    public int yAlignment;
+
     public boolean wait;
 
     public EventAddButton()
@@ -38,6 +42,8 @@ public class EventAddButton extends PersonalEvent
         this.enabled = b.enabled;
         this.hover = b.hoverTextRaw;
         this.wait = b.wait;
+        this.xAlignment = b.xAlignment;
+        this.yAlignment = b.yAlignment;
     }
 
     @Override
@@ -51,6 +57,8 @@ public class EventAddButton extends PersonalEvent
         b.writeDouble(this.sizeY);
         b.writeBoolean(this.enabled);
         NetworkUtils.writeString(b, this.hover);
+        b.writeInt(this.xAlignment);
+        b.writeInt(this.yAlignment);
         b.writeBoolean(this.wait);
     }
 
@@ -65,6 +73,8 @@ public class EventAddButton extends PersonalEvent
         this.sizeY = b.readDouble();
         this.enabled = b.readBoolean();
         this.hover = NetworkUtils.readString(b);
+        this.xAlignment = b.readInt();
+        this.yAlignment = b.readInt();
         this.wait = b.readBoolean();
     }
 
@@ -91,6 +101,9 @@ public class EventAddButton extends PersonalEvent
 
             b.enabled = this.enabled;
             b.enableHover = !this.hover.equals("");
+
+            b.posX -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeX * (xAlignment + 1) / 2.0;
+            b.posY -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeY * (yAlignment + 1) / 2.0;
 
             s.addButton(this.id, b);
         }

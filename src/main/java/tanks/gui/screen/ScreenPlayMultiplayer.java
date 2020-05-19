@@ -1,14 +1,16 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.network.Client;
 
 public class ScreenPlayMultiplayer extends Screen
 {
-    public static Thread clientThread;
+    public ScreenPlayMultiplayer()
+    {
+        this.music = "tomato_feast_2.ogg";
+        this.musicID = "menu";
+    }
 
     Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Party", new Runnable()
     {
@@ -25,63 +27,10 @@ public class ScreenPlayMultiplayer extends Screen
         @Override
         public void run()
         {
-            Game.lastOfflineScreen = Game.screen;
-
-            if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT))
-                Game.screen = new ScreenSelectOnlineServer();
-            else
-            {
-                if (Game.lastOnlineServer.equals(""))
-                    Game.screen = new ScreenOnlineWIP();
-                else
-                {
-                    Game.eventsOut.clear();
-                    clientThread = new Thread(new Runnable()
-                    {
-
-                        @Override
-                        public void run()
-                        {
-                            ScreenConnecting s = new ScreenConnecting(clientThread);
-                            Game.screen = s;
-
-                            try
-                            {
-                                String ipaddress = Game.lastOnlineServer;
-                                int port = Game.port;
-
-                                if (ipaddress.contains(":"))
-                                {
-                                    port = Integer.parseInt(ipaddress.split(":")[1]);
-                                    ipaddress = ipaddress.split(":")[0];
-                                }
-
-                                if (ipaddress.equals(""))
-                                    Client.connect("localhost", Game.port, true); //TODO
-                                else
-                                    Client.connect(ipaddress, port, true);
-                            }
-                            catch (Exception e)
-                            {
-                                s.text = "Failed to connect";
-                                s.exception = e.getLocalizedMessage();
-                                s.finished = true;
-
-                                e.printStackTrace(Game.logger);
-                                e.printStackTrace();
-                            }
-                        }
-
-                    });
-
-                    clientThread.setDaemon(true);
-                    clientThread.start();
-                }
-            }
+            Game.screen = new ScreenJoinOnlineServer();
         }
     },
-            "Access the online Tanks community!------(Shift + Click to change server)");
-
+            "Access the online Tanks community!");
 
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Back", new Runnable()

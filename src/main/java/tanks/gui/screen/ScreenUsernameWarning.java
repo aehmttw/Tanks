@@ -6,6 +6,11 @@ import tanks.gui.Button;
 
 public class ScreenUsernameWarning extends Screen
 {
+	public ScreenUsernameWarning()
+	{
+		this.music = "tomato_feast_2.ogg";
+		this.musicID = "menu";
+	}
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Ok", new Runnable()
 	{

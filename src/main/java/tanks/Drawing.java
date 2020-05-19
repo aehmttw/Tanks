@@ -3,13 +3,14 @@ package tanks;
 import tanks.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
+import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
 
 public class Drawing
 {
 	protected static boolean initialized = false;
-	
+
 	public double sizeX = 1400;//1920;
 	public double sizeY = 900;//1100;
 
@@ -46,12 +47,12 @@ public class Drawing
 	public double fontSize = 1;
 
 	private Drawing() {}
-	
+
 	public static void initialize()
 	{
 		if (!initialized)
 			drawing = new Drawing();
-		
+
 		initialized = true;
 	}
 
@@ -89,18 +90,21 @@ public class Drawing
 		TankPlayer.shootStick.colorB = 0;
 		TankPlayer.shootStick.name = "aim";
 		TankPlayer.mineButton.silent = true;
+
+		if (value > 1)
+			ScreenGame.shopOffset = -100;
 	}
 
 	public void setColor(double r, double g, double b)
 	{
 		Game.game.window.setColor(r, g, b);
 	}
-	
+
 	public void setColor(double r, double g, double b, double a)
 	{
 		Game.game.window.setColor(r, g, b, a);
 	}
-	
+
 	public void fillOval(double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
@@ -138,7 +142,7 @@ public class Drawing
 		else
 			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
-	
+
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
@@ -171,13 +175,13 @@ public class Drawing
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
-		
+
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
 		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
-	
+
 	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
@@ -185,13 +189,13 @@ public class Drawing
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
-		
+
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
 		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
 	}
-	
+
 	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
 	{
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
@@ -199,15 +203,15 @@ public class Drawing
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
-		
+
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
-		
+
 		double drawZ = z * scale;
 
 		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, false);
 	}
-	
+
 	public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 	{
 		double dX1 = getPointX(x1);
@@ -219,7 +223,7 @@ public class Drawing
 		double dY2 = getPointY(y2);
 		double dY3 = getPointY(y3);
 		double dY4 = getPointY(y4);
-		
+
 		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
 	}
 
@@ -239,13 +243,13 @@ public class Drawing
 		double dY2 = getPointY(y2);
 		double dY3 = getPointY(y3);
 		double dY4 = getPointY(y4);
-		
+
 		double dZ = z * scale;
 		double dsZ = sZ * scale;
-		
+
 		Game.game.window.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, options);
 	}
-	
+
 	public void fillInterfaceQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 	{
 		double dX1 = getInterfacePointX(x1);
@@ -257,25 +261,25 @@ public class Drawing
 		double dY2 = getInterfacePointY(y2);
 		double dY3 = getInterfacePointY(y3);
 		double dY4 = getInterfacePointY(y4);
-		
+
 		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
 	}
-	
+
 	public double getPointX(double x)
 	{
 		return (scale * (x + getPlayerOffsetX()) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
 	}
-	
+
 	public double getPointY(double y)
 	{
 		return (scale * (y + getPlayerOffsetY()) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
 	}
-	
+
 	public double getInterfacePointX(double x)
 	{
 		return (interfaceScale * (x) + Math.max(0, Panel.windowWidth - this.interfaceSizeX * interfaceScale) / 2);
 	}
-	
+
 	public double getInterfacePointY(double y)
 	{
 		return (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - this.interfaceSizeY * interfaceScale) / 2);
@@ -290,24 +294,24 @@ public class Drawing
 
 		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
-	
+
 	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ)
 	{
 		fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0);
 	}
-	
+
 	/**
 	 * Options byte:
-	 * 
+	 *
 	 * 0: default
-	 * 
+	 *
 	 * +1 hide behind face
 	 * +2 hide front face
 	 * +4 hide bottom face
 	 * +8 hide top face
 	 * +16 hide left face
 	 * +32 hide right face
-	 * 
+	 *
 	 * +64 draw on top
 	 * */
 	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
@@ -379,10 +383,10 @@ public class Drawing
 		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
-		
+
 		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
-	
+
 	public void fillInterfaceProgressRect(double x, double y, double sizeX, double sizeY, double progress)
 	{
 		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
@@ -392,7 +396,7 @@ public class Drawing
 
 		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
-	
+
 	public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
@@ -417,10 +421,10 @@ public class Drawing
 	{
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
-		
+
 		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
 		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
-		
+
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
@@ -440,10 +444,10 @@ public class Drawing
 	{
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
-				
+
 		double drawX = (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-		
+
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
@@ -453,15 +457,15 @@ public class Drawing
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
 		double offX = sizeX;
-		
+
 		if (!rightAligned)
 			offX = 0;
-		
+
 		double drawX = (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
-	
+
 	public void drawUncenteredInterfaceText(double x, double y, String text)
 	{
 		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
@@ -510,6 +514,24 @@ public class Drawing
 		}
 
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
+	}
+
+	public void playMusic(String sound, float volume, boolean looped, String id, long fadeTime)
+	{
+		if (Game.game.window.soundsEnabled && Game.musicEnabled)
+			Game.game.window.soundPlayer.playMusic("/music/" + sound, volume, looped, id, fadeTime);
+	}
+
+	public void playMusic(String sound, float volume, boolean looped, String id, long fadeTime, boolean stoppable)
+	{
+		if (Game.game.window.soundsEnabled && Game.musicEnabled)
+			Game.game.window.soundPlayer.playMusic("/music/" + sound, volume, looped, id, fadeTime, stoppable);
+	}
+
+	public void stopMusic()
+	{
+		if (Game.game.window.soundsEnabled)
+			Game.game.window.soundPlayer.stopMusic();
 	}
 
 	public void playSound(String sound)
@@ -570,26 +592,26 @@ public class Drawing
 	public double toGameCoordsX(double x)
 	{
 		double x1 = x;
-		
+
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
 			x1 += (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
-		
+
 		double rawX = interfaceScale * (x1);
 
 		rawX -= (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 
 		return (rawX) / scale - getPlayerMouseOffsetX();
 	}
-	
+
 	public double toGameCoordsY(double y)
 	{
 		double y1 = y;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraY)
 			y1 += (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
-		
+
 		double rawY = interfaceScale * (y1);
-		
+
 		rawY -= (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
 		return (rawY) / scale - getPlayerMouseOffsetY();
@@ -727,7 +749,7 @@ public class Drawing
 				return 0;
 		}
 	}
-	
+
 	public double getPlayerMouseOffsetX()
 	{
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)

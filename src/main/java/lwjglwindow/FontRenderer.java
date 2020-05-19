@@ -20,7 +20,7 @@ public class FontRenderer extends BaseFontRenderer
 				"pqrstuvwxyz{|}~`";
 		this.charSizes = new int[]
 				{
-						3, 2, 4, 5, 5, 5, 5, 2, 4, 4, 4, 5, 1, 5, 1, 5,
+						3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 1, 5, 1, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5,
 						7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5,
@@ -40,7 +40,7 @@ public class FontRenderer extends BaseFontRenderer
 		int col = i % 16;
 		int row = i / 16;
 		int width = charSizes[i];
-		this.home.drawImage(x, y, z, sX, sY - 0.0001, col / 16f, row / 16f, (col + width / 8f) / 16f, (row + 1) / 16f, image, true, depthtest);
+		this.home.drawImage(x, y, z, sX, sY - 0.0001, col / 16f, (row * 2) / 16f, (col + width / 8f) / 16f, (row * 2 + 1) / 16f, image, true, depthtest);
 		return width;
 	}
 	

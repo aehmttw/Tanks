@@ -18,6 +18,9 @@ public class ScreenParty extends Screen
 		port.maxChars = 5;
 		port.maxValue = 65535;
 		port.minValue = 0;
+
+		this.music = "tomato_feast_2.ogg";
+		this.musicID = "menu";
 	}
 	
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()

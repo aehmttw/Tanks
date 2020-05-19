@@ -26,19 +26,19 @@ public class EventPlayerReady extends PersonalEvent
 		if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
 		{
 			Game.eventsOut.add(new EventBeginLevelCountdown());
-			((ScreenGame)Game.screen).cancelCountdown = false;
+			((ScreenGame) Game.screen).cancelCountdown = false;
 		}
 
 	}
 
 	@Override
-	public void write(ByteBuf b) 
+	public void write(ByteBuf b)
 	{
 		
 	}
 
 	@Override
-	public void read(ByteBuf b) 
+	public void read(ByteBuf b)
 	{
 		
 	}

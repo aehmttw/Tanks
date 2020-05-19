@@ -1,12 +1,16 @@
 package lwjglwindow;
 
-import basewindow.*;
+import basewindow.BaseWindow;
+import basewindow.IDrawer;
+import basewindow.IUpdater;
+import basewindow.IWindowHandler;
 import basewindow.transformation.Rotation;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
@@ -54,6 +58,8 @@ public class LWJGLWindow extends BaseWindow
 
 		if (System.getProperties().toString().contains("Mac OS X"))
 			mac = true;
+
+		this.antialiasingSupported = true;
 	}
 
 	public long getWindow()
@@ -88,21 +94,19 @@ public class LWJGLWindow extends BaseWindow
 			throw new IllegalStateException("Unable to initialize GLFW");
 
 		// Configure GLFW
-		glfwDefaultWindowHints(); // optional, the current window hints are
-		// already the default
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden
-		// after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
-		// resizable
-		//glfwWindowHint(GLFW_SAMPLES, 4);
+		glfwDefaultWindowHints(); // optional, the current window hints are already the default
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+
+		if (antialiasingEnabled)
+			glfwWindowHint(GLFW_SAMPLES, 4);
 
 		// Create the window
 		window = glfwCreateWindow((int)this.absoluteWidth, (int)this.absoluteHeight, this.name, NULL, NULL);
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		// Setup a key callback. It will be called every time a key is pressed,
-		// repeated or released.
+		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) ->
 		{
 			if (action == GLFW_PRESS)
@@ -194,6 +198,30 @@ public class LWJGLWindow extends BaseWindow
 		while (!glfwWindowShouldClose(window))
 		{
 			this.startTiming();
+
+			SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
+
+			if (soundPlayer != null)
+			{
+				soundPlayer.musicPlaying = soundPlayer.currentMusic != -1 && AL10.alGetSourcef(soundPlayer.currentMusic, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+
+				if (soundPlayer.prevMusic != -1 && soundPlayer.fadeEnd < System.currentTimeMillis())
+				{
+					AL10.alSourceStop(soundPlayer.prevMusic);
+					soundPlayer.prevMusic = -1;
+
+					if (soundPlayer.currentMusic != -1)
+						AL10.alSourcef(soundPlayer.currentMusic, AL10.AL_GAIN, soundPlayer.currentVolume);
+				}
+
+				if (soundPlayer.prevMusic != -1 && soundPlayer.currentMusic != -1)
+				{
+					double frac = (System.currentTimeMillis() - soundPlayer.fadeBegin) * 1.0 / (soundPlayer.fadeEnd - soundPlayer.fadeBegin);
+
+					AL10.alSourcef(soundPlayer.prevMusic, AL10.AL_GAIN, (float) (soundPlayer.prevVolume * (1 - frac)));
+					AL10.alSourcef(soundPlayer.currentMusic, AL10.AL_GAIN, (float) (soundPlayer.currentVolume * frac));
+				}
+			}
 
 			this.updater.update();
 
@@ -290,39 +318,39 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
-    public void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest)
-    {
-        if (depthTest)
-        {
-            glEnable(GL_DEPTH_TEST);
-            glDepthMask(false);
-        }
+	public void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest)
+	{
+		if (depthTest)
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(false);
+		}
 
-        x += sX / 2;
-        y += sY / 2;
+		x += sX / 2;
+		y += sY / 2;
 
-        int sides = (int) (sX + sY + 5);
+		int sides = (int) (sX + sY + 5);
 
-        loadPerspective();
-        glTranslated(x, y, z);
-        Rotation.transform(this, -this.yaw, -this.pitch, -this.roll);
+		loadPerspective();
+		glTranslated(x, y, z);
+		Rotation.transform(this, -this.yaw, -this.pitch, -this.roll);
 
-        glBegin(GL_TRIANGLE_FAN);
-        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-        {
-            glVertex3d(Math.cos(i) * sX / 2, Math.sin(i) * sY / 2, 0);
-        }
+		glBegin(GL_TRIANGLE_FAN);
+		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
+		{
+			glVertex3d(Math.cos(i) * sX / 2, Math.sin(i) * sY / 2, 0);
+		}
 
-        glEnd();
+		glEnd();
 
-        loadPerspective();
+		loadPerspective();
 
-        if (depthTest)
-        {
-            glDepthMask(true);
-            glDisable(GL_DEPTH_TEST);
-        }
-    }
+		if (depthTest)
+		{
+			glDepthMask(true);
+			glDisable(GL_DEPTH_TEST);
+		}
+	}
 
 	public void setColor(double r, double g, double b, double a)
 	{
@@ -657,37 +685,37 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	public void setUpPerspective()
-    {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
-        this.angled = false;
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
+		this.angled = false;
 
-        this.yaw = 0;
-        this.pitch = 0;
-        this.roll = 0;
-        this.xOffset = 0;
-        this.yOffset = 0;
-        this.zOffset = 0;
-    }
+		this.yaw = 0;
+		this.pitch = 0;
+		this.roll = 0;
+		this.xOffset = 0;
+		this.yOffset = 0;
+		this.zOffset = 0;
+	}
 
-    public void applyTransformations()
-    {
-        //glTranslated(0, 0, -absoluteDepth);
+	public void applyTransformations()
+	{
+		//glTranslated(0, 0, -absoluteDepth);
 
-        ///glMultMatrixd(new double[]{Math.cos(this.roll), -Math.sin(this.roll), 0, 0,  Math.sin(this.roll), Math.cos(this.roll), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1});
-        ///glMultMatrixd(new double[]{1, 0, 0, 0,  0, Math.cos(this.pitch), -Math.sin(this.pitch), 0,  0, Math.sin(this.pitch), Math.cos(this.pitch), 0,  0, 0, 0, 1});
-        ///glMultMatrixd(new double[]{Math.cos(this.yaw), 0, -Math.sin(this.yaw), 0,  0, 1, 0, 0,  Math.sin(this.yaw), 0, Math.cos(this.yaw), 0,  0, 0, 0, 1});
+		///glMultMatrixd(new double[]{Math.cos(this.roll), -Math.sin(this.roll), 0, 0,  Math.sin(this.roll), Math.cos(this.roll), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1});
+		///glMultMatrixd(new double[]{1, 0, 0, 0,  0, Math.cos(this.pitch), -Math.sin(this.pitch), 0,  0, Math.sin(this.pitch), Math.cos(this.pitch), 0,  0, 0, 0, 1});
+		///glMultMatrixd(new double[]{Math.cos(this.yaw), 0, -Math.sin(this.yaw), 0,  0, 1, 0, 0,  Math.sin(this.yaw), 0, Math.cos(this.yaw), 0,  0, 0, 0, 1});
 
-        for (int i = this.transformations.size() - 1; i >= 0; i--)
-        {
-            this.transformations.get(i).apply();
-        }
+		for (int i = this.transformations.size() - 1; i >= 0; i--)
+		{
+			this.transformations.get(i).apply();
+		}
 
-        //glTranslated(absoluteWidth * (-0.5 + xOffset), absoluteHeight * (-0.5 + yOffset), absoluteDepth * zOffset);
+		//glTranslated(absoluteWidth * (-0.5 + xOffset), absoluteHeight * (-0.5 + yOffset), absoluteDepth * zOffset);
 
-        //glOrtho(0, absoluteWidth, absoluteHeight, 0, -1, 1);
-    }
+		//glOrtho(0, absoluteWidth, absoluteHeight, 0, -1, 1);
+	}
 
 	public void loadPerspective()
 	{

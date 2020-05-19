@@ -17,22 +17,22 @@ public class ScreenCrashed extends Screen
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			System.exit(0);
 		}
 	}
-			);
+	);
 
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.exitToTitle();
 		}
 	}
-			);
+	);
 
 	@Override
 	public void update()
@@ -46,7 +46,7 @@ public class ScreenCrashed extends Screen
 	{
 		Drawing drawing = Drawing.drawing;
 		drawing.setColor(0, 0, 255);
-		drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 1.2, Drawing.drawing.interfaceSizeY * 1.2);				
+		drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX * 1.2, Drawing.drawing.interfaceSizeY * 1.2);
 
 		drawing.setColor(255, 255, 255);
 		drawing.setInterfaceFontSize(100);
@@ -68,7 +68,7 @@ public class ScreenCrashed extends Screen
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 450, "but be warned that things may become unstable.");
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 480, "If you see this screen again, restart the game.");
 		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 510, "Also, you may want to report this crash!");
-		
+
 		this.quit.draw();
 		this.exit.draw();
 	}

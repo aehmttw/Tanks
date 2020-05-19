@@ -16,6 +16,9 @@ public class ScreenConnecting extends Screen
 
 	public ScreenConnecting(Thread t)
 	{
+		this.music = "tomato_feast_3.ogg";
+		this.musicID = "menu";
+
 		this.thread = t;
 	}
 
@@ -68,6 +71,8 @@ public class ScreenConnecting extends Screen
 		else
 		{
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.text);
+
+			Drawing.drawing.setInterfaceFontSize(14);
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.exception);
 		}
 

@@ -13,6 +13,8 @@ public class ScreenInfo extends Screen
     public ScreenInfo(Screen screen, String title, String[] text)
     {
         this.previous = screen;
+        this.music = previous.music;
+        this.musicID = previous.musicID;
         this.title = title;
         this.text = text;
     }

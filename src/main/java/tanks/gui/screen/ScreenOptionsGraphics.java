@@ -18,8 +18,14 @@ public class ScreenOptionsGraphics extends Screen
     public static final String birdsEyeText = "\u00A7000100200255bird's-eye";
     public static final String angledText = "\u00A7200100000255angled";
 
+    public static final String antialiasingText = "Antialiasing: ";
+
+
     public ScreenOptionsGraphics()
     {
+        this.music = "tomato_feast_1.ogg";
+        this.musicID = "menu";
+
         if (Game.fancyGraphics)
             graphics.text = graphicsText + fancyText;
         else
@@ -55,10 +61,21 @@ public class ScreenOptionsGraphics extends Screen
             ground3d.hoverText = new String[]{"Unavailable in Swing mode"};
         }
 
+        if (!Game.antialiasing)
+            antialiasing.text = antialiasingText + ScreenOptions.offText;
+        else
+            antialiasing.text = antialiasingText + ScreenOptions.onText;
+
         if (Game.framework == Game.Framework.libgdx)
         {
             vsync.enabled = false;
             altPerspective.enabled = false;
+        }
+
+        if (!Game.game.window.antialiasingSupported)
+        {
+            antialiasing.text = antialiasingText + ScreenOptions.offText;
+            antialiasing.enabled = false;
         }
     }
 
@@ -81,7 +98,7 @@ public class ScreenOptionsGraphics extends Screen
         }
     }
 
-    Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "", new Runnable()
+    Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
     {
         @Override
         public void run()
@@ -98,7 +115,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics may significantly reduce framerate"	);
 
-    Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
+    Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
     {
         @Override
         public void run()
@@ -115,7 +132,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "3D graphics may impact performance");
 
-    Button ground3d = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
+    Button ground3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
     {
         @Override
         public void run()
@@ -131,7 +148,7 @@ public class ScreenOptionsGraphics extends Screen
             "Enabling 3D ground may impact---performance in large levels------Requires 3D and fancy---graphics to take effect");
 
 
-    Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
+    Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
     {
         @Override
         public void run()
@@ -148,7 +165,7 @@ public class ScreenOptionsGraphics extends Screen
             "Changes the angle at which---you view the game field");
 
 
-    Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "", new Runnable()
+    Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "", new Runnable()
     {
         @Override
         public void run()
@@ -162,7 +179,28 @@ public class ScreenOptionsGraphics extends Screen
                 vsync.text = vsyncText + ScreenOptions.offText;
         }
     },
-            "Limits framerate to your screen's refresh rate---May decrease battery consumption---Also, might fix issues with inconsistent game speed");
+            "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
+
+    Button antialiasing = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.antialiasing = !Game.antialiasing;
+
+            if (!Game.antialiasing)
+                antialiasing.text = antialiasingText + ScreenOptions.offText;
+            else
+                antialiasing.text = antialiasingText + ScreenOptions.onText;
+
+            if (Game.antialiasing != Game.game.window.antialiasingEnabled)
+                Game.screen = new ScreenAntialiasingWarning();
+
+            ScreenOptions.saveOptions(Game.homedir);
+        }
+    },
+            "May fix flickering in thin edges---at the cost of performance.------Requires restarting the game---to take effect.");
+
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
     {
@@ -182,7 +220,19 @@ public class ScreenOptionsGraphics extends Screen
         ground3d.update();
         altPerspective.update();
         vsync.update();
+        antialiasing.update();
         back.update();
+
+        if (Game.antialiasing != Game.game.window.antialiasingEnabled)
+        {
+            antialiasing.unselectedColG = 238;
+            antialiasing.unselectedColB = 220;
+        }
+        else
+        {
+            antialiasing.unselectedColG = 255;
+            antialiasing.unselectedColB = 255;
+        }
     }
 
     @Override
@@ -191,6 +241,7 @@ public class ScreenOptionsGraphics extends Screen
         this.drawDefaultBackground();
 
         back.draw();
+        antialiasing.draw();
         vsync.draw();
         altPerspective.draw();
         graphics3d.draw();

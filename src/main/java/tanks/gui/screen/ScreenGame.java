@@ -374,7 +374,9 @@ public class ScreenGame extends Screen
 			, "Note! All players will lose a life for---quitting in the middle of a level------Since nobody has any other lives left,---the crusade will end!");
 
 
-	Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit shop", new Runnable()
+	public static double shopOffset = -25;
+
+	Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300 + shopOffset, 350, 40, "Exit shop", new Runnable()
 	{
 		@Override
 		public void run()
@@ -384,7 +386,7 @@ public class ScreenGame extends Screen
 	}
 	);
 
-	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240 + shopOffset, 350, 40, "Next page", new Runnable()
 	{
 		@Override
 		public void run()
@@ -394,7 +396,7 @@ public class ScreenGame extends Screen
 	}
 	);
 
-	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240 + shopOffset, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
 		public void run()
@@ -435,6 +437,7 @@ public class ScreenGame extends Screen
 	{
 		this();
 		this.shop = shop;
+
 		for (int i = 0; i < this.shop.size(); i++)
 		{
 			final int j = i;
@@ -477,7 +480,7 @@ public class ScreenGame extends Screen
 			if (page * rows * 3 + rows * 2 < shopItemButtons.size())
 				offset = -380;
 
-			shopItemButtons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+			shopItemButtons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60 + shopOffset;
 
 			if (i / rows % 3 == 0)
 				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
@@ -522,13 +525,13 @@ public class ScreenGame extends Screen
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F1))
 		{
 			this.screenshotMode = !this.screenshotMode;
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_F1);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_F1);
 		}
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_I))
 		{
 			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_I);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_I);
 		}
 
 		if (!finished)
@@ -609,7 +612,7 @@ public class ScreenGame extends Screen
 			if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 				return;
 		}
-		else if (Game.game.window.touchscreen)
+		else if (Game.game.window.touchscreen && !shopScreen)
 		{
 			boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight;
 			double vStep = 0;
@@ -631,6 +634,8 @@ public class ScreenGame extends Screen
 			if (Drawing.drawing.enableMovingCamera)
 				zoom.update();
 
+			TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
+			TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
 			TankPlayer.controlStick.update();
 		}
 
@@ -967,7 +972,8 @@ public class ScreenGame extends Screen
 		{
 			if (i == 5 && Game.enable3d)
 			{
-				Drawing.drawing.setColor(174, 92, 16);
+				double frac = Obstacle.draw_size / Obstacle.obstacle_size;
+				Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16  * frac + Level.currentColorB * (1 - frac));
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Obstacle.obstacle_size / 2, 0, drawing.sizeX + Obstacle.obstacle_size * 2, Obstacle.obstacle_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Obstacle.obstacle_size / 2, 0, drawing.sizeX + Obstacle.obstacle_size * 2, Obstacle.obstacle_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(-Obstacle.obstacle_size / 2, drawing.sizeY / 2, 0, Obstacle.obstacle_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
@@ -1018,7 +1024,7 @@ public class ScreenGame extends Screen
 		//Game.game.window.setAngles(0, 0, 0);
 		//Game.game.window.setOffsets(0,  0, 0);
 
-		if (!paused && Game.game.window.touchscreen)
+		if (!paused && Game.game.window.touchscreen && !shopScreen)
 		{
 			pause.draw();
 			Drawing.drawing.drawInterfaceImage("/pause.png", pause.posX, pause.posY, 40, 40);
@@ -1052,9 +1058,12 @@ public class ScreenGame extends Screen
 
 			if (shopScreen)
 			{
+				Drawing.drawing.setColor(127, 178, 228, 64);
+				Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+
 				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.setColor(0, 0, 0);
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Shop");
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210 + shopOffset, "Shop");
 
 				this.exitShop.draw();
 

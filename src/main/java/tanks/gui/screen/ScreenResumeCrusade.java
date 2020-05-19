@@ -7,7 +7,12 @@ import tanks.gui.Button;
 
 public class ScreenResumeCrusade extends Screen
 {
-	
+	public ScreenResumeCrusade()
+	{
+		this.music = "tomato_feast_4.ogg";
+		this.musicID = "menu";
+	}
+
 	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Resume crusade", new Runnable()
 	{
 		@Override

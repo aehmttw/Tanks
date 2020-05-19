@@ -7,7 +7,6 @@ import tanks.gui.Button;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ScreenUploadLevel extends ScreenOnline
 {
@@ -73,19 +72,9 @@ public class ScreenUploadLevel extends ScreenOnline
                 @Override
                 public void run()
                 {
-                    try
-                    {
-                        ScreenPreviewUploadLevel sc = new ScreenPreviewUploadLevel(pathSections[pathSections.length - 1].split("\\.")[0], Game.currentLevel, (ScreenUploadLevel) Game.screen);
-                        Game.loadLevel(Game.game.fileManager.getFile(l), sc);
+                    ScreenPreviewUploadLevel sc = new ScreenPreviewUploadLevel(pathSections[pathSections.length - 1].split("\\.")[0], Game.currentLevel, (ScreenUploadLevel) Game.screen);
+                    if (Game.loadLevel(Game.game.fileManager.getFile(l), sc))
                         Game.screen = sc;
-                    }
-                    catch (Exception e)
-                    {
-                        Game.logger.println(new Date().toString() + " (syserr) failed to load level " + l);
-                        e.printStackTrace();
-                        e.printStackTrace(Game.logger);
-                        Game.screen = new ScreenFailedToLoadLevel(l, Game.screen);
-                    }
                 }
             }
             ));

@@ -16,19 +16,19 @@ public class EventBeginLevelCountdown extends PersonalEvent
 	{
 		if (Game.screen instanceof ScreenGame && this.clientID == null)
 		{
-			((ScreenGame)Game.screen).shopScreen = false;
-			((ScreenGame)Game.screen).cancelCountdown = false;
+			((ScreenGame) Game.screen).shopScreen = false;
+			((ScreenGame) Game.screen).cancelCountdown = false;
 		}
 	}
 
 	@Override
-	public void write(ByteBuf b) 
+	public void write(ByteBuf b)
 	{
 		
 	}
 
 	@Override
-	public void read(ByteBuf b) 
+	public void read(ByteBuf b)
 	{
 		
 	}

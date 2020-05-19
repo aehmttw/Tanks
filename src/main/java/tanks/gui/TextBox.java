@@ -69,6 +69,18 @@ public class TextBox implements IDrawable
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
 	public boolean wait = false;
 
+	/** For online service use with changing interface scales
+	 * -1 = left
+	 * 0 = middle
+	 * 1 = right*/
+	public int xAlignment = 0;
+
+	/** For online service use with changing interface scales
+	 * -1 = top
+	 * 0 = middle
+	 * 1 = bottom*/
+	public int yAlignment = 0;
+
 	public TextBox(double x, double y, double sX, double sY, String text, Runnable f, String defaultText)
 	{
 		this.posX = x;
@@ -160,6 +172,7 @@ public class TextBox implements IDrawable
 
 			drawing.fillInterfaceOval(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 			drawing.setColor(255, 255, 255);
+			drawing.setInterfaceFontSize(24);
 			drawing.drawInterfaceText(this.posX + 2 - this.sizeX / 2 + this.sizeY / 2 - 1, this.posY - 1, "x");
 		}
 	}
@@ -246,6 +259,12 @@ public class TextBox implements IDrawable
 			{
 				handled = true;
 				selected = true;
+
+				if (Panel.selectedTextBox != null)
+					Panel.selectedTextBox.submit();
+
+				Panel.selectedTextBox = this;
+
 				Drawing.drawing.playVibration("click");
 				Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
 				Game.game.window.getRawTextKeys().clear();
@@ -293,8 +312,8 @@ public class TextBox implements IDrawable
 
 	public void submit()
 	{
-		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
-		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+		Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ENTER);
+		Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
 
 		this.performValueCheck();
 		function.run();
@@ -303,6 +322,7 @@ public class TextBox implements IDrawable
 		Drawing.drawing.playVibration("click");
 		selected = false;
 		Game.game.window.showKeyboard = false;
+		Panel.selectedTextBox = null;
 	}
 
 	public void checkKeys()
@@ -315,8 +335,9 @@ public class TextBox implements IDrawable
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE) && selected)
 		{
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
 			selected = false;
+			Panel.selectedTextBox = null;
 			this.inputText = this.previousInputText;
 			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
 			Game.game.window.showKeyboard = false;

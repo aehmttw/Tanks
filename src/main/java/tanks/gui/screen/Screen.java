@@ -8,6 +8,9 @@ import tanks.obstacle.Obstacle;
 
 public abstract class Screen
 {
+	public String music = null;
+	public String musicID = null;
+
 	public String screenHint = "";
 	public boolean showDefaultMouse = true;
 
@@ -130,7 +133,7 @@ public abstract class Screen
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 2, Drawing.drawing.sizeY * 2);
 		}
-		else if (Game.enable3d)
+		else if (Game.enable3d && !(Game.screen instanceof ScreenExit))
 		{
 			for (int i = 0; i < Game.currentSizeX; i++)
 			{

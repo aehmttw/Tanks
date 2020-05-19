@@ -39,6 +39,9 @@ public class ScreenOptionsInputDesktop extends Screen
 
     public ScreenOptionsInputDesktop()
     {
+        this.music = "tomato_feast_1.ogg";
+        this.musicID = "menu";
+
         if (Panel.showMouseTarget)
             mouseTarget.text = mouseTargetText + ScreenOptions.onText;
         else

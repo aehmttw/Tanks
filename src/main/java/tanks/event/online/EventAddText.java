@@ -1,6 +1,7 @@
 package tanks.event.online;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.event.PersonalEvent;
 import tanks.gui.screen.ScreenOnline;
@@ -16,6 +17,9 @@ public class EventAddText extends PersonalEvent
     public double size;
     public int alignment;
 
+    public int xAlignment;
+    public int yAlignment;
+
     public EventAddText()
     {
 
@@ -30,6 +34,8 @@ public class EventAddText extends PersonalEvent
         this.posY = t.posY;
         this.size = t.size;
         this.alignment = t.alignment;
+        this.xAlignment = t.xAlignment;
+        this.yAlignment = t.yAlignment;
     }
 
     @Override
@@ -41,6 +47,8 @@ public class EventAddText extends PersonalEvent
         b.writeDouble(this.posY);
         b.writeDouble(this.size);
         b.writeInt(this.alignment);
+        b.writeInt(this.xAlignment);
+        b.writeInt(this.yAlignment);
     }
 
     @Override
@@ -52,6 +60,8 @@ public class EventAddText extends PersonalEvent
         this.posY = b.readDouble();
         this.size = b.readDouble();
         this.alignment = b.readInt();
+        this.xAlignment = b.readInt();
+        this.yAlignment = b.readInt();
     }
 
     @Override
@@ -60,7 +70,10 @@ public class EventAddText extends PersonalEvent
         if (this.clientID == null && Game.screen instanceof ScreenOnline)
         {
             ScreenOnline s = (ScreenOnline) Game.screen;
-            s.addText(this.id, new ScreenOnline.Text(this.text, this.posX, this.posY, this.size, this.alignment));
+            ScreenOnline.Text t = new ScreenOnline.Text(this.text, this.posX, this.posY, this.size, this.alignment);
+            t.posX -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeX * (xAlignment + 1) / 2.0;
+            t.posY -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeY * (yAlignment + 1) / 2.0;
+            s.addText(this.id, t);
         }
     }
 }

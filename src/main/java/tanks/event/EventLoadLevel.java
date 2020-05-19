@@ -40,7 +40,7 @@ public class EventLoadLevel extends PersonalEvent
 		}
 		catch (Exception e)
 		{
-			Game.screen = new ScreenFailedToLoadLevel("Level is remote!", new ScreenPartyLobby());
+			Game.screen = new ScreenFailedToLoadLevel("Level is remote!", level, e, new ScreenPartyLobby());
 		}
 	}
 

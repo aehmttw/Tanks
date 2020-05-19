@@ -6,6 +6,12 @@ import tanks.gui.Button;
 
 public class ScreenTestKeyboard extends Screen
 {
+    public ScreenTestKeyboard()
+    {
+        this.music = "tomato_feast_1.ogg";
+        this.musicID = "menu";
+    }
+
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Back", new Runnable()
     {
         @Override

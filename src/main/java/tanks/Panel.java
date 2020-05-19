@@ -7,12 +7,14 @@ import tanks.event.EventPlayerChat;
 import tanks.event.online.IOnlineServerEvent;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
+import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.hotbar.Coins;
 import tanks.hotbar.Hotbar;
 import tanks.network.ClientHandler;
 import tanks.tank.Tank;
 import tanks.tank.TankDummyLoadingScreen;
+import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
 public class Panel
@@ -33,6 +35,8 @@ public class Panel
 	public static boolean levelPassed = false;
 
 	public static double darkness = 0;
+
+	public static TextBox selectedTextBox;
 
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
 	public static double frameFrequency = 1;
@@ -60,7 +64,9 @@ public class Panel
 
 	public boolean firstFrame = true;
 
-	protected Screen currentScreen;
+	public boolean startMusicPlayed = false;
+
+	public long introMusicEnd;
 
 	public static void initialize()
 	{
@@ -85,14 +91,9 @@ public class Panel
 				scale = 1.25;
 
 			Drawing.drawing.setInterfaceScaleZoom(scale);
-
-			BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
-			if (!optionsFile.exists())
-			{
-				ScreenOptions.initOptions(Game.homedir);
-			}
-
-			ScreenOptions.loadOptions(Game.homedir);
+			TankPlayer.setShootStick(TankPlayer.shootStickEnabled);
+			TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
+			TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
 
 			this.hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
 			this.hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
@@ -129,11 +130,36 @@ public class Panel
 				}
 
 			});
+
+			if (Game.game.window.soundsEnabled)
+			{
+				Game.game.window.soundPlayer.musicPlaying = true;
+
+				for (int i = 1; i <= 4; i++)
+				{
+					Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
+				}
+			}
+
+			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
+
+			introMusicEnd -= 30;
+
+			if (Game.framework == Game.Framework.libgdx)
+				introMusicEnd -= 70;
+
+			Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
 		}
 
-		this.currentScreen = Game.screen;
-
 		firstFrame = false;
+
+		Screen prevScreen = Game.screen;
+
+		if (!startMusicPlayed && Game.game.window.soundsEnabled && System.currentTimeMillis() > introMusicEnd)
+		{
+			startMusicPlayed = true;
+			this.playScreenMusic(0);
+		}
 
 		Panel.windowWidth = Game.game.window.absoluteWidth;
 		Panel.windowHeight = Game.game.window.absoluteHeight;
@@ -200,7 +226,7 @@ public class Panel
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
 		if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
-				&& this.currentScreen instanceof ScreenGame && ((ScreenGame) (this.currentScreen)).playing)
+				&& Game.screen instanceof ScreenGame && ((ScreenGame) (Game.screen)).playing)
 		{
 			Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
 
@@ -225,7 +251,7 @@ public class Panel
 		Drawing.drawing.enableMovingCameraX = (Panel.windowWidth < Game.currentSizeX * Game.tank_size * Drawing.drawing.interfaceScale * Drawing.drawing.interfaceScaleZoom);
 		Drawing.drawing.enableMovingCameraY = ((Panel.windowHeight - Drawing.drawing.statsHeight) < Game.currentSizeY * Game.tank_size * Drawing.drawing.interfaceScale * Drawing.drawing.interfaceScaleZoom);
 
-		if (Game.connectedToOnline)
+		if (Game.connectedToOnline && Panel.selectedTextBox == null)
 		{
 			if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
 			{
@@ -238,7 +264,7 @@ public class Panel
 			onlinePaused = false;
 
 		if (!onlinePaused)
-			this.currentScreen.update();
+			Game.screen.update();
 		else
 			this.onlineOverlay.update();
 
@@ -264,6 +290,17 @@ public class Panel
 		{
 			Client.handler.reply();
 		}*/
+
+		if (prevScreen != Game.screen && !(prevScreen instanceof ScreenOnline) && !(Game.screen instanceof ScreenOnline))
+			this.playScreenMusic(500);
+	}
+
+	public void playScreenMusic(long fadeTime)
+	{
+		if (Game.screen.music == null)
+			Drawing.drawing.stopMusic();
+		else if (Panel.panel.startMusicPlayed)
+			Drawing.drawing.playMusic(Game.screen.music, Game.musicVolume, true, Game.screen.musicID, fadeTime);
 	}
 
 	public void draw()
@@ -296,7 +333,7 @@ public class Panel
 			return;
 		}
 
-		if (!(this.currentScreen instanceof ScreenExit))
+		if (!(Game.screen instanceof ScreenExit))
 		{
 			Drawing.drawing.setColor(174, 92, 16);
 			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
@@ -320,15 +357,15 @@ public class Panel
 		if (onlinePaused)
 			this.onlineOverlay.draw();
 		else
-			this.currentScreen.draw();
+			Game.screen.draw();
 
-		if (!(this.currentScreen instanceof ScreenExit))
+		if (!(Game.screen instanceof ScreenExit))
 			this.drawBar();
 
-		if (this.currentScreen.showDefaultMouse)
+		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
-		this.currentScreen.drawPostMouse();
+		Game.screen.drawPostMouse();
 	}
 
 	public void drawMouseTarget()
@@ -383,7 +420,7 @@ public class Panel
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 
-		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, this.currentScreen.screenHint);
+		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
 
 		long free = Runtime.getRuntime().freeMemory();
 		long total = Runtime.getRuntime().totalMemory();

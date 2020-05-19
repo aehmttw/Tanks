@@ -7,6 +7,12 @@ import tanks.gui.Button;
 
 public class ScreenPlaySingleplayer extends Screen
 {
+    public ScreenPlaySingleplayer()
+    {
+        this.music = "tomato_feast_3.ogg";
+        this.musicID = "menu";
+    }
+
     Button randomLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
     {
         @Override

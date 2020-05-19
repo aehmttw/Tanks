@@ -75,6 +75,10 @@ public abstract class BaseWindow
     public BaseVibrationPlayer vibrationPlayer;
     public boolean vibrationsEnabled = false;
 
+    public boolean antialiasingSupported = false;
+    public boolean antialiasingEnabled = false;
+
+
     public BasePlatformHandler platformHandler;
 
     public BaseWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)

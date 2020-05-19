@@ -12,6 +12,9 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 
 	public ScreenPartyResumeCrusade()
 	{
+		this.music = "tomato_feast_4.ogg";
+		this.musicID = "menu";
+
 		for (int i = 0; i < Game.players.size(); i++)
 		{
 			if (Game.players.get(i).remainingLives >= 1)

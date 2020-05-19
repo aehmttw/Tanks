@@ -30,6 +30,12 @@ public class ScreenPartyLobby extends Screen
 
 	public static ChatBox chatbox;
 
+	public ScreenPartyLobby()
+	{
+		this.music = "tomato_feast_4.ogg";
+		this.musicID = "menu";
+	}
+
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Leave party", new Runnable()
 	{
 		@Override
@@ -89,7 +95,7 @@ public class ScreenPartyLobby extends Screen
 
 		//Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 4 - 40, "Players in this party:");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 265, "Players in this party:");
 
 		if (connections != null)
 		{

@@ -53,6 +53,8 @@ public class ScreenOptionsInputTouchscreen extends Screen
                 mobile.text = mobileText + ScreenOptions.onText;
             else
                 mobile.text = mobileText + ScreenOptions.offText;
+
+            TankPlayer.controlStickMobile = TankPlayer.controlStick.mobile;
         }
     },
             "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
@@ -70,6 +72,8 @@ public class ScreenOptionsInputTouchscreen extends Screen
                 snap.text = snapText + ScreenOptions.onText;
             else
                 snap.text = snapText + ScreenOptions.offText;
+
+            TankPlayer.controlStickSnap = TankPlayer.controlStick.snap;
         }
     },
             "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
@@ -107,6 +111,9 @@ public class ScreenOptionsInputTouchscreen extends Screen
 
     public ScreenOptionsInputTouchscreen()
     {
+        this.music = "tomato_feast_1.ogg";
+        this.musicID = "menu";
+
         vibrations.enabled = Game.game.window.vibrationsEnabled;
 
         if (!Game.game.window.vibrationsEnabled)

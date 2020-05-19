@@ -16,7 +16,7 @@ public class BulletLaser extends BulletInstant
 		this.baseColorG = 0;
 		this.baseColorB = 0;
 		this.name = "laser";
-		this.effect = Bullet.BulletEffect.none;
+		this.effect = BulletEffect.none;
 		this.itemSound = "laser.ogg";
 	}
 
@@ -27,7 +27,7 @@ public class BulletLaser extends BulletInstant
 
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
-	public BulletLaser(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
+	public BulletLaser(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
 		this(x, y, bounces, t, false, ib);
 	}

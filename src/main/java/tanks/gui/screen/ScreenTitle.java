@@ -91,6 +91,9 @@ public class ScreenTitle extends Screen
 		Game.movables.add(logo);
 
 		takeControl.silent = true;
+
+		this.music = "tomato_feast_1.ogg";
+		this.musicID = "menu";
 	}
 	
 	@Override

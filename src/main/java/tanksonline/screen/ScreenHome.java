@@ -76,6 +76,9 @@ public class ScreenHome extends ScreenLayout
         super(player);
         this.texts.add(new ScreenOnline.Text("Tanks Online menu", sizeX / 2, sizeY / 2 - 240, 24, 0));
 
+        this.music = "tomato_feast_3.ogg";
+        this.musicID = "menu";
+
         upload.wait = true;
         browse.wait = true;
         myUploadedLevels.wait = true;

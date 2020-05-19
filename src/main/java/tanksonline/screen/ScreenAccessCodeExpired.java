@@ -33,6 +33,9 @@ public class ScreenAccessCodeExpired extends ScreenLayout
         back.wait = true;
         this.buttons.add(back);
 
+        this.music = "tomato_feast_2.ogg";
+        this.musicID = "menu";
+
         synchronized (PlayerMap.instance)
         {
             TanksOnlinePlayer p = PlayerMap.instance.getPlayer(player.computerID);

@@ -121,51 +121,72 @@ public class TankPlayerController extends Tank implements IPlayerTank
             {
                 double distSq = 0;
 
-                for (int i : Game.game.window.touchPoints.keySet())
+                if (TankPlayer.shootStickEnabled)
                 {
-                    InputPoint p = Game.game.window.touchPoints.get(i);
+                    TankPlayer.mineButton.update();
 
-                    if (!p.tag.equals("") && !p.tag.equals("aim"))
-                        continue;
+                    if (TankPlayer.mineButton.justPressed)
+                        mine = true;
 
-                    double px = Drawing.drawing.getInterfacePointerX(p.x);
-                    double py = Drawing.drawing.getInterfacePointerY(p.y);
+                    TankPlayer.shootStick.update();
 
-                    this.angle = this.getAngleInDirection(Drawing.drawing.toGameCoordsX(px),
-                            Drawing.drawing.toGameCoordsY(py));
-
-                    distSq = Math.pow(px - Drawing.drawing.toInterfaceCoordsX(this.posX), 2)
-                            + Math.pow(py - Drawing.drawing.toInterfaceCoordsY(this.posY), 2);
-
-                    if (distSq <= Math.pow(this.touchCircleSize / 4, 2) || p.tag.equals("aim"))
+                    if (TankPlayer.shootStick.inputIntensity >= 0.2)
                     {
-                        p.tag = "aim";
-                        this.drawTouchCircle = true;
-
-                        if (!prevTouchCircle)
-                        {
-                            if (System.currentTimeMillis() - prevTap <= 500)
-                            {
-                                Drawing.drawing.playVibration("heavyClick");
-                                mine = true;
-                                this.prevTap = 0;
-                            }
-                            else
-                                prevTap = System.currentTimeMillis();
-                        }
-
+                        this.angle = TankPlayer.shootStick.inputAngle;
                         trace = true;
+
+                        if (TankPlayer.shootStick.inputIntensity >= 1.0)
+                            shoot = true;
                     }
-                    else
-                        shoot = true;
+                }
+                else
+                {
+                    for (int i : Game.game.window.touchPoints.keySet())
+                    {
+                        InputPoint p = Game.game.window.touchPoints.get(i);
 
-                    double proximity = Math.pow(this.touchCircleSize / 2, 2);
+                        if (!p.tag.equals("") && !p.tag.equals("aim"))
+                            continue;
 
-                    if (p.tag.equals("aim") && ((distSq <= proximity && prevDistSq > proximity) || (distSq > proximity && prevDistSq <= proximity)))
-                        Drawing.drawing.playVibration("selectionChanged");
+                        double px = Drawing.drawing.getInterfacePointerX(p.x);
+                        double py = Drawing.drawing.getInterfacePointerY(p.y);
 
-                    if (distSq > proximity)
-                        shoot = true;
+                        this.angle = this.getAngleInDirection(Drawing.drawing.toGameCoordsX(px),
+                                Drawing.drawing.toGameCoordsY(py));
+
+                        distSq = Math.pow(px - Drawing.drawing.toInterfaceCoordsX(this.posX), 2)
+                                + Math.pow(py - Drawing.drawing.toInterfaceCoordsY(this.posY), 2);
+
+                        if (distSq <= Math.pow(this.touchCircleSize / 4, 2) || p.tag.equals("aim"))
+                        {
+                            p.tag = "aim";
+                            this.drawTouchCircle = true;
+
+                            if (!prevTouchCircle)
+                            {
+                                if (System.currentTimeMillis() - prevTap <= 500)
+                                {
+                                    Drawing.drawing.playVibration("heavyClick");
+                                    mine = true;
+                                    this.prevTap = 0;
+                                }
+                                else
+                                    prevTap = System.currentTimeMillis();
+                            }
+
+                            trace = true;
+                        }
+                        else
+                            shoot = true;
+
+                        double proximity = Math.pow(this.touchCircleSize / 2, 2);
+
+                        if (p.tag.equals("aim") && ((distSq <= proximity && prevDistSq > proximity) || (distSq > proximity && prevDistSq <= proximity)))
+                            Drawing.drawing.playVibration("selectionChanged");
+
+                        if (distSq > proximity)
+                            shoot = true;
+                    }
                 }
 
                 this.prevDistSq = distSq;

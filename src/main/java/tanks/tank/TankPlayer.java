@@ -14,7 +14,10 @@ public class TankPlayer extends Tank implements IPlayerTank
 	public static Joystick shootStick;
 	public static Button mineButton;
 
-	public Player player = Game.player;
+    public static boolean controlStickSnap;
+	public static boolean controlStickMobile;
+
+    public Player player = Game.player;
 	public boolean enableDestroyCheat = false;
 
 	public boolean drawTouchCircle = false;
@@ -328,15 +331,18 @@ public class TankPlayer extends Tank implements IPlayerTank
 	{
 		shootStickEnabled = enabled;
 
-		if (enabled)
+		if (controlStick != null && shootStick != null)
 		{
-			controlStick.domain = 1;
-			shootStick.domain = 2;
-		}
-		else
-		{
-			controlStick.domain = 0;
-			shootStick.domain = 0;
+			if (enabled)
+			{
+				controlStick.domain = 1;
+				shootStick.domain = 2;
+			}
+			else
+			{
+				controlStick.domain = 0;
+				shootStick.domain = 0;
+			}
 		}
 	}
 }

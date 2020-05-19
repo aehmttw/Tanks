@@ -51,6 +51,9 @@ public class ScreenOptionsMultiplayer extends Screen
 	
 	public ScreenOptionsMultiplayer()
 	{
+		this.music = "tomato_feast_1.ogg";
+		this.musicID = "menu";
+
 		username.enableCaps = true;
 		username.enableSpaces = false;
 

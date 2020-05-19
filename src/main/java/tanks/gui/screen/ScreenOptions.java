@@ -13,6 +13,7 @@ import java.util.Date;
 
 public class ScreenOptions extends Screen
 {
+	public static final String musicText = "Music: ";
 	public static final String autostartText = "Autostart: ";
 	public static final String infoBarText = "Info bar: ";
 
@@ -21,6 +22,9 @@ public class ScreenOptions extends Screen
 
 	public ScreenOptions()
 	{
+		this.music = "tomato_feast_1.ogg";
+		this.musicID = "menu";
+
 		if (Game.autostart)
 			autostart.text = autostartText + onText;
 		else
@@ -30,6 +34,14 @@ public class ScreenOptions extends Screen
 			showStats.text = infoBarText + onText;
 		else
 			showStats.text = infoBarText + offText;
+
+		if (Game.musicEnabled && Game.game.window.soundsEnabled)
+			musicToggle.text = musicText + onText;
+		else
+			musicToggle.text = musicText + offText;
+
+		if (!Game.game.window.soundsEnabled)
+			musicToggle.enabled = false;
 	}
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
@@ -43,7 +55,29 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
+	Button musicToggle = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.musicEnabled = !Game.musicEnabled;
+
+			if (Game.musicEnabled)
+			{
+				musicToggle.text = musicText + onText;
+				Panel.panel.playScreenMusic(0);
+			}
+			else
+			{
+				musicToggle.text = musicText + offText;
+				Drawing.drawing.stopMusic();
+			}
+		}
+	},
+			"When enabled, music will---play throughout the game.");
+
+
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -56,10 +90,10 @@ public class ScreenOptions extends Screen
 				autostart.text = autostartText + offText;
 		}
 	},
-			"When enabled, levels will start playing---automatically 4 seconds after they are loaded---(if the play button isn't clicked earlier)");
+			"When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
 
-	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
+	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -90,7 +124,7 @@ public class ScreenOptions extends Screen
 			Game.screen = new ScreenOptionsMultiplayer();
 		}
 	}
-			);
+	);
 
 	Button graphicsOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Graphics options", new Runnable()
 	{
@@ -100,7 +134,7 @@ public class ScreenOptions extends Screen
 			Game.screen = new ScreenOptionsGraphics();
 		}
 	}
-			);
+	);
 
 	Button inputOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Input options", new Runnable()
 	{
@@ -119,6 +153,7 @@ public class ScreenOptions extends Screen
 	@Override
 	public void update()
 	{
+		musicToggle.update();
 		autostart.update();
 		showStats.update();
 
@@ -139,6 +174,7 @@ public class ScreenOptions extends Screen
 		graphicsOptions.draw();
 		showStats.draw();
 		autostart.draw();
+		musicToggle.draw();
 
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
@@ -175,14 +211,16 @@ public class ScreenOptions extends Screen
 			f.println("fancy_graphics=" + Game.fancyGraphics);
 			f.println("3d=" + Game.enable3d);
 			f.println("3d_ground=" + Game.enable3dBg);
+			f.println("vsync=" + Game.vsync);
+			f.println("antialiasing=" + Game.antialiasing);
 			f.println("angled_perspective=" + Game.angledView);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("vibrations=" + Game.enableVibrations);
-			f.println("mobile_joystick=" + TankPlayer.controlStick.mobile);
-			f.println("snap_joystick=" + TankPlayer.controlStick.snap);
+			f.println("mobile_joystick=" + TankPlayer.controlStickMobile);
+			f.println("snap_joystick=" + TankPlayer.controlStickSnap);
 			f.println("dual_joystick=" + TankPlayer.shootStickEnabled);
+			f.println("music=" + Game.musicEnabled);
 			f.println("auto_start=" + Game.autostart);
-			f.println("vsync=" + Game.vsync);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
 			f.println("last_party=" + Game.lastParty);
@@ -233,6 +271,12 @@ public class ScreenOptions extends Screen
 					case "3d_ground":
 						Game.enable3dBg = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "vsync":
+						Game.vsync = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "antialiasing":
+						Game.antialiasing = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "mouse_target":
 						Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -240,13 +284,16 @@ public class ScreenOptions extends Screen
 						Game.enableVibrations = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "mobile_joystick":
-						TankPlayer.controlStick.mobile = Boolean.parseBoolean(optionLine[1]);
+						TankPlayer.controlStickMobile = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "snap_joystick":
-						TankPlayer.controlStick.snap = Boolean.parseBoolean(optionLine[1]);
+						TankPlayer.controlStickSnap = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "dual_joystick":
 						TankPlayer.setShootStick(Boolean.parseBoolean(optionLine[1]));
+						break;
+					case "music":
+						Game.musicEnabled = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "auto_start":
 						Game.autostart = Boolean.parseBoolean(optionLine[1]);
@@ -256,9 +303,6 @@ public class ScreenOptions extends Screen
 						break;
 					case "angled_perspective":
 						Game.angledView = Boolean.parseBoolean(optionLine[1]);
-						break;
-					case "vsync":
-						Game.vsync = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "port":
 						Game.port = Integer.parseInt(optionLine[1]);

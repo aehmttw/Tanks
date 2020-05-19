@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 
-public class Game 
+public class Game
 {
 	public enum Framework {lwjgl, swing, libgdx}
 	public static Framework framework;
@@ -38,7 +38,7 @@ public class Game
 	public static final UUID clientID = UUID.randomUUID();
 
 	public static final int absoluteDepthBase = 1000;
-	
+
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 	public static ArrayList<Effect> effects = new ArrayList<Effect>();
@@ -61,19 +61,19 @@ public class Game
 
 	public static int currentSizeX = 28;
 	public static int currentSizeY = 18;
-	public static double bgResMultiplier = 1;	
-	
+	public static double bgResMultiplier = 1;
+
 	public static double[][] tilesR = new double[28][18];
 	public static double[][] tilesG = new double[28][18];
 	public static double[][] tilesB = new double[28][18];
-	
+
 	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
-	
+
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks 0.8.h";
-	public static final int network_protocol = 12;
+	public static final String version = "Tanks 0.8.i";
+	public static final int network_protocol = 13;
 	public static boolean debug = false;
 
 	public static int port = 8080;
@@ -82,28 +82,32 @@ public class Game
 	public static String lastOnlineServer = "";
 
 	public static double levelSize = 1;
-	
+
 	public static Tank playerTank;
-	
+
 	public static boolean bulletLocked = false;
-		
+
 	public static boolean vsync = true;
 
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 
+	public static boolean musicEnabled = true;
+
+	public static boolean antialiasing = false;
+
 	public static boolean enableVibrations = true;
 
 	public static boolean enableChatFilter = true;
-	
+
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	public static long crashTime = 0;
 
 	public static Screen screen;
 
 	public static String ip = "";
-	
+
 	public static boolean fancyGraphics = true;
 
 	public static boolean autostart = true;
@@ -121,13 +125,13 @@ public class Game
 
 	public BaseFileManager fileManager;
 
-	public static Level currentLevel = null;	
-	public static String currentLevelString = "";	
-	
+	public static Level currentLevel = null;
+	public static String currentLevelString = "";
+
 	public static ChatFilter chatFilter = new ChatFilter();
-	
+
 	public static PrintStream logger = System.err;
-	
+
 	public static String directoryPath = "/.tanks";
 	public static final String logPath = directoryPath + "/logfile.txt";
 	public static final String crashesPath = directoryPath + "/crashes/";
@@ -137,8 +141,10 @@ public class Game
 	public static final String tutorialPath = directoryPath + "/tutorial.txt";
 	public static final String uuidPath = directoryPath + "/uuid";
 
+	public static final float musicVolume = 0.5f;
+
 	public static String homedir;
-	
+
 	public static ArrayList<RegistryTank.DefaultTankEntry> defaultTanks = new ArrayList<RegistryTank.DefaultTankEntry>();
 	public static ArrayList<RegistryObstacle.DefaultObstacleEntry> defaultObstacles = new ArrayList<RegistryObstacle.DefaultObstacleEntry>();
 
@@ -209,6 +215,7 @@ public class Game
 		NetworkEventMap.register(EventAddTextBox.class);
 		NetworkEventMap.register(EventAddMenuButton.class);
 		NetworkEventMap.register(EventAddUUIDTextBox.class);
+		NetworkEventMap.register(EventSetMusic.class);
 		NetworkEventMap.register(EventRemoveShape.class);
 		NetworkEventMap.register(EventRemoveText.class);
 		NetworkEventMap.register(EventRemoveButton.class);
@@ -270,12 +277,12 @@ public class Game
 			directoryFile.mkdirs();
 			game.fileManager.getFile(homedir + directoryPath + ScreenSavedLevels.levelDir).mkdirs();
 
-			try 
+			try
 			{
 				game.fileManager.getFile(homedir + logPath).create();
 				Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
-			} 
-			catch (IOException e) 
+			}
+			catch (IOException e)
 			{
 				e.printStackTrace();
 				System.exit(1);
@@ -326,11 +333,11 @@ public class Game
 			System.exit(1);
 		}
 
-		try 
+		try
 		{
 			Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
-		} 
-		catch (FileNotFoundException e) 
+		}
+		catch (FileNotFoundException e)
 		{
 			Game.logger = System.err;
 			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
@@ -338,13 +345,21 @@ public class Game
 
 		RegistryTank.loadRegistry(homedir);
 		RegistryObstacle.loadRegistry(homedir);
+
+		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
+		if (!optionsFile.exists())
+		{
+			ScreenOptions.initOptions(Game.homedir);
+		}
+
+		ScreenOptions.loadOptions(Game.homedir);
 	}
-	
+
 	public static boolean usernameInvalid(String username)
 	{
 		if (username.length() > 18)
 			return true;
-			
+
 		for (int i = 0; i < username.length(); i++)
 		{
 			if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i+1)))
@@ -352,7 +367,7 @@ public class Game
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -386,7 +401,7 @@ public class Game
 		else
 			return "less than 1m";
 	}
-	
+
 	public static void reset()
 	{
 		resetNetworkIDs();
@@ -402,7 +417,7 @@ public class Game
 		System.gc();
 		start();
 	}
-	
+
 	public static void exit()
 	{
 		screen = new ScreenInterlevel();
@@ -416,10 +431,10 @@ public class Game
 		recycleEffects.clear();
 		removeEffects.clear();
 		removeBelowEffects.clear();
-		
+
 		System.gc();
 	}
-	
+
 	public static void exit(String name)
 	{
 		obstacles.clear();
@@ -429,14 +444,14 @@ public class Game
 		recycleEffects.clear();
 		removeEffects.clear();
 		removeBelowEffects.clear();
-		
+
 		System.gc();
-		
+
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
 		Game.loadLevel(game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
 		Game.screen = s;
 	}
-	
+
 	public static void exitToCrash(Throwable e)
 	{
 		System.gc();
@@ -445,7 +460,7 @@ public class Game
 
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 			ScreenPartyHost.server.close("The party has ended because the host crashed");
-		
+
 		if (ScreenPartyLobby.isClient || Game.connectedToOnline)
 			Client.handler.ctx.close();
 
@@ -502,10 +517,10 @@ public class Game
 		recycleEffects.clear();
 		removeEffects.clear();
 		removeBelowEffects.clear();
-		
+
 		System.gc();
 	}
-	
+
 	public static void resetTiles()
 	{
 		Game.tilesR = new double[28][18];
@@ -524,12 +539,12 @@ public class Game
 				Game.tilesDepth[i][j] = Math.random() * 10;
 			}
 		}
-		
-		Level.currentColorR = 235; 
+
+		Level.currentColorR = 235;
 		Level.currentColorG = 207;
 		Level.currentColorB = 166;
 	}
-	
+
 	public static void exitToTitle()
 	{
 		cleanUp();
@@ -537,7 +552,7 @@ public class Game
 		screen = new ScreenTitle();
 		System.gc();
 	}
-	
+
 	public static void cleanUp()
 	{
 		resetTiles();
@@ -546,25 +561,25 @@ public class Game
 	}
 
 	public static void silentCleanUp()
-    {
-        Drawing.drawing.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
-        obstacles.clear();
-        belowEffects.clear();
-        movables.clear();
-        effects.clear();
-        recycleEffects.clear();
-        removeEffects.clear();
-        removeBelowEffects.clear();
+	{
+		Drawing.drawing.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
+		obstacles.clear();
+		belowEffects.clear();
+		movables.clear();
+		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeBelowEffects.clear();
 
-        resetNetworkIDs();
+		resetNetworkIDs();
 
-        Panel.panel.hotbar.currentCoins = new Coins();
-        Panel.panel.hotbar.enabledCoins = false;
-        Panel.panel.hotbar.currentItemBar = new ItemBar(Game.player, Panel.panel.hotbar);
-        Panel.panel.hotbar.enabledItemBar = false;
-    }
+		Panel.panel.hotbar.currentCoins = new Coins();
+		Panel.panel.hotbar.enabledCoins = false;
+		Panel.panel.hotbar.currentItemBar = new ItemBar(Game.player, Panel.panel.hotbar);
+		Panel.panel.hotbar.enabledItemBar = false;
+	}
 
-    public static void resetNetworkIDs()
+	public static void resetNetworkIDs()
 	{
 		Tank.currentID = 0;
 		Tank.idMap.clear();
@@ -578,38 +593,41 @@ public class Game
 		Mine.idMap.clear();
 		Mine.freeIDs.clear();
 	}
-	
-	public static void loadLevel(BaseFile f)
+
+	public static boolean loadLevel(BaseFile f)
 	{
-		Game.loadLevel(f, null);
+		return Game.loadLevel(f, null);
 	}
-	
-	public static void loadLevel(BaseFile f, ILevelPreviewScreen s)
+
+	public static boolean loadLevel(BaseFile f, ILevelPreviewScreen s)
 	{
+		String line = "Could not find level contents!";
 		try
 		{
 			f.startReading();
 
 			while (f.hasNextLine())
 			{
-				String line = f.nextLine();
+				line = f.nextLine();
 				Level l = new Level(line);
 				l.loadLevel(s);
 			}
 
 			f.stopReading();
+			return true;
 		}
-		catch (FileNotFoundException e)
+		catch (Exception e)
 		{
-			Game.exitToCrash(e);
+			Game.screen = new ScreenFailedToLoadLevel(f.path, line, e, Game.screen);
+			return false;
 		}
 	}
-	
+
 	public static void start()
-	{		
+	{
 		//Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-purple2-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
-		
-		//System.out.println(LevelGenerator.generateLevelString());		
+
+		//System.out.println(LevelGenerator.generateLevelString());
 		//Game.currentLevel = "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();
 		Level level = new Level(LevelGenerator.generateLevelString());
 		//Level level = new Level("{28,18|3...6-3...4,3...4-5...6,10...19-13...14,18...19-4...12|22-14-player,14-10-brown}");
@@ -617,5 +635,5 @@ public class Game
 		level.loadLevel();
 	}
 
-	
+
 }

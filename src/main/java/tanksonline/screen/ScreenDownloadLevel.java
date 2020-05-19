@@ -1,5 +1,6 @@
 package tanksonline.screen;
 
+import tanks.Game;
 import tanks.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
@@ -15,7 +16,7 @@ public class ScreenDownloadLevel extends ScreenLayout
     public ScreenLayout screen;
     public ScreenLayout instance = this;
 
-    Button quit = new Button(sizeX - 580, sizeY - 50, 350, 40, "Back", new Runnable()
+    Button quit = new Button(sizeX - 560, sizeY - 50, 350, 40, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -44,7 +45,14 @@ public class ScreenDownloadLevel extends ScreenLayout
         super(player);
         this.screen = player.screen;
 
+        this.music = "tomato_feast_4.ogg";
+        this.musicID = "menu";
+
         quit.wait = true;
+        quit.xAlignment = 1;
+        quit.yAlignment = 1;
+        delete.xAlignment = -1;
+        delete.yAlignment = 1;
         this.buttons.add(quit);
 
         this.name = level.name;
@@ -59,6 +67,8 @@ public class ScreenDownloadLevel extends ScreenLayout
     public void setScreen()
     {
         this.player.screen = this;
+
+        this.player.sendEvent(new EventSetMusic(this.music, Game.musicVolume, true, musicID, 500));
 
         this.player.sendEvent(new EventSendLevelToDownload(this.name, level.level));
 

@@ -20,6 +20,9 @@ public class ScreenUploadLevel extends ScreenSpecial
     {
         super(player, "upload_level");
 
+        this.music = "tomato_feast_4.ogg";
+        this.musicID = "menu";
+
         quit.wait = true;
         this.buttons.add(quit);
     }

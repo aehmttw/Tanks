@@ -18,7 +18,7 @@ public class BulletHealing extends BulletInstant
 		this.baseColorG = 255;
 		this.baseColorB = 0;
 		this.name = "heal";
-		this.effect = BulletEffect.none;
+		this.effect = Bullet.BulletEffect.none;
 		this.damage = -0.01;
 
 		this.itemSound = null;
@@ -32,7 +32,7 @@ public class BulletHealing extends BulletInstant
 	
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
-	public BulletHealing(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	public BulletHealing(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
 	{
 		this(x, y, bounces, t, false, ib);
 	}
@@ -56,7 +56,7 @@ public class BulletHealing extends BulletInstant
 		hitTank = true;
 		
 		t.lives = Math.min(t.baseLives + 1, t.lives - this.damage * Panel.frameFrequency);
-		Drawing.drawing.playGlobalSound("heal.ogg", (float) ((t.lives / (t.baseLives + 1) / 2) + 1f) / 2);
+		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.lives / (t.baseLives + 1) / 2) + 1f) / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 

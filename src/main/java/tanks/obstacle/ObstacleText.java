@@ -21,6 +21,7 @@ public class ObstacleText extends Obstacle
 		this.colorB = 0;
 		this.colorA = 0;
 		this.text = text;
+		this.enableStacking = false;
 
 		this.description = "A piece of text used---to instruct the player";
 

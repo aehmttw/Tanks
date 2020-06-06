@@ -8,7 +8,7 @@ public class TankDummyLoadingScreen extends Tank
 	
 	public TankDummyLoadingScreen(double x, double y) 
 	{
-		super("loadingscreendummy", x, y, Game.tank_size * size_multiplier, 0, 150, 255);
+		super("loadingscreendummy", x, y, Game.tile_size * size_multiplier, 0, 150, 255);
 		this.turret.length *= size_multiplier;
 		this.turret.size *= size_multiplier;
 

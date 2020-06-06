@@ -85,7 +85,7 @@ public class ScreenCrusades extends Screen
 			{
 				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/classic_crusade.tanks");
 
-				Crusade.currentCrusade = new Crusade(al, "Classic Crusade");
+				Crusade.currentCrusade = new Crusade(al, "Classic Crusade", "/classic_crusade.tanks");
 				Crusade.crusadeMode = true;
 				Crusade.currentCrusade.begin();
 				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
@@ -99,7 +99,7 @@ public class ScreenCrusades extends Screen
 			public void run()
 			{
 				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/wii_crusade.tanks");
-				Crusade.currentCrusade = new Crusade(al, "Wii Crusade");
+				Crusade.currentCrusade = new Crusade(al, "Wii Crusade", "/wii_crusade.tanks");
 				Crusade.crusadeMode = true;
 				Crusade.currentCrusade.begin();
 				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());

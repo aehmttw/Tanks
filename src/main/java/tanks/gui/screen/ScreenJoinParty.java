@@ -103,7 +103,7 @@ public class ScreenJoinParty extends Screen
 		}
 		
 	}	
-			,Game.lastParty, "You can find this on the---party host's screen");
+			, Game.lastParty, "You can find this on the---party host's screen");
 	
 	@Override
 	public void update() 

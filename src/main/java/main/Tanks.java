@@ -4,6 +4,8 @@ import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import swingwindow.SwingWindow;
 import tanks.*;
+import tanks.registry.RegistryTank;
+import tanks.tank.Tank;
 import tanksonline.CommandExecutor;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;

@@ -135,13 +135,13 @@ public class Joystick implements IDrawable
         if (activeInput == -1)
             alpha = 0.5;
 
-        double frac = Obstacle.draw_size / Obstacle.obstacle_size;
+        double frac = Obstacle.draw_size / Game.tile_size;
 
         Drawing.drawing.setColor(colorR, colorG, colorB, colorA * alpha);
         Drawing.drawing.fillInterfaceOval(this.posX, this.posY, this.size * frac, this.size * frac);
 
         double x = posX + inputIntensity * Math.cos(inputAngle) * size / 2;
         double y = posY + inputIntensity * Math.sin(inputAngle) * size / 2;
-        Drawing.drawing.fillInterfaceOval(x, y, this.size / 4 * frac, this.size / 4 * frac);
+        Drawing.drawing.fillInterfaceOval(x, y, this.size / 2 * frac, this.size / 2 * frac);
     }
 }

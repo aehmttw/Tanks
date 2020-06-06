@@ -16,11 +16,11 @@ public class TouchscreenTutorial
 				"46-13-gray-2,4-6-player-0,19-13-brown-3}");
 		
 		l.loadLevel();
-		Tank t = new TankDummy("dummy", 7.5 * Game.tank_size, 12.5 * Game.tank_size, Math.PI);
+		Tank t = new TankDummy("dummy", 7.5 * Game.tile_size, 12.5 * Game.tile_size, Math.PI);
 		t.team = Game.enemyTeam;
 		Game.movables.add(t);
 
-		Tank t2 = new TankDummy("dummy", 26.5 * Game.tank_size, 1.5 * Game.tank_size, 0);
+		Tank t2 = new TankDummy("dummy", 26.5 * Game.tile_size, 1.5 * Game.tile_size, 0);
 		t2.team = Game.enemyTeam;
 		Game.movables.add(t2);
 		

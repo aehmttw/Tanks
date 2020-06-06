@@ -4,7 +4,7 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
-import tanks.bullet.Bullet;
+import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
@@ -24,21 +24,12 @@ public class Ray
 	public boolean trace = false;
 	public boolean dotted = false;
 
-	public boolean highAccuracy = false;
-
-	public double xMul = 0;
-	public double yMul = 0;
-
 	public double speed = 10;
 
-	public boolean skipSelfCheck = false;
-	public boolean inShooter = true;
 	public int age = 0;
 
 	public Tank tank;
 	public Tank targetTank;
-
-	public boolean enableBullet = false;
 
 	public ArrayList<Double> bounceX = new ArrayList<Double>();
 	public ArrayList<Double> bounceY = new ArrayList<Double>();
@@ -70,219 +61,288 @@ public class Ray
 		this.tank = tank;
 	}
 
-	public Movable getTarget(double xMul, double yMul, Tank targetTank)
+	public Movable getTarget(double mul, Tank targetTank)
 	{
-		this.xMul = xMul;
-		this.yMul = yMul;
 		this.targetTank = targetTank;
-		return this.getTarget();
+		this.targetTank.size *= mul;
+
+		for (Face f: this.targetTank.getHorizontalFaces())
+			addFace(f);
+
+		for (Face f: this.targetTank.getVerticalFaces())
+			addFace(f);
+
+		Movable m = this.getTarget();
+
+		for (Face f: this.targetTank.getHorizontalFaces())
+			Game.horizontalFaces.remove(f);
+
+		for (Face f: this.targetTank.getVerticalFaces())
+			Game.verticalFaces.remove(f);
+
+		this.targetTank.size /= mul;
+
+		return m;
+	}
+
+	public void addFace(Face f)
+	{
+		if (f.horizontal)
+		{
+			int a = 0;
+			int b = Game.horizontalFaces.size() - 1;
+
+			boolean added = false;
+			int m = 0;
+			while (a <= b)
+			{
+				m = (a + b) / 2;
+
+				if (Game.horizontalFaces.get(m).startY < f.startY)
+					a = m + 1;
+				else if (Game.horizontalFaces.get(m).startY > f.startY)
+					b = m - 1;
+				else
+				{
+					added = true;
+					Game.horizontalFaces.add(m, f);
+					break;
+				}
+			}
+
+			if (!added)
+				Game.horizontalFaces.add(m, f);
+		}
+		else
+		{
+			int a = 0;
+			int b = Game.verticalFaces.size() - 1;
+
+			boolean added = false;
+			int m = 0;
+			while (a <= b)
+			{
+				m = (a + b) / 2;
+
+				if (Game.verticalFaces.get(m).startX < f.startX)
+					a = m + 1;
+				else if (Game.verticalFaces.get(m).startX > f.startX)
+					b = m - 1;
+				else
+				{
+					added = true;
+					Game.verticalFaces.add(m, f);
+					break;
+				}
+			}
+
+			if (!added)
+				Game.verticalFaces.add(m, f);
+		}
 	}
 
 	public Movable getTarget()
 	{
-		double smallestDist = 0;
+		double remainder = 0;
 
-		while (true)
+		if (isInsideObstacle(this.posX - size / 2, this.posY - size / 2) ||
+				isInsideObstacle(this.posX + size / 2, this.posY - size / 2) ||
+				isInsideObstacle(this.posX + size / 2, this.posY + size / 2) ||
+				isInsideObstacle(this.posX - size / 2, this.posY + size / 2))
+			return null;
+
+		for (Movable m: Game.movables)
 		{
-			age++;
-
-			if (trace && (!dotted || (this.age % 2 == 0)))
-				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tank_size / 4, Effect.EffectType.ray));
-
-			this.posX += this.vX;
-			this.posY += this.vY;
-
-			boolean collided = false;
-			boolean bouncy = false;
-
-			double sqVel = Math.pow(this.vX, 2) + Math.pow(this.vY, 2);
-
-			if (sqVel >= Math.pow(smallestDist, 2))
+			if (m instanceof Tank && m != this.tank)
 			{
-				double smallestDistSq = Double.MAX_VALUE;
-				for (int i = 0; i < Game.obstacles.size(); i++)
-				{
-					Obstacle o = Game.obstacles.get(i);
-
-					if (!o.bulletCollision)
-						continue;
-
-					double dx = this.posX - o.posX;
-					double dy = this.posY - o.posY;
-
-					double horizontalDist = Math.abs(dx);
-					double verticalDist = Math.abs(dy);
-
-					double s = this.size;
-
-					double bound = s / 2 + Obstacle.obstacle_size / 2;
-
-					smallestDistSq = Math.min(smallestDistSq, Math.pow(Math.max(horizontalDist - bound, 0), 2) + Math.pow(Math.max(verticalDist - bound, 0), 2));
-
-					if (horizontalDist < bound && verticalDist < bound)
-					{
-						boolean left = this.vX <= 0;
-						boolean right = this.vX >= 0;
-						boolean up = this.vY <= 0;
-						boolean down = this.vY >= 0;
-
-						if (this.highAccuracy)
-						{
-							left = left || o.hasLeftNeighbor();
-							right = right || o.hasRightNeighbor();
-							up = up || o.hasUpperNeighbor();
-							down = down || o.hasLowerNeighbor();
-						}
-
-						if (left && dx <= 0)
-							horizontalDist = 0;
-
-						if (right && dx >= 0)
-							horizontalDist = 0;
-
-						if (up && dy <= 0)
-							verticalDist = 0;
-
-						if (down && dy >= 0)
-							verticalDist = 0;
-
-						bouncy = o.bouncy;
-						collided = true;
-
-						if (!left && dx <= 0 && dx > -bound && horizontalDist > verticalDist)
-						{
-							this.posX += 2 * (horizontalDist - bound);
-							this.vX = -Math.abs(this.vX);
-						}
-						else if (!up && dy <= 0 && dy > -bound && horizontalDist < verticalDist)
-						{
-							this.posY += 2 * (verticalDist - bound);
-							this.vY = -Math.abs(this.vY);
-						}
-						else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
-						{
-							this.posX -= 2 * (horizontalDist - bound);
-							this.vX = Math.abs(this.vX);
-						}
-						else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
-						{
-							this.posY -= 2 * (verticalDist - bound);
-							this.vY = Math.abs(this.vY);
-						}
-					}
-				}
-
-				for (int i = 0; i < Game.movables.size(); i++)
-				{
-					if (Game.movables.get(i) instanceof Tank)
-					{
-						Tank t = (Tank) (Game.movables.get(i));
-
-						double xMult = 1;
-						double yMult = 1;
-
-						if (this.targetTank != null)
-							if (t.equals(this.targetTank))
-							{
-								xMult = xMul;
-								yMult = yMul;
-							}
-
-						double horizontalDist = Math.abs(this.posX - t.posX);
-						double verticalDist = Math.abs(this.posY - t.posY);
-						double xBound = (t.size * xMult + this.size) / 2;
-						double yBound = (t.size * yMult + this.size) / 2;
-
-						smallestDistSq = Math.min(smallestDistSq, Math.pow(horizontalDist - xBound, 2) + Math.pow(verticalDist - yBound, 2));
-
-						if (horizontalDist < xBound && verticalDist < yBound)
-						{
-							if (!Game.movables.get(i).equals(tank))
-							{
-								this.inShooter = false;
-							}
-							if (!Game.movables.get(i).equals(tank) || age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
-							{
-								this.targetX = this.posX;
-								this.targetY = this.posY;
-								return Game.movables.get(i);
-							}
-						}
-					}
-					else if (Game.movables.get(i) instanceof Bullet && enableBullet)
-					{
-						Bullet t = (Bullet) (Game.movables.get(i));
-
-						if (Math.abs(this.posX - t.posX) < (t.size + this.size) / 2 &&
-								Math.abs(this.posY - t.posY) < (t.size + this.size) / 2)
-						{
-							if (age * speed > Math.sqrt(2) * tank.size / 2 + 10 || skipSelfCheck)
-							{
-								this.targetX = this.posX;
-								this.targetY = this.posY;
-								return Game.movables.get(i);
-							}
-						}
-					}
-				}
-
-				smallestDist = Math.sqrt(smallestDistSq);
-			}
-			else
-			{
-				smallestDist -= Math.sqrt(sqVel);
-			}
-
-			if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
-			{
-				collided = true;
-				this.posX = Drawing.drawing.sizeX - this.size / 2 - (this.posX + this.size / 2 - Drawing.drawing.sizeX);
-				this.vX = -Math.abs(this.vX);
-			}
-
-			if (this.posX - this.size / 2 < 0)
-			{
-				collided = true;
-				this.posX = this.size / 2 - (this.posX - this.size / 2);
-				this.vX = Math.abs(this.vX);
-			}
-
-			if (this.posY + this.size / 2 > Drawing.drawing.sizeY)
-			{
-				collided = true;
-				this.posY = Drawing.drawing.sizeY - this.size / 2 - (this.posY + this.size / 2 - Drawing.drawing.sizeY);
-				this.vY = -Math.abs(this.vY);
-			}
-
-			if (this.posY - this.size / 2 < 0)
-			{
-				collided = true;
-				this.posY = this.size / 2 - (this.posY - this.size / 2);
-				this.vY = Math.abs(this.vY);
-			}
-
-			if (collided)
-			{
-				if (!bouncy || !enableBounciness)
-					this.bounces--;
-				else
-					this.bouncyBounces--;
-
-				if (this.bounces < 0 || this.bouncyBounces < 0 || this.age <= 1)
-				{
-					return null;
-				}
-
-				bounceX.add(this.posX);
-				bounceY.add(this.posY);
+				Tank t = (Tank) m;
+				if (this.posX + this.size / 2 >= t.posX - t.size / 2 &&
+						this.posX - this.size / 2 <= t.posX + t.size / 2 &&
+						this.posY + this.size / 2 >= t.posY - t.size / 2 &&
+						this.posY - this.size / 2 <= t.posY + t.size / 2)
+					return t;
 			}
 		}
+
+		boolean firstBounce = true;
+		while (this.bounces >= 0 && this.bouncyBounces >= 0)
+		{
+			double t = Double.MAX_VALUE;
+			double collisionX = -1;
+			double collisionY = -1;
+			Face collisionFace = null;
+
+			if (vX > 0)
+			{
+				for (int i = 0; i < Game.verticalFaces.size(); i++)
+				{
+					Face f = Game.verticalFaces.get(i);
+
+					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce))
+						continue;
+
+					double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
+					if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
+					{
+						t = (f.startX - size / 2  - this.posX) / vX;
+						collisionX = f.startX - size / 2;
+						collisionY = y;
+						collisionFace = f;
+						break;
+					}
+				}
+			}
+			else if (vX < 0)
+			{
+				for (int i = Game.verticalFaces.size() - 1; i >= 0; i--)
+				{
+					Face f = Game.verticalFaces.get(i);
+
+					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce))
+						continue;
+
+					double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
+					if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
+					{
+						t = (f.startX + size / 2  - this.posX) / vX;
+						collisionX = f.startX + size / 2;
+						collisionY = y;
+						collisionFace = f;
+						break;
+					}
+				}
+			}
+
+			boolean corner = false;
+			if (vY > 0)
+			{
+				for (int i = 0; i < Game.horizontalFaces.size(); i++)
+				{
+					Face f = Game.horizontalFaces.get(i);
+
+					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce))
+						continue;
+
+					double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
+					if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
+					{
+						double t1 = (f.startY - size / 2  - this.posY) / vY;
+
+						if (t1 == t)
+							corner = true;
+						else if (t1 < t)
+						{
+							collisionX = x;
+							collisionY = f.startY - size / 2;
+							collisionFace = f;
+						}
+
+						break;
+					}
+				}
+			}
+			else if (vY < 0)
+			{
+				for (int i = Game.horizontalFaces.size() - 1; i >= 0; i--)
+				{
+					Face f = Game.horizontalFaces.get(i);
+
+					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce))
+						continue;
+
+					double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
+					if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
+					{
+						double t1 = (f.startY + size / 2  - this.posY) / vY;
+
+						if (t1 == t)
+							corner = true;
+						else if (t1 < t)
+						{
+                            collisionX = x;
+							collisionY = f.startY + size / 2;
+							collisionFace = f;
+						}
+						break;
+					}
+				}
+			}
+
+			firstBounce = false;
+
+			if (collisionFace != null)
+			{
+				if (trace)
+				{
+					double dx = collisionX - posX;
+					double dy = collisionY - posY;
+
+					double steps = (Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) + 1);
+
+					if (dotted)
+						steps /= 2;
+
+					double s;
+					for (s = remainder; s <= steps; s++)
+					{
+						double x = posX + dx * s / steps;
+						double y = posY + dy * s / steps;
+
+						this.age++;
+
+						double frac = 1 / (1 + this.age / 100.0);
+						double z = this.tank.size / 2 + this.tank.turret.size / 2 * frac + (Game.tile_size / 4) * (1 - frac);
+						Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
+					}
+
+					remainder = s - steps;
+				}
+
+				this.posX = collisionX;
+				this.posY = collisionY;
+
+				if (collisionFace.owner instanceof Movable)
+                {
+                    this.targetX = collisionX;
+                    this.targetY = collisionY;
+
+                    return (Movable) collisionFace.owner;
+                }
+				else if (collisionFace.owner instanceof Obstacle && ((Obstacle) collisionFace.owner).bouncy)
+					this.bouncyBounces--;
+				else
+					this.bounces--;
+
+				bounceX.add(collisionX);
+				bounceY.add(collisionY);
+
+				if (this.bounces >= 0)
+				{
+					if (corner)
+					{
+						this.vX = -this.vX;
+						this.vY = -this.vY;
+					}
+					else if (collisionFace.horizontal)
+						this.vY = -this.vY;
+					else
+						this.vX = -this.vX;
+				}
+			}
+			else
+				return null;
+		}
+
+		return null;
 	}
 
 	public int getDist()
 	{
 		while (true)
 		{
+			if (trace && (!dotted || (this.age % 2 == 0)))
+				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 4, Effect.EffectType.ray));
+
 			age++;
 
 			this.posX += this.vX;
@@ -298,7 +358,7 @@ public class Ray
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
 
-				double bound = this.size / 2 + Obstacle.obstacle_size / 2;
+				double bound = this.size / 2 + Game.tile_size / 2;
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
@@ -310,7 +370,7 @@ public class Ray
 			{
 				Movable o = Game.movables.get(i);
 
-				if (o instanceof Tank && o != tank)
+				if (o instanceof Tank && o != tank && ((Tank) o).targetable)
 				{
 					double horizontalDist = Math.abs(this.posX - o.posX);
 					double verticalDist = Math.abs(this.posY - o.posY);
@@ -342,6 +402,14 @@ public class Ray
 				return this.age;
 			}
 		}
+	}
+
+	public static boolean isInsideObstacle(double x, double y)
+	{
+		int ox = (int) (x / Game.tile_size);
+		int oy = (int) (y / Game.tile_size);
+
+		return !(ox >= 0 && ox < Game.currentSizeX && oy >= 0 && oy < Game.currentSizeY) || Game.game.solidGrid[ox][oy];
 	}
 
 	public void moveOut(double amount)

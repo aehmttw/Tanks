@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class ScreenOnline extends Screen
+public class ScreenOnline extends Screen implements IOnlineScreen
 {
     public HashMap<Integer, Button> buttons = new HashMap<Integer, Button>();
     public HashMap<Integer, TextBox> textboxes = new HashMap<Integer, TextBox>();

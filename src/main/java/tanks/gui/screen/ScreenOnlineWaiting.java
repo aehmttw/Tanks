@@ -3,7 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Panel;
 
-public class ScreenOnlineWaiting extends Screen
+public class ScreenOnlineWaiting extends Screen implements IOnlineScreen
 {
     public double age = 0;
 

@@ -9,6 +9,8 @@ public class Team
 
 	public boolean friendlyFire = true;
 	public String name;
+
+	protected static double[] teamColor = new double[3];
 	
 	public Team(String name)
 	{
@@ -47,10 +49,18 @@ public class Team
 	public static double[] getObjectColor(double r, double g, double b, Movable m)
 	{
 		if (m.team == null)
-			return new double[]{r, g, b};
+			return setTeamColor(r, g, b);
 		else if (!m.team.enableColor)
-			return new double[]{r, g, b};
+            return setTeamColor(r, g, b);
 		else
-			return new double[]{m.team.teamColorR, m.team.teamColorG, m.team.teamColorB};
+			return setTeamColor(m.team.teamColorR, m.team.teamColorG, m.team.teamColorB);
 	}
+
+	protected static double[] setTeamColor(double r, double g, double b)
+    {
+        teamColor[0] = r;
+        teamColor[1] = g;
+        teamColor[2] = b;
+        return teamColor;
+    }
 }

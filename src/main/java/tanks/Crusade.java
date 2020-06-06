@@ -25,6 +25,7 @@ public class Crusade
 	public boolean lifeGained = false;
 
 	public int currentLevel = 0;
+	public int saveLevel = 0;
 
 	public ArrayList<String> levels = new ArrayList<String>();
 	public int bonusLifeFrequency = 3;
@@ -33,9 +34,14 @@ public class Crusade
 	public ArrayList<Item> crusadeItems = new ArrayList<Item>();
 
 	public String name = "";
+	public String fileName = "";
 
-	public Crusade(ArrayList<String> levelArray, String name)
-	{		
+	public boolean internal = false;
+
+	public Crusade(ArrayList<String> levelArray, String name, String file)
+	{
+		internal = true;
+		this.fileName = file;
 		this.initialize(levelArray, name);
 	}
 	
@@ -43,6 +49,7 @@ public class Crusade
 	{
 		try 
 		{
+			this.fileName = f.path;
 			f.startReading();
 			ArrayList<String> list = new ArrayList<String>();
 			
@@ -172,15 +179,29 @@ public class Crusade
 			{
 				this.win = true;
 			}
-			else if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0 && !replay)
+			else if (!replay)
 			{
-				this.lifeGained = true;
+				this.saveLevel++;
 
-				for (Player player : Game.players)
+				if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0)
 				{
-					player.remainingLives++;
+					this.lifeGained = true;
+
+					for (Player player : Game.players)
+					{
+						player.remainingLives++;
+					}
 				}
 			}
+		}
+
+		try
+		{
+			Game.player.saveCrusade(Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath), win);
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
 		}
 	}
 

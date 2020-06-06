@@ -8,7 +8,7 @@ public class TankBlue extends TankAIControlled
 {
 	public TankBlue(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 0, 0, 200, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 0, 0, 200, angle, ShootAI.straight);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;

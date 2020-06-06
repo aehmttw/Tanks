@@ -246,10 +246,10 @@ public class Panel
 
 		this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
 
-		Drawing.drawing.scale = Drawing.drawing.scale * (1 - zoomTimer) + Drawing.drawing.interfaceScale * zoomTimer;
+		Drawing.drawing.scale = Game.screen.getScale();
 
-		Drawing.drawing.enableMovingCameraX = (Panel.windowWidth < Game.currentSizeX * Game.tank_size * Drawing.drawing.interfaceScale * Drawing.drawing.interfaceScaleZoom);
-		Drawing.drawing.enableMovingCameraY = ((Panel.windowHeight - Drawing.drawing.statsHeight) < Game.currentSizeY * Game.tank_size * Drawing.drawing.interfaceScale * Drawing.drawing.interfaceScaleZoom);
+		Drawing.drawing.enableMovingCameraX = (Panel.windowWidth < Game.currentSizeX * Game.tile_size * Drawing.drawing.scale);
+		Drawing.drawing.enableMovingCameraY = ((Panel.windowHeight - Drawing.drawing.statsHeight) < Game.currentSizeY * Game.tile_size * Drawing.drawing.scale);
 
 		if (Game.connectedToOnline && Panel.selectedTextBox == null)
 		{
@@ -291,7 +291,7 @@ public class Panel
 			Client.handler.reply();
 		}*/
 
-		if (prevScreen != Game.screen && !(prevScreen instanceof ScreenOnline) && !(Game.screen instanceof ScreenOnline))
+		if (prevScreen != Game.screen && !(prevScreen instanceof IOnlineScreen) && !(Game.screen instanceof IOnlineScreen))
 			this.playScreenMusic(500);
 	}
 

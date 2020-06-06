@@ -5,11 +5,19 @@ import tanks.Game;
 import tanks.IDrawableForInterface;
 import tanks.Movable;
 
-public class Obstacle implements IDrawableForInterface
+public class Obstacle implements IDrawableForInterface, ISolidObject
 {
+	public static final int default_max_height = 4;
+
 	public boolean destructible = true;
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
+
+	public boolean enableStacking = true;
+	public double stackHeight = 1;
+
+	public boolean enableGroupID = false;
+	public int groupID = 0;
 	//public boolean drawBelow = false;
 	//public boolean drawAbove = false;
 
@@ -28,34 +36,70 @@ public class Obstacle implements IDrawableForInterface
 	public double colorB;
 	public double colorA = 255;
 
+	public double[] stackColorR = new double[default_max_height];
+	public double[] stackColorG = new double[default_max_height];
+	public double[] stackColorB = new double[default_max_height];
+
 	public static double draw_size = 0;
-	public static double obstacle_size = Game.tank_size;
 
 	public String name;
 	public String description;
 
+	public Face[] horizontalFaces;
+	public Face[] verticalFaces;
+
+	protected boolean[] validFaces = new boolean[2];
+
 	public Obstacle(String name, double posX, double posY)
 	{
 		this.name = name;
-		this.posX = (int) ((posX + 0.5) * obstacle_size);
-		this.posY = (int) ((posY + 0.5) * obstacle_size);
+		this.posX = (int) ((posX + 0.5) * Game.tile_size);
+		this.posY = (int) ((posY + 0.5) * Game.tile_size);
 		double[] col = Obstacle.getRandomColor();
 		this.colorR = col[0];
 		this.colorG = col[1];
 		this.colorB = col[2];
+
+		for (int i = 0; i < default_max_height; i++)
+		{
+			double[] col2;
+
+			if (i != 0)
+				col2 = Obstacle.getRandomColor();
+			else
+				col2 = col;
+
+			this.stackColorR[i] = col2[0];
+			this.stackColorG[i] = col2[1];
+			this.stackColorB[i] = col2[2];
+		}
 
 		this.description = "A solid block which can---be destroyed by mines";
 	}
 	
 	@Override
 	public void draw()
-	{	
+	{
+		if (this.stackHeight <= 0)
+			return;
+
 		Drawing drawing = Drawing.drawing;
 		
 		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (Game.enable3d)
-			drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, draw_size);
+		{
+			for (int i = 0; i < Math.min(this.stackHeight, 4); i++)
+			{
+				int in = default_max_height - 1 - i;
+				drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA);
+
+				if (stackHeight % 1 == 0)
+					drawing.fillBox(this.posX, this.posY, i * Game.tile_size, draw_size, draw_size, draw_size);
+				else
+					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size, draw_size, draw_size, draw_size);
+			}
+		}
 		else
 			drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 	}
@@ -85,10 +129,10 @@ public class Obstacle implements IDrawableForInterface
 	{
 		Drawing drawing = Drawing.drawing;
 		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
-		drawing.fillRect(this.posX - Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
-		drawing.fillRect(this.posX + Obstacle.obstacle_size * 0.4, this.posY, Obstacle.obstacle_size * 0.2, Obstacle.obstacle_size);
-		drawing.fillRect(this.posX, this.posY - Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
-		drawing.fillRect(this.posX, this.posY + Obstacle.obstacle_size * 0.4, Obstacle.obstacle_size, Obstacle.obstacle_size * 0.2);
+		drawing.fillRect(this.posX - Game.tile_size * 0.4, this.posY, Game.tile_size * 0.2, Game.tile_size);
+		drawing.fillRect(this.posX + Game.tile_size * 0.4, this.posY, Game.tile_size * 0.2, Game.tile_size);
+		drawing.fillRect(this.posX, this.posY - Game.tile_size * 0.4, Game.tile_size, Game.tile_size * 0.2);
+		drawing.fillRect(this.posX, this.posY + Game.tile_size * 0.4, Game.tile_size, Game.tile_size * 0.2);
 	}
 	
 	public void onObjectEntry(Movable m)
@@ -109,65 +153,110 @@ public class Obstacle implements IDrawableForInterface
 	
 	public boolean hasLeftNeighbor()
 	{
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		int x = (int) (this.posX / Game.tile_size) - 1;
+		int y = (int) (this.posY / Game.tile_size);
+
+		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+		{
+			return Game.game.solidGrid[x][y];
+		}
+
+		return false;
+
+		/*for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			
-			if (o.bulletCollision && o.posY == this.posY && this.posX - o.posX <= obstacle_size && this.posX - o.posX > 0)
+			if (o.bulletCollision && o.posY == this.posY && this.posX - o.posX <= Game.tile_size && this.posX - o.posX > 0)
 				return true;
 		}
 		
-		return false;
+		return false;*/
 	}
 	
 	public boolean hasRightNeighbor()
 	{
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		int x = (int) (this.posX / Game.tile_size) + 1;
+		int y = (int) (this.posY / Game.tile_size);
+
+		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+		{
+			return Game.game.solidGrid[x][y];
+		}
+
+		return false;
+
+		/*for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			
-			if (o.bulletCollision && o.posY == this.posY && o.posX - this.posX <= obstacle_size && o.posX - this.posX > 0)
+			if (o.bulletCollision && o.posY == this.posY && o.posX - this.posX <= Game.tile_size && o.posX - this.posX > 0)
 				return true;
 		}
 		
-		return false;
+		return false;*/
 	}
 	
 	public boolean hasUpperNeighbor()
 	{
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		int x = (int) (this.posX / Game.tile_size);
+		int y = (int) (this.posY / Game.tile_size) - 1;
+
+		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+		{
+			return Game.game.solidGrid[x][y];
+		}
+
+		return false;
+
+		/*for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			
-			if (o.bulletCollision && o.posX == this.posX && this.posY - o.posY <= obstacle_size && this.posY - o.posY > 0)
+			if (o.bulletCollision && o.posX == this.posX && this.posY - o.posY <= Game.tile_size && this.posY - o.posY > 0)
 				return true;
 		}
 		
-		return false;
+		return false;*/
 	}
 	
 	public boolean hasLowerNeighbor()
 	{
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		int x = (int) (this.posX / Game.tile_size);
+		int y = (int) (this.posY / Game.tile_size) + 1;
+
+		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+		{
+			return Game.game.solidGrid[x][y];
+		}
+
+		return false;
+
+		/*for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			
-			if (o.bulletCollision && o.posX == this.posX && o.posY - this.posY <= obstacle_size && o.posY - this.posY > 0)
+			if (o.bulletCollision && o.posX == this.posX && o.posY - this.posY <= Game.tile_size && o.posY - this.posY > 0)
 				return true;
 		}
 		
-		return false;
+		return false;*/
 	}
 	
 	public void drawTile(double r, double g, double b, double d) { }
 	
 	public void postOverride() 
 	{
-		int x = (int)(this.posX / obstacle_size);
-		int y = (int)(this.posY / obstacle_size);
+		int x = (int)(this.posX / Game.tile_size);
+		int y = (int)(this.posY / Game.tile_size);
 
 		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
 			Game.tileDrawables[x][y] = this;
+	}
+
+	public void setMetadata(String data)
+	{
+		this.stackHeight = Double.parseDouble(data);
 	}
 	
 	public static double[] getRandomColor()
@@ -186,5 +275,47 @@ public class Obstacle implements IDrawableForInterface
 			col = new double[]{87, 46, 8};
 		
 		return col;
+	}
+
+	@Override
+	public Face[] getHorizontalFaces()
+	{
+		if (this.horizontalFaces == null)
+		{
+			this.horizontalFaces = new Face[2];
+			double s = Game.tile_size / 2;
+			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, this.tankCollision, this.bulletCollision);
+			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false, this.tankCollision, this.bulletCollision);
+		}
+
+		return this.horizontalFaces;
+	}
+
+	public boolean[] getValidHorizontalFaces()
+	{
+		this.validFaces[0] = !this.hasUpperNeighbor();
+		this.validFaces[1] = !this.hasLowerNeighbor();
+		return this.validFaces;
+	}
+
+	@Override
+	public Face[] getVerticalFaces()
+	{
+		if (this.verticalFaces == null)
+		{
+			this.verticalFaces = new Face[2];
+			double s = Game.tile_size / 2;
+			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, this.tankCollision, this.bulletCollision);
+			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, this.tankCollision, this.bulletCollision);
+		}
+
+		return this.verticalFaces;
+	}
+
+	public boolean[] getValidVerticalFaces()
+	{
+		this.validFaces[0] = !this.hasLeftNeighbor();
+		this.validFaces[1] = !this.hasRightNeighbor();
+		return this.validFaces;
 	}
 }

@@ -34,8 +34,9 @@ public class ScreenSavedLevels extends Screen
 			String name = System.currentTimeMillis() + ".tanks";
 
 			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-
+			s = (ScreenLevelBuilder) Game.screen;
 			s.paused = false;
+			s.optionsMenu = false;
 			Game.screen = s;
 		}
 	}

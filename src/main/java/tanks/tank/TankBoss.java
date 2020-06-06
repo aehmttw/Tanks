@@ -13,7 +13,7 @@ public class TankBoss extends TankAIControlled
 	
 	public TankBoss(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size * 3, 255, 0, 0, angle, ShootAI.alternate);
+		super(name, x, y, Game.tile_size * 3, 255, 0, 0, angle, ShootAI.alternate);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;

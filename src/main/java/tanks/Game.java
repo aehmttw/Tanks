@@ -32,12 +32,17 @@ public class Game
 	public enum Framework {lwjgl, swing, libgdx}
 	public static Framework framework;
 
-	public static final double tank_size = 50;
+	public static final double tile_size = 50;
 
 	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
 
 	public static final int absoluteDepthBase = 1000;
+
+	public static ArrayList<Face> horizontalFaces = new ArrayList<Face>();
+	public static ArrayList<Face> verticalFaces = new ArrayList<Face>();
+
+	public boolean[][] solidGrid;
 
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -72,7 +77,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks 0.8.i";
+	public static final String version = "Tanks 0.8.0";
 	public static final int network_protocol = 13;
 	public static boolean debug = false;
 
@@ -140,6 +145,7 @@ public class Game
 	public static final String optionsPath = directoryPath + "/options.txt";
 	public static final String tutorialPath = directoryPath + "/tutorial.txt";
 	public static final String uuidPath = directoryPath + "/uuid";
+	public static final String savedCrusadePath = directoryPath + "/crusade-progress";
 
 	public static final float musicVolume = 0.5f;
 
@@ -353,6 +359,15 @@ public class Game
 		}
 
 		ScreenOptions.loadOptions(Game.homedir);
+
+		try
+		{
+			player.loadCrusade(Game.game.fileManager.getFile(homedir + savedCrusadePath));
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -545,6 +560,17 @@ public class Game
 		Level.currentColorB = 166;
 	}
 
+	public static double sampleHeight(double px, double py)
+	{
+		int x = (int) (px / Game.tile_size);
+		int y = (int) (py / Game.tile_size);
+
+		if (x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
+			return 0;
+		else
+			return Game.tilesDepth[x][y] + 0;
+	}
+
 	public static void exitToTitle()
 	{
 		cleanUp();
@@ -562,7 +588,7 @@ public class Game
 
 	public static void silentCleanUp()
 	{
-		Drawing.drawing.setScreenBounds(Game.tank_size * 28, Game.tank_size * 18);
+		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
 		obstacles.clear();
 		belowEffects.clear();
 		movables.clear();

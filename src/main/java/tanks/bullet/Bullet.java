@@ -234,7 +234,7 @@ public class Bullet extends Movable implements IDrawable
 			if (useCustomWallCollision)
 				s = this.wallCollisionSize;
 
-			double bound = s / 2 + Obstacle.obstacle_size / 2;
+			double bound = s / 2 + Game.tile_size / 2;
 
 			if (horizontalDist < bound && verticalDist < bound)
 				o.onObjectEntryLocal(this);
@@ -271,7 +271,7 @@ public class Bullet extends Movable implements IDrawable
 			if (useCustomWallCollision)
 				s = this.wallCollisionSize;
 
-			double bound = s / 2 + Obstacle.obstacle_size / 2;
+			double bound = s / 2 + Game.tile_size / 2;
 
 			if (horizontalDist < bound && verticalDist < bound)
 			{
@@ -423,7 +423,6 @@ public class Bullet extends Movable implements IDrawable
 	{
 		Ray r = new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank);
 		r.size = this.size;
-		r.skipSelfCheck = true;
 		return r;
 	}
 
@@ -480,7 +479,7 @@ public class Bullet extends Movable implements IDrawable
 		else
 		{
 			double frac = 1 / (1 + this.age / 100);
-			this.posZ = this.iPosZ * frac + (Game.tank_size / 4) * (1 - frac);
+			this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
 
 			this.ageFrac += Panel.frameFrequency;
 			this.halfAgeFrac += Panel.frameFrequency;

@@ -107,8 +107,8 @@ public class Drawing
 
 	public void fillOval(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * this.scale > Panel.windowWidth || drawX + 200 * this.scale < 0 || drawY - 200 * this.scale > Panel.windowHeight || drawY + 200 * this.scale < 0)
 			return;
@@ -126,8 +126,8 @@ public class Drawing
 
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * this.scale > Panel.windowWidth || drawX + 200 * this.scale < 0 || drawY - 200 * this.scale > Panel.windowHeight || drawY + 200 * this.scale < 0)
 			return;
@@ -145,8 +145,8 @@ public class Drawing
 
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * this.scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * this.scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
@@ -156,8 +156,8 @@ public class Drawing
 
 	public void drawOval(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth  - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -170,8 +170,8 @@ public class Drawing
 
 	public void fillRect(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -184,8 +184,8 @@ public class Drawing
 
 	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -198,8 +198,8 @@ public class Drawing
 
 	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -267,12 +267,18 @@ public class Drawing
 
 	public double getPointX(double x)
 	{
-		return (scale * (x + getPlayerOffsetX()) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		if (Game.screen.enableMargins)
+			return (scale * (x + Game.screen.getOffsetX()) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		else
+			return scale * (x + Game.screen.getOffsetX());
 	}
 
 	public double getPointY(double y)
 	{
-		return (scale * (y + getPlayerOffsetY()) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+		if (Game.screen.enableMargins)
+			return (scale * (y + Game.screen.getOffsetY()) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+		else
+			return scale * (y + Game.screen.getOffsetY());
 	}
 
 	public double getInterfacePointX(double x)
@@ -287,8 +293,8 @@ public class Drawing
 
 	public void fillBackgroundRect(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
@@ -316,8 +322,8 @@ public class Drawing
 	 * */
 	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 		double drawZ = z * scale;
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
@@ -332,8 +338,8 @@ public class Drawing
 
 	public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 		double drawZ = z * scale;
 
 		double drawSizeX = sizeX * scale;
@@ -345,8 +351,8 @@ public class Drawing
 
 	public void drawRect(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
 			return;
@@ -422,8 +428,8 @@ public class Drawing
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
 
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
@@ -433,8 +439,8 @@ public class Drawing
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
 
-		double drawX = (scale * (x + getPlayerOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
-		double drawY = (scale * (y + getPlayerOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 		double drawZ = z * scale;
 
 		Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text);
@@ -682,8 +688,8 @@ public class Drawing
 	{
 		sizeX = x;
 		sizeY = y;
-		Game.currentSizeX = (int)(x / Game.tank_size);
-		Game.currentSizeY = (int)(y / Game.tank_size);
+		Game.currentSizeX = (int)(x / Game.tile_size);
+		Game.currentSizeY = (int)(y / Game.tile_size);
 	}
 
 	public double getPlayerOffsetX()
@@ -693,12 +699,12 @@ public class Drawing
 
 		double result = (playerX - (Panel.windowWidth) / scale / 2);
 
-		double margin = Math.max(0, Math.min(Game.tank_size * 2, Game.currentSizeX * Obstacle.obstacle_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
+		double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
 
 		boolean less = result < -margin;
 		boolean greater = result + (Panel.windowWidth) / scale > sizeX + margin;
 
-		if (scale * Game.currentSizeX * Game.tank_size + margin > Panel.windowWidth)
+		if (scale * Game.currentSizeX * Game.tile_size + margin > Panel.windowWidth)
 		{
 			if (less && !greater)
 				return margin;
@@ -725,12 +731,12 @@ public class Drawing
 
 		double result = (playerY - (Panel.windowHeight - statsHeight) / scale / 2);
 
-		double margin = Math.max(0, Math.min(Game.tank_size * 2, Game.currentSizeY * Obstacle.obstacle_size * Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
+		double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeY * Game.tile_size * Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
 
 		boolean less = result < -margin;
 		boolean greater = result + (Panel.windowHeight - statsHeight) / scale > sizeY + margin;
 
-		if (scale * Game.currentSizeY * Game.tank_size + margin > Panel.windowHeight - statsHeight)
+		if (scale * Game.currentSizeY * Game.tile_size + margin > Panel.windowHeight - statsHeight)
 		{
 			if (less && !greater)
 				return margin;
@@ -755,7 +761,7 @@ public class Drawing
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
 			return 0;
 
-		return getPlayerOffsetX() + (Game.currentSizeX * Drawing.drawing.interfaceScaleZoom / 28.0 - 1) * interfaceSizeX / 2;
+		return Game.screen.getOffsetX() + (Game.currentSizeX * Drawing.drawing.interfaceScaleZoom / 28.0 - 1) * interfaceSizeX / 2;
 	}
 
 	public double getPlayerMouseOffsetY()
@@ -763,7 +769,7 @@ public class Drawing
 		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
 			return 0;
 
-		return getPlayerOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2;
+		return Game.screen.getOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2;
 	}
 
 	public double getHorizontalMargin()
@@ -774,5 +780,21 @@ public class Drawing
 	public double getVerticalMargin()
 	{
 		return (Game.game.window.absoluteHeight - statsHeight - sizeY / scale) / 2;
+	}
+	
+	public double gameToAbsoluteX(double x, double sizeX)
+	{
+		if (Game.screen.enableMargins)
+			return (scale * (x + Game.screen.getOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+		else
+			return scale * (x + Game.screen.getOffsetX() - sizeX / 2);
+	}
+
+	public double gameToAbsoluteY(double y, double sizeY)
+	{
+		if (Game.screen.enableMargins)
+			return (scale * (y + Game.screen.getOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - this.sizeY * scale) / 2);
+		else
+			return scale * (y + Game.screen.getOffsetY() - sizeY / 2);
 	}
 }

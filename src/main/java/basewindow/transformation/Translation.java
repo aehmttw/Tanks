@@ -26,6 +26,7 @@ public class Translation extends Transformation
 
     public static void transform(BaseWindow window, double x, double y, double z)
     {
-        window.transform(new double[]{1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  x * window.absoluteWidth, y * window.absoluteHeight, z * window.absoluteDepth, 1});
+        transform(window,
+                1, 0, 0, 0, 0, 1, 0, 0,  0, 0, 1, 0,  x * window.absoluteWidth, y * window.absoluteHeight, z * window.absoluteDepth, 1);
     }
 }

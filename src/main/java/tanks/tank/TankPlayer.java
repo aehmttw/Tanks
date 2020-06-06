@@ -7,6 +7,7 @@ import tanks.bullet.Bullet;
 import tanks.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
+import tanks.gui.screen.ScreenGame;
 
 public class TankPlayer extends Tank implements IPlayerTank
 {
@@ -14,11 +15,11 @@ public class TankPlayer extends Tank implements IPlayerTank
 	public static Joystick shootStick;
 	public static Button mineButton;
 
-    public static boolean controlStickSnap;
+	public static boolean controlStickSnap;
 	public static boolean controlStickMobile;
 
-    public Player player = Game.player;
-	public boolean enableDestroyCheat = false;
+	public Player player = Game.player;
+	public boolean enableDestroyCheat = true;
 
 	public boolean drawTouchCircle = false;
 	public double touchCircleSize = 400;
@@ -30,7 +31,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 	public TankPlayer(double x, double y, double angle)
 	{
-		super("player", x, y, Game.tank_size, 0, 150, 255);
+		super("player", x, y, Game.tile_size, 0, 150, 255);
 		this.liveBulletMax = 5;
 		this.liveMinesMax = 2;
 		this.angle = angle;
@@ -166,7 +167,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 					{
 						InputPoint p = Game.game.window.touchPoints.get(i);
 
-						if (!p.tag.equals("") && !p.tag.equals("aim"))
+						if (!p.tag.equals("") && !p.tag.equals("aim") && !p.tag.equals("shoot"))
 							continue;
 
 						double px = Drawing.drawing.getInterfacePointerX(p.x);
@@ -198,7 +199,10 @@ public class TankPlayer extends Tank implements IPlayerTank
 							trace = true;
 						}
 						else
+						{
 							shoot = true;
+							p.tag = "shoot";
+						}
 
 						double proximity = Math.pow(this.touchCircleSize / 2, 2);
 
@@ -223,15 +227,14 @@ public class TankPlayer extends Tank implements IPlayerTank
 			this.layMine();
 
 
-		if (trace && !Game.bulletLocked && !this.disabled)
+		if (trace && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
 		{
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 			r.vX /= 2;
 			r.vY /= 2;
 			r.trace = true;
 			r.dotted = true;
-			r.highAccuracy = true;
-			r.moveOut(10 * this.size / Game.tank_size);
+			r.moveOut(10 * this.size / Game.tile_size);
 			r.getTarget();
 		}
 
@@ -265,7 +268,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 		b.setPolarMotion(this.angle, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
 
-		b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tank_size));
+		b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tile_size));
 		b.effect = effect;
 
 		Game.eventsOut.add(new EventShootBullet(b));
@@ -280,7 +283,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 		b.setPolarMotion(this.angle, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0 * b.recoil);
 
-		b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tank_size));
+		b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tile_size));
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);

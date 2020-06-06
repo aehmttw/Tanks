@@ -109,9 +109,9 @@ public class ChatBox extends TextBox
 			if (this.inputText.length() > 0)
 				this.function.run();
 
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ENTER);
-			Game.game.window.pressedKeys.remove((Integer)InputCodes.KEY_ENTER);
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+			Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 
 			this.selected = false;
 			Panel.selectedTextBox = null;
@@ -124,7 +124,7 @@ public class ChatBox extends TextBox
 
 		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
 		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 			this.selected = false;
 			Panel.selectedTextBox = null;
 			this.inputText = this.defaultText;
@@ -165,7 +165,7 @@ public class ChatBox extends TextBox
 
 			selected = true;
 			handled = true;
-			Game.game.window.validPressedButtons.remove((Integer)InputCodes.MOUSE_BUTTON_1);
+			Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
 			Game.game.window.getRawTextKeys().clear();
 			Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
 			Drawing.drawing.playVibration("click");
@@ -173,7 +173,7 @@ public class ChatBox extends TextBox
 
 		if (clearSelected && valid)
 		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 			this.selected = false;
 			Panel.selectedTextBox = null;
 			this.inputText = this.defaultText;

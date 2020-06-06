@@ -6,7 +6,7 @@ public class TankDummy extends Tank
 {
 	public TankDummy(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 75, 40, 0);
+		super(name, x, y, Game.tile_size, 75, 40, 0);
 		this.angle = angle;
 		
 		this.coinValue = 0;

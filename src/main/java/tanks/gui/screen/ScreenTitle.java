@@ -24,6 +24,8 @@ public class ScreenTitle extends Screen
 				if (Game.game.window.soundsEnabled)
 					Game.game.window.soundPlayer.exit();
 
+				Game.game.window.windowHandler.onWindowClose();
+
 				System.exit(0);
 			}
 		}
@@ -63,7 +65,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 
-	Button takeControl = new Button(logo.posX, logo.posY, Game.tank_size, Game.tank_size, "", new Runnable()
+	Button takeControl = new Button(logo.posX, logo.posY, Game.tile_size, Game.tile_size, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -109,7 +111,7 @@ public class ScreenTitle extends Screen
 
 		if (this.controlPlayer)
 		{
-			Obstacle.draw_size = Obstacle.obstacle_size;
+			Obstacle.draw_size = Game.tile_size;
 			for (int i = 0; i < Game.belowEffects.size(); i++)
 			{
 				Game.belowEffects.get(i).update();
@@ -141,6 +143,19 @@ public class ScreenTitle extends Screen
 	{
 		this.drawDefaultBackground();
 
+		play.draw();
+		exit.draw();
+		options.draw();
+
+		if (Game.debug)
+			debug.draw();
+
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setInterfaceFontSize(60);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Tanks");
+		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 110, "The Crusades");
+
 		for (int i = 0; i < Game.belowEffects.size(); i++)
 		{
 			Game.belowEffects.get(i).draw();
@@ -155,17 +170,6 @@ public class ScreenTitle extends Screen
 		{
 			Game.effects.get(i).draw();
 		}
-
-		play.draw();
-		exit.draw();
-		options.draw();
-
-		if (Game.debug)
-			debug.draw();
-
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(60);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Tanks");
 	}
 
 	@Override

@@ -232,4 +232,10 @@ public class SwingWindow extends BaseWindow
     {
         return 0;
     }
+
+    //@Override
+    public void setBatchMode(boolean enabled)
+    {
+
+    }
 }

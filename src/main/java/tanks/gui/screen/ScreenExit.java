@@ -24,6 +24,8 @@ public class ScreenExit extends Screen
     {
         if (System.currentTimeMillis() - startTime >= outroTime + outroAnimationTime)
         {
+            Game.game.window.windowHandler.onWindowClose();
+
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.exit();
 

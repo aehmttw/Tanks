@@ -286,7 +286,7 @@ public class Level
 			}
 		}
 
-		Drawing.drawing.setScreenBounds(Game.tank_size * sX, Game.tank_size * sY);
+		Drawing.drawing.setScreenBounds(Game.tile_size * sX, Game.tile_size * sY);
 
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{
@@ -321,11 +321,20 @@ public class Level
 				if (obs.length >= 3)
 					name = obs[2];
 
+				String meta = null;
+
+				if (obs.length >= 4)
+					meta = obs[3];
+
 				for (double x = startX; x <= endX; x++)
 				{
 					for (double y = startY; y <= endY; y++)
 					{
 						Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
+
+						if (meta != null)
+							o.setMetadata(meta);
+
 						Game.obstacles.add(o);
 					}
 				}
@@ -337,8 +346,8 @@ public class Level
 			for (int i = 0; i < tanks.length; i++)
 			{
 				String[] tank = tanks[i].split("-");
-				double x = Game.tank_size * (0.5 + Double.parseDouble(tank[0]));
-				double y = Game.tank_size * (0.5 + Double.parseDouble(tank[1]));
+				double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]));
+				double y = Game.tile_size * (0.5 + Double.parseDouble(tank[1]));
 				String type = tank[2].toLowerCase();
 				double angle = 0;
 
@@ -449,5 +458,18 @@ public class Level
 
 		if (!remote)
 			Game.eventsOut.add(new EventEnterLevel());
+
+		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+		for (Obstacle o: Game.obstacles)
+		{
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			{
+				Game.game.solidGrid[x][y] = true;
+			}
+		}
 	}
 }

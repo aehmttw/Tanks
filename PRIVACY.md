@@ -19,3 +19,7 @@ Although we do not permit inappropriate or offensive content to be posted on the
 Thus, this service may not be suitable for young children. Users under the age which their law requires (often 13) should
 obtain permission from their parents before using Tanks Online.
 If you see any inappropriate content, please help us by contacting us to report the content. 
+
+## Updates to the privacy policy
+Although we will do our best to let you know if we change this privacy policy, it may change without warning. 
+Each privacy policy revision will only apply to versions of Tanks released after it.

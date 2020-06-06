@@ -85,19 +85,26 @@ public class TeleporterOrb extends Movable
 		this.posZ = Math.sin((this.maxAge - Math.max(0, Math.min(this.maxAge, this.age))) / this.maxAge * Math.PI) *
 				Math.sqrt(Math.pow(this.dX - this.iX, 2) + Math.pow(this.dY - this.iY, 2)) / 2;
 
+
 		if (this.age <= 0)
 		{
-			Drawing.drawing.playGlobalSound("heal1.ogg", 1, 0.25f);
+			if (this.tank == Game.playerTank)
+				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f);
+
 			frac = 1;
 		}
 		else if (this.age >= this.maxAge)
 		{
-			Drawing.drawing.playGlobalSound("heal1.ogg", 1, 0.25f);
+			if (this.tank == Game.playerTank)
+				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f);
+
 			frac = 0;
 		}
 
-		Drawing.drawing.playGlobalSound("heal.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5), (1 - (float) (tank.size / size)) / 4f);
-		
+		if (this.tank == Game.playerTank)
+			Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5), (1 - (float) (tank.size / size)) / 4f);
+
+
 		if (this.age <= -50)
 		{
 			this.posX = this.fX * frac2 + this.iX * (1 - frac2);

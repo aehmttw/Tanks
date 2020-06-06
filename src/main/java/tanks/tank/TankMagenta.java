@@ -6,9 +6,9 @@ public class TankMagenta extends TankAIControlled
 {
 	public TankMagenta(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 230, 0, 200, angle, ShootAI.reflect);
+		super(name, x, y, Game.tile_size, 230, 0, 200, angle, ShootAI.reflect);
 		this.enableTargetEnemyReaction = false;
-		this.speed = 1.5;
+		this.speed = 2.0;
 		this.enableMineLaying = false;
 		this.liveBulletMax = 3;
 		this.cooldownRandom = 20;

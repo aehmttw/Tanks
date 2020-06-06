@@ -209,4 +209,6 @@ public abstract class BaseWindow
     public abstract void transform(double[] matrix);
 
     public abstract double getEdgeBounds();
+
+    public abstract void setBatchMode(boolean enabled);
 }

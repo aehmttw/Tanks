@@ -71,7 +71,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
     public void playSound(String path, float pitch, float volume)
     {
-        if (sources.size() >= 250)
+        if (sources.size() >= 240)
             alDeleteSources(sources.remove(0));
 
         if (this.buffers.get(path) == null)
@@ -80,6 +80,7 @@ public class SoundPlayer extends BaseSoundPlayer
         int bufferPointer = this.buffers.get(path);
 
         int sourcePointer = alGenSources();
+
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcef(sourcePointer, AL_PITCH, pitch);
         alSourcef(sourcePointer, AL_GAIN, volume);
@@ -92,7 +93,7 @@ public class SoundPlayer extends BaseSoundPlayer
     @Override
     public void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime)
     {
-        if (musicSources.size() >= 6)
+        if (musicSources.size() >= 15)
             alDeleteSources(musicSources.remove(0));
 
         if (this.musicBuffers.get(path) == null)
@@ -107,6 +108,8 @@ public class SoundPlayer extends BaseSoundPlayer
 
         int sourcePointer = alGenSources();
 
+        alSourceStop(prevMusic);
+        alSourceUnqueueBuffers(prevMusic);
         prevMusic = currentMusic;
         currentMusic = sourcePointer;
         currentVolume = volume;
@@ -129,7 +132,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
         this.musicID = continueID;
 
-        sources.add(sourcePointer);
+        musicSources.add(sourcePointer);
     }
 
     @Override
@@ -142,6 +145,9 @@ public class SoundPlayer extends BaseSoundPlayer
     public void stopMusic()
     {
         alSourceStop(currentMusic);
+        alSourceStop(prevMusic);
+        alSourceUnqueueBuffers(currentMusic);
+        alSourceUnqueueBuffers(prevMusic);
         this.currentMusic = -1;
         this.prevMusic = -1;
         this.musicID = null;

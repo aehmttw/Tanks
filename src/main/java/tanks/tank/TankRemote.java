@@ -85,7 +85,7 @@ public class TankRemote extends Tank
 				}
 			}
 
-			for (int i = 0; i < Game.tank_size * 2 - this.localAge; i++)
+			for (int i = 0; i < Game.tile_size * 2 - this.localAge; i++)
 			{
 				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, (this.size * 2 - i - this.localAge) * 2.55);
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);

@@ -4,12 +4,15 @@ import tanks.*;
 import tanks.event.EventTankAddAttributeModifier;
 import tanks.event.EventTankUpdate;
 import tanks.event.EventTankUpdateHealth;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class Tank extends Movable
+public abstract class Tank extends Movable implements ISolidObject
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
@@ -24,8 +27,6 @@ public abstract class Tank extends Movable
 
 	public boolean disabled = false;
 
-	public boolean functional = true;
-
 	public int coinValue = 0;
 
 	public int networkID;
@@ -35,7 +36,7 @@ public abstract class Tank extends Movable
 	public String description = "";
 
 	public double accel = 0.1;
-	public double maxV = 2.5;
+	public double maxV = 3.0;
 	public int liveBullets = 0;
 	public int liveMines = 0;
 	public double size;
@@ -64,6 +65,9 @@ public abstract class Tank extends Movable
 	public Turret turret;
 
 	public boolean standardUpdateEvent = true;
+
+	public Face[] horizontalFaces;
+	public Face[] verticalFaces;
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
@@ -196,7 +200,7 @@ public abstract class Tank extends Movable
 			double dx = this.posX - o.posX;
 			double dy = this.posY - o.posY;
 
-			double bound = this.size / 2 + Obstacle.obstacle_size / 2;
+			double bound = this.size / 2 + Game.tile_size / 2;
 
 			if (horizontalDist < bound && verticalDist < bound)
 			{
@@ -263,7 +267,7 @@ public abstract class Tank extends Movable
 		{
 			if (this.destroyTimer <= 0 && this.lives <= 0)
 			{
-				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tank_size / this.size));
+				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
 
 				if (!freeIDs.contains(this.networkID))
 				{
@@ -300,7 +304,7 @@ public abstract class Tank extends Movable
 			this.destroyTimer += Panel.frameFrequency;
 		}
 
-		if (this.destroyTimer > Game.tank_size)
+		if (this.destroyTimer > Game.tile_size)
 			Game.removeMovables.add(this);
 
 		if (this.drawTread)
@@ -343,7 +347,7 @@ public abstract class Tank extends Movable
 
 		this.checkCollision();
 
-		if (!this.isRemote && this.standardUpdateEvent)
+		if (!this.isRemote && this.standardUpdateEvent && ScreenPartyHost.isServer)
 			Game.eventsOut.add(new EventTankUpdate(this));
 
 		this.canHide = true;
@@ -382,11 +386,11 @@ public abstract class Tank extends Movable
 
 	public void drawTank(boolean forInterface)
 	{
-		double s = (this.size * (Game.tank_size - destroyTimer) / Game.tank_size) * Math.min(this.drawAge / Game.tank_size, 1);
+		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
 
 		if (forInterface)
-			s = Math.min(this.size, Game.tank_size * 1.5);
+			s = Math.min(this.size, Game.tile_size * 1.5);
 
 		Drawing drawing = Drawing.drawing;
 		double[] teamColor = Team.getObjectColor(this.colorR, this.colorG, this.colorB, this);
@@ -451,7 +455,7 @@ public abstract class Tank extends Movable
 
 		}
 
-		if (this.lives > 1)
+		if (this.lives > 1 && this.size > 0)
 		{
 			for (int i = 1; i < lives; i++)
 			{
@@ -461,8 +465,8 @@ public abstract class Tank extends Movable
 							8 * i + s);
 				else
 					drawing.drawRect(this.posX, 
-							this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size, 
-							8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0) / Game.tank_size * this.size);
+							this.posY, 8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0) / Game.tile_size * this.size,
+							8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0) / Game.tile_size * this.size);
 			}
 		}
 
@@ -514,7 +518,7 @@ public abstract class Tank extends Movable
 
 	public void drawOutline() 
 	{
-		drawAge = Game.tank_size;
+		drawAge = Game.tile_size;
 		Drawing drawing = Drawing.drawing;
 
 		//g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 128));
@@ -528,7 +532,7 @@ public abstract class Tank extends Movable
 		{
 			for (int i = 1; i < lives; i++)
 			{
-				drawing.drawRect(this.posX, this.posY, 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0), 8 * i + this.size * (Game.tank_size - destroyTimer) / Game.tank_size - Math.max(Game.tank_size - drawAge, 0));
+				drawing.drawRect(this.posX, this.posY, 8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0), 8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0));
 			}
 		}
 
@@ -574,5 +578,45 @@ public abstract class Tank extends Movable
 	public void onDestroy()
 	{
 
+	}
+
+	@Override
+	public Face[] getHorizontalFaces()
+	{
+		double s = this.size / 2;
+
+		if (this.horizontalFaces == null)
+		{
+			this.horizontalFaces = new Face[2];
+			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, true, true);
+			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false,true, true);
+		}
+		else
+		{
+			this.horizontalFaces[0].update(this.posX - s, this.posY - s, this.posX + s, this.posY - s);
+			this.horizontalFaces[1].update(this.posX - s, this.posY + s, this.posX + s, this.posY + s);
+		}
+
+		return this.horizontalFaces;
+	}
+
+	@Override
+	public Face[] getVerticalFaces()
+	{
+		double s = this.size / 2;
+
+		if (this.verticalFaces == null)
+		{
+			this.verticalFaces = new Face[2];
+			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, true, true);
+			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, true, true);
+		}
+		else
+		{
+			this.verticalFaces[0].update(this.posX - s, this.posY - s, this.posX - s, this.posY + s);
+			this.verticalFaces[1].update(this.posX + s, this.posY - s, this.posX + s, this.posY + s);
+		}
+
+		return this.verticalFaces;
 	}
 }

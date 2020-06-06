@@ -7,12 +7,13 @@ public class TankMint extends TankAIControlled
 {
 	public TankMint(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 60, 180, 140, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 60, 180, 140, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 1;
+		this.speed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
+		this.enableDefensiveFiring = true;
 		this.liveBulletMax = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 240;

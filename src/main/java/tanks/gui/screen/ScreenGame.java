@@ -11,10 +11,13 @@ import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.hotbar.Item;
 import tanks.network.Client;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ScreenGame extends Screen
 {
@@ -47,8 +50,11 @@ public class ScreenGame extends Screen
 	public Translation slantTranslation;
 	public ArrayList<Transformation> transformations = new ArrayList<Transformation>();
 
+	public Face[] horizontalFaces;
+	public Face[] verticalFaces;
+
 	@SuppressWarnings("unchecked")
-	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
+	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
 	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
 	{
@@ -422,9 +428,16 @@ public class ScreenGame extends Screen
 			this.drawables[i] = new ArrayList<IDrawable>();
 		}
 
-
 		slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0.5, 0.5, -1);
 		slantTranslation = new Translation(Game.game.window, 0, 0, 0);
+
+		this.horizontalFaces = new Face[2];
+		this.horizontalFaces[0] = new Face(null, 0, 0, Game.currentSizeX * Game.tile_size, 0, true, false, true, true);
+		this.horizontalFaces[1] = new Face(null, 0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, true, true,true, true);
+
+		this.verticalFaces = new Face[2];
+		this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, false, false,true, true);
+		this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, false, true, true, true);
 	}
 
 	public ScreenGame(String s)
@@ -525,18 +538,18 @@ public class ScreenGame extends Screen
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F1))
 		{
 			this.screenshotMode = !this.screenshotMode;
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_F1);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_F1);
 		}
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_I))
 		{
 			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_I);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_I);
 		}
 
 		if (!finished)
 		{
-			Obstacle.draw_size = Math.min(Game.tank_size, Obstacle.draw_size + Panel.frameFrequency);
+			Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size + Panel.frameFrequency);
 		}
 
 		if (paused)
@@ -719,15 +732,61 @@ public class ScreenGame extends Screen
 		{
 			playing = true;
 
-			//System.out.println(Panel.frameFrequency);
-
-			Obstacle.draw_size = Math.min(Obstacle.obstacle_size, Obstacle.draw_size);
+			Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size);
 			ArrayList<Team> aliveTeams = new ArrayList<Team>();
 
 			for (int i = 0; i < Game.effects.size(); i++)
 			{
 				Game.effects.get(i).update();
 			}
+
+			Game.horizontalFaces.clear();
+			Game.verticalFaces.clear();
+
+			this.horizontalFaces[0].update(0, 0, Game.currentSizeX * Game.tile_size, 0);
+			this.horizontalFaces[1].update(0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
+			Game.horizontalFaces.add(this.horizontalFaces[0]);
+			Game.horizontalFaces.add(this.horizontalFaces[1]);
+
+			this.verticalFaces[0].update(0, 0,0, Game.currentSizeY * Game.tile_size);
+			this.verticalFaces[1].update(Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
+			Game.verticalFaces.add(this.verticalFaces[0]);
+			Game.verticalFaces.add(this.verticalFaces[1]);
+
+			for (Movable m: Game.movables)
+			{
+				if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).targetable))
+				{
+					for (Face f: ((ISolidObject) m).getHorizontalFaces())
+						Game.horizontalFaces.add(f);
+
+					for (Face f: ((ISolidObject) m).getVerticalFaces())
+						Game.verticalFaces.add(f);
+				}
+			}
+
+			for (Obstacle o: Game.obstacles)
+			{
+				Face[] faces = o.getHorizontalFaces();
+				boolean[] valid = o.getValidHorizontalFaces();
+				for (int i = 0; i < faces.length; i++)
+				{
+					if (valid[i])
+						Game.horizontalFaces.add(faces[i]);
+				}
+
+				faces = o.getVerticalFaces();
+				valid = o.getValidVerticalFaces();
+				for (int i = 0; i < faces.length; i++)
+				{
+					if (valid[i])
+						Game.verticalFaces.add(faces[i]);
+				}
+
+			}
+
+			Collections.sort(Game.horizontalFaces);
+			Collections.sort(Game.verticalFaces);
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
@@ -880,7 +939,18 @@ public class ScreenGame extends Screen
 			Game.movables.remove(Game.removeMovables.get(i));
 
 		for (int i = 0; i < Game.removeObstacles.size(); i++)
-			Game.obstacles.remove(Game.removeObstacles.get(i));
+		{
+			Obstacle o = Game.removeObstacles.get(i);
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && o.bulletCollision)
+			{
+				Game.game.solidGrid[x][y] = false;
+			}
+
+			Game.obstacles.remove(o);
+		}
 
 		for (int i = 0; i < Game.removeEffects.size(); i++)
 		{
@@ -972,12 +1042,12 @@ public class ScreenGame extends Screen
 		{
 			if (i == 5 && Game.enable3d)
 			{
-				double frac = Obstacle.draw_size / Obstacle.obstacle_size;
+				double frac = Obstacle.draw_size / Game.tile_size;
 				Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16  * frac + Level.currentColorB * (1 - frac));
-				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Obstacle.obstacle_size / 2, 0, drawing.sizeX + Obstacle.obstacle_size * 2, Obstacle.obstacle_size, Obstacle.draw_size, (byte) 0);
-				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Obstacle.obstacle_size / 2, 0, drawing.sizeX + Obstacle.obstacle_size * 2, Obstacle.obstacle_size, Obstacle.draw_size, (byte) 0);
-				Drawing.drawing.fillForcedBox(-Obstacle.obstacle_size / 2, drawing.sizeY / 2, 0, Obstacle.obstacle_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-				Drawing.drawing.fillForcedBox(drawing.sizeX + Obstacle.obstacle_size / 2, drawing.sizeY / 2, 0, Obstacle.obstacle_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
+				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
+				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
+				Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
+				Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
 			}
 
 			for (int j = 0; j < this.drawables[i].size(); j++)
@@ -1001,7 +1071,7 @@ public class ScreenGame extends Screen
 
 		if (Game.game.window.touchscreen && TankPlayer.shootStickEnabled)
 		{
-			double size = TankPlayer.mineButton.sizeX * Obstacle.draw_size / Obstacle.obstacle_size;
+			double size = TankPlayer.mineButton.sizeX * Obstacle.draw_size / Game.tile_size;
 			Drawing.drawing.setColor(255, 127, 0, 64);
 			Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size, size);
 
@@ -1217,4 +1287,21 @@ public class ScreenGame extends Screen
 		}
 	}
 
+	@Override
+	public double getOffsetX()
+	{
+		return Drawing.drawing.getPlayerOffsetX();
+	}
+
+	@Override
+	public double getOffsetY()
+	{
+		return Drawing.drawing.getPlayerOffsetY();
+	}
+
+	@Override
+	public double getScale()
+	{
+		return Drawing.drawing.scale * (1 - Panel.panel.zoomTimer) + Drawing.drawing.interfaceScale * Panel.panel.zoomTimer;
+	}
 }

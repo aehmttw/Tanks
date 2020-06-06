@@ -7,7 +7,7 @@ import tanks.Movable;
 public class Turret extends Movable
 {
 	public double size = 8;
-	public double length = Game.tank_size;
+	public double length = Game.tile_size;
 	public double colorR;
 	public double colorG;
 	public double colorB;
@@ -32,13 +32,13 @@ public class Turret extends Movable
 		if (Game.framework != Game.Framework.swing)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			double s = (size * (Game.tank_size - this.tank.destroyTimer - Math.max(Game.tank_size - tank.drawAge, 0)) / Game.tank_size);
-			double l = length * (Game.tank_size - this.tank.destroyTimer) / Game.tank_size - Math.max(Game.tank_size - tank.drawAge, 0) / Game.tank_size * length;
+			double s = (size * (Game.tile_size - this.tank.destroyTimer - Math.max(Game.tile_size - tank.drawAge, 0)) / Game.tile_size);
+			double l = length * (Game.tile_size - this.tank.destroyTimer) / Game.tile_size - Math.max(Game.tile_size - tank.drawAge, 0) / Game.tile_size * length;
 
 			if (forInterface)
 			{
 				s = Math.min(size, 12);
-				l = Math.min(length, Game.tank_size * 1.5);
+				l = Math.min(length, Game.tile_size * 1.5);
 			}
 
 
@@ -82,11 +82,11 @@ public class Turret extends Movable
 
 			this.setPolarMotion(angle, 1);
 
-			for (double i = 0; i < length * (Game.tank_size - this.tank.destroyTimer) / Game.tank_size - Math.max(Game.tank_size - tank.drawAge, 0); i += amount)
+			for (double i = 0; i < length * (Game.tile_size - this.tank.destroyTimer) / Game.tile_size - Math.max(Game.tile_size - tank.drawAge, 0); i += amount)
 			{
 				//p.setColor(new Color(75, 40, 0));
 				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-				int s = (int) (size * (Game.tank_size - this.tank.destroyTimer - Math.max(Game.tank_size - tank.drawAge, 0)) / Game.tank_size);
+				int s = (int) (size * (Game.tile_size - this.tank.destroyTimer - Math.max(Game.tile_size - tank.drawAge, 0)) / Game.tile_size);
 				Drawing.drawing.fillOval(this.posX, this.posY, s, s);
 				this.posX += this.vX * amount;
 				this.posY += this.vY * amount;

@@ -24,7 +24,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
     public TankPlayerController(double x, double y, double angle, UUID id)
     {
-        super("player", x, y, Game.tank_size, 0, 150, 255);
+        super("player", x, y, Game.tile_size, 0, 150, 255);
         this.clientID = id;
         this.isRemote = true;
         this.angle = angle;
@@ -145,7 +145,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
                     {
                         InputPoint p = Game.game.window.touchPoints.get(i);
 
-                        if (!p.tag.equals("") && !p.tag.equals("aim"))
+                        if (!p.tag.equals("") && !p.tag.equals("aim") && !p.tag.equals("shoot"))
                             continue;
 
                         double px = Drawing.drawing.getInterfacePointerX(p.x);
@@ -177,7 +177,10 @@ public class TankPlayerController extends Tank implements IPlayerTank
                             trace = true;
                         }
                         else
+                        {
                             shoot = true;
+                            p.tag = "shoot";
+                        }
 
                         double proximity = Math.pow(this.touchCircleSize / 2, 2);
 
@@ -205,8 +208,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
             r.vY /= 2;
             r.trace = true;
             r.dotted = true;
-            r.highAccuracy = true;
-            r.moveOut(10 * this.size / Game.tank_size);
+            r.moveOut(10 * this.size / Game.tile_size);
             r.getTarget();
         }
 

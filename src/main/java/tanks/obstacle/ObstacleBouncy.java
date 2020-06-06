@@ -12,6 +12,20 @@ public class ObstacleBouncy extends Obstacle
 		this.colorR = Math.random() * 127 + 128;
 		this.colorG = 0;
 		this.colorB = 255;
+
+		for (int i = 1; i < default_max_height; i++)
+		{
+			stackColorR[i] = Math.random() * 127 + 128;
+			stackColorG[i] = 0;
+			stackColorB[i] = 255;
+
+			if (!Game.fancyGraphics)
+				stackColorR[i] = 191;
+		}
+
+		stackColorR[0] = colorR;
+		stackColorG[0] = colorG;
+		stackColorB[0] = colorB;
 		
 		if (!Game.fancyGraphics)
 			this.colorR = 191;

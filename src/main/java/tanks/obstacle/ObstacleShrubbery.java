@@ -9,7 +9,7 @@ import tanks.tank.Tank;
 
 public class ObstacleShrubbery extends Obstacle
 {
-	public double opacity = 255;
+	public double height = 255;
 	public double heightMultiplier = Math.random() * 0.2 + 0.6;
 	
 	public ObstacleShrubbery(String name, double posX, double posY) 
@@ -28,6 +28,7 @@ public class ObstacleShrubbery extends Obstacle
 		this.colorR = (Math.random() * 20);
 		this.colorG = (Math.random() * 50) + 150;
 		this.colorB = (Math.random() * 20);
+		this.enableStacking = false;
 		
 		if (!Game.fancyGraphics)
 		{
@@ -43,24 +44,26 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void draw()
 	{
-		this.opacity = Math.min(this.opacity + Panel.frameFrequency, 255);
-		
+		this.height = Math.min(this.height + Panel.frameFrequency, 255);
+
 		if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
 		{
-			this.opacity = 127;
+			this.height = 127;
 		}
 		
 		if (Game.playerTank == null || Game.playerTank.destroy)
-			this.opacity = Math.max(127, this.opacity - Panel.frameFrequency * 2);
+		{
+			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
+		}
 		
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, draw_size * (0.25 + 0.75 * this.heightMultiplier * (1 - (255 - this.opacity) / 128)));
+			Drawing.drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, Game.sampleHeight(this.posX, this.posY) + draw_size * (0.07 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
 		}
 		else
 		{
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.opacity);
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.height);
 			Drawing.drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 		}
 	}
@@ -74,10 +77,10 @@ public class ObstacleShrubbery extends Obstacle
 
 	public boolean isInside(double x, double y)
 	{
-		return (x >= this.posX - Obstacle.obstacle_size / 2 &&
-				x <= this.posX + Obstacle.obstacle_size / 2 &&
-				y >= this.posY - Obstacle.obstacle_size / 2 &&
-				y <= this.posY + Obstacle.obstacle_size / 2);
+		return (x >= this.posX - Game.tile_size / 2 &&
+				x <= this.posX + Game.tile_size / 2 &&
+				y >= this.posY - Game.tile_size / 2 &&
+				y <= this.posY + Game.tile_size / 2);
 	}
 	
 	@Override
@@ -93,7 +96,7 @@ public class ObstacleShrubbery extends Obstacle
 							this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
 
 					((Tank) m).hiddenPoints[x + 1][y + 1] = ((Tank) m).hiddenPoints[x + 1][y + 1] ||
-							(this.opacity >= 255 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
+							(this.height >= 255 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
 				}
 			}
 		}
@@ -107,9 +110,9 @@ public class ObstacleShrubbery extends Obstacle
 
 			Effect e;
 			if (Game.enable3d)
-				e = (Effect.createNewEffect(this.posX, this.posY, draw_size * (0.25 + 0.75 * this.heightMultiplier * (1 - (255 - this.opacity) / 128)), Effect.EffectType.bushBurn));
+				e = (Effect.createNewEffect(this.posX, this.posY, draw_size * (0.25 + 0.75 * this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn));
 			else
-				e = (Effect.createNewEffect(this.posX, this.posY, this.opacity, Effect.EffectType.bushBurn));
+				e = (Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn));
 
 			e.colR = this.colorR;
 			e.colG = this.colorG;
@@ -126,6 +129,15 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntryLocal(Movable m)
 	{
-		this.opacity = Math.max(this.opacity - Panel.frameFrequency * Math.pow(Math.abs(m.vX) + Math.abs(m.vY), 2), 127);
+		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
+		double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed / 2, 127);
+
+		double radius = 62500;
+		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0)
+		{
+			int sound = (int) (Math.random() * 4 + 1);
+			Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 6.0f) + 0.5f, (float) (speed * 0.025 * (radius - distsq) / radius));
+		}
 	}
 }

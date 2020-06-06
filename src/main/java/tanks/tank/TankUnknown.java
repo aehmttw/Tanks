@@ -10,7 +10,7 @@ public class TankUnknown extends Tank
 {
 	public TankUnknown(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 255, 0, 0);
+		super(name, x, y, Game.tile_size, 255, 0, 0);
 		this.angle = angle;
 		this.description = "A tank which could not be identified";
 	}

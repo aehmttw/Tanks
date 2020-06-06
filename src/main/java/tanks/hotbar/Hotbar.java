@@ -1,10 +1,9 @@
 package tanks.hotbar;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
+import tanks.tank.Tank;
 
 public class Hotbar
 {
@@ -15,6 +14,7 @@ public class Hotbar
 	public boolean enabledItemBar = false;
 	public boolean enabledHealthBar = true;
 	public boolean enabledCoins = false;
+	public boolean enabledRemainingEnemies = true;
 
 	public boolean hidden = true;
 	public boolean persistent = false;
@@ -62,8 +62,8 @@ public class Hotbar
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT) || Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT))
 		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_RIGHT_SHIFT);
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_LEFT_SHIFT);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_RIGHT_SHIFT);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_LEFT_SHIFT);
 			this.persistent = !this.persistent;
 		}
 
@@ -168,6 +168,30 @@ public class Hotbar
 			Drawing.drawing.setInterfaceFontSize(18);
 			Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: " + currentCoins.coins);
+		}
+
+		if (this.enabledRemainingEnemies)
+		{
+			int count = 0;
+
+			for (Movable m: Game.movables)
+			{
+				if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy)
+					count++;
+			}
+
+			int x = (int) ((Drawing.drawing.interfaceSizeX / 2) - 210);
+			int y = (int) (Drawing.drawing.interfaceSizeY - 17.5 + percentHidden - verticalOffset);
+
+			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.fillInterfaceRect(x, y, Game.tile_size / 2, Game.tile_size / 2);
+
+			Drawing.drawing.setColor(191, 63, 63, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.fillInterfaceRect(x + Game.tile_size / 4, y, Game.tile_size / 2 + 4, 4);
+
+			Drawing.drawing.setColor(255, 0, 0);
+			Drawing.drawing.setInterfaceFontSize(24);
+			Drawing.drawing.drawInterfaceText(x - 15, y + 1, "" + count, true);
 		}
 	}
 }

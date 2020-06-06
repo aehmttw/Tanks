@@ -89,7 +89,7 @@ public abstract class BulletInstant extends Bullet
 
 				this.age++;
 				double frac = 1 / (1 + this.age / 100);
-				this.posZ = this.iPosZ * frac + (Game.tank_size / 4) * (1 - frac);
+				this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
 
 				this.addEffect();
 			}

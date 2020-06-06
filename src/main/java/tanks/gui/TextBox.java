@@ -66,6 +66,8 @@ public class TextBox implements IDrawable
 	public double selectedFullColorG = 238;
 	public double selectedFullColorB = 220;
 
+	public boolean enabled = true;
+
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
 	public boolean wait = false;
 
@@ -246,7 +248,7 @@ public class TextBox implements IDrawable
 		infoSelected = mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
 		clearSelected = selected && mx < posX - sizeX / 2 + sizeY && mx > posX - sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
 
-		if (hover && valid)
+		if (hover && valid && enabled)
 		{
 			if (infoSelected && enableHover && Game.game.window.touchscreen)
 			{
@@ -260,10 +262,12 @@ public class TextBox implements IDrawable
 				handled = true;
 				selected = true;
 
-				if (Panel.selectedTextBox != null)
-					Panel.selectedTextBox.submit();
+				TextBox prev = Panel.selectedTextBox;
 
 				Panel.selectedTextBox = this;
+
+				if (prev != null)
+					prev.submit();
 
 				Drawing.drawing.playVibration("click");
 				Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
@@ -312,8 +316,8 @@ public class TextBox implements IDrawable
 
 	public void submit()
 	{
-		Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ENTER);
-		Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 
 		this.performValueCheck();
 		function.run();
@@ -335,7 +339,7 @@ public class TextBox implements IDrawable
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE) && selected)
 		{
-			Game.game.window.validPressedKeys.remove((Integer)InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 			selected = false;
 			Panel.selectedTextBox = null;
 			this.inputText = this.previousInputText;

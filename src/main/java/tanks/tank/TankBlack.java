@@ -9,15 +9,16 @@ public class TankBlack extends TankAIControlled
 
 	public TankBlack(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 0, 0, 0, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 0, 0, 0, angle, ShootAI.straight);
 		this.cooldownBase = 75;
 		this.cooldownRandom = 0;
-		this.speed = 3.5;
+		this.speed = 4.0;
 		this.enableDefensiveFiring = true;
 		this.bulletSpeed = 25.0 / 2;
 		this.bulletBounces = 0;
 		this.bulletEffect = Bullet.BulletEffect.darkFire;
 		this.aimTurretSpeed = 0.06;
+		this.enablePathfinding = true;
 		
 		this.coinValue = 10;
 

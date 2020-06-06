@@ -14,6 +14,8 @@ public abstract class Screen
 	public String screenHint = "";
 	public boolean showDefaultMouse = true;
 
+	public boolean enableMargins = true;
+
 	public abstract void update();
 
 	public abstract void draw();
@@ -36,7 +38,7 @@ public abstract class Screen
 		double frac = 0;
 
 		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen)
-			frac = Obstacle.draw_size / Obstacle.obstacle_size;
+			frac = Obstacle.draw_size / Game.tile_size;
 
 		if (!(Game.screen instanceof ScreenExit))
 		{
@@ -49,8 +51,10 @@ public abstract class Screen
 
 		if (Game.fancyGraphics)
 		{
-			int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Obstacle.obstacle_size);
-			int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Obstacle.obstacle_size);
+			Game.game.window.setBatchMode(true);
+
+			int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
+			int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
 
 			for (int i1 = (Game.currentSizeX - width) / 2 - 1; i1 < width + 1; i1++)
 			{
@@ -92,7 +96,7 @@ public abstract class Screen
 
 						byte o = 61;
 						if (Game.enable3dBg)
-							o = 0;
+							o = 1;
 
 						if (Game.tileDrawables[i][j] != null && inBounds)
 						{
@@ -102,33 +106,35 @@ public abstract class Screen
 						else
 						{
 							if (size != 1)
-								Drawing.drawing.fillBox( 
-										(i1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-										(j1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-										Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Obstacle.obstacle_size + z1,
-										Obstacle.obstacle_size / Game.bgResMultiplier, 
-										Obstacle.obstacle_size / Game.bgResMultiplier,
-										Obstacle.obstacle_size);
+								Drawing.drawing.fillBox(
+										(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+										(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+										Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Game.tile_size + z1,
+										Game.tile_size / Game.bgResMultiplier,
+										Game.tile_size / Game.bgResMultiplier,
+										Game.tile_size);
 							else
 							{
 								Drawing.drawing.fillBox(
-										(i1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-										(j1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
+										(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+										(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
 										0,
-										Obstacle.obstacle_size / Game.bgResMultiplier,
-										Obstacle.obstacle_size / Game.bgResMultiplier,
+										Game.tile_size / Game.bgResMultiplier,
+										Game.tile_size / Game.bgResMultiplier,
 										z1 * (1 - frac2), o);
 							}
 						}
 					}
 					else
-						Drawing.drawing.fillRect( 
-								(i1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-								(j1 + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size,
-								Obstacle.obstacle_size * size / Game.bgResMultiplier, 
-								Obstacle.obstacle_size * size / Game.bgResMultiplier);
+						Drawing.drawing.fillRect(
+								(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+								(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+								Game.tile_size * size / Game.bgResMultiplier,
+								Game.tile_size * size / Game.bgResMultiplier);
 				}
 			}
+
+			Game.game.window.setBatchMode(false);
 
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 2, Drawing.drawing.sizeY * 2);
@@ -149,13 +155,28 @@ public abstract class Screen
 					else
 					{
 						Drawing.drawing.fillBox(
-								(i + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 
-								(j + 0.5) / Game.bgResMultiplier * Obstacle.obstacle_size, 0,
-								Obstacle.obstacle_size * size / Game.bgResMultiplier, 
-								Obstacle.obstacle_size * size / Game.bgResMultiplier, 0, (byte) 61);
+								(i + 0.5) / Game.bgResMultiplier * Game.tile_size,
+								(j + 0.5) / Game.bgResMultiplier * Game.tile_size, 0,
+								Game.tile_size * size / Game.bgResMultiplier,
+								Game.tile_size * size / Game.bgResMultiplier, 0, (byte) 61);
 					}
 				}
 			}
 		}
+	}
+
+	public double getOffsetX()
+	{
+		return 0;
+	}
+
+	public double getOffsetY()
+	{
+		return 0;
+	}
+
+	public double getScale()
+	{
+		return Drawing.drawing.unzoomedScale;
 	}
 }

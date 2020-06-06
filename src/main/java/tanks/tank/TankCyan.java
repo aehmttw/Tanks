@@ -10,10 +10,10 @@ public class TankCyan extends TankAIControlled
 {
 	public TankCyan(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 128, 255, 255, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 128, 255, 255, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 1;
+		this.speed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -40,7 +40,7 @@ public class TankCyan extends TankAIControlled
 
 		Bullet b = new BulletFreeze(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
-		b.moveOut((int) (25 / this.bulletSpeed * 2 * this.size / Game.tank_size));
+		b.moveOut((int) (25 / this.bulletSpeed * 2 * this.size / Game.tile_size));
 		b.effect = this.bulletEffect;
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;

@@ -10,14 +10,15 @@ public class TankOrange extends TankAIControlled
 {
 	public TankOrange(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 230, 120, 0, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 230, 120, 0, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 1.5;
+		this.speed = 2.0;
 
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.aimTurretSpeed = 0.01;
+		this.enablePathfinding = true;
 
 		this.motionChangeChance = 0.001;
 

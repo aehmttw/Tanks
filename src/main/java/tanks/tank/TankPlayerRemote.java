@@ -28,7 +28,7 @@ public class TankPlayerRemote extends Tank
 
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
-        super("player", x, y, Game.tank_size, 0, 150, 255);
+        super("player", x, y, Game.tile_size, 0, 150, 255);
         this.player = p;
         this.showName = true;
         this.angle = angle;
@@ -157,7 +157,7 @@ public class TankPlayerRemote extends Tank
         b.addPolarMotion(this.angle, speed);
         this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0 * b.recoil);
 
-        b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tank_size));
+        b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tile_size));
 
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);

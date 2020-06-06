@@ -13,7 +13,7 @@ public class TankRed extends TankAIControlled
 
 	public TankRed(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 200, 0, 0, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 200, 0, 0, angle, ShootAI.straight);
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;

@@ -36,9 +36,17 @@ public class LWJGLWindow extends BaseWindow
 	public double colorB;
 	public double colorA;
 
+	protected double[] mx = new double[1];
+	protected double[] my = new double[1];
+
+	protected int[] w = new int[1];
+	protected int[] h = new int[1];
+
 	protected HashMap<String, Integer> textures = new HashMap<String, Integer>();
 	protected HashMap<String, Integer> textureSX = new HashMap<String, Integer>();
 	protected HashMap<String, Integer> textureSY = new HashMap<String, Integer>();
+
+	public boolean batchMode = false;
 
 	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
@@ -227,14 +235,10 @@ public class LWJGLWindow extends BaseWindow
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			int[] w = new int[1];
-			int[] h = new int[1];
 			glfwGetWindowSize(window, w, h);
 			absoluteWidth = w[0];
 			absoluteHeight = h[0];
 
-			double[] mx = new double[1];
-			double[] my = new double[1];
 			glfwGetCursorPos(window, mx, my);
 			absoluteMouseX = mx[0];
 			absoluteMouseY = my[0];
@@ -295,7 +299,9 @@ public class LWJGLWindow extends BaseWindow
 		if (depthTest)
 		{
 			glEnable(GL_DEPTH_TEST);
-			glDepthMask(false);
+
+			if (colorA < 1)
+				glDepthMask(false);
 		}
 
 		x += sX / 2;
@@ -435,14 +441,17 @@ public class LWJGLWindow extends BaseWindow
 	 * */
 	public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options)
 	{
-		glEnable(GL_DEPTH_TEST);
+		if (!batchMode)
+		{
+			glEnable(GL_DEPTH_TEST);
 
-		if ((options >> 6) % 2 == 0)
-			glDepthFunc(GL_LESS);
-		else
-			glDepthFunc(GL_ALWAYS);
+			if ((options >> 6) % 2 == 0)
+				glDepthFunc(GL_LESS);
+			else
+				glDepthFunc(GL_ALWAYS);
 
-		GL11.glBegin(GL11.GL_QUADS);
+			GL11.glBegin(GL11.GL_QUADS);
+		}
 
 		if (options % 2 == 0)
 		{
@@ -498,9 +507,11 @@ public class LWJGLWindow extends BaseWindow
 			GL11.glVertex3d(x + sX, y, z + sZ);
 		}
 
-		GL11.glEnd();
-
-		glDisable(GL_DEPTH_TEST);
+		if (!batchMode)
+		{
+			GL11.glEnd();
+			glDisable(GL_DEPTH_TEST);
+		}
 	}
 
 	public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
@@ -876,5 +887,23 @@ public class LWJGLWindow extends BaseWindow
 	public double getEdgeBounds()
 	{
 		return 0;
+	}
+
+	@Override
+	public void setBatchMode(boolean enabled)
+	{
+		this.batchMode = enabled;
+
+		if (enabled)
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
+			glBegin(GL_QUADS);
+		}
+		else
+		{
+			GL11.glEnd();
+			glDisable(GL_DEPTH_TEST);
+		}
 	}
 }

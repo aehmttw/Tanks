@@ -10,10 +10,10 @@ public class TankMini extends TankAIControlled
 	
 	public TankMini(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size / 2, 255, 127, 127, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size / 2, 255, 127, 127, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 2.5;
+		this.speed = 3.0;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;

@@ -22,7 +22,7 @@ public class Tutorial
 				+ "|4-6-player-0-ally,25-13-brown-0,46-13-gray-2}");
 		
 		l.loadLevel();
-		Tank t = new TankDummy("dummy", 13.5 * Game.tank_size, 10.5 * Game.tank_size, Math.PI);
+		Tank t = new TankDummy("dummy", 13.5 * Game.tile_size, 10.5 * Game.tile_size, Math.PI);
 		t.team = Game.enemyTeam;
 		Game.movables.add(t);
 		

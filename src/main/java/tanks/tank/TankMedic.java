@@ -10,18 +10,16 @@ import tanks.event.EventShootBullet;
 
 public class TankMedic extends TankAIControlled
 {
-	boolean lineOfSight = false;
-
 	boolean suicidal = false;
 	double timeUntilDeath = 500 + Math.random() * 250;
 
 	public TankMedic(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 255, 255, 255, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.straight);
 
 		this.texture = "/medic.png";
 		this.enableMovement = true;
-		this.speed = 1;
+		this.speed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -32,6 +30,8 @@ public class TankMedic extends TankAIControlled
 		this.bulletEffect = Bullet.BulletEffect.none;
 		this.bulletDamage = 0;
 		this.motionChangeChance = 0.001;
+		this.enablePathfinding = true;
+		this.seekChance = 0.01;
 
 		this.coinValue = 8;
 
@@ -155,6 +155,11 @@ public class TankMedic extends TankAIControlled
 			this.overrideDirection = true;
 			this.setMotionInDirection(targetEnemy.posX, targetEnemy.posY, speed);
 		}
+	}
+
+	public boolean isInterestingPathTarget(Movable m)
+	{
+		return m instanceof Tank && Team.isAllied(m, this) && m != this && ((Tank) m).lives - ((Tank) m).baseLives < 1 && !(m instanceof TankMedic);
 	}
 
 }

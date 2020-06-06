@@ -11,9 +11,10 @@ public class TankWhite extends TankAIControlled
 
 	public TankWhite(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 255, 255, 255, angle, ShootAI.alternate);
-		this.speed = 1.5;
+		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.alternate);
+		this.speed = 2.0;
 		this.enableDefensiveFiring = true;
+		this.enablePathfinding = true;
 
 		this.coinValue = 4;
 
@@ -53,9 +54,9 @@ public class TankWhite extends TankAIControlled
 				}
 			}
 
-			for (int i = 0; i < Game.tank_size * 2 - this.age; i++)
+			for (int i = 0; i < Game.tile_size * 2 - this.age; i++)
 			{
-				Drawing.drawing.setColor(255, 255, 255, (Game.tank_size * 2 - i - this.age) * 2.55);
+				Drawing.drawing.setColor(255, 255, 255, (Game.tile_size * 2 - i - this.age) * 2.55);
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}

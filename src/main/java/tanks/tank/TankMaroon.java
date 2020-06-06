@@ -7,10 +7,10 @@ public class TankMaroon extends TankAIControlled
 {
 	public TankMaroon(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tank_size, 100, 0, 25, angle, ShootAI.reflect);
+		super(name, x, y, Game.tile_size, 100, 0, 25, angle, ShootAI.reflect);
 
 		this.enableMovement = true;
-		this.speed = 1;
+		this.speed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -22,12 +22,19 @@ public class TankMaroon extends TankAIControlled
 		this.bulletSpeed = 25.0 / 4;
 		this.bulletSize = 25;
 		this.bulletHeavy = true;
-		this.enableLookingAtTargetEnemy = false;
+		this.enableLookingAtTargetEnemy = true;
 		this.motionChangeChance = 0.001;
 		this.turret.size *= 1.5;
+		this.enablePathfinding = true;
 		
 		this.coinValue = 7;
 
 		this.description = "A tank which shoots huge bullets which---bounce 3 times and can't be stopped";
 	}
+
+	public void reactToTargetEnemySight()
+	{
+		this.currentlySeeking = false;
+	}
+
 }

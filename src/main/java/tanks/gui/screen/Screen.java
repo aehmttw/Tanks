@@ -51,7 +51,10 @@ public abstract class Screen
 
 		if (Game.fancyGraphics)
 		{
-			Game.game.window.setBatchMode(true);
+			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
+
+			if (Game.framework != Game.Framework.libgdx)
+				Game.game.window.setBatchMode(true, true, true);
 
 			int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
 			int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
@@ -134,10 +137,11 @@ public abstract class Screen
 				}
 			}
 
-			Game.game.window.setBatchMode(false);
+			if (Game.framework != Game.Framework.libgdx)
+				Game.game.window.setBatchMode(false, true, true);
 
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX * 2, Drawing.drawing.sizeY * 2);
+			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 		}
 		else if (Game.enable3d && !(Game.screen instanceof ScreenExit))
 		{

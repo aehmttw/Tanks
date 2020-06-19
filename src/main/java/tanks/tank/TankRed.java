@@ -96,9 +96,7 @@ public class TankRed extends TankAIControlled
 			b.team = this.team;
 			b.setPolarMotion(this.angle, 25.0/4);
 			b.moveOut(8);
-			Game.eventsOut.add(new EventShootBullet(b));
-			b.shoot();
-
+			Game.movables.add(b);
 			Drawing.drawing.playGlobalSound("laser.ogg");
 
 			if (this.targetEnemy.destroy)

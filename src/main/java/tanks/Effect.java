@@ -4,14 +4,18 @@ import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 
-public class Effect extends Movable
+public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight}
+    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece}
     public EffectType type;
     double age = 0;
     public double colR;
     public double colG;
     public double colB;
+
+    public double glowR;
+    public double glowG;
+    public double glowB;
 
     public double maxAge = 100;
     public double size;
@@ -127,6 +131,8 @@ public class Effect extends Movable
             this.maxAge = 100;
         else if (type == EffectType.teleporterLight)
             this.maxAge = 0;
+        else if (type == EffectType.teleporterPiece)
+            this.maxAge = Math.random() * 100 + 50;
     }
 
     protected void refurbish()
@@ -142,6 +148,9 @@ public class Effect extends Movable
         this.colR = 0;
         this.colG = 0;
         this.colB = 0;
+        this.glowR = 0;
+        this.glowG = 0;
+        this.glowB = 0;
         this.maxAge = Math.random() * 100 + 50;
         this.size = 0;
         this.removed = false;
@@ -279,7 +288,7 @@ public class Effect extends Movable
 
             double opacity = (255 - this.age / opacityFactor) / 4;
             drawing.setColor(0, 0, 0, opacity);
-            drawing.fillRect(this.posX, this.posY, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size);
+            drawing.drawModel(Drawing.rotatedRect, this.posX, this.posY, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, angle);
         }
         else if (this.type == EffectType.darkFire)
         {
@@ -372,9 +381,91 @@ public class Effect extends Movable
                 Drawing.drawing.fillOval(this.posX, this.posY, posZ + 7 + i * 50, Obstacle.draw_size / 2, Obstacle.draw_size / 2, true, false);
             }
         }
+        else if (this.type == EffectType.teleporterPiece)
+        {
+            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+            drawing.setColor(this.colR, this.colG, this.colB);
+
+            if (Game.enable3d)
+                drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
+            else
+                drawing.fillOval(this.posX, this.posY, size, size);
+        }
         else
         {
             Game.exitToCrash(new RuntimeException("Invalid effect type!"));
+        }
+    }
+
+    public void drawGlow()
+    {
+        if (this.maxAge > 0 && this.maxAge < this.age)
+            return;
+
+        if (this.age < 0)
+            Game.exitToCrash(new RuntimeException("Effect with negative age"));
+
+        double opacityMultiplier = ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+        Drawing drawing = Drawing.drawing;
+
+        if (this.type == EffectType.piece)
+        {
+            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+
+            drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8);
+            else
+                drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
+        }
+        else if (this.type == EffectType.charge)
+        {
+            double size = 1 + (Bullet.bullet_size * (this.age / this.maxAge));
+
+            drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8);
+            else
+                drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
+        }
+        else if (this.type == EffectType.stun)
+        {
+            double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+            double angle = this.angle + this.age / 20;
+            double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+
+            double[] o = Movable.getLocationInDirection(angle, distance);
+
+            drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX + o[0], this.posY + o[1], this.posZ, size * 8, size * 8);
+            else
+                drawing.fillGlow(this.posX + o[0], this.posY + o[1], size * 8, size * 8);
+        }
+        else if (this.type == EffectType.glow)
+        {
+            double size = 1 + (40 * (1 - this.age / this.maxAge));
+
+            drawing.setColor(255, 255, 255, 40);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8, false, true);
+            else
+                drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
+        }
+        else if (this.type == EffectType.teleporterPiece)
+        {
+            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+
+            drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8, false, true);
+            else
+                drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
         }
     }
 
@@ -396,7 +487,7 @@ public class Effect extends Movable
             if (Game.effects.contains(this))
                 Game.removeEffects.add(this);
 
-            else if (Game.belowEffects.contains(this))
+            else if (Game.tracks.contains(this))
                 Game.removeBelowEffects.add(this);
         }
     }

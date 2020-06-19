@@ -785,8 +785,25 @@ public class ScreenGame extends Screen
 
 			}
 
-			Collections.sort(Game.horizontalFaces);
-			Collections.sort(Game.verticalFaces);
+			try
+			{
+				Collections.sort(Game.horizontalFaces);
+			}
+			catch (Exception e)
+			{
+				System.out.println(Game.horizontalFaces);
+				Game.exitToCrash(e);
+			}
+
+			try
+			{
+				Collections.sort(Game.verticalFaces);
+			}
+			catch (Exception e)
+			{
+				System.out.println(Game.verticalFaces);
+				Game.exitToCrash(e);
+			}
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
@@ -817,9 +834,9 @@ public class ScreenGame extends Screen
 					o.update();
 			}
 
-			for (int i = 0; i < Game.belowEffects.size(); i++)
+			for (int i = 0; i < Game.tracks.size(); i++)
 			{
-				Game.belowEffects.get(i).update();
+				Game.tracks.get(i).update();
 			}
 
 			Panel.panel.hotbar.update();
@@ -963,7 +980,7 @@ public class ScreenGame extends Screen
 		for (int i = 0; i < Game.removeBelowEffects.size(); i++)
 		{
 			Effect e = Game.removeBelowEffects.get(i);
-			Game.belowEffects.remove(e);
+			Game.tracks.remove(e);
 			Game.recycleEffects.add(e);
 		}
 
@@ -1008,8 +1025,8 @@ public class ScreenGame extends Screen
 
 		Drawing drawing = Drawing.drawing;
 
-		for (int i = 0; i < Game.belowEffects.size(); i++)
-			drawables[0].add(Game.belowEffects.get(i));
+		for (int i = 0; i < Game.tracks.size(); i++)
+			drawables[0].add(Game.tracks.get(i));
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -1056,6 +1073,17 @@ public class ScreenGame extends Screen
 
 				if (d != null)
 					d.draw();
+			}
+
+			if (Game.superGraphics)
+			{
+				for (int j = 0; j < this.drawables[i].size(); j++)
+				{
+					IDrawable d = this.drawables[i].get(j);
+
+					if (d instanceof IDrawableWithGlow)
+						((IDrawableWithGlow) d).drawGlow();
+				}
 			}
 
 			if (i == 9 && (Game.playerTank instanceof IPlayerTank && ((IPlayerTank) Game.playerTank).showTouchCircle()))

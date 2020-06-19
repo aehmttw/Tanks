@@ -54,10 +54,14 @@ public class TankWhite extends TankAIControlled
 				}
 			}
 
-			for (int i = 0; i < Game.tile_size * 2 - this.age; i++)
+			if (this.size * 4 > this.age * 2)
 			{
-				Drawing.drawing.setColor(255, 255, 255, (Game.tile_size * 2 - i - this.age) * 2.55);
-				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
+				Drawing.drawing.setColor(255, 255, 255);
+
+				if (Game.enable3d)
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2, true, false);
+				else
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2);
 			}
 		}
 	}

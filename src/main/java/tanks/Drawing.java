@@ -46,6 +46,13 @@ public class Drawing
 
 	public double fontSize = 1;
 
+	public double currentColorR;
+	public double currentColorG;
+	public double currentColorB;
+	public double currentColorA;
+
+	public static Model rotatedRect = new Model();
+
 	private Drawing() {}
 
 	public static void initialize()
@@ -98,11 +105,19 @@ public class Drawing
 	public void setColor(double r, double g, double b)
 	{
 		Game.game.window.setColor(r, g, b);
+		this.currentColorR = r;
+		this.currentColorG = g;
+		this.currentColorB = b;
+		this.currentColorA = 255;
 	}
 
 	public void setColor(double r, double g, double b, double a)
 	{
 		Game.game.window.setColor(r, g, b, a);
+		this.currentColorR = r;
+		this.currentColorG = g;
+		this.currentColorB = b;
+		this.currentColorA = a;
 	}
 
 	public void fillOval(double x, double y, double sizeX, double sizeY)
@@ -118,6 +133,20 @@ public class Drawing
 
 		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
+
+    public void fillGlow(double x, double y, double sizeX, double sizeY)
+    {
+        double drawX = gameToAbsoluteX(x, sizeX);
+        double drawY = gameToAbsoluteY(y, sizeY);
+
+        if (drawX - 200 * this.scale > Panel.windowWidth || drawX + 200 * this.scale < 0 || drawY - 200 * this.scale > Panel.windowHeight || drawY + 200 * this.scale < 0)
+            return;
+
+        double drawSizeX = (sizeX * scale);
+        double drawSizeY = (sizeY * scale);
+
+        Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
+    }
 
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
 	{
@@ -142,6 +171,30 @@ public class Drawing
 		else
 			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
+
+    public void fillGlow(double x, double y, double z, double sizeX, double sizeY)
+    {
+        this.fillGlow(x, y, z, sizeX, sizeY, true, true);
+    }
+
+    public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
+    {
+        double drawX = gameToAbsoluteX(x, sizeX);
+        double drawY = gameToAbsoluteY(y, sizeY);
+
+        if (drawX - 200 * this.scale > Panel.windowWidth || drawX + 200 * this.scale < 0 || drawY - 200 * this.scale > Panel.windowHeight || drawY + 200 * this.scale < 0)
+            return;
+
+        double drawSizeX = (sizeX * scale);
+        double drawSizeY = (sizeY * scale);
+
+        double dZ = z * scale;
+
+        if (Game.game.window.angled && facing)
+            Game.game.window.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+        else
+            Game.game.window.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+    }
 
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
 	{
@@ -196,6 +249,20 @@ public class Drawing
 		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
 	}
 
+	public void drawImage(double rotation, String img, double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = gameToAbsoluteX(x, 0);
+		double drawY = gameToAbsoluteY(y, 0);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, rotation,false);
+	}
+
 	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
@@ -211,6 +278,23 @@ public class Drawing
 
 		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, false);
 	}
+
+	public void drawImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
+	{
+		double drawX = gameToAbsoluteX(x, 0);
+		double drawY = gameToAbsoluteY(y, 0);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		double drawZ = z * scale;
+
+		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, rotation, false);
+	}
+
 
 	public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 	{
@@ -349,6 +433,46 @@ public class Drawing
 		Game.game.window.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
 	}
 
+	public void drawModel(Model m, double x, double y, double width, double height, double angle)
+	{
+		double drawX = gameToAbsoluteX(x, 0);
+		double drawY = gameToAbsoluteY(y, 0);
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+
+		double drawSizeX = width * scale;
+		double drawSizeY = height * scale;
+
+		m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
+	}
+
+	public void drawModel(Model m, double x, double y, double z, double width, double height, double depth, double angle)
+	{
+		double drawX = gameToAbsoluteX(x, 0);
+		double drawY = gameToAbsoluteY(y, 0);
+		double drawZ = z * scale;
+
+		if (drawX - 200 * scale > Panel.windowWidth || drawX + 200 * scale < 0 || drawY - 200 * scale > Panel.windowHeight || drawY + 200 * scale < 0)
+			return;
+
+		double drawSizeX = width * scale;
+		double drawSizeY = height * scale;
+		double drawSizeZ = depth * scale;
+
+		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, angle);
+	}
+
+	public void drawInterfaceModel(Model m, double x, double y, double width, double height, double angle)
+	{
+		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (width * interfaceScale);
+		double drawSizeY = (height * interfaceScale);
+
+		m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
+	}
+
 	public void drawRect(double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
@@ -371,6 +495,16 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 
 		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+	}
+
+	public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void drawInterfaceOval(double x, double y, double sizeX, double sizeY)
@@ -477,6 +611,38 @@ public class Drawing
 		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+	}
+
+	public void addVertex(double x, double y, double z)
+	{
+		double drawX = gameToAbsoluteX(x, 0);
+		double drawY = gameToAbsoluteY(y, 0);
+		double drawZ = z * scale;
+
+		if (Game.enable3d)
+			Game.game.window.addVertex(drawX, drawY, drawZ);
+		else
+			Game.game.window.addVertex(drawX, drawY);
+	}
+
+	public void addFacingVertex(double x, double y, double z, double sX, double sY, double sZ)
+	{
+		if (Game.enable3d && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).slant != 0)
+		{
+			double angle = ((ScreenGame) Game.screen).slantRotation.pitch;
+
+			double drawX = gameToAbsoluteX(x, 0);
+			double drawY = gameToAbsoluteY(y, 0);
+			double drawZ = z * scale;
+
+			double drawSX = sX * scale;
+			double drawSY = sY * scale * Math.cos(angle) - sZ * scale * Math.sin(angle);
+			double drawSZ = sZ * scale * Math.cos(angle) + sY * scale * Math.sin(angle);
+
+			Game.game.window.addVertex(drawX + drawSX, drawY + drawSY, drawZ + drawSZ);
+		}
+		else
+			addVertex(x + sX, y + sY, z + sZ);
 	}
 
 	public void setFontSize(double size)

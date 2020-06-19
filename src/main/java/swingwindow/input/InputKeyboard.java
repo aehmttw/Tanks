@@ -91,6 +91,7 @@ public class InputKeyboard implements KeyListener
         key_translations.put(VK_DOWN, GLFW_KEY_DOWN);
         key_translations.put(VK_LEFT, GLFW_KEY_LEFT);
         key_translations.put(VK_RIGHT, GLFW_KEY_RIGHT);
+        key_translations.put(VK_SPACE, GLFW_KEY_SPACE);
     }
 
     public static int translate(int key)

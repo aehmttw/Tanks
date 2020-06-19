@@ -35,7 +35,7 @@ public class ObstacleShrubbery extends Obstacle
 			this.colorR = 10;
 			this.colorG = 175;
 			this.colorB = 10;
-			this.heightMultiplier = 1;
+			this.heightMultiplier = 0.8;
 		}
 
 		this.description = "A destructible bush in which you---can hide by standing still";
@@ -55,11 +55,13 @@ public class ObstacleShrubbery extends Obstacle
 		{
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
-		
+
+		double finalHeight = 0;
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, Game.sampleHeight(this.posX, this.posY) + draw_size * (0.07 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
+			finalHeight = Game.sampleHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+			Drawing.drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, finalHeight);
 		}
 		else
 		{
@@ -110,9 +112,9 @@ public class ObstacleShrubbery extends Obstacle
 
 			Effect e;
 			if (Game.enable3d)
-				e = (Effect.createNewEffect(this.posX, this.posY, draw_size * (0.25 + 0.75 * this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn));
+				e = Effect.createNewEffect(this.posX, this.posY,Game.sampleHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
 			else
-				e = (Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn));
+				e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
 
 			e.colR = this.colorR;
 			e.colG = this.colorG;

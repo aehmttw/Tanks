@@ -6,6 +6,8 @@ import tanks.gui.Button;
 
 public class ScreenTutorialGame extends ScreenGame
 {
+	public boolean active = true;
+
 	public ScreenTutorialGame()
 	{
 		Game.startTime = 100;
@@ -25,6 +27,7 @@ public class ScreenTutorialGame extends ScreenGame
 				Game.exitToCrash(e);
 			}
 
+			active = false;
 			ScreenInterlevel.tutorialInitial = false;
 			ScreenInterlevel.tutorial = false;
 			Game.exitToTitle();
@@ -40,10 +43,11 @@ public class ScreenTutorialGame extends ScreenGame
 	@Override
 	public void update() 
 	{
-		super.update();
-
 		if (!paused)
 			skip.update();
+
+		if (active)
+			super.update();
 	}
 
 	@Override

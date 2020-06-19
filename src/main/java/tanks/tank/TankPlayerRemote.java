@@ -32,6 +32,7 @@ public class TankPlayerRemote extends Tank
         this.player = p;
         this.showName = true;
         this.angle = angle;
+        this.orientation = angle;
 
         this.liveBulletMax = 5;
         this.liveMinesMax = 2;

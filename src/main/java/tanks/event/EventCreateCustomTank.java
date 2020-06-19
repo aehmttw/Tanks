@@ -48,8 +48,8 @@ public class EventCreateCustomTank extends PersonalEvent
 		this.red = t.colorR;
 		this.green = t.colorG;
 		this.blue = t.colorB;
-		this.lives = t.lives;
-		this.baseLives = t.baseLives;
+		this.lives = t.health;
+		this.baseLives = t.baseHealth;
 	}
 	
 	@Override

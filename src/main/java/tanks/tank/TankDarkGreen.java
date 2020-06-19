@@ -17,7 +17,7 @@ public class TankDarkGreen extends TankAIControlled
 		this.bulletBounces = 0;
 		this.bulletDamage /= 8;
 		this.bulletSize /= 2;
-		this.bulletEffect = Bullet.BulletEffect.none;
+		this.bulletEffect = Bullet.BulletEffect.trail;
 		
 		this.coinValue = 9;
 

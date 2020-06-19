@@ -12,6 +12,7 @@ public class TankUnknown extends Tank
 	{
 		super(name, x, y, Game.tile_size, 255, 0, 0);
 		this.angle = angle;
+		this.orientation = angle;
 		this.description = "A tank which could not be identified";
 	}
 	

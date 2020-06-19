@@ -26,7 +26,8 @@ public class Ray
 
 	public double speed = 10;
 
-	public int age = 0;
+	public double age = 0;
+	public int traceAge;
 
 	public Tank tank;
 	public Tank targetTank;
@@ -67,6 +68,12 @@ public class Ray
 		this.targetTank.size *= mul;
 
 		for (Face f: this.targetTank.getHorizontalFaces())
+			Game.horizontalFaces.remove(f);
+
+		for (Face f: this.targetTank.getVerticalFaces())
+			Game.verticalFaces.remove(f);
+
+		for (Face f: this.targetTank.getHorizontalFaces())
 			addFace(f);
 
 		for (Face f: this.targetTank.getVerticalFaces())
@@ -81,6 +88,12 @@ public class Ray
 			Game.verticalFaces.remove(f);
 
 		this.targetTank.size /= mul;
+
+		for (Face f: this.targetTank.getHorizontalFaces())
+			addFace(f);
+
+		for (Face f: this.targetTank.getVerticalFaces())
+			addFace(f);
 
 		return m;
 	}
@@ -235,6 +248,7 @@ public class Ray
 							collisionX = x;
 							collisionY = f.startY - size / 2;
 							collisionFace = f;
+							t = t1;
 						}
 
 						break;
@@ -259,14 +273,17 @@ public class Ray
 							corner = true;
 						else if (t1 < t)
 						{
-                            collisionX = x;
+							collisionX = x;
 							collisionY = f.startY + size / 2;
 							collisionFace = f;
+							t = t1;
 						}
 						break;
 					}
 				}
 			}
+
+			this.age += t;
 
 			firstBounce = false;
 
@@ -288,9 +305,9 @@ public class Ray
 						double x = posX + dx * s / steps;
 						double y = posY + dy * s / steps;
 
-						this.age++;
+						this.traceAge++;
 
-						double frac = 1 / (1 + this.age / 100.0);
+						double frac = 1 / (1 + this.traceAge / 100.0);
 						double z = this.tank.size / 2 + this.tank.turret.size / 2 * frac + (Game.tile_size / 4) * (1 - frac);
 						Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
 					}
@@ -302,12 +319,12 @@ public class Ray
 				this.posY = collisionY;
 
 				if (collisionFace.owner instanceof Movable)
-                {
-                    this.targetX = collisionX;
-                    this.targetY = collisionY;
+				{
+					this.targetX = collisionX;
+					this.targetY = collisionY;
 
-                    return (Movable) collisionFace.owner;
-                }
+					return (Movable) collisionFace.owner;
+				}
 				else if (collisionFace.owner instanceof Obstacle && ((Obstacle) collisionFace.owner).bouncy)
 					this.bouncyBounces--;
 				else
@@ -362,7 +379,7 @@ public class Ray
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
-					return age;
+					return (int) age;
 				}
 			}
 
@@ -379,7 +396,7 @@ public class Ray
 
 					if (horizontalDist < bound && verticalDist < bound)
 					{
-						return age;
+						return (int) age;
 					}
 				}
 
@@ -387,19 +404,19 @@ public class Ray
 
 			if (this.posX + this.size/2 > Drawing.drawing.sizeX)
 			{
-				return this.age;
+				return (int) this.age;
 			}
 			else if (this.posX - this.size/2 < 0)
 			{
-				return this.age;
+				return (int) this.age;
 			}
 			else if (this.posY + this.size/2 > Drawing.drawing.sizeY)
 			{
-				return this.age;
+				return (int) this.age;
 			}
 			else if (this.posY - this.size/2 < 0)
 			{
-				return this.age;
+				return (int) this.age;
 			}
 		}
 	}

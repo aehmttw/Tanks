@@ -10,6 +10,7 @@ public class TankSpawnMarker extends Tank
     {
         super(name, x, y, Game.tile_size, 0, 150, 255);
         this.angle = angle;
+        this.orientation = angle;
         this.texture = this.defaultTexture;
     }
 

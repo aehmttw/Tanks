@@ -31,14 +31,13 @@ public class Bullet extends Movable implements IDrawable
 	public boolean playBounceSound = true;
 	public double age = 0;
 	public double size;
+
 	public int bounces;
 	public int bouncyBounces = 100;
 
 	public double ageFrac = 0;
 	public double quarterAgeFrac = 0;
 	public double halfAgeFrac = 0;
-
-	public double sinceLastEffect = 0;
 
 	public double baseColorR;
 	public double baseColorG;
@@ -60,9 +59,16 @@ public class Bullet extends Movable implements IDrawable
 	public ItemBullet item;
 	public double recoil = 1.0;
 
+	public double collisionX;
+	public double collisionY;
+
 	public boolean affectsMaxLiveBullets;
 
+	public Tank tankInside = null;
+
 	public String itemSound = "shoot.ogg";
+
+	public ArrayList<Trail>[] trails;
 
 	public Bullet(double x, double y, int bounces, Tank t)
 	{
@@ -115,15 +121,23 @@ public class Bullet extends Movable implements IDrawable
 				this.item.liveBullets++;
 		}
 
-		if (freeIDs.size() > 0)
-			this.networkID = freeIDs.remove(0);
-		else
-		{
-			this.networkID = currentID;
-			currentID++;
-		}
+		this.trails = (ArrayList<Trail>[])(new ArrayList[10]);
 
-		idMap.put(this.networkID, this);
+		for (int i = 0; i < this.trails.length; i++)
+			this.trails[i] = new ArrayList<Trail>();
+
+		if (!this.tank.isRemote)
+		{
+			if (freeIDs.size() > 0)
+				this.networkID = freeIDs.remove(0);
+			else
+			{
+				this.networkID = currentID;
+				currentID++;
+			}
+
+			idMap.put(this.networkID, this);
+		}
 
 		this.drawLevel = 8;
 	}
@@ -133,12 +147,17 @@ public class Bullet extends Movable implements IDrawable
 		this.moveInDirection(vX, vY, amount);
 	}
 
+	public void collided()
+	{
+
+	}
+
 	public void collidedWithTank(Tank t)
 	{
 		if (!heavy)
 			this.destroy = true;
 
-		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable)
+		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable && this.tankInside != t)
 		{
 			t.flashAnimation = 1;
 			if (!this.heavy)
@@ -147,11 +166,11 @@ public class Bullet extends Movable implements IDrawable
 				this.vY = 0;
 			}
 
-			t.lives -= this.damage;
+			t.health -= this.damage;
 
 			Game.eventsOut.add(new EventTankUpdateHealth(t));
 
-			if (t.lives <= 0)
+			if (t.health <= 0)
 			{
 				t.flashAnimation = 0;
 				t.destroy = true;
@@ -164,15 +183,17 @@ public class Bullet extends Movable implements IDrawable
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
 			}
-			else if (this.playPopSound)
+			else if (this.playPopSound && !this.heavy)
 			{
 				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
 			}
 		}
-		else if (this.playPopSound)
+		else if (this.playPopSound && !this.heavy)
 		{
 			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
 		}
+
+		this.tankInside = t;
 	}
 
 	public void collidedWithObject(Movable o)
@@ -305,49 +326,73 @@ public class Bullet extends Movable implements IDrawable
 				{
 					this.posX += 2 * (horizontalDist - bound);
 					this.vX = -Math.abs(this.vX);
+
+					this.collisionX = this.posX - (horizontalDist - bound);
+					this.collisionY = this.posY - (horizontalDist - bound) / vX * vY;
 				}
 				else if (!up && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 				{
 					this.posY += 2 * (verticalDist - bound);
 					this.vY = -Math.abs(this.vY);
+
+					this.collisionX = this.posX - (verticalDist - bound) / vY * vX;
+					this.collisionY = this.posY - (verticalDist - bound);
 				}
 				else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
 				{
 					this.posX -= 2 * (horizontalDist - bound);
 					this.vX = Math.abs(this.vX);
+
+					this.collisionX = this.posX + (horizontalDist - bound);
+					this.collisionY = this.posY + (horizontalDist - bound) / vX * vY;
 				}
 				else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
 				{
 					this.posY -= 2 * (verticalDist - bound);
 					this.vY = Math.abs(this.vY);
+
+					this.collisionX = this.posX + (verticalDist - bound) / vY * vX;
+					this.collisionY = this.posY + (verticalDist - bound);
 				}
 			}
 
 		}
 
-		if (this.posX + this.size/2 > Drawing.drawing.sizeX)
+		if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
 		{
 			collided = true;
 			this.posX = Drawing.drawing.sizeX - this.size/2 - (this.posX + this.size/2 - Drawing.drawing.sizeX);
 			this.vX = -Math.abs(this.vX);
+
+			this.collisionX = this.posX - (this.posX + this.size/2 - Drawing.drawing.sizeX);
+			this.collisionY = this.posY - (this.posX + this.size/2 - Drawing.drawing.sizeX) / vX * vY;
 		}
-		if (this.posX - this.size/2 < 0)
+		if (this.posX - this.size / 2 < 0)
 		{
 			collided = true;
 			this.posX = this.size/2 - (this.posX - this.size / 2);
 			this.vX = Math.abs(this.vX);
+
+			this.collisionX = this.posX - (this.posX - this.size / 2);
+			this.collisionY = this.posY - (this.posX - this.size / 2) / vX * vY;
 		}
-		if (this.posY + this.size/2 > Drawing.drawing.sizeY)
+		if (this.posY + this.size / 2 > Drawing.drawing.sizeY)
 		{
 			collided = true;
 			this.posY = Drawing.drawing.sizeY - this.size/2 - (this.posY + this.size/2 - Drawing.drawing.sizeY);
 			this.vY = -Math.abs(this.vY);
+
+			this.collisionX = this.posX - (this.posY + this.size / 2 - Drawing.drawing.sizeY) / vY * vX;
+			this.collisionY = this.posY - (this.posY + this.size / 2 - Drawing.drawing.sizeY);
 		}
-		if (this.posY - this.size/2 < 0)
+		if (this.posY - this.size / 2 < 0)
 		{
 			collided = true;
 			this.posY = this.size/2 - (this.posY - this.size / 2);
 			this.vY = Math.abs(this.vY);
+
+			this.collisionX = this.posX - (this.posY - this.size / 2) / vY * vX;
+			this.collisionY = this.posY - (this.posY - this.size / 2);
 		}
 
 		if (collided && this.age == 0)
@@ -355,9 +400,11 @@ public class Bullet extends Movable implements IDrawable
 			this.destroy = true;
 			this.posX = prevX;
 			this.posY = prevY;
+			this.collided();
 			return;
 		}
 
+		boolean collidedWithTank = false;
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
@@ -373,7 +420,11 @@ public class Bullet extends Movable implements IDrawable
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
+					this.collisionX = this.posX;
+					this.collisionY = this.posY;
+					this.collided();
 					this.collidedWithTank(t);
+					collidedWithTank = true;
 				}
 			}
 			else if ((o instanceof Bullet || o instanceof Mine) && o != this && !o.destroy && !(o instanceof BulletFlame || this instanceof BulletFlame))
@@ -389,15 +440,21 @@ public class Bullet extends Movable implements IDrawable
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
+					this.collisionX = this.posX;
+					this.collisionY = this.posY;
+					this.collided();
 					this.collidedWithObject(o);
 				}
 			}
-
 		}
 
+		if (!collidedWithTank)
+			this.tankInside = null;
 
 		if (collided)
 		{
+			this.collided();
+
 			if (!bouncy)
 				this.bounces--;
 			else
@@ -416,6 +473,9 @@ public class Bullet extends Movable implements IDrawable
 				Drawing.drawing.playGlobalSound("bounce.ogg", (float) (bullet_size / size));
 
 			Game.eventsOut.add(new EventBulletUpdate(this));
+
+			if (!destroy)
+				this.addTrail();
 		}
 	}
 
@@ -430,6 +490,39 @@ public class Bullet extends Movable implements IDrawable
 	public void update()
 	{
 		super.update();
+
+		if (this.age == 0)
+		{
+			this.collisionX = this.posX;
+			this.collisionY = this.posY;
+			this.addTrail();
+		}
+
+		boolean noTrails = true;
+
+		for (int j = 0; j < this.trails.length; j++)
+		{
+			ArrayList<Trail> trails = this.trails[j];
+			double trailLength = 0;
+			for (int i = 0; i < trails.size(); i++)
+			{
+				Trail t = trails.get(i);
+
+				if (this.destroy)
+					t.spawning = false;
+
+				if (t.expired)
+				{
+					trails.remove(i);
+					i--;
+				}
+				else
+				{
+					trailLength += t.update(trailLength);
+					noTrails = false;
+				}
+			}
+		}
 
 		if (destroy)
 		{
@@ -462,6 +555,9 @@ public class Bullet extends Movable implements IDrawable
 					e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
 					e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
 					e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
+					e.glowR = e.colR - this.outlineColorR;
+					e.glowG = e.colG - this.outlineColorG;
+					e.glowB = e.colB - this.outlineColorB;
 
 					if (Game.enable3d)
 						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
@@ -491,8 +587,9 @@ public class Bullet extends Movable implements IDrawable
 				{
 					this.ageFrac -= 1;
 
-					if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
-						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * ageFrac, this.posY - lastFinalVY * ageFrac, this.posZ - lastFinalVZ, Effect.EffectType.trail, ageFrac));
+					if (Game.framework == Game.Framework.swing)
+						if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
+							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * ageFrac, this.posY - lastFinalVY * ageFrac, this.posZ - lastFinalVZ, Effect.EffectType.trail, ageFrac));
 
 					if (this.effect.equals(BulletEffect.ice))
 					{
@@ -502,6 +599,9 @@ public class Bullet extends Movable implements IDrawable
 						e.colR = Math.min(255, Math.max(0, 128 + Math.random() * var - var / 2));
 						e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 						e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+						e.glowR = 90;
+						e.glowG = 180;
+						e.glowB = 180;
 
 						if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
@@ -520,24 +620,28 @@ public class Bullet extends Movable implements IDrawable
 					//if (this.effect.equals(BulletEffect.fireTrail))
 					//	Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, quarterAgeFrac));
 
-					if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
-						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.fire, quarterAgeFrac));
+					if (Game.framework == Game.Framework.swing)
+					{
+						if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
+							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.fire, quarterAgeFrac));
 
-					if (this.effect.equals(BulletEffect.darkFire))
-						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.darkFire, quarterAgeFrac));
+						if (this.effect.equals(BulletEffect.darkFire))
+							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.darkFire, quarterAgeFrac));
+					}
 				}
 
 				while (this.halfAgeFrac >= 0.5)
 				{
 					this.halfAgeFrac -= 0.5;
 
-					if (this.effect.equals(BulletEffect.fireTrail))
-						Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * halfAgeFrac, this.posY - lastFinalVY * halfAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, halfAgeFrac));
+					if (Game.framework == Game.Framework.swing)
+						if (this.effect.equals(BulletEffect.fireTrail))
+							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * halfAgeFrac, this.posY - lastFinalVY * halfAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, halfAgeFrac));
 				}
 			}
 		}
 
-		if (this.destroyTimer >= 60)
+		if (this.destroyTimer >= 60 && noTrails)
 		{
 			Game.removeMovables.add(this);
 		}
@@ -550,25 +654,85 @@ public class Bullet extends Movable implements IDrawable
 		this.age += Panel.frameFrequency;
 	}
 
+	public void addTrail()
+	{
+		if (!Game.fancyGraphics)
+			return;
+
+		double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+
+		for (int i = 0; i < this.trails.length; i++)
+		{
+			if (this.trails[i].size() > 0)
+			{
+				Trail t = this.trails[i].get(0);
+				t.spawning = false;
+				t.frontX = this.collisionX;
+				t.frontY = this.collisionY;
+			}
+		}
+
+		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
+			this.trails[0].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2, this.size / 2, 15 * this.size * speed / 6.25, this.getPolarDirection(), 127, 127, 127, 100, 127, 127, 127, 0));
+
+		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
+			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 12.5, this.getPolarDirection(), 255, 255, 0, 255, 255, 0, 0, 0));
+
+		if (this.effect == BulletEffect.darkFire)
+			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 12.5, this.getPolarDirection(), 64, 0, 128, 255, 0, 0, 0, 0));
+
+		if (this.effect == BulletEffect.fireTrail)
+		{
+			Trail t = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 100 * this.size * speed / 12.5, this.getPolarDirection(), 0, 0, 0, 100, 0, 0, 0, 0);
+			t.delay = 14 * this.size * speed / 12.5;
+			t.frontCircle = false;
+			this.trails[0].add(0, t);
+
+			Trail t2 = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 8 * this.size * speed / 12.5, this.getPolarDirection(), 0, 0, 0, 0, 0, 0, 0, 100);
+			t2.delay = 6 * this.size * speed / 12.5;
+			t2.backCircle = false;
+			this.trails[1].add(0, t2);
+		}
+	}
+
 	@Override
 	public void draw()
 	{
-		double opacity = ((60 - destroyTimer) / 60.0);
-		double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
-		Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, (int)(opacity * opacity * opacity * 255.0));
+		if (!this.destroy && Game.superGraphics)
+		{
+			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
 
-		if (Game.enable3d)
-			Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
-		else
-			Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
+			if (Game.enable3d)
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 4, this.size * 4, true, true);
+			else
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
+		}
 
-		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int)(opacity * opacity * opacity * 255.0));
+		for (int i = 0; i < this.trails.length; i++)
+		{
+			for (Trail t: this.trails[i])
+				t.draw();
+		}
 
-		if (Game.enable3d)
-			Drawing.drawing.fillOval(posX, posY, posZ + 1, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
-		else
-			Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+		if (this.destroyTimer < 60.0)
+		{
+			double opacity = ((60 - destroyTimer) / 60.0);
+			double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
+			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, (int) (opacity * opacity * opacity * 255.0));
 
+			if (Game.enable3d)
+				Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
+			else
+				Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
+
+			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int) (opacity * opacity * opacity * 255.0));
+
+			if (Game.enable3d)
+				Drawing.drawing.fillOval(posX, posY, posZ + 1, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+			else
+				Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+
+		}
 	}
 
 	@Override

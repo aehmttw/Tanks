@@ -2047,7 +2047,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			zoomDist = d;
 		}
 
-		zoom = Math.max(0.75, Math.min(2 / (Drawing.drawing.unzoomedScale / Drawing.drawing.interfaceScale), zoom));
+		zoom = Math.max(0.75, Math.min(Math.max(2 / (Drawing.drawing.unzoomedScale / Drawing.drawing.interfaceScale), 1), zoom));
 
 		offsetX = Math.min(Game.currentSizeX * Game.tile_size / 2, Math.max(-Game.currentSizeX * Game.tile_size / 2, offsetX));
 		offsetY = Math.min(Game.currentSizeY * Game.tile_size / 2, Math.max(-Game.currentSizeY * Game.tile_size / 2, offsetY));
@@ -2379,6 +2379,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 		for (int h = 0; h < Game.registryObstacle.obstacleEntries.size(); h++)
 		{
+			Obstacle obs = Game.registryObstacle.obstacleEntries.get(h).getObstacle(0, 0);
+
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
@@ -2445,7 +2447,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 							else
 								level.append(i).append("...").append(i + xLength - 1).append("-").append(j).append(name);
 
-							if (stack != 1)
+							if ((obs.enableStacking && stack != 1) || (obs.enableGroupID && stack != 0))
 								level.append("-").append(stack);
 
 							level.append(",");
@@ -2459,7 +2461,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 						{
 							level.append(i).append("-").append(j).append("...").append(j + yLength - 1).append(name);
 
-							if (stack != 1)
+							if ((obs.enableStacking && stack != 1) || (obs.enableGroupID && stack != 0))
 								level.append("-").append(stack);
 
 							level.append(",");
@@ -2625,7 +2627,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 	{
 		this.drawDefaultBackground();
 
-		for (Effect e: Game.belowEffects)
+		for (Effect e: Game.tracks)
 			drawables[0].add(e);
 
 		for (Movable m: Game.movables)
@@ -2655,6 +2657,17 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 				if (d instanceof Movable)
 					((Movable) d).drawTeam();
+			}
+
+			if (Game.superGraphics)
+			{
+				for (int j = 0; j < this.drawables[i].size(); j++)
+				{
+					IDrawable d = this.drawables[i].get(j);
+
+					if (d instanceof IDrawableWithGlow)
+						((IDrawableWithGlow) d).drawGlow();
+				}
 			}
 
 			drawables[i].clear();
@@ -3029,6 +3042,20 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 	{
 		this.save();
 		this.replaceSpawns();
+
+		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+		for (Obstacle o: Game.obstacles)
+		{
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			{
+				Game.game.solidGrid[x][y] = true;
+			}
+		}
+
 		Game.screen = new ScreenGame(this.name);
 	}
 

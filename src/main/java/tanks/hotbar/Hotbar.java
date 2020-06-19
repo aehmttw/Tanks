@@ -4,6 +4,7 @@ import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.tank.Tank;
+import tanks.tank.Turret;
 
 public class Hotbar
 {
@@ -94,14 +95,14 @@ public class Hotbar
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(255, 128, 0, (100 - this.percentHidden) * 2.55);
 
-			double lives = Game.playerTank.lives % 1.0;
-			if (lives == 0 && Game.playerTank.lives > 0)
+			double lives = Game.playerTank.health % 1.0;
+			if (lives == 0 && Game.playerTank.health > 0)
 				lives = 1;
 
-			if (Game.playerTank.destroy && Game.playerTank.lives < 1)
+			if (Game.playerTank.destroy && Game.playerTank.health < 1)
 				lives = 0;
 
-			int shields = (int) (Game.playerTank.lives - lives);
+			int shields = (int) (Game.playerTank.health - lives);
 
 			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, lives);
 
@@ -183,15 +184,27 @@ public class Hotbar
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2) - 210);
 			int y = (int) (Drawing.drawing.interfaceSizeY - 17.5 + percentHidden - verticalOffset);
 
+			Drawing.drawing.setColor(191, 63, 63, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.drawInterfaceModel(Tank.color_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+
 			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceRect(x, y, Game.tile_size / 2, Game.tile_size / 2);
+			Drawing.drawing.drawInterfaceModel(Tank.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
 			Drawing.drawing.setColor(191, 63, 63, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceRect(x + Game.tile_size / 4, y, Game.tile_size / 2 + 4, 4);
 
-			Drawing.drawing.setColor(255, 0, 0);
+			if (Game.framework != Game.Framework.swing)
+			{
+				Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+
+				Drawing.drawing.setColor(223, 31, 31, (100 - this.percentHidden) * 2.55);
+				Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+			}
+			else
+				Drawing.drawing.fillInterfaceRect(x + Game.tile_size / 4, y, Game.tile_size / 2 + 4, 4);
+
+			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.setInterfaceFontSize(24);
-			Drawing.drawing.drawInterfaceText(x - 15, y + 1, "" + count, true);
+			Drawing.drawing.drawInterfaceText(x - 17, y + 1, "" + count, true);
 		}
 	}
 }

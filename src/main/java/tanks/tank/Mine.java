@@ -81,9 +81,17 @@ public class Mine extends Movable
                 Drawing.drawing.setColor(this.outlineColorR * frac, this.outlineColorG  * frac, this.outlineColorB * frac);
                 Drawing.drawing.fillOval(this.posX, this.posY, i + 1.5, this.size, this.size, true, false);
             }
+
+            if (Game.superGraphics)
+                Drawing.drawing.fillGlow(this.posX, this.posY, height + 1, this.size * 4, this.size * 4, true, false);
         }
         else
+        {
             Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
+
+            if (Game.superGraphics)
+                Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
+        }
 
         Drawing.drawing.setColor(255, (this.timer) / 1000.0 * 255, 0);
 
@@ -171,10 +179,10 @@ public class Mine extends Movable
                     {
                         if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
                         {
-                            ((Tank) o).lives -= 2;
+                            ((Tank) o).health -= 2;
                             ((Tank) o).flashAnimation = 1;
 
-                            if (((Tank) o).lives <= 0)
+                            if (((Tank) o).health <= 0)
                             {
                                 ((Tank) o).flashAnimation = 0;
                                 o.destroy = true;

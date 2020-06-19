@@ -8,6 +8,7 @@ public class TankDummy extends Tank
 	{
 		super(name, x, y, Game.tile_size, 75, 40, 0);
 		this.angle = angle;
+		this.orientation = angle;
 		
 		this.coinValue = 0;
 

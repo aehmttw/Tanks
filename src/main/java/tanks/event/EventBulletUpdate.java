@@ -56,6 +56,9 @@ public class EventBulletUpdate extends PersonalEvent
 			b.posY = this.posY;
 			b.vX = this.vX;
 			b.vY = this.vY;
+			b.collisionX = this.posX;
+			b.collisionY = this.posY;
+			b.addTrail();
 		}
 	}
 

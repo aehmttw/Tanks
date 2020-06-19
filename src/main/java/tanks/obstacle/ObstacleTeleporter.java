@@ -63,6 +63,10 @@ public class ObstacleTeleporter extends Obstacle
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2);
+
+			if (Game.superGraphics)
+				Drawing.drawing.fillGlow(this.posX, this.posY, height + 7, draw_size * 20 / 8, draw_size * 20 / 8, true, false);
+
 			Drawing.drawing.fillOval(this.posX, this.posY, height + 6, draw_size * 5 / 8, draw_size * 5 / 8, true, false);
 			Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB  + 255 * (1 - this.brightness));
 			Drawing.drawing.fillOval(this.posX, this.posY, height + 7, draw_size / 2, draw_size / 2, true, false);
@@ -87,6 +91,10 @@ public class ObstacleTeleporter extends Obstacle
 		else
 		{
 			Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2);
+
+			if (Game.superGraphics)
+				Drawing.drawing.fillGlow(this.posX, this.posY, draw_size * 20 / 8, draw_size * 20 / 8);
+
 			Drawing.drawing.fillOval(this.posX, this.posY, draw_size * 5 / 8, draw_size * 5 / 8);
 			Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB  + 255 * (1 - this.brightness));
 			Drawing.drawing.fillOval(this.posX, this.posY, draw_size / 2, draw_size / 2);
@@ -110,44 +118,47 @@ public class ObstacleTeleporter extends Obstacle
 		ArrayList<ObstacleTeleporter> teleporters = new ArrayList<ObstacleTeleporter>();
 		Tank t = null;
 
-		for (int i = 0; i < Game.movables.size(); i++)
+		if (!ScreenGame.finished)
 		{
-			Movable m = Game.movables.get(i);
-
-			if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank)m).size)
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				t = (Tank) m;
+				Movable m = Game.movables.get(i);
 
-				if (this.cooldown > 0)
+				if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank) m).size)
 				{
-					this.cooldown = Math.max(100, this.cooldown);
-					continue;
-				}
+					t = (Tank) m;
 
-				if (!m.isRemote)
-				{
-					for (int j = 0; j < Game.obstacles.size(); j++)
+					if (this.cooldown > 0)
 					{
-						Obstacle o = Game.obstacles.get(j);
-						if (o instanceof ObstacleTeleporter && o != this && o.groupID == this.groupID && ((ObstacleTeleporter) o).cooldown <= 0)
+						this.cooldown = Math.max(100, this.cooldown);
+						continue;
+					}
+
+					if (!m.isRemote)
+					{
+						for (int j = 0; j < Game.obstacles.size(); j++)
 						{
-							teleporters.add((ObstacleTeleporter) o);
+							Obstacle o = Game.obstacles.get(j);
+							if (o instanceof ObstacleTeleporter && o != this && o.groupID == this.groupID && ((ObstacleTeleporter) o).cooldown <= 0)
+							{
+								teleporters.add((ObstacleTeleporter) o);
+							}
 						}
 					}
 				}
 			}
-		}
 
-		this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency);
+			this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency);
 
-		if (t != null && teleporters.size() > 0 && this.cooldown <= 0)
-		{
-			int i = (int) (Math.random() * teleporters.size());
+			if (t != null && teleporters.size() > 0 && this.cooldown <= 0)
+			{
+				int i = (int) (Math.random() * teleporters.size());
 
-			ObstacleTeleporter o = teleporters.get(i);
-			o.cooldown = 500;
-			this.cooldown = 500;
-			Game.movables.add(new TeleporterOrb(t.posX, t.posY, this.posX, this.posY, o.posX, o.posY, t));
+				ObstacleTeleporter o = teleporters.get(i);
+				o.cooldown = 500;
+				this.cooldown = 500;
+				Game.movables.add(new TeleporterOrb(t.posX, t.posY, this.posX, this.posY, o.posX, o.posY, t));
+			}
 		}
 	}
 

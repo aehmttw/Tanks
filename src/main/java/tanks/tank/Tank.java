@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.event.EventTankAddAttributeModifier;
 import tanks.event.EventTankUpdate;
 import tanks.event.EventTankUpdateHealth;
+import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
@@ -52,9 +53,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double treadAnimation = 0;
 	public boolean drawTread = false;
 	public String texture = null;
+	public double orientation = 0;
 
-	public double baseLives = 1;
-	public double lives = 1;
+	public double baseHealth = 1;
+	public double health = 1;
 
 	public boolean[][] hiddenPoints = new boolean[3][3];
 	public boolean hidden = false;
@@ -68,6 +70,11 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
+
+	public static Model base_model = new Model();
+	public static Model color_model = new Model();
+
+	public static Model health_model = new Model();
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
@@ -123,37 +130,46 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
+					double ourMass = this.size * this.size;
+					double theirMass = ((Tank) o).size * ((Tank) o).size;
+					double ourFrac = ourMass / (ourMass + theirMass);
+					double theirFrac = theirMass / (ourMass + theirMass);
+
 					if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 					{
 						hasCollided = true;
-						double v = (this.vX + o.vX) / 2;
+						double v = (this.vX * ourFrac + o.vX * theirFrac);
 						this.vX = v;
 						o.vX = v;
-						this.posX += horizontalDist - bound;
+						this.posX += (horizontalDist - bound) * ourFrac - this.vX * theirFrac;
+						o.posX -= (horizontalDist - bound) * ourFrac + o.vX * theirFrac;
 					}
 					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 					{
 						hasCollided = true;
-						double v = (this.vY + o.vY) / 2;
+						double v = (this.vY * ourFrac + o.vY * theirFrac);
 						this.vY = v;
 						o.vY = v;
-						this.posY += verticalDist - bound;
+						this.posY += (verticalDist - bound) * ourFrac - this.vY * theirFrac;
+						o.posY -= (verticalDist - bound) * ourFrac + o.vY * theirFrac;
 					}
 					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
 					{
 						hasCollided = true;
-						double v = (this.vX + o.vX) / 2;
+						double v = (this.vX * ourFrac + o.vX * theirFrac);
 						this.vX = v;
 						o.vX = v;
-						this.posX -= horizontalDist - bound;
+						this.posX -= (horizontalDist - bound) * ourFrac + this.vX * theirFrac;
+						o.posX += (horizontalDist - bound) * ourFrac - o.vX * theirFrac;
 					}
 					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
 					{
 						hasCollided = true;
-						double v = (this.vY + o.vY) / 2;
+						double v = (this.vY * ourFrac + o.vY * theirFrac);
 						this.vY = v;
 						o.vY = v;
-						this.posY -= verticalDist - bound;
+						this.posY -= (verticalDist - bound) * ourFrac + this.vY * theirFrac;
+						o.posY += (verticalDist - bound) * ourFrac - o.vY * theirFrac;
 					}
 				}
 			}
@@ -255,7 +271,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
 
-		if (this.treadAnimation > this.size * 4 / 5)
+		if (this.treadAnimation > this.size * 4 / 5 && !this.destroy && !ScreenGame.finished)
 		{
 			this.drawTread = true;
 			this.treadAnimation -= this.size * 4 / 5;
@@ -265,7 +281,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (destroy)
 		{
-			if (this.destroyTimer <= 0 && this.lives <= 0)
+			if (this.destroyTimer <= 0 && this.health <= 0)
 			{
 				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
 
@@ -321,10 +337,14 @@ public abstract class Tank extends Movable implements ISolidObject
 			e1.posY += e1.vY;
 			e2.posX += e2.vX;
 			e2.posY += e2.vY;
+			e1.angle = a;
+			e2.angle = a;
 			e1.setPolarMotion(0, 0);
 			e2.setPolarMotion(0, 0);
-			Game.belowEffects.add(e1);
-			Game.belowEffects.add(e2);
+			//setEffectHeight(e1);
+			//setEffectHeight(e2);
+			Game.tracks.add(e1);
+			Game.tracks.add(e2);
 		}
 
 		for (int i = 0; i < this.attributes.size(); i++)
@@ -332,7 +352,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			AttributeModifier a = this.attributes.get(i);
 			if (a.name.equals("healray"))
 			{
-				if (this.lives < this.baseLives)
+				if (this.health < this.baseHealth)
 				{
 					this.attributes.remove(a);
 					i--;
@@ -342,7 +362,16 @@ public abstract class Tank extends Movable implements ISolidObject
 		
 		super.update();
 
-		if (this.lives <= 0)
+		if (this.vX != 0 && this.vY != 0 && !this.destroy && !ScreenGame.finished)
+		{
+			double dir = this.getPolarDirection();
+			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
+				this.orientation -= Movable.angleBetween(this.orientation, dir) / 10 * Panel.frameFrequency;
+			else
+				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 10 * Panel.frameFrequency;
+		}
+
+		if (this.health <= 0)
 			this.destroy = true;
 
 		this.checkCollision();
@@ -393,85 +422,105 @@ public abstract class Tank extends Movable implements ISolidObject
 			s = Math.min(this.size, Game.tile_size * 1.5);
 
 		Drawing drawing = Drawing.drawing;
-		double[] teamColor = Team.getObjectColor(this.colorR, this.colorG, this.colorB, this);
+		double[] teamColor = Team.getObjectColor(this.turret.colorR, this.turret.colorG, this.turret.colorB, this);
 
-		if (!(teamColor[0] == this.colorR && teamColor[1] == this.colorG && teamColor[2] == this.colorB))
+		if (Game.framework == Game.Framework.swing)
+			teamColor = Team.getObjectColor(this.colorR, this.colorG, this.colorB, this);
+
+		//double[] teamColor = Team.getObjectColor(172, 129, 74, this);
+
+		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2]);
+
+		if (Game.superGraphics)
 		{
-			Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2]);
-
 			if (forInterface)
-				drawing.fillInterfaceRect(this.posX, this.posY, s, s);
+				Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, s * 4, s * 4);
+			else if (!Game.enable3d)
+				Drawing.drawing.fillGlow(this.posX, this.posY, s * 4, s * 4);
 			else
-			{
-				if (Game.enable3d)
-					drawing.fillBox(this.posX, this.posY, 0, s, s, s / 2 - 1);
-				else
-					drawing.fillRect(this.posX, this.posY, s, s);
-			}
-
-			sizeMod = 0.8;
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, s * 4, s * 4, true, false);
 		}
 
-		double flash = Math.min(1, this.flashAnimation);
-
-		if (forInterface || !Game.enable3d)
+		if (!forInterface)
 		{
-			Drawing.drawing.setColor(0, 255, 0);
 			for (int i = 0; i < this.attributes.size(); i++)
 			{
 				AttributeModifier a = this.attributes.get(i);
 				if (a.name.equals("healray"))
 				{
-					double mod = 1 + 0.4 * (this.lives - this.baseLives);
+					double mod = 1 + 0.4 * (this.health - this.baseHealth);
 
-					if (this.lives > this.baseLives)
+					if (this.health > this.baseHealth)
 					{
-						if (forInterface)
-							drawing.fillInterfaceRect(this.posX, this.posY, s * mod, s * mod);
+						if (!Game.enable3d)
+						{
+							Drawing.drawing.setColor(0, 255, 0);
+							drawing.drawModel(base_model, this.posX, this.posY, s * mod, s * mod, this.orientation);
+						}
 						else
 						{
-							if (!Game.enable3d)
-								drawing.fillRect(this.posX, this.posY, s * mod, s * mod);
+							Drawing.drawing.setColor(0, 255, 0, 127);
+							drawing.drawModel(base_model, this.posX, this.posY, 0, s * mod, s * mod, s - 2, this.orientation);
 						}
 					}
 				}
 			}
 		}
 
-		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash,  this.colorG * (1 - flash), this.colorB * (1 - flash));
+		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2]);
 
 		if (forInterface)
-			drawing.fillInterfaceRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
+			drawing.drawInterfaceModel(base_model, this.posX, this.posY, s, s, this.orientation);
 		else
 		{
-            byte options = 0;
-            if (!depthTest)
-                options = 64;
-
-            if (Game.enable3d)
-				drawing.fillBox(this.posX, this.posY, 0, s * sizeMod, s * sizeMod, s / 2, options);
+			if (Game.enable3d)
+				drawing.drawModel(base_model, this.posX, this.posY, 0, s, s, s, this.orientation);
 			else
-				drawing.fillRect(this.posX, this.posY, s * sizeMod, s * sizeMod);
-
+				drawing.drawModel(base_model, this.posX, this.posY, s, s, this.orientation);
 		}
 
-		if (this.lives > 1 && this.size > 0)
+
+		double flash = Math.min(1, this.flashAnimation);
+
+		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash), this.colorB * (1 - flash));
+
+		if (forInterface)
+			drawing.drawInterfaceModel(color_model, this.posX, this.posY, s * sizeMod, s * sizeMod, this.orientation);
+		else
 		{
-			for (int i = 1; i < lives; i++)
+			if (Game.enable3d)
+				drawing.drawModel(color_model, this.posX, this.posY, 0, s, s, s, this.orientation);
+			else
+				drawing.drawModel(color_model, this.posX, this.posY, s, s, this.orientation);
+		}
+
+		if (this.health > 1 && this.size > 0 && !forInterface)
+		{
+			double size = s;
+			for (int i = 1; i < health; i++)
 			{
-				if (forInterface)
-					drawing.drawInterfaceRect(this.posX, 
-							this.posY, 8 * i + s, 
-							8 * i + s);
+				if (Game.enable3d)
+					drawing.drawModel(health_model,
+							this.posX, this.posY, s / 4,
+							size, size, s,
+							this.orientation);
 				else
-					drawing.drawRect(this.posX, 
-							this.posY, 8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0) / Game.tile_size * this.size,
-							8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0) / Game.tile_size * this.size);
+					drawing.drawModel(health_model,
+							this.posX, this.posY,
+							size, size,
+							this.orientation);
+
+				size *= 1.1;
 			}
 		}
 
 		Drawing.drawing.setColor(255, 255, 255);
 
+		this.turret.draw(angle, forInterface, Game.enable3d, false);
+
+		sizeMod = 0.5;
+
+		Drawing.drawing.setColor(255, 255, 255);
 		if (this.texture != null)
 		{
 			if (forInterface)
@@ -479,34 +528,13 @@ public abstract class Tank extends Movable implements ISolidObject
 			else
 			{
 				if (Game.enable3d)
-					drawing.drawImage(this.texture, this.posX, this.posY, s / 2 + 1, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle, this.texture, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
 				else
-					drawing.drawImage(this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle, this.texture, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
 		}
 
-		if (!forInterface && Game.enable3d)
-		{
-			Drawing.drawing.setColor(0, 255, 0, 127);
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				AttributeModifier a = this.attributes.get(i);
-				if (a.name.equals("healray"))
-				{
-					double mod = 1 + 0.4 * (this.lives - this.baseLives);
-
-					if (this.lives > this.baseLives)
-					{
-						if (Game.enable3d)
-						{
-							drawing.fillBox(this.posX, this.posY, 0, s * mod, s * mod, s / 2 - 2);
-						}
-					}
-				}
-			}
-		}
-
-		this.turret.draw(angle, forInterface, true);
+		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 
 	@Override
@@ -521,29 +549,21 @@ public abstract class Tank extends Movable implements ISolidObject
 		drawAge = Game.tile_size;
 		Drawing drawing = Drawing.drawing;
 
-		//g.setColor(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 128));
-		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
 		drawing.fillRect(this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
 		drawing.fillRect(this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(this.posX, this.posY - this.size * 0.4, this.size, this.size * 0.2);
-		drawing.fillRect(this.posX, this.posY + this.size * 0.4, this.size, this.size * 0.2);
+		drawing.fillRect(this.posX, this.posY - this.size * 0.4, this.size * 0.6, this.size * 0.2);
+		drawing.fillRect(this.posX, this.posY + this.size * 0.4, this.size * 0.6, this.size * 0.2);
 
-		if (this.lives > 1)
-		{
-			for (int i = 1; i < lives; i++)
-			{
-				drawing.drawRect(this.posX, this.posY, 8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0), 8 * i + this.size * (Game.tile_size - destroyTimer) / Game.tile_size - Math.max(Game.tile_size - drawAge, 0));
-			}
-		}
-
-		Drawing.drawing.setColor(255, 255, 255, 127);
+		this.turret.draw(angle, false, false, true);
 
 		if (this.texture != null)
 		{
-			drawing.drawImage(this.texture, this.posX, this.posY, this.size, this.size);
+			Drawing.drawing.setColor(255, 255, 255, 127);
+			drawing.drawImage(this.texture, this.posX, this.posY, this.size / 2, this.size / 2);
 		}
 
-		this.turret.draw(angle, false, false);
+		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 
 	public void drawAt(double x, double y)
@@ -618,5 +638,18 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		return this.verticalFaces;
+	}
+
+	public void setEffectHeight(Effect e)
+	{
+		if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
+		{
+			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX - e.size / 2, e.posY - e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX + e.size / 2, e.posY - e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX - e.size / 2, e.posY + e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX + e.size / 2, e.posY + e.size / 2));
+		}
+		else
+			e.posZ = 1;
 	}
 }

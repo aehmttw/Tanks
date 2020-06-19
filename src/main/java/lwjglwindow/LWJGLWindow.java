@@ -9,10 +9,12 @@ import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.InputStream;
@@ -20,6 +22,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -283,7 +286,7 @@ public class LWJGLWindow extends BaseWindow
 		x += sX / 2;
 		y += sY / 2;
 
-		int sides = (int) (sX + sY + 5);
+		int sides = (int) (sX + sY) / 4 + 5;
 
 		glBegin(GL_TRIANGLE_FAN);
 		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
@@ -294,6 +297,40 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 	}
 
+	public void fillGlow(double x, double y, double sX, double sY)
+	{
+		x += sX / 2;
+		y += sY / 2;
+
+		int sides = (int) (sX + sY) / 16 + 5;
+
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+
+		glBegin(GL_TRIANGLES);
+		double step = Math.PI * 2 / sides;
+
+		double pX = x + Math.cos(0) * sX / 2;
+		double pY = y + Math.sin(0) * sY / 2;
+		double d = 0;
+		for (int n = 0; n < sides; n++)
+		{
+			d += step;
+
+			glColor3d(0, 0, 0);
+			glVertex2d(pX, pY);
+			pX = x + Math.cos(d) * sX / 2;
+			pY = y + Math.sin(d) * sY / 2;
+			glVertex2d(pX, pY);
+			glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+			glVertex2d(x, y);
+		}
+
+		glEnd();
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	@Override
 	public void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest)
 	{
 		if (depthTest)
@@ -307,7 +344,7 @@ public class LWJGLWindow extends BaseWindow
 		x += sX / 2;
 		y += sY / 2;
 
-		int sides = (int) (sX + sY + 5);
+		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
 
 		glBegin(GL_TRIANGLE_FAN);
 		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
@@ -316,6 +353,50 @@ public class LWJGLWindow extends BaseWindow
 		}
 
 		glEnd();
+
+		if (depthTest)
+		{
+			glDepthMask(true);
+			glDisable(GL_DEPTH_TEST);
+		}
+	}
+
+	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+	{
+		if (depthTest)
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(false);
+		}
+
+		x += sX / 2;
+		y += sY / 2;
+
+		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+
+		glBegin(GL_TRIANGLES);
+		double step = Math.PI * 2 / sides;
+
+		double pX = x + Math.cos(0) * sX / 2;
+		double pY = y + Math.sin(0) * sY / 2;
+		double d = 0;
+		for (int n = 0; n < sides; n++)
+		{
+			d += step;
+
+			glColor3d(0, 0, 0);
+			glVertex3d(pX, pY, z);
+			pX = x + Math.cos(d) * sX / 2;
+			pY = y + Math.sin(d) * sY / 2;
+			glVertex3d(pX, pY, z);
+			glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+			glVertex3d(x, y, z);
+		}
+
+		glEnd();
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		if (depthTest)
 		{
@@ -335,7 +416,7 @@ public class LWJGLWindow extends BaseWindow
 		x += sX / 2;
 		y += sY / 2;
 
-		int sides = (int) (sX + sY + 5);
+		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
 
 		loadPerspective();
 		glTranslated(x, y, z);
@@ -356,6 +437,57 @@ public class LWJGLWindow extends BaseWindow
 			glDepthMask(true);
 			glDisable(GL_DEPTH_TEST);
 		}
+	}
+
+	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+	{
+		if (depthTest)
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(false);
+		}
+
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+
+		x += sX / 2;
+		y += sY / 2;
+
+		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
+
+		loadPerspective();
+		glTranslated(x, y, z);
+		Rotation.transform(this, -this.yaw, -this.pitch, -this.roll);
+
+		glBegin(GL_TRIANGLES);
+		double step = Math.PI * 2 / sides;
+
+		double pX = Math.cos(0) * sX / 2;
+		double pY = Math.sin(0) * sY / 2;
+		double d = 0;
+		for (int n = 0; n < sides; n++)
+		{
+			d += step;
+
+			glColor3d(0, 0, 0);
+			glVertex3d(pX, pY, 0);
+			pX = 0 + Math.cos(d) * sX / 2;
+			pY = 0 + Math.sin(d) * sY / 2;
+			glVertex3d(pX, pY, 0);
+			glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+			glVertex3d(0, 0, 0);
+		}
+
+		glEnd();
+
+		if (depthTest)
+		{
+			glDisable(GL_DEPTH_TEST);
+			glDepthMask(true);
+		}
+
+		loadPerspective();
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	public void setColor(double r, double g, double b, double a)
@@ -381,7 +513,7 @@ public class LWJGLWindow extends BaseWindow
 		x += sX / 2;
 		y += sY / 2;
 
-		int sides = (int) (sX + sY + 5);
+		int sides = (int) (sX + sY) / 4 + 5;
 
 		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
 		{
@@ -397,7 +529,7 @@ public class LWJGLWindow extends BaseWindow
 		x += sX / 2;
 		y += sY / 2;
 
-		int sides = (int) (sX + sY + 5);
+		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
 
 		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
 		{
@@ -632,16 +764,6 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 	}
 
-	public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)
-	{
-		drawImage(x, y, sX, sY, 0, 0, 1, 1, image, scaled);
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, String image, boolean scaled)
-	{
-		drawImage(x, y, z, sX, sY, 0, 0, 1, 1, image, scaled);
-	}
-
 	protected void createImage(String image)
 	{
 		try
@@ -682,7 +804,6 @@ public class LWJGLWindow extends BaseWindow
 				textures.put(image, id);
 				textureSX.put(image, decoder.getWidth());
 				textureSY.put(image, decoder.getHeight());
-
 			}
 			finally
 			{
@@ -695,11 +816,57 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
+	public void setIcon(String icon)
+	{
+		InputStream in;
+
+		in = getClass().getResourceAsStream(icon);
+
+		if (in == null)
+			in = getClass().getResourceAsStream("/missing.png");
+
+		try
+		{
+			PNGDecoder decoder = new PNGDecoder(in);
+
+			ByteBuffer buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+			decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
+			buf.flip();
+
+			GLFWImage image = GLFWImage.malloc();
+			GLFWImage.Buffer imagebuf = GLFWImage.malloc(1);
+			image.set(decoder.getWidth(), decoder.getHeight(), buf);
+			imagebuf.put(0, image);
+			glfwSetWindowIcon(window, imagebuf);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	protected String loadResource(String fileName)
+	{
+		String result = null;
+		try (InputStream in = getClass().getResourceAsStream(fileName);
+			 Scanner scanner = new Scanner(in, java.nio.charset.StandardCharsets.UTF_8.name()))
+		{
+			result = scanner.useDelimiter("\\A").next();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
 	public void setUpPerspective()
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
+
 		this.angled = false;
 
 		this.yaw = 0;
@@ -724,7 +891,6 @@ public class LWJGLWindow extends BaseWindow
 		}
 
 		//glTranslated(absoluteWidth * (-0.5 + xOffset), absoluteHeight * (-0.5 + yOffset), absoluteDepth * zOffset);
-
 		//glOrtho(0, absoluteWidth, absoluteHeight, 0, -1, 1);
 	}
 
@@ -733,6 +899,26 @@ public class LWJGLWindow extends BaseWindow
 		setUpPerspective();
 		applyTransformations();
 		this.baseTransformation.apply();
+	}
+
+	public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)
+	{
+		drawImage(x, y, sX, sY, 0, 0, 1, 1, image, scaled);
+	}
+
+	public void drawImage(double x, double y, double z, double sX, double sY, String image, boolean scaled)
+	{
+		drawImage(x, y, z, sX, sY, 0, 0, 1, 1, image, scaled);
+	}
+
+	public void drawImage(double x, double y, double sX, double sY, String image, double rotation, boolean scaled)
+	{
+		drawImage(x, y, sX, sY, 0, 0, 1, 1, image, rotation, scaled);
+	}
+
+	public void drawImage(double x, double y, double z, double sX, double sY, String image, double rotation, boolean scaled)
+	{
+		drawImage(x, y, z, sX, sY, 0, 0, 1, 1, image, rotation, scaled);
 	}
 
 	public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
@@ -769,6 +955,46 @@ public class LWJGLWindow extends BaseWindow
 		glVertex2d(x + width, y + height);
 		glTexCoord2d(u2, v1);
 		glVertex2d(x + width, y);
+
+		glEnd();
+
+		glMatrixMode(GL_PROJECTION);
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
+	{
+		if (!textures.containsKey(image))
+			createImage(image);
+
+		loadPerspective();
+
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_TEXTURE_2D);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glBindTexture(GL_TEXTURE_2D, textures.get(image));
+
+		double width = sX * (u2 - u1);
+		double height = sY * (v2 - v1);
+
+		if (scaled)
+		{
+			width *= textureSX.get(image);
+			height *= textureSY.get(image);
+		}
+
+		glBegin(GL_TRIANGLE_FAN);
+		glTexCoord2d(u1, v1);
+		glVertex2d(rotateX(-width / 2, -height / 2, x, rotation), rotateY(-width / 2, -height / 2, y, rotation));
+		glTexCoord2d(u1, v2);
+		glVertex2d(rotateX(width / 2, -height / 2, x, rotation), rotateY(width / 2, -height / 2, y, rotation));
+		glTexCoord2d(u2, v2);
+		glVertex2d(rotateX(width / 2, height / 2, x, rotation), rotateY(width / 2, height / 2, y, rotation));
+		glTexCoord2d(u2, v1);
+		glVertex2d(rotateX(-width / 2, height / 2, x, rotation), rotateY(-width / 2, height / 2, y, rotation));
 
 		glEnd();
 
@@ -832,6 +1058,69 @@ public class LWJGLWindow extends BaseWindow
 			glDisable(GL_DEPTH_TEST);
 	}
 
+	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
+	{
+		this.drawImage(x, y, z, sX, sY, u1, v1, u2, v2, image, rotation, scaled, true);
+	}
+
+	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
+	{
+		if (!textures.containsKey(image))
+			createImage(image);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		if (depthtest)
+			glEnable(GL_DEPTH_TEST);
+
+		loadPerspective();
+
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glBindTexture(GL_TEXTURE_2D, textures.get(image));
+
+		double width = sX * (u2 - u1);
+		double height = sY * (v2 - v1);
+
+		if (scaled)
+		{
+			width *= textureSX.get(image);
+			height *= textureSY.get(image);
+		}
+
+		glBegin(GL_TRIANGLE_FAN);
+		glTexCoord2d(u1, v1);
+		glVertex3d(rotateX(-width / 2, -height / 2, x, rotation), rotateY(-width / 2, -height / 2, y, rotation), z);
+		glTexCoord2d(u1, v2);
+		glVertex3d(rotateX(width / 2, -height / 2, x, rotation), rotateY(width / 2, -height / 2, y, rotation), z);
+		glTexCoord2d(u2, v2);
+		glVertex3d(rotateX(width / 2, height / 2, x, rotation), rotateY(width / 2, height / 2, y, rotation), z);
+		glTexCoord2d(u2, v1);
+		glVertex3d(rotateX(-width / 2, height / 2, x, rotation), rotateY(-width / 2, height / 2, y, rotation), z);
+
+		glEnd();
+
+		glMatrixMode(GL_PROJECTION);
+		glDisable(GL_TEXTURE_2D);
+
+		if (depthtest)
+			glDisable(GL_DEPTH_TEST);
+	}
+
+	public double rotateX(double px, double py, double posX, double rotation)
+	{
+		return (px * Math.cos(rotation) - py * Math.sin(rotation)) + posX;
+	}
+
+	public double rotateY(double px, double py, double posY, double rotation)
+	{
+		return (py * Math.cos(rotation) + px * Math.sin(rotation)) + posY;
+	}
+
 	@Override
 	public String getClipboard()
 	{
@@ -890,20 +1179,55 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public void setBatchMode(boolean enabled)
+	public void setBatchMode(boolean enabled, boolean quads, boolean depth)
+	{
+		this.setBatchMode(enabled, quads, depth, false);
+	}
+
+	@Override
+	public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow)
 	{
 		this.batchMode = enabled;
 
 		if (enabled)
 		{
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
-			glBegin(GL_QUADS);
+			if (this.colorA < 1 || glow)
+				glDepthMask(false);
+
+			if (depth)
+			{
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LEQUAL);
+			}
+
+			if (glow)
+				glBlendFunc(GL_SRC_COLOR, GL_ONE);
+			else
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			if (quads)
+				glBegin(GL_QUADS);
+			else
+				glBegin(GL_TRIANGLES);
 		}
 		else
 		{
 			GL11.glEnd();
 			glDisable(GL_DEPTH_TEST);
+			glDepthMask(true);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
+	}
+
+	@Override
+	public void addVertex(double x, double y, double z)
+	{
+		glVertex3d(x, y, z);
+	}
+
+	@Override
+	public void addVertex(double x, double y)
+	{
+		glVertex2d(x, y);
 	}
 }

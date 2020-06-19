@@ -40,11 +40,15 @@ public class BulletHealing extends BulletInstant
 	@Override
 	public void update()
 	{
-		this.shoot();
-		Game.removeMovables.add(this);
+		if (!this.expired)
+		{
+			this.shoot();
 
-		if (!hitTank)
-			Drawing.drawing.playGlobalSound("heal1.ogg");
+			if (!hitTank)
+				Drawing.drawing.playGlobalSound("heal1.ogg");
+		}
+
+		super.update();
 	}
 
 	@Override
@@ -55,18 +59,12 @@ public class BulletHealing extends BulletInstant
 
 		hitTank = true;
 		
-		t.lives = Math.min(t.baseLives + 1, t.lives - this.damage * Panel.frameFrequency);
-		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.lives / (t.baseLives + 1) / 2) + 1f) / 2);
+		t.health = Math.min(t.baseHealth + 1, t.health - this.damage * Panel.frameFrequency);
+		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.health / (t.baseHealth + 1) / 2) + 1f) / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 
 		t.addAttribute(new AttributeModifier("healray", "healray", Operation.add, 1.0));
-	}
-	
-	@Override
-	public void draw()
-	{
-		
 	}
 	
 	@Override
@@ -76,17 +74,11 @@ public class BulletHealing extends BulletInstant
 	}
 
 	@Override
-	public void addEffect()
-	{
-		Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.healing));
-	}
-
-	@Override
 	public void addDestroyEffect()
 	{
 		if (Game.fancyGraphics)
 		{
-			for (int i = 0; i < this.size * 4; i++)
+			for (int i = 0; i < this.size / 4; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;

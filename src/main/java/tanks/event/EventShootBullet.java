@@ -8,6 +8,7 @@ import tanks.tank.Tank;
 
 public class EventShootBullet extends PersonalEvent
 {
+	public int id;
 	public int tank;
 	public double posX;
 	public double posY;
@@ -28,6 +29,7 @@ public class EventShootBullet extends PersonalEvent
 	
 	public EventShootBullet(Bullet b)
 	{
+		this.id = b.networkID;
 		this.tank = b.tank.networkID;
 		this.posX = b.posX;
 		this.posY = b.posY;
@@ -106,6 +108,9 @@ public class EventShootBullet extends PersonalEvent
 		bullet.damage = this.damage;
 		bullet.size = this.size;
 		bullet.heavy = this.heavy;
+
+		bullet.networkID = this.id;
+		Bullet.idMap.put(this.id, bullet);
 		
 		if (!(bullet instanceof BulletInstant))
 			Game.movables.add(bullet);
@@ -114,6 +119,7 @@ public class EventShootBullet extends PersonalEvent
 	@Override
 	public void write(ByteBuf b) 
 	{
+		b.writeInt(this.id);
 		b.writeInt(this.tank);
 		b.writeDouble(this.posX);
 		b.writeDouble(this.posY);
@@ -131,6 +137,7 @@ public class EventShootBullet extends PersonalEvent
 	@Override
 	public void read(ByteBuf b) 
 	{
+		this.id = b.readInt();
 		this.tank = b.readInt();
 		this.posX = b.readDouble();
 		this.posY = b.readDouble();

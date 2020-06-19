@@ -47,7 +47,7 @@ public class Game
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 	public static ArrayList<Effect> effects = new ArrayList<Effect>();
-	public static ArrayList<Effect> belowEffects = new ArrayList<Effect>();
+	public static ArrayList<Effect> tracks = new ArrayList<Effect>();
 	public static SynchronizedList<Player> players = new SynchronizedList<Player>();
 	public static Player player;
 
@@ -77,8 +77,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks 0.8.0";
-	public static final int network_protocol = 13;
+	public static final String version = "Tanks 0.8.1";
+	public static final int network_protocol = 14;
 	public static boolean debug = false;
 
 	public static int port = 8080;
@@ -114,6 +114,7 @@ public class Game
 	public static String ip = "";
 
 	public static boolean fancyGraphics = true;
+	public static boolean superGraphics = true;
 
 	public static boolean autostart = true;
 	public static double startTime = 400;
@@ -368,6 +369,303 @@ public class Game
 		{
 			Game.exitToCrash(e);
 		}
+
+		createModels();
+	}
+
+	public static void createModels()
+	{
+		if (Game.framework == Framework.swing)
+		{
+			double centerFrac = 0.8;
+
+			Tank.base_model.shapes = new Model.Shape[1];
+			Tank.base_model.shapes[0] = new Model.LegacySquare(1, 1);
+
+			Tank.color_model.shapes = new Model.Shape[1];
+			Tank.color_model.shapes[0] = new Model.LegacySquare(centerFrac, centerFrac);
+
+			Drawing.rotatedRect.shapes = new Model.Shape[1];
+			Drawing.rotatedRect.shapes[0] = new Model.LegacySquare(1, 1);
+		}
+		else
+		{
+			Tank.base_model.shapes = new Model.Shape[10];
+
+			double size = 0.5;
+			double longSize = size + 0.1;
+			double height = size;
+			double halfHeight = height / 2;
+			double colorEdge = 0.35;
+			double colorMargin = 0.05;
+			double colorMarginEdge = colorMargin / 2;
+
+			Tank.base_model.shapes[0] = new Model.Quad(
+					new Model.Point(-size, -size, 0),
+					new Model.Point(size, -size, 0),
+					new Model.Point(size, size, 0),
+					new Model.Point(-size, size, 0), 0.4);
+			Tank.base_model.shapes[1] = new Model.Quad(
+					new Model.Point(-longSize, -size, halfHeight),
+					new Model.Point(-size, -size, 0),
+					new Model.Point(-size, size, 0),
+					new Model.Point(-longSize, size, halfHeight), 0.4);
+			Tank.base_model.shapes[2] = new Model.Quad(
+					new Model.Point(size, -size, 0),
+					new Model.Point(longSize, -size, halfHeight),
+					new Model.Point(longSize, size, halfHeight),
+					new Model.Point(size, size, 0), 0.4);
+			Tank.base_model.shapes[3] = new Model.Quad(
+					new Model.Point(-longSize, -size, halfHeight),
+					new Model.Point(-size, -size, height),
+					new Model.Point(-size, size, height),
+					new Model.Point(-longSize, size, halfHeight), 0.8);
+			Tank.base_model.shapes[4] = new Model.Quad(
+					new Model.Point(size, -size, height),
+					new Model.Point(longSize, -size, halfHeight),
+					new Model.Point(longSize, size, halfHeight),
+					new Model.Point(size, size, height), 0.8);
+			Tank.base_model.shapes[5] = new Model.Quad(
+					new Model.Point(-longSize, -size, halfHeight),
+					new Model.Point(-size, -size, height),
+					new Model.Point(size, -size, height),
+					new Model.Point(longSize, -size, halfHeight), 0.6);
+			Tank.base_model.shapes[6] = new Model.Quad(
+					new Model.Point(-longSize, -size, halfHeight),
+					new Model.Point(-size, -size, 0),
+					new Model.Point(size, -size, 0),
+					new Model.Point(longSize, -size, halfHeight), 0.6);
+			Tank.base_model.shapes[7] = new Model.Quad(
+					new Model.Point(-longSize, size, halfHeight),
+					new Model.Point(-size, size, height),
+					new Model.Point(size, size, height),
+					new Model.Point(longSize, size, halfHeight), 0.6);
+			Tank.base_model.shapes[8] = new Model.Quad(
+					new Model.Point(-longSize, size, halfHeight),
+					new Model.Point(-size, size, 0),
+					new Model.Point(size, size, 0),
+					new Model.Point(longSize, size, halfHeight), 0.6);
+			Tank.base_model.shapes[9] = new Model.Quad(
+					new Model.Point(-size, -size, height),
+					new Model.Point(size, -size, height),
+					new Model.Point(size, size, height),
+					new Model.Point(-size, size, height), 1);
+
+
+			Tank.color_model.shapes = new Model.Shape[10];
+			Tank.color_model.shapes[0] = new Model.Quad(
+					new Model.Point(-size, -colorEdge, -colorMargin),
+					new Model.Point(size, -colorEdge, -colorMargin),
+					new Model.Point(size, colorEdge, -colorMargin),
+					new Model.Point(-size, colorEdge, -colorMargin), 0.4);
+			Tank.color_model.shapes[1] = new Model.Quad(
+					new Model.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
+					new Model.Point(-size, -colorEdge, -colorMargin),
+					new Model.Point(-size, colorEdge, -colorMargin),
+					new Model.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight), 0.4);
+			Tank.color_model.shapes[2] = new Model.Quad(
+					new Model.Point(size, -colorEdge, -colorMargin),
+					new Model.Point((longSize + colorMarginEdge), -colorEdge, halfHeight),
+					new Model.Point((longSize + colorMarginEdge), colorEdge, halfHeight),
+					new Model.Point(size, colorEdge, -colorMargin), 0.4);
+			Tank.color_model.shapes[3] = new Model.Quad(
+					new Model.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
+					new Model.Point(-size, -colorEdge, height + colorMargin),
+					new Model.Point(-size, colorEdge, height + colorMargin),
+					new Model.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight), 0.8);
+			Tank.color_model.shapes[4] = new Model.Quad(
+					new Model.Point(size, -colorEdge, height + colorMargin),
+					new Model.Point((longSize + colorMarginEdge), -colorEdge, halfHeight),
+					new Model.Point((longSize + colorMarginEdge), colorEdge, halfHeight),
+					new Model.Point(size, colorEdge, height + colorMargin), 0.8);
+			Tank.color_model.shapes[5] = new Model.Quad(
+					new Model.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
+					new Model.Point(-size, -colorEdge, height + colorMargin),
+					new Model.Point(size, -colorEdge, height + colorMargin),
+					new Model.Point((longSize + colorMarginEdge), -colorEdge, halfHeight), 0.6);
+			Tank.color_model.shapes[6] = new Model.Quad(
+					new Model.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
+					new Model.Point(-size, -colorEdge, -colorMargin),
+					new Model.Point(size, -colorEdge, -colorMargin),
+					new Model.Point((longSize + colorMarginEdge), -colorEdge, halfHeight), 0.6);
+			Tank.color_model.shapes[7] = new Model.Quad(
+					new Model.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight),
+					new Model.Point(-size, colorEdge, height + colorMargin),
+					new Model.Point(size, colorEdge, height + colorMargin),
+					new Model.Point((longSize + colorMarginEdge), colorEdge, halfHeight), 0.6);
+			Tank.color_model.shapes[8] = new Model.Quad(
+					new Model.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight),
+					new Model.Point(-size, colorEdge, -colorMargin),
+					new Model.Point(size, colorEdge, -colorMargin),
+					new Model.Point((longSize + colorMarginEdge), colorEdge, halfHeight), 0.6);
+			Tank.color_model.shapes[9] = new Model.Quad(
+					new Model.Point(-size, -colorEdge, height + colorMargin),
+					new Model.Point(size, -colorEdge, height + colorMargin),
+					new Model.Point(size, colorEdge, height + colorMargin),
+					new Model.Point(-size, colorEdge, height + colorMargin), 1);
+
+			double turretThickness = 0.08;
+			double turretLength = 1.00;
+			Turret.turret_model.shapes = new Model.Shape[6];
+			Turret.turret_model.shapes[0] = new Model.Quad(
+					new Model.Point(-turretThickness, -turretThickness, -turretThickness),
+					new Model.Point(turretLength + turretThickness, -turretThickness, -turretThickness),
+					new Model.Point(turretLength + turretThickness, turretThickness, -turretThickness),
+					new Model.Point(-turretThickness, turretThickness, -turretThickness), 0.4);
+			Turret.turret_model.shapes[1] = new Model.Quad(
+					new Model.Point(-turretThickness, -turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, -turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, -turretThickness, -turretThickness),
+					new Model.Point(-turretThickness, -turretThickness, -turretThickness), 0.8);
+			Turret.turret_model.shapes[2] = new Model.Quad(
+					new Model.Point(-turretThickness, -turretThickness, turretThickness),
+					new Model.Point(-turretThickness, -turretThickness, turretThickness),
+					new Model.Point(-turretThickness, turretThickness, -turretThickness),
+					new Model.Point(-turretThickness, turretThickness, -turretThickness), 0.6);
+			Turret.turret_model.shapes[3] = new Model.Quad(
+					new Model.Point(-turretThickness, turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, turretThickness, -turretThickness),
+					new Model.Point(-turretThickness, turretThickness, -turretThickness), 0.8);
+			Turret.turret_model.shapes[4] = new Model.Quad(
+					new Model.Point(turretLength + turretThickness, -turretThickness, -turretThickness),
+					new Model.Point(turretLength + turretThickness, -turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, turretThickness, -turretThickness), 0.6);
+			Turret.turret_model.shapes[5] = new Model.Quad(
+					new Model.Point(-turretThickness, -turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, -turretThickness, turretThickness),
+					new Model.Point(turretLength + turretThickness, turretThickness, turretThickness),
+					new Model.Point(-turretThickness, turretThickness, turretThickness), 1);
+
+			double turretTopSize = 0.25;
+			double turretBaseSize = 0.30;
+			double turretDepth = 0.30;
+
+			Turret.base_model.shapes = new Model.Shape[5];
+			Turret.base_model.shapes[0] = new Model.Quad(
+					new Model.Point(-turretTopSize, -turretTopSize, turretDepth),
+					new Model.Point(turretTopSize, -turretTopSize, turretDepth),
+					new Model.Point(turretTopSize, turretTopSize, turretDepth),
+					new Model.Point(-turretTopSize, turretTopSize, turretDepth), 1);
+			Turret.base_model.shapes[1] = new Model.Quad(
+					new Model.Point(-turretTopSize, -turretTopSize, turretDepth),
+					new Model.Point(turretTopSize, -turretTopSize, turretDepth),
+					new Model.Point(turretBaseSize, -turretBaseSize, 0),
+					new Model.Point(-turretBaseSize, -turretBaseSize, 0), 0.8);
+			Turret.base_model.shapes[2] = new Model.Quad(
+					new Model.Point(turretTopSize, -turretTopSize, turretDepth),
+					new Model.Point(turretTopSize, turretTopSize, turretDepth),
+					new Model.Point(turretBaseSize, turretBaseSize, 0),
+					new Model.Point(turretBaseSize, -turretBaseSize, 0), 0.6);
+			Turret.base_model.shapes[3] = new Model.Quad(
+					new Model.Point(-turretTopSize, turretTopSize, turretDepth),
+					new Model.Point(turretTopSize, turretTopSize, turretDepth),
+					new Model.Point(turretBaseSize, turretBaseSize, 0),
+					new Model.Point(-turretBaseSize, turretBaseSize, 0), 0.8);
+			Turret.base_model.shapes[4] = new Model.Quad(
+					new Model.Point(-turretTopSize, -turretTopSize, turretDepth),
+					new Model.Point(-turretTopSize, turretTopSize, turretDepth),
+					new Model.Point(-turretBaseSize, turretBaseSize, 0),
+					new Model.Point(-turretBaseSize, -turretBaseSize, 0), 0.6);
+
+			Drawing.rotatedRect.shapes = new Model.Shape[1];
+			Drawing.rotatedRect.shapes[0] = new Model.Quad(
+					new Model.Point(-0.5, -0.5, 0),
+					new Model.Point(0.5, -0.5, 0),
+					new Model.Point(0.5, 0.5, 0),
+					new Model.Point(-0.5, 0.5, 0), 1);
+
+			double innerHealthEdge = 0.55;
+			double outerHealthEdge = 0.575;
+			double lengthMul = 1.2;
+			double healthHeight = 0.025;
+			Tank.health_model.shapes = new Model.Shape[16];
+
+			Tank.health_model.shapes[0] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(-innerHealthEdge * lengthMul, innerHealthEdge, 0),
+					new Model.Point(-outerHealthEdge * lengthMul, innerHealthEdge, 0), 0.4);
+			Tank.health_model.shapes[1] = new Model.Quad(
+					new Model.Point(innerHealthEdge * lengthMul, -innerHealthEdge, 0),
+					new Model.Point(outerHealthEdge * lengthMul, -innerHealthEdge, 0),
+					new Model.Point(outerHealthEdge * lengthMul, outerHealthEdge, 0),
+					new Model.Point(innerHealthEdge * lengthMul, outerHealthEdge, 0), 0.4);
+			Tank.health_model.shapes[2] = new Model.Quad(
+					new Model.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(outerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(outerHealthEdge * lengthMul, -innerHealthEdge, 0),
+					new Model.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, 0), 0.4);
+			Tank.health_model.shapes[3] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, innerHealthEdge, 0),
+					new Model.Point(innerHealthEdge * lengthMul, innerHealthEdge, 0),
+					new Model.Point(innerHealthEdge * lengthMul, outerHealthEdge, 0),
+					new Model.Point(-outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.4);
+
+			Tank.health_model.shapes[4] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
+					new Model.Point(-outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.6);
+			Tank.health_model.shapes[5] = new Model.Quad(
+					new Model.Point(outerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.6);
+			Tank.health_model.shapes[6] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, 0),
+					new Model.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, -outerHealthEdge, 0), 0.8);
+			Tank.health_model.shapes[7] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, outerHealthEdge, 0),
+					new Model.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.8);
+
+			Tank.health_model.shapes[8] = new Model.Quad(
+					new Model.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, 0),
+					new Model.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(-innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(-innerHealthEdge * lengthMul, innerHealthEdge, 0), 0.6);
+			Tank.health_model.shapes[9] = new Model.Quad(
+					new Model.Point(innerHealthEdge * lengthMul, -innerHealthEdge, 0),
+					new Model.Point(innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, innerHealthEdge, 0), 0.6);
+			Tank.health_model.shapes[10] = new Model.Quad(
+					new Model.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, 0),
+					new Model.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, -innerHealthEdge, 0), 0.8);
+			Tank.health_model.shapes[11] = new Model.Quad(
+					new Model.Point(-innerHealthEdge * lengthMul, innerHealthEdge, 0),
+					new Model.Point(-innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, innerHealthEdge, 0), 0.8);
+
+			Tank.health_model.shapes[12] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(-innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(-outerHealthEdge * lengthMul, innerHealthEdge, healthHeight), 1);
+			Tank.health_model.shapes[13] = new Model.Quad(
+					new Model.Point(innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, outerHealthEdge, healthHeight), 1);
+			Tank.health_model.shapes[14] = new Model.Quad(
+					new Model.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
+					new Model.Point(outerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
+					new Model.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight), 1);
+			Tank.health_model.shapes[15] = new Model.Quad(
+					new Model.Point(-outerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
+					new Model.Point(innerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
+					new Model.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight), 1);
+		}
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -422,7 +720,7 @@ public class Game
 		resetNetworkIDs();
 
 		obstacles.clear();
-		belowEffects.clear();
+		tracks.clear();
 		movables.clear();
 		effects.clear();
 		recycleEffects.clear();
@@ -440,7 +738,7 @@ public class Game
 		resetNetworkIDs();
 
 		obstacles.clear();
-		belowEffects.clear();
+		tracks.clear();
 		movables.clear();
 		effects.clear();
 		recycleEffects.clear();
@@ -453,7 +751,7 @@ public class Game
 	public static void exit(String name)
 	{
 		obstacles.clear();
-		belowEffects.clear();
+		tracks.clear();
 		movables.clear();
 		effects.clear();
 		recycleEffects.clear();
@@ -483,7 +781,7 @@ public class Game
 		ScreenPartyLobby.isClient = false;
 
 		obstacles.clear();
-		belowEffects.clear();
+		tracks.clear();
 		movables.clear();
 		effects.clear();
 		eventsIn.clear();
@@ -565,7 +863,7 @@ public class Game
 		int x = (int) (px / Game.tile_size);
 		int y = (int) (py / Game.tile_size);
 
-		if (x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
+		if (!Game.fancyGraphics || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
 			return 0;
 		else
 			return Game.tilesDepth[x][y] + 0;
@@ -590,7 +888,7 @@ public class Game
 	{
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
 		obstacles.clear();
-		belowEffects.clear();
+		tracks.clear();
 		movables.clear();
 		effects.clear();
 		recycleEffects.clear();

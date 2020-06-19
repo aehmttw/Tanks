@@ -11,9 +11,13 @@ import java.util.ArrayList;
 public class SwingWindow extends BaseWindow
 {
     public SwingDrawing drawing;
+
     public SwingPanel panel;
+
     public Graphics graphics;
+
     public SwingWindow self;
+
     public TextClipboard clipboard;
 
     public ArrayList<Integer> rawTextInput = new ArrayList<Integer>();
@@ -30,7 +34,7 @@ public class SwingWindow extends BaseWindow
     public void run()
     {
         panel = new SwingPanel(self);
-        drawing = new SwingDrawing(self, (int)self.absoluteWidth, (int)self.absoluteHeight);
+        drawing = new SwingDrawing(self, (int) self.absoluteWidth, (int) self.absoluteHeight);
 
         SwingUtilities.invokeLater(
                 new Runnable()
@@ -54,9 +58,15 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void setIcon(String icon)
+    {
+        drawing.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(icon)));
+    }
+
+    @Override
     public void fillOval(double x, double y, double sX, double sY)
     {
-        this.graphics.fillOval((int)x, (int)y, (int)sX, (int)sY);
+        this.graphics.fillOval((int) x, (int) y, (int) sX, (int) sY);
     }
 
     @Override
@@ -72,21 +82,39 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void fillGlow(double x, double y, double sX, double sY)
+    {
+
+    }
+
+    @Override
+    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+
+    }
+
+    @Override
+    public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+
+    }
+
+    @Override
     public void setColor(double r, double g, double b, double a)
     {
-        this.graphics.setColor(new Color((int)r, (int)g, (int)b, (int)a));
+        this.graphics.setColor(new Color((int) r, (int) g, (int) b, (int) a));
     }
 
     @Override
     public void setColor(double r, double g, double b)
     {
-        this.graphics.setColor(new Color((int)r, (int)g, (int)b));
+        this.graphics.setColor(new Color((int) r, (int) g, (int) b));
     }
 
     @Override
     public void drawOval(double x, double y, double sX, double sY)
     {
-        this.graphics.drawOval((int)x, (int)y, (int)sX, (int)sY);
+        this.graphics.drawOval((int) x, (int) y, (int) sX, (int) sY);
     }
 
     @Override
@@ -98,7 +126,7 @@ public class SwingWindow extends BaseWindow
     @Override
     public void fillRect(double x, double y, double sX, double sY)
     {
-        this.graphics.fillRect((int)x, (int)y, (int)sX, (int)sY);
+        this.graphics.fillRect((int) x, (int) y, (int) sX, (int) sY);
     }
 
     @Override
@@ -128,13 +156,13 @@ public class SwingWindow extends BaseWindow
     @Override
     public void drawRect(double x, double y, double sX, double sY)
     {
-        this.graphics.drawRect((int)x, (int)y, (int)sX, (int)sY);
+        this.graphics.drawRect((int) x, (int) y, (int) sX, (int) sY);
     }
 
     @Override
     public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)
     {
-        this.graphics.drawImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(image)), (int)x, (int)y, (int)sX, (int)sY, null);
+        this.graphics.drawImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(image)), (int) x, (int) y, (int) sX, (int) sY, null);
     }
 
     @Override
@@ -175,6 +203,36 @@ public class SwingWindow extends BaseWindow
 
     @Override
     public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest)
+    {
+        throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
+    }
+
+    @Override
+    public void drawImage(double x, double y, double sX, double sY, String image, double rotation, boolean scaled)
+    {
+        this.drawImage(x - sX / 2, y - sY / 2, sX, sY, image, scaled);
+    }
+
+    @Override
+    public void drawImage(double x, double y, double z, double sX, double sY, String image, double rotation, boolean scaled)
+    {
+        throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
+    }
+
+    @Override
+    public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
+    {
+        throw new UnsupportedOperationException("The Swing renderer does not support UV!");
+    }
+
+    @Override
+    public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
+    {
+        throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
+    }
+
+    @Override
+    public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
     {
         throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
     }
@@ -233,8 +291,26 @@ public class SwingWindow extends BaseWindow
         return 0;
     }
 
-    //@Override
-    public void setBatchMode(boolean enabled)
+    @Override
+    public void setBatchMode(boolean enabled, boolean quads, boolean depth)
+    {
+
+    }
+
+    @Override
+    public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow)
+    {
+
+    }
+
+    @Override
+    public void addVertex(double x, double y, double z)
+    {
+
+    }
+
+    @Override
+    public void addVertex(double x, double y)
     {
 
     }

@@ -261,6 +261,7 @@ public class TextBox implements IDrawable
 			{
 				handled = true;
 				selected = true;
+				this.previousInputText = this.inputText;
 
 				TextBox prev = Panel.selectedTextBox;
 
@@ -418,7 +419,7 @@ public class TextBox implements IDrawable
 
 		else if (text != null && inputText.length() + text.length() <= maxChars)
 		{
-			if (text.equals(" "))
+			if (text.equals(" ") || key == InputCodes.KEY_SPACE)
 			{
 				if (allowSpaces)
 				{

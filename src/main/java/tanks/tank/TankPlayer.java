@@ -19,7 +19,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 	public static boolean controlStickMobile;
 
 	public Player player = Game.player;
-	public boolean enableDestroyCheat = true;
+	public boolean enableDestroyCheat = false;
 
 	public boolean drawTouchCircle = false;
 	public double touchCircleSize = 400;
@@ -35,6 +35,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 		this.liveBulletMax = 5;
 		this.liveMinesMax = 2;
 		this.angle = angle;
+		this.orientation = angle;
 		this.player.tank = this;
 	}
 

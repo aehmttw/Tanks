@@ -109,7 +109,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
     public void drawLevel()
     {
-        for (Effect e: Game.belowEffects)
+        for (Effect e: Game.tracks)
             drawables[0].add(e);
 
         for (Movable m: Game.movables)

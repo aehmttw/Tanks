@@ -209,6 +209,7 @@ public class ScreenOptions extends Screen
 			f.println("# This file stores game settings that you have set");
 			f.println("username=" + Game.player.username);
 			f.println("fancy_graphics=" + Game.fancyGraphics);
+			f.println("super_graphics=" + Game.superGraphics);
 			f.println("3d=" + Game.enable3d);
 			f.println("3d_ground=" + Game.enable3dBg);
 			f.println("vsync=" + Game.vsync);
@@ -264,6 +265,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "fancy_graphics":
 						Game.fancyGraphics = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "super_graphics":
+						Game.superGraphics = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "3d":
 						Game.enable3d = Boolean.parseBoolean(optionLine[1]);
@@ -338,6 +342,7 @@ public class ScreenOptions extends Screen
 				Game.angledView = false;
 				Game.enable3d = false;
 				Game.enable3dBg = false;
+				Game.superGraphics = false;
 			}
 
 			if (Game.framework == Game.Framework.libgdx)

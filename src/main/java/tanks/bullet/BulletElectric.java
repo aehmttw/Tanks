@@ -42,6 +42,10 @@ public class BulletElectric extends BulletInstant
 		this.damage = 0.125;
 		this.effect = BulletEffect.none;
 		this.itemSound = "laser.ogg";
+
+		this.baseColorR = 0;
+		this.baseColorG = 255;
+		this.baseColorB = 255;
 	}
 
 	public void sendEvent()
@@ -51,7 +55,16 @@ public class BulletElectric extends BulletInstant
 	}
 
 	public void shoot()
-	{	
+	{
+		this.collisionX = this.posX;
+		this.collisionY = this.posY;
+		this.lastX = this.posX;
+		this.lastY = this.posY;
+		this.lastZ = this.iPosZ;
+		this.expired = true;
+
+		this.sendEvent();
+
 		if (this.target != null)
 		{
 			double angle = this.getAngleInDirection(target.posX, target.posY);
@@ -70,7 +83,7 @@ public class BulletElectric extends BulletInstant
 
 			this.move();
 
-			this.addEffect();
+			//this.addEffect();
 		}
 
 		if (!this.tank.isRemote)
@@ -89,31 +102,34 @@ public class BulletElectric extends BulletInstant
 	@Override
 	public void update()
 	{
-		if (this.delay > 0)
+		if (!this.expired)
 		{
-			this.delay -= Panel.frameFrequency;
-			return;
-		}
-
-		if (this.delay <= 0)
-		{
-			if (!this.tank.destroy)
-				this.shoot();
-
-			Game.removeMovables.add(this);
-
-			if (!freeIDs.contains(this.networkID))
+			if (this.delay > 0)
 			{
-				freeIDs.add(this.networkID);
-				idMap.remove(this.networkID);
+				this.delay -= Panel.frameFrequency;
+				return;
+			}
+
+			if (this.delay <= 0)
+			{
+				if (!this.tank.destroy)
+					this.shoot();
+
+				if (!freeIDs.contains(this.networkID))
+				{
+					freeIDs.add(this.networkID);
+					idMap.remove(this.networkID);
+				}
 			}
 		}
+
+		super.update();
 	}
 
 	public void move()
 	{	
 		this.invulnerability -= Panel.frameFrequency;
-		super.update();
+		super.superUpdate();
 	}
 
 	@Override
@@ -189,8 +205,6 @@ public class BulletElectric extends BulletInstant
 					b.invulnerability = 2;
 
 				b.target = n;
-
-				b.sendEvent();
 				Game.movables.add(b);
 			}
 		}
@@ -208,22 +222,13 @@ public class BulletElectric extends BulletInstant
 					e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
 					e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 					e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+					e.glowR = 0;
+					e.glowG = 128;
+					e.glowB = 128;
 					Game.effects.add(e);
 				}
 			}
 		}
-	}
-	
-	@Override
-	public void draw()
-	{
-		
-	}
-
-	@Override
-	public void addEffect()
-	{
-		Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.electric));
 	}
 
 	@Override

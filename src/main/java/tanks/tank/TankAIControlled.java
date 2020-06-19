@@ -211,6 +211,7 @@ public class TankAIControlled extends Tank
 			this.idlePhase = RotationPhase.counterClockwise;
 
 		this.angle = angle;
+		this.orientation = angle;
 
 		this.liveBulletMax = 5;
 
@@ -264,10 +265,10 @@ public class TankAIControlled extends Tank
 				an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 			Ray a2 = new Ray(this.posX, this.posY, an, this.bulletBounces, this);
-
+			a2.size = this.bulletSize;
 			a2.getTarget();
 
-			int dist = a2.age;
+			double dist = a2.age;
 			// Cancels if the bullet will hit another enemy
 			double offset = (Math.random() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((dist / 100.0), 2);
 
@@ -278,6 +279,7 @@ public class TankAIControlled extends Tank
 			}
 
 			Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this, 2.5);
+			a.size = this.bulletSize;
 			a.moveOut(this.size / 2.5);
 
 			Movable m = a.getTarget();
@@ -352,7 +354,18 @@ public class TankAIControlled extends Tank
 			fleeDirection = -fleeDirection;
 
 			if (this.targetEnemy != null && this.seesTargetEnemy && this.enableTargetEnemyReaction)
-				this.reactToTargetEnemySight();
+			{
+				if (this.currentlySeeking)
+				{
+					this.seekTimer -= Panel.frameFrequency;
+					this.followPath();
+
+					if (this.seekTimer <= 0)
+						this.currentlySeeking = false;
+				}
+				else
+					this.reactToTargetEnemySight();
+			}
 			else if (currentlySeeking && seekPause <= 0)
 				this.followPath();
 			else
@@ -363,7 +376,6 @@ public class TankAIControlled extends Tank
 
 	public void reactToTargetEnemySight()
 	{
-		this.currentlySeeking = false;
 		this.overrideDirection = true;
 		this.setMotionInDirection(targetEnemy.posX, targetEnemy.posY, speed);
 	}
@@ -560,12 +572,12 @@ public class TankAIControlled extends Tank
 		if (offsetMotion < 0)
 		{
 			int dist = this.distances[(int) (this.direction * 2 + 6) % 8];
-			offsetMotion *= Math.max(1, (dist - 1) / 5.0) * this.speed / 2.5;
+			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.speed;
 		}
 		else
 		{
 			int dist = this.distances[(int) (this.direction * 2 + 2) % 8];
-			offsetMotion *= Math.max(1, (dist - 1) / 5.0) * this.speed / 2.5;
+			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.speed;
 		}
 
 		this.addPolarMotion((this.direction + 1) / 2 * Math.PI, offsetMotion);
@@ -658,6 +670,7 @@ public class TankAIControlled extends Tank
 	{
 		Ray a = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
 		a.moveOut(this.size / 10);
+		a.size = this.bulletSize;
 
 		Movable m = a.getTarget();
 
@@ -726,6 +739,7 @@ public class TankAIControlled extends Tank
 
 		Ray r = new Ray(this.posX, this.posY, a, 0, this);
 		r.moveOut(this.size / 10);
+		r.size = this.bulletSize;
 
 		Movable m = r.getTarget();
 
@@ -782,13 +796,11 @@ public class TankAIControlled extends Tank
 		}
 
 		if (aim && this.hasTarget)
-		{
 			this.updateAimingTurret();
-		}
+		else if (currentlySeeking && this.seekPause <= 0)
+			this.updateSeekingTurret();
 		else
-		{
 			this.updateIdleTurret();
-		}
 	}
 
 	public void search()
@@ -817,6 +829,7 @@ public class TankAIControlled extends Tank
 
 		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, this.bulletBounces, this);
 		ray.moveOut(this.size / 10);
+		ray.size = this.bulletSize;
 
 		Movable target = ray.getTarget();
 
@@ -853,6 +866,7 @@ public class TankAIControlled extends Tank
 			a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 		Ray rayToTarget = new Ray(this.posX, this.posY, a, 0, this);
+		rayToTarget.size = this.bulletSize;
 		rayToTarget.moveOut(this.size / 10);
 		Movable target = rayToTarget.getTarget();
 
@@ -932,9 +946,28 @@ public class TankAIControlled extends Tank
 		}
 	}
 
+	public void updateSeekingTurret()
+	{
+		if (this.idlePhase == RotationPhase.clockwise)
+			this.angle += this.idleTurretSpeed * Panel.frameFrequency;
+		else
+			this.angle -= this.idleTurretSpeed * Panel.frameFrequency;
+
+		double dir = this.getPolarDirection();
+		if (Movable.absoluteAngleBetween(dir, this.angle) > Math.PI / 8)
+		{
+			if (Movable.angleBetween(dir, this.angle) < 0)
+				this.idlePhase = RotationPhase.counterClockwise;
+			else
+				this.idlePhase = RotationPhase.clockwise;
+		}
+	}
+
 	public boolean isInterestingPathTarget(Movable m)
 	{
-		return m instanceof Tank && !Team.isAllied(m, this);
+		return m instanceof Tank && !Team.isAllied(m, this)
+				&& m.posX >= 0 && m.posX < Game.currentSizeX * Game.tile_size
+				&& m.posY >= 0 && m.posY < Game.currentSizeY * Game.tile_size;
 	}
 
 	public void updateMineAI()
@@ -1074,8 +1107,8 @@ public class TankAIControlled extends Tank
 		public double posX;
 		public double posY;
 
-		public double shiftedX = (Math.random() - 0.5) * Game.tile_size;
-		public double shiftedY = (Math.random() - 0.5) * Game.tile_size;
+		public double shiftedX = (Math.random() - 0.5) * Game.tile_size / 2;
+		public double shiftedY = (Math.random() - 0.5) * Game.tile_size / 2;
 
 		public int tileX;
 		public int tileY;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class LevelGeneratorVersus
 {
-	public static String generateLevelString() 
+	public static String generateLevelString()
 	{
 		//int type = (int) (Math.random() * 13);
 		//test ^
@@ -16,7 +16,6 @@ public class LevelGeneratorVersus
 		int height = (int)(18 * size);
 		int width = (int)(28 * size);
 		double amountWalls = 12 * size * size;
-		double amountTanks = 8 * size * size;
 
 		double random = Math.random();
 		int walls = (int) (random * amountWalls + 4);
@@ -36,8 +35,26 @@ public class LevelGeneratorVersus
 
 		boolean teleporters = Math.random() < 0.2;
 		int numTeleporters = walls / 5 + 2;
+		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * Math.random()) + 1;
 
 		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|");
+
+		int[][] teleporterArray = new int[width][height];
+
+		for (int i = 0; i < teleporterArray.length; i++)
+		{
+			for (int j = 0; j < teleporterArray[0].length; j++)
+			{
+				teleporterArray[i][j] = -1;
+			}
+		}
+
+		boolean[][] solid = new boolean[width][height];
+
+		int[] playerX;
+		int[] playerY;
+		int firstPlayerX = 0;
+		int firstPlayerY = 0;
 
 		boolean[][] cells = new boolean[width][height];
 		double[][] cellWeights = new double[width][height];
@@ -45,15 +62,15 @@ public class LevelGeneratorVersus
 		ArrayList<Integer[]> startPointsH = new ArrayList<Integer[]>();
 		ArrayList<Integer[]> startPointsV = new ArrayList<Integer[]>();
 
-		for (int i = 0; i < width; i++) 
+		for (int i = 0; i < width; i++)
 		{
-			for (int j = 0; j < height; j++) 
+			for (int j = 0; j < height; j++)
 			{
 				cellWeights[i][j] = 1;
 			}
 		}
 
-		for (int i = 0; i < walls; i++) 
+		for (int i = 0; i < walls; i++)
 		{
 			int x = 0;
 			int y = 0;
@@ -62,16 +79,22 @@ public class LevelGeneratorVersus
 			int l = 1 + (int) Math.max(1, (Math.random() * (Math.min(height, width) - 3)));
 
 			String type = "";
+			boolean passable = true;
 
 			if (bouncy && Math.random() < bouncyWeight)
 				type = "-bouncy";
 			else if (Math.random() < 0.5)
+			{
 				type = "-hard";
+				passable = false;
+			}
 			else if (Math.random() < 0.25)
+			{
 				type = "-hole";
+				passable = false;
+			}
 
-
-			if (Math.random() * (vertical + horizontal) < horizontal) 
+			if (Math.random() * (vertical + horizontal) < horizontal)
 			{
 				vertical++;
 				int rand;
@@ -169,6 +192,9 @@ public class LevelGeneratorVersus
 							s.append(z).append("...");
 							started = true;
 						}
+
+						cells[z][y] = true;
+						solid[z][y] = solid[z][y] || !passable;
 					}
 					else
 					{
@@ -194,27 +220,22 @@ public class LevelGeneratorVersus
 
 				}
 
-				for (int j = x; j <= xEnd; j++) 
+				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++)
 				{
-					cells[j][y] = true;
-				}
-
-				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++) 
-				{
-					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++) 
+					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++)
 					{
 						cellWeights[j][k] /= 2;
 					}
 				}
 			}
-			else 
+			else
 			{
 				horizontal++;
 				int rand;
 				Integer[] sp = null;
 
 				if (Math.random() < 0.25 || startPointsV.isEmpty())
-				{		
+				{
 					for (int in = 0; in < 50; in++)
 					{
 						boolean chosen = false;
@@ -303,6 +324,9 @@ public class LevelGeneratorVersus
 							s.append(x).append("-").append(z).append("...");
 							started = true;
 						}
+
+						cells[x][z] = true;
+						solid[x][z] = solid[x][z] || !passable;
 					}
 					else
 					{
@@ -325,14 +349,9 @@ public class LevelGeneratorVersus
 					s.append(type);
 				}
 
-				for (int j = y; j <= yEnd; j++) 
+				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++)
 				{
-					cells[x][j] = true;
-				}
-
-				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++) 
-				{
-					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++) 
+					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++)
 					{
 						cellWeights[j][k] /= 2;
 					}
@@ -355,19 +374,19 @@ public class LevelGeneratorVersus
 
 
 				for (int i = 0; i < Math.random() * 20 + 4; i++)
-				{						
+				{
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{
 						cells[x][y] = true;
-						
+
 						if (!s.toString().endsWith(","))
 							s.append(",");
-						
+
 						s.append(x).append("-").append(y).append("-shrub");
 					}
-					
+
 					double rand = Math.random();
-					
+
 					if (rand < 0.25)
 						x++;
 					else if (rand < 0.5)
@@ -379,10 +398,12 @@ public class LevelGeneratorVersus
 				}
 			}
 		}
-		
+
 		if (teleporters)
 		{
 			int n = numTeleporters;
+			int groupProgress = 0;
+
 			while (n > 0)
 			{
 				int x = (int) (Math.random() * width);
@@ -393,11 +414,26 @@ public class LevelGeneratorVersus
 					for (int i = Math.max(x - 2, 0); i <= Math.min(x + 2, width - 1); i++)
 						for (int j = Math.max(y - 2, 0); j <= Math.min(y + 2, height - 1); j++)
 							cells[i][j] = true;
-					
+
 					if (!s.toString().endsWith(","))
 						s.append(",");
-					
+
+					int id = groupProgress / 2;
+
+					if (n == 1)
+						id = (groupProgress - 1) / 2;
+
+					groupProgress++;
+
+					if (id >= teleporterGroups)
+						id = (int) (Math.random() * teleporterGroups);
+
 					s.append(x).append("-").append(y).append("-teleporter");
+					teleporterArray[x][y] = id;
+
+					if (id != 0)
+						s.append("-").append(id);
+
 					n--;
 				}
 			}
@@ -406,6 +442,8 @@ public class LevelGeneratorVersus
 		s.append("|");
 
 		int numTanks = ScreenPartyHost.server.connections.size() + 1;
+		playerX = new int[ScreenPartyHost.server.connections.size()];
+		playerY = new int[ScreenPartyHost.server.connections.size()];
 
 		int x = (int) (Math.random() * (width));
 		int y = (int) (Math.random() * (height));
@@ -449,16 +487,94 @@ public class LevelGeneratorVersus
 			s.append("player");
 			s.append("-").append(angle);
 
-			if (i == numTanks - 1) 
+			if (i == 0)
+			{
+				firstPlayerX = x;
+				firstPlayerY = y;
+			}
+			else
+			{
+				playerX[i - 1] = x;
+				playerY[i - 1] = y;
+			}
+
+			if (i == numTanks - 1)
 			{
 				s.append("|ally-true}");
-			} 
-			else 
+			}
+			else
 			{
 				s.append(",");
 			}
-		}		
- 
+		}
+
+		ArrayList<Integer> currentX = new ArrayList<>();
+		ArrayList<Integer> currentY = new ArrayList<>();
+
+		currentX.add(firstPlayerX);
+		currentY.add(firstPlayerY);
+
+		while (!currentX.isEmpty())
+		{
+			int posX = currentX.remove(0);
+			int posY = currentY.remove(0);
+
+			solid[posX][posY] = true;
+
+			if (teleporterArray[posX][posY] >= 0)
+			{
+				int id = teleporterArray[posX][posY];
+
+				for (int i = 0; i < width; i++)
+				{
+					for (int j = 0; j < height; j++)
+					{
+						if (teleporterArray[i][j] == id && !(posX == i && posY == j) && !solid[i][j])
+						{
+							currentX.add(i);
+							currentY.add(j);
+						}
+					}
+				}
+			}
+
+			if (posX > 0 && !solid[posX - 1][posY])
+			{
+				currentX.add(posX - 1);
+				currentY.add(posY);
+				solid[posX - 1][posY] = true;
+			}
+
+			if (posX < width - 1 && !solid[posX + 1][posY])
+			{
+				currentX.add(posX + 1);
+				currentY.add(posY);
+				solid[posX + 1][posY] = true;
+			}
+
+			if (posY > 0 && !solid[posX][posY - 1])
+			{
+				currentX.add(posX);
+				currentY.add(posY - 1);
+				solid[posX][posY - 1] = true;
+			}
+
+			if (posY < height - 1 && !solid[posX][posY + 1])
+			{
+				currentX.add(posX);
+				currentY.add(posY + 1);
+				solid[posX][posY + 1] = true;
+			}
+		}
+
+		for (int i = 0; i < numTanks - 1; i++)
+		{
+			if (!solid[playerX[i]][playerY[i]])
+			{
+				return LevelGeneratorVersus.generateLevelString();
+			}
+		}
+
 		return s.toString();
 	}
 }

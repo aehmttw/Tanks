@@ -138,7 +138,7 @@ public class TeleporterOrb extends Movable
 		if (!Game.fancyGraphics)
 			return;
 		
-		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);
 		double var = 50;
 		
 		e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));

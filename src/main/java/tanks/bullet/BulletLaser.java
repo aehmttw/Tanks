@@ -35,8 +35,10 @@ public class BulletLaser extends BulletInstant
 	@Override
 	public void update()
 	{
-		this.shoot();
-		Game.removeMovables.add(this);
+		if (!this.expired)
+			this.shoot();
+
+		super.update();
 	}
 
 	@Override
@@ -45,12 +47,6 @@ public class BulletLaser extends BulletInstant
 		this.playPopSound = true;
 		super.collidedWithObject(m);
 		this.playPopSound = false;
-	}
-
-	@Override
-	public void addEffect()
-	{
-		Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.laser));
 	}
 
 	@Override
@@ -75,11 +71,5 @@ public class BulletLaser extends BulletInstant
 				Game.effects.add(e);
 			}
 		}
-	}
-	
-	@Override
-	public void draw()
-	{
-
 	}
 }

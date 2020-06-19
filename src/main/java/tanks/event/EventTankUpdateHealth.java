@@ -16,7 +16,7 @@ public class EventTankUpdateHealth extends PersonalEvent
 	public EventTankUpdateHealth(Tank t)
 	{
 		tank = t.networkID;
-		health = t.lives;
+		health = t.health;
 	}
 	
 	@Override
@@ -27,10 +27,10 @@ public class EventTankUpdateHealth extends PersonalEvent
 		if (t == null || this.clientID != null)
 			return;
 
-		if (t.lives > health && health > 0)
+		if (t.health > health && health > 0)
 			t.flashAnimation = 1;
 
-		t.lives = health;
+		t.health = health;
 	}
 
 	@Override

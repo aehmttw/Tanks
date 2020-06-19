@@ -145,11 +145,19 @@ public abstract class BaseWindow
 
     public abstract void setShowCursor(boolean show);
 
+    public abstract void setIcon(String icon);
+
     public abstract void fillOval(double x, double y, double sX, double sY);
 
     public abstract void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest);
 
     public abstract void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest);
+
+    public abstract void fillGlow(double x, double y, double sX, double sY);
+
+    public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
+
+    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
 
     public abstract void setColor(double r, double g, double b, double a);
 
@@ -176,21 +184,31 @@ public abstract class BaseWindow
 
     public abstract void drawRect(double x, double y, double sX, double sY);
 
-    public abstract void drawImage(double x, double y, double sX, double sY, String image, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, String image, boolean scaled);
-
     public abstract void setUpPerspective();
 
     public abstract void applyTransformations();
 
     public abstract void loadPerspective();
 
+    public abstract void drawImage(double x, double y, double sX, double sY, String image, boolean scaled);
+
+    public abstract void drawImage(double x, double y, double z, double sX, double sY, String image, boolean scaled);
+
     public abstract void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled);
 
     public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled);
 
     public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest);
+
+    public abstract void drawImage(double x, double y, double sX, double sY, String image, double rotation, boolean scaled);
+
+    public abstract void drawImage(double x, double y, double z, double sX, double sY, String image, double rotation, boolean scaled);
+
+    public abstract void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled);
+
+    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled);
+
+    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest);
 
     public abstract String getClipboard();
 
@@ -210,5 +228,11 @@ public abstract class BaseWindow
 
     public abstract double getEdgeBounds();
 
-    public abstract void setBatchMode(boolean enabled);
+    public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth);
+
+    public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow);
+
+    public abstract void addVertex(double x, double y, double z);
+
+    public abstract void addVertex(double x, double y);
 }

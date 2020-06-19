@@ -1,8 +1,10 @@
 package tanks.bullet;
 
 import tanks.Game;
+import tanks.Panel;
 import tanks.event.EventBulletDestroyed;
 import tanks.event.EventBulletInstantWaypoint;
+import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBullet;
 import tanks.tank.Ray;
@@ -15,6 +17,14 @@ public abstract class BulletInstant extends Bullet
 	public ArrayList<Double> xTargets = new ArrayList<Double>();
 	public ArrayList<Double> yTargets = new ArrayList<Double>();
 
+	public ArrayList<Laser> segments = new ArrayList<Laser>();
+
+	public double lastX;
+	public double lastY;
+	public double lastZ;
+
+	public boolean expired = false;
+
 	public BulletInstant(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
@@ -24,25 +34,27 @@ public abstract class BulletInstant extends Bullet
 
 	public void saveTarget()
 	{
-		this.xTargets.add(this.posX);
-		this.yTargets.add(this.posY);
+		this.xTargets.add(this.collisionX);
+		this.yTargets.add(this.collisionY);
 	}
-
-	public abstract void addEffect();
 
 	public abstract void addDestroyEffect();
 
 	public void shoot()
 	{
+		if (this.expired)
+			return;
+
+		Game.eventsOut.add(new EventShootBullet(this));
+
 		if (!this.tank.isRemote)
 		{
-			Ray r = new Ray(this.posX, this.posY, 0, this.bounces, this.tank);
-			r.vX = this.vX;
-			r.vY = this.vY;
-			r.getTarget();
+			this.collisionX = this.posX;
+			this.collisionY = this.posY;
+			this.lastX = this.posX;
+			this.lastY = this.posY;
+			this.lastZ = this.iPosZ;
 			this.saveTarget();
-			this.xTargets.addAll(r.bounceX);
-			this.yTargets.addAll(r.bounceY);
 		}
 
 		while (!this.destroy)
@@ -51,7 +63,7 @@ public abstract class BulletInstant extends Bullet
 				this.destroy = true;
 
 			super.update();
-			this.addEffect();
+			//this.addEffect();
 		}
 
 		if (!this.tank.isRemote)
@@ -70,6 +82,22 @@ public abstract class BulletInstant extends Bullet
 		idMap.remove(this.networkID);
 
 		this.addDestroyEffect();
+		this.expired = true;
+	}
+
+	@Override
+	public void collided()
+	{
+		this.segments.add(new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColorR, this.baseColorG, this.baseColorB));
+		this.lastX = this.collisionX;
+		this.lastY = this.collisionY;
+		this.lastZ = this.posZ;
+
+		if (!this.isRemote)
+		{
+			this.xTargets.add(this.collisionX);
+			this.yTargets.add(this.collisionY);
+		}
 	}
 
 	public void remoteShoot()
@@ -81,20 +109,52 @@ public abstract class BulletInstant extends Bullet
 			double dX = xTargets.get(i + 1) - iX;
 			double dY = yTargets.get(i + 1) - iY;
 
-			int steps = (int) (Math.sqrt((Math.pow(dX, 2) + Math.pow(dY, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) + 1);
-			for (int s = 0; s <= steps; s++)
-			{
-				this.posX = iX + dX * s / steps;
-				this.posY = iY + dY * s / steps;
+			this.posX = iX;
+			this.posY = iY;
 
-				this.age++;
-				double frac = 1 / (1 + this.age / 100);
-				this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
+			double z = Game.tile_size / 4;
+			if (i == 0)
+				z = this.iPosZ;
 
-				this.addEffect();
-			}
+			this.segments.add(new Laser(iX + dX, iY + dY, z, iX, iY, Game.tile_size / 4, this.size / 2, this.getAngleInDirection(iX + dX, iY + dY), this.baseColorR, this.baseColorG, this.baseColorB));
+			this.expired = true;
+			Game.movables.add(this);
 		}
 
 		this.addDestroyEffect();
+	}
+
+	@Override
+	public void update()
+	{
+		boolean finished = true;
+
+		for (Laser s: this.segments)
+		{
+			s.age += Panel.frameFrequency;
+
+			if (s.age > s.maxAge)
+				s.expired = true;
+
+			if (!s.expired)
+				finished = false;
+		}
+
+		if (finished)
+			Game.removeMovables.add(this);
+	}
+
+	@Override
+	public void draw()
+	{
+		for (Laser s: this.segments)
+		{
+			s.draw();
+		}
+	}
+
+	public void superUpdate()
+	{
+		super.update();
 	}
 }

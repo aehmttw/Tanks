@@ -63,6 +63,7 @@ public class Panel
 	public Tank dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
 
 	public boolean firstFrame = true;
+	public boolean firstDraw = true;
 
 	public boolean startMusicPlayed = false;
 
@@ -86,6 +87,10 @@ public class Panel
 	{
 		if (firstFrame)
 		{
+			boolean tutorial = false;
+
+			Game.game.window.setIcon("/icon.png");
+
 			double scale = 1;
 			if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
 				scale = 1.25;
@@ -106,6 +111,7 @@ public class Panel
 			BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
 			if (!tutorialFile.exists())
 			{
+				tutorial = true;
 				Game.silentCleanUp();
 				Tutorial.loadTutorial(true, Game.game.window.touchscreen);
 			}
@@ -148,7 +154,8 @@ public class Panel
 			if (Game.framework == Game.Framework.libgdx)
 				introMusicEnd -= 70;
 
-			Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
+			if (!tutorial)
+				Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
 		}
 
 		firstFrame = false;
@@ -209,7 +216,7 @@ public class Panel
 					{
 						Movable m = Game.movables.get(j);
 						if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
-							((TankPlayerRemote) m).lives = 0;
+							((TankPlayerRemote) m).health = 0;
 					}
 
 					ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
@@ -330,6 +337,9 @@ public class Panel
 
 			dummySpin.draw();
 			drawMouseTarget();
+
+			firstDraw = false;
+
 			return;
 		}
 
@@ -386,6 +396,12 @@ public class Panel
 
 		if (showMouseTarget || force)
 		{
+			if (Game.superGraphics)
+			{
+				Drawing.drawing.setColor(255, 255, 255, 128);
+				Drawing.drawing.fillInterfaceGlow(mx, my, 64, 64);
+			}
+
 			Drawing.drawing.setColor(0, 0, 0);
 			/*Drawing.drawing.drawInterfaceOval(mx, my, 8, 8);
 			Drawing.drawing.drawInterfaceOval(mx, my, 4, 4);*/

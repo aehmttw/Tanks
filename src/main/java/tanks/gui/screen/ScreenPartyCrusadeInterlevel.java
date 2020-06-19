@@ -12,11 +12,13 @@ import java.util.ArrayList;
 
 public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuScreen, IDarkScreen
 {
-    ArrayList<Firework> fireworks = new ArrayList<Firework>();
-    ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
+    public String msg1;
+    public String msg2;
 
-    public String msg1 = "Message 1";
-    public String msg2 = "Message 2";
+    boolean odd = false;
+
+    ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
+    ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
 
     Button replayCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Try again", new Runnable()
     {
@@ -119,15 +121,13 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
         {
             for (int i = 0; i < 5; i++)
             {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
+                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, getFireworkArray());
                 f.setRandomColor();
-                f.vY = - Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
-                f.vX = Math.random() * 5 - 2.5;
-                fireworks.add(f);
+                f.setVelocity();
+                getFireworkArray().add(f);
             }
         }
     }
-
 
     @Override
     public void update()
@@ -216,24 +216,31 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
 
         if (Panel.win && Game.fancyGraphics)
         {
-            if (Math.random() < 0.02)
+            ArrayList<Firework> fireworks = getFireworkArray();
+            if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency)
             {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
+                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
                 f.setRandomColor();
-                f.vY = - Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
-                f.vX = Math.random() * 5 - 2.5;
-                fireworks.add(f);
+                f.setVelocity();
+                getFireworkArray().add(f);
             }
 
-            for (int i = 0; i < fireworks.size(); i++)
+            for (int i = 0; i < getFireworkArray().size(); i++)
             {
-                fireworks.get(i).drawUpdate();
+                fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
             }
 
-            for (int i = 0; i < removeFireworks.size(); i++)
+            for (int i = 0; i < getFireworkArray().size(); i++)
             {
-                fireworks.remove(removeFireworks.get(i));
+                fireworks.get(i).drawGlow();
             }
+
+            //A fix to some glitchiness on ios
+            Drawing.drawing.setColor(0, 0, 0, 0);
+            Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
+
+            fireworks.clear();
+            odd = !odd;
         }
 
         if (ScreenPartyLobby.isClient)
@@ -280,5 +287,22 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
             else if (ScreenPartyLobby.isClient)
                 ScreenPartyLobby.chatbox.defaultTextColor = "\u00A7127127127255";
         }
+    }
+
+
+    public ArrayList<Firework> getFireworkArray()
+    {
+        if (odd)
+            return fireworks2;
+        else
+            return fireworks1;
+    }
+
+    public ArrayList<Firework> getOtherFireworkArray()
+    {
+        if (odd)
+            return fireworks1;
+        else
+            return fireworks2;
     }
 }

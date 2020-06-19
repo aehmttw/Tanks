@@ -62,6 +62,16 @@ public class BulletFlame extends Bullet
 			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
 		else
 			Drawing.drawing.fillOval(this.posX, this.posY, size, size);
+
+		Drawing.drawing.setColor(255, green, 0, opacity);
+
+		if (Game.superGraphics)
+		{
+			if (Game.enable3d)
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, size * 2, size * 2, true, false);
+			else
+				Drawing.drawing.fillGlow(this.posX, this.posY, size * 2, size * 2);
+		}
 	}
 
 }

@@ -28,6 +28,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
         this.clientID = id;
         this.isRemote = true;
         this.angle = angle;
+        this.orientation = angle;
     }
 
     @Override

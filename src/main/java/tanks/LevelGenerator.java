@@ -36,8 +36,25 @@ public class LevelGenerator
 
 		boolean teleporters = Math.random() < 0.2;
 		int numTeleporters = walls / 5 + 2;
+		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * Math.random()) + 1;
 
 		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|");
+
+		int[][] teleporterArray = new int[width][height];
+
+		for (int i = 0; i < teleporterArray.length; i++)
+		{
+			for (int j = 0; j < teleporterArray[0].length; j++)
+			{
+				teleporterArray[i][j] = -1;
+			}
+		}
+
+		boolean[][] solid = new boolean[width][height];
+		int[] tankX;
+		int[] tankY;
+		int[] playerTankX;
+		int[] playerTankY;
 
 		boolean[][] cells = new boolean[width][height];
 		double[][] cellWeights = new double[width][height];
@@ -62,13 +79,20 @@ public class LevelGenerator
 			int l = 1 + (int) Math.max(1, (Math.random() * (Math.min(height, width) - 3)));
 
 			String type = "";
+			boolean passable = true;
 
 			if (bouncy && Math.random() < bouncyWeight)
 				type = "-bouncy";
 			else if (Math.random() < 0.5)
+			{
 				type = "-hard";
+				passable = false;
+			}
 			else if (Math.random() < 0.25)
+			{
 				type = "-hole";
+				passable = false;
+			}
 
 
 			if (Math.random() * (vertical + horizontal) < horizontal) 
@@ -169,6 +193,9 @@ public class LevelGenerator
 							s.append(z).append("...");
 							started = true;
 						}
+
+						cells[z][y] = true;
+						solid[z][y] = solid[z][y] || !passable;
 					}
 					else
 					{
@@ -191,12 +218,6 @@ public class LevelGenerator
 					s.append("-").append(y);
 
 					s.append(type);
-
-				}
-
-				for (int j = x; j <= xEnd; j++) 
-				{
-					cells[j][y] = true;
 				}
 
 				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++) 
@@ -303,6 +324,9 @@ public class LevelGenerator
 							s.append(x).append("-").append(z).append("...");
 							started = true;
 						}
+
+						cells[x][z] = true;
+						solid[x][z] = solid[x][z] || !passable;
 					}
 					else
 					{
@@ -323,11 +347,6 @@ public class LevelGenerator
 				if (started || stopped)
 				{
 					s.append(type);
-				}
-
-				for (int j = y; j <= yEnd; j++) 
-				{
-					cells[x][j] = true;
 				}
 
 				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++) 
@@ -383,6 +402,8 @@ public class LevelGenerator
 		if (teleporters)
 		{
 			int n = numTeleporters;
+			int groupProgress = 0;
+
 			while (n > 0)
 			{
 				int x = (int) (Math.random() * width);
@@ -396,8 +417,23 @@ public class LevelGenerator
 					
 					if (!s.toString().endsWith(","))
 						s.append(",");
+
+					int id = groupProgress / 2;
+
+					if (n == 1)
+						id = (groupProgress - 1) / 2;
+
+					groupProgress++;
+
+					if (id >= teleporterGroups)
+						id = (int) (Math.random() * teleporterGroups);
 					
 					s.append(x).append("-").append(y).append("-teleporter");
+					teleporterArray[x][y] = id;
+
+					if (id != 0)
+						s.append("-").append(id);
+
 					n--;
 				}
 			}
@@ -406,6 +442,8 @@ public class LevelGenerator
 		s.append("|");
 
 		int numTanks = (int) (random * amountTanks + 1);
+		tankX = new int[numTanks];
+		tankY = new int[numTanks];
 
 		int x = (int) (Math.random() * (width));
 		int y = (int) (Math.random() * (height));
@@ -426,6 +464,9 @@ public class LevelGenerator
 
 		if (ScreenPartyHost.isServer)
 			numPlayers += ScreenPartyHost.server.connections.size();
+
+		playerTankX = new int[numPlayers];
+		playerTankY = new int[numPlayers];
 
 		for (int i = 0; i < numPlayers; i++)
 		{
@@ -456,6 +497,9 @@ public class LevelGenerator
 			s.append("player");
 			s.append("-").append(angle);
 
+			playerTankX[i] = x;
+			playerTankY[i] = y;
+
 			s.append(",");
 		}
 
@@ -479,6 +523,9 @@ public class LevelGenerator
 			s.append(Game.registryTank.getRandomTank().name);
 			s.append("-").append(angle);
 
+			tankX[i] = x;
+			tankY[i] = y;
+
 			if (i == numTanks - 1) 
 			{
 				s.append("}");
@@ -487,8 +534,78 @@ public class LevelGenerator
 			{
 				s.append(",");
 			}
-		}		
- 
+		}
+
+		ArrayList<Integer> currentX = new ArrayList<>();
+		ArrayList<Integer> currentY = new ArrayList<>();
+
+		for (int i = 0; i < numPlayers; i++)
+		{
+			currentX.add(playerTankX[i]);
+			currentY.add(playerTankY[i]);
+		}
+
+		while (!currentX.isEmpty())
+		{
+			int posX = currentX.remove(0);
+			int posY = currentY.remove(0);
+
+			solid[posX][posY] = true;
+
+			if (teleporterArray[posX][posY] >= 0)
+			{
+				int id = teleporterArray[posX][posY];
+
+				for (int i = 0; i < width; i++)
+				{
+					for (int j = 0; j < height; j++)
+					{
+						if (teleporterArray[i][j] == id && !(posX == i && posY == j) && !solid[i][j])
+						{
+							currentX.add(i);
+							currentY.add(j);
+						}
+					}
+				}
+			}
+
+			if (posX > 0 && !solid[posX - 1][posY])
+			{
+				currentX.add(posX - 1);
+				currentY.add(posY);
+				solid[posX - 1][posY] = true;
+			}
+
+			if (posX < width - 1 && !solid[posX + 1][posY])
+			{
+				currentX.add(posX + 1);
+				currentY.add(posY);
+				solid[posX + 1][posY] = true;
+			}
+
+			if (posY > 0 && !solid[posX][posY - 1])
+			{
+				currentX.add(posX);
+				currentY.add(posY - 1);
+				solid[posX][posY - 1] = true;
+			}
+
+			if (posY < height - 1 && !solid[posX][posY + 1])
+			{
+				currentX.add(posX);
+				currentY.add(posY + 1);
+				solid[posX][posY + 1] = true;
+			}
+		}
+
+		for (int i = 0; i < numTanks; i++)
+		{
+			if (!solid[tankX[i]][tankY[i]])
+			{
+				return LevelGenerator.generateLevelString();
+			}
+		}
+
 		return s.toString();
 	}
 }

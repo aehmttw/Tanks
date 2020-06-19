@@ -8,7 +8,7 @@ public class Face implements Comparable<Face>
     public double endY;
 
     public boolean horizontal;
-    public boolean positiveCollision = false;
+    public boolean positiveCollision;
 
     public boolean solidTank;
     public boolean solidBullet;
@@ -32,9 +32,9 @@ public class Face implements Comparable<Face>
     public int compareTo(Face f)
     {
         if (this.horizontal)
-            return (int) (this.startY - f.startY);
+            return (int) Math.signum(this.startY - f.startY);
         else
-            return (int) (this.startX - f.startX);
+            return (int) Math.signum(this.startX - f.startX);
     }
 
     public void update(double x1, double y1, double x2, double y2)
@@ -43,5 +43,13 @@ public class Face implements Comparable<Face>
         this.startY = y1;
         this.endX = x2;
         this.endY = y2;
+    }
+
+    public String toString()
+    {
+        if (this.horizontal)
+            return this.startX + "-" + this.endX + " " + this.startY;
+        else
+            return this.startX + " " + this.startY + "-" + this.endY;
     }
 }

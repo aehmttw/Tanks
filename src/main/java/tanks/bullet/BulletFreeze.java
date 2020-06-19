@@ -48,9 +48,9 @@ public class BulletFreeze extends Bullet
 				Drawing.drawing.setColor(255, 255, 255, 20);
 
 				if (Game.enable3d)
-					Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i);
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, i * 4, i * 4);
 				else
-					Drawing.drawing.fillOval(this.posX, this.posY, i, i);
+					Drawing.drawing.fillGlow(this.posX, this.posY, i * 4, i * 4);
 			}
 		}
 

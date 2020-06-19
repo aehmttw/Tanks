@@ -42,7 +42,6 @@ public class TankBlue extends TankAIControlled
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
-		b.sendEvent();
 		Game.movables.add(b);
 		this.cooldown = this.cooldownBase;
 

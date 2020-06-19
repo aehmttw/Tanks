@@ -83,7 +83,7 @@ public class TankMedic extends TankAIControlled
 		{
 			Game.movables.add(new Mine(this.posX, this.posY, 0, this));
 			this.destroy = true;
-			this.lives = 0;
+			this.health = 0;
 		}
 	}
 
@@ -103,7 +103,6 @@ public class TankMedic extends TankAIControlled
 		b.setPolarMotion(this.angle, 25.0/4);
 		b.moveOut(8);
 		Game.movables.add(b);
-		Game.eventsOut.add(new EventShootBullet(b));
 
 		//Drawing.drawing.playGlobalSound("heal.ogg", 0.75f);
 
@@ -127,7 +126,7 @@ public class TankMedic extends TankAIControlled
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && m != this && Team.isAllied(this, m) && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).lives - ((Tank) m).baseLives < 1)
+			if (m instanceof Tank && m != this && Team.isAllied(this, m) && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).health - ((Tank) m).baseHealth < 1)
 			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 				r.moveOut(5);
@@ -159,7 +158,7 @@ public class TankMedic extends TankAIControlled
 
 	public boolean isInterestingPathTarget(Movable m)
 	{
-		return m instanceof Tank && Team.isAllied(m, this) && m != this && ((Tank) m).lives - ((Tank) m).baseLives < 1 && !(m instanceof TankMedic);
+		return m instanceof Tank && Team.isAllied(m, this) && m != this && ((Tank) m).health - ((Tank) m).baseHealth < 1 && !(m instanceof TankMedic);
 	}
 
 }

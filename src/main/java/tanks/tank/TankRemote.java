@@ -16,9 +16,10 @@ public class TankRemote extends Tank
 	{
 		super(name, x, y, size, r, g, b);
 		this.angle = angle;
+		this.orientation = angle;
 		this.team = team;
-		this.lives = lives;
-		this.baseLives = baselives;
+		this.health = lives;
+		this.baseHealth = baselives;
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = null;
@@ -32,9 +33,10 @@ public class TankRemote extends Tank
 	{
 		super(t.name, t.posX, t.posY, t.size, t.colorR, t.colorG, t.colorB, false);
 		this.angle = t.angle;
+		this.orientation = t.orientation;
 		this.team = t.team;
-		this.lives = t.lives;
-		this.baseLives = t.baseLives;
+		this.health = t.health;
+		this.baseHealth = t.baseHealth;
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = t;

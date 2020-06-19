@@ -9,8 +9,10 @@ import java.util.ArrayList;
 
 public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, IDarkScreen
 {
-    ArrayList<Firework> fireworks = new ArrayList<Firework>();
-    ArrayList<Firework> removeFireworks = new ArrayList<Firework>();
+    boolean odd = false;
+
+    ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
+    ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
 
     Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Generate a new level", new Runnable()
     {
@@ -30,7 +32,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
             }
         }
     }
-        );
+    );
 
     Button replay = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "Replay the level", new Runnable()
     {
@@ -42,7 +44,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
             Game.screen = new ScreenGame();
         }
     }
-        );
+    );
 
     Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to party", new Runnable()
     {
@@ -54,7 +56,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
             ScreenInterlevel.fromSavedLevels = false;
         }
     }
-        );
+    );
 
     Button replayHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
     {
@@ -104,11 +106,10 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
         {
             for (int i = 0; i < 5; i++)
             {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
+                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, getFireworkArray());
                 f.setRandomColor();
-                f.vY = - Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
-                f.vX = Math.random() * 5 - 2.5;
-                fireworks.add(f);
+                f.setVelocity();
+                getFireworkArray().add(f);
             }
         }
     }
@@ -183,24 +184,31 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
 
         if (Panel.win && Game.fancyGraphics)
         {
-            if (Math.random() < 0.02)
+            ArrayList<Firework> fireworks = getFireworkArray();
+            if (Math.random() < Panel.frameFrequency * ScreenInterlevel.firework_frequency)
             {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.sizeX, Drawing.drawing.sizeY, fireworks, removeFireworks);
+                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
                 f.setRandomColor();
-                f.vY = - Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
-                f.vX = Math.random() * 5 - 2.5;
-                fireworks.add(f);
+                f.setVelocity();
+                getFireworkArray().add(f);
             }
 
-            for (int i = 0; i < fireworks.size(); i++)
+            for (int i = 0; i < getFireworkArray().size(); i++)
             {
-                fireworks.get(i).drawUpdate();
+                fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
             }
 
-            for (int i = 0; i < removeFireworks.size(); i++)
+            for (int i = 0; i < getFireworkArray().size(); i++)
             {
-                fireworks.remove(removeFireworks.get(i));
+                fireworks.get(i).drawGlow();
             }
+
+            //A fix to some glitchiness on ios
+            Drawing.drawing.setColor(0, 0, 0, 0);
+            Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
+
+            fireworks.clear();
+            odd = !odd;
         }
 
         if (ScreenPartyLobby.isClient)
@@ -247,5 +255,21 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
             else if (ScreenPartyLobby.isClient)
                 ScreenPartyLobby.chatbox.defaultTextColor = "\u00A7127127127255";
         }
+    }
+
+    public ArrayList<Firework> getFireworkArray()
+    {
+        if (odd)
+            return fireworks2;
+        else
+            return fireworks1;
+    }
+
+    public ArrayList<Firework> getOtherFireworkArray()
+    {
+        if (odd)
+            return fireworks1;
+        else
+            return fireworks2;
     }
 }

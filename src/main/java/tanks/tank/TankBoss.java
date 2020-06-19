@@ -22,14 +22,13 @@ public class TankBoss extends TankAIControlled
 		this.cooldownBase = 100;
 		this.aimAccuracyOffset = 0;
 		this.bulletBounces = 3;
-		this.bulletEffect = Bullet.BulletEffect.none;
+		this.bulletEffect = Bullet.BulletEffect.trail;
 		this.bulletSpeed = 25.0 / 4;
 		this.bulletSize = 25;
 		this.bulletHeavy = true;
-		this.lives = 5;
-		this.baseLives = 5;
+		this.health = 5;
+		this.baseHealth = 5;
 		this.turret.length *= 3;
-		this.turret.size *= 3;
 		this.coinValue = 25;
 
 		this.description = "A big boss tank which spawns---other tanks and takes 5 regular---bullets to destroy";

@@ -12,6 +12,7 @@ public class ScreenOptionsGraphics extends Screen
     public static final String ground3dText = "3D ground: ";
     public static final String perspectiveText = "View: ";
 
+    public static final String superText = "\u00A7200000200255super";
     public static final String fancyText = "\u00A7000100200255fancy";
     public static final String fastText = "\u00A7200100000255fast";
 
@@ -27,7 +28,12 @@ public class ScreenOptionsGraphics extends Screen
         this.musicID = "menu";
 
         if (Game.fancyGraphics)
-            graphics.text = graphicsText + fancyText;
+        {
+            if (Game.superGraphics)
+                graphics.text = graphicsText + superText;
+            else
+                graphics.text = graphicsText + fancyText;
+        }
         else
             graphics.text = graphicsText + fastText;
 
@@ -103,17 +109,30 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            Game.fancyGraphics = !Game.fancyGraphics;
+            if (!Game.fancyGraphics)
+                Game.fancyGraphics = true;
+            else if (!Game.superGraphics && Game.framework != Game.Framework.swing)
+                Game.superGraphics = true;
+            else
+            {
+                Game.fancyGraphics = false;
+                Game.superGraphics = false;
+            }
 
             if (Game.fancyGraphics)
-                graphics.text = graphicsText + fancyText;
+            {
+                if (Game.superGraphics)
+                    graphics.text = graphicsText + superText;
+                else
+                    graphics.text = graphicsText + fancyText;
+            }
             else
                 graphics.text = graphicsText + fastText;
 
             update3dGroundButton();
         }
     },
-            "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics may significantly reduce framerate"	);
+            "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics enable these effects but---may significantly reduce framerate------Super graphics enable glow effects but---may also somewhat reduce framerate");
 
     Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
     {

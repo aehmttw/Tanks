@@ -73,7 +73,7 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
 
     public void drawLevel()
     {
-        for (Effect e: Game.belowEffects)
+        for (Effect e: Game.tracks)
             drawables[0].add(e);
 
         for (Movable m: Game.movables)

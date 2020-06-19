@@ -21,15 +21,15 @@ public class TankMini extends TankAIControlled
 		this.cooldownBase = 120;
 		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 0;
-		this.bulletEffect = Bullet.BulletEffect.none;
+		this.bulletEffect = Bullet.BulletEffect.trail;
 		this.bulletSpeed = 25.0 / 4;
 		this.bulletDamage = 0.25;
 		this.bulletSize /= 2;
 		this.enableLookingAtTargetEnemy = true;
 		this.motionChangeChance = 0.001;
 		this.enableBulletAvoidance = false;
-		this.lives = 0.25;
-		this.baseLives = 0.25;
+		this.health = 0.25;
+		this.baseHealth = 0.25;
 
 		this.description = "A small, primitive tank which---shoots tiny, low damage bullets";
 	}
@@ -40,7 +40,6 @@ public class TankMini extends TankAIControlled
 		this.tank = t;
 		t.spawnedMinis++;
 		
-		this.turret.size /= 2;
 		this.turret.length /= 2;
 		
 		this.team = t.team;

@@ -5,6 +5,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
 public class ScreenTitle extends Screen
@@ -86,7 +87,6 @@ public class ScreenTitle extends Screen
 		Game.movables.clear();
 		this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
 		this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom;
-		this.logo.turret.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
 		this.logo.invulnerable = true;
 		this.logo.drawAge = 50;
 		this.logo.depthTest = false;
@@ -112,9 +112,9 @@ public class ScreenTitle extends Screen
 		if (this.controlPlayer)
 		{
 			Obstacle.draw_size = Game.tile_size;
-			for (int i = 0; i < Game.belowEffects.size(); i++)
+			for (int i = 0; i < Game.tracks.size(); i++)
 			{
-				Game.belowEffects.get(i).update();
+				Game.tracks.get(i).update();
 			}
 
 			for (int i = 0; i < Game.movables.size(); i++)
@@ -127,7 +127,7 @@ public class ScreenTitle extends Screen
 				Game.effects.get(i).update();
 			}
 
-			Game.belowEffects.removeAll(Game.removeBelowEffects);
+			Game.tracks.removeAll(Game.removeBelowEffects);
 			Game.removeBelowEffects.clear();
 
 			Game.movables.removeAll(Game.removeMovables);
@@ -156,9 +156,9 @@ public class ScreenTitle extends Screen
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 110, "The Crusades");
 
-		for (int i = 0; i < Game.belowEffects.size(); i++)
+		for (int i = 0; i < Game.tracks.size(); i++)
 		{
-			Game.belowEffects.get(i).draw();
+			Game.tracks.get(i).draw();
 		}
 
 		for (int i = Game.movables.size() - 1; i >= 0; i--)
@@ -169,6 +169,11 @@ public class ScreenTitle extends Screen
 		for (int i = 0; i < Game.effects.size(); i++)
 		{
 			Game.effects.get(i).draw();
+		}
+
+		for (int i = 0; i < Game.effects.size(); i++)
+		{
+			Game.effects.get(i).drawGlow();
 		}
 	}
 

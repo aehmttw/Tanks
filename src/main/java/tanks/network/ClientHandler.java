@@ -86,6 +86,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     	if (ScreenPartyLobby.isClient)
 		{
 			Game.screen = new ScreenKicked("You have lost connection");
+			Game.cleanUp();
 		}
 
 		ScreenPartyLobby.isClient = false;

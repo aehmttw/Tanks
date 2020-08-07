@@ -37,10 +37,8 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
     {
         if (this.clientID == null)
         {
-            Panel.panel.hotbar.enabledItemBar = true;
-            Panel.panel.hotbar.currentItemBar = Game.player.crusadeItemBar;
-            Panel.panel.hotbar.enabledCoins = true;
-            Panel.panel.hotbar.currentCoins = Game.player.coins;
+            Game.player.hotbar.enabledItemBar = true;
+            Game.player.hotbar.enabledCoins = true;
         }
 
         ((ScreenGame)(Game.screen)).title = this.title;

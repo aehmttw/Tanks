@@ -31,6 +31,8 @@ public class EventAddTextBox extends PersonalEvent
     public boolean enablePunctuation;
     public boolean checkMaxValue;
     public boolean checkMinValue;
+    public boolean allowNegatives;
+    public boolean allowDoubles;
 
     public boolean lowerCase;
     public boolean enableCaps;
@@ -69,6 +71,8 @@ public class EventAddTextBox extends PersonalEvent
         this.enablePunctuation = t.enablePunctuation;
         this.checkMaxValue = t.checkMaxValue;
         this.checkMinValue = t.checkMinValue;
+        this.allowNegatives = t.allowNegatives;
+        this.allowDoubles = t.allowDoubles;
         this.lowerCase = t.lowerCase;
         this.enableCaps = t.enableCaps;
         this.maxChars = t.maxChars;
@@ -102,6 +106,8 @@ public class EventAddTextBox extends PersonalEvent
         b.writeBoolean(enablePunctuation);
         b.writeBoolean(checkMaxValue);
         b.writeBoolean(checkMinValue);
+        b.writeBoolean(allowNegatives);
+        b.writeBoolean(allowDoubles);
 
         b.writeBoolean(lowerCase);
         b.writeBoolean(enableCaps);
@@ -139,6 +145,8 @@ public class EventAddTextBox extends PersonalEvent
         enablePunctuation = b.readBoolean();
         checkMaxValue = b.readBoolean();
         checkMinValue = b.readBoolean();
+        allowNegatives = b.readBoolean();
+        allowDoubles = b.readBoolean();
 
         lowerCase = b.readBoolean();
         enableCaps = b.readBoolean();
@@ -189,6 +197,8 @@ public class EventAddTextBox extends PersonalEvent
             t.enablePunctuation = this.enablePunctuation;
             t.checkMaxValue = this.checkMaxValue;
             t.checkMinValue = this.checkMinValue;
+            t.allowNegatives = this.allowNegatives;
+            t.allowDoubles = this.allowDoubles;
             t.lowerCase = this.lowerCase;
             t.enableCaps = this.enableCaps;
             t.maxChars = this.maxChars;

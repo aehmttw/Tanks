@@ -65,9 +65,9 @@ public class ScreenUploadLevel extends ScreenOnline
 
         for (String l: levels)
         {
-            String[] pathSections = l.replaceAll("\\\\", "/").split("/");
+            String[] pathSections = l.replace("\\", "/").split("/");
 
-            buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
+            buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0].replace("_", " "), new Runnable()
             {
                 @Override
                 public void run()

@@ -1,9 +1,6 @@
 package tanks.bullet;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawable;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 
 public class Trail implements IDrawable
@@ -75,7 +72,7 @@ public class Trail implements IDrawable
     public double update(double trailLength)
     {
         if (this.movable.destroy)
-            this.age += speed;
+            this.age += speed * Panel.frameFrequency / 2;
         else
             this.age = trailLength;
 

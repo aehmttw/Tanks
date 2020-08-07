@@ -3,7 +3,7 @@ package tanks.bullet;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
-import tanks.hotbar.ItemBullet;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletLaser extends BulletInstant

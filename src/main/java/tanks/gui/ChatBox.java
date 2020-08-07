@@ -5,16 +5,18 @@ import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.input.InputBinding;
+import tanks.gui.input.InputBindingGroup;
 
 public class ChatBox extends TextBox
 {
-	public int key;
+	public InputBindingGroup input;
 	public String defaultText;
 	public String defaultTextColor = "\u00A7127127127255";
 
 	public boolean persistent = true;
 
-	public ChatBox(double x, double y, double sX, double sY, int key, Runnable f)
+	public ChatBox(double x, double y, double sX, double sY, InputBindingGroup input, Runnable f)
 	{
 		super(x, y, sX, sY, "", f, "");
 		this.enableCaps = true;
@@ -37,15 +39,14 @@ public class ChatBox extends TextBox
 		this.selectedFullColorG = 0;
 		this.selectedFullColorB = 0;
 
-		String defaultText = "Click here or press 'T' to send a chat message";
+		String defaultText = "Click here or press " + Game.game.input.chat.getInputs() + " to send a chat message";
 		if (Game.game.window.touchscreen)
 			defaultText = "Click here to send a chat message";
 
 		this.inputText = defaultText;
 		this.defaultText = defaultText;
 
-		this.key = key;
-
+		this.input = input;
 	}
 
 	public void update(boolean persistent)
@@ -87,9 +88,9 @@ public class ChatBox extends TextBox
 			}
 		}
 
-		if (!this.selected && Game.game.window.validPressedKeys.contains(key))
+		if (!this.selected && this.input.isValid())
 		{
-			Game.game.window.validPressedKeys.remove((Integer)key);
+			this.input.invalidate();
 			Game.game.window.getRawTextKeys().clear();
 
 			if (Panel.selectedTextBox != null)
@@ -106,7 +107,7 @@ public class ChatBox extends TextBox
 
 		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
 		{
-			if (this.inputText.length() > 0)
+			if (this.inputText.trim().length() > 0)
 				this.function.run();
 
 			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);

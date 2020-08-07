@@ -2,7 +2,7 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.event.*;
-import tanks.hotbar.ItemBullet;
+import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Mine;
 import tanks.tank.Ray;
@@ -79,7 +79,7 @@ public class Bullet extends Movable implements IDrawable
 	@Deprecated
 	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
 	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false, ib);
+		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
 	}
 
 	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet item)
@@ -176,16 +176,16 @@ public class Bullet extends Movable implements IDrawable
 				t.destroy = true;
 
 				if (this.tank.equals(Game.playerTank))
-					Panel.panel.hotbar.currentCoins.coins += t.coinValue;
+					Game.player.hotbar.coins += t.coinValue;
 				else if (this.tank instanceof TankPlayerRemote && Crusade.crusadeMode)
 				{
-					((TankPlayerRemote) this.tank).player.coins.coins += t.coinValue;
+					((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
 			}
-			else if (this.playPopSound && !this.heavy)
+			else if (this.playPopSound)
 			{
-				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+				Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
 			}
 		}
 		else if (this.playPopSound && !this.heavy)
@@ -472,10 +472,11 @@ public class Bullet extends Movable implements IDrawable
 			else if (this.playBounceSound)
 				Drawing.drawing.playGlobalSound("bounce.ogg", (float) (bullet_size / size));
 
-			Game.eventsOut.add(new EventBulletUpdate(this));
-
 			if (!destroy)
+			{
+				Game.eventsOut.add(new EventBulletBounce(this));
 				this.addTrail();
+			}
 		}
 	}
 

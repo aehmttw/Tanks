@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import tanks.event.EventKeepConnectionAlive;
+import tanks.event.EventPing;
 import tanks.event.INetworkEvent;
 import tanks.event.online.EventAddMenuButton;
 import tanks.event.online.EventRemoveMenuButton;
@@ -77,8 +77,6 @@ public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
 
         if (reply)
         {
-            this.reader.frame++;
-
             if (lastMessage < 0)
                 lastMessage = System.currentTimeMillis();
 
@@ -100,7 +98,7 @@ public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
 
             synchronized (this.events)
             {
-                EventKeepConnectionAlive k = new EventKeepConnectionAlive();
+                EventPing k = new EventPing();
                 this.events.add(k);
 
                 for (int i = 0; i < this.events.size(); i++)
@@ -117,7 +115,13 @@ public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
     public void sendEvent(INetworkEvent e)
     {
         ByteBuf b = ctx.channel().alloc().buffer();
-        b.writeInt(NetworkEventMap.get(e.getClass()));
+
+        int i = NetworkEventMap.get(e.getClass());
+
+        if (i == -1)
+            throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
+
+        b.writeInt(i);
         e.write(b);
 
         ByteBuf b2 = ctx.channel().alloc().buffer();

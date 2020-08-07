@@ -46,6 +46,13 @@ public class EventTankControllerUpdateS extends EventTankUpdate
             t.posY = this.posY;
             t.vX = this.vX;
             t.vY = this.vY;
+
+            if (this.vX * this.vX + this.vY * this.vY > t.maxSpeed * t.maxSpeed)
+            {
+                t.processRecoil(0);
+                t.recoilSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+            }
+
             t.angle = this.angle;
         }
     }

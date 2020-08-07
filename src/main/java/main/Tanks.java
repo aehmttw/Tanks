@@ -4,6 +4,8 @@ import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import swingwindow.SwingWindow;
 import tanks.*;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanksonline.CommandExecutor;

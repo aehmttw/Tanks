@@ -32,7 +32,7 @@ public class EventLoadLevel extends PersonalEvent
 			
 		try
 		{
-			ScreenPartyLobby.readyPlayers = 0;
+			ScreenPartyLobby.readyPlayers.clear();
 			ScreenPartyLobby.includedPlayers.clear();
 			Game.cleanUp();
 			Game.currentLevel = new Level(level);

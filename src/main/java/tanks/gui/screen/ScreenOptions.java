@@ -5,6 +5,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
+import tanks.gui.Selector;
 import tanks.tank.TankPlayer;
 
 import java.io.FileNotFoundException;
@@ -13,7 +14,6 @@ import java.util.Date;
 
 public class ScreenOptions extends Screen
 {
-	public static final String musicText = "Music: ";
 	public static final String autostartText = "Autostart: ";
 	public static final String infoBarText = "Info bar: ";
 
@@ -35,13 +35,8 @@ public class ScreenOptions extends Screen
 		else
 			showStats.text = infoBarText + offText;
 
-		if (Game.musicEnabled && Game.game.window.soundsEnabled)
-			musicToggle.text = musicText + onText;
-		else
-			musicToggle.text = musicText + offText;
-
 		if (!Game.game.window.soundsEnabled)
-			musicToggle.enabled = false;
+			soundOptions.enabled = false;
 	}
 
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
@@ -54,28 +49,6 @@ public class ScreenOptions extends Screen
 		}
 	}
 	);
-
-	Button musicToggle = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.musicEnabled = !Game.musicEnabled;
-
-			if (Game.musicEnabled)
-			{
-				musicToggle.text = musicText + onText;
-				Panel.panel.playScreenMusic(0);
-			}
-			else
-			{
-				musicToggle.text = musicText + offText;
-				Drawing.drawing.stopMusic();
-			}
-		}
-	},
-			"When enabled, music will---play throughout the game.");
-
 
 	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
 	{
@@ -136,6 +109,16 @@ public class ScreenOptions extends Screen
 	}
 	);
 
+	Button soundOptions = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Sound options", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenOptionsSound();
+		}
+	}
+	);
+
 	Button inputOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Input options", new Runnable()
 	{
 		@Override
@@ -153,7 +136,7 @@ public class ScreenOptions extends Screen
 	@Override
 	public void update()
 	{
-		musicToggle.update();
+		soundOptions.update();
 		autostart.update();
 		showStats.update();
 
@@ -174,7 +157,7 @@ public class ScreenOptions extends Screen
 		graphicsOptions.draw();
 		showStats.draw();
 		autostart.draw();
-		musicToggle.draw();
+		soundOptions.draw();
 
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);
@@ -220,6 +203,7 @@ public class ScreenOptions extends Screen
 			f.println("mobile_joystick=" + TankPlayer.controlStickMobile);
 			f.println("snap_joystick=" + TankPlayer.controlStickSnap);
 			f.println("dual_joystick=" + TankPlayer.shootStickEnabled);
+			f.println("sound=" + Game.soundsEnabled);
 			f.println("music=" + Game.musicEnabled);
 			f.println("auto_start=" + Game.autostart);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
@@ -227,6 +211,13 @@ public class ScreenOptions extends Screen
 			f.println("last_party=" + Game.lastParty);
 			f.println("last_online_server=" + Game.lastOnlineServer);
 			f.println("chat_filter=" + Game.enableChatFilter);
+			f.println("tank_secondary_color=" + Game.player.enableSecondaryColor);
+			f.println("tank_red=" + Game.player.colorR);
+			f.println("tank_green=" + Game.player.colorG);
+			f.println("tank_blue=" + Game.player.colorB);
+			f.println("tank_red_2=" + Game.player.turretColorR);
+			f.println("tank_green_2=" + Game.player.turretColorG);
+			f.println("tank_blue_2=" + Game.player.turretColorB);
 			f.println("use_custom_tank_registry=" + Game.enableCustomTankRegistry);
 			f.println("use_custom_obstacle_registry=" + Game.enableCustomObstacleRegistry);
 			f.stopWriting();
@@ -296,6 +287,9 @@ public class ScreenOptions extends Screen
 					case "dual_joystick":
 						TankPlayer.setShootStick(Boolean.parseBoolean(optionLine[1]));
 						break;
+					case "sound":
+						Game.soundsEnabled = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "music":
 						Game.musicEnabled = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -325,6 +319,27 @@ public class ScreenOptions extends Screen
 						break;
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "tank_secondary_color":
+						Game.player.enableSecondaryColor = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "tank_red":
+						Game.player.colorR = Integer.parseInt(optionLine[1]);
+						break;
+					case "tank_green":
+						Game.player.colorG = Integer.parseInt(optionLine[1]);
+						break;
+					case "tank_blue":
+						Game.player.colorB = Integer.parseInt(optionLine[1]);
+						break;
+					case "tank_red_2":
+						Game.player.turretColorR = Integer.parseInt(optionLine[1]);
+						break;
+					case "tank_green_2":
+						Game.player.turretColorG = Integer.parseInt(optionLine[1]);
+						break;
+					case "tank_blue_2":
+						Game.player.turretColorB = Integer.parseInt(optionLine[1]);
 						break;
 					case "use_custom_tank_registry":
 						Game.enableCustomTankRegistry = Boolean.parseBoolean(optionLine[1]);

@@ -13,7 +13,7 @@ public class TankOrange extends TankAIControlled
 		super(name, x, y, Game.tile_size, 230, 120, 0, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 2.0;
+		this.maxSpeed = 2.0;
 
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
@@ -21,6 +21,7 @@ public class TankOrange extends TankAIControlled
 		this.enablePathfinding = true;
 
 		this.motionChangeChance = 0.001;
+		this.mineSensitivity = 1;
 
 		this.coinValue = 6;
 

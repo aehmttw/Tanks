@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.ChatMessage;
@@ -115,8 +116,12 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		Game.players.add(new Player(this.clientID, this.username));
 
 		s.sendEvent(new EventConnectionSuccess());
-		
 		s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.player.username), true));
+
+		if (Crusade.currentCrusade != null)
+			s.sendEvent(new EventBeginCrusade());
+
+		Game.eventsIn.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
 		
 		ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
 
@@ -127,9 +132,12 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			ServerHandler h = s.server.connections.get(i);
 
 			if (h != s)
+			{
 				s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(h.clientID, h.rawUsername), true));
+			}
 		}
 
 		Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(s.clientID, s.rawUsername), true));
+		Game.eventsOut.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
 	}
 }

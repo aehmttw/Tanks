@@ -1,8 +1,11 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+
+import java.util.Date;
 
 public class ScreenTutorialGame extends ScreenGame
 {
@@ -10,17 +13,24 @@ public class ScreenTutorialGame extends ScreenGame
 
 	public ScreenTutorialGame()
 	{
-		Game.startTime = 100;
+		Game.startTime = 0;
 	}
 	
-	public Button skip = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Skip Tutorial", new Runnable()
+	public Button skip = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 25, 350, 40, "Skip Tutorial", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
 			try 
 			{
-				Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath).create();
+				BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
+
+				f.create();
+				f.startWriting();
+				f.println("Fake certificate of completion:");
+				f.println("Tanks: The Crusades tutorial");
+				f.println("Skipped " + new Date().toString());
+				f.stopWriting();
 			} 
 			catch (Exception e)
 			{

@@ -29,10 +29,7 @@ public class ScreenPlaySingleplayer extends Screen
         @Override
         public void run()
         {
-            if (Crusade.currentCrusade == null)
-                Game.screen = new ScreenCrusades();
-            else
-                Game.screen = new ScreenResumeCrusade();
+            Game.screen = new ScreenCrusades();
         }
     }
             , "Fight battles in an order,---and see how long you can survive!");
@@ -52,7 +49,7 @@ public class ScreenPlaySingleplayer extends Screen
         @Override
         public void run()
         {
-            Tutorial.loadTutorial(false, Game.game.window.touchscreen);
+            new Tutorial().loadTutorial(false, Game.game.window.touchscreen);
         }
     }, "Learn how to play Tanks!"
     );

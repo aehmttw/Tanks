@@ -7,7 +7,7 @@ import tanks.event.EventBulletElectricStunEffect;
 import tanks.event.EventBulletInstantWaypoint;
 import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.ItemBullet;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;

@@ -12,7 +12,7 @@ public class TankBlack extends TankAIControlled
 		super(name, x, y, Game.tile_size, 0, 0, 0, angle, ShootAI.straight);
 		this.cooldownBase = 75;
 		this.cooldownRandom = 0;
-		this.speed = 4.0;
+		this.maxSpeed = 4.0;
 		this.enableDefensiveFiring = true;
 		this.bulletSpeed = 25.0 / 2;
 		this.bulletBounces = 0;
@@ -31,6 +31,6 @@ public class TankBlack extends TankAIControlled
 		if (Math.random() < 0.01)
 			strafeDirection = -strafeDirection;
 
-		this.setMotionInDirectionWithOffset(Game.playerTank.posX, Game.playerTank.posY, 3.5, strafeDirection);
+		this.setAccelerationInDirectionWithOffset(Game.playerTank.posX, Game.playerTank.posY, 3.5, strafeDirection);
 	}
 }

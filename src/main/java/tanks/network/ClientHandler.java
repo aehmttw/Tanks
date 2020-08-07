@@ -6,7 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
 import tanks.Panel;
-import tanks.event.EventKeepConnectionAlive;
+import tanks.event.EventPing;
 import tanks.event.EventSendClientDetails;
 import tanks.event.INetworkEvent;
 import tanks.event.online.EventSendOnlineClientDetails;
@@ -55,13 +55,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
 		ScreenPartyLobby.isClient = true;
 
-		this.sendEvent(new EventKeepConnectionAlive());
+		this.sendEvent(new EventPing());
     }
 	
 	public synchronized void sendEvent(INetworkEvent e)
 	{
 		ByteBuf b = ctx.channel().alloc().buffer();
-		b.writeInt(NetworkEventMap.get(e.getClass()));
+		int i = NetworkEventMap.get(e.getClass());
+
+		if (i == -1)
+			throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
+
+		b.writeInt(i);
 		e.write(b);
 		
 		ByteBuf b2 = ctx.channel().alloc().buffer();
@@ -97,7 +102,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg)
     {
-    	this.ctx = ctx;
+		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
 		boolean reply = this.reader.queueMessage(buffy, null);
 		ReferenceCountUtil.release(msg);
@@ -123,7 +128,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 				latencyCount = 0;
 			}
 
-			reply();
+			this.sendEvent(new EventPing());
+			//reply();
 		}	
     }
 
@@ -131,8 +137,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (Game.eventsOut)
 		{
-			EventKeepConnectionAlive k = new EventKeepConnectionAlive();
-			Game.eventsOut.add(k);
+			//EventKeepConnectionAlive k = new EventKeepConnectionAlive();
+			//Game.eventsOut.add(k);
 
 			for (int i = 0; i < Game.eventsOut.size(); i++)
 			{

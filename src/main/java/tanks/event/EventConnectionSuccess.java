@@ -15,7 +15,11 @@ public class EventConnectionSuccess extends PersonalEvent
 	public void execute() 
 	{
 		if (this.clientID == null)
+		{
 			Game.screen = new ScreenPartyLobby();
+
+			Game.eventsOut.add(new EventSendTankColors(Game.player));
+		}
 	}
 
 	@Override

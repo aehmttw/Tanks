@@ -1,15 +1,15 @@
 package tanks.hotbar;
 
-import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 
 public class Hotbar
 {
-	public ItemBar currentItemBar;
-	public Coins currentCoins;
+	public ItemBar itemBar;
+	public int coins;
 
 	public boolean enabledAmmunitionBar = true;
 	public boolean enabledItemBar = false;
@@ -25,22 +25,14 @@ public class Hotbar
 
 	public double hideTimer = 0;
 
-	public Button toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Panel.panel.hotbar.persistent = !Panel.panel.hotbar.persistent;
-		}
-	}
-	);
+	public static Button toggle;
 
 	public void update()
 	{
 		if (Game.game.window.touchscreen)
 		{
 			this.verticalOffset = 20;
-			this.toggle.update();
+			toggle.update();
 		}
 		else
 			this.verticalOffset = 0;
@@ -48,7 +40,7 @@ public class Hotbar
 		if (this.persistent)
 			this.hidden = false;
 
-		if (Game.playerTank.destroy)
+		if (Game.playerTank == null || Game.playerTank.destroy)
 			this.hidden = true;
 
 		this.hideTimer = Math.max(0, this.hideTimer - Panel.frameFrequency);
@@ -61,15 +53,14 @@ public class Hotbar
 		else
 			this.percentHidden = Math.max(0, this.percentHidden - 4 * Panel.frameFrequency);
 
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT) || Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT))
+		if (Game.game.input.hotbarToggle.isValid())
 		{
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_RIGHT_SHIFT);
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_LEFT_SHIFT);
+			Game.game.input.hotbarToggle.invalidate();
 			this.persistent = !this.persistent;
 		}
 
 		if (this.enabledItemBar)
-			this.currentItemBar.update();
+			this.itemBar.update();
 	}
 
 	public void draw()
@@ -85,7 +76,7 @@ public class Hotbar
 		}
 
 		if (this.enabledItemBar)
-			this.currentItemBar.draw();
+			this.itemBar.draw();
 
 		if (this.enabledHealthBar)
 		{
@@ -95,14 +86,20 @@ public class Hotbar
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(255, 128, 0, (100 - this.percentHidden) * 2.55);
 
-			double lives = Game.playerTank.health % 1.0;
-			if (lives == 0 && Game.playerTank.health > 0)
-				lives = 1;
+			double lives = 0;
+			int shields = 0;
 
-			if (Game.playerTank.destroy && Game.playerTank.health < 1)
-				lives = 0;
+			if (Game.playerTank != null)
+			{
+				lives = Game.playerTank.health % 1.0;
+				if (lives == 0 && Game.playerTank.health > 0)
+					lives = 1;
 
-			int shields = (int) (Game.playerTank.health - lives);
+				if (Game.playerTank.destroy && Game.playerTank.health < 1)
+					lives = 0;
+
+				shields = (int) (Game.playerTank.health - lives);
+			}
 
 			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, lives);
 
@@ -112,7 +109,7 @@ public class Hotbar
 				Drawing.drawing.fillInterfaceOval(x - 175, y, 18, 18);
 				Drawing.drawing.setInterfaceFontSize(12);
 				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.drawInterfaceText(x - 174, y, shields + "");
+				Drawing.drawing.drawInterfaceText(x - 175, y, shields + "");
 			}
 		}
 
@@ -125,12 +122,18 @@ public class Hotbar
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
 
-			int live = Game.playerTank.liveBullets;
-			int max = Game.playerTank.liveBulletMax;
+			int live = 0;
+			int max = 1;
 
-			if (this.enabledItemBar && this.currentItemBar.selected != -1 && this.currentItemBar.slots[this.currentItemBar.selected] instanceof ItemBullet)
+			if (Game.playerTank != null)
 			{
-				ItemBullet ib = (ItemBullet) this.currentItemBar.slots[this.currentItemBar.selected];
+				live = Game.playerTank.liveBullets;
+				max = Game.playerTank.liveBulletMax;
+			}
+
+			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet)
+			{
+				ItemBullet ib = (ItemBullet) this.itemBar.slots[this.itemBar.selected];
 				live = ib.liveBullets;
 				max = ib.maxAmount;
 			}
@@ -150,7 +153,7 @@ public class Hotbar
 				Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
 			}
 
-			if (Game.playerTank.liveMines < Game.playerTank.liveMinesMax)
+			if (Game.playerTank != null && Game.playerTank.liveMines < Game.playerTank.liveMinesMax)
 			{
 				Drawing.drawing.setColor(255, 0 , 0, (100 - this.percentHidden) * 2.55);
 				Drawing.drawing.fillInterfaceOval(x + 175, y, 18, 18);
@@ -160,7 +163,7 @@ public class Hotbar
 
 				Drawing.drawing.setInterfaceFontSize(12);
 				Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.drawInterfaceText(x + 176, y, Game.playerTank.liveMinesMax - Game.playerTank.liveMines + "");
+				Drawing.drawing.drawInterfaceText(x + 175, y, Game.playerTank.liveMinesMax - Game.playerTank.liveMines + "");
 			}
 		}
 
@@ -168,7 +171,7 @@ public class Hotbar
 		{
 			Drawing.drawing.setInterfaceFontSize(18);
 			Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: " + currentCoins.coins);
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: " + coins);
 		}
 
 		if (this.enabledRemainingEnemies)

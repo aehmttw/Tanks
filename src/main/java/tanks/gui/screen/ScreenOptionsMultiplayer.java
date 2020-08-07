@@ -9,7 +9,7 @@ public class ScreenOptionsMultiplayer extends Screen
 {
 	public static final String chatFilterText = "Chat filter: ";
 
-	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Username", new Runnable()
+	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Username", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -23,7 +23,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			Game.player.username, "Pick a username that players---will see in multiplayer");
 
-	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
+	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -38,7 +38,17 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"Filters chat of potentially---inappropriate words");
 
-	
+	Button color = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Tank color", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenOptionsMultiplayerColor();
+		}
+	},
+			"Personalize your tank---to stand out in multiplayer!");
+
+
 	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
 	{
 		@Override
@@ -69,6 +79,7 @@ public class ScreenOptionsMultiplayer extends Screen
 		chatFilter.update();
 		back.update();
 		username.update();
+		color.update();
 	}
 
 	@Override
@@ -78,6 +89,7 @@ public class ScreenOptionsMultiplayer extends Screen
 		back.draw();
 		chatFilter.draw();
 		username.draw();
+		color.draw();
 
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);

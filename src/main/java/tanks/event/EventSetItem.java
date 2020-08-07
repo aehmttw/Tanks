@@ -4,9 +4,9 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Panel;
 import tanks.Player;
-import tanks.hotbar.Item;
-import tanks.hotbar.ItemEmpty;
-import tanks.hotbar.ItemRemote;
+import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemEmpty;
+import tanks.hotbar.item.ItemRemote;
 import tanks.network.NetworkUtils;
 
 import java.util.UUID;
@@ -66,7 +66,7 @@ public class EventSetItem extends PersonalEvent
             if (i.stackSize == 0)
                 i = new ItemEmpty();
 
-            Panel.panel.hotbar.currentItemBar.slots[slot] = i;
+            Game.player.hotbar.itemBar.slots[slot] = i;
         }
     }
 }

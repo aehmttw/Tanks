@@ -3,7 +3,7 @@ package tanks.bullet;
 import tanks.*;
 import tanks.AttributeModifier.Operation;
 import tanks.event.EventTankUpdateHealth;
-import tanks.hotbar.ItemBullet;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletHealing extends BulletInstant
@@ -19,7 +19,7 @@ public class BulletHealing extends BulletInstant
 		this.baseColorB = 0;
 		this.name = "heal";
 		this.effect = Bullet.BulletEffect.none;
-		this.damage = -0.01;
+		this.damage = 0.01;
 
 		this.itemSound = null;
 		// this.itemSound = "heal.ogg";
@@ -44,8 +44,13 @@ public class BulletHealing extends BulletInstant
 		{
 			this.shoot();
 
+			float freq = (float) (Panel.frameFrequency / 10);
+
+			if (Game.game.window.touchscreen)
+				freq = 1;
+
 			if (!hitTank)
-				Drawing.drawing.playGlobalSound("heal1.ogg");
+				Drawing.drawing.playGlobalSound("heal1.ogg", 1f, freq / 2);
 		}
 
 		super.update();
@@ -58,9 +63,14 @@ public class BulletHealing extends BulletInstant
 			this.destroy = true;
 
 		hitTank = true;
-		
-		t.health = Math.min(t.baseHealth + 1, t.health - this.damage * Panel.frameFrequency);
-		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.health / (t.baseHealth + 1) / 2) + 1f) / 2);
+
+		float freq = (float) (Panel.frameFrequency / 10);
+
+		if (Game.game.window.touchscreen)
+			freq = 1;
+
+		t.health = Math.min(t.baseHealth + 1, t.health + this.damage * Panel.frameFrequency);
+		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.health / (t.baseHealth + 1) / 2) + 1f) / 2, freq / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 

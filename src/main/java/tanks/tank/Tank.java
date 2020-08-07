@@ -27,6 +27,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean targetable = true;
 
 	public boolean disabled = false;
+	public boolean inControlOfMotion = true;
+
+	public boolean tookRecoil = false;
+	public double recoilSpeed = 0;
 
 	public int coinValue = 0;
 
@@ -36,8 +40,11 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public String description = "";
 
-	public double accel = 0.1;
-	public double maxV = 3.0;
+	public double acceleration = 0.1;
+	public double accelerationModifier = 1;
+	public double frictionModifier = 1;
+	public double maxSpeedModifier = 1;
+	public double maxSpeed = 3.0;
 	public int liveBullets = 0;
 	public int liveMines = 0;
 	public double size;
@@ -118,59 +125,42 @@ public abstract class Tank extends Movable implements ISolidObject
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
-			if (o instanceof Tank && ((Tank)o).size > 0)
+			if (this != o && o instanceof Tank && ((Tank)o).size > 0)
 			{
-				double horizontalDist = Math.abs(this.posX - o.posX);
-				double verticalDist = Math.abs(this.posY - o.posY);
+				Tank t = (Tank) o;
+				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 
-				double dx = this.posX - o.posX;
-				double dy = this.posY - o.posY;
-
-				double bound = this.size / 2 + ((Tank)o).size / 2;
-
-				if (horizontalDist < bound && verticalDist < bound)
+				if (distSq <= Math.pow((this.size + t.size) / 2, 2))
 				{
-					double ourMass = this.size * this.size;
-					double theirMass = ((Tank) o).size * ((Tank) o).size;
-					double ourFrac = ourMass / (ourMass + theirMass);
-					double theirFrac = theirMass / (ourMass + theirMass);
+					this.hasCollided = true;
+					t.hasCollided = true;
 
-					if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vX * ourFrac + o.vX * theirFrac);
-						this.vX = v;
-						o.vX = v;
-						this.posX += (horizontalDist - bound) * ourFrac - this.vX * theirFrac;
-						o.posX -= (horizontalDist - bound) * ourFrac + o.vX * theirFrac;
-					}
-					else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vY * ourFrac + o.vY * theirFrac);
-						this.vY = v;
-						o.vY = v;
-						this.posY += (verticalDist - bound) * ourFrac - this.vY * theirFrac;
-						o.posY -= (verticalDist - bound) * ourFrac + o.vY * theirFrac;
-					}
-					else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vX * ourFrac + o.vX * theirFrac);
-						this.vX = v;
-						o.vX = v;
-						this.posX -= (horizontalDist - bound) * ourFrac + this.vX * theirFrac;
-						o.posX += (horizontalDist - bound) * ourFrac - o.vX * theirFrac;
-					}
-					else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
-					{
-						hasCollided = true;
-						double v = (this.vY * ourFrac + o.vY * theirFrac);
-						this.vY = v;
-						o.vY = v;
-						this.posY -= (verticalDist - bound) * ourFrac + this.vY * theirFrac;
-						o.posY += (verticalDist - bound) * ourFrac - o.vY * theirFrac;
-					}
+					double ourMass = this.size * this.size;
+					double theirMass = t.size * t.size;
+
+					double angle = this.getAngleInDirection(t.posX, t.posY);
+
+					double ourV = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+					double ourAngle = this.getPolarDirection();
+					double ourParallelV = ourV * Math.cos(ourAngle - angle);
+					double ourPerpV = ourV * Math.sin(ourAngle - angle);
+
+					double theirV = Math.sqrt(t.vX * t.vX + t.vY * t.vY);
+					double theirAngle = t.getPolarDirection();
+					double theirParallelV = theirV * Math.cos(theirAngle - angle);
+					double theirPerpV = theirV * Math.sin(theirAngle - angle);
+
+					double newV = (ourParallelV * ourMass + theirParallelV * theirMass) / (ourMass + theirMass);
+
+					double dist = Math.sqrt(distSq);
+					this.moveInDirection(Math.cos(angle), Math.sin(angle), (dist - (this.size + t.size) / 2) * theirMass / (ourMass + theirMass));
+					t.moveInDirection(Math.cos(Math.PI + angle), Math.sin(Math.PI + angle), (dist - (this.size + t.size) / 2) * ourMass / (ourMass + theirMass));
+
+					this.setMotionInDirection(t.posX, t.posY, newV);
+					this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
+
+					t.setMotionInDirection(this.posX, this.posY, -newV);
+					t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
 				}
 			}
 		}
@@ -326,6 +316,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.drawTread)
 		{
 			this.drawTread = false;
+
 			double a = this.getPolarDirection();
 			Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
 			Effect e2 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
@@ -347,9 +338,14 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.tracks.add(e2);
 		}
 
+		this.accelerationModifier = 1;
+		this.frictionModifier = 1;
+		this.maxSpeedModifier = 1;
+
 		for (int i = 0; i < this.attributes.size(); i++)
 		{
 			AttributeModifier a = this.attributes.get(i);
+
 			if (a.name.equals("healray"))
 			{
 				if (this.health < this.baseHealth)
@@ -358,23 +354,29 @@ public abstract class Tank extends Movable implements ISolidObject
 					i--;
 				}
 			}
+			else if (a.type.equals("acceleration"))
+				this.accelerationModifier = a.getValue(this.accelerationModifier);
+			else if (a.type.equals("friction"))
+				this.frictionModifier = a.getValue(this.frictionModifier);
+			else if (a.type.equals("max_speed"))
+				this.maxSpeedModifier = a.getValue(this.maxSpeedModifier);
 		}
-		
-		super.update();
 
-		if (this.vX != 0 && this.vY != 0 && !this.destroy && !ScreenGame.finished)
-		{
-			double dir = this.getPolarDirection();
-			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-				this.orientation -= Movable.angleBetween(this.orientation, dir) / 10 * Panel.frameFrequency;
-			else
-				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 10 * Panel.frameFrequency;
-		}
+		super.update();
 
 		if (this.health <= 0)
 			this.destroy = true;
 
 		this.checkCollision();
+
+		if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
+		{
+			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
+			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
+				this.orientation -= Movable.angleBetween(this.orientation, dir) / 10 * Panel.frameFrequency;
+			else
+				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 10 * Panel.frameFrequency;
+		}
 
 		if (!this.isRemote && this.standardUpdateEvent && ScreenPartyHost.isServer)
 			Game.eventsOut.add(new EventTankUpdate(this));
@@ -397,6 +399,12 @@ public abstract class Tank extends Movable implements ISolidObject
 				hidden = hidden && hiddenPoints[i][j];
 				hiddenPoints[i][j] = false;
 			}
+		}
+
+		if (this.hasCollided)
+		{
+			this.tookRecoil = false;
+			this.inControlOfMotion = true;
 		}
 	}
 
@@ -448,7 +456,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				AttributeModifier a = this.attributes.get(i);
 				if (a.name.equals("healray"))
 				{
-					double mod = 1 + 0.4 * (this.health - this.baseHealth);
+					double mod = 1 + 0.4 * Math.min(1, this.health - this.baseHealth);
 
 					if (this.health > this.baseHealth)
 					{
@@ -651,5 +659,15 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 		else
 			e.posZ = 1;
+	}
+
+	public void processRecoil(double recoil)
+	{
+		if (this.vX * this.vX + this.vY * this.vY > this.maxSpeed * this.maxSpeed)
+		{
+			this.tookRecoil = true;
+			this.inControlOfMotion = false;
+			this.recoilSpeed = 25.0 / 16.0 * recoil;
+		}
 	}
 }

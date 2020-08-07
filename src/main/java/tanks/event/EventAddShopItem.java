@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
+import tanks.hotbar.item.ItemRemote;
 import tanks.network.NetworkUtils;
 
 public class EventAddShopItem extends PersonalEvent
@@ -11,17 +12,19 @@ public class EventAddShopItem extends PersonalEvent
     public int item;
     public String name;
     public String description;
+    public String icon;
 
     public EventAddShopItem()
     {
 
     }
 
-    public EventAddShopItem(int item, String name, String desc)
+    public EventAddShopItem(int item, String name, String desc, String icon)
     {
         this.item = item;
         this.name = name;
         this.description = desc;
+        this.icon = icon;
     }
 
     @Override
@@ -30,6 +33,7 @@ public class EventAddShopItem extends PersonalEvent
         b.writeInt(item);
         NetworkUtils.writeString(b, name);
         NetworkUtils.writeString(b, description);
+        NetworkUtils.writeString(b, icon);
     }
 
     @Override
@@ -38,6 +42,7 @@ public class EventAddShopItem extends PersonalEvent
         item = b.readInt();
         name = NetworkUtils.readString(b);
         description = NetworkUtils.readString(b);
+        icon = NetworkUtils.readString(b);
     }
 
     @Override
@@ -55,6 +60,10 @@ public class EventAddShopItem extends PersonalEvent
             }, description));
 
 
+            ItemRemote i = new ItemRemote();
+            i.icon = icon;
+
+            ((ScreenGame) Game.screen).shop.add(i);
         }
     }
 }

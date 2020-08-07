@@ -1,9 +1,6 @@
 package lwjglwindow;
 
-import basewindow.BaseWindow;
-import basewindow.IDrawer;
-import basewindow.IUpdater;
-import basewindow.IWindowHandler;
+import basewindow.*;
 import basewindow.transformation.Rotation;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
@@ -14,7 +11,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.InputStream;
@@ -578,7 +574,7 @@ public class LWJGLWindow extends BaseWindow
 			glEnable(GL_DEPTH_TEST);
 
 			if ((options >> 6) % 2 == 0)
-				glDepthFunc(GL_LESS);
+				glDepthFunc(GL_LEQUAL);
 			else
 				glDepthFunc(GL_ALWAYS);
 
@@ -668,7 +664,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_DEPTH_TEST);
 
 		if ((options >> 6) % 2 == 0)
-			glDepthFunc(GL_LESS);
+			glDepthFunc(GL_LEQUAL);
 		else
 			glDepthFunc(GL_ALWAYS);
 
@@ -1151,7 +1147,24 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public String getKeyText(int key)
 	{
-		return glfwGetKeyName(key, 0);
+		return getTextKeyText(key);
+	}
+
+	@Override
+	public String getTextKeyText(int key)
+	{
+		String s = glfwGetKeyName(key, 0);
+
+		if (s == null || (key >= InputCodes.KEY_KP_0 && key <= InputCodes.KEY_KP_EQUAL))
+		{
+			String s2 = BaseWindow.keyNames.get(key);
+			if (s2 == null)
+				return "Key " + key;
+			else
+				return s2;
+		}
+		else
+			return s;
 	}
 
 	@Override

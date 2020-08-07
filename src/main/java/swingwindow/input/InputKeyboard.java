@@ -12,7 +12,9 @@ import static org.lwjgl.glfw.GLFW.*;
 public class InputKeyboard implements KeyListener
 {
     public static final HashMap<Integer, Integer> key_translations = new HashMap<>();
-	public SwingWindow window;
+    public static final HashMap<Integer, Integer> key_untranslations = new HashMap<>();
+
+    public SwingWindow window;
 	public InputKeyboard(SwingWindow w)
 	{
 		this.window = w;
@@ -65,38 +67,52 @@ public class InputKeyboard implements KeyListener
 
 	public void setupKeyMap()
     {
-        key_translations.put(VK_ESCAPE, GLFW_KEY_ESCAPE);
-        key_translations.put(VK_F1, GLFW_KEY_F1);
-        key_translations.put(VK_F2, GLFW_KEY_F2);
-        key_translations.put(VK_F3, GLFW_KEY_F3);
-        key_translations.put(VK_F4, GLFW_KEY_F4);
-        key_translations.put(VK_F5, GLFW_KEY_F5);
-        key_translations.put(VK_F6, GLFW_KEY_F6);
-        key_translations.put(VK_F7, GLFW_KEY_F7);
-        key_translations.put(VK_F8, GLFW_KEY_F8);
-        key_translations.put(VK_F9, GLFW_KEY_F9);
-        key_translations.put(VK_F10, GLFW_KEY_F10);
-        key_translations.put(VK_F11, GLFW_KEY_F11);
-        key_translations.put(VK_F12, GLFW_KEY_F12);
-        key_translations.put(VK_BACK_QUOTE, GLFW_KEY_GRAVE_ACCENT);
-        key_translations.put(VK_BACK_SPACE, GLFW_KEY_BACKSPACE);
-        key_translations.put(VK_TAB, GLFW_KEY_TAB);
-        key_translations.put(VK_ENTER, GLFW_KEY_ENTER);
-        key_translations.put(VK_SHIFT, GLFW_KEY_LEFT_SHIFT);
-        key_translations.put(VK_CONTROL, GLFW_KEY_LEFT_CONTROL);
-        key_translations.put(VK_ALT, GLFW_KEY_LEFT_ALT);
-        key_translations.put(VK_META, GLFW_KEY_LEFT_SUPER);
-        key_translations.put(VK_CONTEXT_MENU, GLFW_KEY_MENU);
-        key_translations.put(VK_UP, GLFW_KEY_UP);
-        key_translations.put(VK_DOWN, GLFW_KEY_DOWN);
-        key_translations.put(VK_LEFT, GLFW_KEY_LEFT);
-        key_translations.put(VK_RIGHT, GLFW_KEY_RIGHT);
-        key_translations.put(VK_SPACE, GLFW_KEY_SPACE);
+        registerTranslation(VK_ESCAPE, GLFW_KEY_ESCAPE);
+        registerTranslation(VK_F1, GLFW_KEY_F1);
+        registerTranslation(VK_F2, GLFW_KEY_F2);
+        registerTranslation(VK_F3, GLFW_KEY_F3);
+        registerTranslation(VK_F4, GLFW_KEY_F4);
+        registerTranslation(VK_F5, GLFW_KEY_F5);
+        registerTranslation(VK_F6, GLFW_KEY_F6);
+        registerTranslation(VK_F7, GLFW_KEY_F7);
+        registerTranslation(VK_F8, GLFW_KEY_F8);
+        registerTranslation(VK_F9, GLFW_KEY_F9);
+        registerTranslation(VK_F10, GLFW_KEY_F10);
+        registerTranslation(VK_F11, GLFW_KEY_F11);
+        registerTranslation(VK_F12, GLFW_KEY_F12);
+        registerTranslation(VK_BACK_QUOTE, GLFW_KEY_GRAVE_ACCENT);
+        registerTranslation(VK_BACK_SPACE, GLFW_KEY_BACKSPACE);
+        registerTranslation(VK_TAB, GLFW_KEY_TAB);
+        registerTranslation(VK_ENTER, GLFW_KEY_ENTER);
+        registerTranslation(VK_SHIFT, GLFW_KEY_LEFT_SHIFT);
+        registerTranslation(VK_CONTROL, GLFW_KEY_LEFT_CONTROL);
+        registerTranslation(VK_ALT, GLFW_KEY_LEFT_ALT);
+        registerTranslation(VK_META, GLFW_KEY_LEFT_SUPER);
+        registerTranslation(VK_CONTEXT_MENU, GLFW_KEY_MENU);
+        registerTranslation(VK_UP, GLFW_KEY_UP);
+        registerTranslation(VK_DOWN, GLFW_KEY_DOWN);
+        registerTranslation(VK_LEFT, GLFW_KEY_LEFT);
+        registerTranslation(VK_RIGHT, GLFW_KEY_RIGHT);
+        registerTranslation(VK_SPACE, GLFW_KEY_SPACE);
+    }
+
+    public void registerTranslation(Integer a, Integer b)
+    {
+        key_translations.put(a, b);
+        key_untranslations.put(b, a);
     }
 
     public static int translate(int key)
     {
         Integer code = key_translations.get(key);
+        if (code == null)
+            code = key;
+        return code;
+    }
+
+    public static int untranslate(int key)
+    {
+        Integer code = key_untranslations.get(key);
         if (code == null)
             code = key;
         return code;

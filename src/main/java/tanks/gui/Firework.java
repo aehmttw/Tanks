@@ -35,44 +35,44 @@ public class Firework extends Movable
 
 	public void setRandomColor()
 	{
-		int col = (int) (Math.random() * 256 * 6);
-		int r = 0;
-		int g = 0;
-		int b = 0;
+		double col = (Math.random() * 255 * 6);
+		double r = 0;
+		double g = 0;
+		double b = 0;
 
-		if (col < 256)
+		if (col <= 255)
 		{
 			r = 255;
 			g = col;
 			b = 0;
 		}
-		else if (col < 256 * 2)
+		else if (col <= 255 * 2)
 		{
-			r = 256 * 2 - col - 1;
+			r = 255 * 2 - col;
 			g = 255;
 			b = 0;
 		}
-		else if (col < 256 * 3)
+		else if (col <= 255 * 3)
 		{
 			g = 255;
-			b = col - 256 * 2;
+			b = col - 255 * 2;
 		}
-		else if (col < 256 * 4)
+		else if (col <= 255 * 4)
 		{
-			g = 256 * 4 - col - 1;
+			g = 255 * 4 - col;
 			b = 255;
 		}
-		else if (col < 256 * 5)
+		else if (col <= 255 * 5)
 		{
-			r = col - 256 * 4;
+			r = col - 255 * 4;
 			g = 0;
 			b = 255;
 		}
-		else if (col < 256 * 6)
+		else if (col <= 255 * 6)
 		{
 			r = 255;
 			g = 0;
-			b = 256 * 6 - col - 1;
+			b = 255 * 6 - col;
 		}
 
 		this.colorR = r;

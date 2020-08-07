@@ -2,9 +2,9 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 
-public class EventKeepConnectionAlive implements INetworkEvent
+public class EventPing implements INetworkEvent
 {
-	public EventKeepConnectionAlive()
+	public EventPing()
 	{
 		
 	}

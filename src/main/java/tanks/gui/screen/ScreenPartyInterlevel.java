@@ -95,7 +95,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
 
     public ScreenPartyInterlevel()
     {
-        Panel.panel.hotbar.percentHidden = 100;
+        Game.player.hotbar.percentHidden = 100;
 
         if (Panel.win)
             Drawing.drawing.playSound("win.ogg");
@@ -198,9 +198,12 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
                 fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
             }
 
-            for (int i = 0; i < getFireworkArray().size(); i++)
+            if (Game.superGraphics)
             {
-                fireworks.get(i).drawGlow();
+                for (int i = 0; i < getFireworkArray().size(); i++)
+                {
+                    fireworks.get(i).drawGlow();
+                }
             }
 
             //A fix to some glitchiness on ios

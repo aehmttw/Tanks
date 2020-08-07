@@ -107,7 +107,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
 
     public ScreenPartyCrusadeInterlevel()
     {
-        Panel.panel.hotbar.percentHidden = 100;
+        Game.player.hotbar.percentHidden = 100;
 
         if (ScreenPartyHost.isServer)
         {
@@ -230,9 +230,12 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
                 fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
             }
 
-            for (int i = 0; i < getFireworkArray().size(); i++)
+            if (Game.superGraphics)
             {
-                fireworks.get(i).drawGlow();
+                for (int i = 0; i < getFireworkArray().size(); i++)
+                {
+                    fireworks.get(i).drawGlow();
+                }
             }
 
             //A fix to some glitchiness on ios

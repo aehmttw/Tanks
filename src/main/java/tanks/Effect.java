@@ -13,6 +13,7 @@ public class Effect extends Movable implements IDrawableWithGlow
     public double colG;
     public double colB;
 
+    public boolean enableGlow = true;
     public double glowR;
     public double glowG;
     public double glowB;
@@ -26,12 +27,9 @@ public class Effect extends Movable implements IDrawableWithGlow
 
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
     {
-        //while (Game.recycleEffects.size() > 0 && Game.recycleEffects.get(0) == null)
-        //	Game.recycleEffects.remove(0);
-
         if (Game.recycleEffects.size() > 0)
         {
-            Effect e = Game.recycleEffects.remove(0);
+            Effect e = Game.recycleEffects.remove();
 
             e.refurbish();
             e.initialize(x, y, z, type);
@@ -157,6 +155,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         this.angle = 0;
         this.distance = 0;
         this.radius = 0;
+        this.enableGlow = true;
     }
 
     @Override
@@ -470,6 +469,12 @@ public class Effect extends Movable implements IDrawableWithGlow
     }
 
     @Override
+    public boolean isGlowEnabled()
+    {
+        return this.enableGlow;
+    }
+
+    @Override
     public void update()
     {
         this.posX += this.vX * Panel.frameFrequency;
@@ -478,17 +483,15 @@ public class Effect extends Movable implements IDrawableWithGlow
 
         if (this.maxAge >= 0)
             this.age += Panel.frameFrequency;
-        //this.age++;
 
         if (this.maxAge > 0 && this.age > this.maxAge && !removed)
         {
             removed = true;
 
-            if (Game.effects.contains(this))
+            if (Game.effects.contains(this) && !Game.removeEffects.contains(this))
                 Game.removeEffects.add(this);
-
-            else if (Game.tracks.contains(this))
-                Game.removeBelowEffects.add(this);
+            else if (Game.tracks.contains(this) && !Game.removeTracks.contains(this))
+                Game.removeTracks.add(this);
         }
     }
 }

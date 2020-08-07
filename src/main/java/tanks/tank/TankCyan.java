@@ -13,7 +13,7 @@ public class TankCyan extends TankAIControlled
 		super(name, x, y, Game.tile_size, 128, 255, 255, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 1.5;
+		this.maxSpeed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;

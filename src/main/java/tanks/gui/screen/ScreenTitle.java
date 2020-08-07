@@ -5,7 +5,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
 public class ScreenTitle extends Screen
@@ -119,6 +118,7 @@ public class ScreenTitle extends Screen
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
+				Game.movables.get(i).preUpdate();
 				Game.movables.get(i).update();
 			}
 
@@ -127,8 +127,8 @@ public class ScreenTitle extends Screen
 				Game.effects.get(i).update();
 			}
 
-			Game.tracks.removeAll(Game.removeBelowEffects);
-			Game.removeBelowEffects.clear();
+			Game.tracks.removeAll(Game.removeTracks);
+			Game.removeTracks.clear();
 
 			Game.movables.removeAll(Game.removeMovables);
 			Game.removeMovables.clear();

@@ -11,7 +11,8 @@ public class ObstacleText extends Obstacle
 	public ObstacleText(String name, String text, double posX, double posY) 
 	{
 		super(name, posX, posY);
-		
+
+		this.replaceTiles = false;
 		this.drawLevel = 1;
 		this.destructible = false;
 		this.bulletCollision = false;

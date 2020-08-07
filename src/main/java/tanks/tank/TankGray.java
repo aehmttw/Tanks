@@ -9,7 +9,7 @@ public class TankGray extends TankAIControlled
 		super(name, x, y, Game.tile_size, 100, 100, 100, angle, ShootAI.wander);
 
 		this.enableMovement = true;
-		this.speed = 1.5;
+		this.maxSpeed = 1.5;
 		this.enableMineLaying = false;
 		this.liveBulletMax = 1;
 		this.cooldownRandom = 60;
@@ -21,6 +21,7 @@ public class TankGray extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
 		this.aimAccuracyOffset = 0;
+		this.mineSensitivity = 0.75;
 
 		this.coinValue = 1;
 

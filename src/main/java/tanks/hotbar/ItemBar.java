@@ -1,13 +1,15 @@
 package tanks.hotbar;
 
-import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Player;
 import tanks.event.EventSetItem;
 import tanks.event.EventSetItemBarSlot;
 import tanks.gui.Button;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemEmpty;
 
 public class ItemBar
 {
@@ -34,9 +36,7 @@ public class ItemBar
 	public Button[] slotButtons = new Button[5];
 
 	public int selected = -1;
-
-	public Hotbar hotbar;
-
+	
 	public Player player;
 
 	public ItemBar(Player p)
@@ -58,12 +58,6 @@ public class ItemBar
 				}
 			});
 		}
-	}
-
-	public ItemBar(Player p, Hotbar h)
-	{
-		this(p);
-		this.hotbar = h;
 	}
 
 	public boolean addItem(Item item)
@@ -161,19 +155,19 @@ public class ItemBar
 
 	public void update()
 	{
-		checkKey(InputCodes.KEY_1, 0);
-		checkKey(InputCodes.KEY_2, 1);
-		checkKey(InputCodes.KEY_3, 2);
-		checkKey(InputCodes.KEY_4, 3);
-		checkKey(InputCodes.KEY_5, 4);
+		checkKey(Game.game.input.hotbar1, 0);
+		checkKey(Game.game.input.hotbar2, 1);
+		checkKey(Game.game.input.hotbar3, 2);
+		checkKey(Game.game.input.hotbar4, 3);
+		checkKey(Game.game.input.hotbar5, 4);
 
-		if (Game.game.window.touchscreen && this.hotbar.persistent)
+		if (Game.game.window.touchscreen && this.player.hotbar.persistent)
 		{
 			for (int i = 0; i < this.slotButtons.length; i++)
 			{
 				Button b = this.slotButtons[i];
 				b.posX = ((i - 2) * gap) + (Drawing.drawing.interfaceSizeX / 2);
-				b.posY = Drawing.drawing.interfaceSizeY - bar_margin - this.hotbar.verticalOffset;
+				b.posY = Drawing.drawing.interfaceSizeY - bar_margin - this.player.hotbar.verticalOffset;
 				b.update();
 			}
 		}
@@ -191,23 +185,23 @@ public class ItemBar
 		}
 	}
 
-	public void checkKey(int key, int index)
+	public void checkKey(InputBindingGroup input, int index)
 	{
-		if (Game.game.window.validPressedKeys.contains(key))
+		if (input.isValid())
 		{
 			this.setItem(index);
-			Game.game.window.validPressedKeys.remove((Integer) key);
+			input.invalidate();
 		}
 	}
 
 	public void setItem(int index)
 	{
-		if (this.hotbar != null)
+		if (this.player.hotbar != null)
 		{
-			this.hotbar.hidden = false;
+			this.player.hotbar.hidden = false;
 
 			if (!Game.game.window.touchscreen)
-				this.hotbar.hideTimer = 500;
+				this.player.hotbar.hideTimer = 500;
 		}
 
 		this.selected = (this.selected == index ? -1 : index);
@@ -220,21 +214,21 @@ public class ItemBar
 	{
 		for (int i = -2; i <= 2; i++)
 		{
-			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.hotbar.percentHidden) / 100.0);
+			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 
 			int x = (int) ((i * gap) + (Drawing.drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.hotbar.percentHidden - this.hotbar.verticalOffset);
+			int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.player.hotbar.percentHidden - this.player.hotbar.verticalOffset);
 
 			Drawing.drawing.fillInterfaceRect(x, y, size, size);
 
 			if (i + 2 == selected)
 			{
-				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.hotbar.percentHidden) * 2.55);
+				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.player.hotbar.percentHidden) * 2.55);
 				Drawing.drawing.fillInterfaceRect(x, y, size, size);
 				Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
 			}
 
-			Drawing.drawing.setColor(255, 255, 255, (100 - this.hotbar.percentHidden) * 2.55);
+			Drawing.drawing.setColor(255, 255, 255, (100 - this.player.hotbar.percentHidden) * 2.55);
 			if (slots[i + 2].icon != null)
 				Drawing.drawing.drawInterfaceImage("/" + slots[i + 2].icon, x, y, size, size);
 
@@ -243,10 +237,10 @@ public class ItemBar
 				Item item = slots[i + 2];
 				if (item.stackSize > 1)
 				{
-					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.hotbar.percentHidden) * 2.55);
+					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.player.hotbar.percentHidden) * 2.55);
 					Drawing.drawing.setInterfaceFontSize(18);
 					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
-					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.hotbar.percentHidden) / 100.0);
+					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 				}
 			}
 		}

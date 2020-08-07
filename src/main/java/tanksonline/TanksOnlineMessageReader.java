@@ -13,7 +13,6 @@ public class TanksOnlineMessageReader
     public ByteBuf queue;
     protected boolean reading = false;
     protected int endpoint;
-    protected int frame = 0;
 
     public boolean queueMessage(ByteBuf m, UUID clientID)
     {
@@ -39,7 +38,7 @@ public class TanksOnlineMessageReader
 
                 while (queue.readableBytes() >= endpoint)
                 {
-                    reply = reply || this.readMessage(s, queue, clientID);
+                    reply = this.readMessage(s, queue, clientID) || reply;
                     queue.discardReadBytes();
 
                     reading = false;
@@ -69,16 +68,18 @@ public class TanksOnlineMessageReader
         int i = m.readInt();
         Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
 
+        if (c == null)
+            throw new Exception("Invalid network event: " + i);
+
         INetworkEvent e = c.getConstructor().newInstance();
         e.read(m);
 
         if (e instanceof PersonalEvent)
         {
             ((PersonalEvent) e).clientID = clientID;
-            ((PersonalEvent) e).frame = frame;
         }
 
-        if (e instanceof EventKeepConnectionAlive)
+        if (e instanceof EventPing)
             return true;
         else if (e instanceof IOnlineServerEvent)
             ((IOnlineServerEvent) e).execute(s);

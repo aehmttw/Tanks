@@ -2,6 +2,7 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.Player;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 
@@ -18,17 +19,29 @@ public class EventPlayerReady extends PersonalEvent
 		if (!ScreenPartyHost.includedPlayers.contains(this.clientID))
 			return;
 
-		if (!ScreenPartyHost.readyPlayers.contains(this.clientID))
-			ScreenPartyHost.readyPlayers.add(this.clientID);
+		Player pl = null;
 
-		Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
-
-		if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
+		for (Player p: Game.players)
 		{
-			Game.eventsOut.add(new EventBeginLevelCountdown());
-			((ScreenGame) Game.screen).cancelCountdown = false;
+			if (p.clientID.equals(this.clientID))
+			{
+				pl = p;
+			}
 		}
 
+		if (pl != null)
+		{
+			if (!ScreenPartyHost.readyPlayers.contains(pl))
+				ScreenPartyHost.readyPlayers.add(pl);
+
+			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
+
+			if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
+			{
+				Game.eventsOut.add(new EventBeginLevelCountdown());
+				((ScreenGame) Game.screen).cancelCountdown = false;
+			}
+		}
 	}
 
 	@Override

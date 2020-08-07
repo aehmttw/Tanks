@@ -18,7 +18,7 @@ public class EventReturnToLobby extends PersonalEvent
 		{
 			Game.cleanUp();
 			Game.screen = new ScreenPartyLobby();
-			ScreenPartyLobby.readyPlayers = 0;
+			ScreenPartyLobby.readyPlayers.clear();
 			ScreenPartyLobby.includedPlayers.clear();
 
 			System.gc();

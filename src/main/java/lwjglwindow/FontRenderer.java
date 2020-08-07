@@ -113,7 +113,7 @@ public class FontRenderer extends BaseFontRenderer
 				w += (charSizes[this.chars.indexOf(c[i])] + 1) * sX * 4;
 		}
 		
-		return w;
+		return Math.max(w - 1, 0);
 	}
 	
 	public double getStringSizeY(double sY, String s)

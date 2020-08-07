@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.IWindowHandler;
+import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
 
 public class GameWindowHandler implements IWindowHandler
@@ -15,7 +16,10 @@ public class GameWindowHandler implements IWindowHandler
 
 		try
 		{
-			Game.player.saveCrusade(Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath));
+			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer)
+			{
+				Game.player.saveCrusade();
+			}
 		}
 		catch (Exception e)
 		{

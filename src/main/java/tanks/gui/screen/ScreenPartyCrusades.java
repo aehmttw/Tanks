@@ -9,7 +9,7 @@ public class ScreenPartyCrusades extends ScreenCrusades implements IPartyMenuScr
 {
     public ScreenPartyCrusades()
     {
-        this.quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+        this.quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
         {
             @Override
             public void run()

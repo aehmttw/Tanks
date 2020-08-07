@@ -41,18 +41,20 @@ public class Mine extends Movable
         this.outlineColorG = outlineCol[1];
         this.outlineColorB = outlineCol[2];
 
-        if (!t.isRemote)
-            Game.eventsOut.add(new EventLayMine(this));
-
-        if (freeIDs.size() > 0)
-            this.networkID = freeIDs.remove(0);
-        else
+        if (!this.tank.isRemote)
         {
-            this.networkID = currentID;
-            currentID++;
-        }
+            if (freeIDs.size() > 0)
+                this.networkID = freeIDs.remove(0);
+            else
+            {
+                this.networkID = currentID;
+                currentID++;
+            }
 
-        idMap.put(this.networkID, this);
+            idMap.put(this.networkID, this);
+
+            Game.eventsOut.add(new EventLayMine(this));
+        }
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
         {
@@ -188,7 +190,11 @@ public class Mine extends Movable
                                 o.destroy = true;
 
                                 if (this.tank.equals(Game.playerTank))
-                                    Panel.panel.hotbar.currentCoins.coins += ((Tank) o).coinValue;
+                                    Game.player.hotbar.coins += ((Tank) o).coinValue;
+                            }
+                            else
+                            {
+                                Drawing.drawing.playGlobalSound("damage.ogg");
                             }
                         }
                     }

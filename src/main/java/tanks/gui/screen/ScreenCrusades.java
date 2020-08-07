@@ -17,12 +17,51 @@ public class ScreenCrusades extends Screen
 	int yoffset = -150;
 	int page = 0;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run()
 		{
 			Game.screen = new ScreenPlaySingleplayer();
+		}
+	}
+	);
+
+	Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenPlaySingleplayer();
+		}
+	}
+	);
+
+
+	Button create = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Create crusade", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			String name = System.currentTimeMillis() + "";
+			BaseFile f = Game.game.fileManager.getFile(Game.homedir + crusadeDir + "/" + name + ".tanks");
+
+			try
+			{
+				f.create();
+				f.startWriting();
+				f.println("properties");
+				f.println("items");
+				f.println("levels");
+				f.stopWriting();
+
+				Crusade c = new Crusade(f, name);
+				Game.screen = new ScreenCrusadeDetails(c);
+			}
+			catch (IOException e)
+			{
+				Game.exitToCrash(e);
+			}
 		}
 	}
 	);
@@ -83,12 +122,15 @@ public class ScreenCrusades extends Screen
 			@Override
 			public void run()
 			{
-				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/classic_crusade.tanks");
+				Crusade c = findExistingCrusadeProgress("internal/Classic crusade");
 
-				Crusade.currentCrusade = new Crusade(al, "Classic Crusade", "/classic_crusade.tanks");
-				Crusade.crusadeMode = true;
-				Crusade.currentCrusade.begin();
-				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+				if (c == null)
+				{
+					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/classic_crusade.tanks");
+					c = new Crusade(al, "Classic crusade", "/classic_crusade.tanks");
+				}
+
+				Game.screen = new ScreenCrusadeDetails(c);
 			}
 		}
 		));
@@ -98,28 +140,36 @@ public class ScreenCrusades extends Screen
 			@Override
 			public void run()
 			{
-				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/wii_crusade.tanks");
-				Crusade.currentCrusade = new Crusade(al, "Wii Crusade", "/wii_crusade.tanks");
-				Crusade.crusadeMode = true;
-				Crusade.currentCrusade.begin();
-				Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+				Crusade c = findExistingCrusadeProgress("internal/Wii crusade");
+
+				if (c == null)
+				{
+					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/wii_crusade.tanks");
+					c = new Crusade(al, "Wii crusade", "/wii_crusade.tanks");
+				}
+
+				Game.screen = new ScreenCrusadeDetails(c);
 			}
 		}
 		));
 
+
 		for (String l: levels)
 		{
-			String[] pathSections = l.toString().replaceAll("\\\\", "/").split("/");
+			String[] pathSections = l.toString().replace("\\", "/").split("/");
 
-			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
+			String name = pathSections[pathSections.length - 1].split("\\.")[0];
+			buttons.add(new Button(0, 0, 350, 40, name.replace("_", " "), new Runnable()
 			{
 				@Override
 				public void run()
 				{
-					Crusade.currentCrusade = new Crusade(Game.game.fileManager.getFile(l), pathSections[pathSections.length - 1].split("\\.")[0]);
-					Crusade.crusadeMode = true;
-					Crusade.currentCrusade.begin();
-					Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+					Crusade c = findExistingCrusadeProgress(name);
+
+					if (c == null)
+						c = new Crusade(Game.game.fileManager.getFile(l), pathSections[pathSections.length - 1].split("\\.")[0]);
+
+					Game.screen = new ScreenCrusadeDetails(c);
 				}
 			}
 			));
@@ -146,8 +196,19 @@ public class ScreenCrusades extends Screen
 			else
 				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
 		}
+	}
 
+	public Crusade findExistingCrusadeProgress(String name)
+	{
+		if (ScreenPartyHost.isServer)
+			return null;
 
+		BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + name);
+
+		if (f.exists())
+			return Game.player.loadCrusade(f);
+		else
+			return null;
 	}
 
 	@Override
@@ -158,8 +219,13 @@ public class ScreenCrusades extends Screen
 			buttons.get(i).update();
 		}
 
-		quit.update();
-		//newLevel.update();
+		if (ScreenPartyHost.isServer)
+			quit2.update();
+		else
+		{
+			quit.update();
+			create.update();
+		}
 
 		if (page > 0)
 			previous.update();
@@ -178,8 +244,14 @@ public class ScreenCrusades extends Screen
 			buttons.get(i).draw();
 		}
 
-		quit.draw();
-		//newLevel.draw(g);
+		if (ScreenPartyHost.isServer)
+			quit2.draw();
+		else
+		{
+			quit.draw();
+			create.draw();
+		}
+
 
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Crusades");
 

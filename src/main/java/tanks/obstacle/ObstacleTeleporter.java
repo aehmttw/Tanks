@@ -18,6 +18,7 @@ public class ObstacleTeleporter extends Obstacle
 	{
 		super(name, posX, posY);
 
+		this.replaceTiles = false;
 		this.enableGroupID = true;
 		this.destructible = false;
 		this.tankCollision = false;

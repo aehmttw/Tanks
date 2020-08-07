@@ -164,7 +164,7 @@ public class ScreenOptionsGraphics extends Screen
                 ground3d.text = ground3dText + ScreenOptions.offText;
         }
     },
-            "Enabling 3D ground may impact---performance in large levels------Requires 3D and fancy---graphics to take effect");
+            "Enabling 3D ground may impact---performance in large levels");
 
 
     Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
@@ -261,10 +261,10 @@ public class ScreenOptionsGraphics extends Screen
 
         back.draw();
         antialiasing.draw();
+        ground3d.draw();
         vsync.draw();
         altPerspective.draw();
         graphics3d.draw();
-        ground3d.draw();
         graphics.draw();
 
         Drawing.drawing.setInterfaceFontSize(24);

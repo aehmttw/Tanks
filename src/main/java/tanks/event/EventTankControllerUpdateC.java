@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Panel;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerController;
 import tanks.tank.TankPlayerRemote;
@@ -15,7 +16,8 @@ public class EventTankControllerUpdateC extends PersonalEvent
     public double angle;
     public boolean action1;
     public boolean action2;
-    public long time;
+    public double time;
+    public long sysTime = System.currentTimeMillis();
 
     public EventTankControllerUpdateC()
     {
@@ -32,7 +34,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.angle = t.angle;
         this.action1 = t.action1;
         this.action2 = t.action2;
-        this.time = System.currentTimeMillis();
+        this.time = Panel.frameFrequency;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
         b.writeDouble(this.angle);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
-        b.writeLong(this.time);
+        b.writeDouble(this.time);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.angle = b.readDouble();
         this.action1 = b.readBoolean();
         this.action2 = b.readBoolean();
-        this.time = b.readLong();
+        this.time = b.readDouble();
     }
 
     @Override
@@ -70,7 +72,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
-            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.action1, this.action2, this.frame, this.time);
+            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.action1, this.action2, this.time, this.sysTime);
         }
     }
 

@@ -3,7 +3,7 @@ package tanks.bullet;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.hotbar.ItemBullet;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletFlame extends Bullet

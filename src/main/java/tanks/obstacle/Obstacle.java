@@ -13,6 +13,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
 
+	public boolean isSurfaceTile = false;
+
 	public boolean enableStacking = true;
 	public double stackHeight = 1;
 
@@ -27,7 +29,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 	public boolean update = false;
 	public boolean draggable = true;
 	public boolean bouncy = false;
-	public boolean replaceTiles = false;
+	public boolean replaceTiles = true;
 
 	public double posX;
 	public double posY;
@@ -94,10 +96,21 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 				int in = default_max_height - 1 - i;
 				drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA);
 
+				byte option = 0;
+
+				if (Obstacle.draw_size >= Game.tile_size)
+				{
+					if (i > 0)
+						option += 1;
+
+					if (i < Math.min(this.stackHeight, 4) - 1)
+						option += 2;
+				}
+
 				if (stackHeight % 1 == 0)
-					drawing.fillBox(this.posX, this.posY, i * Game.tile_size, draw_size, draw_size, draw_size);
+					drawing.fillBox(this.posX, this.posY, i * Game.tile_size, draw_size, draw_size, draw_size, option);
 				else
-					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size, draw_size, draw_size, draw_size);
+					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size, draw_size, draw_size, draw_size, option);
 			}
 		}
 		else
@@ -243,7 +256,14 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 		return false;*/
 	}
 	
-	public void drawTile(double r, double g, double b, double d) { }
+	public void drawTile(double r, double g, double b, double d)
+	{
+		if (Obstacle.draw_size < Game.tile_size)
+		{
+			Drawing.drawing.setColor(r, g, b);
+			Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, d * (1 - Obstacle.draw_size / Game.tile_size));
+		}
+	}
 	
 	public void postOverride() 
 	{

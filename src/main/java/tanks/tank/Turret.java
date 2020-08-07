@@ -22,10 +22,9 @@ public class Turret extends Movable
 	{
 		super(t.posX, t.posY);
 		this.tank = t;
-		this.colorR = (tank.colorR + 64) / 2;
-		this.colorG = (tank.colorG + 64) / 2;
-	    this.colorB = (tank.colorB + 64) / 2;
-
+		this.colorR = calculateSecondaryColor(this.tank.colorR);
+		this.colorG = calculateSecondaryColor(this.tank.colorG);
+	    this.colorB = calculateSecondaryColor(this.tank.colorB);
 	}
 
 	public void draw(double angle, boolean forInterface, boolean in3d, boolean transparent)
@@ -105,5 +104,10 @@ public class Turret extends Movable
 
 	@Override
 	public void draw() {}
+
+	public static double calculateSecondaryColor(double input)
+	{
+		return (input + 64) / 2;
+	}
 
 }

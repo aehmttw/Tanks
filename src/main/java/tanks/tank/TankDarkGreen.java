@@ -10,7 +10,7 @@ public class TankDarkGreen extends TankAIControlled
 		super(name, x, y, Game.tile_size, 85, 107, 47, angle, ShootAI.straight);
 		this.cooldownBase = 5;
 		this.cooldownRandom = 0;
-		this.speed = 3;
+		this.maxSpeed = 3;
 		this.bulletSpeed = 25.0 / 2;
 		this.aimAccuracyOffset = 0.1;
 		this.liveBulletMax = 8;
@@ -27,6 +27,6 @@ public class TankDarkGreen extends TankAIControlled
 	@Override
 	public void reactToTargetEnemySight()
 	{
-		this.setMotionAwayFromDirection(Game.playerTank.posX, Game.playerTank.posY, speed);
+		this.setAccelerationAwayFromDirection(Game.playerTank.posX, Game.playerTank.posY, acceleration);
 	}
 }

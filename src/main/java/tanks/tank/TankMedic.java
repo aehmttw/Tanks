@@ -6,7 +6,6 @@ import tanks.Panel;
 import tanks.Team;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletHealing;
-import tanks.event.EventShootBullet;
 
 public class TankMedic extends TankAIControlled
 {
@@ -19,7 +18,7 @@ public class TankMedic extends TankAIControlled
 
 		this.texture = "/medic.png";
 		this.enableMovement = true;
-		this.speed = 1.5;
+		this.maxSpeed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -61,7 +60,7 @@ public class TankMedic extends TankAIControlled
 		if (this.suicidal)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
-			this.speed = 6 - 4 * Math.min(this.timeUntilDeath, 500) / 500;
+			this.maxSpeed = 6 - 4 * Math.min(this.timeUntilDeath, 500) / 500;
 			this.enableBulletAvoidance = false;
 			this.enableMineAvoidance = false;
 		}
@@ -152,7 +151,7 @@ public class TankMedic extends TankAIControlled
 		if (this.suicidal)
 		{
 			this.overrideDirection = true;
-			this.setMotionInDirection(targetEnemy.posX, targetEnemy.posY, speed);
+			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, acceleration);
 		}
 	}
 

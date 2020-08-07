@@ -29,7 +29,7 @@ public class EventLevelEnd extends PersonalEvent
 
 		Game.cleanUp();
 
-		if (Game.clientID.toString().equals(winningTeam) || (Game.playerTank.team != null && Game.playerTank.team.name.equals(this.winningTeam)))
+		if (Game.clientID.toString().equals(winningTeam) || (Game.playerTank != null && Game.playerTank.team != null && Game.playerTank.team.name.equals(this.winningTeam)))
 		{
 			Panel.win = true;
 			Panel.winlose = "Victory!";
@@ -42,7 +42,7 @@ public class EventLevelEnd extends PersonalEvent
 
 		Game.screen = new ScreenPartyInterlevel();
 
-		ScreenPartyLobby.readyPlayers = 0;
+		ScreenPartyLobby.readyPlayers.clear();
 		ScreenPartyLobby.includedPlayers.clear();
 
 		System.gc();

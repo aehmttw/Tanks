@@ -1,5 +1,7 @@
 package basewindow;
 
+import java.util.HashMap;
+
 public class InputCodes
 {
     //Taken from GLFW so that we can use these key codes without having GLFW imported
@@ -195,4 +197,5 @@ public class InputCodes
     public static final int GAMEPAD_AXIS_RIGHT_Y = 3;
     public static final int GAMEPAD_AXIS_LEFT_TRIGGER = 4;
     public static final int GAMEPAD_AXIS_RIGHT_TRIGGER = 5;
-    public static final int GAMEPAD_AXIS_LAST = 5;}
+    public static final int GAMEPAD_AXIS_LAST = 5;
+}

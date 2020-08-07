@@ -29,6 +29,11 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 	protected double prevDistSq;
 
+	protected long lastTrace = 0;
+	protected static boolean lockTrace = false;
+
+	public static final double base_deceleration = 0.05;
+
 	public TankPlayer(double x, double y, double angle)
 	{
 		super("player", x, y, Game.tile_size, 0, 150, 255);
@@ -42,13 +47,29 @@ public class TankPlayer extends Tank implements IPlayerTank
 	@Override
 	public void update()
 	{
-		boolean up = Game.game.window.pressedKeys.contains(InputCodes.KEY_UP) || Game.game.window.pressedKeys.contains(InputCodes.KEY_W);
-		boolean down = Game.game.window.pressedKeys.contains(InputCodes.KEY_DOWN) || Game.game.window.pressedKeys.contains(InputCodes.KEY_S);
-		boolean left = Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_A);
-		boolean right = Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_D);
-		boolean trace = Game.game.window.pressedKeys.contains(InputCodes.KEY_PERIOD) || Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_4);
+		boolean up = Game.game.input.moveUp.isPressed();
+		boolean down = Game.game.input.moveDown.isPressed();
+		boolean left = Game.game.input.moveLeft.isPressed();
+		boolean right = Game.game.input.moveRight.isPressed();
+		boolean trace = Game.game.input.aim.isPressed();
 
 		boolean destroy = Game.game.window.pressedKeys.contains(InputCodes.KEY_BACKSPACE);
+
+		if (Game.game.input.aim.isValid())
+		{
+			Game.game.input.aim.invalidate();
+
+			long time = System.currentTimeMillis();
+
+			lockTrace = false;
+			if (time - lastTrace <= 500)
+			{
+				lastTrace = 0;
+				lockTrace = true;
+			}
+			else
+				lastTrace = time;
+		}
 
 		if (destroy && this.enableDestroyCheat)
 		{
@@ -59,81 +80,98 @@ public class TankPlayer extends Tank implements IPlayerTank
 			}
 		}
 
-		double acceleration = accel;
-		double maxVelocity = maxV;
-
-		double x = 0;
-		double y = 0;
-
-		double a = -1;
-
-		if (left)
-			x -= 1;
-
-		if (right)
-			x += 1;
-
-		if (up)
-			y -= 1;
-
-		if (down)
-			y += 1;
-
-		if (x == 1 && y == 0)
-			a = 0;
-		else if (x == 1 && y == 1)
-			a = Math.PI / 4;
-		else if (x == 0 && y == 1)
-			a = Math.PI / 2;
-		else if (x == -1 && y == 1)
-			a = 3 * Math.PI / 4;
-		else if (x == -1 && y == 0)
-			a = Math.PI;
-		else if (x == -1 && y == -1)
-			a = 5 * Math.PI / 4;
-		else if (x == 0 && y == -1)
-			a = 3 * Math.PI / 2;
-		else if (x == 1 && y == -1)
-			a = 7 * Math.PI / 4;
-
-		double intensity = 1;
-
-		if (a < 0 && Game.game.window.touchscreen)
+		if (this.tookRecoil)
 		{
-			intensity = controlStick.inputIntensity;
-
-			if (intensity >= 0.2)
-				a = controlStick.inputAngle;
+			if (this.recoilSpeed <= this.maxSpeed)
+			{
+				this.tookRecoil = false;
+				this.inControlOfMotion = true;
+			}
+			else
+			{
+				this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
+				this.recoilSpeed *= Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, Panel.frameFrequency);
+			}
 		}
-
-		if (a >= 0 && intensity >= 0.2)
-			this.addPolarMotion(a, acceleration * Panel.frameFrequency);
-		else
+		else if (this.inControlOfMotion)
 		{
-			this.vX *= Math.pow(0.95, Panel.frameFrequency);
-			this.vY *= Math.pow(0.95, Panel.frameFrequency);
+			double acceleration = this.acceleration * this.accelerationModifier;
+			double maxVelocity = this.maxSpeed * this.maxSpeedModifier;
 
-			if (Math.abs(this.vX) < 0.001)
-				this.vX = 0;
+			double x = 0;
+			double y = 0;
 
-			if (Math.abs(this.vY) < 0.001)
-				this.vY = 0;
+			double a = -1;
+
+			if (left)
+				x -= 1;
+
+			if (right)
+				x += 1;
+
+			if (up)
+				y -= 1;
+
+			if (down)
+				y += 1;
+
+			if (x == 1 && y == 0)
+				a = 0;
+			else if (x == 1 && y == 1)
+				a = Math.PI / 4;
+			else if (x == 0 && y == 1)
+				a = Math.PI / 2;
+			else if (x == -1 && y == 1)
+				a = 3 * Math.PI / 4;
+			else if (x == -1 && y == 0)
+				a = Math.PI;
+			else if (x == -1 && y == -1)
+				a = 5 * Math.PI / 4;
+			else if (x == 0 && y == -1)
+				a = 3 * Math.PI / 2;
+			else if (x == 1 && y == -1)
+				a = 7 * Math.PI / 4;
+
+			double intensity = 1;
+
+			if (a < 0 && Game.game.window.touchscreen)
+			{
+				intensity = controlStick.inputIntensity;
+
+				if (intensity >= 0.2)
+					a = controlStick.inputAngle;
+			}
+
+			if (a >= 0 && intensity >= 0.2)
+				this.addPolarMotion(a, acceleration * Panel.frameFrequency);
+
+			if (a == -1)
+			{
+				this.vX *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+
+				if (Math.abs(this.vX) < 0.001)
+					this.vX = 0;
+
+				if (Math.abs(this.vY) < 0.001)
+					this.vY = 0;
+			}
+
+			double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+
+			if (speed > maxVelocity)
+				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
 		}
-
-		double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-
-		if (speed > maxVelocity)
-			this.setPolarMotion(this.getPolarDirection(), maxVelocity);
 
 		if (this.cooldown > 0)
 			this.cooldown -= Panel.frameFrequency;
 
 		boolean shoot = false;
-		if (!Game.game.window.touchscreen && (Game.game.window.pressedKeys.contains(InputCodes.KEY_SPACE) || Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1)))
+		if (!Game.game.window.touchscreen && Game.game.input.shoot.isPressed())
 			shoot = true;
 
 		boolean mine = false;
-		if (!Game.game.window.touchscreen && (Game.game.window.pressedKeys.contains(InputCodes.KEY_ENTER) || Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_2)))
+		if (!Game.game.window.touchscreen && Game.game.input.mine.isPressed())
 			mine = true;
 
 		boolean prevTouchCircle = this.drawTouchCircle;
@@ -228,7 +266,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 			this.layMine();
 
 
-		if (trace && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
+		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
 		{
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 			r.vX /= 2;
@@ -247,9 +285,9 @@ public class TankPlayer extends Tank implements IPlayerTank
 		if (Game.bulletLocked || this.destroy)
 			return;
 
-		if (Panel.panel.hotbar.enabledItemBar)
+		if (Game.player.hotbar.enabledItemBar)
 		{
-			if (Panel.panel.hotbar.currentItemBar.useItem(false))
+			if (Game.player.hotbar.itemBar.useItem(false))
 				return;
 		}
 
@@ -274,6 +312,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
+
+		this.processRecoil(1);
 	}
 
 	public void fireBullet(Bullet b, double speed)
@@ -288,6 +328,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
+
+		this.processRecoil(b.recoil);
 	}
 
 	public void layMine()
@@ -295,9 +337,9 @@ public class TankPlayer extends Tank implements IPlayerTank
 		if (Game.bulletLocked || this.destroy)
 			return;
 
-		if (Panel.panel.hotbar.enabledItemBar)
+		if (Game.player.hotbar.enabledItemBar)
 		{
-			if (Panel.panel.hotbar.currentItemBar.useItem(true))
+			if (Game.player.hotbar.itemBar.useItem(true))
 				return;
 		}
 

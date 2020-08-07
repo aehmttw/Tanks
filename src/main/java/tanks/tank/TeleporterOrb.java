@@ -35,6 +35,9 @@ public class TeleporterOrb extends Movable
 		this.iY = iY;
 		this.dX = destX;
 		this.dY = destY;
+
+		this.tank.tookRecoil = false;
+		this.tank.inControlOfMotion = false;
 		
 		if (!t.isRemote)
 			Game.eventsOut.add(new EventTankTeleport(this));
@@ -60,6 +63,11 @@ public class TeleporterOrb extends Movable
 	@Override
 	public void update()
 	{
+		float freq = (float) (Panel.frameFrequency / 10);
+
+		if (Game.game.window.touchscreen)
+			freq = 1;
+
 		this.age += Panel.frameFrequency;
 
 		if (this.age > this.endAge)
@@ -67,6 +75,7 @@ public class TeleporterOrb extends Movable
 			Game.removeMovables.add(this);
 			this.tank.invulnerable = false;
 			this.tank.targetable = true;
+			this.tank.inControlOfMotion = true;
 
 			for (int i = 0; i < 100; i++)
 			{
@@ -89,20 +98,20 @@ public class TeleporterOrb extends Movable
 		if (this.age <= 0)
 		{
 			if (this.tank == Game.playerTank)
-				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f);
+				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f * freq);
 
 			frac = 1;
 		}
 		else if (this.age >= this.maxAge)
 		{
 			if (this.tank == Game.playerTank)
-				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f);
+				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f * freq);
 
 			frac = 0;
 		}
 
 		if (this.tank == Game.playerTank)
-			Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5), (1 - (float) (tank.size / size)) / 4f);
+			Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5), freq * (1 - (float) (tank.size / size)) / 4f);
 
 
 		if (this.age <= -50)
@@ -137,7 +146,7 @@ public class TeleporterOrb extends Movable
 	{
 		if (!Game.fancyGraphics)
 			return;
-		
+
 		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);
 		double var = 50;
 		

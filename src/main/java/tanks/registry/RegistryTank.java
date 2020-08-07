@@ -124,7 +124,7 @@ public class RegistryTank
 			f.println("# put 'custom' for parameter 3");
 			f.println("# and put its absolute file path as parameter 4 in this file.");
 			f.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
-			f.println("# Example custom tank entry: 'mytank,1,custom,C:\\Users\\potato\\.tanks.d\\MyTank.jar,com.potato.MyTank'");
+			f.println("# Example custom tank entry: 'mytank,1,custom,C:\\Users\\potato\\.tanks\\MyTank.jar,com.potato.MyTank'");
 			f.println("# Don't leave any blank lines!");
 
 			for (int i = 0; i < Game.defaultTanks.size(); i++)

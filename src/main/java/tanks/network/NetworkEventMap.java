@@ -19,22 +19,17 @@ public class NetworkEventMap
 	
 	public static int get(Class<? extends INetworkEvent> c)
 	{
-		Integer n = map2.get(c);
+		Integer i = map2.get(c);
 
-		if (n == null)
-			throw new RuntimeException("Invalid network event: " + c);
+		if (i == null)
+			return -1;
 
-		return n;
+		return i;
 	}
 	
 	public static Class<? extends INetworkEvent> get(int i)
 	{
-		Class<? extends INetworkEvent> n = map1.get(i);
-
-		if (n == null)
-			throw new RuntimeException("Invalid network event: " + i);
-
-		return n;
+		return map1.get(i);
 	}
 
 	public static void print()

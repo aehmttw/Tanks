@@ -40,8 +40,8 @@ public class EventSetItemBarSlot extends PersonalEvent
                 Player p = Game.players.get(i);
                 if (p.clientID.equals(this.clientID))
                 {
-                    if (p.crusadeItemBar != null)
-                        p.crusadeItemBar.selected = this.slot;
+                    if (p.hotbar.itemBar != null)
+                        p.hotbar.itemBar.selected = this.slot;
                 }
             }
         }

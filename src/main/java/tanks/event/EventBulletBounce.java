@@ -3,7 +3,7 @@ package tanks.event;
 import io.netty.buffer.ByteBuf;
 import tanks.bullet.Bullet;
 
-public class EventBulletUpdate extends PersonalEvent
+public class EventBulletBounce extends PersonalEvent
 {
 	public int bullet;
 	public double posX;
@@ -11,16 +11,16 @@ public class EventBulletUpdate extends PersonalEvent
 	public double vX;
 	public double vY;
 
-	public EventBulletUpdate()
+	public EventBulletBounce()
 	{
 
 	}
 
-	public EventBulletUpdate(Bullet b)
+	public EventBulletBounce(Bullet b)
 	{
 		this.bullet = b.networkID;
-		this.posX = b.posX;
-		this.posY = b.posY;
+		this.posX = b.collisionX;
+		this.posY = b.collisionY;
 		this.vX = b.vX;
 		this.vY = b.vY;
 	}

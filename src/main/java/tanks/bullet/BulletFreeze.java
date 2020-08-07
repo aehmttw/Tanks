@@ -3,7 +3,7 @@ package tanks.bullet;
 import tanks.AreaEffectFreeze;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.hotbar.ItemBullet;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletFreeze extends Bullet

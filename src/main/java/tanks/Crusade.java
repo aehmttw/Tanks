@@ -1,16 +1,17 @@
 package tanks;
-
 import basewindow.BaseFile;
-import tanks.event.EventBeginCrusade;
-import tanks.event.EventLoadCrusadeHotbar;
-import tanks.hotbar.Coins;
-import tanks.hotbar.Item;
+import tanks.event.*;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
+import tanks.hotbar.item.Item;
+import tanks.network.Server;
+import tanks.network.ServerHandler;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Crusade 
 {
@@ -28,6 +29,8 @@ public class Crusade
 	public int saveLevel = 0;
 
 	public ArrayList<String> levels = new ArrayList<String>();
+	public ArrayList<String> levelNames = new ArrayList<String>();
+
 	public int bonusLifeFrequency = 3;
 	public int startingLives = 3;
 
@@ -37,6 +40,12 @@ public class Crusade
 	public String fileName = "";
 
 	public boolean internal = false;
+	public boolean readOnly = false;
+
+	public boolean started = false;
+
+	public HashMap<Player, ItemBar> crusadeItembars = new HashMap<>();
+	public HashMap<Player, Integer> crusadeCoins = new HashMap<>();
 
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
@@ -95,6 +104,11 @@ public class Crusade
 					if (parsing == 0)
 					{
 						this.levels.add(levelArray.get(i));
+
+						if (levelArray.get(i).contains("name="))
+							this.levelNames.add(levelArray.get(i).substring(levelArray.get(i).indexOf("name=") + 5));
+						else
+							this.levelNames.add("Battle " + (levelNames.size() + 1));
 					}
 					else if (parsing == 1)
 					{
@@ -107,14 +121,14 @@ public class Crusade
 					}
 					break;
 			}
-			
+
 			i++;
 		}
 		
 		this.name = name;
 
-		if (this.levels.size() <= 0)
-			Game.exitToCrash(new RuntimeException("The crusade " + name + " has no levels!"));
+		//if (this.levels.size() <= 0)
+		//	Game.exitToCrash(new RuntimeException("The crusade " + name + " has no levels!"));
 
 		for (int j = 0; j < Game.players.size(); j++)
 		{
@@ -126,25 +140,32 @@ public class Crusade
 	{
 		for (int i = 0; i < Game.players.size(); i++)
 		{
-			Game.players.get(i).crusadeItemBar = new ItemBar(Game.players.get(i));
-			Game.players.get(i).coins = new Coins();
+			Game.players.get(i).hotbar.itemBar = new ItemBar(Game.players.get(i));
+			Game.players.get(i).hotbar.coins = 0;
+			Game.players.get(i).remainingLives = startingLives;
 		}
 
-		Game.player.crusadeItemBar.hotbar = Panel.panel.hotbar;
+		currentLevel = 0;
+		saveLevel = 0;
 
 		Game.eventsOut.add(new EventBeginCrusade());
 
-		this.loadLevel();
+		this.started = true;
+		this.crusadeCoins.clear();
+		this.crusadeItembars.clear();
+
+        this.crusadeCoins.put(Game.player, 0);
+        this.crusadeItembars.put(Game.player, new ItemBar(Game.player));
+
+        this.loadLevel();
 	}
 
 	public void loadLevel()
 	{
 		Level l = new Level(this.levels.get(this.currentLevel));
 
-		Panel.panel.hotbar.enabledItemBar = true;
-		Panel.panel.hotbar.currentItemBar = Game.player.crusadeItemBar;
-		Panel.panel.hotbar.enabledCoins = true;
-		Panel.panel.hotbar.currentCoins = Game.player.coins;
+		Game.player.hotbar.enabledItemBar = true;
+		Game.player.hotbar.enabledCoins = true;
 
 		for (Player player: Game.players)
 		{
@@ -153,6 +174,30 @@ public class Crusade
 		}
 
 		l.loadLevel();
+
+		for (Player player: Game.players)
+		{
+			Integer c = crusadeCoins.get(player);
+			if (c == null)
+				player.hotbar.coins = 0;
+			else
+				player.hotbar.coins = c;
+
+			ItemBar i = crusadeItembars.get(player);
+			if (i == null)
+				player.hotbar.itemBar = new ItemBar(player);
+			else
+				player.hotbar.itemBar = i;
+
+			if (player != Game.player)
+			{
+				Game.eventsOut.add(new EventUpdateCoins(player));
+
+				for (int in = 0; in < player.hotbar.itemBar.slots.length; in++)
+					Game.eventsOut.add(new EventSetItem(player, in, player.hotbar.itemBar.slots[in]));
+			}
+		}
+
 		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle " + (this.currentLevel + 1)));
 	}
 	
@@ -197,7 +242,8 @@ public class Crusade
 
 		try
 		{
-			Game.player.saveCrusade(Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath), win);
+			if (!ScreenPartyHost.isServer)
+				Game.player.saveCrusade(win);
 		}
 		catch (Exception e)
 		{
@@ -230,5 +276,17 @@ public class Crusade
 		}
 
 		return shop;
+	}
+
+	public void saveHotbars()
+	{
+		this.crusadeItembars.clear();
+		this.crusadeCoins.clear();
+
+		for (Player p: Game.players)
+		{
+			this.crusadeItembars.put(p, p.hotbar.itemBar);
+			this.crusadeCoins.put(p, p.hotbar.coins);
+		}
 	}
 }

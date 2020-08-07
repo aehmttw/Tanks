@@ -6,14 +6,20 @@ import basewindow.BaseWindow;
 import tanks.bullet.Bullet;
 import tanks.event.*;
 import tanks.event.online.*;
+import tanks.gui.Button;
 import tanks.gui.ChatFilter;
+import tanks.gui.input.InputBindingGroup;
+import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
-import tanks.hotbar.Coins;
+import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemShield;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SynchronizedList;
 import tanks.obstacle.*;
+import tanks.registry.RegistryItem;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
@@ -22,10 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 public class Game
 {
@@ -54,9 +57,9 @@ public class Game
 	public static ArrayList<Movable> removeMovables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> removeObstacles = new ArrayList<Obstacle>();
 	public static ArrayList<Effect> removeEffects = new ArrayList<Effect>();
-	public static ArrayList<Effect> removeBelowEffects = new ArrayList<Effect>();
+	public static ArrayList<Effect> removeTracks = new ArrayList<Effect>();
 
-	public static ArrayList<Effect> recycleEffects = new ArrayList<Effect>();
+	public static Queue<Effect> recycleEffects = new LinkedList<Effect>();
 
 	public static final SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<INetworkEvent>();
 	public static final SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<INetworkEvent>();
@@ -77,8 +80,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks 0.8.1";
-	public static final int network_protocol = 14;
+	public static final String version = "Tanks 0.9.c";
+	public static final int network_protocol = 18;
 	public static boolean debug = false;
 
 	public static int port = 8080;
@@ -98,6 +101,7 @@ public class Game
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 
+	public static boolean soundsEnabled = true;
 	public static boolean musicEnabled = true;
 
 	public static boolean antialiasing = false;
@@ -109,7 +113,9 @@ public class Game
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	public static long crashTime = 0;
 
-	public static Screen screen;
+    public static double[] color = new double[3];
+
+    public static Screen screen;
 
 	public static String ip = "";
 
@@ -123,9 +129,11 @@ public class Game
 
 	public static boolean enableCustomTankRegistry = false;
 	public static boolean enableCustomObstacleRegistry = false;
+	public static boolean enableCustomItemRegistry = false;
 
 	public static RegistryTank registryTank = new RegistryTank();
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
+	public static RegistryItem registryItem = new RegistryItem();
 
 	public BaseWindow window;
 
@@ -136,6 +144,9 @@ public class Game
 
 	public static ChatFilter chatFilter = new ChatFilter();
 
+	public ArrayList<InputBindingGroup> inputBindings = new ArrayList<>();
+	public InputBindings input;
+
 	public static PrintStream logger = System.err;
 
 	public static String directoryPath = "/.tanks";
@@ -143,10 +154,12 @@ public class Game
 	public static final String crashesPath = directoryPath + "/crashes/";
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
 	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
+	public static final String itemRegistryPath = directoryPath + "/item-registry.txt";
 	public static final String optionsPath = directoryPath + "/options.txt";
+	public static final String controlsPath = directoryPath + "/controls.txt";
 	public static final String tutorialPath = directoryPath + "/tutorial.txt";
 	public static final String uuidPath = directoryPath + "/uuid";
-	public static final String savedCrusadePath = directoryPath + "/crusade-progress";
+	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 
 	public static final float musicVolume = 0.5f;
 
@@ -154,18 +167,23 @@ public class Game
 
 	public static ArrayList<RegistryTank.DefaultTankEntry> defaultTanks = new ArrayList<RegistryTank.DefaultTankEntry>();
 	public static ArrayList<RegistryObstacle.DefaultObstacleEntry> defaultObstacles = new ArrayList<RegistryObstacle.DefaultObstacleEntry>();
+	public static ArrayList<RegistryItem.DefaultItemEntry> defaultItems = new ArrayList<RegistryItem.DefaultItemEntry>();
 
 	public static Game game = new Game();
 
 	public static boolean isOnlineServer;
 	public static boolean connectedToOnline = false;
 
-	private Game() {}
+	private Game()
+	{
+		Game.game = this;
+		input = new InputBindings();
+	}
 
 	public static void registerEvents()
 	{
 		NetworkEventMap.register(EventSendClientDetails.class);
-		NetworkEventMap.register(EventKeepConnectionAlive.class);
+		NetworkEventMap.register(EventPing.class);
 		NetworkEventMap.register(EventConnectionSuccess.class);
 		NetworkEventMap.register(EventKick.class);
 		NetworkEventMap.register(EventAnnounceConnection.class);
@@ -185,7 +203,7 @@ public class Game
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
-		NetworkEventMap.register(EventUpdateReadyCount.class);
+		NetworkEventMap.register(EventUpdateReadyPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
 		NetworkEventMap.register(EventTankUpdate.class);
@@ -197,7 +215,7 @@ public class Game
 		NetworkEventMap.register(EventCreateCustomTank.class);
 		NetworkEventMap.register(EventTankUpdateHealth.class);
 		NetworkEventMap.register(EventShootBullet.class);
-		NetworkEventMap.register(EventBulletUpdate.class);
+		NetworkEventMap.register(EventBulletBounce.class);
 		NetworkEventMap.register(EventBulletDestroyed.class);
 		NetworkEventMap.register(EventBulletInstantWaypoint.class);
 		NetworkEventMap.register(EventBulletAddAttributeModifier.class);
@@ -211,6 +229,7 @@ public class Game
 		NetworkEventMap.register(EventCreateFreezeEffect.class);
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
 		NetworkEventMap.register(EventPlaySound.class);
+		NetworkEventMap.register(EventSendTankColors.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);
@@ -245,13 +264,27 @@ public class Game
 		Panel.initialize();
 		Game.exitToTitle();
 
+		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Game.player.hotbar.persistent = !Game.player.hotbar.persistent;
+			}
+		}
+		);
+
 		registerEvents();
+
+		ItemBullet.initializeMaps();
 
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleBouncy.class, "bouncy"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleShrubbery.class, "shrub"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleMud.class, "mud"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIce.class, "ice"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleTeleporter.class, "teleporter"));
 
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
@@ -272,6 +305,9 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
+
+		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemBullet.class, ItemBullet.item_name));
+		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemShield.class, ItemShield.item_name));
 
 		homedir = System.getProperty("user.home");
 
@@ -306,6 +342,18 @@ public class Game
 		if (!obstacleRegistryFile.exists())
 		{
 			RegistryObstacle.initRegistry(homedir);
+		}
+
+		BaseFile itemRegistryFile = game.fileManager.getFile(homedir + itemRegistryPath);
+		if (!itemRegistryFile.exists())
+		{
+			RegistryItem.initRegistry(homedir);
+		}
+
+		BaseFile savedCrusadesProgressFile = game.fileManager.getFile(homedir + savedCrusadePath + "/internal");
+		if (!savedCrusadesProgressFile.exists())
+		{
+			savedCrusadesProgressFile.mkdirs();
 		}
 
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
@@ -352,6 +400,7 @@ public class Game
 
 		RegistryTank.loadRegistry(homedir);
 		RegistryObstacle.loadRegistry(homedir);
+		RegistryItem.loadRegistry(homedir);
 
 		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
 		if (!optionsFile.exists())
@@ -360,15 +409,8 @@ public class Game
 		}
 
 		ScreenOptions.loadOptions(Game.homedir);
-
-		try
-		{
-			player.loadCrusade(Game.game.fileManager.getFile(homedir + savedCrusadePath));
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
+		game.input.file = game.fileManager.getFile(Game.homedir + Game.controlsPath);
+		game.input.load();
 
 		createModels();
 	}
@@ -715,6 +757,16 @@ public class Game
 			return "less than 1m";
 	}
 
+	public static String formatString(String s)
+	{
+		if (s.length() == 0)
+			return s;
+		else if (s.length() == 1)
+			return s.toUpperCase();
+		else
+			return Character.toUpperCase(s.charAt(0)) + s.substring(1).replace("-", " ").replace("_", " ").toLowerCase();
+	}
+
 	public static void reset()
 	{
 		resetNetworkIDs();
@@ -725,7 +777,7 @@ public class Game
 		effects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeBelowEffects.clear();
+		removeTracks.clear();
 
 		System.gc();
 		start();
@@ -743,7 +795,7 @@ public class Game
 		effects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeBelowEffects.clear();
+		removeTracks.clear();
 
 		System.gc();
 	}
@@ -756,7 +808,7 @@ public class Game
 		effects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeBelowEffects.clear();
+		removeTracks.clear();
 
 		System.gc();
 
@@ -829,7 +881,7 @@ public class Game
 
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeBelowEffects.clear();
+		removeTracks.clear();
 
 		System.gc();
 	}
@@ -869,6 +921,67 @@ public class Game
 			return Game.tilesDepth[x][y] + 0;
 	}
 
+	public static boolean stringsEqual(String a, String b)
+	{
+		if (a == null && b == null)
+			return true;
+
+		if (a == null || b == null)
+			return false;
+
+		return a.equals(b);
+	}
+
+	public static double[] getRainbowColor(double fraction)
+    {
+        double col = fraction * 255 * 6;
+
+        double r = 0;
+        double g = 0;
+        double b = 0;
+
+        if (col <= 255)
+        {
+            r = 255;
+            g = col;
+            b = 0;
+        }
+        else if (col <= 255 * 2)
+        {
+            r = 255 * 2 - col;
+            g = 255;
+            b = 0;
+        }
+        else if (col <= 255 * 3)
+        {
+            g = 255;
+            b = col - 255 * 2;
+        }
+        else if (col <= 255 * 4)
+        {
+            g = 255 * 4 - col;
+            b = 255;
+        }
+        else if (col <= 255 * 5)
+        {
+            r = col - 255 * 4;
+            g = 0;
+            b = 255;
+        }
+        else if (col <= 255 * 6)
+        {
+            r = 255;
+            g = 0;
+            b = 255 * 6 - col;
+        }
+
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
+
+        return color;
+    }
+
 	public static void exitToTitle()
 	{
 		cleanUp();
@@ -893,14 +1006,14 @@ public class Game
 		effects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeBelowEffects.clear();
+		removeTracks.clear();
 
 		resetNetworkIDs();
 
-		Panel.panel.hotbar.currentCoins = new Coins();
-		Panel.panel.hotbar.enabledCoins = false;
-		Panel.panel.hotbar.currentItemBar = new ItemBar(Game.player, Panel.panel.hotbar);
-		Panel.panel.hotbar.enabledItemBar = false;
+		Game.player.hotbar.coins = 0;
+		Game.player.hotbar.enabledCoins = false;
+		Game.player.hotbar.itemBar = new ItemBar(Game.player);
+		Game.player.hotbar.enabledItemBar = false;
 	}
 
 	public static void resetNetworkIDs()

@@ -78,7 +78,7 @@ public class ScreenBrowseLevels extends ScreenLayout
 		{
 			for (UploadedLevel l : levels)
 			{
-				Button b = new Button(0, 0, 350, 40, l.name, new Runnable()
+				Button b = new Button(0, 0, 350, 40, l.name.replace("_", " "), new Runnable()
 				{
 					@Override
 					public void run()

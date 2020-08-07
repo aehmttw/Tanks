@@ -53,13 +53,22 @@ public class UUIDTextBox extends TextBox
                     this.inputKey(0, s.substring(i, i + 1).toLowerCase());
                 }
             }
+
+            if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_BACKSPACE) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_DELETE))
+            {
+                Game.game.window.textPressedKeys.clear();
+                Game.game.window.textValidPressedKeys.clear();
+                Game.game.window.getRawTextKeys().clear();
+
+                this.clear();
+            }
         }
 
         ArrayList<Integer> texts = Game.game.window.getRawTextKeys();
 
         for (int key : texts)
         {
-            String text = Game.game.window.getKeyText(key);
+            String text = Game.game.window.getTextKeyText(key);
 
             if (text == null && key == InputCodes.KEY_SPACE)
                 text = " ";

@@ -34,6 +34,8 @@ public class TankAIControlled extends Tank
 	public boolean enableTargetEnemyReaction = true;
 	public boolean enableMineLaying = true;
 	public boolean enableMineAvoidance = true;
+	/** How close the tank needs to get to a mine to avoid it*/
+	public double mineSensitivity = 1.5;
 	public boolean enableBulletAvoidance = true;
 	/** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!*/
 	public boolean enablePredictiveFiring = true;
@@ -79,9 +81,6 @@ public class TankAIControlled extends Tank
 	/** Speed at which the turret moves while idle*/
 	public double idleTurretSpeed = 0.005;
 
-	/** Speed at which the tank moves*/
-	public double speed = 3.0;
-
 	/** Chance per frame to change direction*/
 	public double motionChangeChance = 0.01;
 
@@ -102,9 +101,6 @@ public class TankAIControlled extends Tank
 
 	/** Increasing this value increases how stubborn the tank is in following a path*/
 	public double seekTimerBase = 200;
-
-	/** Increasing this value increases how sharply the tank turns while following a path*/
-	public double seekTurnBase = 50;
 
 	/** Type of shooting AI to use*/
 	public ShootAI shootAIType;
@@ -133,6 +129,9 @@ public class TankAIControlled extends Tank
 
 	/** Stores distances to obstacles or tanks in 32 directions*/
 	protected int[] mineFleeDistances = new int[32];
+
+	/** Time in which the tank will follow its initial flee path from a mine*/
+	protected double mineFleeTimer = 0;
 
 	/** Used only in non-straight AI tanks. When detecting the target enemy, set to the angle necessary to hit them. This angle is added to random offsets to search for the target enemy moving.*/
 	protected double lockedAngle = 0;
@@ -203,6 +202,10 @@ public class TankAIControlled extends Tank
 	/** Describes the path the tank is currently following*/
 	protected ArrayList<Tile> path;
 
+	/* Accelerations */
+	protected double aX;
+	protected double aY;
+
 	public TankAIControlled(String name, double x, double y, double size, double r, double g, double b, double angle, ShootAI ai)
 	{
 		super(name, x, y, size, r, g, b);
@@ -225,6 +228,9 @@ public class TankAIControlled extends Tank
 
 		this.age += Panel.frameFrequency;
 
+		this.vX *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+		this.vY *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+
 		if (!this.destroy)
 		{
 			if (this.shootAIType != ShootAI.wander)
@@ -234,8 +240,8 @@ public class TankAIControlled extends Tank
 				this.updateMotionAI();
 			else
 			{
-				this.vX *= 0.85;
-				this.vY *= 0.85;
+				this.vX *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
 			}
 
 			if (!ScreenGame.finished)
@@ -247,6 +253,14 @@ public class TankAIControlled extends Tank
 
 			this.postUpdate();
 		}
+
+		this.vX += this.aX * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
+		this.vY += this.aY * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
+
+		double currentSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+
+		if (currentSpeed > maxSpeed * maxSpeedModifier)
+			this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 
 		super.update();
 	}
@@ -316,7 +330,7 @@ public class TankAIControlled extends Tank
 	public void updateTarget()
 	{
 		double nearestDist = Double.MAX_VALUE;
-		Movable nearest = this;
+		Movable nearest = null;
 		this.hasTarget = false;
 
 		for (int i = 0; i < Game.movables.size(); i++)
@@ -346,7 +360,7 @@ public class TankAIControlled extends Tank
 		if (this.avoidTimer > 0)
 		{
 			this.avoidTimer -= Panel.frameFrequency;
-			this.setPolarMotion(avoidDirection, speed);
+			this.setPolarAcceleration(avoidDirection, acceleration * 2);
 			this.overrideDirection = true;
 		}
 		else
@@ -377,7 +391,7 @@ public class TankAIControlled extends Tank
 	public void reactToTargetEnemySight()
 	{
 		this.overrideDirection = true;
-		this.setMotionInDirection(targetEnemy.posX, targetEnemy.posY, speed);
+		this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 	}
 
 	public void updateIdleMotion()
@@ -422,15 +436,15 @@ public class TankAIControlled extends Tank
 
 		if (this.motionPauseTimer > 0)
 		{
-			this.vX = 0;
-			this.vY = 0;
+			this.aX = 0;
+			this.aY = 0;
 			this.motionPauseTimer = (Math.max(0, this.motionPauseTimer - Panel.frameFrequency));
 		}
 		else
 		{
 			if (!this.overrideDirection)
 			{
-				this.setPolarMotion(this.direction / 2 * Math.PI, speed);
+				this.setPolarAcceleration(this.direction / 2 * Math.PI, acceleration);
 				this.addIdleMotionOffset();
 			}
 		}
@@ -532,14 +546,14 @@ public class TankAIControlled extends Tank
 
 		Tile t = this.path.get(0);
 
-		double frac = Math.max(Math.min(1, (seekTimerBase - seekTimer) / seekTurnBase), 0);
+		//double frac = Math.max(Math.min(1, (seekTimerBase - seekTimer) / seekTurnBase), 0);
 
-		double pvX = this.vX;
-		double pvY = this.vY;
+		//double pvX = this.vX;
+		//double pvY = this.vY;
 
-		this.setMotionInDirection(t.shiftedX, t.shiftedY, this.speed);
-		this.vX = this.vX * frac + pvX * (1 - frac);
-		this.vY = this.vY * frac + pvY * (1 - frac);
+		this.setAccelerationInDirection(t.shiftedX, t.shiftedY, this.acceleration);
+		//this.vX = this.vX * frac + pvX * (1 - frac);
+		//this.vY = this.vY * frac + pvY * (1 - frac);
 
 		double mul = 1;
 
@@ -572,15 +586,15 @@ public class TankAIControlled extends Tank
 		if (offsetMotion < 0)
 		{
 			int dist = this.distances[(int) (this.direction * 2 + 6) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.speed;
+			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 		}
 		else
 		{
 			int dist = this.distances[(int) (this.direction * 2 + 2) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.speed;
+			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 		}
 
-		this.addPolarMotion((this.direction + 1) / 2 * Math.PI, offsetMotion);
+		this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
 	}
 
 	public void checkForBulletThreats()
@@ -599,7 +613,7 @@ public class TankAIControlled extends Tank
 				{
 					Ray r = b.getRay();
 
-					Movable m = r.getTarget(2, this);
+					Movable m = r.getTarget(3, this);
 					if (m != null)
 					{
 						if (m.equals(this))
@@ -972,23 +986,22 @@ public class TankAIControlled extends Tank
 
 	public void updateMineAI()
 	{
-		double nearestX = 1000;
-		double nearestY = 1000;
-		double nearestTimer = 1000;
-
+		double nearestX = Double.MAX_VALUE;
+		double nearestY = Double.MAX_VALUE;
+		double nearestTimer = Double.MAX_VALUE;
 
 		if (this.mineTimer == -1)
 			this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);
 
 		Movable nearest = null;
 
-		if (!laidMine)
+		if (!laidMine && mineFleeTimer <= 0)
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
 				if (m instanceof Mine)
 				{
-					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius * 1.5, 2))
+					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius * this.mineSensitivity, 2))
 					{
 						if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
 						{
@@ -1005,13 +1018,16 @@ public class TankAIControlled extends Tank
 				}
 			}
 
+		if (this.mineFleeTimer > 0)
+			this.mineFleeTimer = Math.max(0, this.mineFleeTimer - Panel.frameFrequency);
+
 		laidMine = false;
 
 		if (nearest != null)
 		{
 			if (this.enableMineAvoidance && this.enableMovement)
 			{
-				this.setMotionAwayFromDirection(nearest.posX, nearest.posY, speed);
+				this.setAccelerationAwayFromDirection(nearest.posX, nearest.posY, acceleration);
 				this.overrideDirection = true;
 			}
 		}
@@ -1043,16 +1059,16 @@ public class TankAIControlled extends Tank
 					this.layMine();
 				}
 			}
+
+			if (!this.currentlySeeking)
+				this.mineTimer = Math.max(0, this.mineTimer - Panel.frameFrequency);
 		}
 
-		if (Math.abs(nearestX) + Math.abs(nearestY) <= 1)
+		if (Math.abs(nearestX) + Math.abs(nearestY) <= 1 && this.mineFleeTimer <= 0)
 		{
 			this.overrideDirection = true;
-			this.setPolarMotion(Math.random() * 2 * Math.PI, speed);
+			this.setPolarAcceleration(Math.random() * 2 * Math.PI, acceleration);
 		}
-
-		if (!this.currentlySeeking)
-			this.mineTimer = Math.max(0, this.mineTimer - Panel.frameFrequency);
 	}
 
 	public void layMine()
@@ -1064,6 +1080,8 @@ public class TankAIControlled extends Tank
 
 		int count = mineFleeDistances.length;
 		int[] d = mineFleeDistances;
+		this.mineFleeTimer = 100;
+
 		int k = 0;
 		for (double dir = 0; dir < 4; dir += 4.0 / count)
 		{
@@ -1089,7 +1107,7 @@ public class TankAIControlled extends Tank
 
 		//double angleV = this.getPolarDirection() + Math.PI + (Math.random() - 0.5) * Math.PI / 2;
 		this.overrideDirection = true;
-		this.setPolarMotion(greatest * 2.0 / count * Math.PI, speed);
+		this.setPolarAcceleration(greatest * 2.0 / count * Math.PI, acceleration);
 		laidMine = true;
 	}
 
@@ -1195,4 +1213,73 @@ public class TankAIControlled extends Tank
 			this.explored = true;
 		}
 	}
+
+	public void setPolarAcceleration(double angle, double acceleration)
+	{
+		double accX = acceleration * Math.cos(angle);
+		double accY = acceleration * Math.sin(angle);
+		this.aX = accX;
+		this.aY = accY;
+	}
+
+	public void addPolarAcceleration(double angle, double acceleration)
+	{
+		double accX = acceleration * Math.cos(angle);
+		double accY = acceleration * Math.sin(angle);
+		this.aX += accX;
+		this.aY += accY;
+	}
+
+	public void setAccelerationInDirection(double x, double y, double accel)
+	{
+		x -= this.posX;
+		y -= this.posY;
+
+		double angle = 0;
+		if (x > 0)
+			angle = Math.atan(y/x);
+		else if (x < 0)
+			angle = Math.atan(y/x) + Math.PI;
+		else
+		{
+			if (y > 0)
+				angle = Math.PI / 2;
+			else if (y < 0)
+				angle = Math.PI * 3 / 2;
+		}
+		double accX = accel * Math.cos(angle);
+		double accY = accel * Math.sin(angle);
+		this.aX = accX;
+		this.aY = accY;
+	}
+
+	public void setAccelerationAwayFromDirection(double x, double y, double accel)
+	{
+		this.setAccelerationInDirectionWithOffset(x, y, accel, Math.PI);
+	}
+
+	public void setAccelerationInDirectionWithOffset(double x, double y, double accel, double a)
+	{
+		x -= this.posX;
+		y -= this.posY;
+
+		double angle = 0;
+		if (x > 0)
+			angle = Math.atan(y/x);
+		else if (x < 0)
+			angle = Math.atan(y/x) + Math.PI;
+		else
+		{
+			if (y > 0)
+				angle = Math.PI / 2;
+			else if (y < 0)
+				angle = Math.PI * 3 / 2;
+		}
+		angle += a;
+		double accX = accel * Math.cos(angle);
+		double accY = accel * Math.sin(angle);
+		this.aX = accX;
+		this.aY = accY;
+	}
+
 }

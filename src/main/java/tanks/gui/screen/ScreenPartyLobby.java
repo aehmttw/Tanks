@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.event.EventChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
@@ -16,7 +17,7 @@ public class ScreenPartyLobby extends Screen
 	public static ArrayList<ConnectedPlayer> connections = new ArrayList<ConnectedPlayer>();
 	public static boolean isClient = false;
 	public static ArrayList<UUID> includedPlayers = new ArrayList<UUID>();
-	public static int readyPlayers = 0;
+	public static ArrayList<String> readyPlayers = new ArrayList<String>();
 	public static int remainingLives = 0;
 
 	public static ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
@@ -34,6 +35,15 @@ public class ScreenPartyLobby extends Screen
 	{
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
+
+		ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText));
+			}
+		});
 	}
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Leave party", new Runnable()
@@ -41,10 +51,7 @@ public class ScreenPartyLobby extends Screen
 		@Override
 		public void run()
 		{
-			isClient = false;
-			Client.handler.ctx.close();
-			Game.screen = new ScreenJoinParty();
-			connections.clear();
+			Game.screen = new ScreenConfirmLeaveParty();
 		}
 	}
 	);

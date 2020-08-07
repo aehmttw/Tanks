@@ -264,6 +264,12 @@ public class SwingWindow extends BaseWindow
     @Override
     public String getKeyText(int key)
     {
+        return KeyEvent.getKeyText(InputKeyboard.untranslate(key)).toLowerCase();
+    }
+
+    @Override
+    public String getTextKeyText(int key)
+    {
         return KeyEvent.getKeyText(key).toLowerCase();
     }
 

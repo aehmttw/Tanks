@@ -1,5 +1,6 @@
 package tanks;
 
+import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.NameTag;
@@ -11,6 +12,11 @@ public abstract class Movable implements IDrawableForInterface
 	public double posX;
 	public double posY;
 	public double posZ = 0;
+
+	public double lastPosX;
+	public double lastPosY;
+	public double lastPosZ = 0;
+
 	public double vX;
 	public double vY;
 	public double vZ = 0;
@@ -41,6 +47,16 @@ public abstract class Movable implements IDrawableForInterface
 	{
 		this.posX = x;
 		this.posY = y;
+
+		this.lastPosX = x;
+		this.lastPosY = y;
+	}
+
+	public void preUpdate()
+	{
+		this.lastPosX = this.posX;
+		this.lastPosY = this.posY;
+		this.lastPosZ = this.posZ;
 	}
 
 	public void update()
@@ -109,7 +125,6 @@ public abstract class Movable implements IDrawableForInterface
 		double velY = velocity * Math.sin(angle);
 		this.vX = velX;
 		this.vY = velY;
-
 	}
 
 	public void setMotionAwayFromDirection(double x, double y, double velocity)
@@ -159,7 +174,6 @@ public abstract class Movable implements IDrawableForInterface
 		double velY = velocity * Math.sin(angle);
 		this.vX = velX;
 		this.vY = velY;
-
 	}
 
 

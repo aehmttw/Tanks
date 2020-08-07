@@ -79,9 +79,8 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
             }
 
         }
-                , name);
+                , name.replace("_", " "));
 
-        levelName.enableSpaces = false;
         levelName.enableCaps = true;
 
         this.updateDownloadButton();
@@ -173,7 +172,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
     public void updateDownloadButton()
     {
-        BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText + ".tanks");
+        BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
         if (file.exists())
         {

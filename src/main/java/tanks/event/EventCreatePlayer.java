@@ -21,7 +21,15 @@ public class EventCreatePlayer extends PersonalEvent
 	public double posY;
 	public double angle;
 	public String team;
-	
+
+	public int colorR;
+	public int colorG;
+	public int colorB;
+
+	public int colorR2;
+	public int colorG2;
+	public int colorB2;
+
 	public EventCreatePlayer()
 	{
 	
@@ -43,6 +51,14 @@ public class EventCreatePlayer extends PersonalEvent
 			this.team = t.name;
 		
 		this.username = p.username;
+
+		this.colorR = p.colorR;
+		this.colorG = p.colorG;
+		this.colorB = p.colorB;
+
+		this.colorR2 = p.turretColorR;
+		this.colorG2 = p.turretColorG;
+		this.colorB2 = p.turretColorB;
 	}
 	
 	@Override
@@ -92,6 +108,19 @@ public class EventCreatePlayer extends PersonalEvent
 		else
 			t.team = Game.currentLevel.teamsMap.get(team);
 
+		t.colorR = this.colorR;
+		t.colorG = this.colorG;
+		t.colorB = this.colorB;
+
+		t.turret.colorR = this.colorR2;
+		t.nameTag.colorR = this.colorR2;
+
+		t.turret.colorG = this.colorG2;
+		t.nameTag.colorG = this.colorG2;
+
+		t.turret.colorB = this.colorB2;
+		t.nameTag.colorB = this.colorB2;
+
 		Game.movables.add(t);
 	}
 
@@ -104,6 +133,13 @@ public class EventCreatePlayer extends PersonalEvent
 		b.writeDouble(this.posY);
 		b.writeDouble(this.angle);
 		NetworkUtils.writeString(b, this.team);
+
+		b.writeInt(this.colorR);
+		b.writeInt(this.colorG);
+		b.writeInt(this.colorB);
+		b.writeInt(this.colorR2);
+		b.writeInt(this.colorG2);
+		b.writeInt(this.colorB2);
 	}
 
 	@Override
@@ -115,5 +151,12 @@ public class EventCreatePlayer extends PersonalEvent
 		this.posY = b.readDouble();
 		this.angle = b.readDouble();
 		this.team = NetworkUtils.readString(b);
+
+		this.colorR = b.readInt();
+		this.colorG = b.readInt();
+		this.colorB = b.readInt();
+		this.colorR2 = b.readInt();
+		this.colorG2 = b.readInt();
+		this.colorB2 = b.readInt();
 	}
 }

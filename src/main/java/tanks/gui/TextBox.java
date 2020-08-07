@@ -10,7 +10,7 @@ import tanks.gui.screen.ScreenInfo;
 
 import java.util.ArrayList;
 
-public class TextBox implements IDrawable
+public class TextBox implements IDrawable, ITrigger
 {
 	public Runnable function;
 	public double posX;
@@ -42,6 +42,8 @@ public class TextBox implements IDrawable
 	public boolean enablePunctuation = false;
 	public boolean checkMaxValue = false;
 	public boolean checkMinValue = false;
+	public boolean allowNegatives = false;
+	public boolean allowDoubles = false;
 
 	public boolean lowerCase = false;
 	public boolean enableCaps = false;
@@ -134,7 +136,6 @@ public class TextBox implements IDrawable
 		else
 			drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 		double m = 0.8;
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);
@@ -153,7 +154,7 @@ public class TextBox implements IDrawable
 				drawing.setColor(0, 0, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				drawing.setColor(255, 255, 255);
-				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawInterfaceText(this.posX + 1 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 				drawing.drawTooltip(this.hoverText);
 			}
 			else
@@ -161,7 +162,7 @@ public class TextBox implements IDrawable
 				drawing.setColor(0, 150, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				drawing.setColor(255, 255, 255);
-				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawInterfaceText(this.posX + 1 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 			}
 		}
 
@@ -279,9 +280,7 @@ public class TextBox implements IDrawable
 		if (clearSelected && valid && inputText.length() > 0)
 		{
 			handled = true;
-			Drawing.drawing.playVibration("click");
-			Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
-			this.inputText = "";
+			this.clear();
 		}
 
 		if (Game.game.window.touchscreen)
@@ -291,6 +290,13 @@ public class TextBox implements IDrawable
 		}
 
 		return handled;
+	}
+
+	public void clear()
+	{
+		Drawing.drawing.playVibration("click");
+		Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
+		this.inputText = "";
 	}
 
 	public void checkDeselect(double mx, double my, boolean valid)
@@ -375,6 +381,15 @@ public class TextBox implements IDrawable
 					this.inputKey(0, s.substring(i, i + 1).toLowerCase(), Character.isUpperCase(s.charAt(i)));
 				}
 			}
+
+			if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_BACKSPACE) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_DELETE))
+			{
+				Game.game.window.textPressedKeys.clear();
+				Game.game.window.textValidPressedKeys.clear();
+				Game.game.window.getRawTextKeys().clear();
+
+				this.clear();
+			}
 		}
 
 		boolean caps = (this.enableCaps && (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)));
@@ -383,7 +398,7 @@ public class TextBox implements IDrawable
 
 		for (int key : texts)
 		{
-			String text = Game.game.window.getKeyText(key);
+			String text = Game.game.window.getTextKeyText(key);
 
 			if (text == null && key == InputCodes.KEY_SPACE)
 				text = " ";
@@ -414,12 +429,15 @@ public class TextBox implements IDrawable
 		if (this.enableCaps && (key == InputCodes.KEY_LEFT_SHIFT || key == InputCodes.KEY_RIGHT_SHIFT))
 			return;
 
+		if (key == InputCodes.KEY_SPACE)
+			text = " ";
+
 		if (key == InputCodes.KEY_BACKSPACE || key == '\b')
 			inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
 
 		else if (text != null && inputText.length() + text.length() <= maxChars)
 		{
-			if (text.equals(" ") || key == InputCodes.KEY_SPACE)
+			if (text.equals(" "))
 			{
 				if (allowSpaces)
 				{
@@ -438,6 +456,18 @@ public class TextBox implements IDrawable
 				}
 
 				if (allowDots)
+				{
+					if (".".contains(text))
+						inputText += text;
+				}
+
+				if (allowNegatives && inputText.length() == 0)
+				{
+					if ("-".contains(text))
+						inputText += text;
+				}
+
+				if (allowDoubles && !inputText.contains("."))
 				{
 					if (".".contains(text))
 						inputText += text;
@@ -528,5 +558,12 @@ public class TextBox implements IDrawable
 				}
 			}
 		}
+	}
+
+	@Override
+	public void setPosition(double x, double y)
+	{
+		this.posX = x;
+		this.posY = y;
 	}
 }

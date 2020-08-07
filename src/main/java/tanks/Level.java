@@ -13,7 +13,9 @@ import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
 import tanks.tank.TankSpawnMarker;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Level 
@@ -341,6 +343,38 @@ public class Level
 			}
 		}
 
+		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		boolean[][] solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+
+		for (Obstacle o: Game.obstacles)
+		{
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+				Game.game.solidGrid[x][y] = true;
+
+			if (o.tankCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+				solidGrid[x][y] = true;
+		}
+
+		boolean[][] tankGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+		for (Movable m: Game.movables)
+		{
+			if (m instanceof Tank)
+			{
+				int x = (int) (m.posX / Game.tile_size);
+				int y = (int) (m.posY / Game.tile_size);
+
+				if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+				{
+					tankGrid[x][y] = true;
+				}
+			}
+		}
+
 		if (!preset[2].equals(""))
 		{
 			for (int i = 0; i < tanks.length; i++)
@@ -373,6 +407,7 @@ public class Level
 					this.playerSpawnsY.add(y);
 					this.playerSpawnsAngle.add(angle);
 					this.playerSpawnsTeam.add(team);
+					tankGrid[(int) Double.parseDouble(tank[0])][(int) Double.parseDouble(tank[1])] = true;
 
 					continue;
 				}
@@ -401,6 +436,113 @@ public class Level
 		else
 		{
 			this.includedPlayers.addAll(Game.players);
+		}
+
+		int extraSpawns = 0;
+		if (playerCount > playerSpawnsX.size() && playerSpawnsX.size() > 0)
+		{
+			extraSpawns = playerCount / playerSpawnsX.size() - 1;
+
+			if (playerCount % playerSpawnsX.size() != 0)
+				extraSpawns++;
+		}
+
+		int spawns = playerSpawnsX.size();
+
+		for (int i = 0; i < spawns; i++)
+		{
+			int spawnsLeft = extraSpawns;
+			ArrayList<Integer> extraSpawnsX = new ArrayList<>();
+			ArrayList<Integer> extraSpawnsY = new ArrayList<>();
+
+			boolean[][] explored = new boolean[Game.currentSizeX][Game.currentSizeY];
+			boolean[][] blacklist = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+			ArrayList<Tile> queue = new ArrayList<>();
+			queue.add(new Tile((int) (playerSpawnsX.get(i) / Game.tile_size), (int) (playerSpawnsY.get(i) / Game.tile_size)));
+
+			while (!queue.isEmpty() && spawnsLeft > 0)
+			{
+				boolean stop = false;
+
+				Tile t = queue.remove(0);
+
+				for (int j: t.sidesOrder)
+				{
+					Tile t1;
+
+					if (j == 0)
+						t1 = new Tile(t.posX - 1, t.posY);
+					else if (j == 1)
+						t1 = new Tile(t.posX + 1, t.posY);
+					else if (j == 2)
+						t1 = new Tile(t.posX, t.posY - 1);
+					else
+						t1 = new Tile(t.posX, t.posY + 1);
+
+					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
+							!solidGrid[t1.posX][t1.posY] && !tankGrid[t1.posX][t1.posY] && !explored[t1.posX][t1.posY])
+					{
+						explored[t1.posX][t1.posY] = true;
+
+						t1.age = t.age + 1;
+
+						extraSpawnsX.add(t1.posX);
+						extraSpawnsY.add(t1.posY);
+
+						if (!blacklist[t1.posX][t1.posY] && (t1.age == 3 && Math.random() < 0.333 || t1.age == 4 && Math.random() < 0.5 || t1.age >= 5))
+						{
+							spawnsLeft--;
+							t1.age = 0;
+
+							playerSpawnsX.add((t1.posX + 0.5) * Game.tile_size);
+							playerSpawnsY.add((t1.posY + 0.5) * Game.tile_size);
+							playerSpawnsTeam.add(playerSpawnsTeam.get(i));
+							playerSpawnsAngle.add(playerSpawnsAngle.get(i));
+
+							tankGrid[t1.posX][t1.posY] = true;
+
+							for (int x = Math.max(t1.posX - 1, 0); x <= Math.min(t1.posX + 1, Game.currentSizeX - 1); x++)
+							{
+								for (int y = Math.max(t1.posY - 1, 0); y <= Math.min(t1.posY + 1, Game.currentSizeY - 1); y++)
+								{
+									blacklist[x][y] = true;
+								}
+							}
+
+							if (spawnsLeft <= 0)
+							{
+								stop = true;
+								break;
+							}
+						}
+
+						queue.add(t1);
+					}
+				}
+
+				if (stop)
+					break;
+			}
+
+			while (spawnsLeft > 0)
+			{
+				if (extraSpawnsX.isEmpty())
+					break;
+
+				int in = (int) (Math.random() * extraSpawnsX.size());
+				int x = extraSpawnsX.remove(in);
+				int y = extraSpawnsY.remove(in);
+
+				if (!tankGrid[x][y])
+				{
+					playerSpawnsX.add((x + 0.5) * Game.tile_size);
+					playerSpawnsY.add((y + 0.5) * Game.tile_size);
+					playerSpawnsTeam.add(playerSpawnsTeam.get(i));
+					playerSpawnsAngle.add(playerSpawnsAngle.get(i));
+					spawnsLeft--;
+				}
+			}
 		}
 
 		if (sc == null && !preview)
@@ -458,17 +600,33 @@ public class Level
 
 		if (!remote)
 			Game.eventsOut.add(new EventEnterLevel());
+	}
 
-		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+	public static class Tile
+	{
+		public int posX;
+		public int posY;
+		public int age = 0;
+		public int[] sidesOrder = new int[4];
 
-		for (Obstacle o: Game.obstacles)
+		public Tile(int x, int y)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
+			this.posX = x;
+			this.posY = y;
 
-			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			ArrayList<Integer> sides = new ArrayList<>();
+			sides.add(1);
+			sides.add(2);
+			sides.add(3);
+			sides.add(4);
+
+			int i = 0;
+
+			while (!sides.isEmpty())
 			{
-				Game.game.solidGrid[x][y] = true;
+				int s = sides.remove((int) (Math.random() * sides.size()));
+				sidesOrder[i] = s;
+				i++;
 			}
 		}
 	}

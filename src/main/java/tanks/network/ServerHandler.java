@@ -56,15 +56,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		if (ScreenPartyHost.isServer)
 		{
 			ScreenPartyHost.includedPlayers.remove(this.clientID);
-			ScreenPartyHost.readyPlayers.remove(this.clientID);
 			ScreenPartyHost.disconnectedPlayers.add(this.clientID);
 
 			if (this.clientID != null)
 			{
-				Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+				Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
 				Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(this.clientID, this.rawUsername), false));
 				Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
+				Game.eventsOut.add(new EventPlaySound("leave.ogg", 1.0f, 1.0f));
 
+				Game.eventsIn.add(new EventPlaySound("leave.ogg", 1.0f, 1.0f));
 				ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
 			}
 		}
@@ -83,8 +84,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		if (reply)
 		{
-			this.reader.frame++;
-
 			if (lastMessage < 0)
 				lastMessage = System.currentTimeMillis();
 
@@ -104,7 +103,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 				latencyCount = 0;
 			}
 
-			this.reply();
+			this.sendEvent(new EventPing());
+
+			//this.reply();
 		}
 	}
 
@@ -112,8 +113,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (this.events)
 		{
-			EventKeepConnectionAlive k = new EventKeepConnectionAlive();
-			this.events.add(k);
+			//EventKeepConnectionAlive k = new EventKeepConnectionAlive();
+			//this.events.add(k);
 
 			for (int i = 0; i < this.events.size(); i++)
 			{
@@ -128,7 +129,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public synchronized void sendEvent(INetworkEvent e)
 	{
 		ByteBuf b = ctx.channel().alloc().buffer();
-		b.writeInt(NetworkEventMap.get(e.getClass()));
+
+		int i = NetworkEventMap.get(e.getClass());
+		if (i == -1)
+			throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
+
+		b.writeInt(i);
 		e.write(b);
 
 		ByteBuf b2 = ctx.channel().alloc().buffer();

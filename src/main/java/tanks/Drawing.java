@@ -673,11 +673,18 @@ public class Drawing
 
 		double sizeY = 14;
 
+		if (x + sizeX + xPadding * 2 - 14 > Drawing.drawing.interfaceSizeX)
+			x -= sizeX + xPadding * 2 - 14 ;
+
+		if (y + sizeY + yPadding * 2 * text.length > Drawing.drawing.interfaceSizeY)
+			y -= sizeY + yPadding * 2 * text.length;
+
 		double drawX = x + sizeX / 2.0 + xPadding;
 		double drawY = y + sizeY / 2.0 + yPadding * text.length;
 
 		setColor(0, 0, 0, 127);
 		fillInterfaceRect(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length);
+		fillInterfaceRect(drawX - 7, drawY, sizeX + xPadding * 2 - 14 - 10, sizeY + yPadding * 2 * text.length - 10);
 
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
@@ -708,7 +715,7 @@ public class Drawing
 
 	public void playSound(String sound)
 	{
-		if (Game.game.window.soundsEnabled)
+		if (Game.game.window.soundsEnabled && Game.soundsEnabled)
 			Game.game.window.soundPlayer.playSound("/sounds/" + sound);
 	}
 
@@ -720,8 +727,22 @@ public class Drawing
 
 	public void playSound(String sound, float pitch)
 	{
-		if (Game.game.window.soundsEnabled)
+		if (Game.game.window.soundsEnabled && Game.soundsEnabled)
 			Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch);
+	}
+
+	public void playSound(String sound, float volume, boolean asMusic)
+	{
+		if (Game.game.window.soundsEnabled)
+		{
+			if (asMusic)
+			{
+				if (Game.musicEnabled)
+					Game.game.window.soundPlayer.playSound("/music/" + sound, 1.0f, volume);
+			}
+			else if (Game.soundsEnabled)
+				Game.game.window.soundPlayer.playSound("/sound/" + sound, 1.0f, volume);
+		}
 	}
 
 	public void playGlobalSound(String sound, float pitch)
@@ -732,7 +753,7 @@ public class Drawing
 
 	public void playSound(String sound, float pitch, float volume)
 	{
-		if (Game.game.window.soundsEnabled)
+		if (Game.game.window.soundsEnabled && Game.soundsEnabled)
 			Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch, volume);
 	}
 

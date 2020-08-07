@@ -1,4 +1,8 @@
-package tanks.hotbar;
+package tanks.hotbar.item;
+
+import tanks.hotbar.item.property.ItemProperty;
+
+import java.util.ArrayList;
 
 public class ItemEmpty extends Item
 {
@@ -6,6 +10,12 @@ public class ItemEmpty extends Item
 	{
 		this.name = "";
 		this.stackSize = 0;
+	}
+
+	@Override
+	public void fromString(String s)
+	{
+
 	}
 
 	@Override
@@ -19,5 +29,4 @@ public class ItemEmpty extends Item
 	{
 		
 	}
-	
 }

@@ -43,10 +43,10 @@ public class EventPurchaseItem extends PersonalEvent
                 {
                     Player p = Game.players.get(i);
                     int pr = s.shop.get(this.item).price;
-                    if (p.coins.coins >= pr)
+                    if (p.hotbar.coins >= pr)
                     {
-                        if (p.crusadeItemBar.addItem(s.shop.get(this.item)))
-                            p.coins.coins -= pr;
+                        if (p.hotbar.itemBar.addItem(s.shop.get(this.item)))
+                            p.hotbar.coins -= pr;
 
                         Game.eventsOut.add(new EventUpdateCoins(p));
                     }

@@ -1,10 +1,12 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ScreenInterlevel extends Screen implements IDarkScreen
 {
@@ -48,7 +50,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run()
 		{
-			Tutorial.loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen);
+			new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen);
 		}
 	}
 	);
@@ -58,7 +60,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run()
 		{
-			Tutorial.loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen);
+			new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen);
 		}
 	}
 	);
@@ -99,8 +101,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 			if (Crusade.currentCrusade != null)
 			{
-				if (Crusade.currentCrusade.lose)
-					Crusade.currentCrusade = null;
+				Game.player.saveCrusade();
+				Crusade.currentCrusade = null;
 			}
 
 			ScreenLevelBuilder s = new ScreenLevelBuilder(System.currentTimeMillis() + ".tanks", false);
@@ -181,7 +183,14 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			Game.exitToTitle();
 			try
 			{
-				Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath).create();
+				BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
+
+				f.create();
+				f.startWriting();
+				f.println("Certificate of completion:");
+				f.println("Tanks: The Crusades tutorial");
+				f.println("Completed " + new Date().toString());
+				f.stopWriting();
 			}
 			catch (Exception e)
 			{
@@ -202,7 +211,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				Crusade.currentCrusade.replay = false;
 			}
 
+			Game.player.saveCrusade();
 			Crusade.crusadeMode = false;
+			Crusade.currentCrusade = null;
 			Game.exitToTitle();
 		}
 	}
@@ -273,7 +284,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	public ScreenInterlevel()
 	{
-		Panel.panel.hotbar.percentHidden = 100;
+		Game.player.hotbar.percentHidden = 100;
 
 		if (Crusade.crusadeMode)
 		{
@@ -418,9 +429,12 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
 			}
 
-			for (int i = 0; i < getFireworkArray().size(); i++)
+			if (Game.superGraphics)
 			{
-				fireworks.get(i).drawGlow();
+				for (int i = 0; i < getFireworkArray().size(); i++)
+				{
+					fireworks.get(i).drawGlow();
+				}
 			}
 
 			//A fix to some glitchiness on ios

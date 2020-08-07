@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenKicked extends Screen
@@ -10,8 +11,10 @@ public class ScreenKicked extends Screen
 	
 	public ScreenKicked(String reason)
 	{
-		this.music = "tomato_feast_2.ogg";
+		this.music = "tomato_feast_1.ogg";
 		this.musicID = "menu";
+
+		Panel.forceRefreshMusic = true;
 
 		this.reason = reason;
 		ScreenPartyLobby.connections.clear();

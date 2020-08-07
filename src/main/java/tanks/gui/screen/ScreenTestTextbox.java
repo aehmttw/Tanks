@@ -12,6 +12,9 @@ public class ScreenTestTextbox extends Screen
     {
         this.music = "tomato_feast_1.ogg";
         this.musicID = "menu";
+
+        box.allowAll = true;
+        box.enableCaps = true;
     }
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Back", new Runnable()

@@ -24,7 +24,7 @@ public class ScreenPartyKick extends Screen implements IPartyMenuScreen
 
     public ScreenPartyKick(ServerHandler h)
     {
-        this.music = "tomato_feast_2.ogg";
+        this.music = "tomato_feast_3.ogg";
         this.musicID = "menu";
 
         handler = h;

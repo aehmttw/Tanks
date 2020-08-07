@@ -13,11 +13,13 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 {
 	public static final String levelDir = Game.directoryPath + "/levels";
 
-	int rows = 6;
-	int yoffset = -150;
-	static int page = 0;
+	public int rows = 6;
+	public int yoffset = -150;
+	public static int page = 0;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	public String title = "My levels";
+
+	public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -30,7 +32,7 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 	}
 			);
 
-	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+	public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -40,7 +42,7 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 	}
 			);
 
-	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+	public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -50,13 +52,44 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 	}
 			);
 
-	ArrayList<Button> buttons = new ArrayList<Button>();
+	public ArrayList<Button> buttons = new ArrayList<Button>();
 
 	public ScreenPlaySavedLevels()
 	{
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
+		this.addButtons();
+
+		this.sortButtons();
+	}
+
+	public void sortButtons()
+	{
+		for (int i = 0; i < buttons.size(); i++)
+		{
+			int page = i / (rows * 3);
+			int offset = 0;
+
+			if (page * rows * 3 + rows < buttons.size())
+				offset = -190;
+
+			if (page * rows * 3 + rows * 2 < buttons.size())
+				offset = -380;
+
+			buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
+
+			if (i / rows % 3 == 0)
+				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
+			else if (i / rows % 3 == 1)
+				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
+			else
+				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
+		}
+	}
+
+	public void addButtons()
+	{
 		BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
 		if (!savedLevelsFile.exists())
 		{
@@ -82,9 +115,9 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 		for (String l: levels)
 		{
-			String[] pathSections = l.replaceAll("\\\\", "/").split("/");
+			String[] pathSections = l.replace("\\", "/").split("/");
 
-			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0], new Runnable()
+			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0].replace("_", " "), new Runnable()
 			{
 				@Override
 				public void run()
@@ -96,32 +129,9 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 					}
 				}
 			}
-					));
+			));
 
 		}
-
-		for (int i = 0; i < buttons.size(); i++)
-		{
-			int page = i / (rows * 3);
-			int offset = 0;
-
-			if (page * rows * 3 + rows < buttons.size())
-				offset = -190;
-
-			if (page * rows * 3 + rows * 2 < buttons.size())
-				offset = -380;
-
-			buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
-
-			if (i / rows % 3 == 0)
-				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
-			else if (i / rows % 3 == 1)
-				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
-			else
-				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
-		}
-
-
 	}
 
 	@Override
@@ -139,8 +149,9 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 		if (buttons.size() > (1 + page) * rows * 3)
 			next.update();
-		
-		ScreenPartyHost.chatbox.update();
+
+		if (ScreenPartyHost.isServer)
+			ScreenPartyHost.chatbox.update();
 	}
 
 	@Override
@@ -155,24 +166,27 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 		quit.draw();
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "My levels");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, this.title);
 
 		if (page > 0)
 			previous.draw();
 
 		if (buttons.size() > (1 + page) * rows * 3)
 			next.draw();
-		
-		ScreenPartyHost.chatbox.draw();
-		long time = System.currentTimeMillis();
-		
-		Drawing.drawing.setColor(0, 0, 0);
-		for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
+
+		if (ScreenPartyHost.isServer)
 		{
-			ChatMessage c = ScreenPartyHost.chat.get(i);
-			if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
+			ScreenPartyHost.chatbox.draw();
+			long time = System.currentTimeMillis();
+
+			Drawing.drawing.setColor(0, 0, 0);
+			for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
 			{
-				Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+				ChatMessage c = ScreenPartyHost.chat.get(i);
+				if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
+				{
+					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+				}
 			}
 		}
 	}

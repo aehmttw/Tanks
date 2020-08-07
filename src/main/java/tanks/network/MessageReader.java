@@ -16,14 +16,13 @@ public class MessageReader
 	public ByteBuf queue;
 	protected boolean reading = false;
 	protected int endpoint;
-	protected int frame = 0;
 
 	public boolean queueMessage(ByteBuf m, UUID clientID)
 	{
 		return this.queueMessage(null, m, clientID);
 	}
 
-	public boolean queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
+	public synchronized boolean queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
 	{
 		boolean reply = false;
 		
@@ -42,7 +41,7 @@ public class MessageReader
 
 				while (queue.readableBytes() >= endpoint)
 				{
-					reply = reply || this.readMessage(s, queue, clientID);
+					reply = this.readMessage(s, queue, clientID) || reply;
 					queue.discardReadBytes();
 					
 					reading = false;
@@ -50,7 +49,7 @@ public class MessageReader
 					if (queue.readableBytes() >= 4)
 					{
 						endpoint = queue.readInt();
-						
+
 						reading = true;
 					}
 				}
@@ -58,13 +57,25 @@ public class MessageReader
 		}
 		catch (Exception e)
 		{
-			System.err.println("A network exception has occurred: " + e.toString());
-			Game.logger.println("A network exception has occurred: " + e.toString());
+			if (s != null)
+			{
+				System.err.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
+				Game.logger.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
+			}
+			else
+			{
+				System.err.println("A network exception has occurred: " + e.toString());
+				Game.logger.println("A network exception has occurred: " + e.toString());
+			}
+
 			e.printStackTrace();
 			e.printStackTrace(Game.logger);
 
-			if (ScreenPartyHost.isServer)
-				Game.screen = new ScreenHostingEnded("A network exception has occurred: " + e.toString());
+			if (ScreenPartyHost.isServer && s != null)
+			{
+				s.sendEventAndClose(new EventKick("A network exception has occurred: " + e.toString()));
+				//Game.screen = new ScreenHostingEnded("A network exception has occurred: " + e.toString());
+			}
 			else if (ScreenPartyLobby.isClient)
 			{
 				Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
@@ -76,21 +87,23 @@ public class MessageReader
 		return reply;
 	}
 
-	public boolean readMessage(ServerHandler s, ByteBuf m, UUID clientID) throws Exception
+	public synchronized boolean readMessage(ServerHandler s, ByteBuf m, UUID clientID) throws Exception
 	{
 		int i = m.readInt();
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
-	
-		INetworkEvent e = c.getConstructor().newInstance();	
+
+		if (c == null)
+			throw new Exception("Invalid network event: " + i);
+
+		INetworkEvent e = c.getConstructor().newInstance();
 		e.read(m);
 
 		if (e instanceof PersonalEvent)
 		{
 			((PersonalEvent) e).clientID = clientID;
-			((PersonalEvent) e).frame = frame;
 		}
 
-		if (e instanceof EventKeepConnectionAlive)
+		if (e instanceof EventPing)
 			return true;
 		else if (e instanceof IOnlineServerEvent)
 			s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));

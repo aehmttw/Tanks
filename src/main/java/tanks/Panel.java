@@ -2,15 +2,12 @@ package tanks;
 
 import basewindow.BaseFile;
 import basewindow.InputCodes;
-import tanks.event.EventChat;
-import tanks.event.EventPlayerChat;
+import tanks.event.EventBeginLevelCountdown;
 import tanks.event.online.IOnlineServerEvent;
-import tanks.gui.ChatBox;
-import tanks.gui.ChatMessage;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
-import tanks.hotbar.Coins;
 import tanks.hotbar.Hotbar;
+import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.tank.Tank;
 import tanks.tank.TankDummyLoadingScreen;
@@ -30,6 +27,8 @@ public class Panel
 
 	public static Panel panel;
 
+	public static boolean forceRefreshMusic;
+
 	public static String winlose = "";
 	public static boolean win = false;
 	public static boolean levelPassed = false;
@@ -40,8 +39,6 @@ public class Panel
 
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
 	public static double frameFrequency = 1;
-
-	public Hotbar hotbar = new Hotbar();
 
 	//ArrayList<Double> frameFrequencies = new ArrayList<Double>();
 
@@ -79,8 +76,7 @@ public class Panel
 
 	private Panel()
 	{
-		this.hotbar.enabledItemBar = false;
-		this.hotbar.currentCoins = new Coins();
+
 	}
 
 	public void update()
@@ -100,8 +96,8 @@ public class Panel
 			TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
 			TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
 
-			this.hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
-			this.hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
+			Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
+			Hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
 
 			if (Game.usernameInvalid(Game.player.username))
 				Game.screen = new ScreenUsernameInvalid();
@@ -113,29 +109,8 @@ public class Panel
 			{
 				tutorial = true;
 				Game.silentCleanUp();
-				Tutorial.loadTutorial(true, Game.game.window.touchscreen);
+				new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
 			}
-
-			ScreenPartyHost.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, InputCodes.KEY_T, new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					ScreenPartyHost.chat.add(0, new ChatMessage(Game.player.username, ScreenPartyHost.chatbox.inputText));
-					Game.eventsOut.add(new EventPlayerChat(Game.player.username, ScreenPartyHost.chatbox.inputText));
-				}
-
-			});
-
-			ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, InputCodes.KEY_T, new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText));
-				}
-
-			});
 
 			if (Game.game.window.soundsEnabled)
 			{
@@ -144,6 +119,11 @@ public class Panel
 				for (int i = 1; i <= 4; i++)
 				{
 					Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
+				}
+
+				for (int i = 1; i <= 2; i++)
+				{
+					Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
 				}
 			}
 
@@ -220,15 +200,36 @@ public class Panel
 					}
 
 					ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
+
+					for (Player p: Game.players)
+					{
+						if (p.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
+						{
+							ScreenPartyHost.readyPlayers.remove(p);
+
+							if (Crusade.currentCrusade != null)
+							{
+								Crusade.currentCrusade.crusadeCoins.remove(p);
+								Crusade.currentCrusade.crusadeItembars.remove(p);
+							}
+						}
+					}
+
 					Game.removePlayer(ScreenPartyHost.disconnectedPlayers.get(i));
+				}
+
+				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
+				{
+					Game.eventsOut.add(new EventBeginLevelCountdown());
+					((ScreenGame) Game.screen).cancelCountdown = false;
 				}
 
 				ScreenPartyHost.disconnectedPlayers.clear();
 			}
 		}
 
-		if (Panel.panel.hotbar.currentCoins.coins < 0)
-			Panel.panel.hotbar.currentCoins.coins = 0;
+		if (Game.player.hotbar.coins < 0)
+			Game.player.hotbar.coins = 0;
 
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
@@ -286,20 +287,30 @@ public class Panel
 						ScreenPartyHost.server.connections.get(j).events.addAll(Game.eventsOut);
 					}
 
-					//ScreenPartyHost.server.connections.get(j).reply();
+					ScreenPartyHost.server.connections.get(j).reply();
 				}
 			}
 
 			Game.eventsOut.clear();
 		}
 
-		/*if (ScreenPartyLobby.isClient)
+		if (prevScreen != Game.screen)
+			Panel.selectedTextBox = null;
+
+		if (ScreenPartyLobby.isClient)
 		{
 			Client.handler.reply();
-		}*/
+		}
 
-		if (prevScreen != Game.screen && !(prevScreen instanceof IOnlineScreen) && !(Game.screen instanceof IOnlineScreen))
-			this.playScreenMusic(500);
+		if (forceRefreshMusic || (prevScreen != Game.screen && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
+		{
+			if (Game.stringsEqual(prevScreen.musicID, Game.screen.musicID))
+				this.playScreenMusic(500);
+			else
+				this.playScreenMusic(0);
+		}
+
+		forceRefreshMusic = false;
 	}
 
 	public void playScreenMusic(long fadeTime)
@@ -317,6 +328,17 @@ public class Panel
 
 		if (Game.fancyGraphics && Game.enable3d)
 			introAnimationTime = 1000;
+
+		/*for (int i = 0; i < Game.tilesR.length; i++)
+		{
+			for (int j = 0; j < Game.tilesR[i].length; j++)
+			{
+				double[] col = Game.getRainbowColor((((i + j + Game.tilesDepth[i][j]) * 70 + System.currentTimeMillis()) / 10000.0) % 1);
+				Game.tilesR[i][j] = col[0];
+				Game.tilesG[i][j] = col[1];
+				Game.tilesB[i][j] = col[2];
+			}
+		}*/
 
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{

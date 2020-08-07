@@ -7,7 +7,7 @@ import tanks.Game;
 import tanks.IDrawable;
 import tanks.gui.screen.ScreenInfo;
 
-public class Button implements IDrawable
+public class Button implements IDrawable, ITrigger
 {
 	public Runnable function;
 	public double posX;
@@ -48,6 +48,14 @@ public class Button implements IDrawable
 
 	public boolean silent = false;
 
+	public boolean fullInfo = false;
+
+	public String image = null;
+	public double imageSizeX = 0;
+    public double imageSizeY = 0;
+
+    //public String sound = "click.ogg";
+
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
 	public boolean wait = false;
 
@@ -72,6 +80,9 @@ public class Button implements IDrawable
 		this.sizeX = sX;
 		this.sizeY = sY;
 		this.text = text;
+
+		//if (text.toLowerCase().contains("back") || text.toLowerCase().contains("quit"))
+		//	this.sound = "cancel.ogg";
 	}
 
 	public Button(double x, double y, double sX, double sY, String text, Runnable f, String hoverText)
@@ -124,24 +135,41 @@ public class Button implements IDrawable
 		drawing.setColor(this.textColR, this.textColG, this.textColB);
 		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, text);
 
+		if (this.image != null)
+        {
+            drawing.setColor(255, 255, 255);
+            drawing.drawInterfaceImage(image, this.posX, this.posY, this.imageSizeX, this.imageSizeY);
+        }
+
 		if (enableHover)
 		{
-			if (infoSelected && !Game.game.window.touchscreen)
+			if ((infoSelected || (selected && fullInfo)) && !Game.game.window.touchscreen)
 			{
-				drawing.setColor(0, 0, 255);
-				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-				drawing.setColor(255, 255, 255);
-				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				if (!fullInfo)
+				{
+					drawing.setColor(0, 0, 255);
+					drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+					drawing.setColor(255, 255, 255);
+					drawing.drawInterfaceText(this.posX + 1 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				}
+
 				drawing.drawTooltip(this.hoverText);
 			}
-			else
+			else if (!fullInfo)
 			{
 				drawing.setColor(0, 150, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				drawing.setColor(255, 255, 255);
-				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawInterfaceText(this.posX + 1 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 			}
 		}
+	}
+
+	@Override
+	public void setPosition(double x, double y)
+	{
+		this.posX = x;
+		this.posY = y;
 	}
 
 	public void update()
@@ -193,10 +221,11 @@ public class Button implements IDrawable
 
 		if (selected && valid)
 		{
-			if (infoSelected && this.enableHover && Game.game.window.touchscreen)
+			if (infoSelected && this.enableHover && Game.game.window.touchscreen && !fullInfo)
 			{
 				handled = true;
 				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
+				//Drawing.drawing.playSound(this.sound, 1f, 1f);
 				Drawing.drawing.playVibration("click");
 				Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
 			}
@@ -209,6 +238,7 @@ public class Button implements IDrawable
 				if (!this.silent)
 				{
 					Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
+					//Drawing.drawing.playSound(this.sound, 1f, 1f);
 					Drawing.drawing.playVibration("click");
 				}
 			}

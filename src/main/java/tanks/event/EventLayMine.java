@@ -7,6 +7,8 @@ import tanks.tank.Tank;
 
 public class EventLayMine extends PersonalEvent
 {
+	public int id;
+
 	public int tank;
 	public double posX;
 	public double posY;
@@ -20,6 +22,7 @@ public class EventLayMine extends PersonalEvent
 	
 	public EventLayMine(Mine m)
 	{
+		this.id = m.networkID;
 		this.tank = m.tank.networkID;
 		this.posX = m.posX;
 		this.posY = m.posY;
@@ -33,13 +36,17 @@ public class EventLayMine extends PersonalEvent
 		if (clientID == null)
 		{
 			Mine m = new Mine(this.posX, this.posY, this.timer, Tank.idMap.get(tank));
+			m.networkID = id;
 			Game.movables.add(m);
+
+			Mine.idMap.put(id, m);
 		}
 	}
 
 	@Override
 	public void write(ByteBuf b) 
 	{
+		b.writeInt(this.id);
 		b.writeInt(this.tank);
 		b.writeDouble(this.posX);
 		b.writeDouble(this.posY);
@@ -50,6 +57,7 @@ public class EventLayMine extends PersonalEvent
 	@Override
 	public void read(ByteBuf b) 
 	{
+		this.id = b.readInt();
 		this.tank = b.readInt();
 		this.posX = b.readDouble();
 		this.posY = b.readDouble();

@@ -33,6 +33,12 @@ public class LevelGeneratorVersus
 		boolean shrubs = Math.random() < 0.2;
 		int shrubCount = (int) (walls + Math.random() * 4 - 2);
 
+		boolean mud = Math.random() < 0.2;
+		int mudCount = (int) (walls + Math.random() * 4 - 2);
+
+		boolean ice = Math.random() < 0.2;
+		int iceCount = (int) (walls + Math.random() * 4 - 2);
+
 		boolean teleporters = Math.random() < 0.2;
 		int numTeleporters = walls / 5 + 2;
 		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * Math.random()) + 1;
@@ -383,6 +389,73 @@ public class LevelGeneratorVersus
 							s.append(",");
 
 						s.append(x).append("-").append(y).append("-shrub");
+					}
+
+					double rand = Math.random();
+
+					if (rand < 0.25)
+						x++;
+					else if (rand < 0.5)
+						x--;
+					else if (rand < 0.75)
+						y++;
+					else
+						y--;
+				}
+			}
+		}
+
+		if (mud)
+		{
+			for (int j = 0; j < mudCount; j++)
+			{
+				int x = (int) (Math.random() * width);
+				int y = (int) (Math.random() * height);
+
+
+				for (int i = 0; i < Math.random() * 20 + 4; i++)
+				{
+					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
+					{
+						cells[x][y] = true;
+
+						if (!s.toString().endsWith(","))
+							s.append(",");
+
+						s.append(x).append("-").append(y).append("-mud");
+					}
+
+					double rand = Math.random();
+
+					if (rand < 0.25)
+						x++;
+					else if (rand < 0.5)
+						x--;
+					else if (rand < 0.75)
+						y++;
+					else
+						y--;
+				}
+			}
+		}
+
+		if (ice)
+		{
+			for (int j = 0; j < iceCount; j++)
+			{
+				int x = (int) (Math.random() * width);
+				int y = (int) (Math.random() * height);
+
+				for (int i = 0; i < Math.random() * 40 + 8; i++)
+				{
+					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
+					{
+						cells[x][y] = true;
+
+						if (!s.toString().endsWith(","))
+							s.append(",");
+
+						s.append(x).append("-").append(y).append("-ice");
 					}
 
 					double rand = Math.random();

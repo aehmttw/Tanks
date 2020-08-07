@@ -20,7 +20,7 @@ public class EventUpdateCoins extends PersonalEvent
     public EventUpdateCoins(Player p)
     {
         this.playerID = p.clientID;
-        this.coins = p.coins.coins;
+        this.coins = p.hotbar.coins;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class EventUpdateCoins extends PersonalEvent
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))
         {
-            Game.player.coins.coins = coins;
+            Game.player.hotbar.coins = coins;
         }
     }
 }

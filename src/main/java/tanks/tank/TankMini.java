@@ -13,7 +13,7 @@ public class TankMini extends TankAIControlled
 		super(name, x, y, Game.tile_size / 2, 255, 127, 127, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.speed = 3.0;
+		this.maxSpeed = 3.0;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -30,6 +30,7 @@ public class TankMini extends TankAIControlled
 		this.enableBulletAvoidance = false;
 		this.health = 0.25;
 		this.baseHealth = 0.25;
+		this.mineSensitivity = 0.5;
 
 		this.description = "A small, primitive tank which---shoots tiny, low damage bullets";
 	}
@@ -67,7 +68,7 @@ public class TankMini extends TankAIControlled
 			if (!this.tank.destroy && Math.sqrt(Math.pow(this.posX - this.tank.posX, 2) + Math.pow(this.posY - this.tank.posY, 2)) > 300)
 			{
 				this.overrideDirection = true;
-				this.setMotionInDirection(this.tank.posX, this.tank.posY, this.speed);
+				this.setAccelerationInDirection(this.tank.posX, this.tank.posY, this.acceleration);
 			}
 		}
 		

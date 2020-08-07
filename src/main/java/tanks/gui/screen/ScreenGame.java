@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Transformation;
 import basewindow.transformation.Translation;
@@ -9,7 +8,8 @@ import tanks.bullet.Bullet;
 import tanks.event.*;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
-import tanks.hotbar.Item;
+import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemRemote;
 import tanks.network.Client;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
@@ -41,10 +41,19 @@ public class ScreenGame extends Screen
 	public ArrayList<Item> shop = new ArrayList<Item>();
 	public boolean screenshotMode = false;
 
+	public Tutorial tutorial;
+
 	public boolean ready = false;
+	public double readyNameSpacing = 10;
+	public double lastNewReadyName = readyNameSpacing;
+	public int readyNamesCount = 0;
+	public int prevReadyNames = 0;
+	public ArrayList<String> readyPlayers = new ArrayList<>();
 
 	public static boolean versus = false;
 	public String title = "";
+
+	public long introMusicEnd;
 
 	public RotationAboutPoint slantRotation;
 	public Translation slantTranslation;
@@ -52,6 +61,8 @@ public class ScreenGame extends Screen
 
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
+
+	public double readyPanelCounter = 0;
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
@@ -76,8 +87,8 @@ public class ScreenGame extends Screen
 				Game.eventsOut.add(new EventPlayerReady());
 			else
 			{
-				ScreenPartyHost.readyPlayers.add(Game.clientID);
-				Game.eventsOut.add(new EventUpdateReadyCount(ScreenPartyHost.readyPlayers.size()));
+				ScreenPartyHost.readyPlayers.add(Game.player);
+				Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
 
 				//synchronized(ScreenPartyHost.server.connections)
 				{
@@ -100,6 +111,14 @@ public class ScreenGame extends Screen
 		{
 			if (ScreenPartyHost.isServer)
 			{
+				for (Player p: Game.players)
+				{
+					if (!ScreenPartyHost.readyPlayers.contains(p) && ScreenPartyHost.includedPlayers.contains(p.clientID))
+						ScreenPartyHost.readyPlayers.add(p);
+				}
+
+				Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
+
 				Game.eventsOut.add(new EventBeginLevelCountdown());
 				cancelCountdown = false;
 			}
@@ -210,6 +229,8 @@ public class ScreenGame extends Screen
 			}
 			else
 				Game.reset();
+
+			Game.screen = new ScreenGame();
 		}
 	}
 	);
@@ -308,6 +329,8 @@ public class ScreenGame extends Screen
 		public void run()
 		{
 			Crusade.crusadeMode = false;
+			Game.player.saveCrusade();
+			Crusade.currentCrusade = null;
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
@@ -328,6 +351,7 @@ public class ScreenGame extends Screen
 		public void run()
 		{
 			Crusade.crusadeMode = false;
+			Game.player.saveCrusade();
 			Crusade.currentCrusade = null;
 			Game.exitToTitle();
 		}
@@ -416,10 +440,14 @@ public class ScreenGame extends Screen
 
 	public ScreenGame()
 	{
+		introMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/ready_music_intro_length.txt").get(0));
 		Game.startTime = 400;
 
 		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+		{
+			this.music = "waiting_music.ogg";
 			cancelCountdown = true;
+		}
 
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 
@@ -455,6 +483,8 @@ public class ScreenGame extends Screen
 		{
 			final int j = i;
 			Item item = this.shop.get(j);
+			if (item instanceof ItemRemote)
+				continue;
 
 			String price = "Price: " + item.price + " ";
 			if (item.price == 0)
@@ -470,16 +500,16 @@ public class ScreenGame extends Screen
 				public void run()
 				{
 					int pr = shop.get(j).price;
-					if (Panel.panel.hotbar.currentCoins.coins >= pr)
+					if (Game.player.hotbar.coins >= pr)
 					{
-						if (Panel.panel.hotbar.currentItemBar.addItem(shop.get(j)))
-							Panel.panel.hotbar.currentCoins.coins -= pr;
+						if (Game.player.hotbar.itemBar.addItem(shop.get(j)))
+							Game.player.hotbar.coins -= pr;
 					}
 				}
 			}, price
 			));
 
-			Game.eventsOut.add(new EventAddShopItem(i, item.name, price));
+			Game.eventsOut.add(new EventAddShopItem(i, item.name, price, item.icon));
 		}
 
 		for (int i = 0; i < shopItemButtons.size(); i++)
@@ -514,7 +544,7 @@ public class ScreenGame extends Screen
 		else if (ScreenPartyHost.isServer)
 			ScreenPartyHost.chatbox.update(false);
 
-		Panel.panel.hotbar.update();
+		Game.player.hotbar.update();
 
 		if (Game.enable3d)
 			for (int i = 0; i < Game.obstacles.size(); i++)
@@ -525,26 +555,26 @@ public class ScreenGame extends Screen
 					o.postOverride();
 			}
 
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
+		if (Game.game.input.pause.isValid())
 		{
 			if (shopScreen)
 				shopScreen = false;
 			else
 				this.paused = !this.paused;
 
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+			Game.game.input.pause.invalidate();
 		}
 
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F1))
+		if (Game.game.input.hidePause.isValid())
 		{
 			this.screenshotMode = !this.screenshotMode;
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_F1);
+			Game.game.input.hidePause.invalidate();
 		}
 
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_I))
+		if (Game.game.input.zoom.isValid())
 		{
 			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_I);
+			Game.game.input.zoom.invalidate();
 		}
 
 		if (!finished)
@@ -652,13 +682,15 @@ public class ScreenGame extends Screen
 			TankPlayer.controlStick.update();
 		}
 
+		String prevMusic = this.music;
+		this.music = null;
 
 		if (!playing && Game.startTime >= 0)
 		{
 			if (shopScreen)
 			{
-				Panel.panel.hotbar.hidden = false;
-				Panel.panel.hotbar.hideTimer = 100;
+				Game.player.hotbar.hidden = false;
+				Game.player.hotbar.hideTimer = 100;
 
 				this.exitShop.update();
 
@@ -670,6 +702,12 @@ public class ScreenGame extends Screen
 
 				for (int i = shopPage * rows * 3; i < Math.min(shopPage * rows * 3 + rows * 3, shopItemButtons.size()); i++)
 					this.shopItemButtons.get(i).update();
+
+				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+				{
+					this.music = "waiting_music.ogg";
+					this.musicID = null;
+				}
 			}
 			else
 			{
@@ -685,9 +723,30 @@ public class ScreenGame extends Screen
 						readyButton.enabled = !this.ready;
 
 						if (this.ready)
+						{
+							if (this.readyPanelCounter * 10 >= introMusicEnd)
+							{
+								this.music = "ready_music_1.ogg";
+								this.musicID = "ready";
+							}
+							else
+							{
+								if (this.readyPanelCounter == 0)
+									Drawing.drawing.playSound("ready_music_intro.ogg", Game.musicVolume, true);
+
+								this.music = null;
+								this.musicID = null;
+							}
+
+							this.readyPanelCounter += Panel.frameFrequency;
 							readyButton.text = "Waiting... (";
+						}
 						else
+						{
 							readyButton.text = "Ready (";
+							this.music = "waiting_music.ogg";
+							this.musicID = null;
+						}
 
 						if (ScreenPartyHost.isServer)
 						{
@@ -707,13 +766,28 @@ public class ScreenGame extends Screen
 								readyButton.enabled = false;
 							}
 
-							readyButton.text += ScreenPartyLobby.readyPlayers + "/" + ScreenPartyLobby.includedPlayers.size() + ")";
+							readyButton.text += ScreenPartyLobby.readyPlayers.size() + "/" + ScreenPartyLobby.includedPlayers.size() + ")";
 						}
 
 						readyButton.update();
 					}
 					else
 					{
+						if (this.readyPanelCounter * 10 >= introMusicEnd)
+						{
+							this.music = "ready_music_2.ogg";
+							this.musicID = "ready";
+						}
+						else
+						{
+							if (this.readyPanelCounter == 0)
+								Drawing.drawing.playSound("ready_music_intro.ogg", Game.musicVolume, true);
+
+							this.music = null;
+							this.musicID = null;
+						}
+
+						this.readyPanelCounter += Panel.frameFrequency;
 						readyButton.enabled = false;
 						readyButton.text = "Starting in " + ((int)(Game.startTime / 100) + 1);
 					}
@@ -807,6 +881,11 @@ public class ScreenGame extends Screen
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
+				Game.movables.get(i).preUpdate();
+			}
+
+			for (int i = 0; i < Game.movables.size(); i++)
+			{
 				Movable m = Game.movables.get(i);
 				m.update();
 
@@ -839,7 +918,7 @@ public class ScreenGame extends Screen
 				Game.tracks.get(i).update();
 			}
 
-			Panel.panel.hotbar.update();
+			Game.player.hotbar.update();
 
 			if (aliveTeams.size() <= 1)
 			{
@@ -889,24 +968,32 @@ public class ScreenGame extends Screen
 								}
 							}
 
-							if (aliveTeams.contains(Game.playerTank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.clientID.toString())))
+							if (Game.playerTank != null)
 							{
-								if (Crusade.crusadeMode)
-									Panel.winlose = "Battle cleared!";
-								else
-									Panel.winlose = "Victory!";
+								if (aliveTeams.contains(Game.playerTank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.clientID.toString())))
+								{
+									if (Crusade.crusadeMode)
+										Panel.winlose = "Battle cleared!";
+									else
+										Panel.winlose = "Victory!";
 
-								Panel.win = true;
+									Panel.win = true;
+								}
+								else
+								{
+									if (Crusade.crusadeMode)
+										Panel.winlose = "Battle failed!";
+									else
+										Panel.winlose = "You were destroyed!";
+
+									Panel.win = false;
+								}
 							}
 							else
-							{
-								if (Crusade.crusadeMode)
-									Panel.winlose = "Battle failed!";
-								else
-									Panel.winlose = "You were destroyed!";
-
 								Panel.win = false;
-							}
+
+							if (Crusade.crusadeMode)
+								Crusade.currentCrusade.saveHotbars();
 
 							if (ScreenPartyHost.isServer)
 							{
@@ -952,6 +1039,15 @@ public class ScreenGame extends Screen
 				Game.bulletLocked = false;
 		}
 
+		if (this.music == null && prevMusic != null)
+			Panel.forceRefreshMusic = true;
+
+		if (this.music != null && prevMusic == null)
+			Panel.forceRefreshMusic = true;
+
+		if (this.music != null && !this.music.equals(prevMusic))
+			Panel.forceRefreshMusic = true;
+
 		for (int i = 0; i < Game.removeMovables.size(); i++)
 			Game.movables.remove(Game.removeMovables.get(i));
 
@@ -969,25 +1065,21 @@ public class ScreenGame extends Screen
 			Game.obstacles.remove(o);
 		}
 
-		for (int i = 0; i < Game.removeEffects.size(); i++)
-		{
-			Effect e = Game.removeEffects.get(i);
-			Game.effects.remove(e);
-			Game.recycleEffects.add(e);
+		Game.effects.removeAll(Game.removeEffects);
+		Game.recycleEffects.addAll(Game.removeEffects);
 
-		}
-
-		for (int i = 0; i < Game.removeBelowEffects.size(); i++)
-		{
-			Effect e = Game.removeBelowEffects.get(i);
-			Game.tracks.remove(e);
-			Game.recycleEffects.add(e);
-		}
+		Game.tracks.removeAll(Game.removeTracks);
+		Game.recycleEffects.addAll(Game.removeTracks);
 
 		Game.removeMovables.clear();
 		Game.removeObstacles.clear();
 		Game.removeEffects.clear();
-		Game.removeBelowEffects.clear();
+		Game.removeTracks.clear();
+
+		if (this.tutorial != null)
+		{
+			this.tutorial.update();
+		}
 	}
 
 	public void setPerspective()
@@ -1067,6 +1159,11 @@ public class ScreenGame extends Screen
 				Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
 			}
 
+			if (i == 9 && this.tutorial != null)
+			{
+				this.tutorial.draw();
+			}
+
 			for (int j = 0; j < this.drawables[i].size(); j++)
 			{
 				IDrawable d = this.drawables[i].get(j);
@@ -1081,7 +1178,7 @@ public class ScreenGame extends Screen
 				{
 					IDrawable d = this.drawables[i].get(j);
 
-					if (d instanceof IDrawableWithGlow)
+					if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
 						((IDrawableWithGlow) d).drawGlow();
 				}
 			}
@@ -1122,22 +1219,6 @@ public class ScreenGame extends Screen
 		//Game.game.window.setAngles(0, 0, 0);
 		//Game.game.window.setOffsets(0,  0, 0);
 
-		if (!paused && Game.game.window.touchscreen && !shopScreen)
-		{
-			pause.draw();
-			Drawing.drawing.drawInterfaceImage("/pause.png", pause.posX, pause.posY, 40, 40);
-
-			if (Drawing.drawing.enableMovingCamera)
-			{
-				zoom.draw();
-
-				if (Drawing.drawing.movingCamera)
-					Drawing.drawing.drawInterfaceImage("/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
-				else
-					Drawing.drawing.drawInterfaceImage("/zoom_in.png", zoom.posX, zoom.posY, 40, 40);
-			}
-		}
-
 		if (!playing)
 		{
 			if (Crusade.crusadeMode)
@@ -1172,14 +1253,125 @@ public class ScreenGame extends Screen
 					this.previous.draw();
 
 				for (int i = Math.min(shopPage * rows * 3 + rows * 3, shopItemButtons.size()) - 1; i >= shopPage * rows * 3; i--)
-					shopItemButtons.get(i).draw();
+				{
+					Button b = this.shopItemButtons.get(i);
+					b.draw();
+					Drawing.drawing.setColor(255, 255, 255);
+					Drawing.drawing.drawInterfaceImage("/" + this.shop.get(i).icon, b.posX - 135, b.posY, 40, 40);
+				}
 			}
 			else
 			{
 				if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 					play.draw();
 				else
+				{
+					if (ScreenPartyHost.isServer)
+					{
+						readyPlayers.clear();
+
+						for (Player p: ScreenPartyHost.readyPlayers)
+							readyPlayers.add(p.username);
+					}
+					else
+						readyPlayers = ScreenPartyLobby.readyPlayers;
+
+					double extraWidth = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
+					double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;
+
+					Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (readyPanelCounter * 10) / 200) * Math.min(Game.startTime / 25, 1)));
+					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX + extraWidth / 2, Drawing.drawing.interfaceSizeY / 2, extraWidth, height);
+					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - Math.min(readyPanelCounter * 10, 200), Drawing.drawing.interfaceSizeY / 2,
+							Math.min(readyPanelCounter * 20, 400), height);
+
+					double c = readyPanelCounter - 35;
+
+					if (c > 0)
+					{
+						Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(Game.startTime / 25, 1) * 255, 0));
+						Drawing.drawing.setInterfaceFontSize(24);
+
+						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 50, "Ready players:");
+					}
+
+					int includedPlayers = 0;
+
+					if (ScreenPartyHost.isServer)
+						includedPlayers = ScreenPartyHost.includedPlayers.size();
+					else if (ScreenPartyLobby.isClient)
+						includedPlayers = ScreenPartyLobby.includedPlayers.size();
+
+					double spacing = readyNameSpacing;
+
+					if (includedPlayers > 15)
+						spacing = spacing / 2;
+
+					if (includedPlayers > 30)
+						spacing = spacing / 2;
+
+					if (includedPlayers > 60)
+						spacing = spacing / 2;
+
+
+					if (readyPlayers.size() > readyNamesCount && c > lastNewReadyName + spacing)
+					{
+						lastNewReadyName = c;
+						readyNamesCount++;
+					}
+
+					int slots = (int) ((Drawing.drawing.interfaceSizeY - 200) / 40) - 1;
+					int base = 0;
+
+					if (readyNamesCount >= includedPlayers)
+						slots++;
+
+					if (readyNamesCount > slots)
+						base = readyNamesCount - slots;
+
+					for (int i = 0; i < readyPlayers.size(); i++)
+					{
+						if (i < readyNamesCount)
+						{
+							Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(Game.startTime / 25, 1) * 255, 0));
+							Drawing.drawing.setInterfaceFontSize(24);
+
+							if (i >= base)
+							{
+								if (Game.enableChatFilter)
+									Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, Game.chatFilter.filterChat(readyPlayers.get(i)));
+								else
+									Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, readyPlayers.get(i));
+							}
+						}
+					}
+
+					if (c >= 0)
+					{
+						Drawing.drawing.setColor(255, 255, 255, Math.min(Game.startTime / 25, 1) * 127);
+						Drawing.drawing.setInterfaceFontSize(24);
+
+						for (int i = readyNamesCount; i < Math.min(includedPlayers, slots); i++)
+						{
+							Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * i + 100, "Waiting...");
+						}
+
+						int extra = includedPlayers - Math.max(readyNamesCount, slots);
+						if (extra > 0)
+						{
+							if (extra == 1)
+								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * slots + 100, "Waiting...");
+							else
+								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * slots + 100, extra + " waiting...");
+						}
+					}
+
+					if (prevReadyNames != readyNamesCount)
+						Drawing.drawing.playSound("bullet_explode.ogg", 1.5f);
+
+					prevReadyNames = readyNamesCount;
+
 					readyButton.draw();
+				}
 
 				if (!this.shopItemButtons.isEmpty() && this.readyButton.enabled)
 					enterShop.draw();
@@ -1197,7 +1389,23 @@ public class ScreenGame extends Screen
 			}
 		}
 
-		Panel.panel.hotbar.draw();
+		if (!paused && Game.game.window.touchscreen && !shopScreen)
+		{
+			pause.draw();
+			Drawing.drawing.drawInterfaceImage("/pause.png", pause.posX, pause.posY, 40, 40);
+
+			if (Drawing.drawing.enableMovingCamera)
+			{
+				zoom.draw();
+
+				if (Drawing.drawing.movingCamera)
+					Drawing.drawing.drawInterfaceImage("/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
+				else
+					Drawing.drawing.drawInterfaceImage("/zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+			}
+		}
+
+		Game.player.hotbar.draw();
 
 		if (paused && !screenshotMode)
 		{

@@ -37,7 +37,7 @@ public class ChatFilter
 		
 		if (!message.equals(rawMessage))
 		{
-			msg = "\u00A7255000000255< Redacted >\u00A7000000000255";
+			msg = "< Redacted >";
 		}
 
 		return msg;

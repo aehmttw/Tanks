@@ -123,7 +123,7 @@ public class RegistryObstacle
 			f.println("# put 'custom' for parameter 2");
 			f.println("# and put its absolute file path as parameter 3 in this file.");
 			f.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
-			f.println("# Example custom obstacle entry: 'myobstacle,1,custom,C:\\Users\\potato\\.tanks.d\\MyObstacle.jar,com.potato.MyObstacle'");
+			f.println("# Example custom obstacle entry: 'myobstacle,1,custom,C:\\Users\\potato\\.tanks\\MyObstacle.jar,com.potato.MyObstacle'");
 			f.println("# Don't leave any blank lines!");
 
 			for (int i = 0; i < Game.defaultObstacles.size(); i++)

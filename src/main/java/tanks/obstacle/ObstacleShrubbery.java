@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.BulletFlame;
+import tanks.bullet.BulletInstant;
 import tanks.event.EventObstacleShrubberyBurn;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
@@ -56,7 +57,7 @@ public class ObstacleShrubbery extends Obstacle
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
 
-		double finalHeight = 0;
+		double finalHeight;
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
@@ -131,12 +132,15 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntryLocal(Movable m)
 	{
+		if (Game.playerTank == null || Game.playerTank.destroy)
+			return;
+
 		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 		double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
 		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed / 2, 127);
 
 		double radius = 62500;
-		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0)
+		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
 		{
 			int sound = (int) (Math.random() * 4 + 1);
 			Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 6.0f) + 0.5f, (float) (speed * 0.025 * (radius - distsq) / radius));

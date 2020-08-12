@@ -40,8 +40,8 @@ public class TankBlue extends TankAIControlled
 
 		BulletElectric b = new BulletElectric(this.posX, this.posY, 5, this);
 		b.team = this.team;
-		b.setPolarMotion(this.angle, 25.0/4);
-		b.moveOut(8);
+		b.setPolarMotion(this.angle, 25.0/8);
+		b.moveOut(16);
 		Game.movables.add(b);
 		this.cooldown = this.cooldownBase;
 

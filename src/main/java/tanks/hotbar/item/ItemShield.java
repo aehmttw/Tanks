@@ -94,6 +94,12 @@ public class ItemShield extends Item
     }
 
     @Override
+    public String getTypeName()
+    {
+        return "Shield";
+    }
+
+    @Override
     public void exportProperties()
     {
         super.exportProperties();

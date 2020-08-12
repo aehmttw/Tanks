@@ -1257,7 +1257,7 @@ public class ScreenGame extends Screen
 					Button b = this.shopItemButtons.get(i);
 					b.draw();
 					Drawing.drawing.setColor(255, 255, 255);
-					Drawing.drawing.drawInterfaceImage("/" + this.shop.get(i).icon, b.posX - 135, b.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage(this.shop.get(i).icon, b.posX - 135, b.posY, 40, 40);
 				}
 			}
 			else
@@ -1392,16 +1392,16 @@ public class ScreenGame extends Screen
 		if (!paused && Game.game.window.touchscreen && !shopScreen)
 		{
 			pause.draw();
-			Drawing.drawing.drawInterfaceImage("/pause.png", pause.posX, pause.posY, 40, 40);
+			Drawing.drawing.drawInterfaceImage("pause.png", pause.posX, pause.posY, 40, 40);
 
 			if (Drawing.drawing.enableMovingCamera)
 			{
 				zoom.draw();
 
 				if (Drawing.drawing.movingCamera)
-					Drawing.drawing.drawInterfaceImage("/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("zoom_out.png", zoom.posX, zoom.posY, 40, 40);
 				else
-					Drawing.drawing.drawInterfaceImage("/zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("zoom_in.png", zoom.posX, zoom.posY, 40, 40);
 			}
 		}
 

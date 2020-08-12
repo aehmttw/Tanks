@@ -218,6 +218,6 @@ public class ScreenEditItem extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Item properties");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, item.getTypeName() + " item properties");
     }
 }

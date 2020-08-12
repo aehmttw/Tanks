@@ -35,12 +35,17 @@ public class NameTag implements IDrawable
     @Override
     public void draw()
     {
-        Drawing.drawing.setFontSize(size);
-        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-
-        if (Game.enable3d)
-            Drawing.drawing.drawText(movable.posX + ox, movable.posY + oy, movable.posZ + oz, name);
+        if (this.movable instanceof TankPlayerRemote)
+            ((TankPlayerRemote) this.movable).drawName();
         else
-            Drawing.drawing.drawText(movable.posX + ox, movable.posY + oy, name);
+        {
+            Drawing.drawing.setFontSize(size);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+
+            if (Game.enable3d)
+                Drawing.drawing.drawText(movable.posX + ox, movable.posY + oy, movable.posZ + oz, name);
+            else
+                Drawing.drawing.drawText(movable.posX + ox, movable.posY + oy, name);
+        }
     }
 }

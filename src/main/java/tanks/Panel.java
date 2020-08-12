@@ -9,10 +9,7 @@ import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
-import tanks.tank.Tank;
-import tanks.tank.TankDummyLoadingScreen;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 public class Panel
 {
@@ -85,7 +82,7 @@ public class Panel
 		{
 			boolean tutorial = false;
 
-			Game.game.window.setIcon("/icon.png");
+			Game.game.window.setIcon("/images/icon.png");
 
 			double scale = 1;
 			if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
@@ -240,6 +237,12 @@ public class Panel
 
 			Drawing.drawing.playerX = Game.playerTank.posX;
 			Drawing.drawing.playerY = Game.playerTank.posY;
+
+			if (Game.playerTank instanceof TankPlayerController)
+			{
+				Drawing.drawing.playerX = ((TankPlayerController) Game.playerTank).interpolatedPosX;
+				Drawing.drawing.playerY = ((TankPlayerController) Game.playerTank).interpolatedPosY;
+			}
 
 			if (Drawing.drawing.movingCamera)
 			{
@@ -428,7 +431,7 @@ public class Panel
 			/*Drawing.drawing.drawInterfaceOval(mx, my, 8, 8);
 			Drawing.drawing.drawInterfaceOval(mx, my, 4, 4);*/
 
-			Drawing.drawing.drawInterfaceImage("/cursor.png", mx, my, 48, 48);
+			Drawing.drawing.drawInterfaceImage("cursor.png", mx, my, 48, 48);
 
 			//Drawing.drawing.setColor(255, 0, 0);
 			//Drawing.drawing.drawOval(mx2, my2, 8, 8);

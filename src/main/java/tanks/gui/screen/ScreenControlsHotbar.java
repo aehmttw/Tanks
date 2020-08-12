@@ -7,12 +7,13 @@ import tanks.gui.InputSelector;
 
 public class ScreenControlsHotbar extends Screen
 {
-    InputSelector hotbarToggle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Toggle hotbar visibility", Game.game.input.hotbarToggle);
-    InputSelector hotbar1 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Item slot 1", Game.game.input.hotbar1);
-    InputSelector hotbar2 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Item slot 2", Game.game.input.hotbar2);
-    InputSelector hotbar3 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Item slot 3", Game.game.input.hotbar3);
-    InputSelector hotbar4 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Item slot 4", Game.game.input.hotbar4);
-    InputSelector hotbar5 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Item slot 5", Game.game.input.hotbar5);
+    InputSelector hotbarToggle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 270, 700, 40, "Toggle hotbar visibility", Game.game.input.hotbarToggle);
+    InputSelector hotbar1 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 180, 700, 40, "Item slot 1", Game.game.input.hotbar1);
+    InputSelector hotbar2 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 90, 700, 40, "Item slot 2", Game.game.input.hotbar2);
+    InputSelector hotbar3 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 0, 700, 40, "Item slot 3", Game.game.input.hotbar3);
+    InputSelector hotbar4 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 90, 700, 40, "Item slot 4", Game.game.input.hotbar4);
+    InputSelector hotbar5 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 180, 700, 40, "Item slot 5", Game.game.input.hotbar5);
+    InputSelector hotbarDeselect = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 270, 700, 40, "Deselect item slot", Game.game.input.hotbarDeselect);
 
     public ScreenControlsHotbar()
     {
@@ -29,6 +30,7 @@ public class ScreenControlsHotbar extends Screen
         hotbar3.update();
         hotbar4.update();
         hotbar5.update();
+        hotbarDeselect.update();
 
         ScreenOptionsInputDesktop.overlay.update();
     }
@@ -43,6 +45,7 @@ public class ScreenControlsHotbar extends Screen
         hotbar3.draw();
         hotbar4.draw();
         hotbar5.draw();
+        hotbarDeselect.draw();
 
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);

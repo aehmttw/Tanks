@@ -14,6 +14,8 @@ public class ScreenKicked extends Screen
 		this.music = "tomato_feast_1.ogg";
 		this.musicID = "menu";
 
+		Drawing.drawing.playSound("leave.ogg");
+
 		Panel.forceRefreshMusic = true;
 
 		this.reason = reason;

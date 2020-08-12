@@ -23,6 +23,8 @@ public class ScreenConfirmEndParty extends Screen implements IPartyMenuScreen
         @Override
         public void run()
         {
+            Drawing.drawing.playSound("leave.ogg");
+
             ScreenPartyHost.isServer = false;
             ScreenPartyHost.server.close();
             ScreenPartyHost.activeScreen = null;

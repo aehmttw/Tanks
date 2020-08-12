@@ -61,6 +61,7 @@ public class EventAddShopItem extends PersonalEvent
 
 
             ItemRemote i = new ItemRemote();
+            i.name = name;
             i.icon = icon;
 
             ((ScreenGame) Game.screen).shop.add(i);

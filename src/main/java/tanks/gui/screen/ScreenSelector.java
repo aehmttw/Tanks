@@ -151,7 +151,7 @@ public class ScreenSelector extends Screen
             if (drawImages)
             {
                 Drawing.drawing.setColor(255, 255, 255);
-                Drawing.drawing.drawInterfaceImage("/" + selector.options[i], b.posX - b.sizeX / 2 + b.sizeY / 2 + 10, b.posY, b.sizeY, b.sizeY);
+                Drawing.drawing.drawInterfaceImage(selector.options[i], b.posX - b.sizeX / 2 + b.sizeY / 2 + 10, b.posY, b.sizeY, b.sizeY);
             }
         }
 

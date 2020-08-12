@@ -82,7 +82,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		if (this.tookRecoil)
 		{
-			if (this.recoilSpeed <= this.maxSpeed)
+			if (this.recoilSpeed <= this.maxSpeed * 1.0001)
 			{
 				this.tookRecoil = false;
 				this.inControlOfMotion = true;
@@ -296,7 +296,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		this.cooldown = 20;
 
-		fireBullet(25 / 4.0, 1, Bullet.BulletEffect.trail);
+		fireBullet(25 / 8.0, 1, Bullet.BulletEffect.trail);
 	}
 
 	public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
@@ -305,15 +305,15 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		Bullet b = new Bullet(posX, posY, bounces, this);
 		b.setPolarMotion(this.angle, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
 
-		b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tile_size));
+		b.moveOut(50 / speed * this.size / Game.tile_size);
 		b.effect = effect;
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
 
-		this.processRecoil(1);
+		this.processRecoil();
 	}
 
 	public void fireBullet(Bullet b, double speed)
@@ -322,14 +322,14 @@ public class TankPlayer extends Tank implements IPlayerTank
 			Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 
 		b.setPolarMotion(this.angle, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0 * b.recoil);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil);
 
-		b.moveOut((int) (25.0 / speed * 2 * this.size / Game.tile_size));
+		b.moveOut(50 / speed * this.size / Game.tile_size);
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
 
-		this.processRecoil(b.recoil);
+		this.processRecoil();
 	}
 
 	public void layMine()

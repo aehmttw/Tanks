@@ -244,7 +244,7 @@ public class ChatBox extends TextBox
 		{
 			drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
 			drawing.fillInterfaceRect(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY, this.sizeY);
-			drawing.drawInterfaceImage("/chat.png", this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, 0.8 * this.sizeY, 0.8 * this.sizeY);
+			drawing.drawInterfaceImage("chat.png", this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, 0.8 * this.sizeY, 0.8 * this.sizeY);
 		}
 	}
 }

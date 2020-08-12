@@ -109,7 +109,7 @@ public class Player
             Crusade c;
 
             if (internal)
-                c = new Crusade(Game.game.fileManager.getInternalFileContents(fileName), name, fileName);
+                c = new Crusade(Game.game.fileManager.getInternalFileContents("/crusades" + fileName), name, fileName);
             else
                 c = new Crusade(Game.game.fileManager.getFile(fileName), name);
 

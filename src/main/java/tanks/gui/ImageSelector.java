@@ -36,7 +36,7 @@ public class ImageSelector extends Selector
         super.draw();
 
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceImage("/" + options[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
+        Drawing.drawing.drawInterfaceImage(options[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
     }
 
     @Override

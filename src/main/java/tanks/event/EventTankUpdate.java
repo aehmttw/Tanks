@@ -2,6 +2,8 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayerController;
+import tanks.tank.TankRemote;
 
 public class EventTankUpdate extends PersonalEvent
 {
@@ -11,6 +13,8 @@ public class EventTankUpdate extends PersonalEvent
 	public double vX;
 	public double vY;
 	public double angle;
+	public long time = System.currentTimeMillis();
+
 
 	public EventTankUpdate()
 	{
@@ -56,6 +60,18 @@ public class EventTankUpdate extends PersonalEvent
 		
 		if (t != null && this.clientID == null)
 		{
+			if (t instanceof TankRemote)
+			{
+				TankRemote r = (TankRemote) t;
+				double iTime = Math.max(0.1, (time - r.lastUpdate) / 10.0);
+
+				r.interpolatedOffX = this.posX - (t.posX - r.interpolatedOffX * (r.interpolationTime - r.interpolatedProgress) / r.interpolationTime);
+				r.interpolatedOffY = this.posY - (t.posY - r.interpolatedOffY * (r.interpolationTime - r.interpolatedProgress) / r.interpolationTime);
+				r.interpolatedProgress = 0;
+				r.interpolationTime = iTime;
+				r.lastUpdate = time;
+			}
+
 			t.posX = this.posX;
 			t.posY = this.posY;
 			t.vX = this.vX;

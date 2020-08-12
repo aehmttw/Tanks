@@ -38,6 +38,7 @@ public class TeleporterOrb extends Movable
 
 		this.tank.tookRecoil = false;
 		this.tank.inControlOfMotion = false;
+		this.tank.positionLock = true;
 		
 		if (!t.isRemote)
 			Game.eventsOut.add(new EventTankTeleport(this));
@@ -70,12 +71,16 @@ public class TeleporterOrb extends Movable
 
 		this.age += Panel.frameFrequency;
 
+		this.tank.vX = 0;
+		this.tank.vY = 0;
+
 		if (this.age > this.endAge)
 		{
 			Game.removeMovables.add(this);
 			this.tank.invulnerable = false;
 			this.tank.targetable = true;
 			this.tank.inControlOfMotion = true;
+			this.tank.positionLock = false;
 
 			for (int i = 0; i < 100; i++)
 			{
@@ -85,7 +90,6 @@ public class TeleporterOrb extends Movable
 			this.tank.size = this.size;
 			this.tank.turret.size = this.tSize;
 			return;
-
 		}
 
 		double frac = (Math.sin((this.maxAge - this.age) / this.maxAge * Math.PI - Math.PI / 2) + 1) / 2;
@@ -133,7 +137,7 @@ public class TeleporterOrb extends Movable
 		
 		this.tank.size = size * this.size;
 		this.tank.turret.size = size * this.tSize;
-		this.tank.turret.length = (int) this.tank.size;
+		this.tank.turret.length = this.tank.size;
 		
 		this.tank.disabled = this.tank.size <= 0;
 

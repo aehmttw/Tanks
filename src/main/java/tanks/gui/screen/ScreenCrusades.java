@@ -126,7 +126,7 @@ public class ScreenCrusades extends Screen
 
 				if (c == null)
 				{
-					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/classic_crusade.tanks");
+					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/classic_crusade.tanks");
 					c = new Crusade(al, "Classic crusade", "/classic_crusade.tanks");
 				}
 
@@ -144,7 +144,7 @@ public class ScreenCrusades extends Screen
 
 				if (c == null)
 				{
-					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/wii_crusade.tanks");
+					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/wii_crusade.tanks");
 					c = new Crusade(al, "Wii crusade", "/wii_crusade.tanks");
 				}
 

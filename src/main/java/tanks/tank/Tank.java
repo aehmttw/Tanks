@@ -28,6 +28,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean disabled = false;
 	public boolean inControlOfMotion = true;
+	public boolean positionLock = false;
 
 	public boolean tookRecoil = false;
 	public double recoilSpeed = 0;
@@ -40,11 +41,11 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public String description = "";
 
-	public double acceleration = 0.1;
+	public double acceleration = 0.05;
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
-	public double maxSpeed = 3.0;
+	public double maxSpeed = 1.5;
 	public int liveBullets = 0;
 	public int liveMines = 0;
 	public double size;
@@ -61,6 +62,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean drawTread = false;
 	public String texture = null;
 	public double orientation = 0;
+
+	public double hitboxSize = 0.95;
 
 	public double baseHealth = 1;
 	public double health = 1;
@@ -167,6 +170,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		hasCollided = false;
 
+		this.size *= this.hitboxSize;
+
 		if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
 		{
 			this.posX = Drawing.drawing.sizeX - this.size / 2;
@@ -216,7 +221,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (!o.tankCollision)
 					continue;
 
-				if (dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
+				if (!o.hasLeftNeighbor() && dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -225,7 +230,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vX = 0;
 					this.posX += horizontalDist - bound;
 				}
-				else if (dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
+				else if (!o.hasUpperNeighbor() && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -234,7 +239,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vY = 0;
 					this.posY += verticalDist - bound;
 				}
-				else if (dx >= 0 && dx < bound && horizontalDist > verticalDist)
+				else if (!o.hasRightNeighbor() && dx >= 0 && dx < bound && horizontalDist > verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -243,7 +248,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vX = 0;
 					this.posX -= horizontalDist - bound;
 				}
-				else if (dy >= 0 && dy < bound && horizontalDist < verticalDist)
+				else if (!o.hasLowerNeighbor() && dy >= 0 && dy < bound && horizontalDist < verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -254,6 +259,8 @@ public abstract class Tank extends Movable implements ISolidObject
 				}
 			}
 		}
+
+		this.size /= this.hitboxSize;
 	}
 
 	@Override
@@ -261,10 +268,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
 
-		if (this.treadAnimation > this.size * 4 / 5 && !this.destroy && !ScreenGame.finished)
+		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy && !ScreenGame.finished)
 		{
 			this.drawTread = true;
-			this.treadAnimation -= this.size * 4 / 5;
+			this.treadAnimation -= this.size * 2 / 5;
 		}
 
 		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);
@@ -317,25 +324,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		{
 			this.drawTread = false;
 
-			double a = this.getPolarDirection();
-			Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
-			Effect e2 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
-			e1.setPolarMotion(a - Math.PI / 2, this.size * 0.25);
-			e2.setPolarMotion(a + Math.PI / 2, this.size * 0.25);
-			e1.size = this.size / 5;
-			e2.size = this.size / 5;
-			e1.posX += e1.vX;
-			e1.posY += e1.vY;
-			e2.posX += e2.vX;
-			e2.posY += e2.vY;
-			e1.angle = a;
-			e2.angle = a;
-			e1.setPolarMotion(0, 0);
-			e2.setPolarMotion(0, 0);
-			//setEffectHeight(e1);
-			//setEffectHeight(e2);
-			Game.tracks.add(e1);
-			Game.tracks.add(e2);
+			this.drawTread();
 		}
 
 		this.accelerationModifier = 1;
@@ -406,6 +395,27 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.tookRecoil = false;
 			this.inControlOfMotion = true;
 		}
+	}
+
+	public void drawTread()
+	{
+		double a = this.getPolarDirection();
+		Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
+		Effect e2 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
+		e1.setPolarMotion(a - Math.PI / 2, this.size * 0.25);
+		e2.setPolarMotion(a + Math.PI / 2, this.size * 0.25);
+		e1.size = this.size / 5;
+		e2.size = this.size / 5;
+		e1.posX += e1.vX;
+		e1.posY += e1.vY;
+		e2.posX += e2.vX;
+		e2.posY += e2.vY;
+		e1.angle = a;
+		e2.angle = a;
+		e1.setPolarMotion(0, 0);
+		e2.setPolarMotion(0, 0);
+		Game.tracks.add(e1);
+		Game.tracks.add(e2);
 	}
 
 	@Override
@@ -611,7 +621,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public Face[] getHorizontalFaces()
 	{
-		double s = this.size / 2;
+		double s = this.size * this.hitboxSize / 2;
 
 		if (this.horizontalFaces == null)
 		{
@@ -631,7 +641,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public Face[] getVerticalFaces()
 	{
-		double s = this.size / 2;
+		double s = this.size * this.hitboxSize / 2;
 
 		if (this.verticalFaces == null)
 		{
@@ -661,13 +671,13 @@ public abstract class Tank extends Movable implements ISolidObject
 			e.posZ = 1;
 	}
 
-	public void processRecoil(double recoil)
+	public void processRecoil()
 	{
-		if (this.vX * this.vX + this.vY * this.vY > this.maxSpeed * this.maxSpeed)
+		if (this.vX * this.vX + this.vY * this.vY > this.maxSpeed * this.maxSpeed * 1.0001 && !this.positionLock)
 		{
 			this.tookRecoil = true;
 			this.inControlOfMotion = false;
-			this.recoilSpeed = 25.0 / 16.0 * recoil;
+			this.recoilSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 		}
 	}
 }

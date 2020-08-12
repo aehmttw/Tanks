@@ -4,12 +4,17 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.tank.TankPlayerRemote;
 
 public class ScreenOptionsMultiplayer extends Screen
 {
 	public static final String chatFilterText = "Chat filter: ";
+	public static final String anticheatText = "Anticheat: ";
 
-	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Username", new Runnable()
+	public static final String weakText = "\u00A7200100000255weak";
+	public static final String strongText = "\u00A7000200000255strong";
+
+	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Username", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -23,7 +28,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			Game.player.username, "Pick a username that players---will see in multiplayer");
 
-	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "", new Runnable()
+	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -38,7 +43,36 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"Filters chat of potentially---inappropriate words");
 
-	Button color = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Tank color", new Runnable()
+	Button anticheat = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			if (!TankPlayerRemote.checkMotion)
+			{
+				TankPlayerRemote.checkMotion = true;
+				TankPlayerRemote.weakTimeCheck = false;
+				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatStrongTimeOffset;
+			}
+			else if (!TankPlayerRemote.weakTimeCheck)
+			{
+				TankPlayerRemote.weakTimeCheck = true;
+				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatWeakTimeOffset;
+			}
+			else
+				TankPlayerRemote.checkMotion = false;
+
+			if (!TankPlayerRemote.checkMotion)
+				anticheat.text = anticheatText + ScreenOptions.offText;
+			else if (!TankPlayerRemote.weakTimeCheck)
+				anticheat.text = anticheatText + strongText;
+			else
+				anticheat.text = anticheatText + weakText;
+		}
+	},
+			"When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
+
+	Button color = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Tank color", new Runnable()
 	{
 		@Override
 		public void run()
@@ -71,6 +105,13 @@ public class ScreenOptionsMultiplayer extends Screen
 			chatFilter.text = chatFilterText + ScreenOptions.onText;
 		else
 			chatFilter.text = chatFilterText + ScreenOptions.offText;
+
+		if (!TankPlayerRemote.checkMotion)
+			anticheat.text = anticheatText + ScreenOptions.offText;
+		else if (!TankPlayerRemote.weakTimeCheck)
+			anticheat.text = anticheatText + strongText;
+		else
+			anticheat.text = anticheatText + weakText;
 	}
 	
 	@Override
@@ -80,6 +121,7 @@ public class ScreenOptionsMultiplayer extends Screen
 		back.update();
 		username.update();
 		color.update();
+		anticheat.update();
 	}
 
 	@Override
@@ -87,9 +129,10 @@ public class ScreenOptionsMultiplayer extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
+		anticheat.draw();
 		chatFilter.draw();
-		username.draw();
 		color.draw();
+		username.draw();
 
 		Drawing.drawing.setInterfaceFontSize(24);
 		Drawing.drawing.setColor(0, 0, 0);

@@ -33,6 +33,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 	public int mouseTankOrientation = 0;
 	public Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 	public double mouseObstacleHeight = 1;
+	public boolean stagger = false;
+	public boolean oddStagger = false;
 	public int mouseObstacleGroup = 0;
 	public boolean paused = true;
 	public boolean optionsMenu = false;
@@ -518,6 +520,30 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 	}
 	);
 
+	public Button staggering = new Button(Drawing.drawing.interfaceSizeX / 2 + 200, Drawing.drawing.interfaceSizeY / 2, 60, 60, "", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			if (!stagger)
+			{
+				mouseObstacleHeight = Math.max(mouseObstacleHeight, 1);
+				stagger = true;
+			}
+			else if (!oddStagger)
+			{
+				mouseObstacleHeight = Math.max(mouseObstacleHeight, 1);
+				oddStagger = true;
+			}
+			else
+			{
+				oddStagger = false;
+				stagger = false;
+			}
+		}
+	}, " --- "
+	);
+
 	public Button increaseID = new Button(Drawing.drawing.interfaceSizeX / 2 + 250, Drawing.drawing.interfaceSizeY / 2, 60, 60, "+", new Runnable()
 	{
 		@Override
@@ -891,6 +917,10 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		rotateShortcut.sizeX *= controlsSizeMultiplier;
 		rotateShortcut.sizeY *= controlsSizeMultiplier;
 		rotateShortcut.fullInfo = true;
+
+		staggering.imageSizeX = 40;
+		staggering.imageSizeY = 40;
+		staggering.fullInfo = true;
 
 		this.enableMargins = false;
 
@@ -1433,8 +1463,31 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 						this.increaseHeight.enabled = this.mouseObstacleHeight < 4;
 						this.decreaseHeight.enabled = this.mouseObstacleHeight > 0.5;
 
+						if (stagger)
+							this.decreaseHeight.enabled = this.mouseObstacleHeight > 1;
+
 						this.increaseHeight.update();
 						this.decreaseHeight.update();
+						this.staggering.update();
+
+						if (!stagger)
+						{
+							this.staggering.image = "nostagger.png";
+							this.staggering.hoverText[0] = "Blocks will all be placed";
+							this.staggering.hoverText[1] = "with the same height";
+						}
+						else if (oddStagger)
+						{
+							this.staggering.image = "oddstagger.png";
+							this.staggering.hoverText[0] = "Every other block on the grid";
+							this.staggering.hoverText[1] = "will be half a block shorter";
+						}
+						else
+						{
+							this.staggering.image = "evenstagger.png";
+							this.staggering.hoverText[0] = "Every other block on the grid";
+							this.staggering.hoverText[1] = "will be half a block shorter";
+						}
 					}
 					else if (mouseObstacle.enableGroupID)
 					{
@@ -1941,7 +1994,12 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 					else if (currentPlaceable == Placeable.obstacle)
 					{
 						if (mouseObstacle.enableStacking)
+						{
 							mouseObstacleHeight = Math.max(mouseObstacleHeight - 0.5, 0.5);
+
+							if (stagger)
+								mouseObstacleHeight = Math.max(mouseObstacleHeight, 1);
+						}
 						else if (mouseObstacle.enableGroupID)
 						{
 							mouseObstacleGroup = Math.max(mouseObstacleGroup - 1, 0);
@@ -2383,7 +2441,16 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 							o.posY = mouseObstacle.posY;
 
 							if (o.enableStacking)
+							{
 								o.stackHeight = mouseObstacleHeight;
+
+								if (this.stagger)
+								{
+									if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 1 && !this.oddStagger)
+									|| (((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0 && this.oddStagger))
+										o.stackHeight -= 0.5;
+								}
+							}
 							else if (o.enableGroupID)
 								o.setMetadata("" + mouseObstacleGroup);
 
@@ -2655,6 +2722,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		s.mouseObstacle = mouseObstacle;
 		s.mouseObstacleGroup = mouseObstacleGroup;
 		s.mouseObstacleHeight = mouseObstacleHeight;
+		s.stagger = stagger;
+		s.oddStagger = oddStagger;
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -2736,7 +2805,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				if (currentPlaceable == Placeable.playerTank && !this.movePlayer)
 				{
 					Drawing.drawing.setColor(255, 255, 255, 127);
-					Drawing.drawing.drawImage("/player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size, mouseTank.size);
+					Drawing.drawing.drawImage("player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size, mouseTank.size);
 				}
 			}
 			else if (currentPlaceable == Placeable.obstacle)
@@ -2778,7 +2847,6 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 120 - 0, "Scroll or press " + Game.game.input.editorZoomIn.getInputs() + " or " + Game.game.input.editorZoomOut.getInputs() + " to zoom");
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 120 + 30, "Press " + Game.game.input.editorRevertCamera.getInputs() + " to re-center");
 			}
-
 		}
 
 		if (this.paused)
@@ -2840,7 +2908,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 						Drawing.drawing.setColor(0, 0, 0, 127);
 
-						Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 300, 75);
+						Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 500, 150);
 
 						Drawing.drawing.setColor(255, 255, 255);
 						Drawing.drawing.setInterfaceFontSize(36);
@@ -2848,6 +2916,10 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 						this.increaseHeight.draw();
 						this.decreaseHeight.draw();
+						this.staggering.draw();
+
+						Drawing.drawing.setInterfaceFontSize(12);
+						Drawing.drawing.drawInterfaceText(staggering.posX, staggering.posY - 40, "Staggering");
 
 					}
 					else if (mouseObstacle.enableGroupID)
@@ -3040,51 +3112,51 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 		if (!paused && showControls)
 		{
-			pause.image = "/pause.png";
+			pause.image = "pause.png";
 			pause.imageSizeX = 40 * controlsSizeMultiplier;
 			pause.imageSizeY = 40 * controlsSizeMultiplier;
 
-			menu.image = "/menu.png";
+			menu.image = "menu.png";
 			menu.imageSizeX = 50 * controlsSizeMultiplier;
 			menu.imageSizeY = 50 * controlsSizeMultiplier;
 
-			playControl.image = "/play.png";
+			playControl.image = "play.png";
 			playControl.imageSizeX = 30 * controlsSizeMultiplier;
 			playControl.imageSizeY = 30 * controlsSizeMultiplier;
 
-			place.image = "/pencil.png";
+			place.image = "pencil.png";
 			place.imageSizeX = 40 * controlsSizeMultiplier;
 			place.imageSizeY = 40 * controlsSizeMultiplier;
 
-			erase.image = "/eraser.png";
+			erase.image = "eraser.png";
 			erase.imageSizeX = 40 * controlsSizeMultiplier;
 			erase.imageSizeY = 40 * controlsSizeMultiplier;
 
-			panZoom.image = "/zoom_pan.png";
+			panZoom.image = "zoom_pan.png";
 			panZoom.imageSizeX = 40 * controlsSizeMultiplier;
 			panZoom.imageSizeY = 40 * controlsSizeMultiplier;
 
-			undo.image = "/undo.png";
+			undo.image = "undo.png";
 			undo.imageSizeX = 40 * controlsSizeMultiplier;
 			undo.imageSizeY = 40 * controlsSizeMultiplier;
 
-			redo.image = "/redo.png";
+			redo.image = "redo.png";
 			redo.imageSizeX = 40 * controlsSizeMultiplier;
 			redo.imageSizeY = 40 * controlsSizeMultiplier;
 
 			if (mouseObstacle.enableStacking)
-				metadataShortcut.image = "/obstacle_height.png";
+				metadataShortcut.image = "obstacle_height.png";
 			else if (mouseObstacle.enableGroupID)
-				metadataShortcut.image = "/id.png";
+				metadataShortcut.image = "id.png";
 
 			metadataShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			metadataShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 
-			rotateShortcut.image = "/rotate_tank.png";
+			rotateShortcut.image = "rotate_tank.png";
 			rotateShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			rotateShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 
-			teamShortcut.image = "/team.png";
+			teamShortcut.image = "team.png";
 			teamShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			teamShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 

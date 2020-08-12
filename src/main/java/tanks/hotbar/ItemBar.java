@@ -2,6 +2,7 @@ package tanks.hotbar;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.Player;
 import tanks.event.EventSetItem;
 import tanks.event.EventSetItemBarSlot;
@@ -34,6 +35,8 @@ public class ItemBar
 
 	public Item[] slots = new Item[5];
 	public Button[] slotButtons = new Button[5];
+
+	public double selectedTimer = 0;
 
 	public int selected = -1;
 	
@@ -155,6 +158,7 @@ public class ItemBar
 
 	public void update()
 	{
+		checkKey(Game.game.input.hotbarDeselect, -1);
 		checkKey(Game.game.input.hotbar1, 0);
 		checkKey(Game.game.input.hotbar2, 1);
 		checkKey(Game.game.input.hotbar3, 2);
@@ -183,6 +187,8 @@ public class ItemBar
 			this.setItem(((this.selected + 1) + this.slots.length) % this.slots.length);
 			Game.game.window.validScrollDown = false;
 		}
+
+		this.selectedTimer = Math.max(0, this.selectedTimer - Panel.frameFrequency);
 	}
 
 	public void checkKey(InputBindingGroup input, int index)
@@ -205,6 +211,7 @@ public class ItemBar
 		}
 
 		this.selected = (this.selected == index ? -1 : index);
+		this.selectedTimer = 300;
 
 		if (ScreenPartyLobby.isClient)
 			Game.eventsOut.add(new EventSetItemBarSlot(this.selected));
@@ -212,12 +219,13 @@ public class ItemBar
 
 	public void draw()
 	{
+		int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.player.hotbar.percentHidden - this.player.hotbar.verticalOffset);
+
 		for (int i = -2; i <= 2; i++)
 		{
 			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 
 			int x = (int) ((i * gap) + (Drawing.drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.player.hotbar.percentHidden - this.player.hotbar.verticalOffset);
 
 			Drawing.drawing.fillInterfaceRect(x, y, size, size);
 
@@ -230,7 +238,7 @@ public class ItemBar
 
 			Drawing.drawing.setColor(255, 255, 255, (100 - this.player.hotbar.percentHidden) * 2.55);
 			if (slots[i + 2].icon != null)
-				Drawing.drawing.drawInterfaceImage("/" + slots[i + 2].icon, x, y, size, size);
+				Drawing.drawing.drawInterfaceImage(slots[i + 2].icon, x, y, size, size);
 
 			if (slots[i + 2] != null)
 			{
@@ -243,6 +251,13 @@ public class ItemBar
 					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 				}
 			}
+		}
+
+		if (selected >= 0 && slots[selected] != null)
+		{
+			Drawing.drawing.setColor(0, 0, 0, Math.min(this.selectedTimer * 2.55 * 2, 255) * (100 - this.player.hotbar.percentHidden) * 0.01);
+			Drawing.drawing.setInterfaceFontSize(24);
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, y - 70, this.slots[selected].name);
 		}
 	}
 }

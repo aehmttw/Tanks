@@ -7,6 +7,7 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.Selector;
 import tanks.tank.TankPlayer;
+import tanks.tank.TankPlayerRemote;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -211,6 +212,8 @@ public class ScreenOptions extends Screen
 			f.println("last_party=" + Game.lastParty);
 			f.println("last_online_server=" + Game.lastOnlineServer);
 			f.println("chat_filter=" + Game.enableChatFilter);
+			f.println("anticheat=" + TankPlayerRemote.checkMotion);
+			f.println("anticheat_weak=" + TankPlayerRemote.weakTimeCheck);
 			f.println("tank_secondary_color=" + Game.player.enableSecondaryColor);
 			f.println("tank_red=" + Game.player.colorR);
 			f.println("tank_green=" + Game.player.colorG);
@@ -320,6 +323,12 @@ public class ScreenOptions extends Screen
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "anticheat":
+						TankPlayerRemote.checkMotion = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "anticheat_weak":
+						TankPlayerRemote.weakTimeCheck = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "tank_secondary_color":
 						Game.player.enableSecondaryColor = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -366,6 +375,11 @@ public class ScreenOptions extends Screen
 				Panel.showMouseTarget = false;
 				Game.vsync = true;
 			}
+
+			if (TankPlayerRemote.weakTimeCheck)
+				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatStrongTimeOffset;
+			else
+				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatWeakTimeOffset;
 		}
 		catch (Exception e)
 		{

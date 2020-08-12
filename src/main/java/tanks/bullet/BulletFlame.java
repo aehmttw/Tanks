@@ -52,9 +52,9 @@ public class BulletFlame extends Bullet
 	{
 		double rawOpacity = (1.0 - (this.age)/life);
 		rawOpacity *= rawOpacity;
-		int opacity = (int)(rawOpacity * 255);
+		double opacity = rawOpacity * 255;
 		
-		int green = (int)(255 - 255.0*(this.age / life));
+		double green = (255 - 255.0 * (this.age / life));
 		
 		Drawing.drawing.setColor(255, green, 0, opacity);
 		

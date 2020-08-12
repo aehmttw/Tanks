@@ -49,6 +49,9 @@ public class ScreenOptionsMultiplayerColor extends Screen
 
     public ScreenOptionsMultiplayerColor()
     {
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+            preview.posY += Game.tile_size;
+
         if (Game.player.enableSecondaryColor)
             enableSecondary.text = secondaryColorText + ScreenOptions.onText;
         else

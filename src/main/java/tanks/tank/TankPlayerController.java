@@ -2,6 +2,7 @@ package tanks.tank;
 
 import basewindow.InputPoint;
 import tanks.Drawing;
+import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.event.EventTankControllerUpdateC;
@@ -19,6 +20,15 @@ public class TankPlayerController extends Tank implements IPlayerTank
     public double touchCircleSize = 400;
     public long prevTap = 0;
 
+    public double interpolatedOffX = 0;
+    public double interpolatedOffY = 0;
+    public double interpolatedProgress = interpolationTime;
+
+    public double interpolatedPosX = this.posX;
+    public double interpolatedPosY = this.posY;
+
+    public static final double interpolationTime = 25;
+
     protected double prevDistSq;
 
     protected long lastTrace = 0;
@@ -35,6 +45,11 @@ public class TankPlayerController extends Tank implements IPlayerTank
     @Override
     public void update()
     {
+        this.interpolatedProgress = Math.min(this.interpolatedProgress + Panel.frameFrequency, interpolationTime);
+
+        this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+
         boolean up = Game.game.input.moveUp.isPressed();
         boolean down = Game.game.input.moveDown.isPressed();
         boolean left = Game.game.input.moveLeft.isPressed();
@@ -62,7 +77,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
         if (this.tookRecoil)
         {
-            if (this.recoilSpeed <= this.maxSpeed)
+            if (this.recoilSpeed <= this.maxSpeed * 1.0001)
             {
                 this.tookRecoil = false;
                 this.inControlOfMotion = true;
@@ -249,7 +264,36 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
         super.update();
 
+        this.interpolatedPosX = this.posX;
+        this.interpolatedPosY = this.posY;
+
+        this.posX = this.posX + this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.posY = this.posY + this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+
         Game.eventsOut.add(new EventTankControllerUpdateC(this));
+    }
+
+    @Override
+    public void draw()
+    {
+        double realX = this.posX;
+        double realY = this.posY;
+
+        this.posX = this.interpolatedPosX;
+        this.posY = this.interpolatedPosY;
+
+        super.draw();
+
+        this.posX = realX;
+        this.posY = realY;
+    }
+
+    @Override
+    public void preUpdate()
+    {
+        this.lastPosX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.lastPosY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.lastPosZ = this.posZ;
     }
 
     @Override

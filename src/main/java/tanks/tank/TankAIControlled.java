@@ -47,7 +47,7 @@ public class TankAIControlled extends Tank
 	public int bulletBounces = 1;
 	public double bulletSize = Bullet.bullet_size;
 	public double bulletDamage = 1;
-	public double bulletSpeed = 25.0 / 4;
+	public double bulletSpeed = 25.0 / 8;
 	public boolean bulletHeavy = false;
 	public Bullet.BulletEffect bulletEffect = Bullet.BulletEffect.trail;
 
@@ -312,7 +312,7 @@ public class TankAIControlled extends Tank
 
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
-		b.moveOut((int) (25 / this.bulletSpeed * 2 * this.size / Game.tile_size));
+		b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
 		b.effect = this.bulletEffect;
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;
@@ -321,7 +321,7 @@ public class TankAIControlled extends Tank
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
 
-		this.cooldown = (int) (Math.random() * this.cooldownRandom + this.cooldownBase);
+		this.cooldown = Math.random() * this.cooldownRandom + this.cooldownBase;
 
 		if (this.shootAIType.equals(ShootAI.alternate))
 			this.straightShoot = !this.straightShoot;
@@ -701,7 +701,7 @@ public class TankAIControlled extends Tank
 
 		if (idleTimer <= 0)
 		{
-			this.idleTimer = (int) (Math.random() * turretIdleTimerRandom) + turretIdleTimerBase;
+			this.idleTimer = Math.random() * turretIdleTimerRandom + turretIdleTimerBase;
 			if (this.idlePhase == RotationPhase.clockwise)
 				this.idlePhase = RotationPhase.counterClockwise;
 			else
@@ -720,7 +720,9 @@ public class TankAIControlled extends Tank
 			double s = this.bulletSpeed / Math.sqrt(this.nearestBullet.vX * this.nearestBullet.vX + this.nearestBullet.vY * this.nearestBullet.vY) / 2;
 			this.aimAngle = this.getAngleInDirection(
 					this.nearestBullet.posX + this.nearestBullet.vX * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s,
-					this.nearestBullet.posY + this.nearestBullet.vY * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s);			this.disableOffset = true;
+					this.nearestBullet.posY + this.nearestBullet.vY * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s);
+
+			this.disableOffset = true;
 		}
 		else if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
 		{
@@ -800,7 +802,7 @@ public class TankAIControlled extends Tank
 
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy)
 		{
-			double instant = (int) (25 / this.bulletSpeed * 2 * this.size / Game.tile_size);
+			double instant = 50 / this.bulletSpeed * this.size / Game.tile_size;
 			this.aim = true;
 			double s = this.bulletSpeed / Math.sqrt(this.nearestBullet.vX * this.nearestBullet.vX + this.nearestBullet.vY * this.nearestBullet.vY) / 2;
 			this.aimAngle = this.getAngleInDirection(
@@ -956,7 +958,7 @@ public class TankAIControlled extends Tank
 			else
 				this.idlePhase = RotationPhase.clockwise;
 
-			this.idleTimer = (int) (Math.random() * this.turretIdleTimerRandom) + this.turretIdleTimerBase;
+			this.idleTimer = (Math.random() * this.turretIdleTimerRandom) + this.turretIdleTimerBase;
 		}
 	}
 

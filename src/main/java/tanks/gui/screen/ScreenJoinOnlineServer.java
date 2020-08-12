@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
@@ -81,6 +82,9 @@ public class ScreenJoinOnlineServer extends Screen
                             s.text = "Failed to connect";
                             s.exception = e.getLocalizedMessage();
                             s.finished = true;
+
+                            s.music = "tomato_feast_1.ogg";
+                            Panel.forceRefreshMusic = true;
 
                             e.printStackTrace(Game.logger);
                             e.printStackTrace();

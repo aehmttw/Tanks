@@ -13,7 +13,7 @@ public class TankCyan extends TankAIControlled
 		super(name, x, y, Game.tile_size, 128, 255, 255, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.maxSpeed = 1.5;
+		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -22,7 +22,7 @@ public class TankCyan extends TankAIControlled
 		this.aimTurretSpeed = 0.01;
 		this.bulletBounces = 0;
 		this.bulletEffect = Bullet.BulletEffect.ice;
-		this.bulletSpeed = 25.0 / 4;
+		this.bulletSpeed = 25.0 / 8;
 		this.bulletDamage = 0.25;
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
@@ -40,7 +40,7 @@ public class TankCyan extends TankAIControlled
 
 		Bullet b = new BulletFreeze(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
-		b.moveOut((int) (25 / this.bulletSpeed * 2 * this.size / Game.tile_size));
+		b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
 		b.effect = this.bulletEffect;
 		b.size = this.bulletSize;
 		b.damage = this.bulletDamage;
@@ -48,7 +48,7 @@ public class TankCyan extends TankAIControlled
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
 		
-		this.cooldown = (int) (Math.random() * this.cooldownRandom + this.cooldownBase);
+		this.cooldown = Math.random() * this.cooldownRandom + this.cooldownBase;
 
 		if (this.shootAIType.equals(ShootAI.alternate))
 			this.straightShoot = !this.straightShoot;

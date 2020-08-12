@@ -16,6 +16,7 @@ public class ScreenConnecting extends Screen
 
 	public ScreenConnecting(Thread t)
 	{
+		Panel.forceRefreshMusic = true;
 		this.music = "tomato_feast_3.ogg";
 		this.musicID = "menu";
 

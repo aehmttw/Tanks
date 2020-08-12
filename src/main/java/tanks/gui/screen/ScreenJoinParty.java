@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
@@ -12,7 +13,7 @@ public class ScreenJoinParty extends Screen
 
 	public ScreenJoinParty()
 	{
-		this.music = "tomato_feast_3.ogg";
+		this.music = "tomato_feast_2.ogg";
 		this.musicID = "menu";
 
 		ip.allowDots = true;
@@ -78,6 +79,11 @@ public class ScreenJoinParty extends Screen
 						s.text = "Failed to connect";
 						s.exception = e.getLocalizedMessage();
 						s.finished = true;
+
+						s.music = "tomato_feast_1.ogg";
+						Drawing.drawing.playSound("leave.ogg");
+
+						Panel.forceRefreshMusic = true;
 
 						e.printStackTrace(Game.logger);
 						e.printStackTrace();

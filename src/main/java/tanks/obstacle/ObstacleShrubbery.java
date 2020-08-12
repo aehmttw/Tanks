@@ -137,13 +137,13 @@ public class ObstacleShrubbery extends Obstacle
 
 		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 		double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
-		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed / 2, 127);
+		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
 
 		double radius = 62500;
 		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
 		{
 			int sound = (int) (Math.random() * 4 + 1);
-			Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 6.0f) + 0.5f, (float) (speed * 0.025 * (radius - distsq) / radius));
+			Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
 		}
 	}
 }

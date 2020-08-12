@@ -94,8 +94,8 @@ public class TankRed extends TankAIControlled
 			this.maxCooldown = this.maxCooldown * 0.75 + 1;
 			BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
 			b.team = this.team;
-			b.setPolarMotion(this.angle, 25.0/4);
-			b.moveOut(8);
+			b.setPolarMotion(this.angle, 25.0/8);
+			b.moveOut(16);
 			Game.movables.add(b);
 			Drawing.drawing.playGlobalSound("laser.ogg");
 

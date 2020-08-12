@@ -13,7 +13,7 @@ public class TankMini extends TankAIControlled
 		super(name, x, y, Game.tile_size / 2, 255, 127, 127, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.maxSpeed = 3.0;
+		this.maxSpeed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -22,7 +22,6 @@ public class TankMini extends TankAIControlled
 		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 0;
 		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletSpeed = 25.0 / 4;
 		this.bulletDamage = 0.25;
 		this.bulletSize /= 2;
 		this.enableLookingAtTargetEnemy = true;

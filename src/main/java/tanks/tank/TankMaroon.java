@@ -10,7 +10,7 @@ public class TankMaroon extends TankAIControlled
 		super(name, x, y, Game.tile_size, 100, 0, 25, angle, ShootAI.reflect);
 
 		this.enableMovement = true;
-		this.maxSpeed = 1.5;
+		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -19,7 +19,6 @@ public class TankMaroon extends TankAIControlled
 		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 3;
 		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletSpeed = 25.0 / 4;
 		this.bulletSize = 25;
 		this.bulletHeavy = true;
 		this.enableLookingAtTargetEnemy = true;

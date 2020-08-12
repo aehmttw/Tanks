@@ -416,7 +416,7 @@ public class Bullet extends Movable implements IDrawable
 
 				Tank t = ((Tank) o);
 
-				double bound = this.size / 2 + t.size / 2;
+				double bound = this.size / 2 + t.size * t.hitboxSize / 2;
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
@@ -674,23 +674,23 @@ public class Bullet extends Movable implements IDrawable
 		}
 
 		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
-			this.trails[0].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2, this.size / 2, 15 * this.size * speed / 6.25, this.getPolarDirection(), 127, 127, 127, 100, 127, 127, 127, 0));
+			this.trails[0].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2, this.size / 2, 15 * this.size * speed / 3.125, this.getPolarDirection(), 127, 127, 127, 100, 127, 127, 127, 0));
 
 		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
-			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 12.5, this.getPolarDirection(), 255, 255, 0, 255, 255, 0, 0, 0));
+			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.getPolarDirection(), 255, 255, 0, 255, 255, 0, 0, 0));
 
 		if (this.effect == BulletEffect.darkFire)
-			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 12.5, this.getPolarDirection(), 64, 0, 128, 255, 0, 0, 0, 0));
+			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.getPolarDirection(), 64, 0, 128, 255, 0, 0, 0, 0));
 
 		if (this.effect == BulletEffect.fireTrail)
 		{
-			Trail t = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 100 * this.size * speed / 12.5, this.getPolarDirection(), 0, 0, 0, 100, 0, 0, 0, 0);
-			t.delay = 14 * this.size * speed / 12.5;
+			Trail t = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 100 * this.size * speed / 6.25, this.getPolarDirection(), 0, 0, 0, 100, 0, 0, 0, 0);
+			t.delay = 14 * this.size * speed / 6.25;
 			t.frontCircle = false;
 			this.trails[0].add(0, t);
 
-			Trail t2 = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 8 * this.size * speed / 12.5, this.getPolarDirection(), 0, 0, 0, 0, 0, 0, 0, 100);
-			t2.delay = 6 * this.size * speed / 12.5;
+			Trail t2 = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 8 * this.size * speed / 6.25, this.getPolarDirection(), 0, 0, 0, 0, 0, 0, 0, 100);
+			t2.delay = 6 * this.size * speed / 6.25;
 			t2.backCircle = false;
 			this.trails[1].add(0, t2);
 		}
@@ -719,14 +719,14 @@ public class Bullet extends Movable implements IDrawable
 		{
 			double opacity = ((60 - destroyTimer) / 60.0);
 			double sizeModifier = destroyTimer * (size / Bullet.bullet_size);
-			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, (int) (opacity * opacity * opacity * 255.0));
+			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
 			else
 				Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
 
-			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, (int) (opacity * opacity * opacity * 255.0));
+			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, opacity * opacity * opacity * 255.0);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillOval(posX, posY, posZ + 1, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);

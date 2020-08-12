@@ -13,7 +13,7 @@ public class TankOrange extends TankAIControlled
 		super(name, x, y, Game.tile_size, 230, 120, 0, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.maxSpeed = 2.0;
+		this.maxSpeed = 1.0;
 
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
@@ -43,8 +43,8 @@ public class TankOrange extends TankAIControlled
 					Drawing.drawing.playGlobalSound("flame.ogg");
 
 					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
-					b.setPolarMotion(this.angle, 25.0/4);
-					b.moveOut(8);
+					b.setPolarMotion(this.angle, 25.0/8);
+					b.moveOut(16);
 					Game.movables.add(b);
 					Game.eventsOut.add(new EventShootBullet(b));
 					this.cooldown = 0;

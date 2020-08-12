@@ -12,6 +12,17 @@ public class TankRemote extends Tank
 
 	public double localAge = 0;
 
+	public long lastUpdate = -1;
+
+	public double interpolationTime = 1;
+
+	public double interpolatedOffX = 0;
+	public double interpolatedOffY = 0;
+	public double interpolatedProgress = interpolationTime;
+
+	public double interpolatedPosX = this.posX;
+	public double interpolatedPosY = this.posY;
+
 	public TankRemote(String name, double x, double y, double angle, Team team, double size, double ts, double tl, double r, double g, double b, double lives, double baselives)
 	{
 		super(name, x, y, size, r, g, b);
@@ -52,13 +63,30 @@ public class TankRemote extends Tank
 	@Override
 	public void update()
 	{
+		this.interpolatedProgress = Math.min(this.interpolatedProgress + Panel.frameFrequency, this.interpolationTime);
+
+		this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+		this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+
 		this.localAge += Panel.frameFrequency;
 		super.update();
+
+		this.interpolatedPosX = this.posX;
+		this.interpolatedPosY = this.posY;
+
+		this.posX = this.posX + this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+		this.posY = this.posY + this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
 	}
 
 	@Override
 	public void draw()
 	{
+		double realX = this.posX;
+		double realY = this.posY;
+
+		this.posX = this.interpolatedPosX;
+		this.posY = this.interpolatedPosY;
+
 		if (!this.invisible || this.localAge <= 0 || this.destroy)
 			super.draw();
 		else
@@ -93,5 +121,8 @@ public class TankRemote extends Tank
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
+
+		this.posX = realX;
+		this.posY = realY;
 	}
 }

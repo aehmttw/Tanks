@@ -246,7 +246,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
+		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
 	}
 
 	public void drawImage(double rotation, String img, double x, double y, double sizeX, double sizeY)
@@ -260,7 +260,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, rotation,false);
+		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation,false);
 	}
 
 	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
@@ -276,7 +276,7 @@ public class Drawing
 
 		double drawZ = z * scale;
 
-		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, false);
+		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, false);
 	}
 
 	public void drawImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
@@ -292,7 +292,7 @@ public class Drawing
 
 		double drawZ = z * scale;
 
-		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, img, rotation, false);
+		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
 	}
 
 
@@ -544,7 +544,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, img, false);
+		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
 	}
 
 	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)

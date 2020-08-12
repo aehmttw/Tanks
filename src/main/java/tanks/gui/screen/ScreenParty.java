@@ -48,6 +48,8 @@ public class ScreenParty extends Screen
 
 			ScreenPartyHost.disconnectedPlayers.clear();
 
+			Drawing.drawing.playSound("join.ogg");
+
 			Game.screen = new ScreenPartyHost();
 		}
 	}

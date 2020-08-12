@@ -23,7 +23,7 @@ public class TankBoss extends TankAIControlled
 		this.aimAccuracyOffset = 0;
 		this.bulletBounces = 3;
 		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletSpeed = 25.0 / 4;
+		this.bulletSpeed = 25.0 / 8;
 		this.bulletSize = 25;
 		this.bulletHeavy = true;
 		this.health = 5;

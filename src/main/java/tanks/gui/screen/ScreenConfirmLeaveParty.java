@@ -24,6 +24,7 @@ public class ScreenConfirmLeaveParty extends Screen implements IPartyMenuScreen
         @Override
         public void run()
         {
+            Drawing.drawing.playSound("leave.ogg");
             ScreenPartyLobby.isClient = false;
             Client.handler.ctx.close();
             Game.screen = new ScreenJoinParty();

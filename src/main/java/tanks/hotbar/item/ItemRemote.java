@@ -1,9 +1,5 @@
 package tanks.hotbar.item;
 
-import tanks.hotbar.item.property.ItemProperty;
-
-import java.util.ArrayList;
-
 public class ItemRemote extends Item
 {
     @Override
@@ -22,5 +18,11 @@ public class ItemRemote extends Item
     public void fromString(String s)
     {
 
+    }
+
+    @Override
+    public String getTypeName()
+    {
+        return "Item";
     }
 }

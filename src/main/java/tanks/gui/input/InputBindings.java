@@ -22,6 +22,7 @@ public class InputBindings
     public InputBindingGroup hotbar3 = new InputBindingGroup("hotbar.3", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_3));
     public InputBindingGroup hotbar4 = new InputBindingGroup("hotbar.4", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_4));
     public InputBindingGroup hotbar5 = new InputBindingGroup("hotbar.5", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_5));
+    public InputBindingGroup hotbarDeselect = new InputBindingGroup("hotbar.deselect", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_GRAVE_ACCENT));
 
     public InputBindingGroup pause = new InputBindingGroup("game.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup zoom = new InputBindingGroup("game.zoom", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_I));

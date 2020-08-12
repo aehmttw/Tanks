@@ -10,7 +10,7 @@ public class TankMint extends TankAIControlled
 		super(name, x, y, Game.tile_size, 60, 180, 140, angle, ShootAI.straight);
 
 		this.enableMovement = true;
-		this.maxSpeed = 1.5;
+		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.enableDefensiveFiring = true;
@@ -20,7 +20,7 @@ public class TankMint extends TankAIControlled
 		this.aimTurretSpeed = 0.02;
 		this.bulletBounces = 0;
 		this.bulletEffect = Bullet.BulletEffect.fire;
-		this.bulletSpeed = 25.0 / 2;
+		this.bulletSpeed = 25.0 / 4;
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
 		this.mineSensitivity = 1;

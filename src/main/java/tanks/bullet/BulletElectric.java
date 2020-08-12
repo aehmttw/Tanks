@@ -68,7 +68,7 @@ public class BulletElectric extends BulletInstant
 		if (this.target != null)
 		{
 			double angle = this.getAngleInDirection(target.posX, target.posY);
-			this.addPolarMotion(angle, 25.0 / 4);
+			this.addPolarMotion(angle, 25.0 / 8);
 		}
 
 		if (!this.tank.isRemote)

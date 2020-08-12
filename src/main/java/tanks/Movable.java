@@ -94,9 +94,9 @@ public abstract class Movable implements IDrawableForInterface
 
 			removeAttributes.clear();
 
-			this.lastFinalVX = vX2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-			this.lastFinalVY = vY2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-			this.lastFinalVZ = vZ2 / 2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+			this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+			this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+			this.lastFinalVZ = vZ2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
 			this.posX += this.lastFinalVX * Panel.frameFrequency;
 			this.posY += this.lastFinalVY * Panel.frameFrequency;

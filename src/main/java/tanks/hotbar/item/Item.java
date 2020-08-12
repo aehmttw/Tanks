@@ -22,7 +22,7 @@ public abstract class Item
 	public String name = "Item";
 	public String icon;
 	public LinkedHashMap<String, ItemProperty> properties = new LinkedHashMap<>();
-	
+
 	public boolean destroy = false;
 	
 	public boolean rightClick;
@@ -62,7 +62,7 @@ public abstract class Item
 		int level = Integer.parseInt(p[3]);
 		int quantity = Integer.parseInt(p[4]);
 		int maxStack = Integer.parseInt(p[5]);
-		
+
 		Item i = Game.registryItem.getEntry(p[6]).getItem();
 		i.player = pl;
 
@@ -176,4 +176,6 @@ public abstract class Item
 
 		return null;
 	}
+
+	public abstract String getTypeName();
 }

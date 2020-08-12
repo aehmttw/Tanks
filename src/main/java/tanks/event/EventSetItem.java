@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public class EventSetItem extends PersonalEvent
 {
+    public String name;
     public UUID playerID;
     public int slot;
     public String texture;
@@ -34,6 +35,7 @@ public class EventSetItem extends PersonalEvent
             this.texture = item.icon;
 
         this.count = item.stackSize;
+        this.name = item.name;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class EventSetItem extends PersonalEvent
         b.writeInt(this.slot);
         NetworkUtils.writeString(b, this.texture);
         b.writeInt(this.count);
+        NetworkUtils.writeString(b, this.name);
     }
 
     @Override
@@ -52,6 +55,7 @@ public class EventSetItem extends PersonalEvent
         this.slot = b.readInt();
         this.texture = NetworkUtils.readString(b);
         this.count = b.readInt();
+        this.name = NetworkUtils.readString(b);
     }
 
     @Override
@@ -62,6 +66,7 @@ public class EventSetItem extends PersonalEvent
             Item i = new ItemRemote();
             i.stackSize = this.count;
             i.icon = this.texture;
+            i.name = this.name;
 
             if (i.stackSize == 0)
                 i = new ItemEmpty();

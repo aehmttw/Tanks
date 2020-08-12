@@ -16,9 +16,9 @@ public class TankMedic extends TankAIControlled
 	{
 		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.straight);
 
-		this.texture = "/medic.png";
+		this.texture = "medic.png";
 		this.enableMovement = true;
-		this.maxSpeed = 1.5;
+		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
@@ -60,7 +60,7 @@ public class TankMedic extends TankAIControlled
 		if (this.suicidal)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
-			this.maxSpeed = 6 - 4 * Math.min(this.timeUntilDeath, 500) / 500;
+			this.maxSpeed = 3 - 2 * Math.min(this.timeUntilDeath, 500) / 500;
 			this.enableBulletAvoidance = false;
 			this.enableMineAvoidance = false;
 		}
@@ -99,8 +99,8 @@ public class TankMedic extends TankAIControlled
 
 		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bulletBounces, this);
 		b.team = this.team;
-		b.setPolarMotion(this.angle, 25.0/4);
-		b.moveOut(8);
+		b.setPolarMotion(this.angle, 25.0/8);
+		b.moveOut(16);
 		Game.movables.add(b);
 
 		//Drawing.drawing.playGlobalSound("heal.ogg", 0.75f);

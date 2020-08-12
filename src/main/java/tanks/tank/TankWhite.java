@@ -12,7 +12,7 @@ public class TankWhite extends TankAIControlled
 	public TankWhite(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.alternate);
-		this.maxSpeed = 2.0;
+		this.maxSpeed = 1.0;
 		this.enableDefensiveFiring = true;
 		this.enablePathfinding = true;
 

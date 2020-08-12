@@ -75,13 +75,13 @@ public class ObstacleMud extends Obstacle
 
             double angle = t.getPolarDirection() + Math.PI / 2;
 
-            e1.vX = -t.vX / 4 * (Math.random() * 0.6 + 0.7);
-            e1.vY = -t.vY / 4 * (Math.random() * 0.6 + 0.7);
-            e1.vZ = Math.sqrt(t.vX * t.vX + t.vY * t.vY) / 4;
+            e1.vX = -t.vX / 2 * (Math.random() * 0.6 + 0.7);
+            e1.vY = -t.vY / 2 * (Math.random() * 0.6 + 0.7);
+            e1.vZ = Math.sqrt(t.vX * t.vX + t.vY * t.vY) / 2;
             e1.addPolarMotion(angle, (Math.random() - 0.5) * e1.vZ);
 
-            e2.vX = -t.vX / 4 * (Math.random() * 0.6 + 0.7);
-            e2.vY = -t.vY / 4 * (Math.random() * 0.6 + 0.7);
+            e2.vX = -t.vX / 2 * (Math.random() * 0.6 + 0.7);
+            e2.vY = -t.vY / 2 * (Math.random() * 0.6 + 0.7);
             e2.vZ = e1.vZ;
             e2.addPolarMotion(angle, (Math.random() - 0.5) * e2.vZ);
 
@@ -101,14 +101,17 @@ public class ObstacleMud extends Obstacle
             Game.effects.add(e2);
         }
 
-        double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
-        double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
-
-        double radius = 250000;
-        if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.05 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+        if (m instanceof Tank)
         {
-            int sound = (int) (Math.random() * 8 + 1);
-            Drawing.drawing.playSound("mud" + sound + ".ogg", (float) ((speed / 6.0f) + 0.5f) * 1.25f, (float) (speed * 0.0125 * (radius - distsq) / radius));
+            double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
+            double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+
+            double radius = 250000;
+            if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.05 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy)
+            {
+                int sound = (int) (Math.random() * 8 + 1);
+                Drawing.drawing.playSound("mud" + sound + ".ogg", (float) ((speed / 3.0f) + 0.5f) * 1.25f, (float) (speed * 0.025 * (radius - distsq) / radius));
+            }
         }
     }
 

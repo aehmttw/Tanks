@@ -8,7 +8,7 @@ public class TankMagenta extends TankAIControlled
 	{
 		super(name, x, y, Game.tile_size, 230, 0, 200, angle, ShootAI.reflect);
 		this.enableTargetEnemyReaction = false;
-		this.maxSpeed = 2.0;
+		this.maxSpeed = 1.0;
 		this.enableMineLaying = false;
 		this.liveBulletMax = 3;
 		this.cooldownRandom = 20;

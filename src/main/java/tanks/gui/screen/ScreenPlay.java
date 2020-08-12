@@ -16,7 +16,7 @@ public class ScreenPlay extends Screen
 	}
 	);
 
-	Button singleplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Single-player", new Runnable()
+	Button singleplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Singleplayer", new Runnable()
 	{
 		@Override
 		public void run()
@@ -26,7 +26,7 @@ public class ScreenPlay extends Screen
 	}
 	, "Play random levels, crusades,---the tutorial, or make your own levels!");
 
-	Button multiplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Multi-player", new Runnable()
+	Button multiplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Multiplayer", new Runnable()
 	{
 		@Override
 		public void run()

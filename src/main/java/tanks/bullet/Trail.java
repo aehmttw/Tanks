@@ -72,7 +72,7 @@ public class Trail implements IDrawable
     public double update(double trailLength)
     {
         if (this.movable.destroy)
-            this.age += speed * Panel.frameFrequency / 2;
+            this.age += speed * Panel.frameFrequency;
         else
             this.age = trailLength;
 

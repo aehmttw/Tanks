@@ -22,6 +22,7 @@ public class TankPlayerRemote extends Tank
 
     public double lastUpdateTime = 0;
     public long startUpdateTime = -1;
+    public double ourTimeOffset = 0;
 
     public ArrayList<Bullet> recentBullets = new ArrayList<Bullet>();
 
@@ -29,9 +30,27 @@ public class TankPlayerRemote extends Tank
 
     public Player player;
 
-    public double anticheatMaxTimeOffset = 5;
+    public static boolean checkMotion = true;
+    public static boolean weakTimeCheck = false;
+
+    public static final double anticheatStrongTimeOffset = 10;
+    public static final double anticheatWeakTimeOffset = 100;
+
+    public static double anticheatMaxTimeOffset = anticheatStrongTimeOffset;
     public double anticheatMaxTime = 20;
     public double anticheatMaxDist = 20;
+
+    public double dXSinceFrame = 0;
+    public double dYSinceFrame = 0;
+
+    public double interpolationTime = 25;
+
+    public double interpolatedOffX = 0;
+    public double interpolatedOffY = 0;
+    public double interpolatedProgress = interpolationTime;
+
+    public double interpolatedPosX = this.posX;
+    public double interpolatedPosY = this.posY;
 
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
@@ -60,18 +79,20 @@ public class TankPlayerRemote extends Tank
 
         Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion));
         this.forceMotion = false;
+        this.dXSinceFrame = 0;
+        this.dYSinceFrame = 0;
 
         if (this.hasCollided)
         {
             this.lastVX = this.vX;
             this.lastVY = this.vY;
-            this.lastPosX = this.posX;
-            this.lastPosY = this.posY;
+            //this.lastPosX = this.posX;
+            //this.lastPosY = this.posY;
         }
 
         if (this.tookRecoil)
         {
-            if (this.recoilSpeed <= this.maxSpeed)
+            if (this.recoilSpeed <= this.maxSpeed * 1.0001)
             {
                 this.tookRecoil = false;
                 this.inControlOfMotion = true;
@@ -95,141 +116,142 @@ public class TankPlayerRemote extends Tank
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, boolean action1, boolean action2, double time, long receiveTime)
     {
-        //double time = (timeNow - this.lastUpdateTime) / 10.0;
-
-        if (this.startUpdateTime == -1)
-            this.startUpdateTime = receiveTime;
-
-        this.lastUpdateTime = (receiveTime - this.startUpdateTime) / 10.0;
-        this.lastUpdateReportedTime += time;
-
-        if (this.lastUpdateReportedTime - this.lastUpdateTime > anticheatMaxTimeOffset)
+        if (checkMotion)
         {
-            time = time - this.lastUpdateReportedTime - this.lastUpdateTime - anticheatMaxTimeOffset;
-            this.lastUpdateReportedTime = this.lastUpdateTime + anticheatMaxTimeOffset;
-        }
+            if (this.startUpdateTime == -1)
+                this.startUpdateTime = receiveTime;
 
-        if (this.lastUpdateReportedTime - this.lastUpdateTime < -anticheatMaxTimeOffset)
-        {
-            time = time - (this.lastUpdateReportedTime - this.lastUpdateTime + anticheatMaxTimeOffset);
-            this.lastUpdateReportedTime = this.lastUpdateTime - anticheatMaxTimeOffset;
-        }
+            double prevTime = this.lastUpdateReportedTime;
+            this.lastUpdateTime = (receiveTime - this.startUpdateTime) / 10.0 + this.ourTimeOffset;
+            this.lastUpdateReportedTime += time;
 
-        if (this.inControlOfMotion)
-        {
-            if (time > anticheatMaxTime)
+            System.out.println(this.lastUpdateReportedTime - this.lastUpdateTime);
+
+            if (this.lastUpdateReportedTime - this.lastUpdateTime > anticheatMaxTimeOffset)
             {
-                time = anticheatMaxTime;
-                forceMotion = true;
+                time = this.lastUpdateTime + anticheatMaxTimeOffset - prevTime;
+                this.lastUpdateReportedTime = this.lastUpdateTime + anticheatMaxTimeOffset;
+            }
+            else if (this.lastUpdateReportedTime - this.lastUpdateTime < -anticheatMaxTimeOffset)
+            {
+                time = this.lastUpdateTime - anticheatMaxTimeOffset - prevTime;
+                this.lastUpdateReportedTime = this.lastUpdateTime - anticheatMaxTimeOffset;
             }
 
-            double maxChangeVelocity = time * acceleration * accelerationModifier;
+            this.ourTimeOffset += Math.min(Math.max(-anticheatMaxTimeOffset, this.lastUpdateReportedTime - this.lastUpdateTime), anticheatMaxTimeOffset) * 0.02;
 
-            double dVX = vX - this.lastVX;
-            double dVY = vY - this.lastVY;
-            double changeVelocitySq = dVX * dVX + dVY * dVY;
-
-            if (changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
-                    && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
-                    && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                    && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVX) < 0.001)
-                    && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVY) < 0.001)))
+            if (this.inControlOfMotion)
             {
-                double changeVelocity = Math.sqrt(changeVelocitySq);
-
-                forceMotion = true;
-                dVX *= maxChangeVelocity / changeVelocity;
-                dVY *= maxChangeVelocity / changeVelocity;
-
-                vX = this.lastVX + dVX;
-                vY = this.lastVY + dVY;
-            }
-
-            double speedSq = vX * vX + vY * vY;
-
-            if (speedSq > Math.pow(this.maxSpeed * this.maxSpeedModifier, 2) * 1.00001)
-            {
-                forceMotion = true;
-                double speed = Math.sqrt(speedSq);
-                double maxSpeed = this.maxSpeed * this.maxSpeedModifier;
-
-                vX *= maxSpeed / speed;
-                vY *= maxSpeed / speed;
-            }
-
-            double vX2 = vX;
-            double vY2 = vY;
-
-            for (int i = 0; i < this.attributes.size(); i++)
-            {
-                AttributeModifier a = this.attributes.get(i);
-
-                if (a.type.equals("velocity"))
+                if (time > anticheatMaxTime)
                 {
-                    vX2 = a.getValue(vX2);
-                    vY2 = a.getValue(vY2);
+                    time = anticheatMaxTime;
+                    forceMotion = true;
+                }
+
+                double maxChangeVelocity = time * acceleration * accelerationModifier;
+
+                double dVX = vX - this.lastVX;
+                double dVY = vY - this.lastVY;
+                double changeVelocitySq = dVX * dVX + dVY * dVY;
+
+                if (changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
+                        && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
+                        && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
+                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVX) < 0.001)
+                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVY) < 0.001)))
+                {
+                    double changeVelocity = Math.sqrt(changeVelocitySq);
+
+                    forceMotion = true;
+                    dVX *= maxChangeVelocity / changeVelocity;
+                    dVY *= maxChangeVelocity / changeVelocity;
+
+                    vX = this.lastVX + dVX;
+                    vY = this.lastVY + dVY;
+                }
+
+                double speedSq = vX * vX + vY * vY;
+
+                if (speedSq > Math.pow(this.maxSpeed * this.maxSpeedModifier, 2) * 1.00001)
+                {
+                    forceMotion = true;
+                    double speed = Math.sqrt(speedSq);
+                    double maxSpeed = this.maxSpeed * this.maxSpeedModifier;
+
+                    vX *= maxSpeed / speed;
+                    vY *= maxSpeed / speed;
+                }
+
+                double vX2 = vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+                double vY2 = vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+
+                for (int i = 0; i < this.attributes.size(); i++)
+                {
+                    AttributeModifier a = this.attributes.get(i);
+
+                    if (a.type.equals("velocity"))
+                    {
+                        vX2 = a.getValue(vX2);
+                        vY2 = a.getValue(vY2);
+                    }
+                }
+
+                double maxDist = 1;
+
+                double ourPosX = (this.lastPosX + vX2 * time);
+                double ourPosY = (this.lastPosY + vY2 * time);
+
+                double dX2 = x - ourPosX;
+                double dY2 = y - ourPosY;
+
+                double distSq2 = dX2 * dX2 + dY2 * dY2;
+                if (distSq2 > maxDist * maxDist)
+                {
+                    forceMotion = true;
+                }
+
+                x = ourPosX;
+                y = ourPosY;
+
+                double dX = x - this.lastPosX;
+                double dY = y - this.lastPosY;
+                double prevDX = this.dXSinceFrame;
+                double prevDY = this.dYSinceFrame;
+                this.dXSinceFrame += dX;
+                this.dYSinceFrame += dY;
+
+                double distSq = Math.pow(this.dXSinceFrame, 2) + Math.pow(this.dYSinceFrame, 2);
+                if (distSq > anticheatMaxDist * anticheatMaxDist)
+                {
+                    double dist = Math.sqrt(distSq);
+                    forceMotion = true;
+                    this.dXSinceFrame *= anticheatMaxDist / dist;
+                    this.dYSinceFrame *= anticheatMaxDist / dist;
+
+                    x = this.lastPosX + this.dXSinceFrame - prevDX;
+                    y = this.lastPosY + this.dYSinceFrame - prevDY;
                 }
             }
-
-            double maxDist = 1;
-
-            double ourPosX = (this.lastPosX + vX2 * time / 2);
-            double ourPosY = (this.lastPosY + vY2 * time / 2);
-
-            double dX2 = x - ourPosX;
-            double dY2 = y - ourPosY;
-
-            double distSq2 = dX2 * dX2 + dY2 * dY2;
-            if (distSq2 > maxDist * maxDist)
+            else
             {
-                forceMotion = true;
-            }
-
-            x = ourPosX;
-            y = ourPosY;
-
-            double dX = x - this.lastPosX;
-            double dY = y - this.lastPosY;
-
-            double distSq = dX * dX + dY * dY;
-            if (distSq > anticheatMaxDist * anticheatMaxDist)
-            {
-                double dist = Math.sqrt(distSq);
-                forceMotion = true;
-                dX *= anticheatMaxDist / dist;
-                dY *= anticheatMaxDist / dist;
-
-                x = this.lastPosX + dX;
-                y = this.lastPosY + dY;
+                x = this.posX;
+                y = this.posY;
+                vX = this.vX;
+                vY = this.vY;
             }
         }
-        else
-        {
-            x = this.posX;
-            y = this.posY;
-            vX = this.vX;
-            vY = this.vY;
-        }
-
-        //this.lastUpdateTime = timeNow;
 
         if (Game.screen instanceof ScreenGame)
         {
             if (!((ScreenGame) Game.screen).playing)
                 return;
 
-            /*if (frame != this.lastUpdateFrame)
-                this.recentBullets.clear();
-            else
-            {
-                for (Bullet recentBullet : this.recentBullets)
-                {
-                    recentBullet.moveOut(Math.max(0, time - this.lastUpdateTime) / 200.0);
-                }
-            }
+            double iTime = Math.max(0.1, time);
 
-            this.lastUpdateTime = time;
-            this.lastUpdateFrame = frame;*/
+            this.interpolatedOffX = x - (this.posX - this.interpolatedOffX * (this.interpolationTime - this.interpolatedProgress) / this.interpolationTime);
+            this.interpolatedOffY = y - (this.posY - this.interpolatedOffY * (this.interpolationTime - this.interpolatedProgress) / this.interpolationTime);
+            this.interpolatedProgress = 0;
+            this.interpolationTime = iTime;
 
             this.posX = x;
             this.posY = y;
@@ -248,6 +270,38 @@ public class TankPlayerRemote extends Tank
             if (action2 && this.cooldown <= 0 && this.liveMines < this.liveMinesMax && !this.disabled)
                 this.layMine();
         }
+    }
+
+    @Override
+    public void draw()
+    {
+        double realPosX = this.posX;
+        double realPosY = this.posY;
+
+        this.interpolatedProgress = Math.min(this.interpolatedProgress + Panel.frameFrequency, interpolationTime);
+
+        this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+
+        super.draw();
+
+        this.posX = realPosX;
+        this.posY = realPosY;
+    }
+
+    @Override
+    public void drawTread()
+    {
+        double realPosX = this.posX;
+        double realPosY = this.posY;
+
+        this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+
+        super.drawTread();
+
+        this.posX = realPosX;
+        this.posY = realPosY;
     }
 
     public void layMine()
@@ -282,7 +336,7 @@ public class TankPlayerRemote extends Tank
 
         this.cooldown = 20;
 
-        fireBullet(25 / 4.0, 1, Bullet.BulletEffect.trail);
+        fireBullet(25 / 8.0, 1, Bullet.BulletEffect.trail);
     }
 
     public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
@@ -291,9 +345,9 @@ public class TankPlayerRemote extends Tank
 
         Bullet b = new Bullet(posX, posY, bounces, this);
         b.addPolarMotion(this.angle, speed);
-        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0);
+        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
 
-        b.moveOut(25.0 / speed * 2);
+        b.moveOut(50 / speed * this.size / Game.tile_size);
         b.effect = effect;
 
         Game.eventsOut.add(new EventShootBullet(b));
@@ -302,7 +356,7 @@ public class TankPlayerRemote extends Tank
         this.recentBullets.add(b);
 
         this.forceMotion = true;
-        this.processRecoil(1);
+        this.processRecoil();
     }
 
     public void fireBullet(Bullet b, double speed)
@@ -311,9 +365,9 @@ public class TankPlayerRemote extends Tank
             Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 
         b.addPolarMotion(this.angle, speed);
-        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 16.0 * b.recoil);
+        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil);
 
-        b.moveOut(25.0 / speed * 2 * this.size / Game.tile_size);
+        b.moveOut(50 / speed * this.size / Game.tile_size);
 
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);
@@ -321,17 +375,7 @@ public class TankPlayerRemote extends Tank
         if (b.recoil != 0)
             this.forceMotion = true;
 
-        this.processRecoil(b.recoil);
-    }
-
-    public void processRecoil(double recoil)
-    {
-        if (this.vX * this.vX + this.vY * this.vY > this.maxSpeed * this.maxSpeed)
-        {
-            this.tookRecoil = true;
-            this.inControlOfMotion = false;
-            this.recoilSpeed = 25.0 / 16.0 * recoil;
-        }
+        this.processRecoil();
     }
 
     public void addPolarMotion(double angle, double velocity)
@@ -350,5 +394,25 @@ public class TankPlayerRemote extends Tank
     {
         if (Crusade.crusadeMode)
             this.player.remainingLives--;
+    }
+
+    public void drawName()
+    {
+        double realPosX = this.posX;
+        double realPosY = this.posY;
+
+        this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+
+        Drawing.drawing.setFontSize(this.nameTag.size);
+        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+
+        if (Game.enable3d)
+            Drawing.drawing.drawText(this.posX + this.nameTag.ox, this.posY + this.nameTag.oy, this.posZ + this.nameTag.oz, this.nameTag.name);
+        else
+            Drawing.drawing.drawText(this.posX + this.nameTag.ox, this.posY + this.nameTag.oy, this.nameTag.name);
+
+        this.posX = realPosX;
+        this.posY = realPosY;
     }
 }

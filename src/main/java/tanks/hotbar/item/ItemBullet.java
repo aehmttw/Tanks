@@ -17,7 +17,7 @@ public class ItemBullet extends Item
 	public static final String item_name = "bullet";
 
 	public Bullet.BulletEffect effect = Bullet.BulletEffect.none;
-	public double speed = 25.0 / 4;
+	public double speed = 25.0 / 8;
 	public int bounces = 1;
 	public double damage = 1;
 	public int maxAmount = 5;
@@ -48,7 +48,7 @@ public class ItemBullet extends Item
 
 		new ItemPropertySelector(this.properties, "type", new String[]{"normal", "flamethrower", "laser", "freezing", "electric", "healing"}, 0);
 		new ItemPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice"}, 0);
-		new ItemPropertyDouble(this.properties, "speed", 6.25);
+		new ItemPropertyDouble(this.properties, "speed", 3.125);
 		new ItemPropertyInt(this.properties, "bounces", 1);
 		new ItemPropertyDouble(this.properties, "damage", 1.0);
 		new ItemPropertyInt(this.properties, "max_live_bullets", 5);
@@ -144,6 +144,12 @@ public class ItemBullet extends Item
 		this.setProperty("size", this.size);
 		this.setProperty("recoil", this.recoil);
 		this.setProperty("heavy", this.heavy);
+	}
+
+	@Override
+	public String getTypeName()
+	{
+		return "Bullet";
 	}
 
 	@Override

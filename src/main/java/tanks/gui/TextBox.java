@@ -113,6 +113,9 @@ public class TextBox implements IDrawable, ITrigger
 
 		drawing.setInterfaceFontSize(24);
 
+		if (Game.superGraphics)
+			drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 30, 0.6, 0, 0, 0, 100, false);
+
 		drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
@@ -123,6 +126,18 @@ public class TextBox implements IDrawable, ITrigger
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY - 30, sizeY, sizeY);
 
 		drawing.fillInterfaceRect(posX, posY - 15, sizeX, 30);
+
+		double m = 0.8;
+
+		if (Game.superGraphics)
+		{
+			if (selected)
+				Button.drawGlow(this.posX, this.posY + 3.5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.55, 0, 0, 0, 160, false);
+			else if (hover && !Game.game.window.touchscreen)
+				Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+			else
+				Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+		}
 
 		if (selected)
 		{
@@ -136,7 +151,6 @@ public class TextBox implements IDrawable, ITrigger
 		else
 			drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-		double m = 0.8;
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY * m, sizeY * m);
@@ -149,6 +163,14 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (enableHover)
 		{
+			if (Game.superGraphics)
+			{
+				if (infoSelected && !Game.game.window.touchscreen)
+					Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+				else
+					Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+			}
+
 			if (infoSelected && !Game.game.window.touchscreen)
 			{
 				drawing.setColor(0, 0, 255);
@@ -168,6 +190,14 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (selected && inputText.length() > 0)
 		{
+			if (Game.superGraphics)
+			{
+				if (clearSelected && !Game.game.window.touchscreen)
+					Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+				else
+					Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+			}
+
 			if (!clearSelected || Game.game.window.touchscreen)
 				drawing.setColor(255, 0, 0);
 			else
@@ -565,5 +595,78 @@ public class TextBox implements IDrawable, ITrigger
 	{
 		this.posX = x;
 		this.posY = y;
+	}
+
+	public static void drawTallGlow(double posX, double posY, double sizeX, double sizeY, double extra, double size, double r, double g, double b, double a, boolean glow)
+	{
+		Game.game.window.setBatchMode(true, true, false, glow);
+
+		Drawing drawing = Drawing.drawing;
+		drawing.setColor(0, 0, 0, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - sizeY * size - extra, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - sizeY * size - extra, 0);
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - extra, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - extra, 0);
+
+		drawing.setColor(0, 0, 0, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY + sizeY * size, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY + sizeY * size, 0);
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+
+		drawing.setColor(0, 0, 0, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 - size * sizeY, posY - extra, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 - size * sizeY, posY, 0);
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - extra, 0);
+
+		drawing.setColor(0, 0, 0, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + size * sizeY, posY - extra, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + size * sizeY, posY, 0);
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - extra, 0);
+
+
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - extra, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - extra, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+
+		Game.game.window.setBatchMode(false, true, false, glow);
+		Game.game.window.setBatchMode(true, false, false, glow);
+
+		for (int i = 0; i < 15; i++)
+		{
+			drawing.setColor(r, g, b, a);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+			drawing.setColor(0, 0, 0, 0);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 15) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 15) / 30.0 * Math.PI) * size, 0);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 16) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 16) / 30.0 * Math.PI) * size, 0);
+
+			drawing.setColor(r, g, b, a);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+			drawing.setColor(0, 0, 0, 0);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i) / 30.0 * Math.PI) * size, 0);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 1) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 1) / 30.0 * Math.PI) * size, 0);
+
+			drawing.setColor(r, g, b, a);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - extra, 0);
+			drawing.setColor(0, 0, 0, 0);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 30) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 30) / 30.0 * Math.PI) * size, 0);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 31) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 31) / 30.0 * Math.PI) * size, 0);
+
+			drawing.setColor(r, g, b, a);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - extra, 0);
+			drawing.setColor(0, 0, 0, 0);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 45) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 45) / 30.0 * Math.PI) * size, 0);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 46) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 46) / 30.0 * Math.PI) * size, 0);
+		}
+
+		Game.game.window.setBatchMode(false, false, false, glow);
 	}
 }

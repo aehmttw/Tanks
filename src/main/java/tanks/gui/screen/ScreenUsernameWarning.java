@@ -8,7 +8,7 @@ public class ScreenUsernameWarning extends Screen
 {
 	public ScreenUsernameWarning()
 	{
-		this.music = "tomato_feast_2.ogg";
+		this.music = "tomato_feast_1_options.ogg";
 		this.musicID = "menu";
 	}
 

@@ -33,7 +33,7 @@ public class ScreenResetControls extends Screen
 
     public ScreenResetControls()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
     }
 

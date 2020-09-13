@@ -47,6 +47,9 @@ public class ScreenJoinParty extends Screen
 		{
 			Game.lastOfflineScreen = Game.screen;
 
+			ScreenPartyLobby.chat.clear();
+			ScreenPartyLobby.sharedLevels.clear();
+
 			Game.eventsOut.clear();
 			clientThread = new Thread(new Runnable()
 			{

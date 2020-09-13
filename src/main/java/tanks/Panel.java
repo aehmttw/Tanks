@@ -2,6 +2,7 @@ package tanks;
 
 import basewindow.BaseFile;
 import basewindow.InputCodes;
+import basewindow.transformation.Translation;
 import tanks.event.EventBeginLevelCountdown;
 import tanks.event.online.IOnlineServerEvent;
 import tanks.gui.TextBox;
@@ -10,6 +11,8 @@ import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.tank.*;
+
+import java.util.ArrayList;
 
 public class Panel
 {
@@ -33,6 +36,9 @@ public class Panel
 	public static double darkness = 0;
 
 	public static TextBox selectedTextBox;
+
+	public Translation zoomTranslation = new Translation(Game.game.window, 0, 0, 0);
+
 
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
 	public static double frameFrequency = 1;
@@ -62,6 +68,12 @@ public class Panel
 	public boolean startMusicPlayed = false;
 
 	public long introMusicEnd;
+
+	public ArrayList<Double> pastPlayerX = new ArrayList<>();
+	public ArrayList<Double> pastPlayerY = new ArrayList<>();
+	public ArrayList<Double> pastPlayerTime = new ArrayList<>();
+
+	public double age = 0;
 
 	public static void initialize()
 	{
@@ -118,6 +130,9 @@ public class Panel
 					Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
 				}
 
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_1_options.ogg", "menu");
+
+
 				for (int i = 1; i <= 2; i++)
 				{
 					Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
@@ -133,6 +148,8 @@ public class Panel
 
 			if (!tutorial)
 				Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
+
+			zoomTranslation.window = Game.game.window;
 		}
 
 		firstFrame = false;
@@ -230,19 +247,37 @@ public class Panel
 
 		this.zoomTimer -= 0.02 * Panel.frameFrequency;
 
-		if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
+		if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) && !ScreenGame.finished && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale
 				&& Game.screen instanceof ScreenGame && ((ScreenGame) (Game.screen)).playing)
 		{
 			Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
 
-			Drawing.drawing.playerX = Game.playerTank.posX;
-			Drawing.drawing.playerY = Game.playerTank.posY;
-
-			if (Game.playerTank instanceof TankPlayerController)
+			if (Game.playerTank == null || Game.playerTank.destroy)
 			{
-				Drawing.drawing.playerX = ((TankPlayerController) Game.playerTank).interpolatedPosX;
-				Drawing.drawing.playerY = ((TankPlayerController) Game.playerTank).interpolatedPosY;
+				Drawing.drawing.playerX = ((ScreenGame) Game.screen).spectatingTank.posX;
+				Drawing.drawing.playerY = ((ScreenGame) Game.screen).spectatingTank.posY;
+
+				if (((ScreenGame) Game.screen).spectatingTank instanceof TankRemote)
+				{
+					Drawing.drawing.playerX = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
+					Drawing.drawing.playerY = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
+				}
 			}
+			else
+			{
+				Drawing.drawing.playerX = Game.playerTank.posX;
+				Drawing.drawing.playerY = Game.playerTank.posY;
+
+				if (Game.playerTank instanceof TankPlayerController)
+				{
+					Drawing.drawing.playerX = ((TankPlayerController) Game.playerTank).interpolatedPosX;
+					Drawing.drawing.playerY = ((TankPlayerController) Game.playerTank).interpolatedPosY;
+				}
+			}
+
+			this.pastPlayerX.add(Drawing.drawing.playerX);
+			this.pastPlayerY.add(Drawing.drawing.playerY);
+			this.pastPlayerTime.add(this.age);
 
 			if (Drawing.drawing.movingCamera)
 			{
@@ -318,6 +353,9 @@ public class Panel
 
 	public void playScreenMusic(long fadeTime)
 	{
+		if (Game.screen instanceof IOnlineScreen)
+			return;
+
 		if (Game.screen.music == null)
 			Drawing.drawing.stopMusic();
 		else if (Panel.panel.startMusicPlayed)
@@ -331,6 +369,8 @@ public class Panel
 
 		if (Game.fancyGraphics && Game.enable3d)
 			introAnimationTime = 1000;
+
+		this.age += Panel.frameFrequency;
 
 		/*for (int i = 0; i < Game.tilesR.length; i++)
 		{
@@ -347,8 +387,19 @@ public class Panel
 		{
 			double frac = ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
 
+			if (Game.enable3d && Game.fancyGraphics)
+			{
+				zoomTranslation.z = -0.08 * frac;
+				Game.game.window.transformations.add(zoomTranslation);
+				Game.game.window.loadPerspective();
+			}
+
 			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth * 1.2 / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight * 1.2 / Drawing.drawing.interfaceScale);
+			dummySpin.draw();
+
+			Game.game.window.transformations.clear();
+			Game.game.window.loadPerspective();
 
 			/*Drawing.drawing.setColor(255, 255, 255);
 			Drawing.drawing.drawInterfaceImage("/tanks//loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
@@ -360,8 +411,21 @@ public class Panel
 				drawBar(40 - frac * 40);
 			}
 
-			dummySpin.draw();
 			drawMouseTarget();
+
+			if (Game.screen instanceof ScreenTitle)
+			{
+				zoomTranslation.z = (1 - frac) * 3;
+
+				Game.game.window.transformations.add(zoomTranslation);
+				Game.game.window.loadPerspective();
+
+				((ScreenTitle) Game.screen).drawWithoutBackground();
+
+				Game.game.window.transformations.clear();
+				Game.game.window.loadPerspective();
+			}
+
 
 			firstDraw = false;
 

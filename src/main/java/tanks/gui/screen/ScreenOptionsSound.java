@@ -12,7 +12,7 @@ public class ScreenOptionsSound extends Screen
 
     public ScreenOptionsSound()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
 
         if (Game.musicEnabled && Game.game.window.soundsEnabled)

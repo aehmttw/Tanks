@@ -7,6 +7,8 @@ import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
 
+import java.util.ArrayList;
+
 public class Drawing
 {
 	protected static boolean initialized = false;
@@ -50,6 +52,8 @@ public class Drawing
 	public double currentColorG;
 	public double currentColorB;
 	public double currentColorA;
+
+	public static final double track_offset = 20;
 
 	public static Model rotatedRect = new Model();
 
@@ -625,6 +629,18 @@ public class Drawing
 			Game.game.window.addVertex(drawX, drawY);
 	}
 
+	public void addInterfaceVertex(double x, double y, double z)
+	{
+		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawZ = z * scale;
+
+		if (Game.enable3d)
+			Game.game.window.addVertex(drawX, drawY, drawZ);
+		else
+			Game.game.window.addVertex(drawX, drawY);
+	}
+
 	public void addFacingVertex(double x, double y, double z, double sX, double sY, double sZ)
 	{
 		if (Game.enable3d && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).slant != 0)
@@ -884,7 +900,24 @@ public class Drawing
 		if (!enableMovingCameraX)
 			return 0;
 
-		double result = (playerX - (Panel.windowWidth) / scale / 2);
+		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - track_offset)
+		{
+			Panel.panel.pastPlayerX.remove(0);
+			Panel.panel.pastPlayerY.remove(0);
+			Panel.panel.pastPlayerTime.remove(0);
+		}
+
+		double x = playerX;
+
+		if (Panel.panel.pastPlayerTime.size() == 1)
+			x = Panel.panel.pastPlayerX.get(0);
+		else if (Panel.panel.pastPlayerTime.size() > 1)
+		{
+			double frac = (Panel.panel.age - track_offset - Panel.panel.pastPlayerTime.get(0)) * 1.0 / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
+			x = Panel.panel.pastPlayerX.get(0) * (1 - frac) + Panel.panel.pastPlayerX.get(1) * frac;
+		}
+
+		double result = (x - (Panel.windowWidth) / scale / 2);
 
 		double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
 
@@ -916,7 +949,24 @@ public class Drawing
 		if (!enableMovingCameraY)
 			return 0;
 
-		double result = (playerY - (Panel.windowHeight - statsHeight) / scale / 2);
+		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - track_offset)
+		{
+			Panel.panel.pastPlayerX.remove(0);
+			Panel.panel.pastPlayerY.remove(0);
+			Panel.panel.pastPlayerTime.remove(0);
+		}
+
+		double y = playerY;
+
+		if (Panel.panel.pastPlayerTime.size() == 1)
+			y = Panel.panel.pastPlayerY.get(0);
+		else if (Panel.panel.pastPlayerTime.size() > 1)
+		{
+			double frac = (Panel.panel.age - track_offset - Panel.panel.pastPlayerTime.get(0)) * 1.0 / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
+			y = Panel.panel.pastPlayerY.get(0) * (1 - frac) + Panel.panel.pastPlayerY.get(1) * frac;
+		}
+
+		double result = (y - (Panel.windowHeight - statsHeight) / scale / 2);
 
 		double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeY * Game.tile_size * Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
 

@@ -91,7 +91,7 @@ public class ScreenFailedToLoadLevel extends Screen
 		}
 		else
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Please have the party host check the level!");
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "If this is your level, it may be corrupted!");
 		}
 	}
 }

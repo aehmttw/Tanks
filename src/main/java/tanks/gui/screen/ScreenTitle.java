@@ -3,6 +3,8 @@ package tanks.gui.screen;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Movable;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
@@ -90,6 +92,7 @@ public class ScreenTitle extends Screen
 		this.logo.drawAge = 50;
 		this.logo.depthTest = false;
 		Game.movables.add(logo);
+		ScreenGame.finished = false;
 
 		takeControl.silent = true;
 
@@ -118,8 +121,9 @@ public class ScreenTitle extends Screen
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				Game.movables.get(i).preUpdate();
-				Game.movables.get(i).update();
+				Movable m = Game.movables.get(i);
+				m.preUpdate();
+				m.update();
 			}
 
 			for (int i = 0; i < Game.effects.size(); i++)
@@ -138,11 +142,8 @@ public class ScreenTitle extends Screen
 		}
 	}
 
-	@Override
-	public void draw()
+	public void drawWithoutBackground()
 	{
-		this.drawDefaultBackground();
-
 		play.draw();
 		exit.draw();
 		options.draw();
@@ -175,6 +176,14 @@ public class ScreenTitle extends Screen
 		{
 			Game.effects.get(i).drawGlow();
 		}
+	}
+
+	@Override
+	public void draw()
+	{
+		this.drawDefaultBackground();
+
+		this.drawWithoutBackground();
 	}
 
 	@Override

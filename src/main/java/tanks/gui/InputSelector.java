@@ -72,6 +72,9 @@ public class InputSelector implements IDrawable, ITrigger
 
 		drawing.setInterfaceFontSize(24);
 
+		if (Game.superGraphics)
+			TextBox.drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 30, 0.6, 0, 0, 0, 100, false);
+
 		drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
@@ -84,6 +87,20 @@ public class InputSelector implements IDrawable, ITrigger
 		drawing.fillInterfaceRect(posX, posY - 15, sizeX, 30);
 
 		double m = 0.8;
+
+		if (Game.superGraphics)
+		{
+			if (selected && !right && !Game.game.window.touchscreen)
+				Button.drawGlow(q1, this.posY + 5, this.sizeX / 2 - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+			else
+				Button.drawGlow(q1, this.posY + 5, this.sizeX / 2 - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+
+			if (selected && right && !Game.game.window.touchscreen)
+				Button.drawGlow(q3, this.posY + 5, this.sizeX / 2 - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+			else
+				Button.drawGlow(q3, this.posY + 5, this.sizeX / 2 - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+
+		}
 
 		if (selected && !Game.game.window.touchscreen && !right)
 			drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);

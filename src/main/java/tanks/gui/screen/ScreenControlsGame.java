@@ -14,7 +14,7 @@ public class ScreenControlsGame extends Screen
 
     public ScreenControlsGame()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
     }
 

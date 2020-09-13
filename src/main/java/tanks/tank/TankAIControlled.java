@@ -407,8 +407,7 @@ public class TankAIControlled extends Tank
 			for (double dir = 0; dir < 4; dir += 0.5)
 			{
 				Ray r = new Ray(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
-				r.size = Game.tile_size;
-
+				r.size = Game.tile_size * this.hitboxSize;
 				int dist = r.getDist();
 
 				distances[(int) (dir * 2)] = dist;
@@ -426,6 +425,7 @@ public class TankAIControlled extends Tank
 				this.direction = (this.direction + 2) % 4;
 			else
 				this.direction = directions.get(chosenDir);
+
 
 			if (this.direction != prevDirection)
 				this.motionPauseTimer = this.directionChangeCooldown;

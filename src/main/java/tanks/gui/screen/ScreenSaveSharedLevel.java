@@ -3,6 +3,8 @@ package tanks.gui.screen;
 import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
+import tanks.gui.ChatBox;
+import tanks.gui.ChatMessage;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
@@ -10,15 +12,28 @@ import tanks.tank.TankSpawnMarker;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewScreen
+public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen, IPartyMenuScreen
 {
     public String level;
     public TextBox levelName;
     public boolean downloaded = false;
 
+    public Screen screen;
+
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 
-    public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Download", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Back", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.cleanUp();
+
+            Game.screen = screen;
+        }
+    });
+
+    public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Download", new Runnable()
     {
         @Override
         public void run()
@@ -57,8 +72,12 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     @SuppressWarnings("unchecked")
     protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
-    public ScreenDownloadLevel(String name, String level)
+    public ScreenSaveSharedLevel(String name, String level, Screen s)
     {
+        this.music = "tomato_feast_4.ogg";
+        this.musicID = "menu";
+
+        this.screen = s;
         this.level = level;
 
         for (int i = 0; i < drawables.length; i++)
@@ -68,7 +87,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
         Obstacle.draw_size = Game.tile_size;
 
-        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, 350, 40, "Level save name", new Runnable()
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, 350, 40, "Level save name", new Runnable()
         {
             @Override
             public void run()
@@ -89,9 +108,8 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     @Override
     public void update()
     {
-        super.update();
-
         this.download.update();
+        this.back.update();
 
         if (!this.downloaded)
             this.levelName.update();
@@ -104,6 +122,16 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
                 if (o.replaceTiles)
                     o.postOverride();
             }
+
+        if (ScreenPartyHost.isServer)
+            ScreenPartyHost.chatbox.update();
+        else if (ScreenPartyLobby.isClient)
+            ScreenPartyLobby.chatbox.update();
+
+        if (ScreenPartyHost.isServer)
+            ScreenPartyHost.chatbox.update();
+        else if (ScreenPartyLobby.isClient)
+            ScreenPartyLobby.chatbox.update();
     }
 
     public void drawLevel()
@@ -150,24 +178,39 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
         this.drawDefaultBackground();
         this.drawLevel();
 
-        for (int i : this.shapes.keySet())
-            this.shapes.get(i).draw();
-
-        Drawing.drawing.setColor(0, 0, 0);
-
-        for (int i : this.texts.keySet())
-            this.texts.get(i).draw();
-
-        for (int i : this.buttons.keySet())
-            this.buttons.get(i).draw();
-
-        for (int i : this.textboxes.keySet())
-            this.textboxes.get(i).draw();
-
         this.download.draw();
+        this.back.draw();
 
         if (!this.downloaded)
             this.levelName.draw();
+
+        ChatBox chatbox = null;
+        ArrayList<ChatMessage> chat = null;
+
+        if (ScreenPartyHost.isServer)
+        {
+            chatbox = ScreenPartyHost.chatbox;
+            chat = ScreenPartyHost.chat;
+        }
+        else if (ScreenPartyLobby.isClient)
+        {
+            chatbox = ScreenPartyLobby.chatbox;
+            chat = ScreenPartyLobby.chat;
+        }
+
+        chatbox.draw();
+
+        Drawing.drawing.setColor(0, 0, 0);
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < chat.size(); i++)
+        {
+            ChatMessage c = chat.get(i);
+            if (time - c.time <= 30000 || chatbox.selected)
+            {
+                Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+            }
+        }
+
     }
 
     public void updateDownloadButton()

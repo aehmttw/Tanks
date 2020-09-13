@@ -25,6 +25,8 @@ public class Effect extends Movable implements IDrawableWithGlow
     public double angle;
     public double distance;
 
+    public int drawLayer = 7;
+
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
     {
         if (Game.recycleEffects.size() > 0)
@@ -156,6 +158,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         this.distance = 0;
         this.radius = 0;
         this.enableGlow = true;
+        this.drawLayer = 7;
     }
 
     @Override

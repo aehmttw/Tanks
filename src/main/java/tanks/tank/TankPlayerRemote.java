@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.EventShootBullet;
 import tanks.event.EventTankControllerUpdateAmmunition;
+import tanks.event.EventTankControllerUpdateC;
 import tanks.event.EventTankControllerUpdateS;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBar;
@@ -27,6 +28,7 @@ public class TankPlayerRemote extends Tank
     public ArrayList<Bullet> recentBullets = new ArrayList<Bullet>();
 
     public boolean forceMotion = false;
+    public boolean recoil = false;
 
     public Player player;
 
@@ -77,8 +79,9 @@ public class TankPlayerRemote extends Tank
         if (this.cooldown > 0)
             this.cooldown -= Panel.frameFrequency;
 
-        Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion));
+        Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion, this.recoil));
         this.forceMotion = false;
+        this.recoil = false;
         this.dXSinceFrame = 0;
         this.dYSinceFrame = 0;
 
@@ -125,8 +128,6 @@ public class TankPlayerRemote extends Tank
             this.lastUpdateTime = (receiveTime - this.startUpdateTime) / 10.0 + this.ourTimeOffset;
             this.lastUpdateReportedTime += time;
 
-            System.out.println(this.lastUpdateReportedTime - this.lastUpdateTime);
-
             if (this.lastUpdateReportedTime - this.lastUpdateTime > anticheatMaxTimeOffset)
             {
                 time = this.lastUpdateTime + anticheatMaxTimeOffset - prevTime;
@@ -154,7 +155,7 @@ public class TankPlayerRemote extends Tank
                 double dVY = vY - this.lastVY;
                 double changeVelocitySq = dVX * dVX + dVY * dVY;
 
-                if (changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
+                if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
                         && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
                         && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
                         && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVX) < 0.001)
@@ -356,6 +357,10 @@ public class TankPlayerRemote extends Tank
         this.recentBullets.add(b);
 
         this.forceMotion = true;
+
+        if (!this.hasCollided)
+            this.recoil = true;
+
         this.processRecoil();
     }
 
@@ -405,7 +410,7 @@ public class TankPlayerRemote extends Tank
         this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
 
         Drawing.drawing.setFontSize(this.nameTag.size);
-        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+        Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 
         if (Game.enable3d)
             Drawing.drawing.drawText(this.posX + this.nameTag.ox, this.posY + this.nameTag.oy, this.posZ + this.nameTag.oz, this.nameTag.name);

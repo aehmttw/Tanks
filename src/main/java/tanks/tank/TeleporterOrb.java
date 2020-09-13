@@ -157,6 +157,7 @@ public class TeleporterOrb extends Movable
 		e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 		e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 		e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.drawLayer = 9;
 
 		if (Game.enable3d)
 			e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI * 2, Math.random() * 4);

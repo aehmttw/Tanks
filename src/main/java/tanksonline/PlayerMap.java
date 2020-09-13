@@ -184,6 +184,9 @@ public class PlayerMap
 
             for (Path p : ds)
             {
+                if (p.toString().contains(".DS_Store"))
+                    continue;
+
                 DirectoryStream<Path> ds2 = Files.newDirectoryStream(p);
 
                 for (Path p2 : ds2)

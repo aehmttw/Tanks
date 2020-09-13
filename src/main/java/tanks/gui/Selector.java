@@ -114,6 +114,9 @@ public class Selector implements IDrawable, ITrigger
 
         drawing.setInterfaceFontSize(24);
 
+        if (Game.superGraphics)
+            TextBox.drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 30, 0.6, 0, 0, 0, 100, false);
+
         drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
         drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
         drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
@@ -125,12 +128,21 @@ public class Selector implements IDrawable, ITrigger
 
         drawing.fillInterfaceRect(posX, posY - 15, sizeX, 30);
 
+        double m = 0.8;
+
+        if (Game.superGraphics)
+        {
+            if (selected && !Game.game.window.touchscreen)
+                Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+            else
+                Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+        }
+
         if (selected && !Game.game.window.touchscreen)
             drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);
         else
             drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-        double m = 0.8;
         drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
         drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);
         drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY * m, sizeY * m);
@@ -146,6 +158,14 @@ public class Selector implements IDrawable, ITrigger
 
         if (enableHover)
         {
+            if (Game.superGraphics)
+            {
+                if (infoSelected && !Game.game.window.touchscreen)
+                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+                else
+                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+            }
+
             if (infoSelected && !Game.game.window.touchscreen)
             {
                 drawing.setColor(0, 0, 255);

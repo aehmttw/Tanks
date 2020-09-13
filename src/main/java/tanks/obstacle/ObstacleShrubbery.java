@@ -20,7 +20,7 @@ public class ObstacleShrubbery extends Obstacle
 		if (Game.enable3d)
 			this.drawLevel = 1;
 		else
-			this.drawLevel = 8;
+			this.drawLevel = 9;
 		
 		this.destructible = true;
 		this.tankCollision = false;
@@ -52,7 +52,7 @@ public class ObstacleShrubbery extends Obstacle
 			this.height = 127;
 		}
 		
-		if (Game.playerTank == null || Game.playerTank.destroy)
+		if (Game.playerTank == null || ScreenGame.finishedQuick)
 		{
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}

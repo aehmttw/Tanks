@@ -78,7 +78,8 @@ public class MessageReader
 			}
 			else if (ScreenPartyLobby.isClient)
 			{
-				Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
+                Game.cleanUp();
+                Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
 				Client.handler.ctx.close();
 				ScreenPartyLobby.connections.clear();
 			}

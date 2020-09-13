@@ -7,9 +7,11 @@ import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
+import tanksonline.UploadedLevel;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class ScreenPartyHost extends Screen implements IPartyMenuScreen
@@ -24,19 +26,21 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
     public String ip = "";
 
-    Button[] kickButtons = new Button[entries_per_page];
+    public Button[] kickButtons = new Button[entries_per_page];
 
     public int usernamePage = 0;
 
     public static int entries_per_page = 10;
     public static int username_spacing = 30;
-    public static int username_y_offset = -120;
+    public static int username_y_offset = -180;
 
     public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
     public static ChatBox chatbox;
 
-    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Random level", new Runnable()
+    public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
+
+    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Random level", new Runnable()
     {
         @Override
         public void run()
@@ -69,7 +73,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     }
     );
 
-    Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Versus", new Runnable()
+    Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Versus", new Runnable()
     {
         @Override
         public void run()
@@ -85,7 +89,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     }
             , "Fight other players in this party---in a randomly generated level");
 
-    Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Crusades", new Runnable()
+    Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Crusades", new Runnable()
     {
         @Override
         public void run()
@@ -98,17 +102,36 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     },
             "Fight battles in an order,---and see how long you can survive!");
 
-    Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "My levels", new Runnable()
+    Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "My levels", new Runnable()
     {
         @Override
         public void run()
         {
             Game.screen = new ScreenPlaySavedLevels();
         }
-    }
-            , "Play levels you have created");
+    },
+            "Play levels you have created");
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "End party", new Runnable()
+    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Share a level", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.screen = new ScreenShareLevel();
+        }
+    });
+
+    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Shared levels", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.screen = new ScreenSharedLevels(sharedLevels);
+        }
+    }
+    );
+
+    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, 350, 40, "End party", new Runnable()
     {
         @Override
         public void run()
@@ -136,7 +159,6 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
         if (Game.game.window.touchscreen)
         {
             chatbox.defaultText = "Click here to send a chat message";
-            quit.posY -= 30;
         }
 
         for (int i = 0; i < this.kickButtons.length; i++)
@@ -223,6 +245,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
         crusades.update();
         myLevels.update();
         versus.update();
+        share.update();
+        shared.update();
         quit.update();
 
         if (server != null && server.connections != null)
@@ -241,7 +265,6 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
             }
         }
 
-
         chatbox.update();
     }
 
@@ -254,28 +277,20 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
         myLevels.draw();
         versus.draw();
         newLevel.draw();
+        share.draw();
+        shared.draw();
         quit.draw();
 
-        chatbox.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, this.ip);
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, this.ip);
         //Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 160, "Play:");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Play:");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 160, "Players in this party:");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 80, "Level sharing:");
 
-
-        long time = System.currentTimeMillis();
-        for (int i = 0; i < chat.size(); i++)
-        {
-            ChatMessage c = chat.get(i);
-            if (time - c.time <= 30000 || chatbox.selected)
-            {
-                Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-            }
-        }
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
 
         if (server != null && server.connections != null)
         {
@@ -325,6 +340,34 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
                     }
                 }
             }
+        }
+
+        chatbox.draw();
+
+        Drawing.drawing.setColor(0, 0, 0);
+
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < chat.size(); i++)
+        {
+            ChatMessage c = chat.get(i);
+            if (time - c.time <= 30000 || chatbox.selected)
+            {
+                Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+            }
+        }
+    }
+
+    public static class SharedLevel
+    {
+        public String level;
+        public String name;
+        public String creator;
+
+        public SharedLevel(String level, String name, String creator)
+        {
+            this.level = level;
+            this.name = name;
+            this.creator = creator;
         }
     }
 

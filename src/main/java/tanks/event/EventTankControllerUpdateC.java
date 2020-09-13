@@ -75,5 +75,4 @@ public class EventTankControllerUpdateC extends PersonalEvent
             ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.action1, this.action2, this.time, this.sysTime);
         }
     }
-
 }

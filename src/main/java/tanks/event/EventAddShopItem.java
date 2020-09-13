@@ -50,15 +50,18 @@ public class EventAddShopItem extends PersonalEvent
     {
         if (clientID == null && Game.screen instanceof ScreenGame)
         {
-            ((ScreenGame) Game.screen).shopItemButtons.add(new Button(0, 0, 350, 40, name, new Runnable()
+            Button b = new Button(0, 0, 350, 40, name, new Runnable()
             {
                 @Override
                 public void run()
                 {
                     Game.eventsOut.add(new EventPurchaseItem(item));
                 }
-            }, description));
+            });
 
+            b.subtext = description;
+
+            ((ScreenGame) Game.screen).shopItemButtons.add(b);
 
             ItemRemote i = new ItemRemote();
             i.name = name;

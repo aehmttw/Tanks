@@ -10,13 +10,14 @@ import tanks.tank.TankRemote;
 public class EventTankControllerUpdateS extends EventTankUpdate
 {
     public boolean forced;
+    public boolean recoil;
 
     public EventTankControllerUpdateS()
     {
 
     }
 
-    public EventTankControllerUpdateS(Tank t, boolean forced)
+    public EventTankControllerUpdateS(Tank t, boolean forced, boolean recoil)
     {
         super(t);
         this.forced = forced;
@@ -27,6 +28,7 @@ public class EventTankControllerUpdateS extends EventTankUpdate
     {
         super.read(b);
         this.forced = b.readBoolean();
+        this.recoil = b.readBoolean();
     }
 
     @Override
@@ -34,6 +36,7 @@ public class EventTankControllerUpdateS extends EventTankUpdate
     {
         super.write(b);
         b.writeBoolean(this.forced);
+        b.writeBoolean(this.recoil);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class EventTankControllerUpdateS extends EventTankUpdate
             t.vX = this.vX;
             t.vY = this.vY;
 
-            if (t instanceof TankPlayerController && Game.clientID.equals(((TankPlayerController) t).clientID))
+            if (t instanceof TankPlayerController && Game.clientID.equals(((TankPlayerController) t).clientID) && this.recoil)
                 t.processRecoil();
 
             t.angle = this.angle;

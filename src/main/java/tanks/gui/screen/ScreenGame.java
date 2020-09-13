@@ -1,5 +1,7 @@
 package tanks.gui.screen;
 
+import basewindow.InputCodes;
+import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Transformation;
 import basewindow.transformation.Translation;
@@ -31,6 +33,7 @@ public class ScreenGame extends Screen
 
 	public double slant = 0;
 
+	public static boolean finishedQuick = false;
 	public static boolean finished = false;
 	public static double finishTimer = 100;
 	public static double finishTimerMax = 100;
@@ -61,6 +64,8 @@ public class ScreenGame extends Screen
 
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
+
+	public Tank spectatingTank = null;
 
 	public double readyPanelCounter = 0;
 
@@ -104,7 +109,7 @@ public class ScreenGame extends Screen
 	}
 	);
 
-	Button startNow = new Button(Drawing.drawing.interfaceSizeX-580, Drawing.drawing.interfaceSizeY-50, 350, 40, "Start now", new Runnable()
+	Button startNow = new Button( 200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Start now", new Runnable()
 	{
 		@Override
 		public void run()
@@ -486,15 +491,15 @@ public class ScreenGame extends Screen
 			if (item instanceof ItemRemote)
 				continue;
 
-			String price = "Price: " + item.price + " ";
+			String price = item.price + " ";
 			if (item.price == 0)
-				price = "Price: Free!";
+				price = "Free!";
 			else if (item.price == 1)
 				price += "coin";
 			else
 				price += "coins";
 
-			this.shopItemButtons.add(new Button(0, 0, 350, 40, item.name, new Runnable()
+			Button b = new Button(0, 0, 350, 40, item.name, new Runnable()
 			{
 				@Override
 				public void run()
@@ -506,8 +511,12 @@ public class ScreenGame extends Screen
 							Game.player.hotbar.coins -= pr;
 					}
 				}
-			}, price
-			));
+			}
+			);
+
+			b.subtext = price;
+
+			this.shopItemButtons.add(b);
 
 			Game.eventsOut.add(new EventAddShopItem(i, item.name, price, item.icon));
 		}
@@ -584,6 +593,8 @@ public class ScreenGame extends Screen
 
 		if (paused)
 		{
+			Panel.panel.age -= Panel.frameFrequency;
+
 			if (ScreenPartyLobby.isClient)
 			{
 				closeMenuLowerPos.update();
@@ -808,6 +819,7 @@ public class ScreenGame extends Screen
 
 			Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size);
 			ArrayList<Team> aliveTeams = new ArrayList<Team>();
+			ArrayList<Team> fullyAliveTeams = new ArrayList<Team>();
 
 			for (int i = 0; i < Game.effects.size(); i++)
 			{
@@ -891,17 +903,25 @@ public class ScreenGame extends Screen
 
 				if (m instanceof Tank)
 				{
+					Team t;
+
 					if (m.team == null)
 					{
 						if (m instanceof TankPlayer)
-							aliveTeams.add(new Team(Game.clientID.toString()));
+							t = new Team(Game.clientID.toString());
 						else if (m instanceof TankPlayerRemote)
-							aliveTeams.add(new Team(((TankPlayerRemote) m).player.clientID.toString()));
+							t = new Team(((TankPlayerRemote) m).player.clientID.toString());
 						else
-							aliveTeams.add(new Team("*"));
+							t = new Team("*");
 					}
-					else if (!aliveTeams.contains(m.team))
-						aliveTeams.add(m.team);
+					else
+						t = m.team;
+
+					if (!aliveTeams.contains(t))
+						aliveTeams.add(t);
+
+					if (!fullyAliveTeams.contains(t) && !m.destroy)
+						fullyAliveTeams.add(t);
 				}
 			}
 
@@ -919,6 +939,9 @@ public class ScreenGame extends Screen
 			}
 
 			Game.player.hotbar.update();
+
+			if (fullyAliveTeams.size() <= 1)
+				ScreenGame.finishedQuick = true;
 
 			if (aliveTeams.size() <= 1)
 			{
@@ -1039,6 +1062,39 @@ public class ScreenGame extends Screen
 				Game.bulletLocked = false;
 		}
 
+		if (spectatingTank != null && spectatingTank.destroy)
+			spectatingTank = null;
+
+		if (!Game.game.window.touchscreen)
+		{
+			double mx = Drawing.drawing.getInterfaceMouseX();
+			double my = Drawing.drawing.getInterfaceMouseY();
+
+			boolean handled = checkMouse(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+
+			if (handled)
+				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
+		}
+		else
+		{
+			for (int i: Game.game.window.touchPoints.keySet())
+			{
+				InputPoint p = Game.game.window.touchPoints.get(i);
+
+				if (p.tag.equals(""))
+				{
+					double mx = Drawing.drawing.toGameCoordsX(Drawing.drawing.getInterfacePointerX(p.x));
+					double my = Drawing.drawing.getInterfacePointerY(p.y);
+
+					boolean handled = checkMouse(mx, my, p.valid);
+
+					if (handled)
+						p.tag = "spectate";
+				}
+			}
+		}
+
+
 		if (this.music == null && prevMusic != null)
 			Panel.forceRefreshMusic = true;
 
@@ -1082,6 +1138,37 @@ public class ScreenGame extends Screen
 		}
 	}
 
+	public boolean checkMouse(double mx, double my, boolean valid)
+	{
+		if (!valid)
+			return false;
+
+		double x = Drawing.drawing.toGameCoordsX(mx);
+		double y = Drawing.drawing.toGameCoordsY(my);
+
+		if ((Game.playerTank == null || Game.playerTank.destroy) && (spectatingTank == null || !Drawing.drawing.movingCamera))
+		{
+			if (Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1))
+			{
+				for (Movable m: Game.movables)
+				{
+					if (m instanceof Tank && !m.destroy && !((Tank) m).hidden)
+					{
+						if (x >= m.posX - ((Tank) m).size && x <= m.posX + ((Tank) m).size &&
+						y >= m.posY - ((Tank) m).size && y <= m.posY + ((Tank) m).size)
+						{
+							this.spectatingTank = (Tank) m;
+							Drawing.drawing.movingCamera = true;
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public void setPerspective()
 	{
 		if (Game.angledView && Game.framework == Game.Framework.lwjgl)
@@ -1117,6 +1204,12 @@ public class ScreenGame extends Screen
 
 		Drawing drawing = Drawing.drawing;
 
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+			drawables[o.drawLevel].add(o);
+		}
+
 		for (int i = 0; i < Game.tracks.size(); i++)
 			drawables[0].add(Game.tracks.get(i));
 
@@ -1130,14 +1223,11 @@ public class ScreenGame extends Screen
 				drawables[m.nameTag.drawLevel].add(m.nameTag);
 		}
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-			drawables[o.drawLevel].add(o);
-		}
-
 		for (int i = 0; i < Game.effects.size(); i++)
-			drawables[7].add(Game.effects.get(i));
+		{
+			Effect e = Game.effects.get(i);
+			drawables[e.drawLayer].add(e);
+		}
 
 		if (Game.game.window.touchscreen)
 		{

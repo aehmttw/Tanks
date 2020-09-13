@@ -157,6 +157,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		Game.logger.println("A network exception has occurred: " + e.toString());
 		e.printStackTrace();
 		e.printStackTrace(Game.logger);
+		Game.cleanUp();
 		Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
 		ScreenPartyLobby.isClient = false;
         ctx.close();

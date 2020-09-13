@@ -54,6 +54,9 @@ public class InputBindingGroup
             return input1.getInputName();
         else if (input1.inputType == null)
             return input2.getInputName();
+        else if ((input1.getInputName().startsWith("Left") && input2.getInputName().startsWith("Right")) ||
+                (input2.getInputName().startsWith("Left") && input1.getInputName().startsWith("Right")))
+            return Game.formatString(input1.getInputName().replace("Left ", "").replace("Right ", ""));
         else
             return input1.getInputName() + " or " + input2.getInputName();
     }

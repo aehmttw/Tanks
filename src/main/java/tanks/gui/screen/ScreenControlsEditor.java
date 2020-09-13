@@ -8,7 +8,7 @@ import tanks.gui.InputSelector;
 public class ScreenControlsEditor extends Screen
 {
     public static int page = 0;
-    public static final int page_count = 4;
+    public static final int page_count = 5;
 
     InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Editor menu", Game.game.input.editorPause);
     InputSelector objectMenu = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Object menu", Game.game.input.editorObjectMenu);
@@ -38,6 +38,12 @@ public class ScreenControlsEditor extends Screen
     InputSelector nextMeta = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Next object property", Game.game.input.editorNextMeta);
     InputSelector prevMeta = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Previous object property", Game.game.input.editorPrevMeta);
 
+    InputSelector select = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Select", Game.game.input.editorSelect);
+    InputSelector deselect = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Clear selection", Game.game.input.editorDeselect);
+    InputSelector holdSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Square selection", Game.game.input.editorHoldSquare);
+    InputSelector lockSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle square selection", Game.game.input.editorLockSquare);
+    InputSelector toggleAdd = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle remove from selection", Game.game.input.editorSelectAddToggle);
+
     Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, 350, 40, "Next page", new Runnable()
     {
         @Override
@@ -60,7 +66,7 @@ public class ScreenControlsEditor extends Screen
 
     public ScreenControlsEditor()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
 
         next.enabled = page < page_count - 1;
@@ -105,6 +111,14 @@ public class ScreenControlsEditor extends Screen
             prevType.update();
             nextMeta.update();
             prevMeta.update();
+        }
+        else if (page == 4)
+        {
+            select.update();
+            deselect.update();
+            holdSquare.update();
+            lockSquare.update();
+            toggleAdd.update();
         }
 
         next.enabled = page < page_count - 1;
@@ -156,6 +170,14 @@ public class ScreenControlsEditor extends Screen
             prevType.draw();
             nextMeta.draw();
             prevMeta.draw();
+        }
+        else if (page == 4)
+        {
+            select.draw();
+            deselect.draw();
+            holdSquare.draw();
+            lockSquare.draw();
+            toggleAdd.draw();
         }
 
         next.draw();

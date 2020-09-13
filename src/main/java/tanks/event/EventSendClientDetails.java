@@ -125,6 +125,15 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		
 		ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
 
+		for (ScreenPartyHost.SharedLevel l: ScreenPartyHost.activeScreen.sharedLevels)
+		{
+			EventShareLevel e = new EventShareLevel();
+			e.username = l.creator;
+			e.name = l.name;
+			e.level = l.level;
+			s.sendEvent(e);
+		}
+
 		Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has joined the party\u00A7000000000255"));
 		
 		for (int i = 0; i < s.server.connections.size(); i++)

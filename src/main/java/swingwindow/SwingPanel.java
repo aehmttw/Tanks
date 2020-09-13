@@ -2,7 +2,6 @@ package swingwindow;
 
 import swingwindow.input.InputMouse;
 import swingwindow.input.InputScroll;
-import tanks.Game;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,24 +27,16 @@ public class SwingPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                try
-                {
-                    w.startTiming();
+                w.startTiming();
 
-                    w.absoluteWidth = getWidth();
-                    w.absoluteHeight = getHeight();
+                w.absoluteWidth = getWidth();
+                w.absoluteHeight = getHeight();
 
-                    w.updater.update();
+                w.updater.update();
 
-                    repaint();
+                repaint();
 
-                    w.stopTiming();
-                }
-                catch (Exception exception)
-                {
-                    Game.exitToCrash(exception);
-                }
-
+                w.stopTiming();
             }
 
         });

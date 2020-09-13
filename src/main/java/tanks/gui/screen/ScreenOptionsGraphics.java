@@ -24,7 +24,7 @@ public class ScreenOptionsGraphics extends Screen
 
     public ScreenOptionsGraphics()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
 
         if (Game.fancyGraphics)
@@ -132,7 +132,7 @@ public class ScreenOptionsGraphics extends Screen
             update3dGroundButton();
         }
     },
-            "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics enable these effects but---may significantly reduce framerate------Super graphics enable glow effects but---may also somewhat reduce framerate");
+            "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics enable these effects but---may significantly reduce framerate------Super graphics enable glow and shadow---effects but may further reduce framerate");
 
     Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
     {

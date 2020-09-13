@@ -1,22 +1,25 @@
 package tanks.gui.screen;
 
 import tanks.*;
+import tanks.event.EventShareLevel;
 import tanks.event.online.EventUploadLevel;
 import tanks.gui.Button;
+import tanks.gui.ChatBox;
+import tanks.gui.ChatMessage;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
 
-public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScreen, IOnlineScreen
+public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScreen, IPartyMenuScreen
 {
     public String name;
     public Level level;
-    public ScreenUploadLevel screen;
+    public Screen screen;
 
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -27,13 +30,26 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
         }
     });
 
-    public Button upload = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Upload", new Runnable()
+
+    public Button upload = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Share", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenOnlineWaiting();
-            Game.eventsOut.add(new EventUploadLevel(name, Game.currentLevelString));
+            if (ScreenPartyHost.isServer)
+            {
+                Game.screen = ScreenPartyHost.activeScreen;
+                EventShareLevel e = new EventShareLevel(level, name);
+                e.clientID = Game.clientID;
+                Game.eventsIn.add(e);
+            }
+            else
+            {
+                Game.screen = new ScreenPartyLobby();
+                Game.eventsOut.add(new EventShareLevel(level, name));
+            }
+
+            Game.cleanUp();
         }
     });
 
@@ -41,8 +57,11 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
     @SuppressWarnings("unchecked")
     protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
-    public ScreenPreviewUploadLevel(String name, ScreenUploadLevel s)
+    public ScreenPreviewShareLevel(String name, Screen s)
     {
+        this.music = "tomato_feast_4.ogg";
+        this.musicID = "menu";
+
         this.name = name;
 
         for (int i = 0; i < drawables.length; i++)
@@ -68,6 +87,11 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
                 if (o.replaceTiles)
                     o.postOverride();
             }
+
+        if (ScreenPartyHost.isServer)
+            ScreenPartyHost.chatbox.update();
+        else if (ScreenPartyLobby.isClient)
+            ScreenPartyLobby.chatbox.update();
     }
 
     public void drawLevel()
@@ -115,6 +139,33 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
         this.drawLevel();
         this.back.draw();
         this.upload.draw();
+
+        ChatBox chatbox = null;
+        ArrayList<ChatMessage> chat = null;
+
+        if (ScreenPartyHost.isServer)
+        {
+            chatbox = ScreenPartyHost.chatbox;
+            chat = ScreenPartyHost.chat;
+        }
+        else if (ScreenPartyLobby.isClient)
+        {
+            chatbox = ScreenPartyLobby.chatbox;
+            chat = ScreenPartyLobby.chat;
+        }
+
+        chatbox.draw();
+
+        Drawing.drawing.setColor(0, 0, 0);
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < chat.size(); i++)
+        {
+            ChatMessage c = chat.get(i);
+            if (time - c.time <= 30000 || chatbox.selected)
+            {
+                Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
+            }
+        }
     }
 
     @Override

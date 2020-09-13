@@ -80,8 +80,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v0.9.g";
-	public static final int network_protocol = 19;
+	public static final String version = "Tanks v0.9.0";
+	public static final int network_protocol = 20;
 	public static boolean debug = false;
 
 	public static int port = 8080;
@@ -230,6 +230,7 @@ public class Game
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
 		NetworkEventMap.register(EventPlaySound.class);
 		NetworkEventMap.register(EventSendTankColors.class);
+		NetworkEventMap.register(EventShareLevel.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);

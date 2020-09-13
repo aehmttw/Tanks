@@ -15,6 +15,7 @@ public class Button implements IDrawable, ITrigger
 	public double sizeX;
 	public double sizeY;
 	public String text;
+	public String subtext = null;
 
 	public boolean enableHover = false;
 	public String[] hoverText;
@@ -118,6 +119,18 @@ public class Button implements IDrawable, ITrigger
 		Drawing drawing = Drawing.drawing;
 		drawing.setInterfaceFontSize(24);
 
+		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
+
+		if (Game.superGraphics)
+		{
+			if (!enabled)
+				drawGlow(this.posX, this.posY + 3.5, this.sizeX, this.sizeY, 0.55, 0, 0, 0, 160, false);
+			else if (selected && !Game.game.window.touchscreen)
+				drawGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 0.65, 0, 0, 0, 80, false);
+			else
+				drawGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 0.6, 0, 0, 0, 100, false);
+		}
+
 		if (!enabled)
 			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB);
 
@@ -126,8 +139,6 @@ public class Button implements IDrawable, ITrigger
 		else
 			drawing.setColor(this.unselectedColR, this.unselectedColG, this.unselectedColB);
 
-		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
-
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
@@ -135,14 +146,29 @@ public class Button implements IDrawable, ITrigger
 		drawing.setColor(this.textColR, this.textColG, this.textColB);
 		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, text);
 
+		if (this.subtext != null)
+		{
+			drawing.setInterfaceFontSize(12);
+			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2, this.posY + this.sizeY * 0.325, this.subtext, true);
+
+		}
+
 		if (this.image != null)
-        {
-            drawing.setColor(255, 255, 255);
-            drawing.drawInterfaceImage(image, this.posX, this.posY, this.imageSizeX, this.imageSizeY);
-        }
+		{
+			drawing.setColor(255, 255, 255);
+			drawing.drawInterfaceImage(image, this.posX, this.posY, this.imageSizeX, this.imageSizeY);
+		}
 
 		if (enableHover)
 		{
+			if (Game.superGraphics && !fullInfo)
+			{
+				if (infoSelected && !Game.game.window.touchscreen)
+					drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+				else
+					drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+			}
+
 			if ((infoSelected || (selected && fullInfo)) && !Game.game.window.touchscreen)
 			{
 				if (!fullInfo)
@@ -251,5 +277,47 @@ public class Button implements IDrawable, ITrigger
 		}
 
 		return handled;
+	}
+
+	public static void drawGlow(double posX, double posY, double sizeX, double sizeY, double size, double r, double g, double b, double a, boolean glow)
+	{
+		Game.game.window.setBatchMode(true, true, false, glow);
+
+		Drawing drawing = Drawing.drawing;
+		drawing.setColor(0, 0, 0, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - sizeY * size, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - sizeY * size, 0);
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+
+		drawing.setColor(0, 0, 0, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY + sizeY * size, 0);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY + sizeY * size, 0);
+		drawing.setColor(r, g, b, a);
+		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+
+		Game.game.window.setBatchMode(false, true, false, glow);
+		Game.game.window.setBatchMode(true, false, false, glow);
+
+		for (int i = 0; i < 30; i++)
+		{
+			drawing.setColor(r, g, b, a);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
+			drawing.setColor(0, 0, 0, 0);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 15) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 15) / 30.0 * Math.PI) * size, 0);
+			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 16) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 16) / 30.0 * Math.PI) * size, 0);
+
+			drawing.setColor(r, g, b, a);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
+			drawing.setColor(0, 0, 0, 0);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 45) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 45) / 30.0 * Math.PI) * size, 0);
+			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 46) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 46) / 30.0 * Math.PI) * size, 0);
+		}
+
+
+		Game.game.window.setBatchMode(false, false, false, glow);
+
 	}
 }

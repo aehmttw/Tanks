@@ -186,7 +186,7 @@ public class SwingWindow extends BaseWindow
     @Override
     public void loadPerspective()
     {
-        throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
+        //throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
     }
 
     @Override

@@ -72,9 +72,12 @@ public class ScreenUploadLevel extends ScreenOnline
                 @Override
                 public void run()
                 {
-                    ScreenPreviewUploadLevel sc = new ScreenPreviewUploadLevel(pathSections[pathSections.length - 1].split("\\.")[0], Game.currentLevel, (ScreenUploadLevel) Game.screen);
+                    ScreenPreviewUploadLevel sc = new ScreenPreviewUploadLevel(pathSections[pathSections.length - 1].split("\\.")[0], (ScreenUploadLevel) Game.screen);
                     if (Game.loadLevel(Game.game.fileManager.getFile(l), sc))
+                    {
+                        sc.level = Game.currentLevel;
                         Game.screen = sc;
+                    }
                 }
             }
             ));

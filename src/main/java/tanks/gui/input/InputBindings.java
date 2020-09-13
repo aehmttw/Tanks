@@ -57,6 +57,12 @@ public class InputBindings
     public InputBindingGroup editorNextMeta = new InputBindingGroup("editor.nextMeta", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_EQUAL));
     public InputBindingGroup editorPrevMeta = new InputBindingGroup("editor.prevMeta", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_MINUS));
 
+    public InputBindingGroup editorSelect = new InputBindingGroup("editor.select", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_S));
+    public InputBindingGroup editorDeselect = new InputBindingGroup("editor.deselect", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_BACKSPACE));
+    public InputBindingGroup editorHoldSquare = new InputBindingGroup("editor.holdSquare", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT_SHIFT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT_SHIFT));
+    public InputBindingGroup editorLockSquare = new InputBindingGroup("editor.lockSquare", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_L));
+    public InputBindingGroup editorSelectAddToggle = new InputBindingGroup("editor.selectToggle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_A));
+
     public void save()
     {
         try

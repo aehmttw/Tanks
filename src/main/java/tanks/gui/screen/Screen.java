@@ -40,7 +40,7 @@ public abstract class Screen
 		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen)
 			frac = Obstacle.draw_size / Game.tile_size;
 
-		if (!(Game.screen instanceof ScreenExit))
+		if (!(Game.screen instanceof ScreenExit) && size >= 1)
 		{
 			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG,16 * frac + (1 - frac) * Level.currentColorB);
 			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);

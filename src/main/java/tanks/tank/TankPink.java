@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateCustomTank;
+import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 
 public class TankPink extends TankAIControlled
@@ -51,20 +52,49 @@ public class TankPink extends TankAIControlled
 	
 	public void spawnTank()
 	{
-		double pos = Math.random() * 100 - 50;
-		int side = (int) (Math.random() * 4);
+		double x;
+		double y;
 
-		double x = pos;
-		double y = pos;
+		int attempts = 0;
 
-		if (side == 0)
-			x = -50;
-		else if (side == 1)
-			x = 50;
-		else if (side == 2)
-			y = -50;
-		else if (side == 3)
-			y = 50;
+		while (true)
+		{
+			attempts++;
+
+			double pos = Math.random() * 100 - 50;
+			int side = (int) (Math.random() * 4);
+
+			x = pos;
+			y = pos;
+
+			if (side == 0)
+				x = -50;
+			else if (side == 1)
+				x = 50;
+			else if (side == 2)
+				y = -50;
+			else if (side == 3)
+				y = 50;
+
+			boolean retry = false;
+			if (this.posX + x > Game.tile_size / 4 && this.posX + x < (Game.currentSizeX - 0.25) * Game.tile_size &&
+					this.posY + y > Game.tile_size / 4 && this.posY + y < (Game.currentSizeY - 0.25) * Game.tile_size)
+			{
+				for (Obstacle o : Game.obstacles)
+				{
+					if (o.tankCollision && Math.abs(o.posX - (this.posX + x)) < Game.tile_size * 0.75 && Math.abs(o.posY - (this.posY + y)) < Game.tile_size * 0.75)
+					{
+						retry = true;
+						break;
+					}
+				}
+			}
+			else
+				retry = true;
+
+			if (!retry || attempts >= 10)
+				break;
+		}
 
 		RegistryTank.TankEntry e = Game.registryTank.getEntry(this.name);
 

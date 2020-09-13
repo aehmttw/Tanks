@@ -111,7 +111,7 @@ public class Level
 
 		this.remote = remote;
 
-		if (!remote)
+		if (!remote && sc == null || (sc instanceof ScreenLevelBuilder))
 			Game.eventsOut.add(new EventLoadLevel(this));
 
 		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<EventCreatePlayer>();
@@ -124,6 +124,8 @@ public class Level
 
 		Game.currentLevel = this;
 		Game.currentLevelString = this.levelString;
+
+		ScreenGame.finishedQuick = false;
 
 		ScreenGame.finished = false;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
@@ -188,6 +190,7 @@ public class Level
 
 			s.width = sX;
 			s.height = sY;
+			s.selectedTiles = new boolean[sX][sY];
 
 			s.r = r;
 			s.g = g;
@@ -428,7 +431,7 @@ public class Level
 		this.availablePlayerSpawns.clear();
 
 		int playerCount = 1;
-		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
+		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null && sc == null)
 			playerCount += ScreenPartyHost.server.connections.size();
 
 		if (this.includedPlayers.size() > 0)
@@ -598,7 +601,7 @@ public class Level
 		for (EventCreatePlayer e: playerEvents)
 			e.execute();
 
-		if (!remote)
+		if (!remote && sc == null || (sc instanceof ScreenLevelBuilder))
 			Game.eventsOut.add(new EventEnterLevel());
 	}
 

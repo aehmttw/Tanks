@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.event.EventKick;
 import tanks.gui.Button;
 import tanks.network.ServerHandler;
@@ -14,7 +15,9 @@ public class ScreenHostingEnded extends Screen
 	{
 		this.music = "tomato_feast_1.ogg";
 		this.musicID = "menu";
+		Panel.forceRefreshMusic = true;
 
+		Drawing.drawing.playSound("leave.ogg");
 		this.reason = reason;
 
 		//synchronized(ScreenPartyHost.server.connections)

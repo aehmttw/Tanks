@@ -10,7 +10,7 @@ public class ObstacleIce extends Obstacle
     {
         super(name, posX, posY);
 
-        this.drawLevel = 0;
+        this.drawLevel = 1;
 
         this.destructible = false;
         this.tankCollision = false;

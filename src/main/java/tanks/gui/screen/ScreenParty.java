@@ -38,6 +38,7 @@ public class ScreenParty extends Screen
 		@Override
 		public void run() 
 		{
+			ScreenPartyHost.chat.clear();
 			ScreenPartyHost.isServer = false;
 			ScreenPartyHost.includedPlayers.clear();
 			ScreenPartyHost.readyPlayers.clear();

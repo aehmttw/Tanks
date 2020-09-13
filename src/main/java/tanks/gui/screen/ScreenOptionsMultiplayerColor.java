@@ -183,7 +183,9 @@ public class ScreenOptionsMultiplayerColor extends Screen
         this.preview.drawAge = 50;
         this.preview.depthTest = false;
 
-        this.music = "tomato_feast_1.ogg";
+        this.setupButtons();
+
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
     }
 
@@ -194,6 +196,23 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorGreen.update();
         colorBlue.update();
 
+        this.setupButtons();
+
+        back.update();
+
+        enableSecondary.update();
+
+        preview.colorR = Game.player.colorR;
+        preview.colorG = Game.player.colorG;
+        preview.colorB = Game.player.colorB;
+
+        preview.turret.colorR = Game.player.turretColorR;
+        preview.turret.colorG = Game.player.turretColorG;
+        preview.turret.colorB = Game.player.turretColorB;
+    }
+
+    public void setupButtons()
+    {
         if (Game.player.enableSecondaryColor)
         {
             colorRed2.update();
@@ -218,18 +237,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
             colorGreen2.inputText = Game.player.turretColorG + "";
             colorBlue2.inputText = Game.player.turretColorB + "";
         }
-
-        back.update();
-
-        enableSecondary.update();
-
-        preview.colorR = Game.player.colorR;
-        preview.colorG = Game.player.colorG;
-        preview.colorB = Game.player.colorB;
-
-        preview.turret.colorR = Game.player.turretColorR;
-        preview.turret.colorG = Game.player.turretColorG;
-        preview.turret.colorB = Game.player.turretColorB;
     }
 
     @Override

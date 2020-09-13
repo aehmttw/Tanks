@@ -9,6 +9,8 @@ public class TankWhite extends TankAIControlled
 {
 	boolean vanish = false;
 
+	boolean updateVanished = false;
+
 	public TankWhite(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.alternate);
@@ -19,8 +21,18 @@ public class TankWhite extends TankAIControlled
 		this.coinValue = 4;
 
 		this.description = "An invisible smart tank";
+	}
 
-		Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
+	@Override
+	public void update()
+	{
+		if (!this.updateVanished)
+		{
+			Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
+			this.updateVanished = true;
+		}
+
+		super.update();
 	}
 
 	@Override

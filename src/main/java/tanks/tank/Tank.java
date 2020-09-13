@@ -159,11 +159,14 @@ public abstract class Tank extends Movable implements ISolidObject
 					this.moveInDirection(Math.cos(angle), Math.sin(angle), (dist - (this.size + t.size) / 2) * theirMass / (ourMass + theirMass));
 					t.moveInDirection(Math.cos(Math.PI + angle), Math.sin(Math.PI + angle), (dist - (this.size + t.size) / 2) * ourMass / (ourMass + theirMass));
 
-					this.setMotionInDirection(t.posX, t.posY, newV);
-					this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
+					if (distSq > Math.pow((this.posX + this.vX) - (t.posX + t.vX), 2) + Math.pow((this.posY + this.vY) - (t.posY + t.vY), 2))
+					{
+						this.setMotionInDirection(t.posX, t.posY, newV);
+						this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
 
-					t.setMotionInDirection(this.posX, this.posY, -newV);
-					t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
+						t.setMotionInDirection(this.posX, this.posY, -newV);
+						t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
+					}
 				}
 			}
 		}

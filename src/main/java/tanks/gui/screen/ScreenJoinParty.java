@@ -47,6 +47,7 @@ public class ScreenJoinParty extends Screen
 		{
 			Game.lastOfflineScreen = Game.screen;
 
+			ScreenSharedLevels.page = 0;
 			ScreenPartyLobby.chat.clear();
 			ScreenPartyLobby.sharedLevels.clear();
 

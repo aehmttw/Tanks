@@ -13,8 +13,7 @@ import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemShield;
+import tanks.hotbar.item.*;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SynchronizedList;
@@ -80,9 +79,11 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v0.9.0";
-	public static final int network_protocol = 20;
+	public static final String version = "Tanks v1.0.b";
+	public static final int network_protocol = 21;
 	public static boolean debug = false;
+
+	public static String lastVersion = "Tanks v0";
 
 	public static int port = 8080;
 
@@ -150,6 +151,7 @@ public class Game
 	public static PrintStream logger = System.err;
 
 	public static String directoryPath = "/.tanks";
+
 	public static final String logPath = directoryPath + "/logfile.txt";
 	public static final String crashesPath = directoryPath + "/crashes/";
 	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
@@ -160,6 +162,8 @@ public class Game
 	public static final String tutorialPath = directoryPath + "/tutorial.txt";
 	public static final String uuidPath = directoryPath + "/uuid";
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
+	public static final String levelDir = directoryPath + "/levels";
+	public static final String crusadeDir = directoryPath + "/crusades";
 
 	public static final float musicVolume = 0.5f;
 
@@ -196,6 +200,7 @@ public class Game
 		NetworkEventMap.register(EventBeginCrusade.class);
 		NetworkEventMap.register(EventReturnToCrusade.class);
 		NetworkEventMap.register(EventLoadCrusadeHotbar.class);
+		NetworkEventMap.register(EventSetupHotbar.class);
 		NetworkEventMap.register(EventAddShopItem.class);
 		NetworkEventMap.register(EventSortShopButtons.class);
 		NetworkEventMap.register(EventPurchaseItem.class);
@@ -308,6 +313,7 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
 
 		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemBullet.class, ItemBullet.item_name));
+		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemMine.class, ItemMine.item_name));
 		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemShield.class, ItemShield.item_name));
 
 		homedir = System.getProperty("user.home");
@@ -319,8 +325,6 @@ public class Game
 		if (!directoryFile.exists() && Game.framework != Framework.libgdx)
 		{
 			directoryFile.mkdirs();
-			game.fileManager.getFile(homedir + directoryPath + ScreenSavedLevels.levelDir).mkdirs();
-
 			try
 			{
 				game.fileManager.getFile(homedir + logPath).create();
@@ -349,6 +353,18 @@ public class Game
 		if (!itemRegistryFile.exists())
 		{
 			RegistryItem.initRegistry(homedir);
+		}
+
+		BaseFile levelsFile = game.fileManager.getFile(homedir + levelDir);
+		if (!levelsFile.exists())
+		{
+			levelsFile.mkdirs();
+		}
+
+		BaseFile crusadesFile = game.fileManager.getFile(homedir + crusadeDir);
+		if (!crusadesFile.exists())
+		{
+			crusadesFile.mkdirs();
 		}
 
 		BaseFile savedCrusadesProgressFile = game.fileManager.getFile(homedir + savedCrusadePath + "/internal");
@@ -814,7 +830,7 @@ public class Game
 		System.gc();
 
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-		Game.loadLevel(game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+		Game.loadLevel(game.fileManager.getFile(Game.homedir + levelDir + "/" + name), s);
 		Game.screen = s;
 	}
 
@@ -1041,26 +1057,80 @@ public class Game
 
 	public static boolean loadLevel(BaseFile f, ILevelPreviewScreen s)
 	{
-		String line = "Could not find level contents!";
+		StringBuilder line = new StringBuilder();
 		try
 		{
 			f.startReading();
 
 			while (f.hasNextLine())
 			{
-				line = f.nextLine();
-				Level l = new Level(line);
-				l.loadLevel(s);
+				line.append(f.nextLine()).append("\n");
 			}
+
+			Level l = new Level(line.substring(0, line.length() - 1));
+			l.loadLevel(s);
 
 			f.stopReading();
 			return true;
 		}
 		catch (Exception e)
 		{
-			Game.screen = new ScreenFailedToLoadLevel(f.path, line, e, Game.screen);
+			Game.screen = new ScreenFailedToLoadLevel(f.path, line.toString(), e, Game.screen);
 			return false;
 		}
+	}
+
+	public static int compareVersions(String v1, String v2)
+	{
+		String[] a = v1.substring(v1.indexOf(" v") + 2).split("\\.");
+		String[] b = v2.substring(v2.indexOf(" v") + 2).split("\\.");
+
+		for (int i = 0; i < Math.max(a.length, b.length); i++)
+		{
+			String a1 = "0";
+			String b1 = "0";
+
+			if (i < a.length)
+				a1 = a[i];
+
+			if (i < b.length)
+				b1 = b[i];
+
+			StringBuilder na = new StringBuilder("0");
+			StringBuilder nb = new StringBuilder("0");
+			StringBuilder la = new StringBuilder("");
+			StringBuilder lb = new StringBuilder("");
+
+			for (int j = 0; j < a1.length(); j++)
+			{
+				if ("0123456789".indexOf(a1.charAt(j)) != -1)
+					na.append(a1.charAt(j));
+				else
+					la.append(a1.charAt(j));
+			}
+
+			for (int j = 0; j < b1.length(); j++)
+			{
+				if ("0123456789".indexOf(b1.charAt(j)) != -1)
+					nb.append(b1.charAt(j));
+				else
+					lb.append(b1.charAt(j));
+			}
+
+			int ia = Integer.parseInt(na.toString());
+			int ib = Integer.parseInt(nb.toString());
+
+			if (ia != ib)
+				return ia - ib;
+			else if ((la.toString().length() == 0 || lb.toString().length() == 0) && la.toString().length() + lb.toString().length() > 0)
+				return lb.toString().length() - la.toString().length();
+			else if (la.toString().length() != lb.toString().length())
+				return la.toString().length() - lb.toString().length();
+			else if (!la.toString().equals(lb.toString()))
+				return la.toString().compareTo(lb.toString());
+		}
+
+		return 0;
 	}
 
 	public static void start()

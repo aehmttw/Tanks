@@ -6,6 +6,7 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.event.EventTankControllerUpdateC;
+import tanks.hotbar.item.ItemBullet;
 
 import java.util.UUID;
 
@@ -254,6 +255,12 @@ public class TankPlayerController extends Tank implements IPlayerTank
         if ((trace || TankPlayer.lockTrace) && !Game.bulletLocked && !this.disabled)
         {
             Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
+
+            if (Game.player.hotbar.enabledItemBar && Game.player.hotbar.itemBar.slots[Game.player.hotbar.itemBar.selected] instanceof ItemBullet)
+            {
+                r.bounces = ((ItemBullet)Game.player.hotbar.itemBar.slots[Game.player.hotbar.itemBar.selected]).bounces;
+            }
+
             r.vX /= 2;
             r.vY /= 2;
             r.trace = true;

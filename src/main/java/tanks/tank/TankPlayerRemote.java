@@ -310,7 +310,7 @@ public class TankPlayerRemote extends Tank
         if (Game.bulletLocked || this.destroy)
             return;
 
-        if (Crusade.crusadeMode)
+        if (this.player.hotbar.enabledItemBar)
         {
             if (this.player.hotbar.itemBar.useItem(true))
                 return;
@@ -324,12 +324,23 @@ public class TankPlayerRemote extends Tank
         Game.movables.add(m);
     }
 
+    public void layMine(Mine m)
+    {
+        if (Game.bulletLocked || this.destroy)
+            return;
+
+        Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
+
+        this.cooldown = m.cooldown;
+        Game.movables.add(m);
+    }
+
     public void shoot()
     {
         if (Game.bulletLocked || this.destroy)
             return;
 
-        if (Crusade.crusadeMode)
+        if (this.player.hotbar.enabledItemBar)
         {
             if (this.player.hotbar.itemBar.useItem(false))
                 return;

@@ -2,11 +2,11 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawable;
+import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
+
+import java.util.ArrayList;
 
 public class Selector implements IDrawable, ITrigger
 {
@@ -40,6 +40,10 @@ public class Selector implements IDrawable, ITrigger
     public double hoverColorR = 240;
     public double hoverColorG = 240;
     public double hoverColorB = 255;
+
+    public long lastFrame;
+    public double effectTimer;
+    public ArrayList<Effect> glowEffects = new ArrayList<>();
 
     public boolean quick = false;
 
@@ -136,6 +140,15 @@ public class Selector implements IDrawable, ITrigger
                 Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
             else
                 Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+
+            if (this.lastFrame == Panel.panel.ageFrames - 1)
+            {
+                for (Effect e : this.glowEffects)
+                {
+                    e.drawGlow();
+                    e.draw();
+                }
+            }
         }
 
         if (selected && !Game.game.window.touchscreen)
@@ -161,7 +174,11 @@ public class Selector implements IDrawable, ITrigger
             if (Game.superGraphics)
             {
                 if (infoSelected && !Game.game.window.touchscreen)
+                {
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+                    Drawing.drawing.setColor(0, 0, 255);
+                    Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
+                }
                 else
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
             }
@@ -213,6 +230,37 @@ public class Selector implements IDrawable, ITrigger
 
                     if (handled)
                         p.tag = "button";
+                }
+            }
+        }
+
+        if (Game.superGraphics)
+        {
+            if (this.lastFrame < Panel.panel.ageFrames - 1)
+                this.glowEffects.clear();
+
+            this.lastFrame = Panel.panel.ageFrames;
+
+            for (int i = 0; i < this.glowEffects.size(); i++)
+            {
+                Effect e = this.glowEffects.get(i);
+                e.update();
+
+                if (e.age > e.maxAge)
+                {
+                    this.glowEffects.remove(i);
+                    i--;
+                }
+            }
+
+            if (this.selected && this.enabled && !Game.game.window.touchscreen)
+            {
+                this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
+
+                while (this.effectTimer >= 0.4 / Panel.frameFrequency)
+                {
+                    this.effectTimer -= 0.4 / Panel.frameFrequency;
+                    Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
                 }
             }
         }

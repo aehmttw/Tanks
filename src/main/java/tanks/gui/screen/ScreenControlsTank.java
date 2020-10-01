@@ -41,13 +41,14 @@ public class ScreenControlsTank extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        moveUp.draw();
-        moveDown.draw();
-        moveLeft.draw();
-        moveRight.draw();
-        shoot.draw();
-        mine.draw();
+
         aim.draw();
+        mine.draw();
+        shoot.draw();
+        moveRight.draw();
+        moveLeft.draw();
+        moveDown.draw();
+        moveUp.draw();
 
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);

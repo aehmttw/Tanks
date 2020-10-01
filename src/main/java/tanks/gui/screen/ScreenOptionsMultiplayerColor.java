@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.tank.TankPlayer;
@@ -183,7 +184,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         this.preview.drawAge = 50;
         this.preview.depthTest = false;
 
-        this.setupButtons();
+        this.setupButtons(true);
 
         this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
@@ -196,7 +197,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorGreen.update();
         colorBlue.update();
 
-        this.setupButtons();
+        this.setupButtons(false);
 
         back.update();
 
@@ -211,13 +212,16 @@ public class ScreenOptionsMultiplayerColor extends Screen
         preview.turret.colorB = Game.player.turretColorB;
     }
 
-    public void setupButtons()
+    public void setupButtons(boolean initial)
     {
         if (Game.player.enableSecondaryColor)
         {
-            colorRed2.update();
-            colorGreen2.update();
-            colorBlue2.update();
+            if (!initial)
+            {
+                colorRed2.update();
+                colorGreen2.update();
+                colorBlue2.update();
+            }
 
             colorRed.posX = Drawing.drawing.interfaceSizeX / 2 - 190;
             colorGreen.posX = Drawing.drawing.interfaceSizeX / 2 - 190;
@@ -244,15 +248,15 @@ public class ScreenOptionsMultiplayerColor extends Screen
     {
         this.drawDefaultBackground();
 
-        colorRed.draw();
-        colorGreen.draw();
         colorBlue.draw();
+        colorGreen.draw();
+        colorRed.draw();
 
         if (Game.player.enableSecondaryColor)
         {
-            colorRed2.draw();
-            colorGreen2.draw();
             colorBlue2.draw();
+            colorGreen2.draw();
+            colorRed2.draw();
         }
 
         enableSecondary.draw();

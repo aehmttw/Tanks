@@ -223,6 +223,7 @@ public class ScreenOptions extends Screen
 			f.println("tank_blue_2=" + Game.player.turretColorB);
 			f.println("use_custom_tank_registry=" + Game.enableCustomTankRegistry);
 			f.println("use_custom_obstacle_registry=" + Game.enableCustomObstacleRegistry);
+			f.println("last_version=" + Game.lastVersion);
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -355,6 +356,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "use_custom_obstacle_registry":
 						Game.enableCustomObstacleRegistry = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "last_version":
+						Game.lastVersion = optionLine[1];
 						break;
 				}
 			}

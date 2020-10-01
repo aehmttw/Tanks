@@ -1,11 +1,9 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.TextBox;
 import tanks.hotbar.item.Item;
@@ -18,15 +16,10 @@ public class ScreenCrusadeBuilder extends ItemScreen
     public enum Mode {options, levels, items}
 
     public Crusade crusade;
-    public int levelsPage = 0;
-    public int itemsPage = 0;
     public Mode mode = Mode.options;
 
-    int rows = 6;
-    int yoffset = -150;
-
-    ArrayList<Button> levelButtons = new ArrayList<Button>();
-    ArrayList<Button> itemButtons = new ArrayList<Button>();
+    public ButtonList levelButtons;
+    public ButtonList itemButtons;
 
     public TextBox crusadeName;
     public TextBox startingLives;
@@ -35,6 +28,8 @@ public class ScreenCrusadeBuilder extends ItemScreen
     public Selector itemSelector;
 
     public ScreenCrusadeBuilder instance = this;
+
+    public int titleOffset = -270;
 
     public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit", new Runnable()
     {
@@ -53,33 +48,6 @@ public class ScreenCrusadeBuilder extends ItemScreen
         public void run()
         {
             quit.function.run();
-        }
-    }
-    );
-
-
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            if (mode == Mode.levels)
-                levelsPage++;
-            else if (mode == Mode.items)
-                itemsPage++;
-        }
-    }
-    );
-
-    public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            if (mode == Mode.levels)
-                levelsPage--;
-            else if (mode == Mode.items)
-                itemsPage--;
         }
     }
     );
@@ -143,9 +111,6 @@ public class ScreenCrusadeBuilder extends ItemScreen
             i.importProperties();
         }
 
-        this.refreshLevelButtons();
-        this.refreshItemButtons();
-
         String[] itemNames = new String[Game.registryItem.itemEntries.size()];
         for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
         {
@@ -174,11 +139,11 @@ public class ScreenCrusadeBuilder extends ItemScreen
             {
                 BaseFile file = Game.game.fileManager.getFile(crusade.fileName);
 
-                if (crusadeName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + ScreenCrusades.crusadeDir + "/" + crusadeName.inputText + ".tanks").exists())
+                if (crusadeName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText + ".tanks").exists())
                 {
                     if (file.exists())
                     {
-                        file.renameTo(Game.homedir + ScreenCrusades.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks");
+                        file.renameTo(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks");
                     }
 
                     while (file.exists())
@@ -187,7 +152,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
                     }
 
                     crusade.name = crusadeName.inputText;
-                    crusade.fileName = Game.homedir + ScreenCrusades.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks";
+                    crusade.fileName = Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks";
                 }
                 else
                 {
@@ -234,16 +199,37 @@ public class ScreenCrusadeBuilder extends ItemScreen
         bonusLifeFrequency.allowSpaces = false;
         bonusLifeFrequency.minValue = 1;
         bonusLifeFrequency.checkMinValue = true;
+
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+        {
+            this.levelButtons = new ButtonList(new ArrayList<>(), 0, 0, 0);
+            this.itemButtons = new ButtonList(new ArrayList<>(), 0, 0, 0);
+
+            this.titleOffset = -210;
+
+            this.levelButtons.controlsYOffset = -30;
+            this.itemButtons.controlsYOffset = -30;
+        }
+        else
+        {
+            this.levelButtons = new ButtonList(new ArrayList<>(), 0, 0, -30);
+            this.itemButtons = new ButtonList(new ArrayList<>(), 0, 0, -30);
+        }
+
+        this.refreshLevelButtons();
+        this.refreshItemButtons();
+
+        this.levelButtons.indexPrefix = true;
     }
 
     public void refreshLevelButtons()
     {
-        this.levelButtons.clear();
+        this.levelButtons.buttons.clear();
 
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
             int j = i;
-            this.levelButtons.add(new Button(0, 0, 350, 40, this.crusade.levelNames.get(i).replace("_", " "), new Runnable()
+            this.levelButtons.buttons.add(new Button(0, 0, 350, 40, this.crusade.levelNames.get(i).replace("_", " "), new Runnable()
             {
                 @Override
                 public void run()
@@ -258,65 +244,46 @@ public class ScreenCrusadeBuilder extends ItemScreen
             }));
         }
 
-        for (int i = 0; i < levelButtons.size(); i++)
-        {
-            int page = i / (rows * 3);
-            int offset = 0;
-
-            if (page * rows * 3 + rows < levelButtons.size())
-                offset = -190;
-
-            if (page * rows * 3 + rows * 2 < levelButtons.size())
-                offset = -380;
-
-            levelButtons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
-
-            if (i / rows % 3 == 0)
-                levelButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
-            else if (i / rows % 3 == 1)
-                levelButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
-            else
-                levelButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
-        }
+        this.levelButtons.sortButtons();
     }
 
     public void refreshItemButtons()
     {
-        this.itemButtons.clear();
+        this.itemButtons.buttons.clear();
 
         for (int i = 0; i < this.crusade.crusadeItems.size(); i++)
         {
             int j = i;
-            this.itemButtons.add(new Button(0, 0, 350, 40, this.crusade.crusadeItems.get(i).name, new Runnable()
+
+            Button b = new Button(0, 0, 350, 40, this.crusade.crusadeItems.get(i).name, new Runnable()
             {
                 @Override
                 public void run()
                 {
                     Game.screen = new ScreenEditItem(crusade.crusadeItems.get(j), (ItemScreen) Game.screen);
                 }
-            }));
-        }
+            });
 
-        for (int i = 0; i < itemButtons.size(); i++)
-        {
-            int page = i / (rows * 3);
-            int offset = 0;
+            b.image = crusade.crusadeItems.get(j).icon;
+            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+            b.imageSizeX = b.sizeY;
+            b.imageSizeY = b.sizeY;
 
-            if (page * rows * 3 + rows < itemButtons.size())
-                offset = -190;
-
-            if (page * rows * 3 + rows * 2 < itemButtons.size())
-                offset = -380;
-
-            itemButtons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
-
-            if (i / rows % 3 == 0)
-                itemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
-            else if (i / rows % 3 == 1)
-                itemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
+            int p = crusade.crusadeItems.get(i).price;
+            String price = p + " ";
+            if (p == 0)
+                price = "Free!";
+            else if (p == 1)
+                price += "coin";
             else
-                itemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
+                price += "coins";
+
+            b.subtext = price;
+
+            this.itemButtons.buttons.add(b);
         }
+
+        this.itemButtons.sortButtons();
     }
 
     @Override
@@ -332,19 +299,10 @@ public class ScreenCrusadeBuilder extends ItemScreen
 
         if (mode == Mode.levels)
         {
-            for (int i = levelsPage * rows * 3; i < Math.min(levelsPage * rows * 3 + rows * 3, levelButtons.size()); i++)
-            {
-                levelButtons.get(i).update();
-            }
+            levelButtons.update();
 
             quit.update();
             addLevel.update();
-
-            if (levelsPage > 0)
-                previous.update();
-
-            if (levelButtons.size() > (1 + levelsPage) * rows * 3)
-                next.update();
         }
         else if (mode == Mode.options)
         {
@@ -355,19 +313,10 @@ public class ScreenCrusadeBuilder extends ItemScreen
         }
         else if (mode == Mode.items)
         {
-            for (int i = itemsPage * rows * 3; i < Math.min(itemsPage * rows * 3 + rows * 3, itemButtons.size()); i++)
-            {
-                itemButtons.get(i).update();
-            }
+            itemButtons.update();
 
             quit.update();
             addItem.update();
-
-            if (itemsPage > 0)
-                previous.update();
-
-            if (itemButtons.size() > (1 + itemsPage) * rows * 3)
-                next.update();
         }
     }
 
@@ -391,50 +340,34 @@ public class ScreenCrusadeBuilder extends ItemScreen
         {
             quit.draw();
             addLevel.draw();
+            levelButtons.draw();
 
-            if (levelsPage > 0)
-                previous.draw();
-
-            if (levelButtons.size() > (1 + levelsPage) * rows * 3)
-                next.draw();
-
-            for (int i = levelsPage * rows * 3; i < Math.min(levelsPage * rows * 3 + rows * 3, levelButtons.size()); i++)
-            {
-                Button b = levelButtons.get(i);
-                String s = b.text;
-                b.text = (i + 1) + ". " + s;
-                b.draw();
-                b.text = s;
-            }
-
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Crusade levels");
+            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade levels");
         }
         else if (mode == Mode.options)
         {
-            crusadeName.draw();
-            startingLives.draw();
             bonusLifeFrequency.draw();
+            startingLives.draw();
+            crusadeName.draw();
+
             quit2.draw();
 
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Crusade options");
+            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade options");
         }
         else if (mode == Mode.items)
         {
             quit.draw();
             addItem.draw();
 
-            if (itemsPage > 0)
-                previous.draw();
+            itemButtons.draw();
 
-            if (itemButtons.size() > (1 + itemsPage) * rows * 3)
-                next.draw();
-
-            for (int i = itemsPage * rows * 3; i < Math.min(itemsPage * rows * 3 + rows * 3, itemButtons.size()); i++)
-            {
-                itemButtons.get(i).draw();
-            }
-
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Crusade items");
+            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade items");
         }
     }
 

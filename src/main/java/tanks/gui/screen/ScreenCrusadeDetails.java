@@ -95,7 +95,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
     {
         this.crusade = c;
 
-        this.music = "tomato_feast_4.ogg";
+        this.music = "tomato_feast_5.ogg";
         this.musicID = "menu";
 
         if (c.levels.size() <= 0)
@@ -125,9 +125,6 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
         else
             back2.update();
-
-        if (ScreenPartyHost.isServer)
-            ScreenPartyHost.chatbox.update();
     }
 
     @Override
@@ -163,22 +160,5 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
         else
             begin.draw();
-
-        if (ScreenPartyHost.isServer)
-        {
-            ScreenPartyHost.chatbox.draw();
-
-            Drawing.drawing.setColor(0, 0, 0);
-
-            long time = System.currentTimeMillis();
-            for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
-            {
-                ChatMessage c = ScreenPartyHost.chat.get(i);
-                if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
-                {
-                    Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-                }
-            }
-        }
     }
 }

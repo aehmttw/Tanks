@@ -491,10 +491,7 @@ public class TankAIControlled extends Tank
 
 			for (Movable m: Game.movables)
 			{
-				if (this.isInterestingPathTarget(m))
-				{
-					tiles[(int)(m.posX / Game.tile_size)][(int)(m.posY / Game.tile_size)].interesting = true;
-				}
+				tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
 			}
 
 			ArrayList<Tile> queue = new ArrayList<Tile>();
@@ -982,8 +979,8 @@ public class TankAIControlled extends Tank
 	public boolean isInterestingPathTarget(Movable m)
 	{
 		return m instanceof Tank && !Team.isAllied(m, this)
-				&& m.posX >= 0 && m.posX < Game.currentSizeX * Game.tile_size
-				&& m.posY >= 0 && m.posY < Game.currentSizeY * Game.tile_size;
+				&& m.posX >= 0 && m.posX / Game.tile_size < Game.currentSizeX
+				&& m.posY >= 0 && m.posY / Game.tile_size < Game.currentSizeY;
 	}
 
 	public void updateMineAI()

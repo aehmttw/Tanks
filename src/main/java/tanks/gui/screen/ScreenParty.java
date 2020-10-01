@@ -43,6 +43,7 @@ public class ScreenParty extends Screen
 			ScreenPartyHost.includedPlayers.clear();
 			ScreenPartyHost.readyPlayers.clear();
 			ScreenPartyHost.activeScreen = null;
+			ScreenSharedLevels.page = 0;
 
 			Game.players.clear();
 			Game.players.add(Game.player);

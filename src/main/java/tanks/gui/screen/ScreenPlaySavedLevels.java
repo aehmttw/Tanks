@@ -1,23 +1,17 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import tanks.gui.SavedFilesList;
 
 public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 {
 	public static final String levelDir = Game.directoryPath + "/levels";
 
-	public int rows = 6;
-	public int yoffset = -150;
-	public static int page = 0;
-
 	public String title = "My levels";
+
+	public SavedFilesList levels;
 
 	public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
 	{
@@ -32,126 +26,34 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 	}
 			);
 
-	public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			page++;
-		}
-	}
-			);
-
-	public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			page--;
-		}
-	}
-			);
-
-	public ArrayList<Button> buttons = new ArrayList<Button>();
-
 	public ScreenPlaySavedLevels()
 	{
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
-		this.addButtons();
-
-		this.sortButtons();
+		this.initializeLevels();
 	}
 
-	public void sortButtons()
+	public void initializeLevels()
 	{
-		for (int i = 0; i < buttons.size(); i++)
-		{
-			int page = i / (rows * 3);
-			int offset = 0;
-
-			if (page * rows * 3 + rows < buttons.size())
-				offset = -190;
-
-			if (page * rows * 3 + rows * 2 < buttons.size())
-				offset = -380;
-
-			buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60;
-
-			if (i / rows % 3 == 0)
-				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
-			else if (i / rows % 3 == 1)
-				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
-			else
-				buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
-		}
-	}
-
-	public void addButtons()
-	{
-		BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
-		if (!savedLevelsFile.exists())
-		{
-			savedLevelsFile.mkdirs();
-		}
-
-		ArrayList<String> levels = new ArrayList<String>();
-
-		try
-		{
-			ArrayList<String> ds = savedLevelsFile.getSubfiles();
-
-			for (String p : ds)
-			{
-				if (p.endsWith(".tanks"))
-					levels.add(p);
-			}
-		}
-		catch (IOException e)
-		{
-			Game.exitToCrash(e);
-		}
-
-		for (String l: levels)
-		{
-			String[] pathSections = l.replace("\\", "/").split("/");
-
-			buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0].replace("_", " "), new Runnable()
-			{
-				@Override
-				public void run()
+		this.levels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, -30,
+				(name, file) ->
 				{
-					if (Game.loadLevel(Game.game.fileManager.getFile(l)))
+					if (Game.loadLevel(file))
 					{
 						Game.screen = new ScreenGame();
 						ScreenInterlevel.fromSavedLevels = true;
 					}
-				}
-			}
-			));
-
-		}
+				}, (file) -> null);
 	}
 
 	@Override
 	public void update()
-	{		
-		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, buttons.size()); i++)
-		{
-			buttons.get(i).update();
-		}
+	{
+		this.levels.update();
+		this.quit.update();
 
-		quit.update();
-
-		if (page > 0)
-			previous.update();
-
-		if (buttons.size() > (1 + page) * rows * 3)
-			next.update();
-
-		if (ScreenPartyHost.isServer)
-			ScreenPartyHost.chatbox.update();
+		ScreenSavedLevels.page = this.levels.page;
 	}
 
 	@Override
@@ -159,36 +61,11 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 	{
 		this.drawDefaultBackground();
 
-		for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, buttons.size()); i++)
-		{
-			buttons.get(i).draw();
-		}
+		this.levels.draw();
+		this.quit.draw();
 
-		quit.draw();
-
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, this.title);
-
-		if (page > 0)
-			previous.draw();
-
-		if (buttons.size() > (1 + page) * rows * 3)
-			next.draw();
-
-		if (ScreenPartyHost.isServer)
-		{
-			ScreenPartyHost.chatbox.draw();
-			long time = System.currentTimeMillis();
-
-			Drawing.drawing.setColor(0, 0, 0);
-			for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
-			{
-				ChatMessage c = ScreenPartyHost.chat.get(i);
-				if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
-				{
-					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-				}
-			}
-		}
+		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, this.title);
 	}
-
 }

@@ -2,12 +2,12 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawable;
+import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenBindInput;
 import tanks.gui.screen.ScreenInfo;
+
+import java.util.ArrayList;
 
 public class InputSelector implements IDrawable, ITrigger
 {
@@ -36,6 +36,11 @@ public class InputSelector implements IDrawable, ITrigger
 	public double hoverColorR = 240;
 	public double hoverColorG = 240;
 	public double hoverColorB = 255;
+
+	public double effectTimer = 0;
+	public long lastFrame = 0;
+
+	public ArrayList<Effect> glowEffects = new ArrayList<>();
 
 	boolean right = false;
 
@@ -100,6 +105,14 @@ public class InputSelector implements IDrawable, ITrigger
 			else
 				Button.drawGlow(q3, this.posY + 5, this.sizeX / 2 - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
+			if (this.lastFrame == Panel.panel.ageFrames - 1)
+			{
+				for (Effect e : this.glowEffects)
+				{
+					e.drawGlow();
+					e.draw();
+				}
+			}
 		}
 
 		if (selected && !Game.game.window.touchscreen && !right)
@@ -140,6 +153,18 @@ public class InputSelector implements IDrawable, ITrigger
 
 		if (enableHover)
 		{
+			if (Game.superGraphics)
+			{
+				if (infoSelected && !Game.game.window.touchscreen)
+				{
+					Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+					Drawing.drawing.setColor(0, 0, 255);
+					Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
+				}
+				else
+					Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+			}
+
 			if (infoSelected && !Game.game.window.touchscreen)
 			{
 				drawing.setColor(0, 0, 255);
@@ -194,6 +219,43 @@ public class InputSelector implements IDrawable, ITrigger
 
 					if (handled)
 						p.tag = "button";
+				}
+			}
+		}
+
+		if (Game.superGraphics)
+		{
+			if (this.lastFrame < Panel.panel.ageFrames - 1)
+				this.glowEffects.clear();
+
+			this.lastFrame = Panel.panel.ageFrames;
+
+			for (int i = 0; i < this.glowEffects.size(); i++)
+			{
+				Effect e = this.glowEffects.get(i);
+				e.update();
+
+				if (e.age > e.maxAge)
+				{
+					this.glowEffects.remove(i);
+					i--;
+				}
+			}
+
+			if (this.selected && !Game.game.window.touchscreen)
+			{
+				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
+
+				while (this.effectTimer >= 0.4 / Panel.frameFrequency)
+				{
+					this.effectTimer -= 0.4 / Panel.frameFrequency;
+
+					double off = -this.sizeX / 4;
+
+					if (this.right)
+						off = -off;
+
+					Button.addEffect(this.posX + off, this.posY, this.sizeX / 2 - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
 				}
 			}
 		}

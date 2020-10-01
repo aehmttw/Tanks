@@ -23,7 +23,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
         @Override
         public void run()
         {
-            BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
+            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
             boolean success = false;
             if (!file.exists())
@@ -172,7 +172,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
     public void updateDownloadButton()
     {
-        BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
+        BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
         if (file.exists())
         {

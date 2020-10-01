@@ -87,11 +87,6 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
                 if (o.replaceTiles)
                     o.postOverride();
             }
-
-        if (ScreenPartyHost.isServer)
-            ScreenPartyHost.chatbox.update();
-        else if (ScreenPartyLobby.isClient)
-            ScreenPartyLobby.chatbox.update();
     }
 
     public void drawLevel()
@@ -139,33 +134,6 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
         this.drawLevel();
         this.back.draw();
         this.upload.draw();
-
-        ChatBox chatbox = null;
-        ArrayList<ChatMessage> chat = null;
-
-        if (ScreenPartyHost.isServer)
-        {
-            chatbox = ScreenPartyHost.chatbox;
-            chat = ScreenPartyHost.chat;
-        }
-        else if (ScreenPartyLobby.isClient)
-        {
-            chatbox = ScreenPartyLobby.chatbox;
-            chat = ScreenPartyLobby.chat;
-        }
-
-        chatbox.draw();
-
-        Drawing.drawing.setColor(0, 0, 0);
-        long time = System.currentTimeMillis();
-        for (int i = 0; i < chat.size(); i++)
-        {
-            ChatMessage c = chat.get(i);
-            if (time - c.time <= 30000 || chatbox.selected)
-            {
-                Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-            }
-        }
     }
 
     @Override

@@ -57,7 +57,7 @@ public class ScreenPlayMultiplayer extends Screen
         this.drawDefaultBackground();
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, "Select a multi-player game mode");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, "Select a multiplayer game mode");
         back.draw();
         online.draw();
         party.draw();

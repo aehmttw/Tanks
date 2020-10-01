@@ -9,7 +9,8 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.*;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
+import tanks.gui.ButtonList;
+import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;
 import tanks.network.Client;
@@ -21,15 +22,12 @@ import tanks.tank.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ScreenGame extends Screen
+public class ScreenGame extends Screen implements IHiddenChatboxScreen
 {
 	public boolean playing = false;
 	public boolean paused = false;
 
 	public boolean shopScreen = false;
-	public int shopPage = 0;
-	public int rows = 6;
-	public int yoffset = -150;
 
 	public double slant = 0;
 
@@ -60,7 +58,6 @@ public class ScreenGame extends Screen
 
 	public RotationAboutPoint slantRotation;
 	public Translation slantTranslation;
-	public ArrayList<Transformation> transformations = new ArrayList<Transformation>();
 
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
@@ -138,8 +135,11 @@ public class ScreenGame extends Screen
 		@Override
 		public void run()
 		{
-			cancelCountdown = true;
-			shopScreen = true;
+			if (shopList != null)
+			{
+				cancelCountdown = true;
+				shopScreen = true;
+			}
 		}
 	}
 	);
@@ -247,7 +247,7 @@ public class ScreenGame extends Screen
 		{
 			Game.cleanUp();
 			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-			Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+			Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name), s);
 			Game.screen = s;
 		}
 	}
@@ -320,6 +320,7 @@ public class ScreenGame extends Screen
 			Game.cleanUp();
 			System.gc();
 			Panel.panel.zoomTimer = 0;
+			Drawing.drawing.playSound("leave.ogg");
 			ScreenPartyLobby.isClient = false;
 			Game.screen = new ScreenJoinParty();
 			Client.handler.ctx.close();
@@ -421,27 +422,8 @@ public class ScreenGame extends Screen
 	}
 	);
 
-	Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240 + shopOffset, 350, 40, "Next page", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			shopPage++;
-		}
-	}
-	);
-
-	Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240 + shopOffset, 350, 40, "Previous page", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			shopPage--;
-		}
-	}
-	);
-
-	public ArrayList<Button> shopItemButtons = new ArrayList<Button>();
+	public ArrayList<Button> shopItemButtons = new ArrayList<>();
+	public ButtonList shopList;
 
 	public ScreenGame()
 	{
@@ -471,6 +453,53 @@ public class ScreenGame extends Screen
 		this.verticalFaces = new Face[2];
 		this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, false, false,true, true);
 		this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, false, true, true, true);
+
+		if (!Crusade.crusadeMode)
+		{
+			boolean shop = false;
+			boolean startingItems = false;
+
+			if (!Game.currentLevel.shop.isEmpty())
+			{
+				shop = true;
+				this.initShop(Game.currentLevel.shop);
+			}
+
+			if (!Game.currentLevel.startingItems.isEmpty())
+			{
+				startingItems = true;
+			}
+
+			for (Player p: Game.players)
+			{
+				p.hotbar.enabledItemBar = false;
+				p.hotbar.enabledCoins = false;
+
+				if (startingItems || shop)
+					p.hotbar.itemBar = new ItemBar(p);
+
+				if (startingItems)
+				{
+					p.hotbar.enabledItemBar = true;
+
+					for (Item i: Game.currentLevel.startingItems)
+						p.hotbar.itemBar.addItem(i);
+				}
+
+				if (shop)
+				{
+					p.hotbar.enabledItemBar = true;
+					p.hotbar.enabledCoins = true;
+					p.hotbar.coins = Game.currentLevel.startingCoins;
+					Game.eventsOut.add(new EventUpdateCoins(p));
+				}
+
+				if (p != Game.player)
+				{
+					Game.eventsOut.add(new EventSetupHotbar(p));
+				}
+			}
+		}
 	}
 
 	public ScreenGame(String s)
@@ -482,6 +511,11 @@ public class ScreenGame extends Screen
 	public ScreenGame(ArrayList<Item> shop)
 	{
 		this();
+		this.initShop(shop);
+	}
+
+	public void initShop(ArrayList<Item> shop)
+	{
 		this.shop = shop;
 
 		for (int i = 0; i < this.shop.size(); i++)
@@ -521,38 +555,19 @@ public class ScreenGame extends Screen
 			Game.eventsOut.add(new EventAddShopItem(i, item.name, price, item.icon));
 		}
 
-		for (int i = 0; i < shopItemButtons.size(); i++)
-		{
-			int page = i / (rows * 3);
-			int offset = 0;
-
-			if (page * rows * 3 + rows < shopItemButtons.size())
-				offset = -190;
-
-			if (page * rows * 3 + rows * 2 < shopItemButtons.size())
-				offset = -380;
-
-			shopItemButtons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + (i % rows) * 60 + shopOffset;
-
-			if (i / rows % 3 == 0)
-				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset;
-			else if (i / rows % 3 == 1)
-				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380;
-			else
-				shopItemButtons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2;
-		}
+		this.initializeShopList();
 
 		Game.eventsOut.add(new EventSortShopButtons());
+	}
+
+	public void initializeShopList()
+	{
+		this.shopList = new ButtonList(this.shopItemButtons, 0, 0, (int) shopOffset, -30);
 	}
 
 	@Override
 	public void update()
 	{
-		if (ScreenPartyLobby.isClient)
-			ScreenPartyLobby.chatbox.update(false);
-		else if (ScreenPartyHost.isServer)
-			ScreenPartyHost.chatbox.update(false);
-
 		Game.player.hotbar.update();
 
 		if (Game.enable3d)
@@ -705,14 +720,7 @@ public class ScreenGame extends Screen
 
 				this.exitShop.update();
 
-				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)
-					next.update();
-
-				if (shopPage > 0)
-					this.previous.update();
-
-				for (int i = shopPage * rows * 3; i < Math.min(shopPage * rows * 3 + rows * 3, shopItemButtons.size()); i++)
-					this.shopItemButtons.get(i).update();
+				this.shopList.update();
 
 				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
 				{
@@ -779,8 +787,6 @@ public class ScreenGame extends Screen
 
 							readyButton.text += ScreenPartyLobby.readyPlayers.size() + "/" + ScreenPartyLobby.includedPlayers.size() + ")";
 						}
-
-						readyButton.update();
 					}
 					else
 					{
@@ -802,6 +808,8 @@ public class ScreenGame extends Screen
 						readyButton.enabled = false;
 						readyButton.text = "Starting in " + ((int)(Game.startTime / 100) + 1);
 					}
+
+					readyButton.update();
 				}
 
 				if (!this.shopItemButtons.isEmpty() && readyButton.enabled)
@@ -1121,11 +1129,25 @@ public class ScreenGame extends Screen
 			Game.obstacles.remove(o);
 		}
 
-		Game.effects.removeAll(Game.removeEffects);
-		Game.recycleEffects.addAll(Game.removeEffects);
+		for (Effect e: Game.removeEffects)
+		{
+			if (e.state == Effect.State.removed)
+			{
+				e.state = Effect.State.recycle;
+				Game.effects.remove(e);
+				Game.recycleEffects.add(e);
+			}
+		}
 
-		Game.tracks.removeAll(Game.removeTracks);
-		Game.recycleEffects.addAll(Game.removeTracks);
+		for (Effect e: Game.removeTracks)
+		{
+			if (e.state == Effect.State.removed)
+			{
+				e.state = Effect.State.recycle;
+				Game.tracks.remove(e);
+				Game.recycleEffects.add(e);
+			}
+		}
 
 		Game.removeMovables.clear();
 		Game.removeObstacles.clear();
@@ -1336,13 +1358,9 @@ public class ScreenGame extends Screen
 
 				this.exitShop.draw();
 
-				if (shopItemButtons.size() > (1 + shopPage) * rows * 3)
-					next.draw();
+				this.shopList.draw();
 
-				if (shopPage > 0)
-					this.previous.draw();
-
-				for (int i = Math.min(shopPage * rows * 3 + rows * 3, shopItemButtons.size()) - 1; i >= shopPage * rows * 3; i--)
+				for (int i = Math.min((this.shopList.page + 1) * this.shopList.rows * this.shopList.columns, shopItemButtons.size()) - 1; i >= this.shopList.page * this.shopList.rows * this.shopList.columns; i--)
 				{
 					Button b = this.shopItemButtons.get(i);
 					b.draw();
@@ -1474,7 +1492,12 @@ public class ScreenGame extends Screen
 					Drawing.drawing.setColor(127, 127, 127);
 					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 35, 320, 3);
 					Drawing.drawing.setColor(255, 127, 0);
-					Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 35, 320, 3, Game.startTime / 400);
+					Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 35, 320, 3, Math.max(Game.startTime / 400, 0));
+
+					if (Game.superGraphics)
+					{
+						Drawing.drawing.fillInterfaceGlow(Drawing.drawing.interfaceSizeX - 200 + ((Game.startTime / 400 - 0.5) * 320), Drawing.drawing.interfaceSizeY - 35, 20, 20);
+					}
 				}
 			}
 		}
@@ -1582,35 +1605,6 @@ public class ScreenGame extends Screen
 		}
 
 		Drawing.drawing.setInterfaceFontSize(24);
-
-		if (ScreenPartyLobby.isClient)
-		{
-			ScreenPartyLobby.chatbox.draw(false);
-			long time = System.currentTimeMillis();
-			for (int i = 0; i < ScreenPartyLobby.chat.size(); i++)
-			{
-				ChatMessage c = ScreenPartyLobby.chat.get(i);
-				if (time - c.time <= 30000 || ScreenPartyLobby.chatbox.selected)
-				{
-					Drawing.drawing.setColor(0, 0, 0);
-					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-				}
-			}
-		}
-		else if (ScreenPartyHost.isServer)
-		{
-			ScreenPartyHost.chatbox.draw(false);
-			long time = System.currentTimeMillis();
-			for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
-			{
-				ChatMessage c = ScreenPartyHost.chat.get(i);
-				if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
-				{
-					Drawing.drawing.setColor(0, 0, 0);
-					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-				}
-			}
-		}
 	}
 
 	@Override

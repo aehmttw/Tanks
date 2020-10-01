@@ -2,10 +2,7 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawable;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 
 import java.util.ArrayList;
@@ -67,6 +64,10 @@ public class TextBox implements IDrawable, ITrigger
 	public double selectedFullColorR = 255;
 	public double selectedFullColorG = 238;
 	public double selectedFullColorB = 220;
+
+	public long lastFrame;
+	public double effectTimer;
+	public ArrayList<Effect> glowEffects = new ArrayList<>();
 
 	public boolean enabled = true;
 
@@ -137,6 +138,15 @@ public class TextBox implements IDrawable, ITrigger
 				Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
 			else
 				Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+
+			if (this.lastFrame == Panel.panel.ageFrames - 1)
+			{
+				for (Effect e : this.glowEffects)
+				{
+					e.drawGlow();
+					e.draw();
+				}
+			}
 		}
 
 		if (selected)
@@ -166,7 +176,11 @@ public class TextBox implements IDrawable, ITrigger
 			if (Game.superGraphics)
 			{
 				if (infoSelected && !Game.game.window.touchscreen)
+				{
 					Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+					Drawing.drawing.setColor(0, 0, 255);
+					Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
+				}
 				else
 					Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 			}
@@ -193,7 +207,11 @@ public class TextBox implements IDrawable, ITrigger
 			if (Game.superGraphics)
 			{
 				if (clearSelected && !Game.game.window.touchscreen)
+				{
 					Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+					Drawing.drawing.setColor(127, 0, 0);
+					Drawing.drawing.fillInterfaceGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
+				}
 				else
 					Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 			}
@@ -204,7 +222,9 @@ public class TextBox implements IDrawable, ITrigger
 				drawing.setColor(255, 127, 127);
 
 			drawing.fillInterfaceOval(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+
 			drawing.setColor(255, 255, 255);
+
 			drawing.setInterfaceFontSize(24);
 			drawing.drawInterfaceText(this.posX + 2 - this.sizeX / 2 + this.sizeY / 2 - 1, this.posY - 1, "x");
 		}
@@ -262,6 +282,40 @@ public class TextBox implements IDrawable, ITrigger
 			Game.game.window.showKeyboard = true;
 			this.checkKeys();
 		}
+
+		if (Game.superGraphics)
+		{
+			if (this.lastFrame < Panel.panel.ageFrames - 1)
+				this.glowEffects.clear();
+
+			this.lastFrame = Panel.panel.ageFrames;
+
+			for (int i = 0; i < this.glowEffects.size(); i++)
+			{
+				Effect e = this.glowEffects.get(i);
+				e.update();
+
+				if (e.age > e.maxAge)
+				{
+					this.glowEffects.remove(i);
+					i--;
+				}
+			}
+
+			if (this.hover && !this.selected && this.enabled && !Game.game.window.touchscreen)
+			{
+				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
+
+				while (this.effectTimer >= 0.4 / Panel.frameFrequency)
+				{
+					this.effectTimer -= 0.4 / Panel.frameFrequency;
+					Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
+				}
+			}
+		}
+
+		if (this.selected)
+			Panel.selectedTextBox = this;
 	}
 
 	public boolean checkMouse(double mx, double my, boolean valid)
@@ -364,6 +418,12 @@ public class TextBox implements IDrawable, ITrigger
 		selected = false;
 		Game.game.window.showKeyboard = false;
 		Panel.selectedTextBox = null;
+
+		if (Game.superGraphics)
+		{
+			for (int i = 0; i < 0.2 * (this.sizeX + this.sizeY); i++)
+				Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8, 0.25);
+		}
 	}
 
 	public void checkKeys()

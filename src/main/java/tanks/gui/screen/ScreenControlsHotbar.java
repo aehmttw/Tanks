@@ -39,13 +39,14 @@ public class ScreenControlsHotbar extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        hotbarToggle.draw();
-        hotbar1.draw();
-        hotbar2.draw();
-        hotbar3.draw();
-        hotbar4.draw();
-        hotbar5.draw();
+
         hotbarDeselect.draw();
+        hotbar5.draw();
+        hotbar4.draw();
+        hotbar3.draw();
+        hotbar2.draw();
+        hotbar1.draw();
+        hotbarToggle.draw();
 
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);

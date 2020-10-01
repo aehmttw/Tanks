@@ -4,13 +4,11 @@ import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import swingwindow.SwingWindow;
 import tanks.*;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleTeleporter;
-import tanks.registry.RegistryTank;
-import tanks.tank.Tank;
 import tanksonline.CommandExecutor;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;
+
+import java.io.File;
 
 public class Tanks
 {
@@ -18,6 +16,8 @@ public class Tanks
     {
         Game.framework = Game.Framework.lwjgl;
         int port = 8080;
+
+        boolean relaunch = System.getProperties().toString().contains("Mac OS X");
 
         for (int i = 0; i < args.length; i++)
         {
@@ -32,10 +32,33 @@ public class Tanks
 
             if (args[i].equals("debug"))
                 Game.debug = true;
+
+            if (args[i].equals("mac"))
+                relaunch = false;
         }
 
         if (!Game.isOnlineServer)
         {
+            if (relaunch && Game.framework == Game.Framework.lwjgl)
+            {
+                try
+                {
+                    String path = new File(Tanks.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+
+                    if (path.endsWith(".jar"))
+                    {
+                        String[] command = new String[]{"java", "-XstartOnFirstThread", "-jar", path, "mac"};
+                        Runtime.getRuntime().exec(command);
+                        Runtime.getRuntime().exit(0);
+                        return;
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
             if (Game.framework == Game.Framework.lwjgl || Game.framework == Game.Framework.swing)
                 Game.game.fileManager = new ComputerFileManager();
 

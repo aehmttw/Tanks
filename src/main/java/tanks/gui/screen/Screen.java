@@ -94,12 +94,14 @@ public abstract class Screen
 					if (Game.enable3d)
 					{
 						double z1 = 0;
-						if (Game.enable3dBg)
-							z1 = Game.tilesDepth[i][j];
 
 						byte o = 61;
-						if (Game.enable3dBg)
+
+						if (Game.enable3dBg && Drawing.drawing.scale > 0.25 * Drawing.drawing.interfaceScale)
+						{
+							z1 = Game.tilesDepth[i][j];
 							o = 1;
+						}
 
 						if (Game.tileDrawables[i][j] != null && inBounds)
 						{

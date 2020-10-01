@@ -501,6 +501,16 @@ public class Drawing
 		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
+	public void fillInterfaceOval(double x, double y, double sizeX, double sizeY, boolean depthTest)
+	{
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.fillOval(drawX, drawY, 0, drawSizeX, drawSizeY, depthTest);
+	}
+
 	public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - interfaceSizeX * interfaceScale) / 2);
@@ -509,6 +519,16 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 
 		Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
+	}
+
+	public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean depthTest)
+	{
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth  - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight  - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.fillGlow(drawX, drawY, 0, drawSizeX, drawSizeY, depthTest);
 	}
 
 	public void drawInterfaceOval(double x, double y, double sizeX, double sizeY)

@@ -14,7 +14,7 @@ public class ScreenEditItem extends Screen
     public ItemScreen screen;
 
     public int rows = 4;
-    public int yoffset = -120;
+    public int yoffset = -150;
 
     public int page = 0;
 
@@ -52,7 +52,7 @@ public class ScreenEditItem extends Screen
     }
     );
 
-    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 220, 350, 40, "Delete item", new Runnable()
+    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, 350, 40, "Delete item", new Runnable()
     {
         @Override
         public void run()
@@ -86,6 +86,7 @@ public class ScreenEditItem extends Screen
                         p.value = Integer.parseInt(t.inputText);
                 };
 
+                t.maxChars = 9;
                 t.allowLetters = false;
                 t.allowSpaces = false;
 
@@ -190,11 +191,14 @@ public class ScreenEditItem extends Screen
         back.update();
         delete.update();
 
-        if (page > 0)
-            previous.update();
+        previous.enabled = page > 0;
+        next.enabled = (properties.size() > (1 + page) * rows * 3);
 
-        if (properties.size() > (1 + page) * rows * 3)
+        if (rows * 3 < properties.size())
+        {
+            previous.update();
             next.update();
+        }
     }
 
     @Override
@@ -205,19 +209,27 @@ public class ScreenEditItem extends Screen
         back.draw();
         delete.draw();
 
-        if (page > 0)
-            previous.draw();
+        previous.enabled = page > 0;
+        next.enabled = (properties.size() > (1 + page) * rows * 3);
 
-        if (properties.size() > (1 + page) * rows * 3)
+        if (rows * 3 < properties.size())
+        {
+            previous.draw();
             next.draw();
 
-        for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, properties.size()); i++)
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
+                    "Page " + (page + 1) + " of " + (properties.size() / (rows * 3) + Math.min(1, properties.size() % (rows * 3))));
+        }
+
+        for (int i = Math.min(page * rows * 3 + rows * 3, properties.size()) - 1; i >= page * rows * 3; i--)
         {
             properties.get(i).draw();
         }
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, item.getTypeName() + " item properties");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, item.getTypeName() + " item properties");
     }
 }

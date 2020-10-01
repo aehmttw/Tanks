@@ -30,7 +30,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 	public boolean reloadNewLevel;
 	public Tank mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 	public int mouseTankOrientation = 0;
-	public Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+	public tanks.obstacle.Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 	public double mouseObstacleHeight = 1;
 	public boolean stagger = false;
 	public boolean oddStagger = false;
@@ -299,7 +299,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		@Override
 		public void run()
 		{
-			BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name);
+			BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name);
 
 			Game.cleanUp();
 
@@ -1002,6 +1002,27 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		staggering.imageSizeY = 40;
 		staggering.fullInfo = true;
 
+		this.nextObstaclePage.image = "play.png";
+		this.nextObstaclePage.imageSizeX = 25;
+		this.nextObstaclePage.imageSizeY = 25;
+		this.nextObstaclePage.imageXOffset = 145;
+
+		this.previousObstaclePage.image = "play.png";
+		this.previousObstaclePage.imageSizeX = -25;
+		this.previousObstaclePage.imageSizeY = 25;
+		this.previousObstaclePage.imageXOffset = -145;
+
+		this.nextTankPage.image = "play.png";
+		this.nextTankPage.imageSizeX = 25;
+		this.nextTankPage.imageSizeY = 25;
+		this.nextTankPage.imageXOffset = 145;
+
+		this.previousTankPage.image = "play.png";
+		this.previousTankPage.imageSizeX = -25;
+		this.previousTankPage.imageSizeY = 25;
+		this.previousTankPage.imageXOffset = -145;
+
+
 		this.enableMargins = false;
 
 		this.reloadNewLevel = reload;
@@ -1011,7 +1032,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			drawables[i] = new ArrayList<IDrawable>();
 		}
 
-		Obstacle.draw_size = Game.tile_size;
+		tanks.obstacle.Obstacle.draw_size = Game.tile_size;
 
 		Game.game.window.validScrollDown = false;
 		Game.game.window.validScrollUp = false;
@@ -1028,14 +1049,14 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			@Override
 			public void run()
 			{
-				BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + lvlName);
+				BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + lvlName);
 
 				String input = levelName.inputText.replace(" ", "_");
-				if (levelName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + input + ".tanks").exists())
+				if (levelName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + input + ".tanks").exists())
 				{
 					if (file.exists())
 					{
-						file.renameTo(Game.homedir + ScreenSavedLevels.levelDir + "/" + input + ".tanks");
+						file.renameTo(Game.homedir + Game.levelDir + "/" + input + ".tanks");
 					}
 
 					while (file.exists())
@@ -1077,7 +1098,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		sizeX.allowLetters = false;
 		sizeX.allowSpaces = false;
 		sizeX.maxChars = 3;
-		sizeX.maxValue = 200;
+		sizeX.maxValue = 400;
 		sizeX.minValue = 1;
 		sizeX.checkMaxValue = true;
 		sizeX.checkMinValue = true;
@@ -1125,7 +1146,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		sizeY.allowLetters = false;
 		sizeY.allowSpaces = false;
 		sizeY.maxChars = 3;
-		sizeY.maxValue = 200;
+		sizeY.maxValue = 400;
 		sizeY.minValue = 1;
 		sizeY.checkMaxValue = true;
 		sizeY.checkMinValue = true;
@@ -1364,7 +1385,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		teamBlue.maxValue = 255;
 		teamBlue.checkMaxValue = true;
 
-		BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + lvlName);
+		BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + lvlName);
 
 		if (!file.exists() && reloadNewLevel)
 		{
@@ -1418,7 +1439,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 			final int j = i;
 
-			Obstacle o = Game.registryObstacle.obstacleEntries.get(i).getObstacle(x, y);
+			tanks.obstacle.Obstacle o = Game.registryObstacle.obstacleEntries.get(i).getObstacle(x, y);
 			ButtonObject b = new ButtonObject(o, x, y, 75, 75, new Runnable()
 			{
 				@Override
@@ -2185,12 +2206,16 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		}
 		else
 		{
+			boolean input = false;
+
 			for (int i: Game.game.window.touchPoints.keySet())
 			{
 				InputPoint p = Game.game.window.touchPoints.get(i);
 
 				if (p.tag.equals("") || p.tag.equals("levelbuilder"))
 				{
+					input = true;
+
 					double mx = Drawing.drawing.toGameCoordsX(Drawing.drawing.getInterfacePointerX(p.x));
 					double my = Drawing.drawing.toGameCoordsY(Drawing.drawing.getInterfacePointerY(p.y));
 
@@ -2200,6 +2225,9 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 						p.tag = "levelbuilder";
 				}
 			}
+
+			if (!input)
+				checkMouse(0, 0, false, false, false, false);
 
 			if (validZoomFingers == 0)
 				panDown = false;
@@ -2414,12 +2442,20 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				selectHeld = true;
 				handled[0] = true;
 				handled[1] = true;
+
+				Drawing.drawing.playVibration("selectionChanged");
 			}
 
 			if (pressed && selectHeld)
 			{
+				double prevSelectX2 = selectX2;
+				double prevSelectY2 = selectY2;
+
 				selectX2 = clampTileX(mouseObstacle.posX);
 				selectY2 = clampTileY(mouseObstacle.posY);
+
+				if (prevSelectX2 != selectX2 || prevSelectY2 != selectY2)
+					Drawing.drawing.playVibration("selectionChanged");
 			}
 
 			if (selectSquare || Game.game.input.editorHoldSquare.isPressed())
@@ -2431,6 +2467,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 			if (!pressed && selectHeld)
 			{
+				Drawing.drawing.playVibration("click");
 				selectHeld = false;
 
 				double lowX = Math.min(selectX1, selectX2);
@@ -2934,7 +2971,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 		Game.currentLevelString = level.toString();
 
-		BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name);
+		BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name);
 		if (file.exists())
 		{
 			if (!editable)
@@ -2994,7 +3031,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		Panel.selectedTextBox = null;
 
 		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-		Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + name), s);
+		Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name), s);
 
 		s.optionsMenu = true;
 		s.tankNum = tankNum;
@@ -3006,6 +3043,16 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		s.mouseObstacleHeight = mouseObstacleHeight;
 		s.stagger = stagger;
 		s.oddStagger = oddStagger;
+
+		s.colorRed.glowEffects = this.colorRed.glowEffects;
+		s.colorGreen.glowEffects = this.colorGreen.glowEffects;
+		s.colorBlue.glowEffects = this.colorBlue.glowEffects;
+		s.colorVarRed.glowEffects = this.colorVarRed.glowEffects;
+		s.colorVarGreen.glowEffects = this.colorVarGreen.glowEffects;
+		s.colorVarBlue.glowEffects = this.colorVarBlue.glowEffects;
+
+		s.sizeX.glowEffects = this.sizeX.glowEffects;
+		s.sizeY.glowEffects = this.sizeY.glowEffects;
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -3161,7 +3208,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 			if (!selectHeld)
 			{
-				Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+				if (!Game.game.window.touchscreen)
+					Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
 			}
 			else
 			{
@@ -3361,20 +3409,20 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			{
 				if (this.sizeMenu)
 				{
-					this.sizeX.draw();
 					this.sizeY.draw();
+					this.sizeX.draw();
 					this.back3.draw();
 					Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);
 					Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Level size");
 				}
 				else if (this.colorMenu)
 				{
-					this.colorRed.draw();
-					this.colorGreen.draw();
 					this.colorBlue.draw();
-					this.colorVarRed.draw();
-					this.colorVarGreen.draw();
+					this.colorGreen.draw();
+					this.colorRed.draw();
 					this.colorVarBlue.draw();
+					this.colorVarGreen.draw();
+					this.colorVarRed.draw();
 					Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);
 					Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Background colors");
 					this.back2.draw();
@@ -3388,9 +3436,9 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 							back6.draw();
 							if (selectedTeam.enableColor)
 							{
-								teamRed.draw();
-								teamGreen.draw();
 								teamBlue.draw();
+								teamGreen.draw();
+								teamRed.draw();
 							}
 							teamColorEnabled.draw();
 							Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);

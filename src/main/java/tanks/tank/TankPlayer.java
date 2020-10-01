@@ -8,6 +8,7 @@ import tanks.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
+import tanks.hotbar.item.ItemBullet;
 
 public class TankPlayer extends Tank implements IPlayerTank
 {
@@ -269,6 +270,12 @@ public class TankPlayer extends Tank implements IPlayerTank
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
 		{
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
+
+			if (this.player.hotbar.enabledItemBar && this.player.hotbar.itemBar.slots[this.player.hotbar.itemBar.selected] instanceof ItemBullet)
+			{
+				r.bounces = ((ItemBullet)this.player.hotbar.itemBar.slots[this.player.hotbar.itemBar.selected]).bounces;
+			}
+
 			r.vX /= 2;
 			r.vY /= 2;
 			r.trace = true;
@@ -353,6 +360,18 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		Game.movables.add(m);
 	}
+
+	public void layMine(Mine m)
+	{
+		if (Game.bulletLocked || this.destroy)
+			return;
+
+		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
+
+		this.cooldown = m.cooldown;
+		Game.movables.add(m);
+	}
+
 
 	@Override
 	public void onDestroy()

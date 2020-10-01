@@ -2,10 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import tanks.*;
-import tanks.gui.Button;
-import tanks.gui.ChatBox;
-import tanks.gui.ChatMessage;
-import tanks.gui.TextBox;
+import tanks.gui.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
@@ -38,7 +35,7 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
         @Override
         public void run()
         {
-            BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
+            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
             boolean success = false;
             if (!file.exists())
@@ -122,16 +119,6 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
                 if (o.replaceTiles)
                     o.postOverride();
             }
-
-        if (ScreenPartyHost.isServer)
-            ScreenPartyHost.chatbox.update();
-        else if (ScreenPartyLobby.isClient)
-            ScreenPartyLobby.chatbox.update();
-
-        if (ScreenPartyHost.isServer)
-            ScreenPartyHost.chatbox.update();
-        else if (ScreenPartyLobby.isClient)
-            ScreenPartyLobby.chatbox.update();
     }
 
     public void drawLevel()
@@ -183,39 +170,11 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
 
         if (!this.downloaded)
             this.levelName.draw();
-
-        ChatBox chatbox = null;
-        ArrayList<ChatMessage> chat = null;
-
-        if (ScreenPartyHost.isServer)
-        {
-            chatbox = ScreenPartyHost.chatbox;
-            chat = ScreenPartyHost.chat;
-        }
-        else if (ScreenPartyLobby.isClient)
-        {
-            chatbox = ScreenPartyLobby.chatbox;
-            chat = ScreenPartyLobby.chat;
-        }
-
-        chatbox.draw();
-
-        Drawing.drawing.setColor(0, 0, 0);
-        long time = System.currentTimeMillis();
-        for (int i = 0; i < chat.size(); i++)
-        {
-            ChatMessage c = chat.get(i);
-            if (time - c.time <= 30000 || chatbox.selected)
-            {
-                Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-            }
-        }
-
     }
 
     public void updateDownloadButton()
     {
-        BaseFile file = Game.game.fileManager.getFile(Game.homedir + ScreenSavedLevels.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
+        BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
         if (file.exists())
         {

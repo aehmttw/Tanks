@@ -158,25 +158,12 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
                 }
             }
         }
-
-        if (ScreenPartyHost.isServer)
-            ScreenPartyHost.chatbox.update();
-        else if (ScreenPartyLobby.isClient)
-            ScreenPartyLobby.chatbox.update();
     }
 
     @Override
     public void draw()
     {
         this.drawDefaultBackground();
-
-        if (Panel.win && Game.fancyGraphics)
-        {
-            if (ScreenPartyHost.isServer)
-                ScreenPartyHost.chatbox.defaultTextColor = "\u00A7255255255255";
-            else if (ScreenPartyLobby.isClient)
-                ScreenPartyLobby.chatbox.defaultTextColor = "\u00A7255255255255";
-        }
 
         if (Panel.win && Game.fancyGraphics)
             Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
@@ -244,51 +231,6 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
 
             fireworks.clear();
             odd = !odd;
-        }
-
-        if (ScreenPartyLobby.isClient)
-        {
-            ScreenPartyLobby.chatbox.draw();
-            long time = System.currentTimeMillis();
-            for (int i = 0; i < ScreenPartyLobby.chat.size(); i++)
-            {
-                ChatMessage c = ScreenPartyLobby.chat.get(i);
-                if (time - c.time <= 30000 || ScreenPartyLobby.chatbox.selected)
-                {
-                    if (Panel.win && Game.fancyGraphics)
-                        Drawing.drawing.setColor(255, 255, 255);
-                    else
-                        Drawing.drawing.setColor(0, 0, 0);
-
-                    Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-                }
-            }
-        }
-        else if (ScreenPartyHost.isServer)
-        {
-            ScreenPartyHost.chatbox.draw();
-            long time = System.currentTimeMillis();
-            for (int i = 0; i < ScreenPartyHost.chat.size(); i++)
-            {
-                ChatMessage c = ScreenPartyHost.chat.get(i);
-                if (time - c.time <= 30000 || ScreenPartyHost.chatbox.selected)
-                {
-                    if (Panel.win && Game.fancyGraphics)
-                        Drawing.drawing.setColor(255, 255, 255);
-                    else
-                        Drawing.drawing.setColor(0, 0, 0);
-
-                    Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-                }
-            }
-        }
-
-        if (Panel.win && Game.fancyGraphics)
-        {
-            if (ScreenPartyHost.isServer)
-                ScreenPartyHost.chatbox.defaultTextColor = "\u00A7127127127255";
-            else if (ScreenPartyLobby.isClient)
-                ScreenPartyLobby.chatbox.defaultTextColor = "\u00A7127127127255";
         }
     }
 

@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.*;
 import tanks.event.EventLayMine;
 import tanks.event.EventMineExplode;
+import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 public class Mine extends Movable
 {
     public static double mine_size = 30;
+
     public double timer;
     public double size = mine_size;
     public double outlineColorR;
@@ -18,8 +20,13 @@ public class Mine extends Movable
     public double outlineColorB;
     public double height = 0;
 
+    public double triggeredTimer = 50;
+    public double damage = 2;
+    public boolean destroysObstacles = true;
+
     public double radius = Game.tile_size * 2.5;
     public Tank tank;
+    public ItemMine item;
 
     public int networkID;
 
@@ -34,7 +41,15 @@ public class Mine extends Movable
         this.timer = timer;
         this.drawLevel = 2;
         tank = t;
-        t.liveMines++;
+
+        if (!this.tank.isRemote)
+        {
+            if (this.item == null)
+                t.liveMines++;
+            else
+                this.item.liveMines++;
+        }
+
         this.team = t.team;
         double[] outlineCol = Team.getObjectColor(t.colorR, t.colorG, t.colorB, t);
         this.outlineColorR = outlineCol[0];
@@ -95,7 +110,7 @@ public class Mine extends Movable
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
         }
 
-        Drawing.drawing.setColor(255, (this.timer) / 1000.0 * 255, 0);
+        Drawing.drawing.setColor(255, Math.min(1000, this.timer) / 1000.0 * 255, 0);
 
         if (timer < 150 && ((int) timer % 16) / 8 == 1)
             Drawing.drawing.setColor(255, 255, 0);
@@ -140,16 +155,16 @@ public class Mine extends Movable
         }
 
         if (enemyNear && !allyNear)
-            this.timer = Math.min(50, this.timer);
+            this.timer = Math.min(this.triggeredTimer, this.timer);
     }
 
     public void explode()
     {
-        Drawing.drawing.playSound("explosion.ogg");
+        Drawing.drawing.playSound("explosion.ogg", (float) (mine_size / this.size));
 
         if (Game.fancyGraphics)
         {
-            for (int j = 0; j < 400; j++)
+            for (int j = 0; j < 400 * this.radius / 125; j++)
             {
                 double random = Math.random();
                 Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
@@ -181,7 +196,7 @@ public class Mine extends Movable
                     {
                         if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
                         {
-                            ((Tank) o).health -= 2;
+                            ((Tank) o).health -= this.damage;
                             ((Tank) o).flashAnimation = 1;
 
                             if (((Tank) o).health <= 0)
@@ -206,70 +221,73 @@ public class Mine extends Movable
             }
         }
 
-        for (int i = 0; i < Game.obstacles.size(); i++)
+        if (this.destroysObstacles)
         {
-            Obstacle o = Game.obstacles.get(i);
-            if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible)
+            for (int i = 0; i < Game.obstacles.size(); i++)
             {
-                Game.removeObstacles.add(o);
-
-                if (Game.fancyGraphics)
+                Obstacle o = Game.obstacles.get(i);
+                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible)
                 {
-                    if (Game.enable3d)
+                    Game.removeObstacles.add(o);
+
+                    if (Game.fancyGraphics)
                     {
-                        for (int j = 0; j < Game.tile_size; j += 10)
+                        if (Game.enable3d)
                         {
-                            for (int k = 0; k < Game.tile_size; k += 10)
+                            for (int j = 0; j < Game.tile_size; j += 10)
                             {
-                                for (int l = 0; l < Game.tile_size * o.stackHeight; l += 10)
+                                for (int k = 0; k < Game.tile_size; k += 10)
                                 {
-                                    Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, l, Effect.EffectType.obstaclePiece3d);
-
-                                    int block = (int) ((o.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
-
-                                    if (o.enableStacking)
+                                    for (int l = 0; l < Game.tile_size * o.stackHeight; l += 10)
                                     {
-                                        e.colR = o.stackColorR[block];
-                                        e.colG = o.stackColorG[block];
-                                        e.colB = o.stackColorB[block];
+                                        Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, l, Effect.EffectType.obstaclePiece3d);
+
+                                        int block = (int) ((o.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
+
+                                        if (o.enableStacking)
+                                        {
+                                            e.colR = o.stackColorR[block];
+                                            e.colG = o.stackColorG[block];
+                                            e.colB = o.stackColorB[block];
+                                        }
+                                        else
+                                        {
+                                            e.colR = o.colorR;
+                                            e.colG = o.colorG;
+                                            e.colB = o.colorB;
+                                        }
+
+                                        double dist = Movable.distanceBetween(this, e);
+                                        double angle = this.getAngleInDirection(e.posX, e.posY);
+                                        double rad = radius - Game.tile_size / 2;
+                                        e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
+                                        e.vZ = (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2;
+
+                                        Game.effects.add(e);
+
                                     }
-                                    else
-                                    {
-                                        e.colR = o.colorR;
-                                        e.colG = o.colorG;
-                                        e.colB = o.colorB;
-                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 0; j < Game.tile_size - 6; j += 4)
+                            {
+                                for (int k = 0; k < Game.tile_size - 6; k += 4)
+                                {
+                                    Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, Effect.EffectType.obstaclePiece);
+
+                                    e.colR = o.colorR;
+                                    e.colG = o.colorG;
+                                    e.colB = o.colorB;
 
                                     double dist = Movable.distanceBetween(this, e);
                                     double angle = this.getAngleInDirection(e.posX, e.posY);
                                     double rad = radius - Game.tile_size / 2;
                                     e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
-                                    e.vZ = (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2;
 
                                     Game.effects.add(e);
-
                                 }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int j = 0; j < Game.tile_size - 6; j += 4)
-                        {
-                            for (int k = 0; k < Game.tile_size - 6; k += 4)
-                            {
-                                Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, Effect.EffectType.obstaclePiece);
-
-                                e.colR = o.colorR;
-                                e.colG = o.colorG;
-                                e.colB = o.colorB;
-
-                                double dist = Movable.distanceBetween(this, e);
-                                double angle = this.getAngleInDirection(e.posX, e.posY);
-                                double rad = radius - Game.tile_size / 2;
-                                e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
-
-                                Game.effects.add(e);
                             }
                         }
                     }
@@ -277,7 +295,13 @@ public class Mine extends Movable
             }
         }
 
-        tank.liveMines--;
+        if (!this.tank.isRemote)
+        {
+            if (this.item == null)
+                this.tank.liveMines--;
+            else
+                this.item.liveMines--;
+        }
 
         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.mineExplosion);
         e.radius = this.radius - Game.tile_size * 0.5;

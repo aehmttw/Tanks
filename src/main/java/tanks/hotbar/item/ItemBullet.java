@@ -1,15 +1,16 @@
 package tanks.hotbar.item;
 
 import tanks.Game;
-import tanks.Movable;
 import tanks.Player;
 import tanks.bullet.*;
-import tanks.hotbar.item.property.*;
+import tanks.hotbar.item.property.ItemPropertyBoolean;
+import tanks.hotbar.item.property.ItemPropertyDouble;
+import tanks.hotbar.item.property.ItemPropertyInt;
+import tanks.hotbar.item.property.ItemPropertySelector;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ItemBullet extends Item

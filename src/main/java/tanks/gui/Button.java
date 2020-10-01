@@ -2,10 +2,10 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawable;
+import tanks.*;
 import tanks.gui.screen.ScreenInfo;
+
+import java.util.ArrayList;
 
 public class Button implements IDrawable, ITrigger
 {
@@ -55,6 +55,14 @@ public class Button implements IDrawable, ITrigger
 	public double imageSizeX = 0;
     public double imageSizeY = 0;
 
+	public double imageXOffset = 0;
+	public double imageYOffset = 0;
+
+    public double effectTimer = 0;
+    public long lastFrame = 0;
+
+    public ArrayList<Effect> glowEffects = new ArrayList<>();
+
     //public String sound = "click.ogg";
 
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
@@ -89,9 +97,13 @@ public class Button implements IDrawable, ITrigger
 	public Button(double x, double y, double sX, double sY, String text, Runnable f, String hoverText)
 	{
 		this(x, y, sX, sY, text, f);
-		this.enableHover = true;
-		this.hoverText = hoverText.split("---");
-		this.hoverTextRaw = hoverText;
+
+		if (hoverText != null)
+		{
+			this.enableHover = true;
+			this.hoverText = hoverText.split("---");
+			this.hoverTextRaw = hoverText;
+		}
 	}
 
 	public Button(double x, double y, double sX, double sY, String text)
@@ -109,9 +121,12 @@ public class Button implements IDrawable, ITrigger
 	{
 		this(x, y, sX, sY, text);
 
-		this.enableHover = true;
-		this.hoverText = hoverText.split("---");
-		this.hoverTextRaw = hoverText;
+		if (hoverText != null)
+		{
+			this.enableHover = true;
+			this.hoverText = hoverText.split("---");
+			this.hoverTextRaw = hoverText;
+		}
 	}
 
 	public void draw()
@@ -129,6 +144,15 @@ public class Button implements IDrawable, ITrigger
 				drawGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 0.65, 0, 0, 0, 80, false);
 			else
 				drawGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 0.6, 0, 0, 0, 100, false);
+
+			if (this.lastFrame == Panel.panel.ageFrames - 1)
+			{
+				for (Effect e : this.glowEffects)
+				{
+					e.drawGlow();
+					e.draw();
+				}
+			}
 		}
 
 		if (!enabled)
@@ -150,13 +174,12 @@ public class Button implements IDrawable, ITrigger
 		{
 			drawing.setInterfaceFontSize(12);
 			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2, this.posY + this.sizeY * 0.325, this.subtext, true);
-
 		}
 
 		if (this.image != null)
 		{
 			drawing.setColor(255, 255, 255);
-			drawing.drawInterfaceImage(image, this.posX, this.posY, this.imageSizeX, this.imageSizeY);
+			drawing.drawInterfaceImage(image, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
 		}
 
 		if (enableHover)
@@ -164,7 +187,11 @@ public class Button implements IDrawable, ITrigger
 			if (Game.superGraphics && !fullInfo)
 			{
 				if (infoSelected && !Game.game.window.touchscreen)
+				{
 					drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+					Drawing.drawing.setColor(0, 0, 255);
+					Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
+				}
 				else
 					drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 			}
@@ -230,6 +257,37 @@ public class Button implements IDrawable, ITrigger
 				}
 			}
 		}
+
+		if (Game.superGraphics)
+		{
+			if (this.lastFrame < Panel.panel.ageFrames - 1)
+				this.glowEffects.clear();
+
+			this.lastFrame = Panel.panel.ageFrames;
+
+			for (int i = 0; i < this.glowEffects.size(); i++)
+			{
+				Effect e = this.glowEffects.get(i);
+				e.update();
+
+				if (e.age > e.maxAge)
+				{
+					this.glowEffects.remove(i);
+					i--;
+				}
+			}
+
+			if (this.selected && this.enabled && !Game.game.window.touchscreen)
+			{
+				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
+
+				while (this.effectTimer >= 0.4 / Panel.frameFrequency)
+				{
+					this.effectTimer -= 0.4 / Panel.frameFrequency;
+					addEffect(this.posX, this.posY, this.sizeX, this.sizeY, this.glowEffects);
+				}
+			}
+		}
 	}
 
 	public boolean checkMouse(double mx, double my, boolean valid)
@@ -258,8 +316,6 @@ public class Button implements IDrawable, ITrigger
 			else if (enabled)
 			{
 				handled = true;
-				function.run();
-				this.justPressed = true;
 
 				if (!this.silent)
 				{
@@ -267,6 +323,9 @@ public class Button implements IDrawable, ITrigger
 					//Drawing.drawing.playSound(this.sound, 1f, 1f);
 					Drawing.drawing.playVibration("click");
 				}
+
+				function.run();
+				this.justPressed = true;
 			}
 		}
 
@@ -319,5 +378,62 @@ public class Button implements IDrawable, ITrigger
 
 		Game.game.window.setBatchMode(false, false, false, glow);
 
+	}
+
+	public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects)
+	{
+		addEffect(posX, posY, sizeX, sizeY, glowEffects, Math.random() * 0.2 + 0.8, -1, 1);
+	}
+
+	public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max)
+	{
+		Effect e = Effect.createNewEffect(posX, posY, Effect.EffectType.interfacePiece);
+
+		if (mul == -1)
+			mul = 2 * Math.max(0, (sizeY / 2 - 20) / sizeY);
+
+		double total = (sizeX - sizeY) * 2 + sizeY * Math.PI;
+		double rand = Math.random() * total;
+
+		if (rand < sizeX - sizeY)
+		{
+			e.posX = posX + rand - (sizeX - sizeY) / 2;
+			e.posY = posY + sizeY / 2 * mul;
+			e.vY = velocity;
+		}
+		else if (rand < (sizeX - sizeY) * 2)
+		{
+			e.posX = posX + rand - (sizeX - sizeY) * 3 / 2;
+			e.posY = posY - sizeY / 2 * mul;
+			e.vY = -velocity;
+		}
+		else if (rand < (sizeX - sizeY) * 2 + sizeY * Math.PI / 2)
+		{
+			double a = (rand - (sizeX - sizeY) * 2) / sizeY * 2 - Math.PI / 2;
+			e.posX = posX + (sizeX - sizeY) / 2;
+			e.posX += sizeY / 2 * Math.cos(a) * mul;
+			e.posY += sizeY / 2 * Math.sin(a) * mul;
+			e.setPolarMotion(a, velocity);
+		}
+		else
+		{
+			double a = (rand - (sizeX - sizeY) * 2 + sizeY * Math.PI / 2) / sizeY * 2 + Math.PI / 2;
+			e.posX = posX - (sizeX - sizeY) / 2;
+			e.posX += sizeY / 2 * Math.cos(a) * mul;
+			e.posY += sizeY / 2 * Math.sin(a) * mul;
+			e.setPolarMotion(a, velocity);
+		}
+
+		//e.size = 0.5;
+		e.colR = 255;
+		e.colG = 255;
+		e.colB = 255;
+		e.glowR = 255 * 0.25;
+		e.glowG = e.glowR;
+		e.glowB = e.glowR;
+		e.vX /= 2;
+		e.vY /= 2;
+		e.maxAge *= max;
+		glowEffects.add(e);
 	}
 }

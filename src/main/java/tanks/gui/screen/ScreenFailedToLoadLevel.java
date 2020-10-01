@@ -23,6 +23,7 @@ public class ScreenFailedToLoadLevel extends Screen
 		this.screen = s;
 		Game.resetTiles();
 		Game.cleanUp();
+		e.printStackTrace();
 
 		hashcode = contents.hashCode();
 

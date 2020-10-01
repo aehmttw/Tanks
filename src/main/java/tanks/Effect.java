@@ -6,9 +6,12 @@ import tanks.obstacle.Obstacle;
 
 public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece}
+    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece}
+
+    public enum State {live, removed, recycle}
+
     public EffectType type;
-    double age = 0;
+    public double age = 0;
     public double colR;
     public double colG;
     public double colB;
@@ -20,30 +23,32 @@ public class Effect extends Movable implements IDrawableWithGlow
 
     public double maxAge = 100;
     public double size;
-    public boolean removed = false;
     public double radius;
     public double angle;
     public double distance;
 
     public int drawLayer = 7;
 
+    public State state = State.live;
+
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
     {
-        if (Game.recycleEffects.size() > 0)
+        while (Game.recycleEffects.size() > 0)
         {
             Effect e = Game.recycleEffects.remove();
 
-            e.refurbish();
-            e.initialize(x, y, z, type);
+            if (e.state == State.recycle)
+            {
+                e.refurbish();
+                e.initialize(x, y, z, type);
 
-            return e;
+                return e;
+            }
         }
-        else
-        {
-            Effect e = new Effect();
-            e.initialize(x, y, z, type);
-            return e;
-        }
+
+        Effect e = new Effect();
+        e.initialize(x, y, z, type);
+        return e;
     }
 
     public static Effect createNewEffect(double x, double y, EffectType type, double age)
@@ -133,6 +138,8 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.maxAge = 0;
         else if (type == EffectType.teleporterPiece)
             this.maxAge = Math.random() * 100 + 50;
+        else if (type == EffectType.interfacePiece)
+            this.maxAge = Math.random() * 100 + 50;
     }
 
     protected void refurbish()
@@ -153,12 +160,12 @@ public class Effect extends Movable implements IDrawableWithGlow
         this.glowB = 0;
         this.maxAge = Math.random() * 100 + 50;
         this.size = 0;
-        this.removed = false;
         this.angle = 0;
         this.distance = 0;
         this.radius = 0;
         this.enableGlow = true;
         this.drawLayer = 7;
+        this.state = State.live;
     }
 
     @Override
@@ -226,6 +233,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
 
+            this.state = State.removed;
             Game.removeEffects.add(this);
         }
         else if (this.type == EffectType.mineExplosion)
@@ -254,6 +262,20 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
+        }
+        else if (this.type == EffectType.interfacePiece)
+        {
+            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+
+            if (this.size > 0)
+                size *= this.size;
+
+            drawing.setColor(this.colR, this.colG, this.colB);
+
+            if (Game.enable3d)
+                drawing.fillInterfaceOval(this.posX, this.posY, size, size, false);
+            else
+                drawing.fillInterfaceOval(this.posX, this.posY, size, size);
         }
         else if (this.type == EffectType.obstaclePiece)
         {
@@ -407,7 +429,6 @@ public class Effect extends Movable implements IDrawableWithGlow
         if (this.age < 0)
             Game.exitToCrash(new RuntimeException("Effect with negative age"));
 
-        double opacityMultiplier = ScreenGame.finishTimer / ScreenGame.finishTimerMax;
         Drawing drawing = Drawing.drawing;
 
         if (this.type == EffectType.piece)
@@ -420,6 +441,20 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8);
             else
                 drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
+        }
+        if (this.type == EffectType.interfacePiece)
+        {
+            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+
+            if (this.size > 0)
+                size *= this.size;
+
+            drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127);
+
+            if (Game.enable3d)
+                drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8, false);
+            else
+                drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
         }
         else if (this.type == EffectType.charge)
         {
@@ -487,9 +522,9 @@ public class Effect extends Movable implements IDrawableWithGlow
         if (this.maxAge >= 0)
             this.age += Panel.frameFrequency;
 
-        if (this.maxAge > 0 && this.age > this.maxAge && !removed)
+        if (this.maxAge > 0 && this.age > this.maxAge && this.state == State.live)
         {
-            removed = true;
+            this.state = State.removed;
 
             if (Game.effects.contains(this) && !Game.removeEffects.contains(this))
                 Game.removeEffects.add(this);

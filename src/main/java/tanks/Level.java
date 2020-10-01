@@ -5,6 +5,7 @@ import tanks.event.EventEnterLevel;
 import tanks.event.EventLoadLevel;
 import tanks.gui.Button;
 import tanks.gui.screen.*;
+import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
@@ -13,9 +14,7 @@ import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
 import tanks.tank.TankSpawnMarker;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 public class Level 
@@ -52,33 +51,71 @@ public class Level
 
 	public ArrayList<Player> includedPlayers = new ArrayList<Player>();
 
+	public int startingCoins;
+	public ArrayList<Item> shop = new ArrayList<Item>();
+	public ArrayList<Item> startingItems = new ArrayList<Item>();
+
 	/**
 	 * A level string is structured like this:
 	 * (parentheses signify required parameters, and square brackets signify optional parameters. 
 	 * Asterisks indicate that the parameter can be repeated, separated by commas
 	 * Do not include these in the level string.)
-	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
+	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
 	 */
 	public Level(String level)
 	{
 		this.levelString = level.replaceAll("\u0000", "");
 
-		preset = this.levelString.substring(this.levelString.indexOf('{') + 1, this.levelString.indexOf('}')).split("\\|");
+		int parsing = 0;
 
-		screen = preset[0].split(",");
-		obstaclesPos = preset[1].split(",");
-		tanks = preset[2].split(",");
-
-		if (preset.length >= 4)
+		for (String s: this.levelString.split("\n"))
 		{
-			teams = preset[3].split(",");
-			enableTeams = true;
-		}
+			switch (s.toLowerCase())
+			{
+				case "level":
+					parsing = 0;
+					break;
+				case "items":
+					parsing = 1;
+					break;
+				case "shop":
+					parsing = 2;
+					break;
+				case "coins":
+					parsing = 3;
+					break;
+				default:
+					if (parsing == 0)
+					{
+						preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
+						screen = preset[0].split(",");
+						obstaclesPos = preset[1].split(",");
+						tanks = preset[2].split(",");
 
-		if (screen[0].startsWith("*"))
-		{
-			editable = false;
-			screen[0] = screen[0].substring(1);
+						if (preset.length >= 4)
+						{
+							teams = preset[3].split(",");
+							enableTeams = true;
+						}
+
+						if (screen[0].startsWith("*"))
+						{
+							editable = false;
+							screen[0] = screen[0].substring(1);
+						}
+					}
+					else if (!ScreenPartyLobby.isClient)
+					{
+						if (parsing == 1)
+							this.startingItems.add(Item.parseItem(null, s));
+						else if (parsing == 2)
+							this.shop.add(Item.parseItem(null, s));
+						else if (parsing == 3)
+							this.startingCoins = Integer.parseInt(s);
+					}
+
+					break;
+			}
 		}
 	}
 

@@ -71,6 +71,16 @@ public class ScreenControlsEditor extends Screen
 
         next.enabled = page < page_count - 1;
         previous.enabled = page > 0;
+
+        this.next.image = "play.png";
+        this.next.imageSizeX = 25;
+        this.next.imageSizeY = 25;
+        this.next.imageXOffset = 145;
+
+        this.previous.image = "play.png";
+        this.previous.imageSizeX = -25;
+        this.previous.imageSizeY = 25;
+        this.previous.imageXOffset = -145;
     }
 
     @Override
@@ -137,47 +147,48 @@ public class ScreenControlsEditor extends Screen
 
         if (page == 0)
         {
-            pause.draw();
-            objectMenu.draw();
-            play.draw();
-            toggleControls.draw();
-            undo.draw();
             redo.draw();
+            undo.draw();
+            toggleControls.draw();
+            play.draw();
+            objectMenu.draw();
+            pause.draw();
+
         }
         else if (page == 1)
         {
-            use.draw();
-            action.draw();
-            team.draw();
-            rotate.draw();
-            height.draw();
             group.draw();
+            height.draw();
+            rotate.draw();
+            team.draw();
+            action.draw();
+            use.draw();
         }
         else if (page == 2)
         {
-            build.draw();
-            erase.draw();
-            camera.draw();
-            zoomIn.draw();
-            zoomOut.draw();
             revertCamera.draw();
+            zoomOut.draw();
+            zoomIn.draw();
+            camera.draw();
+            erase.draw();
+            build.draw();
         }
         else if (page == 3)
         {
-            nextObj.draw();
-            prevObj.draw();
-            nextType.draw();
-            prevType.draw();
-            nextMeta.draw();
             prevMeta.draw();
+            nextMeta.draw();
+            prevType.draw();
+            nextType.draw();
+            prevObj.draw();
+            nextObj.draw();
         }
         else if (page == 4)
         {
-            select.draw();
-            deselect.draw();
-            holdSquare.draw();
-            lockSquare.draw();
             toggleAdd.draw();
+            lockSquare.draw();
+            holdSquare.draw();
+            deselect.draw();
+            select.draw();
         }
 
         next.draw();

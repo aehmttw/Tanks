@@ -33,10 +33,12 @@ public class ScreenControlsGame extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        pause.draw();
-        toggleZoom.draw();
-        chat.draw();
+
         hidePause.draw();
+        chat.draw();
+        toggleZoom.draw();
+        pause.draw();
+
 
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.setColor(0, 0, 0);

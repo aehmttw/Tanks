@@ -1,12 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import tanks.gui.SavedFilesList;
 
 public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
 {
@@ -35,49 +32,17 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
     }
 
     @Override
-    public void addButtons()
+    public void initializeLevels()
     {
-        BaseFile savedLevelsFile = Game.game.fileManager.getFile(Game.homedir + levelDir);
-        if (!savedLevelsFile.exists())
-        {
-            savedLevelsFile.mkdirs();
-        }
-
-        ArrayList<String> levels = new ArrayList<String>();
-
-        try
-        {
-            ArrayList<String> ds = savedLevelsFile.getSubfiles();
-
-            for (String p : ds)
-            {
-                if (p.endsWith(".tanks"))
-                    levels.add(p);
-            }
-        }
-        catch (IOException e)
-        {
-            Game.exitToCrash(e);
-        }
-
-        for (String l: levels)
-        {
-            String[] pathSections = l.replace("\\", "/").split("/");
-
-            buttons.add(new Button(0, 0, 350, 40, pathSections[pathSections.length - 1].split("\\.")[0].replace("_", " "), new Runnable()
-            {
-                @Override
-                public void run()
+        this.levels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, -30,
+                (name, file) ->
                 {
-                    ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(pathSections[pathSections.length - 1].split("\\.")[0], null, instance, previous);
-                    if (Game.loadLevel(Game.game.fileManager.getFile(l), s))
+                    ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(name, null, instance, previous);
+                    if (Game.loadLevel(file, s))
                     {
                         s.level = Game.currentLevel.levelString;
                         Game.screen = s;
                     }
-                }
-            }
-            ));
-        }
+                }, (file) -> null);
     }
 }

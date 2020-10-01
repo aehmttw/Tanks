@@ -109,7 +109,6 @@ public class ScreenPartyLobby extends Screen
 		if ((this.usernamePage + 1) * 10 < connections.size())
 			this.nextUsernamePage.update();
 
-		chatbox.update();
 		share.update();
 		shared.update();
 	}
@@ -156,19 +155,6 @@ public class ScreenPartyLobby extends Screen
 					}
 				}
 			}
-
-			long time = System.currentTimeMillis();
-			for (int i = 0; i < chat.size(); i++)
-			{
-				ChatMessage c = chat.get(i);
-				if (time - c.time <= 30000 || chatbox.selected)
-				{
-					Drawing.drawing.setColor(0, 0, 0);
-					Drawing.drawing.drawInterfaceText(20, Drawing.drawing.interfaceSizeY - i * 30 - 70, c.message, false);
-				}
-			}
-
-			chatbox.draw();
 		}
 	}
 

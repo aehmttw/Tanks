@@ -74,6 +74,7 @@ public class Panel
 	public ArrayList<Double> pastPlayerTime = new ArrayList<>();
 
 	public double age = 0;
+	public long ageFrames = 0;
 
 	public static void initialize()
 	{
@@ -118,14 +119,24 @@ public class Panel
 			{
 				tutorial = true;
 				Game.silentCleanUp();
+				Game.lastVersion = Game.version;
+				ScreenOptions.saveOptions(Game.homedir);
 				new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
 			}
+
+			ScreenChangelog.Changelog.setupLogs();
+
+			ScreenChangelog s = new ScreenChangelog();
+			s.setup();
+
+			if (!s.pages.isEmpty())
+				Game.screen = s;
 
 			if (Game.game.window.soundsEnabled)
 			{
 				Game.game.window.soundPlayer.musicPlaying = true;
 
-				for (int i = 1; i <= 4; i++)
+				for (int i = 1; i <= 5; i++)
 				{
 					Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
 				}
@@ -262,6 +273,11 @@ public class Panel
 					Drawing.drawing.playerX = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
 					Drawing.drawing.playerY = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
 				}
+				else if (((ScreenGame) Game.screen).spectatingTank instanceof TankPlayerRemote)
+				{
+					Drawing.drawing.playerX = ((TankPlayerRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
+					Drawing.drawing.playerY = ((TankPlayerRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
+				}
 			}
 			else
 			{
@@ -308,6 +324,8 @@ public class Panel
 		}
 		else
 			onlinePaused = false;
+
+		ScreenOverlayChatBox.update(!(Game.screen instanceof IHiddenChatboxScreen));
 
 		if (!onlinePaused)
 			Game.screen.update();
@@ -405,13 +423,16 @@ public class Panel
 			Drawing.drawing.drawInterfaceImage("/tanks//loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
 			*/
 
+			Game.game.window.setBatchMode(false, false, false, false);
+
 			if (System.currentTimeMillis() - startTime > introTime)
 			{
 				Game.screen.drawDefaultBackground(frac);
 				drawBar(40 - frac * 40);
 			}
 
-			drawMouseTarget();
+			Game.game.window.setBatchMode(false, false, false, false);
+			Game.game.window.setBatchMode(false, false, true, false);
 
 			if (Game.screen instanceof ScreenTitle)
 			{
@@ -426,6 +447,7 @@ public class Panel
 				Game.game.window.loadPerspective();
 			}
 
+			drawMouseTarget();
 
 			firstDraw = false;
 
@@ -448,6 +470,7 @@ public class Panel
 
 		lastFrameSec = time;
 		frames++;
+		ageFrames++;
 
 		//g.setColor(new Color(255, 227, 186));
 		//g.fillRect(0, 0, (int) (Screen.sizeX * Screen.scale), (int) (Screen.sizeY * Screen.scale));
@@ -457,6 +480,8 @@ public class Panel
 			this.onlineOverlay.draw();
 		else
 			Game.screen.draw();
+
+		ScreenOverlayChatBox.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 
 		if (!(Game.screen instanceof ScreenExit))
 			this.drawBar();

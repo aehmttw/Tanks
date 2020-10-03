@@ -42,6 +42,7 @@ public class EventLayMine extends PersonalEvent
 			Mine m = new Mine(this.posX, this.posY, this.timer, Tank.idMap.get(tank));
 			m.networkID = id;
 			m.size = size;
+			m.radius = radius;
 			m.destroysObstacles = destroysObstacles;
 			Game.movables.add(m);
 

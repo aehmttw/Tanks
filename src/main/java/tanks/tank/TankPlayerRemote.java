@@ -2,10 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.event.EventShootBullet;
-import tanks.event.EventTankControllerUpdateAmmunition;
-import tanks.event.EventTankControllerUpdateC;
-import tanks.event.EventTankControllerUpdateS;
+import tanks.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.ItemBullet;
@@ -107,8 +104,13 @@ public class TankPlayerRemote extends Tank
             }
         }
 
+        this.refreshAmmo();
+    }
+
+    public void refreshAmmo()
+    {
         ItemBar b = this.player.hotbar.itemBar;
-        if (Crusade.crusadeMode && b.selected != -1 && b.slots[b.selected] instanceof ItemBullet)
+        if (b != null && Crusade.crusadeMode && b.selected != -1 && b.slots[b.selected] instanceof ItemBullet)
         {
             ItemBullet ib = (ItemBullet) b.slots[b.selected];
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxAmount, this.liveMines, this.liveMinesMax));
@@ -321,6 +323,7 @@ public class TankPlayerRemote extends Tank
         this.cooldown = 50;
         Mine m = new Mine(posX, posY, this);
 
+        Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
     }
 
@@ -332,6 +335,8 @@ public class TankPlayerRemote extends Tank
         Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
         this.cooldown = m.cooldown;
+
+        Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
     }
 

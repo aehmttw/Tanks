@@ -30,6 +30,12 @@ public class EventChat extends PersonalEvent
 			ScreenPartyLobby.chat.add(0, new ChatMessage(this.message));
 		else
 		{
+			for (int i = 0; i < this.message.length(); i++)
+			{
+				if ("`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>".indexOf(this.message.charAt(i)) == -1)
+					return;
+			}
+
 			for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
 			{
 				ServerHandler s = ScreenPartyHost.server.connections.get(i);

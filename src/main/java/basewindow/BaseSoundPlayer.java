@@ -9,6 +9,8 @@ public abstract class BaseSoundPlayer
 
     }
 
+    public abstract void loadMusic(String path);
+
     public abstract void playSound(String path);
 
     public abstract void playSound(String path, float pitch);

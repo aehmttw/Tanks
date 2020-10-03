@@ -432,9 +432,12 @@ public class Bullet extends Movable implements IDrawable
 				double horizontalDist = Math.abs(this.posX - o.posX);
 				double verticalDist = Math.abs(this.posY - o.posY);
 
-				double s = Bullet.bullet_size;
+				double s = 0;
+
 				if (o instanceof Mine)
-					s = Mine.mine_size;
+					s = ((Mine) o).size;
+				else if (o instanceof Bullet)
+					s = ((Bullet) o).size;
 
 				double bound = this.size / 2 + s / 2;
 

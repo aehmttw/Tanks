@@ -67,16 +67,6 @@ public class Mine extends Movable
             }
 
             idMap.put(this.networkID, this);
-
-            Game.eventsOut.add(new EventLayMine(this));
-        }
-
-        if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
-        {
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX - this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX + this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX - this.size / 2, this.posY + this.size / 2));
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX + this.size / 2, this.posY + this.size / 2));
         }
     }
 
@@ -89,6 +79,14 @@ public class Mine extends Movable
     public void draw()
     {
         Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
+
+        if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
+        {
+            this.height = Math.max(this.height, Game.sampleHeight(this.posX - this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleHeight(this.posX + this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleHeight(this.posX - this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleHeight(this.posX + this.size / 2, this.posY + this.size / 2));
+        }
 
         if (Game.enable3d)
         {

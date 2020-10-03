@@ -6,6 +6,7 @@ import tanks.Panel;
 import tanks.Team;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletHealing;
+import tanks.event.EventLayMine;
 
 public class TankMedic extends TankAIControlled
 {
@@ -80,7 +81,9 @@ public class TankMedic extends TankAIControlled
 
 		if (this.timeUntilDeath <= 0)
 		{
-			Game.movables.add(new Mine(this.posX, this.posY, 0, this));
+			Mine m = new Mine(this.posX, this.posY, 0, this);
+			Game.eventsOut.add(new EventLayMine(m));
+			Game.movables.add(m);
 			this.destroy = true;
 			this.health = 0;
 		}

@@ -150,6 +150,11 @@ public class Panel
 				}
 			}
 
+			if (Game.game.window.soundsEnabled)
+			{
+				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			}
+
 			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
 
 			introMusicEnd -= 30;

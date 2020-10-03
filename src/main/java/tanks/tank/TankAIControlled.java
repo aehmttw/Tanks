@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
@@ -491,7 +492,8 @@ public class TankAIControlled extends Tank
 
 			for (Movable m: Game.movables)
 			{
-				tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
+				if (this.isInterestingPathTarget(m))
+					tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
 			}
 
 			ArrayList<Tile> queue = new ArrayList<Tile>();
@@ -1074,7 +1076,9 @@ public class TankAIControlled extends Tank
 	{
 		Drawing.drawing.playGlobalSound("lay_mine.ogg");
 
-		Game.movables.add(new Mine(this.posX, this.posY, this.mineFuseLength, this));
+		Mine m = new Mine(this.posX, this.posY, this.mineFuseLength, this);
+		Game.eventsOut.add(new EventLayMine(m));
+		Game.movables.add(m);
 		this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);
 
 		int count = mineFleeDistances.length;

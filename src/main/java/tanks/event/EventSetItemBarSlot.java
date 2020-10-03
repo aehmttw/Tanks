@@ -2,7 +2,9 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.Movable;
 import tanks.Player;
+import tanks.tank.TankPlayerRemote;
 
 public class EventSetItemBarSlot extends PersonalEvent
 {
@@ -42,6 +44,9 @@ public class EventSetItemBarSlot extends PersonalEvent
                 {
                     if (p.hotbar.itemBar != null)
                         p.hotbar.itemBar.selected = this.slot;
+
+                    if (p.tank instanceof TankPlayerRemote)
+                        ((TankPlayerRemote) p.tank).refreshAmmo();
                 }
             }
         }

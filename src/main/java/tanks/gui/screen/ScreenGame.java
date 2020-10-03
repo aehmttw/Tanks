@@ -55,6 +55,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	public String title = "";
 
 	public long introMusicEnd;
+	public long introBattleMusicEnd;
 
 	public RotationAboutPoint slantRotation;
 	public Translation slantTranslation;
@@ -65,6 +66,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	public Tank spectatingTank = null;
 
 	public double readyPanelCounter = 0;
+	public double playCounter = 0;
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
@@ -428,6 +430,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	public ScreenGame()
 	{
 		introMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/ready_music_intro_length.txt").get(0));
+		introBattleMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
+
 		Game.startTime = 400;
 
 		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
@@ -710,6 +714,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 
 		String prevMusic = this.music;
 		this.music = null;
+		this.musicID = null;
 
 		if (!playing && Game.startTime >= 0)
 		{
@@ -823,6 +828,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 		}
 		else
 		{
+			if (this.playCounter == 0)
+				Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
+
+			this.playCounter += Panel.frameFrequency;
+
+			if (this.playCounter * 10 >= introBattleMusicEnd)
+				this.music = "battle.ogg";
+
 			playing = true;
 
 			Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size);
@@ -1101,7 +1114,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 				}
 			}
 		}
-
 
 		if (this.music == null && prevMusic != null)
 			Panel.forceRefreshMusic = true;

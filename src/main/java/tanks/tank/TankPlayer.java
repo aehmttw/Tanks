@@ -4,6 +4,7 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
@@ -358,6 +359,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 		this.cooldown = 50;
 		Mine m = new Mine(posX, posY, this);
 
+		Game.eventsOut.add(new EventLayMine(m));
+
 		Game.movables.add(m);
 	}
 
@@ -369,6 +372,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
 		this.cooldown = m.cooldown;
+
+		Game.eventsOut.add(new EventLayMine(m));
 		Game.movables.add(m);
 	}
 

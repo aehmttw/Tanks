@@ -171,6 +171,8 @@ public class Crusade
 		{
 			if (player.remainingLives > 0)
 				l.includedPlayers.add(player);
+
+			player.hotbar.enabledItemBar = true;
 		}
 
 		l.loadLevel();

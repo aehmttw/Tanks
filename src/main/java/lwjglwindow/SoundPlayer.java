@@ -42,7 +42,6 @@ public class SoundPlayer extends BaseSoundPlayer
     public float prevVolume;
     public float currentVolume;
 
-
     /**
      * Warning! This will give an exception if there are no audio devices plugged into the computer!
      */
@@ -57,6 +56,12 @@ public class SoundPlayer extends BaseSoundPlayer
 
         ALCCapabilities alcCapabilities = ALC.createCapabilities(device);
         ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+    }
+
+    @Override
+    public void loadMusic(String path)
+    {
+        this.createMusic(path);
     }
 
     public void playSound(String path)

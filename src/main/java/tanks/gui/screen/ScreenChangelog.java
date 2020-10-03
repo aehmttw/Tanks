@@ -144,6 +144,13 @@ public class ScreenChangelog extends Screen
                             "Added mine item\n" +
                             "Other bug fixes and improvements"
                     });
+
+            new Changelog("v1.0.c", new String[]
+                    {
+                            "What's new in Tanks v1.0.c:\n\n" +
+                                    "Added battle music\n" +
+                                    "Many bug fixes and improvements"
+                    });
         }
     }
 }

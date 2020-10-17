@@ -2,6 +2,8 @@ package tanks.hotbar.item;
 
 public class ItemRemote extends Item
 {
+    public int bounces;
+
     @Override
     public boolean usable()
     {

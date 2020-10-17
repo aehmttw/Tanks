@@ -12,7 +12,7 @@ public class ScreenUsernamePrompt extends Screen
 		this.musicID = "menu";
 	}
 
-	Button gotoOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Multiplayer options", new Runnable()
+	Button gotoOptions = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Multiplayer options", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -22,7 +22,7 @@ public class ScreenUsernamePrompt extends Screen
 	}
 			);
 	
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 

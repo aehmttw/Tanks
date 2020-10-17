@@ -1,6 +1,8 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Effect;
+import tanks.Game;
 import tanks.tank.Tank;
 
 public class EventTankUpdateHealth extends PersonalEvent
@@ -30,7 +32,16 @@ public class EventTankUpdateHealth extends PersonalEvent
 		if (t.health > health && health > 0)
 			t.flashAnimation = 1;
 
+		double before = t.health;
 		t.health = health;
+
+		if (t.health > 6 && (int) (before) != (int) (t.health))
+		{
+			Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
+			e.size = t.size;
+			e.radius = t.health - 1;
+			Game.effects.add(e);
+		}
 	}
 
 	@Override

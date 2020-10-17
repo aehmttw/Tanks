@@ -92,7 +92,10 @@ public class EventCreatePlayer extends PersonalEvent
 				t = new TankRemote(t2);
 			}
 			else
+			{
 				t = new TankPlayerRemote(posX, posY, angle, this.player);
+				((TankPlayerRemote) t).refreshAmmo();
+			}
 
 			t.showName = true;
 			t.nameTag.name = this.username;

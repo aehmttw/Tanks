@@ -31,6 +31,9 @@ public class SoundPlayer extends BaseSoundPlayer
     public HashMap<String, Integer> musicBuffers = new HashMap<String, Integer>();
     public ArrayList<Integer> musicSources = new ArrayList<Integer>();
 
+    public boolean musicsToLoad = false;
+    public final HashMap<String, Integer> finishedMusicBuffers = new HashMap<>();
+
     public int currentMusic = -1;
     public int prevMusic = -1;
 
@@ -61,7 +64,17 @@ public class SoundPlayer extends BaseSoundPlayer
     @Override
     public void loadMusic(String path)
     {
-        this.createMusic(path);
+        new Thread(() ->
+        {
+            musicsToLoad = false;
+            int i = setupMusic(path);
+
+            synchronized (finishedMusicBuffers)
+            {
+                finishedMusicBuffers.put(path, i);
+                musicsToLoad = true;
+            }
+        }).start();
     }
 
     public void playSound(String path)
@@ -218,7 +231,7 @@ public class SoundPlayer extends BaseSoundPlayer
         this.buffers.put(path, bufferPointer);
     }
 
-    protected void createMusic(String path)
+    protected int setupMusic(String path)
     {
         ShortBuffer rawAudioBuffer = null;
 
@@ -269,7 +282,12 @@ public class SoundPlayer extends BaseSoundPlayer
         //Free the memory allocated by STB
         free(rawAudioBuffer);
 
-        this.musicBuffers.put(path, bufferPointer);
+        return bufferPointer;
+    }
+
+    protected void createMusic(String path)
+    {
+        this.musicBuffers.put(path, this.setupMusic(path));
     }
 
     public void exit()

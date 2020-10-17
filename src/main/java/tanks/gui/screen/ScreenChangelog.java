@@ -9,13 +9,14 @@ import java.util.Arrays;
 
 public class ScreenChangelog extends Screen
 {
+    public Screen prev = Game.screen;
     public ArrayList<String> pages = new ArrayList<>();
     public int currentPage;
     public String[] pageContents;
 
     public ScreenChangelog()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
     }
 
@@ -33,12 +34,12 @@ public class ScreenChangelog extends Screen
         pages.addAll(Arrays.asList(log));
     }
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Done", new Runnable()
+    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Done", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenTitle();
+            Game.screen = prev;
             Game.lastVersion = Game.version;
             ScreenOptions.saveOptions(Game.homedir);
             pageContents = pages.get(currentPage).split("\n");
@@ -46,7 +47,7 @@ public class ScreenChangelog extends Screen
     }
     );
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Next page", new Runnable()
     {
         @Override
         public void run()
@@ -57,7 +58,7 @@ public class ScreenChangelog extends Screen
     }
     );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
         @Override
         public void run()
@@ -150,6 +151,56 @@ public class ScreenChangelog extends Screen
                             "What's new in Tanks v1.0.c:\n\n" +
                                     "Added battle music\n" +
                                     "Many bug fixes and improvements"
+                    });
+
+            new Changelog("v1.0.d", new String[]
+                    {
+                            "What's new in Tanks v1.0.d:\n\n" +
+                                    "Added win and lose music\n" +
+                                    "Many bug fixes and improvements"
+                    });
+
+            new Changelog("v1.0.e", new String[]
+                    {
+                            "What's new in Tanks v1.0.e:\n\n" +
+                                    "UI improvements, including:\n" +
+                                    "White text being used in dark levels\n" +
+                                    "Chat now has a background for contrast\n\n" +
+                                    "New features:\n" +
+                                    "New snow obstacle which melts and slows tanks and bullets\n" +
+                                    "Flamethrower item size allows longer range\n\n" +
+                                    "Level generator improvements:\n" +
+                                    "Snow in random levels!\n" +
+                                    "Larger levels may now generate sometimes\n" +
+                                    "Some generated levels now have darker backgrounds\n" +
+                                    "Some levels have bigger bush/mud/ice/snow patches\n\n" +
+                                    "Many other bug fixes and improvements",
+                            "Other improvements:\n" +
+                                    "Changed look of fire and dark rockets\n" +
+                                    "Your mines now beep before exploding\n" +
+                                    "No cooldown bullets get used more consistently"
+                    });
+
+            new Changelog("v1.0.f", new String[]
+                    {
+                            "What's new in Tanks v1.0.f:\n\n" +
+                                    "New health rendering for large quantities\n" +
+                                    "Many bugs fixed!"
+                    });
+
+            new Changelog("v1.0.g", new String[]
+                    {
+                            "What's new in Tanks v1.0.g:\n\n" +
+                                    "You can now add items and shops via the level editor!\n" +
+                                    "Mines now destroy bullets in range\n" +
+                                    "Other bugs fixed"
+                    });
+
+            new Changelog("v1.0.h", new String[]
+                    {
+                            "What's new in Tanks v1.0.h:\n\n" +
+                                    "Added about screen with links\n" +
+                                    "Other improvements and bugs fixed"
                     });
         }
     }

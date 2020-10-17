@@ -52,7 +52,7 @@ public class ObstacleShrubbery extends Obstacle
 			this.height = 127;
 		}
 		
-		if (Game.playerTank == null || ScreenGame.finishedQuick)
+		if (ScreenGame.finishedQuick)
 		{
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
@@ -132,12 +132,13 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntryLocal(Movable m)
 	{
+		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
+		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
+
 		if (Game.playerTank == null || Game.playerTank.destroy)
 			return;
 
-		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 		double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
-		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
 
 		double radius = 62500;
 		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))

@@ -69,12 +69,21 @@ public class BulletHealing extends BulletInstant
 		if (Game.game.window.touchscreen)
 			freq = 1;
 
-		t.health = Math.min(t.baseHealth + 1, t.health + this.damage * Panel.frameFrequency);
+		double before = t.health;
+		t.health = Math.min(t.baseHealth + 1, t.health + this.damage * this.frameDamageMultipler);
 		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.health / (t.baseHealth + 1) / 2) + 1f) / 2, freq / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 
 		t.addAttribute(new AttributeModifier("healray", "healray", Operation.add, 1.0));
+
+		if (t.health > 6 && (int) (before) != (int) (t.health))
+		{
+			Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
+			e.size = t.size;
+			e.radius = t.health - 1;
+			Game.effects.add(e);
+		}
 	}
 	
 	@Override

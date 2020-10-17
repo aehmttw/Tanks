@@ -104,7 +104,7 @@ public class ScreenOptionsGraphics extends Screen
         }
     }
 
-    Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
+    Button graphics = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -134,7 +134,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics enable these effects but---may significantly reduce framerate------Super graphics enable glow and shadow---effects but may further reduce framerate");
 
-    Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
+    Button graphics3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -151,7 +151,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "3D graphics may impact performance");
 
-    Button ground3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
+    Button ground3d = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -167,7 +167,7 @@ public class ScreenOptionsGraphics extends Screen
             "Enabling 3D ground may impact---performance in large levels");
 
 
-    Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "", new Runnable()
+    Button altPerspective = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -184,7 +184,7 @@ public class ScreenOptionsGraphics extends Screen
             "Changes the angle at which---you view the game field");
 
 
-    Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "", new Runnable()
+    Button vsync = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -200,7 +200,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
 
-    Button antialiasing = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
+    Button antialiasing = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -221,7 +221,7 @@ public class ScreenOptionsGraphics extends Screen
             "May fix flickering in thin edges---at the cost of performance.------Requires restarting the game---to take effect.");
 
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()

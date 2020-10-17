@@ -22,7 +22,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
 
     public String secondaryColorText = "Second color: ";
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -32,7 +32,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
     }
     );
 
-    Button enableSecondary = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "", new Runnable()
+    Button enableSecondary = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -58,7 +58,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         else
             enableSecondary.text = secondaryColorText + ScreenOptions.offText;
 
-        colorRed = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Primary red", new Runnable()
+        colorRed = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Primary red", new Runnable()
         {
             @Override
             public void run()
@@ -78,7 +78,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorRed.maxValue = 255;
         colorRed.checkMaxValue = true;
 
-        colorGreen = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "Primary green", new Runnable()
+        colorGreen = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Primary green", new Runnable()
         {
             @Override
             public void run()
@@ -98,7 +98,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorGreen.maxValue = 255;
         colorGreen.checkMaxValue = true;
 
-        colorBlue = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Primary blue", new Runnable()
+        colorBlue = new TextBox(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Primary blue", new Runnable()
         {
             @Override
             public void run()
@@ -118,7 +118,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorBlue.maxValue = 255;
         colorBlue.checkMaxValue = true;
 
-        colorRed2 = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Secondary red", new Runnable()
+        colorRed2 = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Secondary red", new Runnable()
         {
             @Override
             public void run()
@@ -138,7 +138,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorRed2.maxValue = 255;
         colorRed2.checkMaxValue = true;
 
-        colorGreen2 = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Secondary green", new Runnable()
+        colorGreen2 = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Secondary green", new Runnable()
         {
             @Override
             public void run()
@@ -158,7 +158,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorGreen2.maxValue = 255;
         colorGreen2.checkMaxValue = true;
 
-        colorBlue2 = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Secondary blue", new Runnable()
+        colorBlue2 = new TextBox(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Secondary blue", new Runnable()
         {
             @Override
             public void run()

@@ -110,7 +110,7 @@ public class TankRemote extends Tank
 						else
 							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
 
-						Game.effects.add(e);						Game.effects.add(e);
+						Game.effects.add(e);
 					}
 				}
 			}

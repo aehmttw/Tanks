@@ -82,7 +82,7 @@ public class Firework extends Movable
 
 	public void setVelocity()
 	{
-		vY = -Math.random() * 1.5 * Game.currentSizeY / 18 - 6;
+		vY = -Math.random() * 1.5 - 6;
 		vX = Math.random() * 5 - 2.5;
 	}
 
@@ -106,7 +106,7 @@ public class Firework extends Movable
 
 			if (this.age >= this.maxAge)
 			{
-				Drawing.drawing.playSound("destroy.ogg");
+				Drawing.drawing.playSound("destroy.ogg", 0.75f, 0.75f);
 
 				for (int i = 0; i < 50; i++)
 				{

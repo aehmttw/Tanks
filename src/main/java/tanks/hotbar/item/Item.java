@@ -19,7 +19,7 @@ public abstract class Item
 	public int maxStackSize = 100;
 	public int stackSize = 1;
 	public boolean inUse = false;
-	public String name = "Item";
+	public String name = System.currentTimeMillis() + "";
 	public String icon;
 	public LinkedHashMap<String, ItemProperty> properties = new LinkedHashMap<>();
 
@@ -41,8 +41,12 @@ public abstract class Item
 
 	public Item()
 	{
-		new ItemPropertyString(this.properties,"name", "Item");
-		new ItemPropertyImageSelector(this.properties, "icon", new String[]{"bullet_normal.png", "bullet_mini.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_laser.png", "bullet_freeze.png", "mine.png", "shield.png"},0);
+		new ItemPropertyString(this.properties,"name", this.name);
+		new ItemPropertyImageSelector(this.properties, "icon", new String[]
+				{"bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
+						"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png",
+						"mine.png",
+						"shield.png", "shield_gold.png"},0);
 		new ItemPropertyInt(this.properties, "amount", 1);
 		new ItemPropertyInt(this.properties, "max-stack-size", 100);
 		new ItemPropertyInt(this.properties, "unlocks-after-level", 0);

@@ -22,7 +22,7 @@ public class ScreenKicked extends Screen
 		ScreenPartyLobby.connections.clear();
 	}
 		
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Ok", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Ok", new Runnable()
 	{
 		@Override
 		public void run() 

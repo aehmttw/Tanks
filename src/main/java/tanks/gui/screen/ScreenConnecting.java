@@ -23,7 +23,7 @@ public class ScreenConnecting extends Screen
 		this.thread = t;
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 

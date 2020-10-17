@@ -12,7 +12,7 @@ public class ScreenOverlayOnline extends Screen
 {
     public static final int max_button_count = 5;
     public HashMap<Integer, Button> buttons = new HashMap<Integer, Button>();
-    public Button disconnect = new Button(0, 0, 350, 40, "Disconnect", new Runnable()
+    public Button disconnect = new Button(0, 0, this.objWidth, this.objHeight, "Disconnect", new Runnable()
     {
         @Override
         public void run()

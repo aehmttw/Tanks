@@ -1,6 +1,7 @@
 package tanks;
 import basewindow.BaseFile;
 import tanks.event.*;
+import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
@@ -47,6 +48,9 @@ public class Crusade
 	public HashMap<Player, ItemBar> crusadeItembars = new HashMap<>();
 	public HashMap<Player, Integer> crusadeCoins = new HashMap<>();
 
+	public String contents = "";
+	public Exception error = null;
+
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
 		internal = true;
@@ -61,22 +65,28 @@ public class Crusade
 			this.fileName = f.path;
 			f.startReading();
 			ArrayList<String> list = new ArrayList<String>();
-			
+
+			StringBuilder c = new StringBuilder();
+
 			while (f.hasNextLine())
 			{
 				String s = f.nextLine();
 				
 				if (!s.equals(""))
 					list.add(s);
+
+				c.append(s).append("\n");
 			}
+
+			this.contents = c.toString();
 			
 			this.initialize(list, name);
 			
 			f.stopReading();
 		}
-		catch (FileNotFoundException e) 
+		catch (Exception e)
 		{
-			Game.exitToCrash(e);
+			this.error = e;
 		}
 	}
 	
@@ -167,7 +177,7 @@ public class Crusade
 		Game.player.hotbar.enabledItemBar = true;
 		Game.player.hotbar.enabledCoins = true;
 
-		for (Player player: Game.players)
+		for (Player player : Game.players)
 		{
 			if (player.remainingLives > 0)
 				l.includedPlayers.add(player);
@@ -177,7 +187,7 @@ public class Crusade
 
 		l.loadLevel();
 
-		for (Player player: Game.players)
+		for (Player player : Game.players)
 		{
 			Integer c = crusadeCoins.get(player);
 			if (c == null)
@@ -186,6 +196,7 @@ public class Crusade
 				player.hotbar.coins = c;
 
 			ItemBar i = crusadeItembars.get(player);
+
 			if (i == null)
 				player.hotbar.itemBar = new ItemBar(player);
 			else
@@ -197,6 +208,8 @@ public class Crusade
 
 				for (int in = 0; in < player.hotbar.itemBar.slots.length; in++)
 					Game.eventsOut.add(new EventSetItem(player, in, player.hotbar.itemBar.slots[in]));
+
+				Game.eventsOut.add(new EventLoadItemBarSlot(player.clientID, player.hotbar.itemBar.selected));
 			}
 		}
 

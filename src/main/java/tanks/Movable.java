@@ -25,7 +25,6 @@ public abstract class Movable implements IDrawableForInterface
 	public double lastFinalVY;
 	public double lastFinalVZ;
 
-	public double cooldown = 0;
 	public boolean destroy = false;
 
 	public NameTag nameTag;

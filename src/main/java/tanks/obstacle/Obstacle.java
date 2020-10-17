@@ -1,14 +1,12 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableForInterface;
-import tanks.Movable;
+import tanks.*;
 
 public class Obstacle implements IDrawableForInterface, ISolidObject
 {
 	public static final int default_max_height = 4;
 
+	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
 	public boolean destructible = true;
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;

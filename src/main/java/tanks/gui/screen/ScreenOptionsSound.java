@@ -26,7 +26,7 @@ public class ScreenOptionsSound extends Screen
             soundEffects.text = soundEffectsText + ScreenOptions.offText;
     }
 
-    Button soundEffects = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "", new Runnable()
+    Button soundEffects = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -40,7 +40,7 @@ public class ScreenOptionsSound extends Screen
         }
     });
 
-    Button musicToggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
+    Button musicToggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -60,7 +60,7 @@ public class ScreenOptionsSound extends Screen
         }
     });
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()

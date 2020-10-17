@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
+import basewindow.transformation.Rotation;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Transformation;
 import basewindow.transformation.Translation;
@@ -12,6 +13,7 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
 import tanks.network.Client;
 import tanks.obstacle.Face;
@@ -71,7 +73,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
-	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Play", new Runnable()
+	Button play = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, this.objWidth, this.objHeight, "Play", new Runnable()
 	{
 		@Override
 		public void run()
@@ -82,7 +84,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button readyButton = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Ready", new Runnable()
+	Button readyButton = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-50, this.objWidth, this.objHeight, "Ready", new Runnable()
 	{
 		@Override
 		public void run()
@@ -108,7 +110,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button startNow = new Button( 200, Drawing.drawing.interfaceSizeY-50, 350, 40, "Start now", new Runnable()
+	Button startNow = new Button( 200, Drawing.drawing.interfaceSizeY-50, this.objWidth, this.objHeight, "Start now", new Runnable()
 	{
 		@Override
 		public void run()
@@ -132,7 +134,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	);
 
 
-	Button enterShop = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-110, 350, 40, "Shop", new Runnable()
+	Button enterShop = new Button(Drawing.drawing.interfaceSizeX-200, Drawing.drawing.interfaceSizeY-110, this.objWidth, this.objHeight, "Shop", new Runnable()
 	{
 		@Override
 		public void run()
@@ -167,7 +169,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Continue playing", new Runnable()
+	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Continue playing", new Runnable()
 	{
 		@Override
 		public void run()
@@ -178,7 +180,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Continue playing", new Runnable()
+	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Continue playing", new Runnable()
 	{
 		@Override
 		public void run()
@@ -189,7 +191,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Close menu", new Runnable()
+	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Close menu", new Runnable()
 	{
 		@Override
 		public void run()
@@ -200,7 +202,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Close menu", new Runnable()
+	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Close menu", new Runnable()
 	{
 		@Override
 		public void run()
@@ -211,7 +213,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Generate a new level", new Runnable()
+	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -242,7 +244,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Edit the level", new Runnable()
+	Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Edit the level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -255,7 +257,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Quit to title", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -265,7 +267,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
+	Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -276,7 +278,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to my levels", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to my levels", new Runnable()
 	{
 		@Override
 		public void run()
@@ -297,7 +299,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to party", new Runnable()
+	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back to party", new Runnable()
 	{
 		@Override
 		public void run()
@@ -314,7 +316,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button exitParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Leave party", new Runnable()
+	Button exitParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Leave party", new Runnable()
 	{
 		@Override
 		public void run()
@@ -331,7 +333,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 	);
 
-	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -353,7 +355,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------You will be able to return to the crusade---through the crusade button on---the play screen.");
 
-	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Quit to title", new Runnable()
+	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -366,7 +368,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 
-	Button quitCrusadeParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to party", new Runnable()
+	Button quitCrusadeParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to party", new Runnable()
 	{
 		@Override
 		public void run()
@@ -392,7 +394,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	}
 			, "Note! All players will lose a life for---quitting in the middle of a level.");
 
-	Button quitCrusadePartyFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to party", new Runnable()
+	Button quitCrusadePartyFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to party", new Runnable()
 	{
 		@Override
 		public void run()
@@ -414,7 +416,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 
 	public static double shopOffset = -25;
 
-	Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300 + shopOffset, 350, 40, "Exit shop", new Runnable()
+	Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300 + shopOffset, this.objWidth, this.objHeight, "Exit shop", new Runnable()
 	{
 		@Override
 		public void run()
@@ -504,6 +506,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 				}
 			}
 		}
+
+		if (Drawing.drawing.interfaceScaleZoom > 1)
+		{
+			startNow.sizeX *= 0.5;
+			startNow.posX -= 20;
+		}
 	}
 
 	public ScreenGame(String s)
@@ -537,7 +545,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 			else
 				price += "coins";
 
-			Button b = new Button(0, 0, 350, 40, item.name, new Runnable()
+			Button b = new Button(0, 0, this.objWidth, this.objHeight, item.name, new Runnable()
 			{
 				@Override
 				public void run()
@@ -573,6 +581,27 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 	public void update()
 	{
 		Game.player.hotbar.update();
+
+		String prevMusic = this.music;
+		this.music = null;
+		this.musicID = null;
+
+		if (this.playCounter >= 0 && this.playing)
+		{
+			if (this.playCounter == 0)
+				Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
+
+			this.playCounter += Panel.frameFrequency;
+		}
+
+		if (this.playCounter * 10 >= introBattleMusicEnd)
+		{
+			Panel.forceRefreshMusic = true;
+			this.playCounter = -1;
+		}
+
+		if (this.playCounter < 0)
+			this.music = "battle.ogg";
 
 		if (Game.enable3d)
 			for (int i = 0; i < Game.obstacles.size(); i++)
@@ -707,14 +736,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 			if (Drawing.drawing.enableMovingCamera)
 				zoom.update();
 
-			TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
-			TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
-			TankPlayer.controlStick.update();
+			if (playing)
+			{
+				TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
+				TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
+				TankPlayer.controlStick.update();
+			}
 		}
-
-		String prevMusic = this.music;
-		this.music = null;
-		this.musicID = null;
 
 		if (!playing && Game.startTime >= 0)
 		{
@@ -824,18 +852,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 				{
 					startNow.update();
 				}
+
+				TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
+				TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
+				TankPlayer.controlStick.update();
 			}
 		}
 		else
 		{
-			if (this.playCounter == 0)
-				Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
-
-			this.playCounter += Panel.frameFrequency;
-
-			if (this.playCounter * 10 >= introBattleMusicEnd)
-				this.music = "battle.ogg";
-
 			playing = true;
 
 			Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size);
@@ -1041,7 +1065,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 
 							if (ScreenPartyHost.isServer)
 							{
-								Game.cleanUp();
+								Game.silentCleanUp();
 
 								String s = "**";
 
@@ -1192,6 +1216,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 						y >= m.posY - ((Tank) m).size && y <= m.posY + ((Tank) m).size)
 						{
 							this.spectatingTank = (Tank) m;
+							Panel.panel.pastPlayerX.clear();
+							Panel.panel.pastPlayerY.clear();
+							Panel.panel.pastPlayerTime.clear();
 							Drawing.drawing.movingCamera = true;
 							return true;
 						}
@@ -1218,10 +1245,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 			Game.game.window.transformations.add(this.slantTranslation);
 			Game.game.window.transformations.add(this.slantRotation);
 
-			/*Game.game.window.addOffset(true,  -(Game.playerTank.posX + 200 * Math.cos(Game.playerTank.angle)) / Drawing.drawing.sizeX,  -(Game.playerTank.posY + 200 * Math.sin(Game.playerTank.angle)) / Drawing.drawing.sizeY, -0.3);
-			Game.game.window.addAngle(true, 0, 0, Game.playerTank.angle + Math.PI / 2);
-			Game.game.window.addOffset(true, 0.5, 0.5, 0);
-			Game.game.window.addAngle(true, 0, -Math.PI * 0.4, 0);*/
+			//Game.game.window.transformations.add(new Translation(Game.game.window,(800 * Math.cos(Game.playerTank.angle)) / Drawing.drawing.sizeX,  (800 * Math.sin(Game.playerTank.angle)) / Drawing.drawing.sizeY, -0.3));
+			//Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, Game.playerTank.angle + Math.PI / 2, 0, 0, 0));
+			//Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0, 0.25));
+			//Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.2, 0, 0, 0, 0));
 
 			Game.game.window.loadPerspective();
 		}
@@ -1347,14 +1374,22 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 		{
 			if (Crusade.crusadeMode)
 			{
-				Drawing.drawing.setColor(0, 0, 0, 127);
+				if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+					Drawing.drawing.setColor(255, 255, 255, 127);
+				else
+					Drawing.drawing.setColor(0, 0, 0, 127);
+
 				Drawing.drawing.setInterfaceFontSize(100);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
 			}
 
 			if (!title.equals(""))
 			{
-				Drawing.drawing.setColor(0, 0, 0, 127);
+				if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+					Drawing.drawing.setColor(255, 255, 255, 127);
+				else
+					Drawing.drawing.setColor(0, 0, 0, 127);
+
 				Drawing.drawing.setInterfaceFontSize(100);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, title);
 			}
@@ -1365,7 +1400,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 				Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 				Drawing.drawing.setInterfaceFontSize(24);
-				Drawing.drawing.setColor(0, 0, 0);
+
+				if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+					Drawing.drawing.setColor(255, 255, 255);
+				else
+					Drawing.drawing.setColor(0, 0, 0);
+
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210 + shopOffset, "Shop");
 
 				this.exitShop.draw();
@@ -1609,6 +1649,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen
 
 			Drawing.drawing.setInterfaceFontSize(24);
 			Drawing.drawing.setColor(0, 0, 0);
+
+			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+				Drawing.drawing.setColor(255, 255, 255);
 
 			if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Game paused");

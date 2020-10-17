@@ -47,7 +47,7 @@ public class ScreenPartyLobby extends Screen
 		});
 	}
 
-	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, 350, 40, "Leave party", new Runnable()
+	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, this.objWidth, this.objHeight, "Leave party", new Runnable()
 	{
 		@Override
 		public void run()
@@ -79,7 +79,7 @@ public class ScreenPartyLobby extends Screen
 	}
 	);
 
-	Button share = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Share a level", new Runnable()
+	Button share = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Share a level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -88,7 +88,7 @@ public class ScreenPartyLobby extends Screen
 		}
 	});
 
-	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Shared levels", new Runnable()
+	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Shared levels", new Runnable()
 	{
 		@Override
 		public void run()

@@ -16,7 +16,7 @@ public class ScreenCrusades extends Screen
 
 	public SavedFilesList crusadesList;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -26,7 +26,7 @@ public class ScreenCrusades extends Screen
 	}
 	);
 
-	Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -36,7 +36,7 @@ public class ScreenCrusades extends Screen
 	}
 	);
 
-	Button create = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Create crusade", new Runnable()
+	Button create = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Create crusade", new Runnable()
 	{
 		@Override
 		public void run()
@@ -76,12 +76,15 @@ public class ScreenCrusades extends Screen
 			if (c == null)
 				c = new Crusade(file, name.split("\\.")[0]);
 
-			Game.screen = new ScreenCrusadeDetails(c);
+			if (c.error == null)
+				Game.screen = new ScreenCrusadeDetails(c);
+			else
+				Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
 		},
 				(name) -> null);
 
 
-		crusadesList.buttons.add(0, new Button(0, 0, 350, 40, "Classic crusade", new Runnable()
+		crusadesList.buttons.add(0, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Classic crusade", new Runnable()
 		{
 			@Override
 			public void run()
@@ -99,7 +102,7 @@ public class ScreenCrusades extends Screen
 		}
 		));
 
-		crusadesList.buttons.add(1, new Button(0, 0, 350, 40, "Wii crusade", new Runnable()
+		crusadesList.buttons.add(1, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Wii crusade", new Runnable()
 		{
 			@Override
 			public void run()

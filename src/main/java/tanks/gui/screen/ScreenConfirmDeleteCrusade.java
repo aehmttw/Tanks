@@ -11,7 +11,7 @@ public class ScreenConfirmDeleteCrusade extends Screen
     public Screen previous;
     public Crusade crusade;
 
-    public Button cancelDelete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), 350, 40, "No", new Runnable()
+    public Button cancelDelete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), this.objWidth, this.objHeight, "No", new Runnable()
     {
         @Override
         public void run()
@@ -21,7 +21,7 @@ public class ScreenConfirmDeleteCrusade extends Screen
     }
     );
 
-    public Button confirmDelete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2), 350, 40, "Yes", new Runnable()
+    public Button confirmDelete = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2), this.objWidth, this.objHeight, "Yes", new Runnable()
     {
         @Override
         public void run()

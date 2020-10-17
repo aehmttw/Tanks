@@ -12,7 +12,7 @@ public class ScreenTestKeyboard extends Screen
         this.musicID = "menu";
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()

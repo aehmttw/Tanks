@@ -59,6 +59,8 @@ public class Bullet extends Movable implements IDrawable
 	public ItemBullet item;
 	public double recoil = 1.0;
 
+	public double frameDamageMultipler = 1;
+
 	public double collisionX;
 	public double collisionY;
 
@@ -166,9 +168,17 @@ public class Bullet extends Movable implements IDrawable
 				this.vY = 0;
 			}
 
-			t.health -= this.damage;
+			t.health -= this.damage * this.frameDamageMultipler;
 
 			Game.eventsOut.add(new EventTankUpdateHealth(t));
+
+			if (t.health > 6 && (int) (t.health + this.damage * this.frameDamageMultipler) != (int) (t.health))
+			{
+				Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
+				e.size = t.size;
+				e.radius = t.health - 1;
+				Game.effects.add(e);
+			}
 
 			if (t.health <= 0)
 			{
@@ -429,8 +439,7 @@ public class Bullet extends Movable implements IDrawable
 			}
 			else if ((o instanceof Bullet || o instanceof Mine) && o != this && !o.destroy && !(o instanceof BulletFlame || this instanceof BulletFlame))
 			{
-				double horizontalDist = Math.abs(this.posX - o.posX);
-				double verticalDist = Math.abs(this.posY - o.posY);
+				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 
 				double s = 0;
 
@@ -441,7 +450,7 @@ public class Bullet extends Movable implements IDrawable
 
 				double bound = this.size / 2 + s / 2;
 
-				if (horizontalDist < bound && verticalDist < bound)
+				if (distSq <= bound * bound)
 				{
 					this.collisionX = this.posX;
 					this.collisionY = this.posY;
@@ -615,6 +624,41 @@ public class Bullet extends Movable implements IDrawable
 
 						Game.effects.add(e);
 					}
+					else if (Game.superGraphics && this.effect.equals(BulletEffect.darkFire))
+					{
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+						double var = 50;
+						e.maxAge /= 4;
+						e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+						e.enableGlow = false;
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 12);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+
+						Game.effects.add(e);
+					}
+					else if (Game.superGraphics && (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail)))
+					{
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+						double var = 50;
+						e.maxAge /= 4;
+						e.colR = 255;
+						e.colG = Math.min(255, Math.max(0, 180 + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, 64 + Math.random() * var - var / 2));
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 12);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+
+						Game.effects.add(e);
+					}
 				}
 
 				while (this.quarterAgeFrac >= 0.25)
@@ -687,12 +731,12 @@ public class Bullet extends Movable implements IDrawable
 
 		if (this.effect == BulletEffect.fireTrail)
 		{
-			Trail t = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 100 * this.size * speed / 6.25, this.getPolarDirection(), 0, 0, 0, 100, 0, 0, 0, 0);
+			Trail t = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 100 * this.size * speed / 6.25, this.getPolarDirection(), 80, 80, 80, 100, 80, 80, 80, 0);
 			t.delay = 14 * this.size * speed / 6.25;
 			t.frontCircle = false;
 			this.trails[0].add(0, t);
 
-			Trail t2 = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 8 * this.size * speed / 6.25, this.getPolarDirection(), 0, 0, 0, 0, 0, 0, 0, 100);
+			Trail t2 = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 8 * this.size * speed / 6.25, this.getPolarDirection(), 80, 80, 80, 0, 80, 80, 80, 100);
 			t2.delay = 6 * this.size * speed / 6.25;
 			t2.backCircle = false;
 			this.trails[1].add(0, t2);
@@ -706,10 +750,25 @@ public class Bullet extends Movable implements IDrawable
 		{
 			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
 
+			double sizeMul = 1;
+			boolean shade = false;
+
+			if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
+			{
+				Drawing.drawing.setColor(255, 180, 0, 200);
+				sizeMul = 4;
+			}
+			else if (this.effect == BulletEffect.darkFire)
+			{
+				Drawing.drawing.setColor(0, 0, 0, 127);
+				sizeMul = 1.5;
+				shade = true;
+			}
+
 			if (Game.enable3d)
-				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 4, this.size * 4, true, true);
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 4 * sizeMul, this.size * 4 * sizeMul, true, true, shade);
 			else
-				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 * sizeMul, this.size * 4 * sizeMul, shade);
 		}
 
 		for (int i = 0; i < this.trails.length; i++)

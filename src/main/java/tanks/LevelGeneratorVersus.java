@@ -13,6 +13,9 @@ public class LevelGeneratorVersus
 		//String name = Game.registryTank.getRandomTank().name;
 		double size = Game.levelSize;
 
+		if (Math.random() < 0.2)
+			size *= 2;
+
 		int height = (int)(18 * size);
 		int width = (int)(28 * size);
 		double amountWalls = 12 * size * size;
@@ -23,9 +26,25 @@ public class LevelGeneratorVersus
 		int vertical = 2;
 		int horizontal = 2;
 
-		int r = (int)(Math.random() * 50) + 185;
-		int g = (int)(Math.random() * 50) + 185;
-		int b = (int)(Math.random() * 50) + 185;
+		int shade = 185;
+
+		if (Math.random() < 0.2)
+			shade = 30;
+
+		int r = (int)(Math.random() * 50) + shade;
+		int g = (int)(Math.random() * 50) + shade;
+		int b = (int)(Math.random() * 50) + shade;
+
+		double heavyTerrain = 1;
+
+		if (Math.random() < 0.2)
+			heavyTerrain *= 2;
+
+		if (Math.random() < 0.2)
+			heavyTerrain *= 2;
+
+		if (Math.random() < 0.2)
+			heavyTerrain *= 4;
 
 		boolean bouncy = Math.random() < 0.2;
 		double bouncyWeight = Math.random() * 0.5 + 0.2;
@@ -379,7 +398,7 @@ public class LevelGeneratorVersus
 				int y = (int) (Math.random() * height);
 
 
-				for (int i = 0; i < Math.random() * 20 + 4; i++)
+				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{
@@ -413,7 +432,7 @@ public class LevelGeneratorVersus
 				int y = (int) (Math.random() * height);
 
 
-				for (int i = 0; i < Math.random() * 20 + 4; i++)
+				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{
@@ -446,7 +465,7 @@ public class LevelGeneratorVersus
 				int x = (int) (Math.random() * width);
 				int y = (int) (Math.random() * height);
 
-				for (int i = 0; i < Math.random() * 40 + 8; i++)
+				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{

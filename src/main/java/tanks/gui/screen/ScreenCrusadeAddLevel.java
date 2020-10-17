@@ -20,7 +20,7 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
 
         this.title = "Select a level to add";
 
-        this.quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+        this.quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
         {
             @Override
             public void run()
@@ -44,5 +44,17 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
                         Game.screen = s;
                     }
                 }, (file) -> null);
+    }
+
+    @Override
+    public void update()
+    {
+        super.update();
+
+        if (Game.game.input.editorPause.isValid())
+        {
+            quit.function.run();
+            Game.game.input.editorPause.invalidate();
+        }
     }
 }

@@ -138,7 +138,12 @@ public class Drawing
 		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
-    public void fillGlow(double x, double y, double sizeX, double sizeY)
+	public void fillGlow(double x, double y, double sizeX, double sizeY)
+	{
+		this.fillGlow(x, y, sizeX, sizeY, false);
+	}
+
+	public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade)
     {
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
@@ -149,7 +154,7 @@ public class Drawing
         double drawSizeX = (sizeX * scale);
         double drawSizeY = (sizeY * scale);
 
-        Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
+        Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade);
     }
 
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
@@ -178,10 +183,20 @@ public class Drawing
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY)
     {
-        this.fillGlow(x, y, z, sizeX, sizeY, true, true);
+        this.fillGlow(x, y, z, sizeX, sizeY, true, true, false);
     }
 
-    public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
+	public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean shade)
+	{
+		this.fillGlow(x, y, z, sizeX, sizeY, true, true, shade);
+	}
+
+	public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
+	{
+		this.fillGlow(x, y, z, sizeX, sizeY, depthTest, facing, false);
+	}
+
+    public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade)
     {
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
@@ -195,9 +210,9 @@ public class Drawing
         double dZ = z * scale;
 
         if (Game.game.window.angled && facing)
-            Game.game.window.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+            Game.game.window.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade);
         else
-            Game.game.window.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+            Game.game.window.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade);
     }
 
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
@@ -962,6 +977,8 @@ public class Drawing
 			else
 				return 0;
 		}
+
+		//return 0 - result;
 	}
 
 	public double getPlayerOffsetY()
@@ -1011,6 +1028,8 @@ public class Drawing
 			else
 				return 0;
 		}
+
+		//return 0 - result;
 	}
 
 	public double getPlayerMouseOffsetX()

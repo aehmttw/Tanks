@@ -8,7 +8,12 @@ public class ScreenOverlayControls
 {
     public static Screen lastControlsScreen = new ScreenControlsGame();
 
-    public Button game = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Game", new Runnable()
+    public double objWidth = 350;
+    public double objHeight = 40;
+    public double objXSpace = 380;
+    public double objYSpace = 60;
+
+    public Button game = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Game", new Runnable()
     {
         @Override
         public void run()
@@ -17,7 +22,7 @@ public class ScreenOverlayControls
         }
     });
 
-    public Button tank = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Tank", new Runnable()
+    public Button tank = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Tank", new Runnable()
     {
         @Override
         public void run()
@@ -26,7 +31,7 @@ public class ScreenOverlayControls
         }
     });
 
-    public Button hotbar = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Hotbar", new Runnable()
+    public Button hotbar = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Hotbar", new Runnable()
     {
         @Override
         public void run()
@@ -35,7 +40,7 @@ public class ScreenOverlayControls
         }
     });
 
-    public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Editor", new Runnable()
+    public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Editor", new Runnable()
     {
         @Override
         public void run()
@@ -44,7 +49,7 @@ public class ScreenOverlayControls
         }
     });
 
-    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 290, 350, 40, "Reset", new Runnable()
+    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 290, this.objWidth, this.objHeight, "Reset", new Runnable()
     {
         @Override
         public void run()
@@ -54,7 +59,7 @@ public class ScreenOverlayControls
     }
     );
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 350, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()

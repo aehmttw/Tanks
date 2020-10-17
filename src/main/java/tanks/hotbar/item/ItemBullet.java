@@ -1,6 +1,7 @@
 package tanks.hotbar.item;
 
 import tanks.Game;
+import tanks.Panel;
 import tanks.Player;
 import tanks.bullet.*;
 import tanks.hotbar.item.property.ItemPropertyBoolean;
@@ -26,6 +27,8 @@ public class ItemBullet extends Item
 	public double size = Bullet.bullet_size;
 	public double recoil = 1.0;
 	public boolean heavy = false;
+
+	public double fractionUsed = 0;
 
 	public int liveBullets;
 
@@ -79,6 +82,14 @@ public class ItemBullet extends Item
 			b.heavy = heavy;
 			b.recoil = recoil;
 
+			if (this.cooldown <= 0)
+			{
+				b.frameDamageMultipler = Panel.frameFrequency;
+				this.fractionUsed += Panel.frameFrequency;
+			}
+			else
+				this.fractionUsed++;
+
 			m.cooldown = this.cooldown;
 
 			if (m instanceof TankPlayerRemote)
@@ -86,7 +97,11 @@ public class ItemBullet extends Item
 			else if (m instanceof TankPlayer)
 				((TankPlayer) m).fireBullet(b, speed);
 
-			this.stackSize--;
+			while (this.fractionUsed >= 1)
+			{
+				this.stackSize--;
+				this.fractionUsed--;
+			}
 
 			if (this.stackSize <= 0)
 				this.destroy = true;
@@ -108,7 +123,7 @@ public class ItemBullet extends Item
 	public String toString()
 	{
 		return super.toString() + "," + item_name + ","
-				+ className + "," + effect + "," + speed + "," + bounces + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + recoil + "," + heavy;
+				+ className + "," + effectsMap2.get(effect) + "," + speed + "," + bounces + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + recoil + "," + heavy;
 	}
 
 	@Override

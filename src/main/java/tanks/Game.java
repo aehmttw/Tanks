@@ -79,8 +79,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.0.c";
-	public static final int network_protocol = 21;
+	public static final String version = "Tanks v1.0.h";
+	public static final int network_protocol = 22;
 	public static boolean debug = false;
 
 	public static String lastVersion = "Tanks v0";
@@ -164,6 +164,7 @@ public class Game
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String levelDir = directoryPath + "/levels";
 	public static final String crusadeDir = directoryPath + "/crusades";
+	public static final String itemDir = directoryPath + "/items";
 
 	public static final float musicVolume = 0.5f;
 
@@ -206,6 +207,7 @@ public class Game
 		NetworkEventMap.register(EventPurchaseItem.class);
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
+		NetworkEventMap.register(EventLoadItemBarSlot.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
@@ -227,12 +229,14 @@ public class Game
 		NetworkEventMap.register(EventBulletElectricStunEffect.class);
 		NetworkEventMap.register(EventLayMine.class);
 		NetworkEventMap.register(EventMineExplode.class);
+		NetworkEventMap.register(EventMineChangeTimer.class);
 		NetworkEventMap.register(EventTankTeleport.class);
 		NetworkEventMap.register(EventTankUpdateVisibility.class);
 		NetworkEventMap.register(EventTankRedUpdateCharge.class);
 		NetworkEventMap.register(EventTankAddAttributeModifier.class);
 		NetworkEventMap.register(EventCreateFreezeEffect.class);
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
+		NetworkEventMap.register(EventObstacleSnowMelt.class);
 		NetworkEventMap.register(EventPlaySound.class);
 		NetworkEventMap.register(EventSendTankColors.class);
 		NetworkEventMap.register(EventShareLevel.class);
@@ -291,6 +295,7 @@ public class Game
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleShrubbery.class, "shrub"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleMud.class, "mud"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIce.class, "ice"));
+		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleSnow.class, "snow"));
 		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleTeleporter.class, "teleporter"));
 
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
@@ -907,6 +912,8 @@ public class Game
 
 	public static void resetTiles()
 	{
+		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
+
 		Game.tilesR = new double[28][18];
 		Game.tilesG = new double[28][18];
 		Game.tilesB = new double[28][18];
@@ -1018,7 +1025,6 @@ public class Game
 
 	public static void silentCleanUp()
 	{
-		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
 		obstacles.clear();
 		tracks.clear();
 		movables.clear();

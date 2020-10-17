@@ -2,22 +2,25 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
+import tanks.gui.input.InputBindings;
 
 import java.util.ArrayList;
 
-public class ScreenSelector extends Screen
+public class ScreenSelector extends Screen implements IOverlayScreen
 {
     public Screen screen;
     public Selector selector;
 
     public boolean drawImages = false;
+    public boolean drawBehindScreen = false;
 
     public String title;
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Ok", new Runnable()
+    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
         @Override
         public void run()
@@ -48,7 +51,7 @@ public class ScreenSelector extends Screen
 
             int j = i;
 
-            Button b = new Button(0, 0, 350, 40, n, new Runnable()
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, n, new Runnable()
             {
                 @Override
                 public void run()
@@ -80,7 +83,6 @@ public class ScreenSelector extends Screen
         this.title = "Select " + s.text.toLowerCase();
     }
 
-
     @Override
     public void update()
     {
@@ -101,19 +103,39 @@ public class ScreenSelector extends Screen
         buttonList.update();
 
         quit.update();
+
+        if (Game.game.input.editorPause.isValid())
+        {
+            Game.game.input.editorPause.invalidate();
+            quit.function.run();
+        }
     }
 
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        if (this.drawBehindScreen)
+            this.screen.draw();
+        else
+            this.drawDefaultBackground();
 
         buttonList.draw();
 
         quit.draw();
 
         Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.setColor(0, 0, 0);
+
+        if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
+
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, this.title);
+    }
+
+    @Override
+    public boolean showOverlay()
+    {
+        return this.drawBehindScreen;
     }
 }

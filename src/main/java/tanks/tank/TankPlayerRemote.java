@@ -6,6 +6,7 @@ import tanks.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
 
 import java.util.ArrayList;
 
@@ -92,7 +93,7 @@ public class TankPlayerRemote extends Tank
 
         if (this.tookRecoil)
         {
-            if (this.recoilSpeed <= this.maxSpeed * 1.0001)
+            if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)
             {
                 this.tookRecoil = false;
                 this.inControlOfMotion = true;
@@ -105,15 +106,23 @@ public class TankPlayerRemote extends Tank
         }
 
         this.refreshAmmo();
+
+        this.interpolatedPosX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
+        this.interpolatedPosY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
     }
 
     public void refreshAmmo()
     {
         ItemBar b = this.player.hotbar.itemBar;
-        if (b != null && Crusade.crusadeMode && b.selected != -1 && b.slots[b.selected] instanceof ItemBullet)
+        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1 && b.slots[b.selected] instanceof ItemBullet)
         {
             ItemBullet ib = (ItemBullet) b.slots[b.selected];
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxAmount, this.liveMines, this.liveMinesMax));
+        }
+        else if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1 && b.slots[b.selected] instanceof ItemMine)
+        {
+            ItemMine im = (ItemMine) b.slots[b.selected];
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, this.liveBullets, this.liveBulletMax, im.liveMines, im.maxAmount));
         }
         else
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, this.liveBullets, this.liveBulletMax, this.liveMines, this.liveMinesMax));
@@ -386,7 +395,7 @@ public class TankPlayerRemote extends Tank
             Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 
         b.addPolarMotion(this.angle, speed);
-        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil);
+        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
         b.moveOut(50 / speed * this.size / Game.tile_size);
 
@@ -395,6 +404,9 @@ public class TankPlayerRemote extends Tank
 
         if (b.recoil != 0)
             this.forceMotion = true;
+
+        if (!this.hasCollided)
+            this.recoil = true;
 
         this.processRecoil();
     }

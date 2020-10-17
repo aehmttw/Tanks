@@ -9,7 +9,10 @@ import tanks.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
+import tanks.hotbar.Hotbar;
+import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemRemote;
 
 public class TankPlayer extends Tank implements IPlayerTank
 {
@@ -84,7 +87,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		if (this.tookRecoil)
 		{
-			if (this.recoilSpeed <= this.maxSpeed * 1.0001)
+			if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)
 			{
 				this.tookRecoil = false;
 				this.inControlOfMotion = true;
@@ -272,9 +275,19 @@ public class TankPlayer extends Tank implements IPlayerTank
 		{
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 
-			if (this.player.hotbar.enabledItemBar && this.player.hotbar.itemBar.slots[this.player.hotbar.itemBar.selected] instanceof ItemBullet)
+			Hotbar h = Game.player.hotbar;
+			if (h.enabledItemBar && h.itemBar.selected >= 0)
 			{
-				r.bounces = ((ItemBullet)this.player.hotbar.itemBar.slots[this.player.hotbar.itemBar.selected]).bounces;
+				Item i = h.itemBar.slots[h.itemBar.selected];
+				if (i instanceof ItemBullet)
+				{
+					r.bounces = ((ItemBullet) i).bounces;
+
+					if (((ItemBullet) i).className.equals("electric"))
+						r.bounces = 0;
+				}
+				else if (i instanceof ItemRemote && ((ItemRemote)i).bounces >= 0)
+					r.bounces = ((ItemRemote)i).bounces;
 			}
 
 			r.vX /= 2;
@@ -330,7 +343,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 			Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 
 		b.setPolarMotion(this.angle, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
 		b.moveOut(50 / speed * this.size / Game.tile_size);
 

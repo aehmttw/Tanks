@@ -19,7 +19,7 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
 
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -31,7 +31,7 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
     });
 
 
-    public Button upload = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Share", new Runnable()
+    public Button upload = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Share", new Runnable()
     {
         @Override
         public void run()

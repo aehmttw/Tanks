@@ -14,7 +14,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
     ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
 
-    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Generate a new level", new Runnable()
+    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
     {
         @Override
         public void run()
@@ -34,7 +34,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button replay = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "Replay the level", new Runnable()
+    Button replay = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Replay the level", new Runnable()
     {
         @Override
         public void run()
@@ -46,11 +46,12 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to party", new Runnable()
+    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Game.screen = ScreenPartyHost.activeScreen;
             ScreenGame.versus = false;
             ScreenInterlevel.fromSavedLevels = false;
@@ -58,7 +59,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button replayHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Replay the level", new Runnable()
+    Button replayHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Replay the level", new Runnable()
     {
         @Override
         public void run()
@@ -70,11 +71,12 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to party", new Runnable()
+    Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Game.screen = ScreenPartyHost.activeScreen;
             ScreenGame.versus = false;
             ScreenInterlevel.fromSavedLevels = false;
@@ -82,11 +84,12 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Continue", new Runnable()
+    Button next = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Continue", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Game.screen = new ScreenPartyLobby();
             ScreenGame.versus = false;
         }
@@ -98,9 +101,15 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
         Game.player.hotbar.percentHidden = 100;
 
         if (Panel.win)
+        {
             Drawing.drawing.playSound("win.ogg");
+            this.music = "win_music.ogg";
+        }
         else
+        {
             Drawing.drawing.playSound("lose.ogg");
+            this.music = "lose_music.ogg";
+        }
 
         if (Panel.win && Game.fancyGraphics)
         {
@@ -162,7 +171,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
             newLevel.draw();
         }
 
-        if (Panel.win && Game.fancyGraphics)
+        if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
             Drawing.drawing.setColor(255, 255, 255);
         else
             Drawing.drawing.setColor(0, 0, 0);

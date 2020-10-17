@@ -13,6 +13,9 @@ public class LevelGenerator
 		//String name = Game.registryTank.getRandomTank().name;
 		double size = Game.levelSize;
 
+		if (Math.random() < 0.2)
+			size *= 2;
+
 		int height = (int)(18 * size);
 		int width = (int)(28 * size);
 		double amountWalls = 12 * size * size;
@@ -24,9 +27,25 @@ public class LevelGenerator
 		int vertical = 2;
 		int horizontal = 2;
 
-		int r = (int)(Math.random() * 50) + 185;
-		int g = (int)(Math.random() * 50) + 185;
-		int b = (int)(Math.random() * 50) + 185;
+		int shade = 185;
+
+		if (Math.random() < 0.2)
+			shade = (int) (Math.random() * 60);
+
+		int r = (int)(Math.random() * 50) + shade;
+		int g = (int)(Math.random() * 50) + shade;
+		int b = (int)(Math.random() * 50) + shade;
+
+		double heavyTerrain = 1;
+
+		if (Math.random() < 0.2)
+			heavyTerrain *= 2;
+
+		if (Math.random() < 0.2)
+			heavyTerrain *= 2;
+
+		if (Math.random() < 0.2)
+			heavyTerrain *= 4;
 
 		boolean bouncy = Math.random() < 0.2;
 		double bouncyWeight = Math.random() * 0.5 + 0.2;
@@ -39,6 +58,9 @@ public class LevelGenerator
 
 		boolean ice = Math.random() < 0.2;
 		int iceCount = (int) (walls + Math.random() * 4 - 2);
+
+		boolean snow = Math.random() < 0.2;
+		int snowCount = (int) (walls + Math.random() * 4 - 2);
 
 		boolean teleporters = Math.random() < 0.2;
 		int numTeleporters = walls / 5 + 2;
@@ -379,7 +401,7 @@ public class LevelGenerator
 				int y = (int) (Math.random() * height);
 
 
-				for (int i = 0; i < Math.random() * 20 + 4; i++)
+				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
 				{						
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{
@@ -413,7 +435,7 @@ public class LevelGenerator
 				int y = (int) (Math.random() * height);
 
 
-				for (int i = 0; i < Math.random() * 20 + 4; i++)
+				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{
@@ -446,7 +468,7 @@ public class LevelGenerator
 				int x = (int) (Math.random() * width);
 				int y = (int) (Math.random() * height);
 
-				for (int i = 0; i < Math.random() * 40 + 8; i++)
+				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
 					{
@@ -456,6 +478,39 @@ public class LevelGenerator
 							s.append(",");
 
 						s.append(x).append("-").append(y).append("-ice");
+					}
+
+					double rand = Math.random();
+
+					if (rand < 0.25)
+						x++;
+					else if (rand < 0.5)
+						x--;
+					else if (rand < 0.75)
+						y++;
+					else
+						y--;
+				}
+			}
+		}
+
+		if (snow)
+		{
+			for (int j = 0; j < snowCount; j++)
+			{
+				int x = (int) (Math.random() * width);
+				int y = (int) (Math.random() * height);
+
+				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
+				{
+					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
+					{
+						cells[x][y] = true;
+
+						if (!s.toString().endsWith(","))
+							s.append(",");
+
+						s.append(x).append("-").append(y).append("-snow");
 					}
 
 					double rand = Math.random();

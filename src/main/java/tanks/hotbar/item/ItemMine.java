@@ -52,7 +52,7 @@ public class ItemMine extends Item
     {
         Tank t = this.getUser();
 
-        Mine m = new Mine(t.posX, t.posY, this.timer, t);
+        Mine m = new Mine(t.posX, t.posY, this.timer, t, this);
 
         t.cooldown = this.cooldown;
         m.timer = this.timer;

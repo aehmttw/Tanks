@@ -3,6 +3,7 @@ package basewindow;
 import basewindow.transformation.Transformation;
 import basewindow.transformation.Translation;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -36,6 +37,7 @@ public abstract class BaseWindow
     public boolean validScrollUp;
     public boolean validScrollDown;
 
+    public String os = "";
     public boolean mac = false;
 
     public boolean vsync;
@@ -163,6 +165,12 @@ public abstract class BaseWindow
 
     public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
 
+    public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade);
+
+    public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
+
+    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
+
     public abstract void setColor(double r, double g, double b, double a);
 
     public abstract void setColor(double r, double g, double b);
@@ -241,6 +249,8 @@ public abstract class BaseWindow
     public abstract void addVertex(double x, double y, double z);
 
     public abstract void addVertex(double x, double y);
+
+    public abstract void openLink(URL url) throws Exception;
 
     public void setupKeyCodes()
     {

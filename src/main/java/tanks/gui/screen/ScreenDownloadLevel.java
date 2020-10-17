@@ -18,7 +18,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 
-    public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Download", new Runnable()
+    public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Download", new Runnable()
     {
         @Override
         public void run()
@@ -68,7 +68,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
         Obstacle.draw_size = Game.tile_size;
 
-        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, 350, 40, "Level save name", new Runnable()
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level save name", new Runnable()
         {
             @Override
             public void run()

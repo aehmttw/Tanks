@@ -21,6 +21,7 @@ public class EventTankControllerUpdateS extends EventTankUpdate
     {
         super(t);
         this.forced = forced;
+        this.recoil = recoil;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class EventTankControllerUpdateS extends EventTankUpdate
     {
         Tank t = Tank.idMap.get(this.tank);
 
-        if (this.clientID == null && (t instanceof TankRemote || (t instanceof TankPlayerController && (this.forced || !Game.clientID.equals(((TankPlayerController) t).clientID)))))
+        if (this.clientID == null && (t instanceof TankRemote || (t instanceof TankPlayerController && (this.recoil || this.forced || !Game.clientID.equals(((TankPlayerController) t).clientID)))))
         {
             if (t instanceof TankPlayerController && Game.clientID.equals(((TankPlayerController) t).clientID))
             {

@@ -180,7 +180,7 @@ public class BulletElectric extends BulletInstant
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (!Team.isAllied(this, m) && this != m && !this.targets.contains(m))
+				if (!Team.isAllied(this, m) && this != m && !m.destroy && !this.targets.contains(m))
 				{
 					double d = Movable.distanceBetween(this, m);
 					if (d < nd)

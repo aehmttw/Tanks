@@ -8,7 +8,7 @@ import tanks.gui.ChatMessage;
 
 public class ScreenConfirmEndParty extends Screen implements IPartyMenuScreen
 {
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -18,7 +18,7 @@ public class ScreenConfirmEndParty extends Screen implements IPartyMenuScreen
     }
     );
 
-    public Button confirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "End party", new Runnable()
+    public Button confirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "End party", new Runnable()
     {
         @Override
         public void run()

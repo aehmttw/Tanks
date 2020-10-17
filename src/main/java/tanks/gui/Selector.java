@@ -51,6 +51,8 @@ public class Selector implements IDrawable, ITrigger
 
     public boolean format = true;
 
+    public boolean drawBehindScreen = false;
+
     //public String sound = "click.ogg";
 
     /** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
@@ -315,7 +317,9 @@ public class Selector implements IDrawable, ITrigger
 
     public void setScreen()
     {
-        Game.screen = new ScreenSelector(this, Game.screen);
+        ScreenSelector s = new ScreenSelector(this, Game.screen);
+        s.drawBehindScreen = this.drawBehindScreen;
+        Game.screen = s;
     }
 
     @Override

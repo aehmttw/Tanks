@@ -3,6 +3,7 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 
@@ -153,17 +154,29 @@ public class Hotbar
 				Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
 			}
 
-			if (Game.playerTank != null && Game.playerTank.liveMines < Game.playerTank.liveMinesMax)
+			if (Game.playerTank != null)
 			{
-				Drawing.drawing.setColor(255, 0 , 0, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.fillInterfaceOval(x + 175, y, 18, 18);
+				int mines = Game.playerTank.liveMinesMax - Game.playerTank.liveMines;
 
-				Drawing.drawing.setColor(255, 255 , 0, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.fillInterfaceOval(x + 175, y, 14, 14);
+				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine)
+				{
+					ItemMine im = (ItemMine) this.itemBar.slots[this.itemBar.selected];
+					mines = im.maxAmount - im.liveMines;
+				}
 
-				Drawing.drawing.setInterfaceFontSize(12);
-				Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.drawInterfaceText(x + 175, y, Game.playerTank.liveMinesMax - Game.playerTank.liveMines + "");
+				if (mines > 0)
+				{
+					Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
+					Drawing.drawing.fillInterfaceOval(x + 175, y, 18, 18);
+
+					Drawing.drawing.setColor(255, 255, 0, (100 - this.percentHidden) * 2.55);
+					Drawing.drawing.fillInterfaceOval(x + 175, y, 14, 14);
+
+					Drawing.drawing.setInterfaceFontSize(12);
+					Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
+
+					Drawing.drawing.drawInterfaceText(x + 175, y, mines + "");
+				}
 			}
 		}
 
@@ -171,6 +184,10 @@ public class Hotbar
 		{
 			Drawing.drawing.setInterfaceFontSize(18);
 			Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
+
+			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
+
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: " + coins);
 		}
 

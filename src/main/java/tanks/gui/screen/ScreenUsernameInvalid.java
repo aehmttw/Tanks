@@ -12,7 +12,7 @@ public class ScreenUsernameInvalid extends Screen
 		this.musicID = "menu";
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Ok", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Ok", new Runnable()
 	{
 		@Override
 		public void run() 

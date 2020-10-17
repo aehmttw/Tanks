@@ -49,15 +49,15 @@ public class ScreenFailedToLoadLevel extends Screen
 
 			f.println("\nSystem properties:");
 			Properties p = System.getProperties();
-			//for (Object s: p.keySet())
-		//		f.println(s + ": " + p.get(s));
+			for (Object o: p.keySet())
+				f.println(o + ": " + p.get(o));
 
 			f.stopWriting();
 		}
 		catch (Exception ex) {ex.printStackTrace();}
 	}
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 

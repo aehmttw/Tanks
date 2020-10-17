@@ -44,7 +44,7 @@ public class ScreenControlsEditor extends Screen
     InputSelector lockSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle square selection", Game.game.input.editorLockSquare);
     InputSelector toggleAdd = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle remove from selection", Game.game.input.editorSelectAddToggle);
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, 350, 40, "Next page", new Runnable()
+    Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", new Runnable()
     {
         @Override
         public void run()
@@ -54,7 +54,7 @@ public class ScreenControlsEditor extends Screen
     }
     );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, 350, 40, "Previous page", new Runnable()
+    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
         @Override
         public void run()

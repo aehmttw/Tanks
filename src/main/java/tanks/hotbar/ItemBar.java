@@ -1,9 +1,6 @@
 package tanks.hotbar;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.Player;
+import tanks.*;
 import tanks.event.EventSetItem;
 import tanks.event.EventSetItemBarSlot;
 import tanks.gui.Button;
@@ -20,9 +17,6 @@ public class ItemBar
 	public static int gap = 75; // Gap between slots.
 	public static int bar_margin = 60; // Bar's distance from bottom.
 
-	public static double slotBgR = 0;
-	public static double slotBgG = 0;
-	public static double slotBgB = 0;
 	public static double slotBgA = 127;
 
 	public static double slotSelectedR = 255;
@@ -221,9 +215,14 @@ public class ItemBar
 	{
 		int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.player.hotbar.percentHidden - this.player.hotbar.verticalOffset);
 
+		double slotBgBrightness = 0;
+
+		if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+			slotBgBrightness = 255;
+
 		for (int i = -2; i <= 2; i++)
 		{
-			Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
+			Drawing.drawing.setColor(slotBgBrightness, slotBgBrightness, slotBgBrightness, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 
 			int x = (int) ((i * gap) + (Drawing.drawing.interfaceSizeX / 2));
 
@@ -233,7 +232,7 @@ public class ItemBar
 			{
 				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.player.hotbar.percentHidden) * 2.55);
 				Drawing.drawing.fillInterfaceRect(x, y, size, size);
-				Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA);
+				Drawing.drawing.setColor(slotBgBrightness, slotBgBrightness, slotBgBrightness, slotBgA);
 			}
 
 			Drawing.drawing.setColor(255, 255, 255, (100 - this.player.hotbar.percentHidden) * 2.55);
@@ -248,14 +247,18 @@ public class ItemBar
 					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.player.hotbar.percentHidden) * 2.55);
 					Drawing.drawing.setInterfaceFontSize(18);
 					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
-					Drawing.drawing.setColor(slotBgR, slotBgG, slotBgB, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
+					Drawing.drawing.setColor(slotBgBrightness, slotBgBrightness, slotBgBrightness, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 				}
 			}
 		}
 
 		if (selected >= 0 && slots[selected] != null)
 		{
-			Drawing.drawing.setColor(0, 0, 0, Math.min(this.selectedTimer * 2.55 * 2, 255) * (100 - this.player.hotbar.percentHidden) * 0.01);
+			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+				Drawing.drawing.setColor(255, 255, 255, Math.min(this.selectedTimer * 2.55 * 2, 255) * (100 - this.player.hotbar.percentHidden) * 0.01);
+			else
+				Drawing.drawing.setColor(0, 0, 0, Math.min(this.selectedTimer * 2.55 * 2, 255) * (100 - this.player.hotbar.percentHidden) * 0.01);
+
 			Drawing.drawing.setInterfaceFontSize(24);
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, y - 70, this.slots[selected].name);
 		}

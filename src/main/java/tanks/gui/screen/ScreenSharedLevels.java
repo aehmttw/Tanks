@@ -14,7 +14,7 @@ public class ScreenSharedLevels extends Screen implements IPartyMenuScreen
 
 	public ButtonList sharedLevels;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -35,7 +35,7 @@ public class ScreenSharedLevels extends Screen implements IPartyMenuScreen
 		ArrayList<Button> buttons = new ArrayList<>();
 		for (ScreenPartyHost.SharedLevel l: levels)
 		{
-			buttons.add(new Button(0, 0, 350, 40, l.name.replace("_", " "), new Runnable()
+			buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), new Runnable()
 			{
 				@Override
 				public void run()

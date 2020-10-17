@@ -14,7 +14,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	public static final String weakText = "\u00A7200100000255weak";
 	public static final String strongText = "\u00A7000200000255strong";
 
-	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Username", new Runnable()
+	TextBox username = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Username", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -28,7 +28,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			Game.player.username, "Pick a username that players---will see in multiplayer");
 
-	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
+	Button chatFilter = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -43,7 +43,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"Filters chat of potentially---inappropriate words");
 
-	Button anticheat = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "", new Runnable()
+	Button anticheat = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -72,7 +72,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
 
-	Button color = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Tank color", new Runnable()
+	Button color = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Tank color", new Runnable()
 	{
 		@Override
 		public void run()
@@ -83,7 +83,7 @@ public class ScreenOptionsMultiplayer extends Screen
 			"Personalize your tank---to stand out in multiplayer!");
 
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 

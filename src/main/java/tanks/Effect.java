@@ -6,7 +6,7 @@ import tanks.obstacle.Obstacle;
 
 public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece}
+    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield}
 
     public enum State {live, removed, recycle}
 
@@ -41,7 +41,6 @@ public class Effect extends Movable implements IDrawableWithGlow
             {
                 e.refurbish();
                 e.initialize(x, y, z, type);
-
                 return e;
             }
         }
@@ -140,6 +139,13 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.maxAge = Math.random() * 100 + 50;
         else if (type == EffectType.interfacePiece)
             this.maxAge = Math.random() * 100 + 50;
+        else if (type == EffectType.snow)
+        {
+            this.maxAge = Math.random() * 100 + 50;
+            this.size = (Math.random() * 4 + 2) * Bullet.bullet_size;
+        }
+        else if (type == EffectType.shield)
+            this.maxAge = 50;
     }
 
     protected void refurbish()
@@ -262,6 +268,16 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
+        }
+        else if (this.type == EffectType.snow)
+        {
+            double size2 = 1 + 1.5 * (Bullet.bullet_size * (1 - this.age / this.maxAge));
+            drawing.setColor(this.colR, this.colG, this.colB);
+
+            if (Game.enable3d)
+                drawing.fillOval(this.posX, this.posY, this.posZ, size2, size2);
+            else
+                drawing.fillOval(this.posX, this.posY, size2, size2);
         }
         else if (this.type == EffectType.interfacePiece)
         {
@@ -415,6 +431,26 @@ public class Effect extends Movable implements IDrawableWithGlow
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
         }
+        else if (this.type == EffectType.shield)
+        {
+            double a = Math.min(25, 50 - this.age) * 2.55 * 4;
+            drawing.setColor(255, 255, 255, a);
+
+            if (Game.enable3d)
+            {
+                drawing.drawImage("shield.png", this.posX, this.posY, this.posZ + this.age, this.size * 1.25, this.size * 1.25);
+                drawing.setFontSize(24 * this.size / Game.tile_size);
+                drawing.setColor(0, 0, 0, a);
+                drawing.drawText(this.posX, this.posY - this.size / 20, this.posZ + this.age + 1, "" + (int) this.radius);
+            }
+            else
+            {
+                drawing.drawImage("shield.png", this.posX, this.posY, this.size * 1.25, this.size * 1.25);
+                drawing.setFontSize(24 * this.size / Game.tile_size);
+                drawing.setColor(0, 0, 0, a);
+                drawing.drawText(this.posX, this.posY - this.size / 20, "" + (int) this.radius);
+            }
+        }
         else
         {
             Game.exitToCrash(new RuntimeException("Invalid effect type!"));
@@ -503,6 +539,16 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8, false, true);
             else
                 drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
+        }
+        else if (this.type == EffectType.snow)
+        {
+            double size = this.size * (1 + this.age / this.maxAge);
+            drawing.setColor(this.colR, this.colG, this.colB, (1 - this.age / this.maxAge) * 255);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX, this.posY, this.posZ, size, size, true);
+            else
+                drawing.fillGlow(this.posX, this.posY, size, size, true);
         }
     }
 

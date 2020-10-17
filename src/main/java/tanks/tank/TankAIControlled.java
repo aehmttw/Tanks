@@ -722,6 +722,9 @@ public class TankAIControlled extends Tank
 					this.nearestBullet.posY + this.nearestBullet.vY * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s);
 
 			this.disableOffset = true;
+
+			if (!Team.isAllied(this.nearestBullet, this))
+				this.cooldown -= Panel.frameFrequency;
 		}
 		else if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
 		{
@@ -786,14 +789,18 @@ public class TankAIControlled extends Tank
 
 		if (Math.abs(this.angle - this.aimAngle) < this.aimThreshold && !this.disableOffset)
 			this.angle = this.aimAngle;
+
+		if (this.seesTargetEnemy && Movable.distanceBetween(this, this.targetEnemy) < 6)
+			this.cooldown -= Panel.frameFrequency;
 	}
 
 	public void updateTurretReflect()
 	{
-		if (this.seesTargetEnemy && this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < Game.tile_size * 2)
+		if (this.seesTargetEnemy && this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) <= Game.tile_size * 6)
 		{
 			aim = true;
 			this.aimAngle = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
+			this.cooldown -= Panel.frameFrequency;
 		}
 
 		if (!this.straightShoot)
@@ -808,6 +815,7 @@ public class TankAIControlled extends Tank
 					this.nearestBullet.posX + this.nearestBullet.vX * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s,
 					this.nearestBullet.posY + this.nearestBullet.vY * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s);
 			this.disableOffset = true;
+			this.cooldown -= Panel.frameFrequency;
 		}
 
 		if (aim && this.hasTarget)

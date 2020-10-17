@@ -101,6 +101,7 @@ public class TankMedic extends TankAIControlled
 			return;
 
 		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bulletBounces, this);
+		b.frameDamageMultipler = Panel.frameFrequency;
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/8);
 		b.moveOut(16);

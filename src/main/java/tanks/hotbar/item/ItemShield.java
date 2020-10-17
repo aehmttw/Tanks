@@ -1,9 +1,6 @@
 package tanks.hotbar.item;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Player;
+import tanks.*;
 import tanks.bullet.*;
 import tanks.event.EventTankUpdateHealth;
 import tanks.hotbar.item.property.*;
@@ -58,6 +55,14 @@ public class ItemShield extends Item
             this.destroy = true;
 
         t.cooldown = this.cooldown;
+
+        if (t.health > 6 && (int) (t.health - amount) != (int) (t.health))
+        {
+            Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
+            e.size = t.size;
+            e.radius = t.health - 1;
+            Game.effects.add(e);
+        }
     }
 
     @Override

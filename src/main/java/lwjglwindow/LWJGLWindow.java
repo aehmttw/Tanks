@@ -13,7 +13,9 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -63,8 +65,10 @@ public class LWJGLWindow extends BaseWindow
 			e.printStackTrace();
 		}
 
-		if (System.getProperties().toString().contains("Mac OS X"))
-			mac = true;
+		if (System.getProperty("os.name").toLowerCase().contains("mac"))
+			this.mac = true;
+
+		this.os = System.getProperty("os.name").toLowerCase();
 
 		this.antialiasingSupported = true;
 	}
@@ -228,6 +232,17 @@ public class LWJGLWindow extends BaseWindow
 					AL10.alSourcef(soundPlayer.prevMusic, AL10.AL_GAIN, (float) (soundPlayer.prevVolume * (1 - frac)));
 					AL10.alSourcef(soundPlayer.currentMusic, AL10.AL_GAIN, (float) (soundPlayer.currentVolume * frac));
 				}
+
+				if (soundPlayer.musicsToLoad)
+				{
+					synchronized (soundPlayer.finishedMusicBuffers)
+					{
+						for (String path : soundPlayer.finishedMusicBuffers.keySet())
+						{
+							soundPlayer.musicBuffers.put(path, soundPlayer.finishedMusicBuffers.get(path));
+						}
+					}
+				}
 			}
 
 			this.updater.update();
@@ -293,14 +308,15 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 	}
 
-	public void fillGlow(double x, double y, double sX, double sY)
+	public void fillGlow(double x, double y, double sX, double sY, boolean shade)
 	{
 		x += sX / 2;
 		y += sY / 2;
 
 		int sides = (int) (sX + sY) / 16 + 5;
 
-		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+		if (!shade)
+			glBlendFunc(GL_SRC_COLOR, GL_ONE);
 
 		glBegin(GL_TRIANGLES);
 		double step = Math.PI * 2 / sides;
@@ -312,18 +328,28 @@ public class LWJGLWindow extends BaseWindow
 		{
 			d += step;
 
-			glColor3d(0, 0, 0);
+			if (!shade)
+				glColor3d(0, 0, 0);
+			else
+				glColor4d(this.colorR, this.colorG, this.colorB, 0);
+
 			glVertex2d(pX, pY);
 			pX = x + Math.cos(d) * sX / 2;
 			pY = y + Math.sin(d) * sY / 2;
 			glVertex2d(pX, pY);
-			glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+
+			if (!shade)
+				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+			else
+				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
+
 			glVertex2d(x, y);
 		}
 
 		glEnd();
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		if (!shade)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	@Override
@@ -357,7 +383,7 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
-	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
 	{
 		if (depthTest)
 		{
@@ -369,7 +395,9 @@ public class LWJGLWindow extends BaseWindow
 		y += sY / 2;
 
 		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
-		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+
+		if (!shade)
+			glBlendFunc(GL_SRC_COLOR, GL_ONE);
 
 		glBegin(GL_TRIANGLES);
 		double step = Math.PI * 2 / sides;
@@ -381,18 +409,28 @@ public class LWJGLWindow extends BaseWindow
 		{
 			d += step;
 
-			glColor3d(0, 0, 0);
+			if (!shade)
+				glColor3d(0, 0, 0);
+			else
+				glColor4d(this.colorR, this.colorG, this.colorB, 0);
+
 			glVertex3d(pX, pY, z);
 			pX = x + Math.cos(d) * sX / 2;
 			pY = y + Math.sin(d) * sY / 2;
 			glVertex3d(pX, pY, z);
-			glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+
+			if (!shade)
+				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+			else
+				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
+
 			glVertex3d(x, y, z);
 		}
 
 		glEnd();
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		if (!shade)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		if (depthTest)
 		{
@@ -435,7 +473,25 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
+	@Override
+	public void fillGlow(double x, double y, double sX, double sY)
+	{
+		this.fillGlow(x, y, sX, sY, false);
+	}
+
+	@Override
+	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+	{
+		this.fillGlow(x, y, z, sX, sY, false, false);
+	}
+
+	@Override
 	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+	{
+		this.fillFacingGlow(x, y, z, sX, sY, depthTest,false);
+	}
+
+	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
 	{
 		if (depthTest)
 		{
@@ -443,7 +499,8 @@ public class LWJGLWindow extends BaseWindow
 			glDepthMask(false);
 		}
 
-		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+		if (!shade)
+			glBlendFunc(GL_SRC_COLOR, GL_ONE);
 
 		x += sX / 2;
 		y += sY / 2;
@@ -464,12 +521,21 @@ public class LWJGLWindow extends BaseWindow
 		{
 			d += step;
 
-			glColor3d(0, 0, 0);
+			if (!shade)
+				glColor3d(0, 0, 0);
+			else
+				glColor4d(this.colorR, this.colorG, this.colorB, 0);
+
 			glVertex3d(pX, pY, 0);
 			pX = 0 + Math.cos(d) * sX / 2;
 			pY = 0 + Math.sin(d) * sY / 2;
 			glVertex3d(pX, pY, 0);
-			glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+
+			if (!shade)
+				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
+			else
+				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
+
 			glVertex3d(0, 0, 0);
 		}
 
@@ -483,25 +549,26 @@ public class LWJGLWindow extends BaseWindow
 
 		loadPerspective();
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		if (!shade)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	public void setColor(double r, double g, double b, double a)
 	{
-		glColor4d(r / 255, g / 255, b / 255, a / 255);
 		this.colorR = r / 255;
 		this.colorG = g / 255;
 		this.colorB = b / 255;
 		this.colorA = a / 255;
+		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 	}
 
 	public void setColor(double r, double g, double b)
 	{
-		glColor3d(r / 255, g / 255, b / 255);
 		this.colorR = r / 255;
 		this.colorG = g / 255;
 		this.colorB = b / 255;
 		this.colorA = 1;
+		glColor3d(this.colorR, this.colorG, this.colorB);
 	}
 
 	public void drawOval(double x, double y, double sX, double sY)
@@ -1242,5 +1309,27 @@ public class LWJGLWindow extends BaseWindow
 	public void addVertex(double x, double y)
 	{
 		glVertex2d(x, y);
+	}
+
+	@Override
+	public void openLink(URL url) throws Exception
+	{
+		String[] cmd;
+
+		if (os.contains("win"))
+			cmd = new String[]{"rundll32", "url.dll,FileProtocolHandler", url.toString()};
+		else if (os.contains("mac"))
+			cmd = new String[]{"open", url.toString()};
+		else
+		{
+			String s = url.toString();
+
+			if ("file".equals(url.getProtocol()))
+				s = s.replace("file:", "file://");
+
+			cmd = new String[]{"xdg-open", s};
+		}
+
+		Runtime.getRuntime().exec(cmd);
 	}
 }

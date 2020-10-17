@@ -2,8 +2,10 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.Movable;
 import tanks.Player;
 import tanks.gui.screen.ScreenGame;
+import tanks.tank.TankPlayerRemote;
 
 public class EventPurchaseItem extends PersonalEvent
 {
@@ -47,6 +49,12 @@ public class EventPurchaseItem extends PersonalEvent
                     {
                         if (p.hotbar.itemBar.addItem(s.shop.get(this.item)))
                             p.hotbar.coins -= pr;
+
+                        for (Movable m: Game.movables)
+                        {
+                            if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(this.clientID))
+                                ((TankPlayerRemote) m).refreshAmmo();
+                        }
 
                         Game.eventsOut.add(new EventUpdateCoins(p));
                     }

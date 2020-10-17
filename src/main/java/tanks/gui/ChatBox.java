@@ -88,7 +88,7 @@ public class ChatBox extends TextBox
 			}
 		}
 
-		if (!this.selected && this.input.isValid())
+		if (!this.selected && this.input.isValid() && Panel.selectedTextBox == null)
 		{
 			this.input.invalidate();
 			Game.game.window.getRawTextKeys().clear();
@@ -206,7 +206,7 @@ public class ChatBox extends TextBox
 			else
 				drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB, 127);
 
-			drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX, this.sizeY);
+			this.drawBox();
 
 			drawing.setColor(0, 0, 0);
 			drawing.setInterfaceFontSize(24);
@@ -230,7 +230,7 @@ public class ChatBox extends TextBox
 			else
 				drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
 
-			drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX, this.sizeY);
+			this.drawBox();
 
 			drawing.setColor(0, 0, 0);
 			drawing.setInterfaceFontSize(24);
@@ -243,8 +243,42 @@ public class ChatBox extends TextBox
 		else if (Game.game.window.touchscreen)
 		{
 			drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
-			drawing.fillInterfaceRect(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY, this.sizeY);
+			drawing.fillInterfaceOval(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY, this.sizeY);
 			drawing.drawInterfaceImage("chat.png", this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, 0.8 * this.sizeY, 0.8 * this.sizeY);
 		}
+	}
+
+	public void drawBox()
+	{
+		if (Game.framework == Game.Framework.swing)
+		{
+			Drawing.drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX, this.sizeY);
+			return;
+		}
+
+		double xPad = -40;
+		Drawing.drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX + xPad, this.sizeY);
+
+		Game.game.window.setBatchMode(true, false, false);
+
+		for (int j = 0; j < 30; j++)
+		{
+			Drawing.drawing.addInterfaceVertex(this.posX - this.sizeX / 2 - xPad / 2, this.posY, 0);
+			Drawing.drawing.addInterfaceVertex(this.posX - this.sizeX / 2 - xPad / 2 + Math.cos((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2,
+					this.posY + Math.sin((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+			Drawing.drawing.addInterfaceVertex(this.posX - this.sizeX / 2 - xPad / 2 + Math.cos((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2,
+					this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+		}
+
+		for (int j = 0; j < 30; j++)
+		{
+			Drawing.drawing.addInterfaceVertex(this.posX + this.sizeX / 2 + xPad / 2, this.posY, 0);
+			Drawing.drawing.addInterfaceVertex(this.posX + this.sizeX / 2 + xPad / 2 + Math.cos((j + 45) / 30.0 * Math.PI) * (this.sizeY) / 2,
+					this.posY + Math.sin((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+			Drawing.drawing.addInterfaceVertex(this.posX + this.sizeX / 2 + xPad / 2 + Math.cos((j + 46) / 30.0 * Math.PI) * (this.sizeY) / 2,
+					this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+		}
+
+		Game.game.window.setBatchMode(false, false, false);
 	}
 }

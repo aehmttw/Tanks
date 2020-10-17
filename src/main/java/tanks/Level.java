@@ -4,6 +4,7 @@ import tanks.event.EventCreatePlayer;
 import tanks.event.EventEnterLevel;
 import tanks.event.EventLoadLevel;
 import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
@@ -249,6 +250,23 @@ public class Level
 			s.colorVarGreen.maxValue = 255 - g;
 			s.colorVarBlue.maxValue = 255 - b;
 
+			s.shop = this.shop;
+			s.startingItems = this.startingItems;
+			s.startingCoins = this.startingCoins;
+			s.editCoins.inputText = s.startingCoins + "";
+
+			s.shopList = new ButtonList(new ArrayList<>(), 0, 0, -30);
+			s.startingItemsList = new ButtonList(new ArrayList<>(), 0, 0, -30);
+
+			for (Item i: this.shop)
+				i.importProperties();
+
+			for (Item i: this.startingItems)
+				i.importProperties();
+
+			s.refreshItemButtons(s.shop, s.shopList);
+			s.refreshItemButtons(s.startingItems, s.startingItemsList);
+
 			if (!editable)
 			{
 				s.play.posY += 60;
@@ -266,7 +284,7 @@ public class Level
 			{
 				final int j = i;
 				Team t = this.teamsList.get(i);
-				Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
+				Button buttonToAdd = new Button(0, 0, s.objWidth, s.objHeight, t.name, new Runnable()
 				{
 					@Override
 					public void run() 
@@ -284,7 +302,7 @@ public class Level
 						);
 				s.teamEditButtons.add(buttonToAdd);
 
-				Button buttonToAdd2 = new Button(0, 0, 350, 40, t.name, new Runnable()
+				Button buttonToAdd2 = new Button(0, 0, s.objWidth, s.objHeight, t.name, new Runnable()
 				{
 					@Override
 					public void run() 
@@ -295,9 +313,18 @@ public class Level
 						);
 
 				s.teamSelectButtons.add(buttonToAdd2);
-
-
 			}
+
+			Button button = new Button(0, 0, s.objWidth, s.objHeight, "\u00A7127000000255none", new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					s.setEditorTeam(teamsList.size());
+				}
+			}
+			);
+			s.teamSelectButtons.add(button);
 
 			s.teams = this.teamsList;
 

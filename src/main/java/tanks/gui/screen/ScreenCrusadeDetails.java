@@ -10,7 +10,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
 {
     public Crusade crusade;
 
-    public Button begin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Play", new Runnable()
+    public Button begin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Play", new Runnable()
     {
         @Override
         public void run()
@@ -22,7 +22,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Resume", new Runnable()
+    public Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Resume", new Runnable()
     {
         @Override
         public void run()
@@ -34,7 +34,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button startOver = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Start over", new Runnable()
+    public Button startOver = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Start over", new Runnable()
     {
         @Override
         public void run()
@@ -46,7 +46,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Edit", new Runnable()
+    public Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Edit", new Runnable()
     {
         @Override
         public void run()
@@ -58,7 +58,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Delete crusade", new Runnable()
+    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Delete crusade", new Runnable()
     {
         @Override
         public void run()
@@ -67,7 +67,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -79,7 +79,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button back2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Back", new Runnable()
+    public Button back2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()

@@ -11,7 +11,7 @@ public class ScreenShareLevel extends Screen implements IPartyMenuScreen
 
 	public SavedFilesList levels;
 
-	public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()

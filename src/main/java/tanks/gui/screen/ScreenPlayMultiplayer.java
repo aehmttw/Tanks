@@ -12,7 +12,7 @@ public class ScreenPlayMultiplayer extends Screen
         this.musicID = "menu";
     }
 
-    Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Party", new Runnable()
+    Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Party", new Runnable()
     {
         @Override
         public void run()
@@ -22,7 +22,7 @@ public class ScreenPlayMultiplayer extends Screen
     },
             "Play with other people who are---connected to your local network---(or who are port forwarding)");
 
-    Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Online", new Runnable()
+    Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Online", new Runnable()
     {
         @Override
         public void run()
@@ -33,7 +33,7 @@ public class ScreenPlayMultiplayer extends Screen
             "Access the online Tanks community!");
 
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()

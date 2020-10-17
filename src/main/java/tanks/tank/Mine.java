@@ -1,7 +1,9 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.bullet.Bullet;
 import tanks.event.EventLayMine;
+import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
 import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Obstacle;
@@ -27,6 +29,9 @@ public class Mine extends Movable
     public double radius = Game.tile_size * 2.5;
     public Tank tank;
     public ItemMine item;
+    public boolean exploded = false;
+    public double cooldown = 0;
+    public int lastBeep = Integer.MAX_VALUE;
 
     public int networkID;
 
@@ -36,11 +41,18 @@ public class Mine extends Movable
 
     public Mine(double x, double y, double timer, Tank t)
     {
+        this(x, y, timer, t, null);
+    }
+
+    public Mine(double x, double y, double timer, Tank t, ItemMine item)
+    {
         super(x, y);
 
         this.timer = timer;
         this.drawLevel = 2;
         tank = t;
+
+        this.item = item;
 
         if (!this.tank.isRemote)
         {
@@ -110,7 +122,7 @@ public class Mine extends Movable
 
         Drawing.drawing.setColor(255, Math.min(1000, this.timer) / 1000.0 * 255, 0);
 
-        if (timer < 150 && ((int) timer % 16) / 8 == 1)
+        if (timer < 150 && ((int) timer % 20) / 10 == 1)
             Drawing.drawing.setColor(255, 255, 0);
 
         if (Game.enable3d)
@@ -133,6 +145,13 @@ public class Mine extends Movable
         if (this.timer <= 0 && !this.tank.isRemote)
             this.explode();
 
+        int beepTime = ((int)this.timer / 10);
+        if (this.timer <= 150 && beepTime % 2 == 1 && this.lastBeep != beepTime && this.tank == Game.playerTank)
+        {
+            Drawing.drawing.playSound("beep.ogg", 1f, 0.25f);
+            this.lastBeep = beepTime;
+        }
+
         super.update();
 
         boolean enemyNear = false;
@@ -152,13 +171,17 @@ public class Mine extends Movable
             }
         }
 
-        if (enemyNear && !allyNear)
-            this.timer = Math.min(this.triggeredTimer, this.timer);
+        if (enemyNear && !allyNear && this.timer > this.triggeredTimer && !this.isRemote)
+        {
+            this.timer = this.triggeredTimer;
+            Game.eventsOut.add(new EventMineChangeTimer(this));
+        }
     }
 
     public void explode()
     {
         Drawing.drawing.playSound("explosion.ogg", (float) (mine_size / this.size));
+        this.exploded = true;
 
         if (Game.fancyGraphics)
         {
@@ -194,16 +217,25 @@ public class Mine extends Movable
                     {
                         if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
                         {
-                            ((Tank) o).health -= this.damage;
-                            ((Tank) o).flashAnimation = 1;
+                            Tank t = (Tank) o;
+                            t.health -= this.damage;
+                            t.flashAnimation = 1;
 
-                            if (((Tank) o).health <= 0)
+                            if (t.health > 6 && (int) (t.health + this.damage) != (int) (t.health))
                             {
-                                ((Tank) o).flashAnimation = 0;
+                                Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
+                                e.size = t.size;
+                                e.radius = t.health - 1;
+                                Game.effects.add(e);
+                            }
+
+                            if (t.health <= 0)
+                            {
+                                t.flashAnimation = 0;
                                 o.destroy = true;
 
                                 if (this.tank.equals(Game.playerTank))
-                                    Game.player.hotbar.coins += ((Tank) o).coinValue;
+                                    Game.player.hotbar.coins += t.coinValue;
                             }
                             else
                             {
@@ -212,6 +244,14 @@ public class Mine extends Movable
                         }
                     }
                     else if (o instanceof Mine && !o.destroy)
+                    {
+                        if (((Mine) o).timer > 10 && !this.isRemote)
+                        {
+                            ((Mine) o).timer = 10;
+                            Game.eventsOut.add(new EventMineChangeTimer((Mine) o));
+                        }
+                    }
+                    else if (o instanceof Bullet && !o.destroy)
                     {
                         o.destroy = true;
                     }
@@ -230,15 +270,20 @@ public class Mine extends Movable
 
                     if (Game.fancyGraphics)
                     {
+                        Effect.EffectType effect = o.destroyEffect;
+
                         if (Game.enable3d)
                         {
+                            if (effect == Effect.EffectType.obstaclePiece)
+                                effect = Effect.EffectType.obstaclePiece3d;
+
                             for (int j = 0; j < Game.tile_size; j += 10)
                             {
                                 for (int k = 0; k < Game.tile_size; k += 10)
                                 {
                                     for (int l = 0; l < Game.tile_size * o.stackHeight; l += 10)
                                     {
-                                        Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, l, Effect.EffectType.obstaclePiece3d);
+                                        Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, l, effect);
 
                                         int block = (int) ((o.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
 
@@ -273,7 +318,7 @@ public class Mine extends Movable
                             {
                                 for (int k = 0; k < Game.tile_size - 6; k += 4)
                                 {
-                                    Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, Effect.EffectType.obstaclePiece);
+                                    Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, effect);
 
                                     e.colR = o.colorR;
                                     e.colG = o.colorG;

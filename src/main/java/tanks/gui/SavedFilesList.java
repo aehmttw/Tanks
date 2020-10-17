@@ -1,12 +1,13 @@
 package tanks.gui;
 
 import basewindow.BaseFile;
+import tanks.BiConsumer;
+import tanks.Function;
 import tanks.Game;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+
 
 public class SavedFilesList extends ButtonList
 {
@@ -44,7 +45,7 @@ public class SavedFilesList extends ButtonList
             String name = pathSections[pathSections.length - 1].split("\\.")[0];
             BaseFile file = Game.game.fileManager.getFile(l);
 
-            this.buttons.add(new Button(0, 0, 350, 40, name.replace("_", " "), new Runnable()
+            this.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, name.replace("_", " "), new Runnable()
             {
                 @Override
                 public void run()

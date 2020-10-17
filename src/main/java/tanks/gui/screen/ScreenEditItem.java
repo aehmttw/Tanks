@@ -2,25 +2,28 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Level;
 import tanks.gui.*;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.property.*;
 
 import java.util.ArrayList;
 
-public class ScreenEditItem extends Screen
+public class ScreenEditItem extends Screen implements IOverlayScreen
 {
     public Item item;
-    public ItemScreen screen;
+    public IItemScreen screen;
 
     public int rows = 4;
     public int yoffset = -150;
 
     public int page = 0;
 
+    public boolean drawBehindScreen = false;
+
     public ArrayList<ITrigger> properties = new ArrayList<>();
 
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Next page", new Runnable()
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Next page", new Runnable()
     {
         @Override
         public void run()
@@ -30,7 +33,7 @@ public class ScreenEditItem extends Screen
     }
     );
 
-    public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", new Runnable()
+    public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
         @Override
         public void run()
@@ -40,36 +43,36 @@ public class ScreenEditItem extends Screen
     }
     );
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Ok", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
         @Override
         public void run()
         {
             item.exportProperties();
             screen.refreshItems();
-            Game.screen = screen;
+            Game.screen = (Screen) screen;
         }
     }
     );
 
-    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, 350, 40, "Delete item", new Runnable()
+    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, this.objWidth, this.objHeight, "Delete item", new Runnable()
     {
         @Override
         public void run()
         {
             screen.removeItem(item);
-            Game.screen = screen;
+            Game.screen = (Screen) screen;
         }
     }
     );
 
-    public ScreenEditItem(Item item, ItemScreen s)
+    public ScreenEditItem(Item item, IItemScreen s)
     {
         this.item = item;
         this.screen = s;
 
-        this.music = s.music;
-        this.musicID = s.musicID;
+        this.music = ((Screen)s).music;
+        this.musicID = ((Screen)s).musicID;
 
         for (ItemProperty p: this.item.properties.values())
         {
@@ -77,7 +80,7 @@ public class ScreenEditItem extends Screen
 
             if (p instanceof ItemPropertyInt)
             {
-                TextBox t = new TextBox(0, 0, 350, 40, name, () -> {}, p.value + "");
+                TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, name, () -> {}, p.value + "");
                 t.function = () ->
                 {
                     if (t.inputText.length() == 0)
@@ -94,7 +97,7 @@ public class ScreenEditItem extends Screen
             }
             else if (p instanceof ItemPropertyDouble)
             {
-                TextBox t = new TextBox(0, 0, 350, 40, name, () -> {}, p.value + "");
+                TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, name, () -> {}, p.value + "");
                 t.function = () ->
                 {
                     if (t.inputText.length() == 0)
@@ -111,7 +114,7 @@ public class ScreenEditItem extends Screen
             }
             else if (p instanceof ItemPropertyString)
             {
-                TextBox t = new TextBox(0, 0, 350, 40, name, () -> {}, p.value + "");
+                TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, name, () -> {}, p.value + "");
                 t.function = () ->
                 {
                     if (t.inputText.length() == 0)
@@ -127,7 +130,7 @@ public class ScreenEditItem extends Screen
             }
             else if (p instanceof ItemPropertyBoolean)
             {
-                Selector t = new Selector(0, 0, 350, 40, name, new String[]{"Yes", "No"}, () -> {});
+                Selector t = new Selector(0, 0, this.objWidth, this.objHeight, name, new String[]{"Yes", "No"}, () -> {});
 
                 if ((boolean) p.value)
                     t.selectedOption = 0;
@@ -136,23 +139,29 @@ public class ScreenEditItem extends Screen
 
                 t.function = () -> p.value = t.selectedOption == 0;
 
+                t.drawBehindScreen = this.drawBehindScreen;
+
                 properties.add(t);
             }
             else if (p instanceof ItemPropertySelector)
             {
-                Selector t = new Selector(0, 0, 350, 40, name, ((ItemPropertySelector) p).values, () -> {});
+                Selector t = new Selector(0, 0, this.objWidth, this.objHeight, name, ((ItemPropertySelector) p).values, () -> {});
                 t.selectedOption = (int) p.value;
 
                 t.function = () -> p.value = t.selectedOption;
+
+                t.drawBehindScreen = this.drawBehindScreen;
 
                 properties.add(t);
             }
             else if (p instanceof ItemPropertyImageSelector)
             {
-                ImageSelector t = new ImageSelector(0, 0, 350, 40, name, ((ItemPropertyImageSelector) p).values, () -> {});
+                ImageSelector t = new ImageSelector(0, 0, this.objWidth, this.objHeight, name, ((ItemPropertyImageSelector) p).values, () -> {});
                 t.selectedOption = (int) p.value;
 
                 t.function = () -> p.value = t.selectedOption;
+
+                t.drawBehindScreen = this.drawBehindScreen;
 
                 properties.add(t);
             }
@@ -185,6 +194,9 @@ public class ScreenEditItem extends Screen
     {
         for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, properties.size()); i++)
         {
+            if (properties.get(i) instanceof Selector)
+                ((Selector) properties.get(i)).drawBehindScreen = this.drawBehindScreen;
+
             properties.get(i).update();
         }
 
@@ -199,12 +211,24 @@ public class ScreenEditItem extends Screen
             previous.update();
             next.update();
         }
+
+        if (Game.game.input.editorPause.isValid())
+        {
+            back.function.run();
+            Game.game.input.editorPause.invalidate();
+        }
     }
 
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        if (this.drawBehindScreen)
+            ((Screen)this.screen).draw();
+        else
+            this.drawDefaultBackground();
+
+        if (Game.screen instanceof ScreenSelector)
+            return;
 
         back.draw();
         delete.draw();
@@ -217,7 +241,11 @@ public class ScreenEditItem extends Screen
             previous.draw();
             next.draw();
 
-            Drawing.drawing.setColor(0, 0, 0);
+            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
+
             Drawing.drawing.setInterfaceFontSize(24);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
                     "Page " + (page + 1) + " of " + (properties.size() / (rows * 3) + Math.min(1, properties.size() % (rows * 3))));
@@ -228,8 +256,18 @@ public class ScreenEditItem extends Screen
             properties.get(i).draw();
         }
 
-        Drawing.drawing.setColor(0, 0, 0);
+        if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
+
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, item.getTypeName() + " item properties");
+    }
+
+    @Override
+    public boolean showOverlay()
+    {
+        return false;
     }
 }

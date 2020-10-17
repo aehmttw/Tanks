@@ -7,7 +7,7 @@ import tanks.gui.input.InputBindingGroup;
 
 public class ScreenResetControls extends Screen
 {
-    public Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Reset controls", new Runnable()
+    public Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Reset controls", new Runnable()
     {
         @Override
         public void run()
@@ -21,7 +21,7 @@ public class ScreenResetControls extends Screen
     }
     );
 
-    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "No", new Runnable()
+    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No", new Runnable()
     {
         @Override
         public void run()

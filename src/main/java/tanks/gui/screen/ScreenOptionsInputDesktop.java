@@ -11,7 +11,7 @@ public class ScreenOptionsInputDesktop extends Screen
 
     public static ScreenOverlayControls overlay = new ScreenOverlayControls();
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -21,7 +21,7 @@ public class ScreenOptionsInputDesktop extends Screen
     }
     );
 
-    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
+    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -38,7 +38,7 @@ public class ScreenOptionsInputDesktop extends Screen
     },
             "When enabled, your mouse pointer---will be replaced by a target");
 
-    Button controls = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Controls", new Runnable()
+    Button controls = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Controls", new Runnable()
     {
         @Override
         public void run()

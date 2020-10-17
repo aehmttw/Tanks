@@ -6,6 +6,7 @@ import swingwindow.input.InputKeyboard;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class SwingWindow extends BaseWindow
@@ -28,6 +29,11 @@ public class SwingWindow extends BaseWindow
         this.self = this;
         this.fontRenderer = new SwingFontRenderer(this);
         this.clipboard = new TextClipboard();
+
+        if (System.getProperty("os.name").toLowerCase().contains("mac"))
+            this.mac = true;
+
+        this.os = System.getProperty("os.name").toLowerCase();
     }
 
     @Override
@@ -45,7 +51,6 @@ public class SwingWindow extends BaseWindow
                         drawing.setTitle(self.name);
                         drawing.add(panel);
 
-                        //window.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/icon64.png")));
                         panel.startTimer();
                     }
                 });
@@ -100,15 +105,33 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void fillGlow(double x, double y, double sX, double sY, boolean shade)
+    {
+
+    }
+
+    @Override
+    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
+    {
+
+    }
+
+    @Override
+    public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
+    {
+
+    }
+
+    @Override
     public void setColor(double r, double g, double b, double a)
     {
-        this.graphics.setColor(new Color((int) r, (int) g, (int) b, (int) a));
+        this.graphics.setColor(new Color((int) Math.max(0, Math.min(255, r)), (int) Math.max(0, Math.min(255, g)), (int) Math.max(0, Math.min(255, b)), (int) Math.max(0, Math.min(255, a))));
     }
 
     @Override
     public void setColor(double r, double g, double b)
     {
-        this.graphics.setColor(new Color((int) r, (int) g, (int) b));
+        this.graphics.setColor(new Color((int) Math.max(0, Math.min(255, r)), (int) Math.max(0, Math.min(255, g)), (int) Math.max(0, Math.min(255, b))));
     }
 
     @Override
@@ -319,5 +342,27 @@ public class SwingWindow extends BaseWindow
     public void addVertex(double x, double y)
     {
 
+    }
+
+    @Override
+    public void openLink(URL url) throws Exception
+    {
+        String[] cmd;
+
+        if (os.contains("win"))
+            cmd = new String[]{"rundll32", "url.dll,FileProtocolHandler", url.toString()};
+        else if (os.contains("mac"))
+            cmd = new String[]{"open", url.toString()};
+        else
+        {
+            String s = url.toString();
+
+            if ("file".equals(url.getProtocol()))
+                s = s.replace("file:", "file://");
+
+            cmd = new String[]{"xdg-open", s};
+        }
+
+        Runtime.getRuntime().exec(cmd);
     }
 }

@@ -15,7 +15,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     public static final String singleText = "\u00A7000100200255single";
     public static final String dualText = "\u00A7200100000255dual";
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -25,7 +25,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     }
     );
 
-    Button vibrations = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "", new Runnable()
+    Button vibrations = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -40,7 +40,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     },
             "When enabled, your device---will vibrate a little as---feedback for interacting with---joysticks, buttons, etc...------Not supported on all devices");
 
-    Button mobile = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "", new Runnable()
+    Button mobile = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -59,7 +59,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     },
             "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
 
-    Button snap = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "", new Runnable()
+    Button snap = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -78,7 +78,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     },
             "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
 
-    Button dualJoysticks = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "", new Runnable()
+    Button dualJoysticks = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()

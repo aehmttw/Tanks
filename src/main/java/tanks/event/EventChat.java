@@ -32,7 +32,7 @@ public class EventChat extends PersonalEvent
 		{
 			for (int i = 0; i < this.message.length(); i++)
 			{
-				if ("`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>".indexOf(this.message.charAt(i)) == -1)
+				if (" `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?".indexOf(this.message.charAt(i)) == -1)
 					return;
 			}
 

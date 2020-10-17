@@ -41,6 +41,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public String description = "";
 
+	public double cooldown = 0;
 	public double acceleration = 0.05;
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
@@ -518,7 +519,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.health > 1 && this.size > 0 && !forInterface)
 		{
 			double size = s;
-			for (int i = 1; i < health; i++)
+			for (int i = 1; i < Math.min(health, 6); i++)
 			{
 				if (Game.enable3d)
 					drawing.drawModel(health_model,
@@ -676,7 +677,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void processRecoil()
 	{
-		if (this.vX * this.vX + this.vY * this.vY > this.maxSpeed * this.maxSpeed * 1.0001 && !this.positionLock)
+		if (this.vX * this.vX + this.vY * this.vY > Math.pow(this.maxSpeed * this.maxSpeedModifier, 2) * 1.0001 && !this.positionLock)
 		{
 			this.tookRecoil = true;
 			this.inControlOfMotion = false;

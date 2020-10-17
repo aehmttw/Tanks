@@ -11,7 +11,7 @@ public class ScreenSavedLevels extends Screen
 
 	public SavedFilesList savedFilesList;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -21,7 +21,7 @@ public class ScreenSavedLevels extends Screen
 	}
 			);
 
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "New level", new Runnable()
+	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "New level", new Runnable()
 	{
 		@Override
 		public void run() 

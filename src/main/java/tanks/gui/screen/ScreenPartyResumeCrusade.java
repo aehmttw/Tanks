@@ -22,7 +22,7 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 		}
 	}
 	
-	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Resume crusade", new Runnable()
+	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Resume crusade", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -34,7 +34,7 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 	}
 			);
 
-	Button selectOtherCrusade = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Start another crusade", new Runnable()
+	Button selectOtherCrusade = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Start another crusade", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -44,7 +44,7 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 	}
 			);
 	
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 

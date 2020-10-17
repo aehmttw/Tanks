@@ -16,6 +16,11 @@ public abstract class Screen
 
 	public boolean enableMargins = true;
 
+	public double objWidth = 350;
+	public double objHeight = 40;
+	public double objXSpace = 380;
+	public double objYSpace = 60;
+
 	public abstract void update();
 
 	public abstract void draw();
@@ -37,7 +42,7 @@ public abstract class Screen
 
 		double frac = 0;
 
-		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen)
+		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen)
 			frac = Obstacle.draw_size / Game.tile_size;
 
 		if (!(Game.screen instanceof ScreenExit) && size >= 1)

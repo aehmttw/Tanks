@@ -40,7 +40,7 @@ public class ScreenOptions extends Screen
 			soundOptions.enabled = false;
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -51,7 +51,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, 350, 40, "", new Runnable()
+	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -67,7 +67,7 @@ public class ScreenOptions extends Screen
 			"When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
 
-	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "", new Runnable()
+	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -90,7 +90,7 @@ public class ScreenOptions extends Screen
 					"Memory usage");
 
 
-	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Multiplayer options", new Runnable()
+	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Multiplayer options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -100,7 +100,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button graphicsOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Graphics options", new Runnable()
+	Button graphicsOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Graphics options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -110,7 +110,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button soundOptions = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Sound options", new Runnable()
+	Button soundOptions = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Sound options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -120,7 +120,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button inputOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Input options", new Runnable()
+	Button inputOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Input options", new Runnable()
 	{
 		@Override
 		public void run()

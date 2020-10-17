@@ -11,7 +11,7 @@ public class ScreenBindInput extends Screen
     public String name;
     public Screen previous;
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -21,7 +21,7 @@ public class ScreenBindInput extends Screen
     }
     );
 
-    Button unbind = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Unbind", new Runnable()
+    Button unbind = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Unbind", new Runnable()
     {
         @Override
         public void run()
@@ -33,7 +33,7 @@ public class ScreenBindInput extends Screen
     }
     );
 
-    Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Reset", new Runnable()
+    Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Reset", new Runnable()
     {
         @Override
         public void run()

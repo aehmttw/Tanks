@@ -317,6 +317,8 @@ public class Button implements IDrawable, ITrigger
 			{
 				handled = true;
 
+				function.run();
+
 				if (!this.silent)
 				{
 					Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
@@ -324,7 +326,6 @@ public class Button implements IDrawable, ITrigger
 					Drawing.drawing.playVibration("click");
 				}
 
-				function.run();
 				this.justPressed = true;
 			}
 		}

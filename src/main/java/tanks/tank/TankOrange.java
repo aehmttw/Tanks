@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
+import tanks.Panel;
 import tanks.bullet.BulletFlame;
 import tanks.event.EventShootBullet;
 
@@ -43,6 +44,7 @@ public class TankOrange extends TankAIControlled
 					Drawing.drawing.playGlobalSound("flame.ogg");
 
 					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
+					b.frameDamageMultipler = Panel.frameFrequency;
 					b.setPolarMotion(this.angle, 25.0/8);
 					b.moveOut(16);
 					Game.movables.add(b);

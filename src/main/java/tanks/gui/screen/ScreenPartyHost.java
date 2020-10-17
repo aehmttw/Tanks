@@ -40,7 +40,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
     public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
 
-    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, 350, 40, "Random level", new Runnable()
+    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Random level", new Runnable()
     {
         @Override
         public void run()
@@ -73,7 +73,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     }
     );
 
-    Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, 350, 40, "Versus", new Runnable()
+    Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Versus", new Runnable()
     {
         @Override
         public void run()
@@ -89,7 +89,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     }
             , "Fight other players in this party---in a randomly generated level");
 
-    Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, 350, 40, "Crusades", new Runnable()
+    Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Crusades", new Runnable()
     {
         @Override
         public void run()
@@ -102,7 +102,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     },
             "Fight battles in an order,---and see how long you can survive!");
 
-    Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "My levels", new Runnable()
+    Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "My levels", new Runnable()
     {
         @Override
         public void run()
@@ -112,7 +112,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     },
             "Play levels you have created");
 
-    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Share a level", new Runnable()
+    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Share a level", new Runnable()
     {
         @Override
         public void run()
@@ -121,7 +121,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
         }
     });
 
-    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Shared levels", new Runnable()
+    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Shared levels", new Runnable()
     {
         @Override
         public void run()
@@ -131,7 +131,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     }
     );
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, 350, 40, "End party", new Runnable()
+    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, this.objWidth, this.objHeight, "End party", new Runnable()
     {
         @Override
         public void run()

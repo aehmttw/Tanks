@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
@@ -20,7 +17,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
     ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
     ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
 
-    Button replayCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Try again", new Runnable()
+    Button replayCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Try again", new Runnable()
     {
         @Override
         public void run()
@@ -31,7 +28,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
     }
     );
 
-    Button replayCrusadeWin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Replay the level", new Runnable()
+    Button replayCrusadeWin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
     {
         @Override
         public void run()
@@ -46,7 +43,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
             + "However, you can still earn coins!---"
             + "You will still lose a life if you die.");
 
-    Button nextLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, 350, 40, "Next level", new Runnable()
+    Button nextLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Next level", new Runnable()
     {
         @Override
         public void run()
@@ -59,11 +56,12 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
     }
     );
 
-    Button quitCrusadeEnd = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Back to party", new Runnable()
+    Button quitCrusadeEnd = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Crusade.crusadeMode = false;
             Crusade.currentCrusade = null;
             Game.screen = ScreenPartyHost.activeScreen;
@@ -71,11 +69,12 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
     }
     );
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Back to party", new Runnable()
+    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Crusade.crusadeMode = false;
             Game.screen = ScreenPartyHost.activeScreen;
             Crusade.currentCrusade.currentLevel++;
@@ -83,22 +82,24 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
     }
     );
 
-    Button quitLose = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Back to party", new Runnable()
+    Button quitLose = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Crusade.crusadeMode = false;
             Game.screen = ScreenPartyHost.activeScreen;
         }
     }
     );
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Continue", new Runnable()
+    Button next = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Continue", new Runnable()
     {
         @Override
         public void run()
         {
+            Game.resetTiles();
             Game.screen = new ScreenPartyLobby();
             ScreenGame.versus = false;
         }
@@ -116,6 +117,12 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
             else
                 Drawing.drawing.playSound("lose.ogg");
         }
+
+        if (Panel.win)
+            this.music = "win_music.ogg";
+        else
+            this.music = "lose_music.ogg";
+
 
         if (Panel.win && Game.fancyGraphics)
         {
@@ -192,7 +199,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
             }
         }
 
-        if (Panel.win && Game.fancyGraphics)
+        if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
             Drawing.drawing.setColor(255, 255, 255);
         else
             Drawing.drawing.setColor(0, 0, 0);

@@ -10,7 +10,7 @@ public class ScreenCrusadeEditWarning extends Screen
     public Screen previous;
     public Crusade crusade;
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2 + 60), this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -20,7 +20,7 @@ public class ScreenCrusadeEditWarning extends Screen
     }
     );
 
-    public Button confirm = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2), 350, 40, "Edit crusade", new Runnable()
+    public Button confirm = new Button(Drawing.drawing.interfaceSizeX / 2, (int) (Drawing.drawing.interfaceSizeY / 2), this.objWidth, this.objHeight, "Edit crusade", new Runnable()
     {
         @Override
         public void run()

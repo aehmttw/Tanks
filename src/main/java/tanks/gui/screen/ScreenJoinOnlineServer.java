@@ -22,7 +22,7 @@ public class ScreenJoinOnlineServer extends Screen
         ip.lowerCase = true;
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -44,7 +44,7 @@ public class ScreenJoinOnlineServer extends Screen
     },
             Game.lastOnlineServer);
 
-    Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Join", new Runnable()
+    Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Join", new Runnable()
     {
         @Override
         public void run()

@@ -1,6 +1,7 @@
 package tanks.gui;
 
 import tanks.Drawing;
+import tanks.Level;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,12 @@ public class ButtonList
 
     public boolean indexPrefix = false;
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Next page", new Runnable()
+    public double objWidth = 350;
+    public double objHeight = 40;
+    public double objXSpace = 380;
+    public double objYSpace = 60;
+
+    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
     {
         @Override
         public void run()
@@ -29,7 +35,7 @@ public class ButtonList
     }
     );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, 0, 350, 40, "Previous page", new Runnable()
+    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
         @Override
         public void run()
@@ -123,7 +129,12 @@ public class ButtonList
         if (rows * columns < buttons.size())
         {
             Drawing.drawing.setInterfaceFontSize(24);
-            Drawing.drawing.setColor(0, 0, 0);
+
+            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
+
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + xOffset, 20 + Drawing.drawing.interfaceSizeY / 2 + yOffset + controlsYOffset + ((rows + 1) / 2.0) * 60,
                     "Page " + (page + 1) + " of " + (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns))));
 

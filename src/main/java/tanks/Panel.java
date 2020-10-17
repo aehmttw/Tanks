@@ -122,6 +122,7 @@ public class Panel
 				Game.lastVersion = Game.version;
 				ScreenOptions.saveOptions(Game.homedir);
 				new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
+				((ScreenGame) Game.screen).introBattleMusicEnd = 0;
 			}
 
 			ScreenChangelog.Changelog.setupLogs();
@@ -157,13 +158,18 @@ public class Panel
 
 			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
 
-			introMusicEnd -= 30;
+			introMusicEnd -= 40;
 
 			if (Game.framework == Game.Framework.libgdx)
-				introMusicEnd -= 70;
+				introMusicEnd -= 40;
 
 			if (!tutorial)
 				Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
+			else
+			{
+				Drawing.drawing.playMusic("battle_intro.ogg", Game.musicVolume, false, "intro", 0, false);
+				introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
+			}
 
 			zoomTranslation.window = Game.game.window;
 		}
@@ -330,7 +336,7 @@ public class Panel
 		else
 			onlinePaused = false;
 
-		ScreenOverlayChatBox.update(!(Game.screen instanceof IHiddenChatboxScreen));
+		ScreenOverlayChat.update(!(Game.screen instanceof IHiddenChatboxScreen));
 
 		if (!onlinePaused)
 			Game.screen.update();
@@ -486,7 +492,7 @@ public class Panel
 		else
 			Game.screen.draw();
 
-		ScreenOverlayChatBox.draw(!(Game.screen instanceof IHiddenChatboxScreen));
+		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 
 		if (!(Game.screen instanceof ScreenExit))
 			this.drawBar();

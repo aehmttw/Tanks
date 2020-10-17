@@ -12,7 +12,7 @@ public class ScreenDebug extends Screen
         this.musicID = "menu";
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -22,7 +22,7 @@ public class ScreenDebug extends Screen
     }
     );
 
-    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Test keyboard", new Runnable()
+    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Test keyboard", new Runnable()
     {
         @Override
         public void run()
@@ -32,7 +32,7 @@ public class ScreenDebug extends Screen
     }
     );
 
-    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Test text boxes", new Runnable()
+    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Test text boxes", new Runnable()
     {
         @Override
         public void run()

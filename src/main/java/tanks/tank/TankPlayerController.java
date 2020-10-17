@@ -6,7 +6,10 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.event.EventTankControllerUpdateC;
+import tanks.hotbar.Hotbar;
+import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemRemote;
 
 import java.util.UUID;
 
@@ -78,7 +81,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
         if (this.tookRecoil)
         {
-            if (this.recoilSpeed <= this.maxSpeed * 1.0001)
+            if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)
             {
                 this.tookRecoil = false;
                 this.inControlOfMotion = true;
@@ -256,9 +259,19 @@ public class TankPlayerController extends Tank implements IPlayerTank
         {
             Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 
-            if (Game.player.hotbar.enabledItemBar && Game.player.hotbar.itemBar.slots[Game.player.hotbar.itemBar.selected] instanceof ItemBullet)
+            Hotbar h = Game.player.hotbar;
+            if (h.enabledItemBar && h.itemBar.selected >= 0)
             {
-                r.bounces = ((ItemBullet)Game.player.hotbar.itemBar.slots[Game.player.hotbar.itemBar.selected]).bounces;
+                Item i = h.itemBar.slots[h.itemBar.selected];
+                if (i instanceof ItemBullet)
+                {
+                    r.bounces = ((ItemBullet) i).bounces;
+
+                    if (((ItemBullet) i).className.equals("electric"))
+                        r.bounces = 0;
+                }
+                else if (i instanceof ItemRemote && ((ItemRemote)i).bounces >= 0)
+                    r.bounces = ((ItemRemote)i).bounces;
             }
 
             r.vX /= 2;

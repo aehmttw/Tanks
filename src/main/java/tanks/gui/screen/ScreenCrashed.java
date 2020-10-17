@@ -14,7 +14,7 @@ public class ScreenCrashed extends Screen
 			sadFace = ":)";
 	}
 
-	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, 350, 40, "Exit the game", new Runnable()
+	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run()
@@ -24,7 +24,7 @@ public class ScreenCrashed extends Screen
 	}
 	);
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, 350, 40, "Return to title", new Runnable()
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, this.objWidth, this.objHeight, "Return to title", new Runnable()
 	{
 		@Override
 		public void run()

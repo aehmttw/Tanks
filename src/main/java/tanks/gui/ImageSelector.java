@@ -44,6 +44,7 @@ public class ImageSelector extends Selector
     {
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.drawImages = true;
+        s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;
     }
 }

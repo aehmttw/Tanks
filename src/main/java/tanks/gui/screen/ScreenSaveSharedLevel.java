@@ -19,7 +19,7 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
 
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -30,7 +30,7 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
         }
     });
 
-    public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, 350, 40, "Download", new Runnable()
+    public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Download", new Runnable()
     {
         @Override
         public void run()
@@ -84,7 +84,7 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
 
         Obstacle.draw_size = Game.tile_size;
 
-        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, 350, 40, "Level save name", new Runnable()
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, this.objWidth, this.objHeight, "Level save name", new Runnable()
         {
             @Override
             public void run()

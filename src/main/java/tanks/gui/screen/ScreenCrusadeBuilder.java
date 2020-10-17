@@ -11,7 +11,7 @@ import tanks.registry.RegistryItem;
 
 import java.util.ArrayList;
 
-public class ScreenCrusadeBuilder extends ItemScreen
+public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 {
     public enum Mode {options, levels, items}
 
@@ -31,7 +31,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
 
     public int titleOffset = -270;
 
-    public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit", new Runnable()
+    public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Exit", new Runnable()
     {
         @Override
         public void run()
@@ -42,7 +42,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
     }
     );
 
-    public Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Exit", new Runnable()
+    public Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Exit", new Runnable()
     {
         @Override
         public void run()
@@ -52,7 +52,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
     }
     );
 
-    public Button options = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, 60, 350, 40, "Options", new Runnable()
+    public Button options = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, 60, this.objWidth, this.objHeight, "Options", new Runnable()
     {
         @Override
         public void run()
@@ -61,7 +61,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
         }
     });
 
-    public Button levels = new Button(Drawing.drawing.interfaceSizeX / 2, 60, 350, 40, "Levels", new Runnable()
+    public Button levels = new Button(Drawing.drawing.interfaceSizeX / 2, 60, this.objWidth, this.objHeight, "Levels", new Runnable()
     {
         @Override
         public void run()
@@ -70,7 +70,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
         }
     });
 
-    public Button items = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, 60, 350, 40, "Items", new Runnable()
+    public Button items = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, 60, this.objWidth, this.objHeight, "Shop", new Runnable()
     {
         @Override
         public void run()
@@ -79,7 +79,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
         }
     });
 
-    public Button addLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Add level", new Runnable()
+    public Button addLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add level", new Runnable()
     {
         @Override
         public void run()
@@ -89,7 +89,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
     }
     );
 
-    public Button addItem = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Add item", new Runnable()
+    public Button addItem = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add item", new Runnable()
     {
         @Override
         public void run()
@@ -132,7 +132,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
 
         itemSelector.quick = true;
 
-        crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, 350, 40, "Crusade name", new Runnable()
+        crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Crusade name", new Runnable()
         {
             @Override
             public void run()
@@ -164,7 +164,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
 
         crusadeName.enableCaps = true;
 
-        startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Starting lives", new Runnable()
+        startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Starting lives", new Runnable()
         {
             @Override
             public void run()
@@ -182,7 +182,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
         startingLives.minValue = 1;
         startingLives.checkMinValue = true;
 
-        bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, 350, 40, "Bonus life frequency", new Runnable()
+        bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Bonus life frequency", new Runnable()
         {
             @Override
             public void run()
@@ -229,7 +229,7 @@ public class ScreenCrusadeBuilder extends ItemScreen
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
             int j = i;
-            this.levelButtons.buttons.add(new Button(0, 0, 350, 40, this.crusade.levelNames.get(i).replace("_", " "), new Runnable()
+            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), new Runnable()
             {
                 @Override
                 public void run()
@@ -255,12 +255,12 @@ public class ScreenCrusadeBuilder extends ItemScreen
         {
             int j = i;
 
-            Button b = new Button(0, 0, 350, 40, this.crusade.crusadeItems.get(i).name, new Runnable()
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeItems.get(i).name, new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    Game.screen = new ScreenEditItem(crusade.crusadeItems.get(j), (ItemScreen) Game.screen);
+                    Game.screen = new ScreenEditItem(crusade.crusadeItems.get(j), (IItemScreen) Game.screen);
                 }
             });
 

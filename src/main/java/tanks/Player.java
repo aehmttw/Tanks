@@ -124,6 +124,7 @@ public class Player
             c.crusadeItembars.put(this, new ItemBar(this));
 
             String[] items = f.nextLine().split("\\|");
+            f.stopReading();
 
             ArrayList<Item> shop = c.getShop();
 
@@ -143,13 +144,26 @@ public class Player
                 }
             }
 
-            f.stopReading();
-
             return c;
         }
         catch (Exception e)
         {
-            Game.exitToCrash(e);
+            System.err.println("Failed to load saved crusade progress (log file includes contents): ");
+            e.printStackTrace();
+            Game.logger.println("Failed to load saved crusade progress: ");
+            e.printStackTrace(Game.logger);
+            Game.logger.println("Progress file contents:");
+
+            try
+            {
+                f.startReading();
+                while (f.hasNextLine())
+                    Game.logger.println(f.nextLine());
+            }
+            catch (Exception e2)
+            {
+                e2.printStackTrace();
+            }
         }
 
         return null;

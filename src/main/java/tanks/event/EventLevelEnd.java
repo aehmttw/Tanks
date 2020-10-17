@@ -27,8 +27,6 @@ public class EventLevelEnd extends PersonalEvent
 		if (this.clientID != null)
 			return;
 
-		Game.cleanUp();
-
 		if (Game.clientID.toString().equals(winningTeam) || (Game.playerTank != null && Game.playerTank.team != null && Game.playerTank.team.name.equals(this.winningTeam)))
 		{
 			Panel.win = true;

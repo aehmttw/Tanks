@@ -9,12 +9,14 @@ import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
 
+import java.net.URL;
+
 public class ScreenTitle extends Screen
 {
 	boolean controlPlayer = false;
 	TankPlayer logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
 
-	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Exit the game", new Runnable()
+	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -34,7 +36,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Options", new Runnable()
+	Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -45,7 +47,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 
-	Button debug = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, 350, 40, "Debug menu", new Runnable()
+	Button debug = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, this.objWidth, this.objHeight, "Debug menu", new Runnable()
 	{
 		@Override
 		public void run()
@@ -55,8 +57,19 @@ public class ScreenTitle extends Screen
 		}
 	}
 	);
+
+	Button about = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "About", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.silentCleanUp();
+			Game.screen = new ScreenAbout();
+		}
+	}
+	);
 	
-	Button play = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Play!", new Runnable()
+	Button play = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Play!", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -111,6 +124,8 @@ public class ScreenTitle extends Screen
 		if (Game.debug)
 			debug.update();
 
+		about.update();
+
 		if (this.controlPlayer)
 		{
 			Obstacle.draw_size = Game.tile_size;
@@ -150,6 +165,8 @@ public class ScreenTitle extends Screen
 
 		if (Game.debug)
 			debug.draw();
+
+		about.draw();
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(60);

@@ -6,7 +6,7 @@ import tanks.gui.Button;
 
 public class ScreenPlay extends Screen
 {
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -16,7 +16,7 @@ public class ScreenPlay extends Screen
 	}
 	);
 
-	Button singleplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 350, 40, "Singleplayer", new Runnable()
+	Button singleplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Singleplayer", new Runnable()
 	{
 		@Override
 		public void run()
@@ -26,7 +26,7 @@ public class ScreenPlay extends Screen
 	}
 	, "Play random levels, crusades,---the tutorial, or make your own levels!");
 
-	Button multiplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 350, 40, "Multiplayer", new Runnable()
+	Button multiplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Multiplayer", new Runnable()
 	{
 		@Override
 		public void run()

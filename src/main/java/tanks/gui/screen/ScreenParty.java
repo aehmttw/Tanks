@@ -23,7 +23,7 @@ public class ScreenParty extends Screen
 		this.musicID = "menu";
 	}
 	
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, 350, 40, "Back", new Runnable()
+	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -33,7 +33,7 @@ public class ScreenParty extends Screen
 	}
 	);
 	
-	Button create = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 350, 40, "Create a party", new Runnable()
+	Button create = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Create a party", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -57,7 +57,7 @@ public class ScreenParty extends Screen
 	}
 	);
 	
-	Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, 350, 40, "Join a party", new Runnable()
+	Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Join a party", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -67,7 +67,7 @@ public class ScreenParty extends Screen
 	}
 	);
 	
-	TextBox port = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, 350, 40, "Port", new Runnable()
+	TextBox port = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Port", new Runnable()
 	{
 		@Override
 		public void run() 

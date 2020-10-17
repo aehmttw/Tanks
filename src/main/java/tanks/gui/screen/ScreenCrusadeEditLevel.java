@@ -22,7 +22,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Back", new Runnable()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Cancel", new Runnable()
     {
         @Override
         public void run()
@@ -41,7 +41,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
     });
 
-    public Button remove = new Button(200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Remove level", new Runnable()
+    public Button remove = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Remove level", new Runnable()
     {
         @Override
         public void run()
@@ -53,7 +53,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
     });
 
-    public Button add = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Add level", new Runnable()
+    public Button add = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Add level", new Runnable()
     {
         @Override
         public void run()
@@ -100,7 +100,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         this.previous = s;
         this.previous2 = s2;
 
-        index = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, 350, 40, "Level position", new Runnable()
+        index = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level position", new Runnable()
         {
             @Override
             public void run()
@@ -144,6 +144,12 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 if (o.replaceTiles)
                     o.postOverride();
             }
+
+        if (Game.game.input.editorPause.isValid())
+        {
+            back.function.run();
+            Game.game.input.editorPause.invalidate();
+        }
     }
 
     public void drawLevel()

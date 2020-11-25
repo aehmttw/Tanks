@@ -31,13 +31,11 @@ The following are three screenshots of the game in action. The user controls the
 ## Installation
 
 To use the game you need to install Java. For this purpose you may need
-administrator privileges to install software on your machine. You can install java 
-from [java.com](https://java.com/download). <br>
+administrator privileges to install software on your machine. You can install Java 
+from [java.com](https://java.com/download). The minimum Java version is Java 8.<br>
 
-You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ6TlP255XMw8D8VGY) for main.java.tanks.
-This comes as a zip, extract the zip file and you will have the jar file and a run command for mac.  
-To run the jar file on Windows you can double-click on it. For Mac, you need to run the jar file with the
-argument -XstartOnFirstThread, or by using the file whose name starts with RunTanks.
+You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ6TlP255XMw8D8VGY) for Tanks.
+To run the jar file you can double-click on it. 
 
 ## Development
 
@@ -45,7 +43,7 @@ To develop the game we suggest using Eclipse or IntelliJ. Eclipse can be install
 [eclipse.org](http://www.eclipse.org/downloads/). IntelliJ can be installed from 
 [jetbrains.com](https://www.jetbrains.com/idea/download/)<br>
 
-To access the source code you also need to install git.<br>
+To access the source code you also need to install Git.<br>
 
 You will need to add the following libraries to the build path of the project: <br>
 PNGDecoder by Matthias Mann in TWL<br>

@@ -16,8 +16,11 @@ Press escape to pause the game<br>
 Left click to place<br>
 Right click on an object to destroy it<br>
 Right click on nothing to rotate the object you are placing<br>
-Press up and down arrow keys or scroll to cycle enemy main.java.tanks<br>
+Press up and down arrow keys or scroll to cycle enemy tanks<br>
 Press left and right arrow keys to cycle enemy tank, obstacle, player tank<br>
+Press space to access the object menu<br>
+Press escape to change level settings<br>
+Press enter to play your level<br>
 
 The following are three screenshots of the game in action. The user controls the azure blue tank using the mouse or keyboard.
 
@@ -38,8 +41,8 @@ argument -XstartOnFirstThread, or by using the file whose name starts with RunTa
 
 ## Development
 
-To develop the game we suggest using Eclipse or IntelliJ.  Eclipse can be installed from 
-[eclipse.org](http://www.eclipse.org/downloads/).  IntelliJ can be installed from 
+To develop the game we suggest using Eclipse or IntelliJ. Eclipse can be installed from 
+[eclipse.org](http://www.eclipse.org/downloads/). IntelliJ can be installed from 
 [jetbrains.com](https://www.jetbrains.com/idea/download/)<br>
 
 To access the source code you also need to install git.<br>

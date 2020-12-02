@@ -34,7 +34,7 @@ To use the game you need to install Java. For this purpose you may need
 administrator privileges to install software on your machine. You can install Java 
 from [java.com](https://java.com/download). The minimum Java version is Java 8.<br>
 
-You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ6TlP255XMw8D8VGY) for Tanks.
+You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ-ltbmsJuG2pZdfVk?e=fg7P0k) for Tanks.
 To run the jar file you can double-click on it. 
 
 ## Development

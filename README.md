@@ -47,6 +47,7 @@ To access the source code you also need to install Git.<br>
 
 You will need to add the following libraries to the build path of the project: <br>
 PNGDecoder by Matthias Mann in TWL<br>
+Netty<br>
 All the jars and natives of the following LWJGL libraries:<br>
 LWJGL (core)<br>
 OpenGL<br>

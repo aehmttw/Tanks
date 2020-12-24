@@ -7,14 +7,12 @@ import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
-import tanksonline.UploadedLevel;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.UUID;
 
-public class ScreenPartyHost extends Screen implements IPartyMenuScreen
+public class ScreenPartyHost extends Screen
 {
     Thread serverThread;
     public static Server server;
@@ -39,6 +37,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     public static ChatBox chatbox;
 
     public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
+    public SynchronizedList<SharedCrusade> sharedCrusades = new SynchronizedList<>();
 
     Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Random level", new Runnable()
     {
@@ -112,21 +111,21 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
     },
             "Play levels you have created");
 
-    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Share a level", new Runnable()
+    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Upload", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenShareLevel();
+            Game.screen = new ScreenShareSelect();
         }
     });
 
-    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Shared levels", new Runnable()
+    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Download", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenSharedLevels(sharedLevels);
+            Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades);
         }
     }
     );
@@ -143,6 +142,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
     public ScreenPartyHost()
     {
+        super(350, 40, 380, 60);
+
         this.music = "tomato_feast_3.ogg";
         this.musicID = "menu";
 
@@ -151,8 +152,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
             @Override
             public void run()
             {
-                ScreenPartyHost.chat.add(0, new ChatMessage(Game.player.username, ScreenPartyHost.chatbox.inputText));
-                Game.eventsOut.add(new EventPlayerChat(Game.player.username, ScreenPartyHost.chatbox.inputText));
+                ScreenPartyHost.chat.add(0, new ChatMessage(Game.player, ScreenPartyHost.chatbox.inputText));
+                Game.eventsOut.add(new EventPlayerChat(Game.player, ScreenPartyHost.chatbox.inputText));
             }
         });
 
@@ -188,6 +189,8 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
             kickButtons[i].selectedColR = 255;
             kickButtons[i].selectedColG = 127;
             kickButtons[i].selectedColB = 127;
+
+            kickButtons[i].fontSize = this.textSize;
         }
 
         activeScreen = this;
@@ -232,6 +235,9 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
                 if (ip.contains("%"))
                     ip = "Connect to a network to play with others!";
+
+                if (ip.contains("127.0.0.1"))
+                    ip = "Party host";
 
             }
         }
@@ -286,7 +292,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Play:");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 80, "Level sharing:");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 80, "Level and crusade sharing:");
 
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
 
@@ -317,7 +323,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
                     {
                         try
                         {
-                            Drawing.drawing.setInterfaceFontSize(24);
+                            Drawing.drawing.setInterfaceFontSize(this.textSize);
                             Drawing.drawing.setColor(0, 0, 0);
                             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190,
                                     Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
@@ -325,7 +331,7 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
 
                             this.kickButtons[i - this.usernamePage * entries_per_page].draw();
 
-                            Drawing.drawing.setInterfaceFontSize(12);
+                            Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
                             Drawing.drawing.setColor(0, 0, 0);
                             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 370,
                                     Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
@@ -350,6 +356,20 @@ public class ScreenPartyHost extends Screen implements IPartyMenuScreen
         public SharedLevel(String level, String name, String creator)
         {
             this.level = level;
+            this.name = name;
+            this.creator = creator;
+        }
+    }
+
+    public static class SharedCrusade
+    {
+        public String crusade;
+        public String name;
+        public String creator;
+
+        public SharedCrusade(String crusade, String name, String creator)
+        {
+            this.crusade = crusade;
             this.name = name;
             this.creator = creator;
         }

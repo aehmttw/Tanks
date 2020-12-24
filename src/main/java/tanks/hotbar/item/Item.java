@@ -43,7 +43,7 @@ public abstract class Item
 	{
 		new ItemPropertyString(this.properties,"name", this.name);
 		new ItemPropertyImageSelector(this.properties, "icon", new String[]
-				{"bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
+				{"item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
 						"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png",
 						"mine.png",
 						"shield.png", "shield_gold.png"},0);

@@ -3,10 +3,9 @@ package tanks.obstacle;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.EventObstacleSnowMelt;
-import tanks.gui.screen.ILevelPreviewScreen;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 
 public class ObstacleSnow extends Obstacle
 {
@@ -17,6 +16,8 @@ public class ObstacleSnow extends Obstacle
     public double baseColorB;
 
     public double visualDepth = 1;
+
+    protected double lastFinalHeight;
 
     public ObstacleSnow(String name, double posX, double posY)
     {
@@ -33,8 +34,13 @@ public class ObstacleSnow extends Obstacle
         this.checkForObjects = true;
         this.enableStacking = false;
         this.destroyEffect = Effect.EffectType.snow;
+        this.destroyEffectAmount = 0.25;
 
         double darkness = Math.random() * 20;
+
+        if (!Game.fancyGraphics)
+            darkness = 10;
+
         this.colorR = 255 - darkness;
         this.colorG = 255 - darkness * 0.75;
         this.colorB = 255 - darkness * 0.5;
@@ -55,10 +61,13 @@ public class ObstacleSnow extends Obstacle
             a.deteriorationAge = 20;
             m.addUnduplicateAttribute(a);
 
-            AttributeModifier b = new AttributeModifier("show_friction", "friction", AttributeModifier.Operation.multiply, 4);
-            b.duration = 10;
-            b.deteriorationAge = 5;
-            m.addUnduplicateAttribute(b);
+            if (!(m instanceof TankAIControlled))
+            {
+                AttributeModifier b = new AttributeModifier("snow_friction", "friction", AttributeModifier.Operation.multiply, 4);
+                b.duration = 10;
+                b.deteriorationAge = 5;
+                m.addUnduplicateAttribute(b);
+            }
 
             this.depth -= Panel.frameFrequency * 0.005;
 
@@ -78,10 +87,7 @@ public class ObstacleSnow extends Obstacle
         {
             double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 
-            double mul = 0.25;
-
-            if (m instanceof Bullet)
-                mul *= 0.25;
+            double mul = 0.0625 / 4;
 
             double amt = speed * mul * Panel.frameFrequency;
 
@@ -108,14 +114,15 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw()
     {
-        this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);
+        if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
+            this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);
 
-        if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+        if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
         {
             this.visualDepth = 0.5;
         }
 
-        if (ScreenGame.finishedQuick)
+        if (ScreenGame.finishedQuick && Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
         {
             this.visualDepth = Math.max(0.5, this.visualDepth - Panel.frameFrequency / 127);
         }
@@ -131,14 +138,37 @@ public class ObstacleSnow extends Obstacle
         }
         else
         {
-            double base = Game.sampleHeight(this.posX, this.posY);
-            double z = this.depth * 0.8 * (Obstacle.draw_size - base);
+            double base = Game.sampleGroundHeight(this.posX, this.posY);
+            double z = Math.max(this.depth * 0.8 * (Obstacle.draw_size - base), 0);
+
+            this.lastFinalHeight = 0;
 
             if (z > 0)
             {
-                Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-                Drawing.drawing.fillBox(this.posX, this.posY, Game.sampleHeight(this.posX, this.posY), Game.tile_size, Game.tile_size, z * this.visualDepth);
+                this.lastFinalHeight = z * this.visualDepth;
+                int x = Math.min(Game.currentSizeX, (int) Math.max(0, this.posX / Game.tile_size));
+                int y = Math.min(Game.currentSizeY, (int) Math.max(0, this.posY / Game.tile_size));
+
+                double r = Game.tilesR[x][y];
+                double g = Game.tilesG[x][y];
+                double b = Game.tilesB[x][y];
+
+                if (!Game.fancyGraphics)
+                {
+                    r = Level.currentColorR;
+                    g = Level.currentColorG;
+                    b = Level.currentColorB;
+                }
+
+                double frac = z / (this.depth * 0.8 * (Game.tile_size - base));
+                Drawing.drawing.setColor(this.colorR * frac + r * (1 - frac), this.colorG * frac + g * (1 - frac), this.colorB * frac + b * (1 - frac));
+                Drawing.drawing.fillBox(this.posX, this.posY, Game.sampleGroundHeight(this.posX, this.posY), Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
             }
         }
+    }
+
+    public double getTileHeight()
+    {
+        return this.lastFinalHeight + Game.sampleGroundHeight(this.posX, this.posY);
     }
 }

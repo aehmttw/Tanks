@@ -19,7 +19,7 @@ public class ScreenConnectionCheck extends Screen
 		this.screen = s;
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Ok", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -70,16 +70,16 @@ public class ScreenConnectionCheck extends Screen
 		this.drawDefaultBackground();
 
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
 		if (!this.connecting)
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "You must connect to a network to play with others!");
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, "You must connect to a network to play with others!");
 			back.draw();
 		}
 		else
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "One moment please...");
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "One moment please...");
 		}
 	}
 

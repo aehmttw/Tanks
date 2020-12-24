@@ -5,9 +5,9 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.network.Client;
 
-public class ScreenConfirmLeaveParty extends Screen implements IPartyMenuScreen
+public class ScreenConfirmLeaveParty extends Screen
 {
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back", new Runnable()
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -17,7 +17,7 @@ public class ScreenConfirmLeaveParty extends Screen implements IPartyMenuScreen
     }
     );
 
-    public Button confirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Leave party", new Runnable()
+    public Button confirm = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Leave party", new Runnable()
     {
         @Override
         public void run()
@@ -53,7 +53,7 @@ public class ScreenConfirmLeaveParty extends Screen implements IPartyMenuScreen
         confirm.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 100, "Are you sure you want to leave the party?");
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 / 3, "Are you sure you want to leave the party?");
     }
 }

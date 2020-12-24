@@ -11,7 +11,7 @@ public class ScreenSavedLevels extends Screen
 
 	public SavedFilesList savedFilesList;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -21,7 +21,7 @@ public class ScreenSavedLevels extends Screen
 	}
 			);
 
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "New level", new Runnable()
+	Button newLevel = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "New level", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -39,6 +39,8 @@ public class ScreenSavedLevels extends Screen
 
 	public ScreenSavedLevels()
 	{
+		super(350, 40, 380, 60);
+
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
@@ -72,8 +74,8 @@ public class ScreenSavedLevels extends Screen
 		quit.draw();
 		newLevel.draw();
 
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "My levels");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "My levels");
 	}
 }

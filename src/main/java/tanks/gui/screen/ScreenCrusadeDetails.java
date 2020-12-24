@@ -4,13 +4,12 @@ import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
 
-public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
+public class ScreenCrusadeDetails extends Screen
 {
     public Crusade crusade;
 
-    public Button begin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Play", new Runnable()
+    public Button begin = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Play", new Runnable()
     {
         @Override
         public void run()
@@ -22,7 +21,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Resume", new Runnable()
+    public Button resume = new Button(this.centerX, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Resume", new Runnable()
     {
         @Override
         public void run()
@@ -34,7 +33,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button startOver = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Start over", new Runnable()
+    public Button startOver = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Start over", new Runnable()
     {
         @Override
         public void run()
@@ -46,7 +45,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Edit", new Runnable()
+    public Button edit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", new Runnable()
     {
         @Override
         public void run()
@@ -58,7 +57,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Delete crusade", new Runnable()
+    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", new Runnable()
     {
         @Override
         public void run()
@@ -67,7 +66,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -79,7 +78,7 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         }
     });
 
-    public Button back2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Back", new Runnable()
+    public Button back2 = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -133,15 +132,15 @@ public class ScreenCrusadeDetails extends Screen implements IPartyMenuScreen
         this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(48);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, crusade.name.replace("_", " "));
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, "Levels: " + crusade.levels.size());
+        Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, crusade.name.replace("_", " "));
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Levels: " + crusade.levels.size());
 
         if (crusade.started && !ScreenPartyHost.isServer)
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "Current battle: " + (crusade.currentLevel + 1));
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "Remaining lives: " + Game.player.remainingLives);
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "Current battle: " + (crusade.currentLevel + 1));
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Remaining lives: " + Game.player.remainingLives);
         }
 
         if (!(crusade.readOnly || crusade.internal || ScreenPartyHost.isServer))

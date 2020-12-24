@@ -7,6 +7,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 	public static final int default_max_height = 4;
 
 	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
+	public double destroyEffectAmount = 1;
+
 	public boolean destructible = true;
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
@@ -106,9 +108,9 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 				}
 
 				if (stackHeight % 1 == 0)
-					drawing.fillBox(this.posX, this.posY, i * Game.tile_size, draw_size, draw_size, draw_size, option);
+					drawing.fillBox(this.posX, this.posY, i * Game.tile_size, draw_size, draw_size, draw_size, (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size)));
 				else
-					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size, draw_size, draw_size, draw_size, option);
+					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size, draw_size, draw_size, draw_size, (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size)));
 			}
 		}
 		else
@@ -196,16 +198,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 		}
 
 		return false;
-
-		/*for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-			
-			if (o.bulletCollision && o.posY == this.posY && o.posX - this.posX <= Game.tile_size && o.posX - this.posX > 0)
-				return true;
-		}
-		
-		return false;*/
 	}
 	
 	public boolean hasUpperNeighbor()
@@ -219,16 +211,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 		}
 
 		return false;
-
-		/*for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-			
-			if (o.bulletCollision && o.posX == this.posX && this.posY - o.posY <= Game.tile_size && this.posY - o.posY > 0)
-				return true;
-		}
-		
-		return false;*/
 	}
 	
 	public boolean hasLowerNeighbor()
@@ -242,16 +224,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 		}
 
 		return false;
-
-		/*for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-			
-			if (o.bulletCollision && o.posX == this.posX && o.posY - this.posY <= Game.tile_size && o.posY - this.posY > 0)
-				return true;
-		}
-		
-		return false;*/
 	}
 	
 	public void drawTile(double r, double g, double b, double d)
@@ -335,5 +307,35 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 		this.validFaces[0] = !this.hasLeftNeighbor();
 		this.validFaces[1] = !this.hasRightNeighbor();
 		return this.validFaces;
+	}
+
+	public double getTileHeight()
+	{
+		if (Obstacle.draw_size < Game.tile_size)
+			return 0;
+
+		return this.stackHeight * Game.tile_size;
+	}
+
+	public byte getOptionsByte(double h)
+	{
+		byte o = 0;
+
+		if (Obstacle.draw_size < Game.tile_size)
+			return 0;
+
+		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
+			o += 4;
+
+		if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h)
+			o += 8;
+
+		if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h)
+			o += 16;
+
+		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
+			o += 32;
+
+		return o;
 	}
 }

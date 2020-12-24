@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
+import tanks.network.Client;
 
 public class ScreenConnecting extends Screen
 {
@@ -23,12 +24,13 @@ public class ScreenConnecting extends Screen
 		this.thread = t;
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
-		public void run() 
+		public void run()
 		{
 			Game.screen = Game.lastOfflineScreen;
+			Client.connectionID = null;
 			try
 			{
 				thread.stop();
@@ -42,18 +44,18 @@ public class ScreenConnecting extends Screen
 	);
 
 	@Override
-	public void update() 
+	public void update()
 	{
 		back.update();
 		time += Panel.frameFrequency;
 	}
 
 	@Override
-	public void draw() 
+	public void draw()
 	{
 		this.drawDefaultBackground();
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
 		double size = Math.min(1, time / 50);
 		double size2 = Math.min(1, Math.max(0, time / 50 - 0.25));
@@ -61,7 +63,7 @@ public class ScreenConnecting extends Screen
 
 		if (!this.finished)
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.text);
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, this.text);
 
 			Drawing.drawing.setColor(0, 0, 0);
 
@@ -71,10 +73,13 @@ public class ScreenConnecting extends Screen
 		}
 		else
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.text);
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.text);
 
-			Drawing.drawing.setInterfaceFontSize(14);
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.exception);
+			if (Drawing.drawing.interfaceScaleZoom > 1)
+				Drawing.drawing.setInterfaceFontSize(this.textSize * 5 / 12);
+			else
+				Drawing.drawing.setInterfaceFontSize(this.textSize * 7 / 12);
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, this.exception);
 		}
 
 		back.draw();
@@ -86,8 +91,8 @@ public class ScreenConnecting extends Screen
 		{
 			double frac = (System.currentTimeMillis() / 1000.0 * speed + i / 100.0) % 1;
 			double s = (i % (max * 1.0 / parts)) / 10.0 * parts;
-			Drawing.drawing.fillInterfaceOval(Drawing.drawing.interfaceSizeX / 2 + size * Math.cos(frac * Math.PI * 2),
-					Drawing.drawing.interfaceSizeY / 2 - 25 + size * Math.sin(frac * Math.PI * 2),
+			Drawing.drawing.fillInterfaceOval(this.centerX + size * Math.cos(frac * Math.PI * 2),
+					this.centerY - this.objYSpace * 5 / 12 + size * Math.sin(frac * Math.PI * 2),
 					s * dotSize, s * dotSize);
 		}
 	}

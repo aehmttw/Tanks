@@ -46,7 +46,7 @@ public class Model
     }
 
 
-    static abstract class Shape
+    public static abstract class Shape
     {
         public double brightness = 1;
 
@@ -54,7 +54,7 @@ public class Model
         public abstract void draw(double posX, double posY, double sX, double sY, double yaw);
     }
 
-    static class Point
+    public static class Point
     {
         public double x;
         public double y;
@@ -68,7 +68,7 @@ public class Model
         }
     }
 
-    static class Triangle extends Shape
+    public static class Triangle extends Shape
     {
         public Point[] points = new Point[3];
 
@@ -104,7 +104,7 @@ public class Model
         }
     }
 
-    static class Quad extends Shape
+    public static class Quad extends Shape
     {
         public Point[] points = new Point[4];
 
@@ -157,7 +157,7 @@ public class Model
         }
     }
 
-    static class LegacySquare extends Shape
+    public static class LegacySquare extends Shape
     {
         public double width;
         public double height;

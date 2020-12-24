@@ -14,6 +14,8 @@ import tanks.gui.screen.ScreenKicked;
 import tanks.gui.screen.ScreenOverlayOnline;
 import tanks.gui.screen.ScreenPartyLobby;
 
+import java.util.UUID;
+
 public class ClientHandler extends ChannelInboundHandlerAdapter 
 {	
 	public String message = "";
@@ -31,14 +33,24 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
 	public boolean online;
 
-	public ClientHandler(boolean online)
+	public UUID connectionID;
+
+	public ClientHandler(boolean online, UUID connectionID)
 	{
 		this.online = online;
+		this.connectionID = connectionID;
 	}
 
 	@Override
     public void channelActive(ChannelHandlerContext ctx)
     {
+    	if (this.connectionID != Client.connectionID)
+		{
+			ScreenPartyLobby.isClient = false;
+			ctx.close();
+			return;
+		}
+
     	if (this.online)
 		{
 			Game.connectedToOnline = true;
@@ -97,6 +109,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		ScreenPartyLobby.isClient = false;
     	Game.connectedToOnline = false;
 		ReferenceCountUtil.release(this.reader.queue);
+
+		Client.connectionID = null;
     }
 	
     @Override

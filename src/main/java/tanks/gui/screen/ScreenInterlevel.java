@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import basewindow.transformation.RotationAboutPoint;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
@@ -21,7 +22,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	public static double firework_frequency = 0.08;
 
-	Button replay = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+	Button replay = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -33,7 +34,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Try again", new Runnable()
+	Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", new Runnable()
 	{
 		@Override
 		public void run()
@@ -45,7 +46,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Try again", new Runnable()
+	Button replayTutorial = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", new Runnable()
 	{
 		@Override
 		public void run()
@@ -55,7 +56,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayTutorial2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Try again", new Runnable()
+	Button replayTutorial2 = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Try again", new Runnable()
 	{
 		@Override
 		public void run()
@@ -65,7 +66,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back to title", new Runnable()
+	Button quitTutorial = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -76,7 +77,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayCrusadeWin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+	Button replayCrusadeWin = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -92,7 +93,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			+ "However, you can still earn coins!---"
 			+ "You will still lose a life if you die.");
 
-	Button save = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Save this level", new Runnable()
+	Button save = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Save this level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -113,7 +114,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
+	Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -124,7 +125,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button nextLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Next level", new Runnable()
+	Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Next level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -137,7 +138,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitCrusadeEnd = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Back to title", new Runnable()
+	Button quitCrusadeEnd = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -149,7 +150,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Quit to title", new Runnable()
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -159,7 +160,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to my levels", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to my levels", new Runnable()
 	{
 		@Override
 		public void run()
@@ -172,7 +173,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button exitTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Let's go!", new Runnable()
+	Button exitTutorial = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Let's go!", new Runnable()
 	{
 		@Override
 		public void run()
@@ -200,7 +201,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -217,7 +218,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			Game.exitToTitle();
 		}
 	}
-			, "You will be able to return to the crusade---through the crusade button on---the play screen.");
+			, "Your crusade progress will be saved.");
 
 	@Override
 	public void update()
@@ -379,40 +380,47 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
-
-
 		if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
 			Drawing.drawing.setColor(255, 255, 255);
 		else
 			Drawing.drawing.setColor(0, 0, 0);
 
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
 		if (tutorialInitial)
 		{
 			if (Panel.win)
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Congratulations! You are now ready to play!");
+				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "Congratulations! You are now ready to play!");
 			else
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, Panel.winlose);
+				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, Panel.winlose);
 		}
 		else if (Crusade.crusadeMode)
 		{
 			if (Crusade.currentCrusade.win)
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 190, "You finished the crusade!");
+				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, "You finished the crusade!");
 			else if (Crusade.currentCrusade.lose)
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 190, "Game over!");
+				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, "Game over!");
 			else
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 190, Panel.winlose);
+				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, Panel.winlose);
 		}
 		else
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, Panel.winlose);
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
+
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
 		if (Crusade.crusadeMode)
 		{
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Game.player.remainingLives);
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: " + Game.player.remainingLives);
 
 			if (Crusade.currentCrusade.lifeGained)
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, "You gained a life for clearing Battle " + (Crusade.currentCrusade.currentLevel + 1) + "!");
+			{
+				double frac = 25.0 / 6;
+
+				if (Drawing.drawing.interfaceScaleZoom > 1)
+					frac = 23.0 / 6;
+
+				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * frac, "You gained a life for clearing Battle " + (Crusade.currentCrusade.currentLevel + 1) + "!");
+			}
 		}
 
 		if (Panel.win && Game.fancyGraphics)

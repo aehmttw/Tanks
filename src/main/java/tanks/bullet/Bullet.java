@@ -211,12 +211,6 @@ public class Bullet extends Movable implements IDrawable
 		if (o instanceof Bullet && !((Bullet) o).enableExternalCollisions)
 			return;
 
-		if (o instanceof Bullet)
-		{
-			if (this.playPopSound)
-				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / ((Bullet) o).size));
-		}
-
 		if (!heavy)
 		{
 			if (this.playPopSound)
@@ -232,15 +226,25 @@ public class Bullet extends Movable implements IDrawable
 			if (this.playPopSound)
 				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
 
+			o.destroy = true;
 			this.destroy = true;
 			this.vX = 0;
 			this.vY = 0;
 		}
 
-		o.destroy = true;
+		if (!((o instanceof Bullet && ((Bullet) o).heavy)))
+		{
+			o.destroy = true;
 
-		o.vX = 0;
-		o.vY = 0;
+			o.vX = 0;
+			o.vY = 0;
+
+			if (o instanceof Bullet)
+			{
+				if (((Bullet) o).playPopSound)
+					Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / ((Bullet) o).size));
+			}
+		}
 	}
 
 	public void checkCollisionLocal()

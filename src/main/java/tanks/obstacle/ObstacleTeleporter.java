@@ -42,7 +42,7 @@ public class ObstacleTeleporter extends Obstacle
 	{
 		Drawing.drawing.setColor(127, 127, 127);
 
-		double height = Game.sampleHeight(this.posX, this.posY);
+		double height = Game.sampleGroundHeight(this.posX, this.posY);
 
 		if (Game.enable3d)
 		{
@@ -234,5 +234,10 @@ public class ObstacleTeleporter extends Obstacle
 		}
 
 		return new double[]{r, g, b};
+	}
+
+	public double getTileHeight()
+	{
+		return 0;
 	}
 }

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
+import tanks.Player;
 import tanks.event.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
@@ -20,6 +21,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public Server server;
 
+	public Player player;
 	public UUID clientID;
 	public String rawUsername;
 	public String username;

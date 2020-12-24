@@ -7,6 +7,8 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
 
+import java.util.UUID;
+
 public class ScreenJoinOnlineServer extends Screen
 {
     public static Thread clientThread;
@@ -22,7 +24,7 @@ public class ScreenJoinOnlineServer extends Screen
         ip.lowerCase = true;
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -32,7 +34,7 @@ public class ScreenJoinOnlineServer extends Screen
     }
     );
 
-    TextBox ip = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 800, 40, "Online server URL or IP Address", new Runnable()
+    TextBox ip = new TextBox(this.centerX, this.centerY - objYSpace / 2, this.objWidth * 16 / 7, this.objHeight, "Online server URL or IP Address", new Runnable()
     {
 
         @Override
@@ -44,7 +46,7 @@ public class ScreenJoinOnlineServer extends Screen
     },
             Game.lastOnlineServer);
 
-    Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Join", new Runnable()
+    Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
     {
         @Override
         public void run()
@@ -61,6 +63,9 @@ public class ScreenJoinOnlineServer extends Screen
                         ScreenConnecting s = new ScreenConnecting(clientThread);
                         Game.screen = s;
 
+                        UUID connectionID = UUID.randomUUID();
+                        Client.connectionID = connectionID;
+
                         try
                         {
                             String ipaddress = Game.lastOnlineServer;
@@ -73,21 +78,24 @@ public class ScreenJoinOnlineServer extends Screen
                             }
 
                             if (ipaddress.equals(""))
-                                Client.connect("localhost", Game.port, true); //TODO
+                                Client.connect("localhost", Game.port, true, connectionID); //TODO
                             else
-                                Client.connect(ipaddress, port, true);
+                                Client.connect(ipaddress, port, true, connectionID);
                         }
                         catch (Exception e)
                         {
-                            s.text = "Failed to connect";
-                            s.exception = e.getLocalizedMessage();
-                            s.finished = true;
+                            if (Game.screen == s && Client.connectionID == connectionID)
+                            {
+                                s.text = "Failed to connect";
+                                s.exception = e.getLocalizedMessage();
+                                s.finished = true;
 
-                            s.music = "tomato_feast_1.ogg";
-                            Panel.forceRefreshMusic = true;
+                                s.music = "tomato_feast_1.ogg";
+                                Panel.forceRefreshMusic = true;
 
-                            e.printStackTrace(Game.logger);
-                            e.printStackTrace();
+                                e.printStackTrace(Game.logger);
+                                e.printStackTrace();
+                            }
                         }
                     }
 
@@ -118,11 +126,12 @@ public class ScreenJoinOnlineServer extends Screen
         back.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Select online server");
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Select online server");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "The official online server is not yet available.");
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, "However, you can join a 3rd party online server.");
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "The official online server is not yet available.");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "However, you can join a 3rd party online server.");
 
     }
 }

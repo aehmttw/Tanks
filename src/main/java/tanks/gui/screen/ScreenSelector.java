@@ -6,29 +6,29 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
-import tanks.gui.input.InputBindings;
 
 import java.util.ArrayList;
 
-public class ScreenSelector extends Screen implements IOverlayScreen
+public class ScreenSelector extends Screen implements IConditionalOverlayScreen
 {
     public Screen screen;
     public Selector selector;
 
+    public String[] images;
     public boolean drawImages = false;
     public boolean drawBehindScreen = false;
 
     public String title;
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Ok", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = screen;
-
             if (!selector.quick)
                 selector.function.run();
+
+            Game.screen = screen;
         }
     }
     );
@@ -37,6 +37,8 @@ public class ScreenSelector extends Screen implements IOverlayScreen
 
     public ScreenSelector(Selector s, Screen sc)
     {
+        super(350, 40, 380, 60);
+
         this.screen = sc;
         this.selector = s;
 
@@ -94,6 +96,10 @@ public class ScreenSelector extends Screen implements IOverlayScreen
             if (drawImages)
             {
                 b.image = selector.options[i];
+
+                if (images != null)
+                    b.image = selector.images[i];
+
                 b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
                 b.imageSizeX = b.sizeY;
                 b.imageSizeY = b.sizeY;
@@ -115,7 +121,10 @@ public class ScreenSelector extends Screen implements IOverlayScreen
     public void draw()
     {
         if (this.drawBehindScreen)
+        {
+            this.enableMargins = this.screen.enableMargins;
             this.screen.draw();
+        }
         else
             this.drawDefaultBackground();
 
@@ -123,19 +132,49 @@ public class ScreenSelector extends Screen implements IOverlayScreen
 
         quit.draw();
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
         if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
             Drawing.drawing.setColor(255, 255, 255);
         else
             Drawing.drawing.setColor(0, 0, 0);
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, this.title);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
     }
 
     @Override
-    public boolean showOverlay()
+    public double getOffsetX()
     {
-        return this.drawBehindScreen;
+        if (drawBehindScreen)
+            return screen.getOffsetX();
+        else
+            return super.getOffsetX();
+    }
+
+    @Override
+    public double getOffsetY()
+    {
+        if (drawBehindScreen)
+            return screen.getOffsetY();
+        else
+            return super.getOffsetY();
+    }
+
+    @Override
+    public double getScale()
+    {
+        if (drawBehindScreen)
+            return screen.getScale();
+        else
+            return super.getScale();
+    }
+
+    @Override
+    public boolean isOverlayEnabled()
+    {
+        if (screen instanceof IConditionalOverlayScreen)
+            return ((IConditionalOverlayScreen) screen).isOverlayEnabled();
+
+        return screen instanceof ScreenGame || screen instanceof ILevelPreviewScreen || screen instanceof IOverlayScreen;
     }
 }

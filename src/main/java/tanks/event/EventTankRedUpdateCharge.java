@@ -29,6 +29,9 @@ public class EventTankRedUpdateCharge extends PersonalEvent
 
 		Tank t = Tank.idMap.get(this.tank);
 
+		if (t == null)
+			return;
+
 		t.colorR = Math.min((200 + charge * 55), 255);
 		t.colorG = charge * 100;
 		t.colorB = charge * 100;

@@ -16,6 +16,7 @@ public class Effect extends Movable implements IDrawableWithGlow
     public double colG;
     public double colB;
 
+    public boolean force = false;
     public boolean enableGlow = true;
     public double glowR;
     public double glowG;
@@ -91,7 +92,10 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (type == EffectType.ray)
             this.maxAge = 20;
         else if (type == EffectType.mineExplosion)
+        {
             this.maxAge = 20;
+            this.force = true;
+        }
         else if (type == EffectType.laser)
             this.maxAge = 21;
         else if (type == EffectType.piece)
@@ -99,7 +103,10 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (type == EffectType.obstaclePiece)
             this.maxAge = Math.random() * 100 + 50;
         else if (type == EffectType.obstaclePiece3d)
+        {
             this.maxAge = Math.random() * 100 + 50;
+            this.force = true;
+        }
         else if (type.equals(EffectType.charge))
         {
             if (Game.enable3d)
@@ -138,7 +145,10 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (type == EffectType.teleporterPiece)
             this.maxAge = Math.random() * 100 + 50;
         else if (type == EffectType.interfacePiece)
+        {
             this.maxAge = Math.random() * 100 + 50;
+            this.force = true;
+        }
         else if (type == EffectType.snow)
         {
             this.maxAge = Math.random() * 100 + 50;
@@ -172,12 +182,22 @@ public class Effect extends Movable implements IDrawableWithGlow
         this.enableGlow = true;
         this.drawLayer = 7;
         this.state = State.live;
+        this.force = false;
     }
 
     @Override
     public void draw()
     {
         if (this.maxAge > 0 && this.maxAge < this.age)
+            return;
+
+        if (this.type == EffectType.ray)
+        {
+            this.state = State.removed;
+            Game.removeEffects.add(this);
+        }
+
+        if (!this.force && Game.sampleObstacleHeight(this.posX, this.posY) > this.posZ)
             return;
 
         if (this.age < 0)
@@ -232,15 +252,16 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (this.type == EffectType.ray)
         {
             int size = 6;
-            drawing.setColor(0, 0, 0, 50);
+
+            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+                Drawing.drawing.setColor(255, 255, 255, 50);
+            else
+                Drawing.drawing.setColor(0, 0, 0, 50);
 
             if (Game.enable3d)
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-
-            this.state = State.removed;
-            Game.removeEffects.add(this);
         }
         else if (this.type == EffectType.mineExplosion)
         {
@@ -287,11 +308,7 @@ public class Effect extends Movable implements IDrawableWithGlow
                 size *= this.size;
 
             drawing.setColor(this.colR, this.colG, this.colB);
-
-            if (Game.enable3d)
-                drawing.fillInterfaceOval(this.posX, this.posY, size, size, false);
-            else
-                drawing.fillInterfaceOval(this.posX, this.posY, size, size);
+            drawing.fillInterfaceOval(this.posX, this.posY, size, size);
         }
         else if (this.type == EffectType.obstaclePiece)
         {
@@ -462,6 +479,9 @@ public class Effect extends Movable implements IDrawableWithGlow
         if (this.maxAge > 0 && this.maxAge < this.age)
             return;
 
+        if (!this.force && Game.sampleObstacleHeight(this.posX, this.posY) > this.posZ)
+            return;
+
         if (this.age < 0)
             Game.exitToCrash(new RuntimeException("Effect with negative age"));
 
@@ -487,10 +507,7 @@ public class Effect extends Movable implements IDrawableWithGlow
 
             drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127);
 
-            if (Game.enable3d)
-                drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8, false);
-            else
-                drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
+            drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
         }
         else if (this.type == EffectType.charge)
         {
@@ -549,6 +566,20 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.fillGlow(this.posX, this.posY, this.posZ, size, size, true);
             else
                 drawing.fillGlow(this.posX, this.posY, size, size, true);
+
+            /*if (Game.enable3d)
+                drawing.drawImage("glow.png", this.posX, this.posY, this.posZ, size, size);
+            else
+                drawing.drawImage("glow.png", this.posX, this.posY, size, size);*/
+        }
+        else if (this.type == EffectType.ray)
+        {
+            drawing.setColor(255, 255, 255, 50);
+
+            if (Game.enable3d)
+                drawing.fillGlow(this.posX, this.posY, this.posZ, 24, 24, false);
+            else
+                drawing.fillGlow(this.posX, this.posY, 24, 24, false);
         }
     }
 

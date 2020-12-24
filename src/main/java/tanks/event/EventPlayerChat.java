@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Player;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
@@ -15,10 +16,11 @@ public class EventPlayerChat extends PersonalEvent
 		
 	}
 	
-	public EventPlayerChat(String p, String m)
+	public EventPlayerChat(Player p, String m)
 	{
 		this.message = m;
-		this.username = p;
+		this.username = "\u00A7" + p.colorR + "," + p.colorG + "," + p.colorB + "," +
+				p.turretColorR + "," + p.turretColorG + "," + p.turretColorB + "|" + p.username;
 	}
 
 	@Override

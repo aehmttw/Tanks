@@ -33,7 +33,7 @@ public class TankMedic extends TankAIControlled
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
 
-		this.coinValue = 8;
+		this.coinValue = 4;
 
 		this.description = "A tank which adds extra health---to its allies and becomes---explosive as a last stand";
 	}
@@ -47,7 +47,7 @@ public class TankMedic extends TankAIControlled
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m != this && m.team == this.team && !(m instanceof TankMedic))
+				if (m != this && m.team == this.team && !(m instanceof TankMedic) && !m.destroy)
 				{
 					die = false;
 					break;

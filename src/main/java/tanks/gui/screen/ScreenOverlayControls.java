@@ -98,7 +98,7 @@ public class ScreenOverlayControls
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX / 3, height);
 
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(Game.screen.titleSize);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 350, "Controls");
 
         game.draw();

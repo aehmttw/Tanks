@@ -17,6 +17,8 @@ public class ScreenFailedToLoadCrusade extends Screen
 
 	public ScreenFailedToLoadCrusade(String name, String contents, Exception e, Screen s)
 	{
+		super(350, 40, 380, 60);
+
 		this.fileName = name.substring(name.replace("\\", "/").lastIndexOf("/") + 1);
 		Game.currentSizeX = 28;
 		Game.currentSizeY = 18;

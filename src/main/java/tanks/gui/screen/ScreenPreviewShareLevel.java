@@ -11,7 +11,7 @@ import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
 
-public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScreen, IPartyMenuScreen
+public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScreen
 {
     public String name;
     public Level level;
@@ -59,6 +59,8 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
 
     public ScreenPreviewShareLevel(String name, Screen s)
     {
+        super(350, 40, 380, 60);
+
         this.music = "tomato_feast_4.ogg";
         this.musicID = "menu";
 

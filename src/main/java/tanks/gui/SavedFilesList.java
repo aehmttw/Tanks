@@ -11,9 +11,18 @@ import java.util.ArrayList;
 
 public class SavedFilesList extends ButtonList
 {
+    public BiConsumer<BaseFile, Button> auxiliarySetup = null;
+
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {
+        this(dir, page, xOffset, yOffset, behavior, hover, null);
+    }
+
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup)
+    {
         super(new ArrayList<>(), page, xOffset, yOffset);
+
+        this.auxiliarySetup = auxiliarySetup;
 
         BaseFile directory = Game.game.fileManager.getFile(dir);
         if (!directory.exists())
@@ -21,7 +30,7 @@ public class SavedFilesList extends ButtonList
             directory.mkdirs();
         }
 
-        ArrayList<String> levels = new ArrayList<String>();
+        ArrayList<String> files = new ArrayList<String>();
 
         try
         {
@@ -30,7 +39,7 @@ public class SavedFilesList extends ButtonList
             for (String p : ds)
             {
                 if (p.endsWith(".tanks"))
-                    levels.add(p);
+                    files.add(p);
             }
         }
         catch (IOException e)
@@ -38,14 +47,14 @@ public class SavedFilesList extends ButtonList
             Game.exitToCrash(e);
         }
 
-        for (String l: levels)
+        for (String l: files)
         {
             String[] pathSections = l.replace("\\", "/").split("/");
 
             String name = pathSections[pathSections.length - 1].split("\\.")[0];
             BaseFile file = Game.game.fileManager.getFile(l);
 
-            this.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, name.replace("_", " "), new Runnable()
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, name.replace("_", " "), new Runnable()
             {
                 @Override
                 public void run()
@@ -53,7 +62,12 @@ public class SavedFilesList extends ButtonList
                     behavior.accept(name, file);
                 }
             }
-                    , hover.apply(file)));
+                    , hover.apply(file));
+
+            if (this.auxiliarySetup != null)
+                this.auxiliarySetup.accept(file, b);
+
+            this.buttons.add(b);
         }
 
         this.sortButtons();

@@ -39,7 +39,12 @@ public class EventLayMine extends PersonalEvent
 	{
 		if (clientID == null)
 		{
-			Mine m = new Mine(this.posX, this.posY, this.timer, Tank.idMap.get(tank));
+			Tank t = Tank.idMap.get(tank);
+
+			if (t == null)
+				return;
+
+			Mine m = new Mine(this.posX, this.posY, this.timer, t);
 			m.networkID = id;
 			m.size = size;
 			m.radius = radius;

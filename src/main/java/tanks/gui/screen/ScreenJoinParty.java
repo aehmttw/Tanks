@@ -7,6 +7,8 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
 
+import java.util.UUID;
+
 public class ScreenJoinParty extends Screen
 {
 	public Thread clientThread;
@@ -22,7 +24,7 @@ public class ScreenJoinParty extends Screen
 		ip.lowerCase = true;
 	}
 	
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@SuppressWarnings("deprecation")
 		@Override
@@ -40,7 +42,7 @@ public class ScreenJoinParty extends Screen
 	}
 	);
 	
-	Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Join", new Runnable()
+	Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -60,7 +62,10 @@ public class ScreenJoinParty extends Screen
 				{
 					ScreenConnecting s = new ScreenConnecting(clientThread);
 					Game.screen = s;
-						
+
+					UUID connectionID = UUID.randomUUID();
+					Client.connectionID = connectionID;
+
 					try 
 					{
 						String ipaddress = ip.inputText;
@@ -74,23 +79,26 @@ public class ScreenJoinParty extends Screen
 						}
 						
 						if (ip.inputText.equals(""))
-							Client.connect("localhost", Game.port, false);
+							Client.connect("localhost", Game.port, false, connectionID);
 						else
-							Client.connect(ipaddress, port, false);
+							Client.connect(ipaddress, port, false, connectionID);
 					} 
 					catch (Exception e) 
 					{
-						s.text = "Failed to connect";
-						s.exception = e.getLocalizedMessage();
-						s.finished = true;
+						if (Game.screen == s && Client.connectionID == connectionID)
+						{
+							s.text = "Failed to connect";
+							s.exception = e.getLocalizedMessage();
+							s.finished = true;
 
-						s.music = "tomato_feast_1.ogg";
-						Drawing.drawing.playSound("leave.ogg");
+							s.music = "tomato_feast_1.ogg";
+							Drawing.drawing.playSound("leave.ogg");
 
-						Panel.forceRefreshMusic = true;
+							Panel.forceRefreshMusic = true;
 
-						e.printStackTrace(Game.logger);
-						e.printStackTrace();
+							e.printStackTrace(Game.logger);
+							e.printStackTrace();
+						}
 					}
 				}
 
@@ -102,7 +110,7 @@ public class ScreenJoinParty extends Screen
 	}
 	);
 	
-	TextBox ip = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, 800, 40, "Party IP Address", new Runnable()
+	TextBox ip = new TextBox(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth * 16 / 7, this.objHeight, "Party IP Address", new Runnable()
 	{
 
 		@Override
@@ -132,7 +140,7 @@ public class ScreenJoinParty extends Screen
 		back.draw();
 
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Join a party");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Join a party");
 	}
 }

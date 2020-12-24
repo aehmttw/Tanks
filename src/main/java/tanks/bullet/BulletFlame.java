@@ -30,6 +30,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		super(x, y, bounces, t, affectsLiveBulletCount, ib);
 		this.useCustomWallCollision = true;
 		this.playPopSound = false;
+		this.playBounceSound = false;
 		this.name = "flame";
 		this.itemSound = "flame.ogg";
 	}

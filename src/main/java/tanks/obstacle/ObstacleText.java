@@ -46,4 +46,8 @@ public class ObstacleText extends Obstacle
 		Drawing.drawing.drawInterfaceText(this.posX, this.posY, this.text);
 	}
 
+	public double getTileHeight()
+	{
+		return 0;
+	}
 }

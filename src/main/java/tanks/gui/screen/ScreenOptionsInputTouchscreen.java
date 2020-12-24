@@ -15,7 +15,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     public static final String singleText = "\u00A7000100200255single";
     public static final String dualText = "\u00A7200100000255dual";
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -25,7 +25,18 @@ public class ScreenOptionsInputTouchscreen extends Screen
     }
     );
 
-    Button vibrations = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
+    Button test = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test controls in tutorial", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            ScreenOptions.saveOptions(Game.homedir);
+            new Tutorial().loadTutorial(false, Game.game.window.touchscreen);
+        }
+    });
+
+
+    Button vibrations = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -40,7 +51,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     },
             "When enabled, your device---will vibrate a little as---feedback for interacting with---joysticks, buttons, etc...------Not supported on all devices");
 
-    Button mobile = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "", new Runnable()
+    Button mobile = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -59,7 +70,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     },
             "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
 
-    Button snap = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
+    Button snap = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -78,7 +89,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     },
             "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
 
-    Button dualJoysticks = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "", new Runnable()
+    Button dualJoysticks = new Button(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -160,6 +171,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
         mobile.update();
         snap.update();
         vibrations.update();
+        test.update();
     }
 
     @Override
@@ -171,10 +183,11 @@ public class ScreenOptionsInputTouchscreen extends Screen
         snap.draw();
         mobile.draw();
         dualJoysticks.draw();
+        test.draw();
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Input options");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Input options");
     }
 
 }

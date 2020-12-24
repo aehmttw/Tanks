@@ -63,6 +63,24 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void setCursorLocked(boolean locked)
+    {
+
+    }
+
+    @Override
+    public void setCursorPos(double x, double y)
+    {
+
+    }
+
+    @Override
+    public void setFullscreen(boolean enabled)
+    {
+
+    }
+
+    @Override
     public void setIcon(String icon)
     {
         drawing.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(icon)));

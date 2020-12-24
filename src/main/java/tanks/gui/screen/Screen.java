@@ -15,11 +15,37 @@ public abstract class Screen
 	public boolean showDefaultMouse = true;
 
 	public boolean enableMargins = true;
+	public boolean drawDarkness = true;
 
-	public double objWidth = 350;
-	public double objHeight = 40;
-	public double objXSpace = 380;
-	public double objYSpace = 60;
+	public double textSize = Drawing.drawing.textSize;
+	public double titleSize = Drawing.drawing.titleSize;
+	public double objWidth = Drawing.drawing.objWidth;
+	public double objHeight = Drawing.drawing.objHeight;
+	public double objXSpace = Drawing.drawing.objXSpace;
+	public double objYSpace = Drawing.drawing.objYSpace;
+
+	public double centerX = Drawing.drawing.interfaceSizeX / 2;
+	public double centerY = Drawing.drawing.interfaceSizeY / 2;
+
+	public Screen()
+	{
+		this.setupLayoutParameters();
+	}
+
+	public Screen(double objWidth, double objHeight, double objXSpace, double objYSpace)
+	{
+		//Game.game.window.setCursorLocked(false);
+
+		this.objWidth = objWidth;
+		this.objHeight = objHeight;
+		this.objXSpace = objXSpace;
+		this.objYSpace = objYSpace;
+
+		this.textSize = this.objHeight * 0.6;
+		this.titleSize = this.textSize * 1.25;
+
+		this.setupLayoutParameters();
+	}
 
 	public abstract void update();
 
@@ -42,7 +68,8 @@ public abstract class Screen
 
 		double frac = 0;
 
-		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen)
+		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen || (Game.screen instanceof IOverlayScreen
+				&& !(Game.screen instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) Game.screen).isOverlayEnabled())))
 			frac = Obstacle.draw_size / Game.tile_size;
 
 		if (!(Game.screen instanceof ScreenExit) && size >= 1)
@@ -60,6 +87,9 @@ public abstract class Screen
 
 			if (Game.framework != Game.Framework.libgdx)
 				Game.game.window.setBatchMode(true, true, true);
+
+			if (Game.currentSizeX != Game.tilesR.length || Game.currentSizeY != Game.tilesR[0].length)
+				Game.resetTiles();
 
 			int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
 			int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
@@ -147,8 +177,11 @@ public abstract class Screen
 			if (Game.framework != Game.Framework.libgdx)
 				Game.game.window.setBatchMode(false, true, true);
 
-			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+			if (this.drawDarkness)
+			{
+				Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
+				Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+			}
 		}
 		else if (Game.enable3d && !(Game.screen instanceof ScreenExit))
 		{
@@ -189,5 +222,10 @@ public abstract class Screen
 	public double getScale()
 	{
 		return Drawing.drawing.unzoomedScale;
+	}
+
+	public void setupLayoutParameters()
+	{
+
 	}
 }

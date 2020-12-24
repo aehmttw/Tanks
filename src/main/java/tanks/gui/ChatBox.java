@@ -7,6 +7,8 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.input.InputBinding;
 import tanks.gui.input.InputBindingGroup;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenInfo;
 
 public class ChatBox extends TextBox
 {
@@ -21,7 +23,7 @@ public class ChatBox extends TextBox
 		super(x, y, sX, sY, "", f, "");
 		this.enableCaps = true;
 		this.enablePunctuation = true;
-		this.maxChars = 84 - Game.player.username.length();
+		this.maxChars = 1000;
 
 		this.colorR = 200;
 		this.colorG = 200;
@@ -59,6 +61,9 @@ public class ChatBox extends TextBox
 
 	public void update()
 	{
+		if (Game.screen instanceof ScreenInfo)
+			return;
+
 		if (!Game.game.window.touchscreen)
 		{
 			double mx = Drawing.drawing.getInterfaceMouseX();
@@ -209,10 +214,31 @@ public class ChatBox extends TextBox
 			this.drawBox();
 
 			drawing.setColor(0, 0, 0);
-			drawing.setInterfaceFontSize(24);
+			drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
-			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY,
-					this.defaultTextColor + Game.player.username + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_", false);
+			String name = this.defaultTextColor + Game.player.username;
+			String s = name + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_";
+
+			double limit = Drawing.drawing.interfaceSizeX - 80;
+			if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > limit)
+			{
+				for (int i = 0; i < s.length(); i++)
+				{
+					if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s.substring(i)) / Drawing.drawing.interfaceScale < limit)
+					{
+						s = s.substring(i);
+
+						if (i <= name.length())
+							s = this.defaultTextColor + s;
+						break;
+					}
+				}
+
+				drawing.drawInterfaceText(this.posX + this.sizeX / 2 - 50, this.posY, s, true);
+			}
+			else
+				drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, s, false);
+
 
 			if (!clearSelected || Game.game.window.touchscreen)
 				drawing.setColor(255, 0, 0);
@@ -233,7 +259,7 @@ public class ChatBox extends TextBox
 			this.drawBox();
 
 			drawing.setColor(0, 0, 0);
-			drawing.setInterfaceFontSize(24);
+			drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
 			if (this.inputText.equals(this.defaultText))
 				drawing.drawInterfaceText(this.posX - this.sizeX / 2 + 10, this.posY, this.defaultTextColor + this.defaultText, false);

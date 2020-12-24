@@ -7,11 +7,13 @@ import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.network.Server;
 import tanks.network.ServerHandler;
+import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Crusade 
@@ -56,6 +58,18 @@ public class Crusade
 		internal = true;
 		this.fileName = file;
 		this.initialize(levelArray, name);
+
+		StringBuilder c = new StringBuilder();
+		for (String s: levelArray)
+			c.append(s).append("\n");
+
+		contents = c.toString().substring(0, c.length() - 1);
+	}
+
+	public Crusade(String s, String name)
+	{
+		this.contents = s;
+		this.initialize(new ArrayList<>(Arrays.asList(s.split("\n"))), name);
 	}
 	
 	public Crusade(BaseFile f, String name)
@@ -268,12 +282,27 @@ public class Crusade
 
 	public boolean finalLife()
 	{
-		for (int i = 0; i < Game.movables.size(); i++)
+		for (Player p: Game.players)
 		{
-			if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy && ((TankPlayer) Game.movables.get(i)).player.remainingLives > 1)
+			if (p.remainingLives > 1)
 				return false;
-			else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy && ((TankPlayerRemote) Game.movables.get(i)).player.remainingLives > 1)
-				return false;
+			else if (p.remainingLives == 1)
+			{
+				boolean found = false;
+				for (Movable m: Game.movables)
+				{
+					if (m instanceof TankPlayer && ((TankPlayer) m).player == p && m.destroy)
+						return false;
+					else if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == p && m.destroy)
+						return false;
+
+					if ((m instanceof TankPlayer && ((TankPlayer) m).player == p) || (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == p))
+						found = true;
+				}
+
+				if (!found)
+					return false;
+			}
 		}
 
 		return true;

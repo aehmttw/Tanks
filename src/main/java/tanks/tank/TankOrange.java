@@ -24,7 +24,7 @@ public class TankOrange extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		this.mineSensitivity = 1;
 
-		this.coinValue = 6;
+		this.coinValue = 4;
 
 		this.description = "A short-range tank which shoots fire";
 	}

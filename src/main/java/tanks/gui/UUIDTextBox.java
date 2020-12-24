@@ -96,7 +96,7 @@ public class UUIDTextBox extends TextBox
     @Override
     public void drawInput()
     {
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
         double width = 17;
 

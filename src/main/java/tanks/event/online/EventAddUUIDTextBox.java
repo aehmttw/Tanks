@@ -1,6 +1,7 @@
 package tanks.event.online;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.UUIDTextBox;
 import tanks.gui.screen.ScreenOnline;
@@ -52,6 +53,9 @@ public class EventAddUUIDTextBox extends EventAddTextBox
 
             if (hover.equals(""))
                 t.enableHover = false;
+
+            t.posX -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeX * (xAlignment + 1) / 2.0;
+            t.posY -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeY * (yAlignment + 1) / 2.0;
 
             s.addTextbox(this.id, t);
         }

@@ -42,21 +42,21 @@ public class ScreenOverlayOnline extends Screen
     @Override
     public void update()
     {
-        double pos = Drawing.drawing.interfaceSizeY / 2 - 30 * (1 + buttons.keySet().size());
+        double pos = this.centerY - this.objYSpace / 2 * (1 + buttons.keySet().size());
 
         for (int i = 0; i < max_button_count; i++)
         {
             Button b = buttons.get(i);
             if (b != null)
             {
-                b.posX = Drawing.drawing.interfaceSizeX / 2;
+                b.posX = this.centerX;
                 b.posY = pos;
-                pos += 60;
+                pos += this.objYSpace;
                 b.update();
             }
         }
 
-        disconnect.posX = Drawing.drawing.interfaceSizeX / 2;
+        disconnect.posX = this.centerX;
         disconnect.posY = pos;
         disconnect.update();
     }
@@ -88,7 +88,7 @@ public class ScreenOverlayOnline extends Screen
         disconnect.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, lowest - 60, title);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, lowest - this.objYSpace, title);
     }
 }

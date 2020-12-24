@@ -7,7 +7,7 @@ import tanks.gui.Firework;
 
 import java.util.ArrayList;
 
-public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuScreen, IDarkScreen
+public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 {
     public String msg1;
     public String msg2;
@@ -17,25 +17,31 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
     ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
     ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
 
-    Button replayCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Try again", new Runnable()
+    Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", new Runnable()
     {
         @Override
         public void run()
         {
-            Crusade.currentCrusade.loadLevel();
-            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            if (checkCrusadeEnd())
+            {
+                Crusade.currentCrusade.loadLevel();
+                Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            }
         }
     }
     );
 
-    Button replayCrusadeWin = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+    Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", new Runnable()
     {
         @Override
         public void run()
         {
-            Crusade.currentCrusade.loadLevel();
-            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
-            Crusade.currentCrusade.replay = true;
+            if (checkCrusadeEnd())
+            {
+                Crusade.currentCrusade.loadLevel();
+                Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+                Crusade.currentCrusade.replay = true;
+            }
         }
     }
             , "You will not gain extra lives---"
@@ -43,65 +49,77 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
             + "However, you can still earn coins!---"
             + "You will still lose a life if you die.");
 
-    Button nextLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Next level", new Runnable()
+    Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Next level", new Runnable()
     {
         @Override
         public void run()
         {
-            Crusade.currentCrusade.currentLevel++;
-            Crusade.currentCrusade.replay = false;
-            Crusade.currentCrusade.loadLevel();
-            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            if (checkCrusadeEnd())
+            {
+                Crusade.currentCrusade.currentLevel++;
+                Crusade.currentCrusade.replay = false;
+                Crusade.currentCrusade.loadLevel();
+                Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            }
         }
     }
     );
 
-    Button quitCrusadeEnd = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button quitCrusadeEnd = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (checkCrusadeEnd())
+            {
+                Game.resetTiles();
+                Crusade.crusadeMode = false;
+                Crusade.currentCrusade = null;
+                Game.screen = ScreenPartyHost.activeScreen;
+            }
+        }
+    }
+    );
+
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (checkCrusadeEnd())
+            {
+                Game.resetTiles();
+                Crusade.crusadeMode = false;
+                Game.screen = ScreenPartyHost.activeScreen;
+                Crusade.currentCrusade.currentLevel++;
+            }
+        }
+    }
+    );
+
+    Button quitLose = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
         {
             Game.resetTiles();
             Crusade.crusadeMode = false;
-            Crusade.currentCrusade = null;
             Game.screen = ScreenPartyHost.activeScreen;
         }
     }
     );
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.resetTiles();
-            Crusade.crusadeMode = false;
-            Game.screen = ScreenPartyHost.activeScreen;
-            Crusade.currentCrusade.currentLevel++;
-        }
-    }
-    );
-
-    Button quitLose = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to party", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.resetTiles();
-            Crusade.crusadeMode = false;
-            Game.screen = ScreenPartyHost.activeScreen;
-        }
-    }
-    );
-
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Continue", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.resetTiles();
-            Game.screen = new ScreenPartyLobby();
-            ScreenGame.versus = false;
+            if (checkCrusadeEnd())
+            {
+                Game.resetTiles();
+                Game.screen = new ScreenPartyLobby();
+                ScreenGame.versus = false;
+            }
         }
     }
     );
@@ -204,9 +222,16 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
         else
             Drawing.drawing.setColor(0, 0, 0);
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 190, msg1);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Lives remaining: " + Game.player.remainingLives);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, msg2);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, msg1);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: " + Game.player.remainingLives);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 23 / 6, msg2);
+        else
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
 
         if (Panel.win && Game.fancyGraphics)
         {
@@ -256,5 +281,21 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IPartyMenuSc
             return fireworks1;
         else
             return fireworks2;
+    }
+
+    public boolean checkCrusadeEnd()
+    {
+        for (Player p: Game.players)
+        {
+            if (p.remainingLives > 0)
+                return true;
+        }
+
+        Game.resetTiles();
+        Crusade.crusadeMode = false;
+        Crusade.currentCrusade = null;
+        Game.screen = ScreenPartyHost.activeScreen;
+
+        return false;
     }
 }

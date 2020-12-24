@@ -239,6 +239,9 @@ public class Level
 			s.editable = this.editable;
 			Game.movables.remove(Game.playerTank);
 
+			s.colorRed.value = r;
+			s.colorGreen.value = g;
+			s.colorBlue.value = b;
 			s.colorRed.inputText = r + "";
 			s.colorGreen.inputText = g + "";
 			s.colorBlue.inputText = b + "";
@@ -257,6 +260,20 @@ public class Level
 
 			s.shopList = new ButtonList(new ArrayList<>(), 0, 0, -30);
 			s.startingItemsList = new ButtonList(new ArrayList<>(), 0, 0, -30);
+			s.shopList.arrowsEnabled = true;
+			s.startingItemsList.arrowsEnabled = true;
+
+			s.shopList.reorderBehavior = (i, j) ->
+			{
+				s.shop.add(j, s.shop.remove((int)i));
+				s.refreshItemButtons(s.shop, s.shopList);
+			};
+
+			s.startingItemsList.reorderBehavior = (i, j) ->
+			{
+				s.startingItems.add(j, s.startingItems.remove((int)i));
+				s.refreshItemButtons(s.startingItems, s.startingItemsList);
+			};
 
 			for (Item i: this.shop)
 				i.importProperties();
@@ -284,7 +301,7 @@ public class Level
 			{
 				final int j = i;
 				Team t = this.teamsList.get(i);
-				Button buttonToAdd = new Button(0, 0, s.objWidth, s.objHeight, t.name, new Runnable()
+				Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
 				{
 					@Override
 					public void run() 
@@ -300,9 +317,10 @@ public class Level
 					}
 				}
 						);
+
 				s.teamEditButtons.add(buttonToAdd);
 
-				Button buttonToAdd2 = new Button(0, 0, s.objWidth, s.objHeight, t.name, new Runnable()
+				Button buttonToAdd2 = new Button(0, 0, 350, 40, t.name, new Runnable()
 				{
 					@Override
 					public void run() 
@@ -315,7 +333,7 @@ public class Level
 				s.teamSelectButtons.add(buttonToAdd2);
 			}
 
-			Button button = new Button(0, 0, s.objWidth, s.objHeight, "\u00A7127000000255none", new Runnable()
+			Button button = new Button(0, 0, 350, 40, "\u00A7127000000255none", new Runnable()
 			{
 				@Override
 				public void run()
@@ -354,6 +372,8 @@ public class Level
 				Game.tilesDepth[i][j] = Math.random() * 10;
 			}
 		}
+
+		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
 
 		Drawing.drawing.setScreenBounds(Game.tile_size * sX, Game.tile_size * sY);
 
@@ -682,10 +702,10 @@ public class Level
 			this.posY = y;
 
 			ArrayList<Integer> sides = new ArrayList<>();
+			sides.add(0);
 			sides.add(1);
 			sides.add(2);
 			sides.add(3);
-			sides.add(4);
 
 			int i = 0;
 

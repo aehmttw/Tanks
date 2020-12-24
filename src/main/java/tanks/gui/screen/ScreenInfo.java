@@ -2,9 +2,11 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
+import tanks.tank.TankPlayer;
 
-public class ScreenInfo extends Screen
+public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDarkScreen
 {
     public Screen previous;
     public String title;
@@ -12,19 +14,28 @@ public class ScreenInfo extends Screen
 
     public ScreenInfo(Screen screen, String title, String[] text)
     {
-        this.previous = screen;
-        this.music = previous.music;
-        this.musicID = previous.musicID;
+        if (screen != null)
+        {
+            this.enableMargins = screen.enableMargins;
+            this.previous = screen;
+            this.music = previous.music;
+            this.musicID = previous.musicID;
+        }
+
         this.title = title;
         this.text = text;
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = previous;
+            if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
+                ((ScreenGame) Game.screen).overlay = null;
+
+            if (previous != null)
+                Game.screen = previous;
         }
     }
     );
@@ -39,21 +50,54 @@ public class ScreenInfo extends Screen
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        if (this.previous != null)
+            this.previous.draw();
+
+        Drawing.drawing.setColor(0, 0, 0, 64);
+        Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 800, 400);
+        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 700 * this.objWidth / 350, 400 * this.objHeight / 40);
+        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 680 * this.objWidth / 350, 380 * this.objHeight / 40);
 
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, this.title);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 2.5, this.title);
 
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(255, 255, 255);
         for (int i = 0; i < text.length; i++)
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + (i - (text.length - 1) / 2.0) * 30, this.text[i]);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i]);
         }
 
         back.draw();
+    }
+
+    @Override
+    public double getOffsetX()
+    {
+        return previous.getOffsetX();
+    }
+
+    @Override
+    public double getOffsetY()
+    {
+        return previous.getOffsetY();
+    }
+
+    @Override
+    public double getScale()
+    {
+        return previous.getScale();
+    }
+
+    @Override
+    public boolean isOverlayEnabled()
+    {
+        if (previous instanceof IConditionalOverlayScreen)
+            return ((IConditionalOverlayScreen) previous).isOverlayEnabled();
+
+        return previous instanceof ScreenGame || previous instanceof ILevelPreviewScreen || previous instanceof IOverlayScreen;
     }
 }

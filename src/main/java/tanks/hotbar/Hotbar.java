@@ -2,6 +2,8 @@ package tanks.hotbar;
 
 import tanks.*;
 import tanks.gui.Button;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
 import tanks.tank.Tank;
@@ -41,7 +43,7 @@ public class Hotbar
 		if (this.persistent)
 			this.hidden = false;
 
-		if (Game.playerTank == null || Game.playerTank.destroy)
+		if (ScreenGame.finished)
 			this.hidden = true;
 
 		this.hideTimer = Math.max(0, this.hideTimer - Panel.frameFrequency);
@@ -83,7 +85,12 @@ public class Hotbar
 		{
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
 			int y = (int) (Drawing.drawing.interfaceSizeY - 25 + percentHidden - verticalOffset);
+
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
+
+			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
+
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(255, 128, 0, (100 - this.percentHidden) * 2.55);
 
@@ -120,13 +127,17 @@ public class Hotbar
 			int y = (int) (Drawing.drawing.interfaceSizeY - 10 + percentHidden - verticalOffset);
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
+
+			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
+
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
 			Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
 
-			int live = 0;
+			int live = 1;
 			int max = 1;
 
-			if (Game.playerTank != null)
+			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
 				live = Game.playerTank.liveBullets;
 				max = Game.playerTank.liveBulletMax;
@@ -146,7 +157,7 @@ public class Hotbar
 
 			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, 1 - ammo);
 
-			Drawing.drawing.setColor(0, 0, 0, 127 * (100 - this.percentHidden) / 100.0);
+			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
 			for (int i = 1; i < max; i++)
 			{
@@ -154,7 +165,7 @@ public class Hotbar
 				Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
 			}
 
-			if (Game.playerTank != null)
+			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
 				int mines = Game.playerTank.liveMinesMax - Game.playerTank.liveMines;
 
@@ -204,19 +215,19 @@ public class Hotbar
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2) - 210);
 			int y = (int) (Drawing.drawing.interfaceSizeY - 17.5 + percentHidden - verticalOffset);
 
-			Drawing.drawing.setColor(191, 63, 63, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.drawInterfaceModel(Tank.color_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
-
-			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.drawInterfaceModel(Tank.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
-			Drawing.drawing.setColor(191, 63, 63, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.drawInterfaceModel(Tank.color_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+
+			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);
 
 			if (Game.framework != Game.Framework.swing)
 			{
 				Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
-				Drawing.drawing.setColor(223, 31, 31, (100 - this.percentHidden) * 2.55);
+				Drawing.drawing.setColor(207, 16, 16, (100 - this.percentHidden) * 2.55);
 				Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 			}
 			else

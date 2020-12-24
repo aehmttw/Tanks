@@ -4,8 +4,8 @@ import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawable;
+import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Obstacle;
 
 public class Joystick implements IDrawable
 {
@@ -54,7 +54,7 @@ public class Joystick implements IDrawable
         prevIntensity = rawIntensity;
         inputIntensity = 0;
 
-        if (!Game.game.window.touchPoints.containsKey(activeInput) || ScreenGame.finished)
+        if (!Game.game.window.touchPoints.containsKey(activeInput) || Game.playerTank == null || Game.playerTank.destroy)
         {
             if (snap || this.domain > 0)
             {
@@ -65,65 +65,68 @@ public class Joystick implements IDrawable
             this.activeInput = -1;
         }
 
-        for (int i: Game.game.window.touchPoints.keySet())
+        if (!(Game.playerTank == null || Game.playerTank.destroy || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused)))
         {
-            InputPoint p = Game.game.window.touchPoints.get(i);
-            double px = Drawing.drawing.getInterfacePointerX(p.x);
-            double py = Drawing.drawing.getInterfacePointerY(p.y);
-
-            double distSq = Math.pow(px - this.posX, 2) + Math.pow(py - this.posY, 2);
-            if (!ScreenGame.finished && (p.tag.equals("") &&
-                    ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) || this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 || this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2))
-                    || (this.activeInput == i && p.tag.equals(this.name)))
+            for (int i : Game.game.window.touchPoints.keySet())
             {
-                if (this.activeInput == -1 && (this.snap || this.mobile || this.domain > 0))
+                InputPoint p = Game.game.window.touchPoints.get(i);
+                double px = Drawing.drawing.getInterfacePointerX(p.x);
+                double py = Drawing.drawing.getInterfacePointerY(p.y);
+
+                double distSq = Math.pow(px - this.posX, 2) + Math.pow(py - this.posY, 2);
+                if (!ScreenGame.finished && (p.tag.equals("") &&
+                        ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) || this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 || this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2))
+                        || (this.activeInput == i && p.tag.equals(this.name)))
                 {
-                    this.posX = px;
-                    this.posY = py;
-                    distSq = 0;
+                    if (this.activeInput == -1 && (this.snap || this.mobile || this.domain > 0))
+                    {
+                        this.posX = px;
+                        this.posY = py;
+                        distSq = 0;
+                    }
+
+                    p.tag = this.name;
+                    this.activeInput = i;
+
+                    double dx = px - this.posX;
+                    double dy = py - this.posY;
+
+                    double angle = 0;
+                    if (dx > 0)
+                        angle = Math.atan(dy / dx);
+                    else if (dx < 0)
+                        angle = Math.atan(dy / dx) + Math.PI;
+                    else
+                    {
+                        if (dy > 0)
+                            angle = Math.PI / 2;
+                        else if (dy < 0)
+                            angle = Math.PI * 3 / 2;
+                    }
+
+                    this.inputAngle = (Math.PI * 2 + angle) % (Math.PI * 2);
+
+                    double dist = Math.sqrt(distSq);
+
+                    if (dist > size / 2 * 1.4 && this.mobile)
+                    {
+                        this.posX += Math.cos(this.inputAngle) * (dist - size / 2 * 1.4);
+                        this.posY += Math.sin(this.inputAngle) * (dist - size / 2 * 1.4);
+                    }
+
+                    this.inputIntensity = Math.min(1, 2 * dist / size);
+                    this.rawIntensity = 2 * dist / size;
                 }
-
-                p.tag = this.name;
-                this.activeInput = i;
-
-                double dx = px - this.posX;
-                double dy = py - this.posY;
-
-                double angle = 0;
-                if (dx > 0)
-                    angle = Math.atan(dy/dx);
-                else if (dx < 0)
-                    angle = Math.atan(dy/dx) + Math.PI;
-                else
-                {
-                    if (dy > 0)
-                        angle = Math.PI / 2;
-                    else if (dy < 0)
-                        angle = Math.PI * 3 / 2;
-                }
-
-                this.inputAngle = (Math.PI * 2 + angle) % (Math.PI * 2);
-
-                double dist = Math.sqrt(distSq);
-
-                if (dist > size / 2 * 1.4 && this.mobile)
-                {
-                    this.posX += Math.cos(this.inputAngle) * (dist - size / 2 * 1.4);
-                    this.posY += Math.sin(this.inputAngle) * (dist - size / 2 * 1.4);
-                }
-
-                this.inputIntensity = Math.min(1, 2 * dist / size);
-                this.rawIntensity = 2 * dist / size;
             }
-        }
 
-        if (this.activeInput != -1 && this.prevInput != -1)
-        {
-            for (int i = 0; i < clickIntensities.length; i++)
+            if (this.activeInput != -1 && this.prevInput != -1)
             {
-                double clickIntensity = clickIntensities[i];
-                if ((prevIntensity > clickIntensity && rawIntensity <= clickIntensity) || (prevIntensity <= clickIntensity && rawIntensity > clickIntensity))
-                    Drawing.drawing.playVibration(clickVibrations[i]);
+                for (int i = 0; i < clickIntensities.length; i++)
+                {
+                    double clickIntensity = clickIntensities[i];
+                    if ((prevIntensity > clickIntensity && rawIntensity <= clickIntensity) || (prevIntensity <= clickIntensity && rawIntensity > clickIntensity))
+                        Drawing.drawing.playVibration(clickVibrations[i]);
+                }
             }
         }
     }
@@ -135,7 +138,7 @@ public class Joystick implements IDrawable
         if (activeInput == -1)
             alpha = 0.5;
 
-        double frac = Obstacle.draw_size / Game.tile_size;
+        double frac = tanks.obstacle.Obstacle.draw_size / Game.tile_size;
 
         Drawing.drawing.setColor(colorR, colorG, colorB, colorA * alpha);
         Drawing.drawing.fillInterfaceOval(this.posX, this.posY, this.size * frac, this.size * frac);

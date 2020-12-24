@@ -6,13 +6,13 @@ import tanks.event.EventKick;
 import tanks.gui.Button;
 import tanks.network.ServerHandler;
 
-public class ScreenPartyKick extends Screen implements IPartyMenuScreen
+public class ScreenPartyKick extends Screen
 {
     public ServerHandler handler;
 
     public Button kick;
 
-    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 120, 360, 40, "Cancel", new Runnable()
+    public Button cancel = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Cancel", new Runnable()
     {
         @Override
         public void run()
@@ -28,7 +28,7 @@ public class ScreenPartyKick extends Screen implements IPartyMenuScreen
         this.musicID = "menu";
 
         handler = h;
-        kick = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, 360, 40, "Kick " + handler.username, new Runnable()
+        kick = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Kick " + handler.username, new Runnable()
         {
              @Override
             public void run()
@@ -52,9 +52,9 @@ public class ScreenPartyKick extends Screen implements IPartyMenuScreen
     {
         this.drawDefaultBackground();
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "Would you like to kick " + handler.username + " from the party?");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Would you like to kick " + handler.username + " from the party?");
 
         cancel.draw();
         kick.draw();

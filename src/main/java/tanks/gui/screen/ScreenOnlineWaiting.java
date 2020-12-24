@@ -29,8 +29,8 @@ public class ScreenOnlineWaiting extends Screen implements IOnlineScreen
         if (age > 50)
         {
             Drawing.drawing.setColor(0, 0, 0, Math.min(255, (age / 100) * 255 - 50));
-            Drawing.drawing.setInterfaceFontSize(24);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "Waiting for server...");
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Waiting for server...");
         }
 
         Drawing.drawing.setColor(0, 0, 0);
@@ -45,8 +45,8 @@ public class ScreenOnlineWaiting extends Screen implements IOnlineScreen
         {
             double frac = (System.currentTimeMillis() / 1000.0 * speed + i / 100.0) % 1;
             double s = (i % (max * 1.0 / parts)) / 10.0 * parts;
-            Drawing.drawing.fillInterfaceOval(Drawing.drawing.interfaceSizeX / 2 + size * Math.cos(frac * Math.PI * 2),
-                    Drawing.drawing.interfaceSizeY / 2 - 25 + size * Math.sin(frac * Math.PI * 2),
+            Drawing.drawing.fillInterfaceOval(this.centerX + size * Math.cos(frac * Math.PI * 2),
+                    this.centerY - this.objYSpace * 5 / 12 + size * Math.sin(frac * Math.PI * 2),
                     s * dotSize, s * dotSize);
         }
     }

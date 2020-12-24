@@ -34,6 +34,9 @@ public class EventBulletElectricStunEffect extends PersonalEvent
                 e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
                 e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
                 e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+                e.glowR = 0;
+                e.glowG = 128;
+                e.glowB = 128;
                 Game.effects.add(e);
             }
         }

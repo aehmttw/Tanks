@@ -17,7 +17,7 @@ public class ScreenTutorialGame extends ScreenGame
 		Game.playerTank.cooldown = 50;
 	}
 	
-	public Button skip = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 25, this.objWidth, this.objHeight, "Skip Tutorial", new Runnable()
+	public Button skip = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 25, 350, 40, "Skip Tutorial", new Runnable()
 	{
 		@Override
 		public void run() 

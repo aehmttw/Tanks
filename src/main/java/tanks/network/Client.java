@@ -9,12 +9,22 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.util.UUID;
+
 public class Client 
 {
 	public static ClientHandler handler;
-	
-    public static void connect(String host, int port, boolean online) throws Exception
+
+	public static String currentHost;
+    public static int currentPort;
+
+    public static UUID connectionID = null;
+
+    public static void connect(String host, int port, boolean online, UUID connectionID) throws Exception
     {
+        currentHost = host;
+        currentPort = port;
+
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         
         try 
@@ -28,7 +38,7 @@ public class Client
                 @Override
                 public void initChannel(SocketChannel ch)
                 {
-                	handler = new ClientHandler(online);
+                	handler = new ClientHandler(online, connectionID);
                     ch.pipeline().addLast(handler);
                 }
             });

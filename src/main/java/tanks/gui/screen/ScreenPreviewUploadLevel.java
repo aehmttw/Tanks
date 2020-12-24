@@ -43,6 +43,8 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
 
     public ScreenPreviewUploadLevel(String name, ScreenUploadLevel s)
     {
+        super(350, 40, 380, 60);
+
         this.name = name;
 
         for (int i = 0; i < drawables.length; i++)

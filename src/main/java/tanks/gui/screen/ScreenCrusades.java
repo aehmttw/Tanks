@@ -16,7 +16,7 @@ public class ScreenCrusades extends Screen
 
 	public SavedFilesList crusadesList;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -26,7 +26,7 @@ public class ScreenCrusades extends Screen
 	}
 	);
 
-	Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit2 = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -36,7 +36,7 @@ public class ScreenCrusades extends Screen
 	}
 	);
 
-	Button create = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Create crusade", new Runnable()
+	Button create = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Create crusade", new Runnable()
 	{
 		@Override
 		public void run()
@@ -66,10 +66,14 @@ public class ScreenCrusades extends Screen
 
 	public ScreenCrusades()
 	{
+		super(350, 40, 380, 60);
+
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
-		crusadesList = new SavedFilesList(Game.homedir + Game.crusadeDir, page, 0, -30, (name, file) ->
+		crusadesList = new SavedFilesList(Game.homedir + Game.crusadeDir, page,
+				(int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
+				(name, file) ->
 		{
 			Crusade c = findExistingCrusadeProgress(name);
 
@@ -84,7 +88,25 @@ public class ScreenCrusades extends Screen
 				(name) -> null);
 
 
-		crusadesList.buttons.add(0, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Classic crusade", new Runnable()
+		crusadesList.buttons.add(0, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Adventure crusade", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Crusade c = findExistingCrusadeProgress("internal/Adventure crusade");
+
+				if (c == null)
+				{
+					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/adventure_crusade.tanks");
+					c = new Crusade(al, "Adventure crusade", "/adventure_crusade.tanks");
+				}
+
+				Game.screen = new ScreenCrusadeDetails(c);
+			}
+		}
+		));
+
+		crusadesList.buttons.add(1, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Classic crusade", new Runnable()
 		{
 			@Override
 			public void run()
@@ -95,24 +117,6 @@ public class ScreenCrusades extends Screen
 				{
 					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/classic_crusade.tanks");
 					c = new Crusade(al, "Classic crusade", "/classic_crusade.tanks");
-				}
-
-				Game.screen = new ScreenCrusadeDetails(c);
-			}
-		}
-		));
-
-		crusadesList.buttons.add(1, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Wii crusade", new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Crusade c = findExistingCrusadeProgress("internal/Wii crusade");
-
-				if (c == null)
-				{
-					ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/wii_crusade.tanks");
-					c = new Crusade(al, "Wii crusade", "/wii_crusade.tanks");
 				}
 
 				Game.screen = new ScreenCrusadeDetails(c);
@@ -167,8 +171,8 @@ public class ScreenCrusades extends Screen
 			create.draw();
 		}
 
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Crusades");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Crusades");
 	}
 }

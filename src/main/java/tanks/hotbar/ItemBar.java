@@ -245,8 +245,18 @@ public class ItemBar
 				if (item.stackSize > 1)
 				{
 					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.player.hotbar.percentHidden) * 2.55);
-					Drawing.drawing.setInterfaceFontSize(18);
-					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + size - count_margin_bottom, Integer.toString(item.stackSize), true);
+
+					int extra = 0;
+
+					if (item.stackSize > 9999)
+					{
+						Drawing.drawing.setInterfaceFontSize(12);
+						extra = 3;
+					}
+					else
+						Drawing.drawing.setInterfaceFontSize(18);
+
+					Drawing.drawing.drawInterfaceText(x + size - count_margin_right, y + extra + size - count_margin_bottom, Integer.toString(item.stackSize), true);
 					Drawing.drawing.setColor(slotBgBrightness, slotBgBrightness, slotBgBrightness, slotBgA * (100 - this.player.hotbar.percentHidden) / 100.0);
 				}
 			}

@@ -5,15 +5,13 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 
-public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
+public class ScreenPlaySavedLevels extends Screen
 {
-	public static final String levelDir = Game.directoryPath + "/levels";
-
 	public String title = "My levels";
 
 	public SavedFilesList levels;
 
-	public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+	public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -28,6 +26,8 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 	public ScreenPlaySavedLevels()
 	{
+		super(350, 40, 380, 60);
+
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
@@ -36,7 +36,8 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 
 	public void initializeLevels()
 	{
-		this.levels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, -30,
+		this.levels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page,
+				(int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
 				(name, file) ->
 				{
 					if (Game.loadLevel(file))
@@ -64,8 +65,15 @@ public class ScreenPlaySavedLevels extends Screen implements IPartyMenuScreen
 		this.levels.draw();
 		this.quit.draw();
 
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, this.title);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
+	}
+	
+	@Override
+	public void setupLayoutParameters()
+	{
+		if (Drawing.drawing.interfaceScaleZoom > 1 && ScreenPartyHost.isServer)
+			this.centerY -= this.objYSpace / 2;
 	}
 }

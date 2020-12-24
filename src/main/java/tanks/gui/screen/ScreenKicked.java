@@ -22,7 +22,7 @@ public class ScreenKicked extends Screen
 		ScreenPartyLobby.connections.clear();
 	}
 		
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Ok", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -43,8 +43,8 @@ public class ScreenKicked extends Screen
 	{
 		this.drawDefaultBackground();
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.reason);
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);
 	
 		back.draw();
 	}

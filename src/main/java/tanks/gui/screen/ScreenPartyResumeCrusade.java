@@ -6,12 +6,14 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 
-public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
+public class ScreenPartyResumeCrusade extends Screen
 {
 	public int players;
 
 	public ScreenPartyResumeCrusade()
 	{
+		super(350, 40, 380, 60);
+
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
@@ -22,7 +24,7 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 		}
 	}
 	
-	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Resume crusade", new Runnable()
+	Button resume = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Resume crusade", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -34,7 +36,7 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 	}
 			);
 
-	Button selectOtherCrusade = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Start another crusade", new Runnable()
+	Button selectOtherCrusade = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Start another crusade", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -44,7 +46,7 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 	}
 			);
 	
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -69,14 +71,21 @@ public class ScreenPartyResumeCrusade extends Screen implements IPartyMenuScreen
 		resume.draw();
 		selectOtherCrusade.draw();
 		quit.draw();
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "A crusade you have not yet finished was found");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "Would you like to continue playing that");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "crusade, or to start a new crusade?");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Progress in the current crusade will be lost");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, "if you decide to start a new crusade!");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, "Crusade: " + Crusade.currentCrusade.name.replace("_", " "));
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, "Battle: " + (Crusade.currentCrusade.currentLevel + 1));
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, "Players alive: " + players);
+
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "A crusade you have not yet finished was found");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Would you like to continue playing that");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1, "crusade, or to start a new crusade?");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "Progress in the current crusade will be lost");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + this.objYSpace * 0.5, "if you decide to start a new crusade!");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + this.objYSpace * 1.5, "Crusade: " + Crusade.currentCrusade.name.replace("_", " "));
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Battle: " + (Crusade.currentCrusade.currentLevel + 1));
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.5, "Players alive: " + players);
+	}
+
+	public void setupLayoutParameters()
+	{
+		this.centerY -= 60;
 	}
 
 }

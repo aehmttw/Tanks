@@ -8,27 +8,29 @@ import tanks.gui.ButtonList;
 
 import java.util.ArrayList;
 
-public class ScreenSharedLevels extends Screen implements IPartyMenuScreen
+public class ScreenSharedLevels extends Screen
 {
 	public static int page = 0;
 
 	public ButtonList sharedLevels;
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
 		{
 			if (ScreenPartyHost.isServer)
-				Game.screen = ScreenPartyHost.activeScreen;
-			else
-				Game.screen = new ScreenPartyLobby();
+				Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
+			else if (ScreenPartyLobby.isClient)
+				Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
 		}
 	}
 			);
 
 	public ScreenSharedLevels(ArrayList<ScreenPartyHost.SharedLevel> levels)
 	{
+		super(350, 40, 380, 60);
+
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
@@ -50,7 +52,7 @@ public class ScreenSharedLevels extends Screen implements IPartyMenuScreen
 					, "Shared by " + l.creator));
 		}
 
-		sharedLevels = new ButtonList(buttons, page, 0, -30);
+		sharedLevels = new ButtonList(buttons, page, 0, -60);
 	}
 
 	@Override
@@ -69,7 +71,13 @@ public class ScreenSharedLevels extends Screen implements IPartyMenuScreen
 		sharedLevels.draw();
 
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Shared levels");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Shared levels");
+	}
+
+	@Override
+	public void setupLayoutParameters()
+	{
+		this.centerY -= this.objYSpace / 2;
 	}
 }

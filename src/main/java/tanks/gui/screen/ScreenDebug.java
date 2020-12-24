@@ -54,7 +54,7 @@ public class ScreenDebug extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Debug menu");
 

@@ -194,9 +194,10 @@ public class ScreenControlsEditor extends Screen
         next.draw();
         previous.draw();
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 310, "Page " + (page + 1) + " of " + page_count);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Editor controls");
 
         ScreenOptionsInputDesktop.overlay.draw();

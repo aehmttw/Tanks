@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -7,9 +8,10 @@ import tanks.gui.*;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.property.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-public class ScreenEditItem extends Screen implements IOverlayScreen
+public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
 {
     public Item item;
     public IItemScreen screen;
@@ -20,6 +22,7 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
     public int page = 0;
 
     public boolean drawBehindScreen = false;
+    public String message = null;
 
     public ArrayList<ITrigger> properties = new ArrayList<>();
 
@@ -55,7 +58,17 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
     }
     );
 
-    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 250, this.objWidth, this.objHeight, "Delete item", new Runnable()
+    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            message = null;
+        }
+    }
+    );
+
+    public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 250, this.objWidth, this.objHeight, "Delete item", new Runnable()
     {
         @Override
         public void run()
@@ -66,8 +79,45 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
     }
     );
 
+    public Button save = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 250, this.objWidth, this.objHeight, "Save to template", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            item.exportProperties();
+            BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.itemDir + "/" + item.name.replace(" ", "_") + ".tanks");
+
+            if (!f.exists())
+            {
+                try
+                {
+                    f.create();
+                    f.startWriting();
+                    f.println(item.toString());
+                    f.stopWriting();
+
+                    message = "Item added to templates!";
+                }
+                catch (IOException e)
+                {
+                    Game.exitToCrash(e);
+                }
+            }
+            else
+                message = "An item template with this name already exists!";
+        }
+    }
+    );
+
     public ScreenEditItem(Item item, IItemScreen s)
     {
+        this(item, s, false, false);
+    }
+
+    public ScreenEditItem(Item item, IItemScreen s, boolean omitPrice, boolean omitUnlockLevel)
+    {
+        super(350, 40, 380, 60);
+
         this.item = item;
         this.screen = s;
 
@@ -77,6 +127,12 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
         for (ItemProperty p: this.item.properties.values())
         {
             String name = Game.formatString(p.name);
+
+            if (p.name.equals("price") && omitPrice)
+                continue;
+
+            if (p.name.equals("unlocks-after-level") && omitUnlockLevel)
+                continue;
 
             if (p instanceof ItemPropertyInt)
             {
@@ -100,10 +156,18 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
                 TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, name, () -> {}, p.value + "");
                 t.function = () ->
                 {
-                    if (t.inputText.length() == 0)
-                        t.inputText = p.value + "";
-                    else
-                        p.value = Double.parseDouble(t.inputText);
+                    try
+                    {
+                        if (t.inputText.length() == 0)
+                            t.inputText = p.value + "";
+                        else
+                            p.value = Double.parseDouble(t.inputText);
+                    }
+                    catch (Exception e)
+                    {
+                        p.value = 0;
+                        t.inputText = "0";
+                    }
                 };
 
                 t.allowDoubles = true;
@@ -147,6 +211,7 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
             {
                 Selector t = new Selector(0, 0, this.objWidth, this.objHeight, name, ((ItemPropertySelector) p).values, () -> {});
                 t.selectedOption = (int) p.value;
+                t.images = ((ItemPropertySelector) p).images;
 
                 t.function = () -> p.value = t.selectedOption;
 
@@ -192,30 +257,36 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
     @Override
     public void update()
     {
-        for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, properties.size()); i++)
+        if (this.message != null)
+            this.dismissMessage.update();
+        else
         {
-            if (properties.get(i) instanceof Selector)
-                ((Selector) properties.get(i)).drawBehindScreen = this.drawBehindScreen;
+            for (int i = page * rows * 3; i < Math.min(page * rows * 3 + rows * 3, properties.size()); i++)
+            {
+                if (properties.get(i) instanceof Selector)
+                    ((Selector) properties.get(i)).drawBehindScreen = this.drawBehindScreen;
 
-            properties.get(i).update();
-        }
+                properties.get(i).update();
+            }
 
-        back.update();
-        delete.update();
+            back.update();
+            delete.update();
+            save.update();
 
-        previous.enabled = page > 0;
-        next.enabled = (properties.size() > (1 + page) * rows * 3);
+            previous.enabled = page > 0;
+            next.enabled = (properties.size() > (1 + page) * rows * 3);
 
-        if (rows * 3 < properties.size())
-        {
-            previous.update();
-            next.update();
-        }
+            if (rows * 3 < properties.size())
+            {
+                previous.update();
+                next.update();
+            }
 
-        if (Game.game.input.editorPause.isValid())
-        {
-            back.function.run();
-            Game.game.input.editorPause.invalidate();
+            if (Game.game.input.editorPause.isValid())
+            {
+                back.function.run();
+                Game.game.input.editorPause.invalidate();
+            }
         }
     }
 
@@ -223,51 +294,100 @@ public class ScreenEditItem extends Screen implements IOverlayScreen
     public void draw()
     {
         if (this.drawBehindScreen)
-            ((Screen)this.screen).draw();
+        {
+            this.enableMargins = ((Screen) this.screen).enableMargins;
+            ((Screen) this.screen).draw();
+        }
         else
             this.drawDefaultBackground();
 
         if (Game.screen instanceof ScreenSelector)
             return;
 
-        back.draw();
-        delete.draw();
-
-        previous.enabled = page > 0;
-        next.enabled = (properties.size() > (1 + page) * rows * 3);
-
-        if (rows * 3 < properties.size())
+        if (this.message != null)
         {
-            previous.draw();
-            next.draw();
+            this.dismissMessage.draw();
 
             if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
                 Drawing.drawing.setColor(255, 255, 255);
             else
                 Drawing.drawing.setColor(0, 0, 0);
 
-            Drawing.drawing.setInterfaceFontSize(24);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
-                    "Page " + (page + 1) + " of " + (properties.size() / (rows * 3) + Math.min(1, properties.size() % (rows * 3))));
+            Drawing.drawing.setInterfaceFontSize(Drawing.drawing.textSize);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.message);
         }
-
-        for (int i = Math.min(page * rows * 3 + rows * 3, properties.size()) - 1; i >= page * rows * 3; i--)
-        {
-            properties.get(i).draw();
-        }
-
-        if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
-            Drawing.drawing.setColor(255, 255, 255);
         else
-            Drawing.drawing.setColor(0, 0, 0);
+        {
+            back.draw();
+            delete.draw();
+            save.draw();
 
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, item.getTypeName() + " item properties");
+            previous.enabled = page > 0;
+            next.enabled = (properties.size() > (1 + page) * rows * 3);
+
+            if (rows * 3 < properties.size())
+            {
+                previous.draw();
+                next.draw();
+
+                if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+                    Drawing.drawing.setColor(255, 255, 255);
+                else
+                    Drawing.drawing.setColor(0, 0, 0);
+
+                Drawing.drawing.setInterfaceFontSize(this.textSize);
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
+                        "Page " + (page + 1) + " of " + (properties.size() / (rows * 3) + Math.min(1, properties.size() % (rows * 3))));
+            }
+
+            for (int i = Math.min(page * rows * 3 + rows * 3, properties.size()) - 1; i >= page * rows * 3; i--)
+            {
+                properties.get(i).draw();
+            }
+
+            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
+
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, item.getTypeName() + " item properties");
+        }
     }
 
     @Override
-    public boolean showOverlay()
+    public double getOffsetX()
     {
-        return false;
+        if (drawBehindScreen)
+            return ((Screen)screen).getOffsetX();
+        else
+            return super.getOffsetX();
+    }
+
+    @Override
+    public double getOffsetY()
+    {
+        if (drawBehindScreen)
+            return ((Screen)screen).getOffsetY();
+        else
+            return super.getOffsetY();
+    }
+
+    @Override
+    public double getScale()
+    {
+        if (drawBehindScreen)
+            return ((Screen)screen).getScale();
+        else
+            return super.getScale();
+    }
+
+    @Override
+    public boolean isOverlayEnabled()
+    {
+        if (screen instanceof IConditionalOverlayScreen)
+            return ((IConditionalOverlayScreen) screen).isOverlayEnabled();
+
+        return screen instanceof ScreenGame || screen instanceof ILevelPreviewScreen || screen instanceof IOverlayScreen;
     }
 }

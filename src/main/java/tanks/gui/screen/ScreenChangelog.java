@@ -16,8 +16,20 @@ public class ScreenChangelog extends Screen
 
     public ScreenChangelog()
     {
+        super(350, 40, 380, 60);
+
         this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
+
+        this.next.image = "play.png";
+        this.next.imageSizeX = 25;
+        this.next.imageSizeY = 25;
+        this.next.imageXOffset = 145;
+
+        this.previous.image = "play.png";
+        this.previous.imageSizeX = -25;
+        this.previous.imageSizeY = 25;
+        this.previous.imageXOffset = -145;
     }
 
     public void setup()
@@ -34,7 +46,7 @@ public class ScreenChangelog extends Screen
         pages.addAll(Arrays.asList(log));
     }
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Done", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Done", new Runnable()
     {
         @Override
         public void run()
@@ -47,7 +59,7 @@ public class ScreenChangelog extends Screen
     }
     );
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Next page", new Runnable()
+    Button next = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Next page", new Runnable()
     {
         @Override
         public void run()
@@ -58,7 +70,7 @@ public class ScreenChangelog extends Screen
     }
     );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Previous page", new Runnable()
+    Button previous = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
         @Override
         public void run()
@@ -97,11 +109,23 @@ public class ScreenChangelog extends Screen
         quit.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(24);
 
-        for (int i = 0; i < pageContents.length; i++)
+        if (pageContents != null)
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + (-(pageContents.length - 1) / 2.0 + i) * 30 - 80, pageContents[i]);
+            for (int i = 0; i < pageContents.length; i++)
+            {
+                String s = pageContents[i];
+
+                if (s.startsWith("*"))
+                {
+                    Drawing.drawing.setInterfaceFontSize(this.titleSize);
+                    s = s.substring(1);
+                }
+                else
+                    Drawing.drawing.setInterfaceFontSize(this.textSize);
+
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + (-(pageContents.length - 1) / 2.0 + i) * this.objYSpace / 2 - this.objYSpace, s);
+            }
         }
     }
 
@@ -126,81 +150,56 @@ public class ScreenChangelog extends Screen
 
         public static void setupLogs()
         {
-            new Changelog("v1.0.a", new String[]
+            new Changelog("v1.0.0", new String[]
                     {
-                            "What's new in Tanks v1.0.a:\n\n" +
-                            "Individual levels can now have items and shops\n" +
-                            "Increased the maximum level size to 400x400\n" +
-                            "Added UI glow effects for super graphics\n" + "" +
-                            "Other miscellaneous UI improvements\n"+
-                            "Added update changelog screen\n" +
-                            "Added launching directly from jar file on Mac\n" +
-                            "Added a new menu music track\n" +
-                            "Various bug fixes and improvements"
-                    });
-
-            new Changelog("v1.0.b", new String[]
-                    {
-                            "What's new in Tanks v1.0.b:\n\n" +
-                            "Added mine item\n" +
-                            "Other bug fixes and improvements"
-                    });
-
-            new Changelog("v1.0.c", new String[]
-                    {
-                            "What's new in Tanks v1.0.c:\n\n" +
-                                    "Added battle music\n" +
-                                    "Many bug fixes and improvements"
-                    });
-
-            new Changelog("v1.0.d", new String[]
-                    {
-                            "What's new in Tanks v1.0.d:\n\n" +
-                                    "Added win and lose music\n" +
-                                    "Many bug fixes and improvements"
-                    });
-
-            new Changelog("v1.0.e", new String[]
-                    {
-                            "What's new in Tanks v1.0.e:\n\n" +
-                                    "UI improvements, including:\n" +
-                                    "White text being used in dark levels\n" +
-                                    "Chat now has a background for contrast\n\n" +
-                                    "New features:\n" +
-                                    "New snow obstacle which melts and slows tanks and bullets\n" +
-                                    "Flamethrower item size allows longer range\n\n" +
-                                    "Level generator improvements:\n" +
-                                    "Snow in random levels!\n" +
-                                    "Larger levels may now generate sometimes\n" +
-                                    "Some generated levels now have darker backgrounds\n" +
-                                    "Some levels have bigger bush/mud/ice/snow patches\n\n" +
-                                    "Many other bug fixes and improvements",
-                            "Other improvements:\n" +
-                                    "Changed look of fire and dark rockets\n" +
-                                    "Your mines now beep before exploding\n" +
-                                    "No cooldown bullets get used more consistently"
-                    });
-
-            new Changelog("v1.0.f", new String[]
-                    {
-                            "What's new in Tanks v1.0.f:\n\n" +
-                                    "New health rendering for large quantities\n" +
-                                    "Many bugs fixed!"
-                    });
-
-            new Changelog("v1.0.g", new String[]
-                    {
-                            "What's new in Tanks v1.0.g:\n\n" +
-                                    "You can now add items and shops via the level editor!\n" +
+                            "*What's new in Tanks v1.0.0:\n\n" +
+                                    "*New features:\n\n" +
+                                    "All-new adventure crusade\n" +
+                                    "New snow obstacle: melts, slows tanks and bullets\n" +
+                                    "Crusades can now be shared in parties\n" +
                                     "Mines now destroy bullets in range\n" +
-                                    "Other bugs fixed"
-                    });
+                                    "Freezing bullets make the ground slippery\n" +
+                                    "Mac users can now launch directly from the Jar\n" +
+                                    "Adjusted tank coins and spawn rates\n" +
+                                    "New update changelog screen",
 
-            new Changelog("v1.0.h", new String[]
-                    {
-                            "What's new in Tanks v1.0.h:\n\n" +
-                                    "Added about screen with links\n" +
-                                    "Other improvements and bugs fixed"
+                            "*Levels:\n\n" +
+                                    "Max level size increased\n" +
+                                    "More variation in level generator\n\n" +
+
+                            "*Items:\n\n" +
+                                    "New mine item\n" +
+                                    "Add items and shops in individual levels\n" +
+                                    "New item templates\n" +
+                                    "New item textures",
+
+                            "*User interfaces:\n\n" +
+                                    "New \"restart\" button on the pause menu\n" +
+                                    "New \"about\" screen with links\n" +
+                                    "List reordering for item and crusade level lists\n" +
+                                    "New \"test controls\" button for mobile input options\n" +
+                                    "New fullscreen mode\n" +
+                                    "White text is now used in dark levels\n" +
+                                    "New chat background\n" +
+                                    "Title text is now larger\n" +
+                                    "Mobile UI scale improved\n" +
+                                    "Pre-game user highlighting in multiplayer\n" +
+                                    "New tank icons in player chat\n" +
+                                    "New color selection sliders\n" +
+                                    "New UI glow effects\n" +
+                                    "Party lobby menu improvements\n" +
+                                    "And many, many more minor improvements",
+
+                            "*Graphics:\n\n" +
+                                    "Updated bullet effects\n" +
+                                    "Updated health indicators\n" +
+                                    "Flashier 3D fireworks\n\n" +
+
+                            "*Audio:\n\n" +
+                                    "New volume controls\n" +
+                                    "New songs for battle, crusade, and battle victory/defeat\n" +
+                                    "New sound effects\n" +
+                                    "\n\n...and countless bug fixes and other minor improvements. Enjoy!"
                     });
         }
     }

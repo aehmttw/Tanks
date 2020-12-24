@@ -31,6 +31,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class LWJGLWindow extends BaseWindow
 {
 	protected long window;
+	protected GLFWVidMode vidmode;
 
 	public double colorR;
 	public double colorG;
@@ -42,6 +43,12 @@ public class LWJGLWindow extends BaseWindow
 
 	protected int[] w = new int[1];
 	protected int[] h = new int[1];
+
+	protected int[] prevPosX = new int[1];
+	protected int[] prevPosY = new int[1];
+
+	protected int[] prevSizeX = new int[1];
+	protected int[] prevSizeY = new int[1];
 
 	protected HashMap<String, Integer> textures = new HashMap<String, Integer>();
 	protected HashMap<String, Integer> textureSX = new HashMap<String, Integer>();
@@ -170,7 +177,7 @@ public class LWJGLWindow extends BaseWindow
 			glfwGetWindowSize(window, pWidth, pHeight);
 
 			// Get the resolution of the primary monitor
-			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+			vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 			// Center the window
 			glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
@@ -290,6 +297,39 @@ public class LWJGLWindow extends BaseWindow
 			mouse = GLFW.GLFW_CURSOR_NORMAL;
 
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, mouse);
+	}
+
+	public void setCursorLocked(boolean locked)
+	{
+		int mouse = GLFW_CURSOR_DISABLED;
+		if (!locked)
+			mouse = GLFW_CURSOR_NORMAL;
+
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, mouse);
+	}
+
+	public void setCursorPos(double x, double y)
+	{
+		GLFW.glfwSetCursorPos(window, x, y);
+	}
+
+	public void setFullscreen(boolean enabled)
+	{
+		this.fullscreen = enabled;
+
+		this.pressedButtons.clear();
+		this.validPressedButtons.clear();
+
+		if (enabled)
+		{
+			glfwGetWindowSize(this.window, this.prevSizeX, this.prevSizeY);
+			glfwGetWindowPos(this.window, this.prevPosX, this.prevPosY);
+			glfwSetWindowMonitor(this.window, glfwGetPrimaryMonitor(), 0, 0, this.vidmode.width(), this.vidmode.height(), this.vidmode.refreshRate());
+		}
+		else
+			glfwSetWindowMonitor(this.window, NULL, this.prevPosX[0], this.prevPosY[0], this.prevSizeX[0], this.prevSizeY[0], this.vidmode.refreshRate());
+
+		this.setVsync(this.vsync);
 	}
 
 	public void fillOval(double x, double y, double sX, double sY)
@@ -858,8 +898,8 @@ public class LWJGLWindow extends BaseWindow
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 				in.close();
@@ -928,7 +968,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
+		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 100);
 
 		this.angled = false;
 
@@ -1091,6 +1131,8 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		glDepthMask(false);
+
 		glBindTexture(GL_TEXTURE_2D, textures.get(image));
 
 		double width = sX * (u2 - u1);
@@ -1116,6 +1158,8 @@ public class LWJGLWindow extends BaseWindow
 
 		glMatrixMode(GL_PROJECTION);
 		glDisable(GL_TEXTURE_2D);
+
+		glDepthMask(true);
 
 		if (depthtest)
 			glDisable(GL_DEPTH_TEST);
@@ -1144,6 +1188,8 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		glDepthMask(false);
+
 		glBindTexture(GL_TEXTURE_2D, textures.get(image));
 
 		double width = sX * (u2 - u1);
@@ -1170,6 +1216,8 @@ public class LWJGLWindow extends BaseWindow
 		glMatrixMode(GL_PROJECTION);
 		glDisable(GL_TEXTURE_2D);
 
+		glDepthMask(true);
+
 		if (depthtest)
 			glDisable(GL_DEPTH_TEST);
 	}
@@ -1187,7 +1235,12 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public String getClipboard()
 	{
-		return GLFW.glfwGetClipboardString(window);
+		String s = GLFW.glfwGetClipboardString(window);
+
+		if (s != null)
+			return s;
+		else
+			return "";
 	}
 
 	@Override

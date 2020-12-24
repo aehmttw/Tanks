@@ -4,7 +4,9 @@ import tanks.hotbar.item.Item;
 
 public interface IItemScreen
 {
-    public abstract void removeItem(Item i);
+    void addItem(Item i);
 
-    public abstract void refreshItems();
+    void removeItem(Item i);
+
+    void refreshItems();
 }

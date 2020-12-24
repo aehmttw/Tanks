@@ -80,7 +80,12 @@ public class EventTankTeleport extends PersonalEvent
 		if (this.clientID != null)
 			return;
 
-		TeleporterOrb t = new TeleporterOrb(this.fX, this.fY, this.iX, this.iY, this.dX, this.dY, Tank.idMap.get(this.tank));
+		Tank tank = Tank.idMap.get(this.tank);
+
+		if (tank == null)
+			return;
+
+		TeleporterOrb t = new TeleporterOrb(this.fX, this.fY, this.iX, this.iY, this.dX, this.dY, tank);
 		t.age = this.age;
 		t.maxAge = this.maxAge;
 		t.endAge = this.endAge;

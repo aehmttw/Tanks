@@ -143,4 +143,9 @@ public class ObstacleMud extends Obstacle
             Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, d * (1 - frac), (byte) 61);
         }
     }
+
+    public double getTileHeight()
+    {
+        return 0;
+    }
 }

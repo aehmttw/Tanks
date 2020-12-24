@@ -2,7 +2,6 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.event.EventLayMine;
 import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
 import tanks.hotbar.item.ItemMine;
@@ -94,10 +93,10 @@ public class Mine extends Movable
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
         {
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX - this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX + this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX - this.size / 2, this.posY + this.size / 2));
-            this.height = Math.max(this.height, Game.sampleHeight(this.posX + this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
         }
 
         if (Game.enable3d)
@@ -277,12 +276,17 @@ public class Mine extends Movable
                             if (effect == Effect.EffectType.obstaclePiece)
                                 effect = Effect.EffectType.obstaclePiece3d;
 
+                            double freq = Math.min((Math.sqrt(Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2)) + Game.tile_size * 2.5) / radius, 1);
+
                             for (int j = 0; j < Game.tile_size; j += 10)
                             {
                                 for (int k = 0; k < Game.tile_size; k += 10)
                                 {
                                     for (int l = 0; l < Game.tile_size * o.stackHeight; l += 10)
                                     {
+                                        if (Math.random() > o.destroyEffectAmount * freq * freq)
+                                            continue;
+
                                         Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, l, effect);
 
                                         int block = (int) ((o.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
@@ -303,8 +307,9 @@ public class Mine extends Movable
                                         double dist = Movable.distanceBetween(this, e);
                                         double angle = this.getAngleInDirection(e.posX, e.posY);
                                         double rad = radius - Game.tile_size / 2;
-                                        e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
-                                        e.vZ = (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2;
+                                        double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
+                                        e.addPolarMotion(angle, v + Math.random() * 2);
+                                        e.vZ = v + Math.random() * 2;
 
                                         Game.effects.add(e);
 

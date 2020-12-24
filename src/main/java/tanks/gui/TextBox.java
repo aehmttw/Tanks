@@ -112,21 +112,21 @@ public class TextBox implements IDrawable, ITrigger
 	{
 		Drawing drawing = Drawing.drawing;
 
-		drawing.setInterfaceFontSize(24);
+		drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
 		if (Game.superGraphics)
-			drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 30, 0.6, 0, 0, 0, 100, false);
+			drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 
 		drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
 
-		drawing.fillInterfaceRect(posX, posY - 30, sizeX - sizeY, sizeY);
-		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY - 30, sizeY, sizeY);
-		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY - 30, sizeY, sizeY);
+		drawing.fillInterfaceRect(posX, posY - sizeY * 3 / 4, sizeX - sizeY, sizeY);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY - sizeY * 3 / 4, sizeY, sizeY);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY - sizeY * 3 / 4, sizeY, sizeY);
 
-		drawing.fillInterfaceRect(posX, posY - 15, sizeX, 30);
+		drawing.fillInterfaceRect(posX, posY - 15, sizeX, sizeY * 3 / 4);
 
 		double m = 0.8;
 
@@ -167,7 +167,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		drawing.setColor(0, 0, 0);
 
-		drawing.drawInterfaceText(posX, posY - 30, labelText);
+		drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, labelText);
 
 		this.drawInput();
 
@@ -202,6 +202,12 @@ public class TextBox implements IDrawable, ITrigger
 			}
 		}
 
+		if (selected && Game.game.window.touchscreen)
+		{
+			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+		}
+
 		if (selected && inputText.length() > 0)
 		{
 			if (Game.superGraphics)
@@ -225,8 +231,19 @@ public class TextBox implements IDrawable, ITrigger
 
 			drawing.setColor(255, 255, 255);
 
-			drawing.setInterfaceFontSize(24);
+			drawing.setInterfaceFontSize(this.sizeY * 0.6);
 			drawing.drawInterfaceText(this.posX + 2 - this.sizeX / 2 + this.sizeY / 2 - 1, this.posY - 1, "x");
+		}
+
+		if (selected && Game.game.window.touchscreen)
+		{
+			drawing.setColor(255, 255, 255);
+			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+			drawing.drawInterfaceImage("paste.png", this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
+
+			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+			drawing.drawInterfaceImage("copy.png", this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
+
 		}
 	}
 
@@ -245,7 +262,7 @@ public class TextBox implements IDrawable, ITrigger
 			double mx = Drawing.drawing.getInterfaceMouseX();
 			double my = Drawing.drawing.getInterfaceMouseY();
 
-			boolean handled = checkMouse(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+			boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1), Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1), null);
 
 			if (handled)
 				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -261,13 +278,10 @@ public class TextBox implements IDrawable, ITrigger
 				double mx = Drawing.drawing.getInterfacePointerX(p.x);
 				double my = Drawing.drawing.getInterfacePointerY(p.y);
 
-				if (p.tag.equals(""))
-				{
-					boolean handled = checkMouse(mx, my, p.valid);
+				boolean handled = checkMouse(mx, my, true, p.valid && p.tag.equals(""), p);
 
-					if (handled)
-						p.tag = "textbox";
-				}
+				if (handled)
+					p.tag = "textbox";
 
 				checkDeselect(mx, my, p.valid);
 			}
@@ -302,7 +316,7 @@ public class TextBox implements IDrawable, ITrigger
 				}
 			}
 
-			if (this.hover && !this.selected && this.enabled && !Game.game.window.touchscreen)
+			if (this.shouldAddEffect())
 			{
 				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
 
@@ -318,7 +332,12 @@ public class TextBox implements IDrawable, ITrigger
 			Panel.selectedTextBox = this;
 	}
 
-	public boolean checkMouse(double mx, double my, boolean valid)
+	public boolean shouldAddEffect()
+	{
+		return this.hover && !this.selected && this.enabled && !Game.game.window.touchscreen;
+	}
+
+	public boolean checkMouse(double mx, double my, boolean down, boolean valid, InputPoint p)
 	{
 		boolean handled = false;
 
@@ -328,7 +347,7 @@ public class TextBox implements IDrawable, ITrigger
 			sizeY += 20;
 		}
 
-		hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - 30 && my < posY + sizeY / 2;
+		hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
 
 		infoSelected = mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
 		clearSelected = selected && mx < posX - sizeX / 2 + sizeY && mx > posX - sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
@@ -369,6 +388,25 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (Game.game.window.touchscreen)
 		{
+			if (selected && valid && mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 13 / 16 && my < posY + sizeY / 2 - sizeY * 13 / 16)
+			{
+				this.paste();
+				handled = true;
+				Drawing.drawing.playVibration("click");
+				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
+			}
+
+			if (selected && valid && mx > posX + sizeX / 2 - sizeY * 2 && mx < posX + sizeX / 2 - sizeY && my > posY - sizeY / 2 - sizeY * 13 / 16 && my < posY + sizeY / 2 - sizeY * 13 / 16)
+			{
+				this.copy();
+				handled = true;
+				Drawing.drawing.playVibration("click");
+				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
+			}
+		}
+
+		if (Game.game.window.touchscreen)
+		{
 			sizeX -= 20;
 			sizeY -= 20;
 		}
@@ -391,7 +429,7 @@ public class TextBox implements IDrawable, ITrigger
 			sizeY += 20;
 		}
 
-		boolean hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - 30 && my < posY + sizeY / 2;
+		boolean hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
 
 		if (((!hover && valid)) && selected)
 		{
@@ -451,25 +489,12 @@ public class TextBox implements IDrawable, ITrigger
 		{
 			if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_C))
 			{
-				Game.game.window.textPressedKeys.clear();
-				Game.game.window.textValidPressedKeys.clear();
-				Game.game.window.getRawTextKeys().clear();
-
-				Game.game.window.setClipboard(this.inputText);
+				this.copy();
 			}
 
 			if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_V))
 			{
-				Game.game.window.textPressedKeys.clear();
-				Game.game.window.textValidPressedKeys.clear();
-				Game.game.window.getRawTextKeys().clear();
-
-				String s = Game.game.window.getClipboard();
-
-				for (int i = 0; i < s.length(); i++)
-				{
-					this.inputKey(0, s.substring(i, i + 1).toLowerCase(), Character.isUpperCase(s.charAt(i)));
-				}
+				this.paste();
 			}
 
 			if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_BACKSPACE) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_DELETE))
@@ -647,6 +672,29 @@ public class TextBox implements IDrawable, ITrigger
 					}
 				}
 			}
+		}
+	}
+
+	public void copy()
+	{
+		Game.game.window.textPressedKeys.clear();
+		Game.game.window.textValidPressedKeys.clear();
+		Game.game.window.getRawTextKeys().clear();
+
+		Game.game.window.setClipboard(this.inputText);
+	}
+
+	public void paste()
+	{
+		Game.game.window.textPressedKeys.clear();
+		Game.game.window.textValidPressedKeys.clear();
+		Game.game.window.getRawTextKeys().clear();
+
+		String s = Game.game.window.getClipboard();
+
+		for (int i = 0; i < s.length(); i++)
+		{
+			this.inputKey(0, s.substring(i, i + 1).toLowerCase(), Character.isUpperCase(s.charAt(i)));
 		}
 	}
 

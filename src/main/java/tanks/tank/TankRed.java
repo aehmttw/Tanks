@@ -23,7 +23,7 @@ public class TankRed extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 		this.cooldown = 250;
 
-		this.coinValue = 3;
+		this.coinValue = 6;
 
 		this.description = "A stationary tank which---shoots deadly lasers";
 	}

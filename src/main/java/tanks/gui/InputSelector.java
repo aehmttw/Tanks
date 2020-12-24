@@ -75,21 +75,21 @@ public class InputSelector implements IDrawable, ITrigger
 
 		Drawing drawing = Drawing.drawing;
 
-		drawing.setInterfaceFontSize(24);
+		drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
 		if (Game.superGraphics)
-			TextBox.drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 30, 0.6, 0, 0, 0, 100, false);
+			TextBox.drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 
 		drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
 
-		drawing.fillInterfaceRect(posX, posY - 30, sizeX - sizeY, sizeY);
-		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY - 30, sizeY, sizeY);
-		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY - 30, sizeY, sizeY);
+		drawing.fillInterfaceRect(posX, posY - sizeY * 3 / 4, sizeX - sizeY, sizeY);
+		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY - sizeY * 3 / 4, sizeY, sizeY);
+		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY - sizeY * 3 / 4, sizeY, sizeY);
 
-		drawing.fillInterfaceRect(posX, posY - 15, sizeX, 30);
+		drawing.fillInterfaceRect(posX, posY - 15, sizeX, sizeY * 3 / 4);
 
 		double m = 0.8;
 
@@ -135,7 +135,7 @@ public class InputSelector implements IDrawable, ITrigger
 
 		drawing.setColor(0, 0, 0);
 
-		drawing.drawInterfaceText(posX, posY - 30, text);
+		drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, text);
 
 		if (input.input1.inputType == null)
 			drawing.setColor(127, 127, 127);
@@ -271,7 +271,7 @@ public class InputSelector implements IDrawable, ITrigger
 			sizeY += 20;
 		}
 
-		selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - 30 && my < posY + sizeY / 2;
+		selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
 		infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
 		right = mx >= posX;
 

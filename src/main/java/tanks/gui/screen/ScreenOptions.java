@@ -40,7 +40,7 @@ public class ScreenOptions extends Screen
 			soundOptions.enabled = false;
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -51,7 +51,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button autostart = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "", new Runnable()
+	Button autostart = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -67,7 +67,7 @@ public class ScreenOptions extends Screen
 			"When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
 
-	Button showStats = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "", new Runnable()
+	Button showStats = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -90,7 +90,7 @@ public class ScreenOptions extends Screen
 					"Memory usage");
 
 
-	Button multiplayerOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Multiplayer options", new Runnable()
+	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -100,7 +100,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button graphicsOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Graphics options", new Runnable()
+	Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -110,7 +110,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button soundOptions = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Sound options", new Runnable()
+	Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -120,7 +120,7 @@ public class ScreenOptions extends Screen
 	}
 	);
 
-	Button inputOptions = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Input options", new Runnable()
+	Button inputOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Input options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -160,9 +160,9 @@ public class ScreenOptions extends Screen
 		autostart.draw();
 		soundOptions.draw();
 
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Options");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
 	}
 
 	public static void initOptions(String homedir)
@@ -205,7 +205,9 @@ public class ScreenOptions extends Screen
 			f.println("snap_joystick=" + TankPlayer.controlStickSnap);
 			f.println("dual_joystick=" + TankPlayer.shootStickEnabled);
 			f.println("sound=" + Game.soundsEnabled);
+			f.println("sound_volume=" + Game.soundVolume);
 			f.println("music=" + Game.musicEnabled);
+			f.println("music_volume=" + Game.musicVolume);
 			f.println("auto_start=" + Game.autostart);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
@@ -297,6 +299,12 @@ public class ScreenOptions extends Screen
 					case "music":
 						Game.musicEnabled = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "sound_volume":
+						Game.soundVolume = Float.parseFloat(optionLine[1]);
+						break;
+					case "music_volume":
+						Game.musicVolume =  Float.parseFloat(optionLine[1]);
+						break;
 					case "auto_start":
 						Game.autostart = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -379,6 +387,13 @@ public class ScreenOptions extends Screen
 				Panel.showMouseTarget = false;
 				Game.vsync = true;
 			}
+
+			if (!Game.soundsEnabled)
+				Game.soundVolume = 0;
+
+			if (!Game.musicEnabled)
+				Game.musicVolume = 0;
+
 
 			if (TankPlayerRemote.weakTimeCheck)
 				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatStrongTimeOffset;

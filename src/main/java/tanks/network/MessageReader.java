@@ -35,6 +35,23 @@ public class MessageReader
 				if (!reading)
 				{
 					endpoint = queue.readInt();
+
+					if (endpoint > 1048576)
+					{
+						if (ScreenPartyHost.isServer && s != null)
+						{
+							s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
+						}
+						else if (ScreenPartyLobby.isClient)
+						{
+							Game.cleanUp();
+							Game.screen = new ScreenKicked("A network exception has occurred: message size " + endpoint + " is too big!");
+							Client.handler.ctx.close();
+							ScreenPartyLobby.connections.clear();
+						}
+
+						return false;
+					}
 				}
 				
 				reading = true;
@@ -49,6 +66,23 @@ public class MessageReader
 					if (queue.readableBytes() >= 4)
 					{
 						endpoint = queue.readInt();
+
+						if (endpoint > 1048576)
+						{
+							if (ScreenPartyHost.isServer && s != null)
+							{
+								s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
+							}
+							else if (ScreenPartyLobby.isClient)
+							{
+								Game.cleanUp();
+								Game.screen = new ScreenKicked("A network exception has occurred: message size " + endpoint + " is too big!");
+								Client.handler.ctx.close();
+								ScreenPartyLobby.connections.clear();
+							}
+
+							return false;
+						}
 
 						reading = true;
 					}

@@ -50,8 +50,10 @@ public class ItemBullet extends Item
 		this.rightClick = false;
 		this.isConsumable = true;
 
-		new ItemPropertySelector(this.properties, "type", new String[]{"normal", "flamethrower", "laser", "freezing", "electric", "healing"}, 0);
-		new ItemPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice"}, 0);
+		new ItemPropertySelector(this.properties, "type", new String[]{"normal", "flamethrower", "laser", "freezing", "electric", "healing"},
+				new String[]{"bullet_normal.png", "bullet_flame.png", "bullet_laser.png", "bullet_freeze.png", "bullet_electric.png", "bullet_healing.png"}, 0);
+		new ItemPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice"},
+				new String[]{"bullet_large.png", "bullet_normal.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_freeze.png"}, 0);
 		new ItemPropertyDouble(this.properties, "speed", 3.125);
 		new ItemPropertyInt(this.properties, "bounces", 1);
 		new ItemPropertyDouble(this.properties, "damage", 1.0);

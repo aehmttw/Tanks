@@ -42,6 +42,7 @@ public class EventReturnToCrusade extends PersonalEvent
 	{
 		if (this.clientID == null)
 		{
+			Game.cleanUp();
 			ScreenPartyCrusadeInterlevel s = new ScreenPartyCrusadeInterlevel();
 			s.msg1 = this.msg1;
 			s.msg2 = this.msg2;

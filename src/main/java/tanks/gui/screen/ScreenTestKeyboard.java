@@ -32,7 +32,7 @@ public class ScreenTestKeyboard extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Key test");
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 100, "Press a key to show its code");

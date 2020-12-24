@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.tank.Mine;
-import tanks.tank.TankBrown;
-import tanks.tank.TankDummy;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 
 public class Tutorial
 {
@@ -19,6 +16,8 @@ public class Tutorial
     public TankDummy dummy5;
 
     public TankBrown brown;
+
+    public Model arrow;
 
 
     public void loadTutorial(boolean initial, boolean touchscreen)
@@ -52,6 +51,11 @@ public class Tutorial
         this.brown = new TankBrown("brown", 32.5 * Game.tile_size, 2.5 * Game.tile_size, Math.PI / 2);
         this.brown.team = Game.enemyTeam;
         Game.movables.add(this.brown);
+
+        arrow = new Model();
+        arrow.shapes = new Model.Shape[2];
+        arrow.shapes[0] = new Model.Triangle(new Model.Point(-1, 0, 0), new Model.Point(-1.75, 0, 0), new Model.Point(-2, 0.25, 0), 1);
+        arrow.shapes[1] = new Model.Triangle(new Model.Point(-1, 0, 0), new Model.Point(-1.75, 0, 0), new Model.Point(-2, -0.25, 0), 1);
     }
 
     public void update()
@@ -143,6 +147,7 @@ public class Tutorial
         {
             Drawing.drawing.setColor(255, 127, 0, 64);
             Drawing.drawing.fillOval(12.5 * Game.tile_size, 16 * Game.tile_size, Game.tile_size * 3, Game.tile_size * 3);
+            this.drawArrow(Game.playerTank.posX, Game.playerTank.posY, 12.5 * Game.tile_size, 16 * Game.tile_size, Game.playerTank.getAngleInDirection(12.5 * Game.tile_size, 16 * Game.tile_size));
 
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.setFontSize(24);
@@ -195,6 +200,7 @@ public class Tutorial
 
             Drawing.drawing.setColor(255, 127, 0, 64);
             Drawing.drawing.fillOval(dummy5.posX, dummy5.posY, Game.tile_size * 2, Game.tile_size * 2);
+            this.drawArrow(Game.playerTank.posX, Game.playerTank.posY, dummy5.posX, dummy5.posY, Game.playerTank.getAngleInDirection(dummy5.posX, dummy5.posY));
 
             drawBottomBar(250);
             Drawing.drawing.setColor(255, 255, 255);
@@ -282,6 +288,7 @@ public class Tutorial
 
             Drawing.drawing.setColor(255, 127, 0, 64);
             Drawing.drawing.fillOval(brown.posX, brown.posY, Game.tile_size * 2, Game.tile_size * 2);
+            this.drawArrow(Game.playerTank.posX, Game.playerTank.posY, brown.posX, brown.posY, Game.playerTank.getAngleInDirection(brown.posX, brown.posY));
 
             drawBottomBar(200);
             Drawing.drawing.setColor(255, 255, 255);
@@ -297,11 +304,19 @@ public class Tutorial
             Drawing.drawing.setInterfaceFontSize(24);
 
             if (touchscreen)
+            {
                 Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing the bottom arrow!");
+                Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Press the arrow below!");
+                Drawing.drawing.setColor(255, 127, 0, 64);
+                Drawing.drawing.fillInterfaceOval(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 6, 150, 75);
+                Drawing.drawing.setColor(255, 255, 255);
+            }
             else
                 Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing " + Game.game.input.hotbarToggle.getInputs() + "!");
 
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "You can see your health, available bullets and mines,");
+
         }
         else if (step == 8)
         {
@@ -338,6 +353,20 @@ public class Tutorial
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY + extraHeight / 2, width, extraHeight);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - height / 2, width, height);
+    }
+
+    public void drawArrow(double px, double py, double x, double y, double angle)
+    {
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+        {
+            double dist = Math.sqrt(Math.pow(px - x, 2) + Math.pow(py - y, 2));
+
+            if (dist >= 400)
+            {
+                Drawing.drawing.setColor(255, 127, 0, 127);
+                Drawing.drawing.drawModel(arrow, px + Math.cos(angle) * 400, py + Math.sin(angle) * 400, 100, 100, angle);
+            }
+        }
     }
 
 

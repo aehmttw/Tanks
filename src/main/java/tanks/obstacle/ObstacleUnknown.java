@@ -31,5 +31,9 @@ public class ObstacleUnknown extends Obstacle
 		Drawing.drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 	}
 
+	public double getTileHeight()
+	{
+		return 0;
+	}
 }
  

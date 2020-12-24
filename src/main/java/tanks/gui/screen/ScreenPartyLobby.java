@@ -6,6 +6,7 @@ import tanks.event.EventChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
+import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
 import tanks.network.SynchronizedList;
 
@@ -20,20 +21,23 @@ public class ScreenPartyLobby extends Screen
 	public static ArrayList<String> readyPlayers = new ArrayList<String>();
 	public static int remainingLives = 0;
 
-	public static ArrayList<ChatMessage> chat = new ArrayList<ChatMessage>();
+	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 	public static SynchronizedList<ScreenPartyHost.SharedLevel> sharedLevels = new SynchronizedList<>();
+	public static SynchronizedList<ScreenPartyHost.SharedCrusade> sharedCrusades = new SynchronizedList<>();
 
 	public int usernamePage = 0;
 
 	public static int entries_per_page = 10;
 	public static int username_spacing = 30;
-	public static int username_y_offset = -260;
-	public static int username_x_offset = 0;
+	public static int username_y_offset = -180;
+	public static int username_x_offset = -190;
 
 	public static ChatBox chatbox;
 
 	public ScreenPartyLobby()
 	{
+		super(350, 40, 380, 60);
+
 		this.music = "tomato_feast_4.ogg";
 		this.musicID = "menu";
 
@@ -79,21 +83,21 @@ public class ScreenPartyLobby extends Screen
 	}
 	);
 
-	Button share = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Share a level", new Runnable()
+	Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Upload", new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			Game.screen = new ScreenShareLevel();
+			Game.screen = new ScreenShareSelect();
 		}
 	});
 
-	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Shared levels", new Runnable()
+	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Download", new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			Game.screen = new ScreenSharedLevels(sharedLevels);
+			Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades);
 		}
 	}
     );
@@ -119,9 +123,13 @@ public class ScreenPartyLobby extends Screen
 		this.drawDefaultBackground();
 
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 295, "Players in this party:");
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Party IP Address: " + Client.currentHost + " (Port: " + Client.currentPort + ")");
+
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
+
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Level and crusade sharing:");
 
 		if (connections != null)
 		{

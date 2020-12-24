@@ -76,4 +76,33 @@ public class AreaEffectFreeze extends AreaEffect
 		}
 	}
 
+	@Override
+	public void update()
+	{
+		for (int i = 0; i < Game.movables.size(); i++)
+		{
+			Movable m = Game.movables.get(i);
+
+			if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
+			{
+				AttributeModifier a = new AttributeModifier("ice_accel", "acceleration", AttributeModifier.Operation.multiply, -0.75);
+				a.duration = 10;
+				a.deteriorationAge = 5;
+				m.addUnduplicateAttribute(a);
+
+				AttributeModifier b = new AttributeModifier("ice_slip", "friction", AttributeModifier.Operation.multiply, -0.875);
+				b.duration = 10;
+				b.deteriorationAge = 5;
+				m.addUnduplicateAttribute(b);
+
+				AttributeModifier c = new AttributeModifier("ice_max_speed", "max_speed", AttributeModifier.Operation.multiply, 3);
+				c.duration = 10;
+				c.deteriorationAge = 5;
+				m.addUnduplicateAttribute(c);
+			}
+		}
+
+		super.update();
+	}
+
 }

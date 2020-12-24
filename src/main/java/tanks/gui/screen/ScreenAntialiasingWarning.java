@@ -12,7 +12,7 @@ public class ScreenAntialiasingWarning extends Screen
 		this.musicID = "menu";
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Ok", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -39,9 +39,13 @@ public class ScreenAntialiasingWarning extends Screen
 		if (Game.antialiasing)
 			s = "enabled";
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Notice!");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Notice!");
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Antialiasing will be " + s + " the next time you start the game.");
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "Antialiasing will be " + s);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "the next time you start the game.");
+
 	}
 
 }

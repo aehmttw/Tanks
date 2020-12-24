@@ -18,7 +18,7 @@ public class TankWhite extends TankAIControlled
 		this.enableDefensiveFiring = true;
 		this.enablePathfinding = true;
 
-		this.coinValue = 4;
+		this.coinValue = 10;
 
 		this.description = "An invisible smart tank";
 	}

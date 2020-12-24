@@ -19,7 +19,7 @@ public class TankDarkGreen extends TankAIControlled
 		this.bulletSize /= 2;
 		this.bulletEffect = Bullet.BulletEffect.trail;
 		
-		this.coinValue = 9;
+		this.coinValue = 10;
 
 		this.description = "A fast tank which rapidly fires---many small, low-damage bullets";
 	}

@@ -29,6 +29,7 @@ public abstract class BulletInstant extends Bullet
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
 		this.enableExternalCollisions = false;
 		this.playPopSound = false;
+		this.playBounceSound = false;
 	}
 
 	public void saveTarget()
@@ -117,9 +118,9 @@ public abstract class BulletInstant extends Bullet
 
 			this.segments.add(new Laser(iX + dX, iY + dY, z, iX, iY, Game.tile_size / 4, this.size / 2, this.getAngleInDirection(iX + dX, iY + dY), this.baseColorR, this.baseColorG, this.baseColorB));
 			this.expired = true;
-			Game.movables.add(this);
 		}
 
+		Game.movables.add(this);
 		this.addDestroyEffect();
 	}
 

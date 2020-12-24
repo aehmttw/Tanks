@@ -21,6 +21,11 @@ public class ScreenOnline extends Screen implements IOnlineScreen
     public ArrayList<Integer> textKeys = new ArrayList<Integer>();
     public ArrayList<Integer> shapeKeys = new ArrayList<Integer>();
 
+    public ScreenOnline()
+    {
+        super(350, 40, 380, 60);
+    }
+
     public Comparator<Integer> intComparator = new Comparator<Integer>()
     {
         @Override

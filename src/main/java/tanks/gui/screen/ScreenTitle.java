@@ -11,12 +11,18 @@ import tanks.tank.TankPlayer;
 
 import java.net.URL;
 
-public class ScreenTitle extends Screen
+public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
 	boolean controlPlayer = false;
-	TankPlayer logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
+	TankPlayer logo;
 
-	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Exit the game", new Runnable()
+	public double lCenterX;
+	public double lCenterY;
+
+	public double rCenterX;
+	public double rCenterY;
+
+	Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -36,7 +42,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 	
-	Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Options", new Runnable()
+	Button options = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Options", new Runnable()
 	{
 		@Override
 		public void run()
@@ -47,7 +53,7 @@ public class ScreenTitle extends Screen
 	}
 			);
 
-	Button debug = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, this.objWidth, this.objHeight, "Debug menu", new Runnable()
+	Button debug = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 3, this.objWidth, this.objHeight, "Debug menu", new Runnable()
 	{
 		@Override
 		public void run()
@@ -58,7 +64,7 @@ public class ScreenTitle extends Screen
 	}
 	);
 
-	Button about = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "About", new Runnable()
+	Button about = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "About", new Runnable()
 	{
 		@Override
 		public void run()
@@ -69,7 +75,7 @@ public class ScreenTitle extends Screen
 	}
 	);
 	
-	Button play = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Play!", new Runnable()
+	Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -99,8 +105,8 @@ public class ScreenTitle extends Screen
 	public ScreenTitle()
 	{
 		Game.movables.clear();
-		this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
-		this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom;
+		this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
+		this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
 		this.logo.invulnerable = true;
 		this.logo.drawAge = 50;
 		this.logo.depthTest = false;
@@ -119,7 +125,9 @@ public class ScreenTitle extends Screen
 		play.update();
 		exit.update();
 		options.update();
-		takeControl.update();
+
+		if (Drawing.drawing.interfaceScaleZoom == 1)
+			takeControl.update();
 
 		if (Game.debug)
 			debug.update();
@@ -169,10 +177,10 @@ public class ScreenTitle extends Screen
 		about.draw();
 
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(60);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Tanks");
-		Drawing.drawing.setInterfaceFontSize(24);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 110, "The Crusades");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
+		Drawing.drawing.drawInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.drawInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
 		for (int i = 0; i < Game.tracks.size(); i++)
 		{
@@ -206,9 +214,33 @@ public class ScreenTitle extends Screen
 	@Override
 	public void drawPostMouse()
 	{
-		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)))
+		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
 		{
 			this.logo.draw();
+		}
+	}
+
+	@Override
+	public void setupLayoutParameters()
+	{
+		this.lCenterX = Drawing.drawing.interfaceSizeX / 2;
+		this.lCenterY = Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5;
+
+		this.rCenterX = Drawing.drawing.interfaceSizeX / 2;
+		this.rCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
+
+		this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
+
+		if (Drawing.drawing.interfaceScaleZoom > 1)
+		{
+			this.rCenterX = Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2;
+			this.rCenterY = Drawing.drawing.interfaceSizeY / 2;
+
+			this.lCenterX = Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2;
+			this.lCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
+
+			this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
+			this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
 		}
 	}
 }

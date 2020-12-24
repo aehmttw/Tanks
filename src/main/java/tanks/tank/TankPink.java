@@ -26,7 +26,7 @@ public class TankPink extends TankAIControlled
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
 		
-		this.coinValue = 15;
+		this.coinValue = 12;
 
 		this.description = "A tank which spawns mini tanks and---shoots rockets that bounce twice";
 	}

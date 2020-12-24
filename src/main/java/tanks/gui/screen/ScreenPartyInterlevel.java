@@ -7,14 +7,14 @@ import tanks.gui.Firework;
 
 import java.util.ArrayList;
 
-public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, IDarkScreen
+public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 {
     boolean odd = false;
 
     ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
     ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
 
-    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
+    Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
     {
         @Override
         public void run()
@@ -34,7 +34,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button replay = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+    Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", new Runnable()
     {
         @Override
         public void run()
@@ -46,7 +46,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
@@ -59,7 +59,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button replayHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+    Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
     {
         @Override
         public void run()
@@ -71,7 +71,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button quitHigherPos = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", new Runnable()
     {
         @Override
         public void run()
@@ -84,7 +84,7 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
     }
     );
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Continue", new Runnable()
+    Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", new Runnable()
     {
         @Override
         public void run()
@@ -176,7 +176,8 @@ public class ScreenPartyInterlevel extends Screen implements IPartyMenuScreen, I
         else
             Drawing.drawing.setColor(0, 0, 0);
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, Panel.winlose);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
 
         if (Panel.win && Game.fancyGraphics)
         {

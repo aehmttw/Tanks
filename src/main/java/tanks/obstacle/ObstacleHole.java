@@ -74,4 +74,9 @@ public class ObstacleHole extends Obstacle
 			Drawing.drawing.fillRect(this.posX, this.posY, draw_size / 2, draw_size / 2);
 		}
 	}
+
+	public double getTileHeight()
+	{
+		return -draw_size / 2;
+	}
 }

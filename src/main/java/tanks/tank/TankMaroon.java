@@ -26,7 +26,7 @@ public class TankMaroon extends TankAIControlled
 		this.turret.size *= 1.5;
 		this.enablePathfinding = true;
 		
-		this.coinValue = 7;
+		this.coinValue = 4;
 
 		this.description = "A tank which shoots huge bullets which---bounce 3 times and can't be stopped";
 	}

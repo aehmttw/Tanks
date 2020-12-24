@@ -275,7 +275,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy && !ScreenGame.finished)
 		{
 			this.drawTread = true;
-			this.treadAnimation -= this.size * 2 / 5;
+			this.treadAnimation %= this.size * 2 / 5;
 		}
 
 		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);
@@ -521,7 +521,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			double size = s;
 			for (int i = 1; i < Math.min(health, 6); i++)
 			{
-				if (Game.enable3d)
+				if (Game.framework == Game.Framework.swing)
+					drawing.drawRect(this.posX, this.posY, size * 1.2, size * 1.2);
+				else if (Game.enable3d)
 					drawing.drawModel(health_model,
 							this.posX, this.posY, s / 4,
 							size, size, s,
@@ -666,10 +668,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
 		{
-			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX - e.size / 2, e.posY - e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX + e.size / 2, e.posY - e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX - e.size / 2, e.posY + e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleHeight(e.posX + e.size / 2, e.posY + e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX - e.size / 2, e.posY - e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX + e.size / 2, e.posY - e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX - e.size / 2, e.posY + e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX + e.size / 2, e.posY + e.size / 2));
 		}
 		else
 			e.posZ = 1;

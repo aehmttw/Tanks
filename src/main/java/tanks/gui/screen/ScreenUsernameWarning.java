@@ -12,7 +12,7 @@ public class ScreenUsernameWarning extends Screen
 		this.musicID = "menu";
 	}
 
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Ok", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -33,12 +33,15 @@ public class ScreenUsernameWarning extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Notice!");
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "The username you picked will be redacted to players");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "who have not disabled the chat filter.");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 0, "If you would like these players to see your username,");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, "please pick another one.");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Notice!");
+
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "The username you picked will be redacted to players");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, "who have not disabled the chat filter.");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 0, "If you would like these players to see your username,");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + this.objYSpace * 0.5, "please pick another one.");
 
 	}
 

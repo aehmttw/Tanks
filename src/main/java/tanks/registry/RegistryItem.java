@@ -41,7 +41,7 @@ public class RegistryItem
 					{ 
 						continue; 
 					}
-					if (itemLine[1].toLowerCase().equals("default"))
+					if (itemLine[2].toLowerCase().equals("default"))
 					{
 						boolean foundItem = false;
 						for (int i = 0; i < Game.defaultItems.size(); i++)
@@ -62,10 +62,10 @@ public class RegistryItem
 						try 
 						{
 							@SuppressWarnings("resource")
-							ClassLoader loader = new URLClassLoader( new URL[] { new File(itemLine[2]).toURI().toURL() }); // super messy
+							ClassLoader loader = new URLClassLoader( new URL[] { new File(itemLine[3]).toURI().toURL() }); // super messy
 							@SuppressWarnings("unchecked")
-							Class<? extends Item> clasz = (Class<? extends Item>) loader.loadClass(itemLine[3]);
-							new ItemEntry(Game.registryItem, clasz, itemLine[0]);
+							Class<? extends Item> clasz = (Class<? extends Item>) loader.loadClass(itemLine[4]);
+							new ItemEntry(Game.registryItem, clasz, itemLine[0], itemLine[1]);
 						}
 						catch (Exception e) 
 						{
@@ -115,7 +115,7 @@ public class RegistryItem
 			f.println("# ");
 			f.println("# This is the Item Registry file!");
 			f.println("# A registry entry is a line in the file");
-			f.println("# The parameters are name, custom/default, jar location, and class");
+			f.println("# The parameters are name, default image, custom/default, jar location, and class");
 			f.println("# Built in items do not use the last 2 parameters");
 			f.println("# and have 'default' written for the third parameter");
 			f.println("# To make a custom item, import the 'Tanks' jar into a java project,");
@@ -124,7 +124,7 @@ public class RegistryItem
 			f.println("# put 'custom' for parameter 2");
 			f.println("# and put its absolute file path as parameter 3 in this file.");
 			f.println("# Then, put a comma and write the Class name with package and all as parameter 5.");
-			f.println("# Example custom item entry: 'myitem,1,custom,C:\\Users\\potato\\.tanks\\MyItem.jar,com.potato.MyItem'");
+			f.println("# Example custom item entry: 'myitem,item.png,custom,C:\\Users\\potato\\.tanks\\MyItem.jar,com.potato.MyItem'");
 			f.println("# Don't leave any blank lines!");
 
 			for (int i = 0; i < Game.defaultItems.size(); i++)
@@ -147,11 +147,13 @@ public class RegistryItem
 	{
 		public final Class<? extends Item> item;
 		public final String name;
+		public final String image;
 
-		public ItemEntry(RegistryItem r, Class<? extends Item> item, String name)
+		public ItemEntry(RegistryItem r, Class<? extends Item> item, String name, String image)
 		{
 			this.item = item;
 			this.name = name;
+			this.image = image;
 
 			r.itemEntries.add(this);
 		}
@@ -160,12 +162,14 @@ public class RegistryItem
 		{
 			this.item = ItemEmpty.class;
 			this.name = "unknown";
+			this.image = "item.png";
 		}
 
 		protected ItemEntry(String name)
 		{
 			this.item = ItemEmpty.class;
 			this.name = name;
+			this.image = "item.png";
 		}
 
 		public Item getItem()
@@ -196,16 +200,18 @@ public class RegistryItem
 	{
 		public final Class<? extends Item> item;
 		public final String name;
+		public final String image;
 
-		public DefaultItemEntry(Class<? extends Item> item, String name)
+		public DefaultItemEntry(Class<? extends Item> item, String name, String image)
 		{
 			this.item = item;
 			this.name = name;
+			this.image = image;
 		}
 
 		public void registerEntry(RegistryItem r)
 		{
-			new ItemEntry(r, this.item, this.name);
+			new ItemEntry(r, this.item, this.name, this.image);
 		}
 
 		public String getString()

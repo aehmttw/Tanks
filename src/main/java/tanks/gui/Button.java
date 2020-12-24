@@ -3,7 +3,10 @@ package tanks.gui;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
+import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenInfo;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 
 import java.util.ArrayList;
 
@@ -53,17 +56,19 @@ public class Button implements IDrawable, ITrigger
 
 	public String image = null;
 	public double imageSizeX = 0;
-    public double imageSizeY = 0;
+	public double imageSizeY = 0;
 
 	public double imageXOffset = 0;
 	public double imageYOffset = 0;
 
-    public double effectTimer = 0;
-    public long lastFrame = 0;
+	public double effectTimer = 0;
+	public long lastFrame = 0;
 
-    public ArrayList<Effect> glowEffects = new ArrayList<>();
+	public double fontSize = -1;
 
-    //public String sound = "click.ogg";
+	public ArrayList<Effect> glowEffects = new ArrayList<>();
+
+	//public String sound = "click.ogg";
 
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
 	public boolean wait = false;
@@ -132,7 +137,11 @@ public class Button implements IDrawable, ITrigger
 	public void draw()
 	{
 		Drawing drawing = Drawing.drawing;
-		drawing.setInterfaceFontSize(24);
+
+		if (this.fontSize < 0)
+			drawing.setInterfaceFontSize(this.sizeY * 0.6);
+		else
+			drawing.setInterfaceFontSize(this.fontSize);
 
 		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 
@@ -311,7 +320,11 @@ public class Button implements IDrawable, ITrigger
 				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
 				//Drawing.drawing.playSound(this.sound, 1f, 1f);
 				Drawing.drawing.playVibration("click");
-				Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
+
+				if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
+					((ScreenGame) Game.screen).overlay = new ScreenInfo(null, this.text, this.hoverText);
+				else
+					Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
 			}
 			else if (enabled)
 			{

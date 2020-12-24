@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import tanks.Effect;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateTank;
@@ -31,7 +30,7 @@ public class TankBoss extends TankAIControlled
 		this.health = 5;
 		this.baseHealth = 5;
 		this.turret.length *= 3;
-		this.coinValue = 25;
+		this.coinValue = 40;
 
 		this.description = "A big boss tank which spawns---other tanks and takes 5 regular---bullets to destroy";
 	}
@@ -122,6 +121,7 @@ public class TankBoss extends TankAIControlled
 
 		Tank t = e.getTank(this.posX + x, this.posY + y, this.angle);
 		t.team = this.team;
+		t.coinValue = 0;
 
 		Game.eventsOut.add(new EventCreateTank(t));
 		this.spawned.add(t);

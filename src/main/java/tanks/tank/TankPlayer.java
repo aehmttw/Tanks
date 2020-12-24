@@ -10,7 +10,6 @@ import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
-import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
 
@@ -148,7 +147,12 @@ public class TankPlayer extends Tank implements IPlayerTank
 			}
 
 			if (a >= 0 && intensity >= 0.2)
+			{
+				if (Game.followingCam)
+					a += this.angle + Math.PI / 2;
+
 				this.addPolarMotion(a, acceleration * Panel.frameFrequency);
+			}
 
 			if (a == -1)
 			{
@@ -183,18 +187,22 @@ public class TankPlayer extends Tank implements IPlayerTank
 		this.drawTouchCircle = false;
 		if (Game.game.window.touchscreen)
 		{
+			if (shootStickEnabled)
+			{
+				if (!Game.bulletLocked && !this.disabled && !this.destroy)
+					mineButton.update();
+
+				shootStick.update();
+			}
+
 			if (!Game.bulletLocked && !this.disabled && !this.destroy)
 			{
 				double distSq = 0;
 
 				if (shootStickEnabled)
 				{
-					mineButton.update();
-
 					if (mineButton.justPressed)
 						mine = true;
-
-					shootStick.update();
 
 					if (shootStick.inputIntensity >= 0.2)
 					{
@@ -217,8 +225,11 @@ public class TankPlayer extends Tank implements IPlayerTank
 						double px = Drawing.drawing.getInterfacePointerX(p.x);
 						double py = Drawing.drawing.getInterfacePointerY(p.y);
 
-						this.angle = this.getAngleInDirection(Drawing.drawing.toGameCoordsX(px),
-								Drawing.drawing.toGameCoordsY(py));
+						if (!Game.followingCam)
+						{
+							this.angle = this.getAngleInDirection(Drawing.drawing.toGameCoordsX(px),
+									Drawing.drawing.toGameCoordsY(py));
+						}
 
 						distSq = Math.pow(px - Drawing.drawing.toInterfaceCoordsX(this.posX), 2)
 								+ Math.pow(py - Drawing.drawing.toInterfaceCoordsY(this.posY), 2);
@@ -261,7 +272,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 				this.prevDistSq = distSq;
 			}
 		}
-		else
+		else if (!Game.followingCam)
 			this.angle = this.getAngleInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
 
 		if (shoot && this.cooldown <= 0 && !this.disabled)
@@ -278,7 +289,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 			Hotbar h = Game.player.hotbar;
 			if (h.enabledItemBar && h.itemBar.selected >= 0)
 			{
-				Item i = h.itemBar.slots[h.itemBar.selected];
+				tanks.hotbar.item.Item i = h.itemBar.slots[h.itemBar.selected];
 				if (i instanceof ItemBullet)
 				{
 					r.bounces = ((ItemBullet) i).bounces;
@@ -317,14 +328,14 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		this.cooldown = 20;
 
-		fireBullet(25 / 8.0, 1, Bullet.BulletEffect.trail);
+		fireBullet(25 / 8.0, 1, tanks.bullet.Bullet.BulletEffect.trail);
 	}
 
-	public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
+	public void fireBullet(double speed, int bounces, tanks.bullet.Bullet.BulletEffect effect)
 	{
 		Drawing.drawing.playGlobalSound("shoot.ogg");
 
-		Bullet b = new Bullet(posX, posY, bounces, this);
+		tanks.bullet.Bullet b = new Bullet(posX, posY, bounces, this);
 		b.setPolarMotion(this.angle, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
 

@@ -85,6 +85,8 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public ScreenCrusadeEditLevel(String name, String level, Screen s, ScreenCrusadeBuilder s2)
     {
+        super(350, 40, 380, 60);
+
         this.music = "tomato_feast_4.ogg";
         this.musicID = "menu";
 
@@ -123,7 +125,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         index.checkMinValue = true;
         insertionIndex = index.maxValue - 1;
         index.inputText = index.maxValue + "";
-
+        index.maxChars = 9;
     }
 
     @Override
@@ -210,7 +212,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 break;
 
             Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
-            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.drawInterfaceText(index.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, (insertionIndex - i) + ". " + previous2.crusade.levelNames.get(insertionIndex - i - 1).replace("_", " "));
         }
 
@@ -220,14 +222,14 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 break;
 
             Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
-            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.drawInterfaceText(index.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, (insertionIndex + i + 2) + ". " + previous2.crusade.levelNames.get(insertionIndex + i).replace("_", " "));
         }
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(index.posX, Drawing.drawing.interfaceSizeY / 2 - 60, 380, 40);
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.drawInterfaceText(index.posX, Drawing.drawing.interfaceSizeY / 2 - 60, (insertionIndex + 1) + ". " + name.replace("_", " "));
 

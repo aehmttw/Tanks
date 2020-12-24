@@ -4,63 +4,69 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
+import tanks.gui.TextBoxSlider;
 
 public class ScreenOptionsSound extends Screen
 {
-    public static final String soundEffectsText = "Sound effects: ";
-    public static final String musicText = "Music: ";
-
     public ScreenOptionsSound()
     {
         this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
 
-        if (Game.musicEnabled && Game.game.window.soundsEnabled)
-            musicToggle.text = musicText + ScreenOptions.onText;
-        else
-            musicToggle.text = musicText + ScreenOptions.offText;
+        musicVolume.allowLetters = false;
+        musicVolume.allowSpaces = false;
+        musicVolume.maxChars = 3;
+        musicVolume.maxValue = 100;
+        musicVolume.checkMaxValue = true;
+        musicVolume.integer = true;
 
-        if (Game.soundsEnabled && Game.game.window.soundsEnabled)
-            soundEffects.text = soundEffectsText + ScreenOptions.onText;
-        else
-            soundEffects.text = soundEffectsText + ScreenOptions.offText;
+        soundVolume.r1 = 210;
+        soundVolume.g1 = 210;
+        soundVolume.b1 = 210;
+
+        musicVolume.r1 = 210;
+        musicVolume.g1 = 210;
+        musicVolume.b1 = 210;
     }
 
-    Button soundEffects = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "", new Runnable()
+    TextBoxSlider musicVolume = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Music volume", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.soundsEnabled = !Game.soundsEnabled;
+            if (musicVolume.inputText.length() <= 0)
+                musicVolume.inputText = musicVolume.previousInputText;
 
-            if (Game.soundsEnabled)
-                soundEffects.text = soundEffectsText + ScreenOptions.onText;
-            else
-                soundEffects.text = soundEffectsText + ScreenOptions.offText;
-        }
-    });
+            Game.musicVolume = Integer.parseInt(musicVolume.inputText) / 100f;
 
-    Button musicToggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.musicEnabled = !Game.musicEnabled;
+            Game.musicEnabled = Game.musicVolume > 0;
 
             if (Game.musicEnabled)
-            {
-                musicToggle.text = musicText + ScreenOptions.onText;
                 Panel.panel.playScreenMusic(0);
-            }
             else
-            {
-                musicToggle.text = musicText + ScreenOptions.offText;
                 Drawing.drawing.stopMusic();
-            }
         }
-    });
+    }
+            , Math.round(Game.musicVolume * 100f), 0, 100, 1);
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", new Runnable()
+
+    TextBoxSlider soundVolume = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Sound volume", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (soundVolume.inputText.length() <= 0)
+                soundVolume.inputText = soundVolume.previousInputText;
+
+            Game.soundVolume = Integer.parseInt(soundVolume.inputText) / 100f;
+
+            Game.soundsEnabled = Game.soundVolume > 0;
+        }
+    }
+            , Math.round(Game.soundVolume * 100f), 0, 100, 1);
+
+
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -73,8 +79,8 @@ public class ScreenOptionsSound extends Screen
     @Override
     public void update()
     {
-        soundEffects.update();
-        musicToggle.update();
+        soundVolume.update();
+        musicVolume.update();
 
         back.update();
     }
@@ -83,12 +89,12 @@ public class ScreenOptionsSound extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        soundEffects.draw();
-        musicToggle.draw();
+        musicVolume.draw();
+        soundVolume.draw();
 
         back.draw();
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Sound options");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Sound options");
     }
 }

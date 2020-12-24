@@ -54,6 +54,9 @@ public class EventShootBullet extends PersonalEvent
 		
 		Tank t = Tank.idMap.get(this.tank);
 
+		if (t == null)
+			return;
+
 		switch (this.name)
 		{
 			case "electric":

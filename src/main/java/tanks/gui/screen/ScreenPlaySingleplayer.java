@@ -13,7 +13,7 @@ public class ScreenPlaySingleplayer extends Screen
         this.musicID = "menu";
     }
 
-    Button randomLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Random level", new Runnable()
+    Button randomLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Random level", new Runnable()
     {
         @Override
         public void run()
@@ -24,7 +24,7 @@ public class ScreenPlaySingleplayer extends Screen
     }
             , "Generate a random level to play");
 
-    Button crusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Crusades", new Runnable()
+    Button crusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Crusades", new Runnable()
     {
         @Override
         public void run()
@@ -34,7 +34,7 @@ public class ScreenPlaySingleplayer extends Screen
     }
             , "Fight battles in an order,---and see how long you can survive!");
 
-    Button create = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "My levels", new Runnable()
+    Button create = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "My levels", new Runnable()
     {
         @Override
         public void run()
@@ -44,7 +44,7 @@ public class ScreenPlaySingleplayer extends Screen
     }
     , "Create and play your own levels!");
 
-    Button tutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Tutorial", new Runnable()
+    Button tutorial = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Tutorial", new Runnable()
     {
         @Override
         public void run()
@@ -54,7 +54,7 @@ public class ScreenPlaySingleplayer extends Screen
     }, "Learn how to play Tanks!"
     );
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -78,9 +78,9 @@ public class ScreenPlaySingleplayer extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, "Select a singleplayer game mode");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a singleplayer game mode");
         back.draw();
         tutorial.draw();
         create.draw();

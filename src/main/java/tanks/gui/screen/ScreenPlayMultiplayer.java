@@ -12,7 +12,7 @@ public class ScreenPlayMultiplayer extends Screen
         this.musicID = "menu";
     }
 
-    Button party = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Party", new Runnable()
+    Button party = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Party", new Runnable()
     {
         @Override
         public void run()
@@ -22,7 +22,7 @@ public class ScreenPlayMultiplayer extends Screen
     },
             "Play with other people who are---connected to your local network---(or who are port forwarding)");
 
-    Button online = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Online", new Runnable()
+    Button online = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Online", new Runnable()
     {
         @Override
         public void run()
@@ -33,7 +33,7 @@ public class ScreenPlayMultiplayer extends Screen
             "Access the online Tanks community!");
 
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -55,9 +55,9 @@ public class ScreenPlayMultiplayer extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
-        Drawing.drawing.setInterfaceFontSize(24);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, "Select a multiplayer game mode");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a multiplayer game mode");
         back.draw();
         online.draw();
         party.draw();

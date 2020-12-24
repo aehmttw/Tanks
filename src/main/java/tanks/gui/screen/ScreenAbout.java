@@ -8,7 +8,7 @@ import java.net.URL;
 
 public class ScreenAbout extends Screen
 {
-    Button link = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Web page", new Runnable()
+    Button link = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Web page", new Runnable()
     {
         @Override
         public void run()
@@ -25,7 +25,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button chatroom = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Chatroom", new Runnable()
+    Button chatroom = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Chatroom", new Runnable()
     {
         @Override
         public void run()
@@ -42,7 +42,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button changelogs = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Changelogs", new Runnable()
+    Button changelogs = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Changelogs", new Runnable()
     {
         @Override
         public void run()
@@ -64,7 +64,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button libraries = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Library licenses", new Runnable()
+    Button libraries = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Library licenses", new Runnable()
     {
         @Override
         public void run()
@@ -81,7 +81,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button license = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "License", new Runnable()
+    Button license = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "License", new Runnable()
     {
         @Override
         public void run()
@@ -98,7 +98,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button privacy = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Privacy policy", new Runnable()
+    Button privacy = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Privacy policy", new Runnable()
     {
         @Override
         public void run()
@@ -115,7 +115,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -128,30 +128,32 @@ public class ScreenAbout extends Screen
 
     public ScreenAbout()
     {
+        double imgsize = 25 * Drawing.drawing.interfaceScaleZoom;
+
         this.link.image = "link.png";
-        this.link.imageSizeX = 25;
-        this.link.imageSizeY = 25;
-        this.link.imageXOffset = 145;
+        this.link.imageSizeX = imgsize;
+        this.link.imageSizeY = imgsize;
+        this.link.imageXOffset = 145 * this.link.sizeX / 350;
 
         this.libraries.image = "link.png";
-        this.libraries.imageSizeX = 25;
-        this.libraries.imageSizeY = 25;
-        this.libraries.imageXOffset = 145;
+        this.libraries.imageSizeX = imgsize;
+        this.libraries.imageSizeY = imgsize;
+        this.libraries.imageXOffset = 145 * this.libraries.sizeX / 350;
 
         this.chatroom.image = "link.png";
-        this.chatroom.imageSizeX = 25;
-        this.chatroom.imageSizeY = 25;
-        this.chatroom.imageXOffset = 145;
+        this.chatroom.imageSizeX = imgsize;
+        this.chatroom.imageSizeY = imgsize;
+        this.chatroom.imageXOffset = 145 * this.chatroom.sizeX / 350;
 
         this.license.image = "link.png";
-        this.license.imageSizeX = 25;
-        this.license.imageSizeY = 25;
-        this.license.imageXOffset = 145;
+        this.license.imageSizeX = imgsize;
+        this.license.imageSizeY = imgsize;
+        this.license.imageXOffset = 145 * this.license.sizeX / 350;
 
         this.privacy.image = "link.png";
-        this.privacy.imageSizeX = 25;
-        this.privacy.imageSizeY = 25;
-        this.privacy.imageXOffset = 145;
+        this.privacy.imageSizeX = imgsize;
+        this.privacy.imageSizeY = imgsize;
+        this.privacy.imageXOffset = 145 * this.privacy.sizeX / 350;
 
         this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
@@ -182,9 +184,10 @@ public class ScreenAbout extends Screen
         back.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 3.5, "About");
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 2.5, "Version: " + Game.version);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "About");
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: " + Game.version);
 
     }
 }

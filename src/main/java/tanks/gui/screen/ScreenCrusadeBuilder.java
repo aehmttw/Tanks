@@ -31,7 +31,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
     public int titleOffset = -270;
 
-    public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Exit", new Runnable()
+    public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Exit", new Runnable()
     {
         @Override
         public void run()
@@ -42,22 +42,14 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
     }
     );
 
-    public Button quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Exit", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            quit.function.run();
-        }
-    }
-    );
-
     public Button options = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, 60, this.objWidth, this.objHeight, "Options", new Runnable()
     {
         @Override
         public void run()
         {
             mode = Mode.options;
+            levelButtons.reorder = false;
+            itemButtons.reorder = false;
         }
     });
 
@@ -67,6 +59,8 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         public void run()
         {
             mode = Mode.levels;
+            levelButtons.reorder = false;
+            itemButtons.reorder = false;
         }
     });
 
@@ -76,10 +70,12 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         public void run()
         {
             mode = Mode.items;
+            levelButtons.reorder = false;
+            itemButtons.reorder = false;
         }
     });
 
-    public Button addLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add level", new Runnable()
+    public Button addLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add level", new Runnable()
     {
         @Override
         public void run()
@@ -89,18 +85,50 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
     }
     );
 
-    public Button addItem = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add item", new Runnable()
+    public Button reorderLevels = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Reorder levels", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenSelector(itemSelector, Game.screen);
+            levelButtons.reorder = !levelButtons.reorder;
+
+            if (levelButtons.reorder)
+                reorderLevels.text = "Stop reordering";
+            else
+                reorderLevels.text = "Reorder levels";
+        }
+    }
+    );
+
+    public Button reorderItems = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Reorder items", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            itemButtons.reorder = !itemButtons.reorder;
+
+            if (itemButtons.reorder)
+                reorderItems.text = "Stop reordering";
+            else
+                reorderItems.text = "Reorder items";
+        }
+    }
+    );
+
+    public Button addItem = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add item", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            itemSelector.setScreen();
         }
     }
     );
 
     public ScreenCrusadeBuilder(Crusade c)
     {
+        super(350, 40, 380, 60);
+
         this.music = "tomato_feast_4.ogg";
         this.musicID = "menu";
 
@@ -111,25 +139,33 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             i.importProperties();
         }
 
-        String[] itemNames = new String[Game.registryItem.itemEntries.size()];
+        String[] itemNames = new String[Game.registryItem.itemEntries.size() + 1];
+        String[] itemImages = new String[Game.registryItem.itemEntries.size() + 1];
+
         for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
         {
             RegistryItem.ItemEntry r = Game.registryItem.getEntry(i);
             itemNames[i] = r.name;
+            itemImages[i] = r.image;
         }
 
-        itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, new Runnable()
+        itemNames[Game.registryItem.itemEntries.size()] = "From template";
+        itemImages[Game.registryItem.itemEntries.size()] = "item.png";
+
+        itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
-            @Override
-            public void run()
+            if (itemSelector.selectedOption == itemSelector.options.length - 1)
+            {
+                Game.screen = new ScreenAddSavedItem(this, this.addItem);
+            }
+            else
             {
                 Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-                crusade.crusadeItems.add(i);
-
-                Game.screen = new ScreenEditItem(i, instance);
+                addItem(i);
             }
         });
 
+        itemSelector.images = itemImages;
         itemSelector.quick = true;
 
         crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Crusade name", new Runnable()
@@ -181,6 +217,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         startingLives.allowSpaces = false;
         startingLives.minValue = 1;
         startingLives.checkMinValue = true;
+        startingLives.maxChars = 9;
 
         bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Bonus life frequency", new Runnable()
         {
@@ -199,6 +236,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         bonusLifeFrequency.allowSpaces = false;
         bonusLifeFrequency.minValue = 1;
         bonusLifeFrequency.checkMinValue = true;
+        bonusLifeFrequency.maxChars = 9;
 
         if (Drawing.drawing.interfaceScaleZoom > 1)
         {
@@ -215,6 +253,22 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             this.levelButtons = new ButtonList(new ArrayList<>(), 0, 0, -30);
             this.itemButtons = new ButtonList(new ArrayList<>(), 0, 0, -30);
         }
+
+        this.levelButtons.arrowsEnabled = true;
+        this.itemButtons.arrowsEnabled = true;
+
+        this.levelButtons.reorderBehavior = (i, j) ->
+        {
+            this.crusade.levels.add(j, this.crusade.levels.remove((int)i));
+            this.crusade.levelNames.add(j, this.crusade.levelNames.remove((int)i));
+            this.refreshLevelButtons();
+        };
+
+        this.itemButtons.reorderBehavior = (i, j) ->
+        {
+            this.crusade.crusadeItems.add(j, this.crusade.crusadeItems.remove((int)i));
+            this.refreshItemButtons();
+        };
 
         this.refreshLevelButtons();
         this.refreshItemButtons();
@@ -303,13 +357,14 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
             quit.update();
             addLevel.update();
+            reorderLevels.update();
         }
         else if (mode == Mode.options)
         {
             crusadeName.update();
             startingLives.update();
             bonusLifeFrequency.update();
-            quit2.update();
+            quit.update();
         }
         else if (mode == Mode.items)
         {
@@ -317,6 +372,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
             quit.update();
             addItem.update();
+            reorderItems.update();
         }
     }
 
@@ -338,11 +394,12 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
         if (mode == Mode.levels)
         {
+            reorderLevels.draw();
             quit.draw();
             addLevel.draw();
             levelButtons.draw();
 
-            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade levels");
         }
@@ -352,23 +409,31 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             startingLives.draw();
             crusadeName.draw();
 
-            quit2.draw();
+            quit.draw();
 
-            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade options");
         }
         else if (mode == Mode.items)
         {
+            reorderItems.draw();
             quit.draw();
             addItem.draw();
 
             itemButtons.draw();
 
-            Drawing.drawing.setInterfaceFontSize(24);
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade items");
         }
+    }
+
+    @Override
+    public void addItem(Item i)
+    {
+        crusade.crusadeItems.add(i);
+        Game.screen = new ScreenEditItem(i, instance);
     }
 
     @Override

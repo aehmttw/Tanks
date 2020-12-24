@@ -23,6 +23,8 @@ public abstract class BaseWindow
     public double absoluteMouseX;
     public double absoluteMouseY;
 
+    public boolean fullscreen;
+
     public HashMap<Integer, InputPoint> touchPoints = new HashMap<Integer, InputPoint>();
 
     public ArrayList<Integer> pressedKeys = new ArrayList<Integer>();
@@ -150,6 +152,12 @@ public abstract class BaseWindow
     public abstract void run();
 
     public abstract void setShowCursor(boolean show);
+
+    public abstract void setCursorLocked(boolean locked);
+
+    public abstract void setCursorPos(double x, double y);
+
+    public abstract void setFullscreen(boolean enabled);
 
     public abstract void setIcon(String icon);
 

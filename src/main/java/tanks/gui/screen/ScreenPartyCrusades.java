@@ -5,11 +5,11 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 
-public class ScreenPartyCrusades extends ScreenCrusades implements IPartyMenuScreen
+public class ScreenPartyCrusades extends ScreenCrusades
 {
     public ScreenPartyCrusades()
     {
-        this.quit2 = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
+        this.quit2 = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
         {
             @Override
             public void run()
@@ -30,5 +30,12 @@ public class ScreenPartyCrusades extends ScreenCrusades implements IPartyMenuScr
     public void draw()
     {
         super.draw();
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+            this.centerY -= this.objYSpace / 2;
     }
 }

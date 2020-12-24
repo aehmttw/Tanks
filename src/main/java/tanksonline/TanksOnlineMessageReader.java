@@ -4,6 +4,10 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.event.*;
 import tanks.event.online.IOnlineServerEvent;
+import tanks.gui.screen.ScreenKicked;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 
 import java.util.UUID;
@@ -32,6 +36,16 @@ public class TanksOnlineMessageReader
                 if (!reading)
                 {
                     endpoint = queue.readInt();
+
+                    if (endpoint > 1048576)
+                    {
+                        if (s != null)
+                        {
+                            s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
+                        }
+
+                        return false;
+                    }
                 }
 
                 reading = true;
@@ -46,6 +60,16 @@ public class TanksOnlineMessageReader
                     if (queue.readableBytes() >= 4)
                     {
                         endpoint = queue.readInt();
+
+                        if (endpoint > 1048576)
+                        {
+                            if (s != null)
+                            {
+                                s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
+                            }
+
+                            return false;
+                        }
 
                         reading = true;
                     }

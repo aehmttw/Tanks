@@ -5,7 +5,7 @@ import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.IPartyMenuScreen;
+import tanks.gui.screen.IPartyGameScreen;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
@@ -59,7 +59,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		if (this.clientID == null || Game.isOnlineServer || !ScreenPartyHost.isServer)
 			return;
 
-		if (!(Game.screen instanceof IPartyMenuScreen))
+		if (Game.screen instanceof IPartyGameScreen)
 		{
 			s.sendEventAndClose(new EventKick("Please wait for the current game to finish!"));
 			return;
@@ -113,7 +113,9 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			}
 		}
 
-		Game.players.add(new Player(this.clientID, this.username));
+		Player p = new Player(this.clientID, this.username);
+		Game.players.add(p);
+		s.player = p;
 
 		s.sendEvent(new EventConnectionSuccess());
 		s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.player.username), true));

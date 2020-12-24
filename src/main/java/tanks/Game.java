@@ -45,6 +45,7 @@ public class Game
 	public static ArrayList<Face> verticalFaces = new ArrayList<Face>();
 
 	public boolean[][] solidGrid;
+	public double[][] heightGrid;
 
 	public static ArrayList<Movable> movables = new ArrayList<Movable>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -79,9 +80,10 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.0.h";
-	public static final int network_protocol = 22;
+	public static final String version = "Tanks v1.0.0";
+	public static final int network_protocol = 25;
 	public static boolean debug = false;
+	public static final boolean cinematic = false;
 
 	public static String lastVersion = "Tanks v0";
 
@@ -102,6 +104,9 @@ public class Game
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 
+	public static boolean followingCam = false;
+	public static boolean firstPerson = false;
+
 	public static boolean soundsEnabled = true;
 	public static boolean musicEnabled = true;
 
@@ -112,6 +117,8 @@ public class Game
 	public static boolean enableChatFilter = true;
 
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
+	public static String crashLine = "Yay! The game hasn't crashed yet!";
+
 	public static long crashTime = 0;
 
     public static double[] color = new double[3];
@@ -166,7 +173,8 @@ public class Game
 	public static final String crusadeDir = directoryPath + "/crusades";
 	public static final String itemDir = directoryPath + "/items";
 
-	public static final float musicVolume = 0.5f;
+	public static float soundVolume = 1f;
+	public static float musicVolume = 0.5f;
 
 	public static String homedir;
 
@@ -178,6 +186,7 @@ public class Game
 
 	public static boolean isOnlineServer;
 	public static boolean connectedToOnline = false;
+
 
 	private Game()
 	{
@@ -240,6 +249,7 @@ public class Game
 		NetworkEventMap.register(EventPlaySound.class);
 		NetworkEventMap.register(EventSendTankColors.class);
 		NetworkEventMap.register(EventShareLevel.class);
+		NetworkEventMap.register(EventShareCrusade.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);
@@ -303,23 +313,23 @@ public class Game
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMint.class, "mint", 1.0 / 2));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankYellow.class, "yellow", 1.0 / 2));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMagenta.class, "magenta", 1.0 / 3));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankRed.class, "red", 1.0 / 3));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGreen.class, "green", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPurple.class, "purple", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankRed.class, "red", 1.0 / 6));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGreen.class, "green", 1.0 / 10));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPurple.class, "purple", 1.0 / 10));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlue.class, "blue", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankWhite.class, "white", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCyan.class, "cyan", 1.0 / 5));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankOrange.class, "orange", 1.0 / 6));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMaroon.class, "maroon", 1.0 / 7));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMedic.class, "medic", 1.0 / 8));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankDarkGreen.class, "darkgreen", 1.0 / 9));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankWhite.class, "white", 1.0 / 10));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCyan.class, "cyan", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankOrange.class, "orange", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMaroon.class, "maroon", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMedic.class, "medic", 1.0 / 4));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankDarkGreen.class, "darkgreen", 1.0 / 10));
 		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 15));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 25));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 12));
+		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 40));
 
-		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemBullet.class, ItemBullet.item_name));
-		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemMine.class, ItemMine.item_name));
-		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemShield.class, ItemShield.item_name));
+		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png"));
+		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemMine.class, ItemMine.item_name, "mine.png"));
+		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemShield.class, ItemShield.item_name, "shield.png"));
 
 		homedir = System.getProperty("user.home");
 
@@ -376,6 +386,12 @@ public class Game
 		if (!savedCrusadesProgressFile.exists())
 		{
 			savedCrusadesProgressFile.mkdirs();
+		}
+
+		BaseFile itemsFile = game.fileManager.getFile(homedir + itemDir);
+		if (!itemsFile.exists())
+		{
+			itemsFile.mkdirs();
 		}
 
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
@@ -862,6 +878,18 @@ public class Game
 		eventsOut.clear();
 
 		Game.crashMessage = e.toString();
+		Game.crashLine = "Unable to locate crash line. Please check the crash report for more info.";
+
+		for (StackTraceElement se: e.getStackTrace())
+		{
+			String s = se.toString();
+			if (s.startsWith("tanks") || (s.contains(".") && s.split("\\.")[0].endsWith("window")))
+			{
+				Game.crashLine = "at " + s;
+				break;
+			}
+		}
+
 		Game.crashTime = System.currentTimeMillis();
 		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
@@ -918,6 +946,7 @@ public class Game
 		Game.tilesG = new double[28][18];
 		Game.tilesB = new double[28][18];
 		Game.tilesDepth = new double[28][18];
+		Game.game.heightGrid = new double[28][18];
 		Game.tileDrawables = new Obstacle[28][18];
 
 		for (int i = 0; i < 28; i++)
@@ -936,7 +965,7 @@ public class Game
 		Level.currentColorB = 166;
 	}
 
-	public static double sampleHeight(double px, double py)
+	public static double sampleGroundHeight(double px, double py)
 	{
 		int x = (int) (px / Game.tile_size);
 		int y = (int) (py / Game.tile_size);
@@ -945,6 +974,17 @@ public class Game
 			return 0;
 		else
 			return Game.tilesDepth[x][y] + 0;
+	}
+
+	public static double sampleObstacleHeight(double px, double py)
+	{
+		int x = (int) (px / Game.tile_size);
+		int y = (int) (py / Game.tile_size);
+
+		if (!Game.fancyGraphics || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
+			return 0;
+		else
+			return Game.game.heightGrid[x][y];
 	}
 
 	public static boolean stringsEqual(String a, String b)

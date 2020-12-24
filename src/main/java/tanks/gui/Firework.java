@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Firework extends Movable
 {
-	public enum FireworkType {rocket, particle, trail}
+	public enum FireworkType {rocket, particle, trail, flash}
 	public FireworkType type;
 
 	double age = 0;
@@ -84,19 +84,28 @@ public class Firework extends Movable
 	{
 		vY = -Math.random() * 1.5 - 6;
 		vX = Math.random() * 5 - 2.5;
+		vZ = Math.random() * 5 - 2.5;
 	}
 
 	public void drawUpdate(ArrayList<Firework> current, ArrayList<Firework> next)
 	{
+		this.posX += this.vX * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+		this.posY += this.vY * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+		this.posZ += this.vZ * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+
 		if (type == FireworkType.rocket)
 		{
 			this.vY += aY * Panel.frameFrequency;
 
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-			Drawing.drawing.fillInterfaceOval(posX, posY, this.size, this.size);
+			if (!Game.enable3d)
+				Drawing.drawing.fillInterfaceOval(posX, posY, this.size, this.size);
+			else
+				Drawing.drawing.fillInterfaceOval(posX, posY, posZ, this.size, this.size);
 
 			Firework f = new Firework(FireworkType.trail, this.posX, this.posY, next);
+			f.posZ = this.posZ;
 			f.maxAge = 30;
 			f.colorR = this.colorR;
 			f.colorG = this.colorG;
@@ -116,12 +125,30 @@ public class Firework extends Movable
 					e.colorR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
 					e.colorG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
 					e.colorB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
-					double power = Math.random() * 1 + 2;
+					e.posZ = this.posZ;
 					e.vX = this.vX;
 					e.vY = this.vY;
-					e.addPolarMotion(Math.random() * 2 * Math.PI, Math.random() * power);
-					e.maxAge = 2 * 100;
+					e.vZ = this.vZ;
+
+					double power = Math.random() * 1 + 2;
+
+					if (!Game.enable3d)
+						e.addPolarMotion(Math.random() * 2 * Math.PI, Math.random() * power);
+					else
+						e.add3dPolarMotion(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1), power);
+
+					e.maxAge = 200;
 				}
+
+				Firework e = new Firework(FireworkType.flash, this.posX, this.posY, next);
+				e.colorR = this.colorR;
+				e.colorG = this.colorG;
+				e.colorB = this.colorB;
+				e.posZ = this.posZ;
+				e.vX = this.vX;
+				e.vY = this.vY;
+				e.vZ = this.vZ;
+				e.maxAge = 25;
 			}
 			else
 				next.add(this);
@@ -131,7 +158,11 @@ public class Firework extends Movable
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge))));
 
 			double s = Math.max(0, this.size - (this.age * this.size / this.maxAge));
-			Drawing.drawing.fillInterfaceOval(posX, posY, s, s);
+
+			if (!Game.enable3d)
+				Drawing.drawing.fillInterfaceOval(posX, posY, s, s);
+			else
+				Drawing.drawing.fillInterfaceOval(posX, posY, posZ, s, s);
 
 			if (this.age < this.maxAge)
 			{
@@ -145,7 +176,11 @@ public class Firework extends Movable
 
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity);
 			double s = this.size - (int) (this.age * this.size / this.maxAge);
-			Drawing.drawing.fillInterfaceOval(posX, posY, s, s);
+
+			if (!Game.enable3d)
+				Drawing.drawing.fillInterfaceOval(posX, posY, s, s);
+			else
+				Drawing.drawing.fillInterfaceOval(posX, posY, posZ, s, s);
 
 			/*Firework f = new Firework(FireworkType.trail, this.posX, this.posY, this.list, this.removeList);
 			f.maxAge = opacity / 50;
@@ -160,9 +195,14 @@ public class Firework extends Movable
 				next.add(this);
 			}
 		}
+		else if (type == FireworkType.flash)
+		{
+			if (this.age < this.maxAge)
+			{
+				next.add(this);
+			}
+		}
 
-		this.posX += this.vX * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
-		this.posY += this.vY * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
 		this.age += Panel.frameFrequency;
 	}
 
@@ -171,20 +211,44 @@ public class Firework extends Movable
 		if (type == FireworkType.rocket)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 4, this.size * 4);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 4, this.size * 4);
+			else
+				Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 4, this.size * 4);
 		}
 		else if (type == FireworkType.trail)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge))));
-			Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 2, this.size * 2);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 2, this.size * 2);
+			else
+				Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 2, this.size * 2);
 		}
 		else if (type == FireworkType.particle)
 		{
 			int opacity = Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
 
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity / 2.0);
-			Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 8, this.size * 8);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 8, this.size * 8);
+			else
+				Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 8, this.size * 8);
 		}
+		else if (type == FireworkType.flash)
+		{
+			int opacity = Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
+
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity / 2.0);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 40, this.size * 40);
+			else
+				Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 40, this.size * 40);
+		}
+
 	}
 
 	@Override

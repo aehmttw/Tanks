@@ -34,6 +34,7 @@ public class ScreenUploadLevel extends ScreenOnline
     {
         super.draw();
         this.levels.draw();
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Select a level to upload...");
     }
 

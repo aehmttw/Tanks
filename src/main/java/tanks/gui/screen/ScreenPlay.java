@@ -6,7 +6,7 @@ import tanks.gui.Button;
 
 public class ScreenPlay extends Screen
 {
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -16,7 +16,7 @@ public class ScreenPlay extends Screen
 	}
 	);
 
-	Button singleplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Singleplayer", new Runnable()
+	Button singleplayer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Singleplayer", new Runnable()
 	{
 		@Override
 		public void run()
@@ -26,13 +26,18 @@ public class ScreenPlay extends Screen
 	}
 	, "Play random levels, crusades,---the tutorial, or make your own levels!");
 
-	Button multiplayer = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Multiplayer", new Runnable()
+	Button multiplayer = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Multiplayer", new Runnable()
 	{
 		@Override
 		public void run()
 		{
 			if (!Game.player.username.equals(""))
-				Game.screen = new ScreenPlayMultiplayer();
+			{
+				if (Game.game.input.hotbarToggle.isPressed())
+					Game.screen = new ScreenPlayMultiplayer();
+				else
+					Game.screen = new ScreenParty();
+			}
 			else
 				Game.screen = new ScreenUsernamePrompt();
 		}
@@ -57,9 +62,9 @@ public class ScreenPlay extends Screen
 	public void draw() 
 	{
 		this.drawDefaultBackground();
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 180, "Select a game mode");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a game mode");
 		back.draw();
 		multiplayer.draw();
 		singleplayer.draw();

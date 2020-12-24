@@ -23,17 +23,17 @@ public class ScreenParty extends Screen
 		this.musicID = "menu";
 	}
 	
-	Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run() 
 		{
-			Game.screen = new ScreenPlayMultiplayer();
+			Game.screen = new ScreenPlay();
 		}
 	}
 	);
 	
-	Button create = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Create a party", new Runnable()
+	Button create = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Create a party", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -57,7 +57,7 @@ public class ScreenParty extends Screen
 	}
 	);
 	
-	Button join = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Join a party", new Runnable()
+	Button join = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Join a party", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -67,7 +67,7 @@ public class ScreenParty extends Screen
 	}
 	);
 	
-	TextBox port = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Port", new Runnable()
+	TextBox port = new TextBox(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Port", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -96,12 +96,14 @@ public class ScreenParty extends Screen
 	public void draw()
 	{
 		this.drawDefaultBackground();
-		Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Create or join a party");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Make sure that everyone is using the same port!");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, "All players should be connected to the same");
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, " network, unless the host is port forwarding.");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Create or join a party");
+
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Make sure that everyone is using the same port!");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "All players should be connected to the same");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, " network, unless the host is port forwarding.");
 
 		back.draw();
 		port.draw();

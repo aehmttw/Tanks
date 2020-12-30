@@ -3,6 +3,7 @@
 Tanks is a game written in Java inspired by a game of the same name on the Wii.<br>
 There are 18 unique enemies you can fight, but you can add more of your own too.<br>
 The game works in Windows, Mac or Linux.<br>
+Tanks can be found on [itch.io](https://aehmttw.itch.io/tanks) and the [iOS App Store](https://apps.apple.com/us/app/tanks-the-crusades/id1508772262)
 
 ## How to play
 
@@ -61,4 +62,5 @@ STB<br>
 Matei Budiu (Aehmttw)<br>
 Karan Gurazada<br>
 Hallowizer<br>
-Grify
+Grify<br>
+...and everyone else from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!

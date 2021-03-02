@@ -18,10 +18,16 @@ public class Translation extends Transformation
 
     public void apply()
     {
+        this.applyToWindow();
+        transform(window, x, y, z);
+    }
+
+    @Override
+    public void applyToWindow()
+    {
         window.xOffset += x;
         window.yOffset += y;
         window.zOffset += z;
-        transform(window, x, y, z);
     }
 
     public static void transform(BaseWindow window, double x, double y, double z)

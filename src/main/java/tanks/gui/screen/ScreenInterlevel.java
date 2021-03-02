@@ -5,6 +5,7 @@ import basewindow.transformation.RotationAboutPoint;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
+import tanks.gui.SpeedrunTimer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -296,6 +297,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			Drawing.drawing.playSound("win.ogg");
 			this.music = "win_music.ogg";
+
+			if (Crusade.crusadeMode && Crusade.currentCrusade.win)
+				this.music = "win_crusade.ogg";
 		}
 		else
 		{
@@ -320,6 +324,39 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public void draw()
 	{
 		this.drawDefaultBackground();
+
+		if (Panel.win && Game.fancyGraphics && !Game.game.window.drawingShadow)
+		{
+			ArrayList<Firework> fireworks = getFireworkArray();
+
+			if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency)
+			{
+				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
+				f.setRandomColor();
+				f.setVelocity();
+				getFireworkArray().add(f);
+			}
+
+			for (int i = 0; i < getFireworkArray().size(); i++)
+			{
+				fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
+			}
+
+			if (Game.superGraphics)
+			{
+				for (int i = 0; i < getFireworkArray().size(); i++)
+				{
+					fireworks.get(i).drawGlow();
+				}
+			}
+
+			//A fix to some glitchiness on ios
+			Drawing.drawing.setColor(0, 0, 0, 0);
+			Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
+
+			fireworks.clear();
+			odd = !odd;
+		}
 
 		boolean skip = false;
 		if (Crusade.crusadeMode)
@@ -380,6 +417,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
+		if (Game.showSpeedrunTimer)
+			SpeedrunTimer.draw();
+
 		if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
 			Drawing.drawing.setColor(255, 255, 255);
 		else
@@ -425,39 +465,6 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 		if (Panel.win && Game.fancyGraphics)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
-
-		if (Panel.win && Game.fancyGraphics)
-		{
-			ArrayList<Firework> fireworks = getFireworkArray();
-
-			if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency)
-			{
-				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
-				f.setRandomColor();
-				f.setVelocity();
-				getFireworkArray().add(f);
-			}
-
-			for (int i = 0; i < getFireworkArray().size(); i++)
-			{
-				fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
-			}
-
-			if (Game.superGraphics)
-			{
-				for (int i = 0; i < getFireworkArray().size(); i++)
-				{
-					fireworks.get(i).drawGlow();
-				}
-			}
-
-			//A fix to some glitchiness on ios
-			Drawing.drawing.setColor(0, 0, 0, 0);
-			Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
-
-			fireworks.clear();
-			odd = !odd;
-		}
 	}
 
 	public ArrayList<Firework> getFireworkArray()

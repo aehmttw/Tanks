@@ -56,7 +56,7 @@ public class Laser implements IDrawable
 
         if (!expired)
         {
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
 
             if (Game.framework == Game.Framework.swing)
             {
@@ -126,7 +126,7 @@ public class Laser implements IDrawable
 
         if (!expired)
         {
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
 
             if (frontCircle || showOutsides)
             {
@@ -134,10 +134,10 @@ public class Laser implements IDrawable
 
                 for (int i = 10; i < 30; i++)
                 {
-                    Drawing.drawing.setColor(0, 0, 0);
+                    Drawing.drawing.setColor(0, 0, 0, 255, 1);
                     Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+                    Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
                     Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
 
@@ -146,20 +146,20 @@ public class Laser implements IDrawable
 
             Game.game.window.setBatchMode(true, true, depth, true);
 
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, 0, 0, 0);
-            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setColor(0, 0, 0, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * -ox * width * (1 - frac), mul * -oy * width * (1 - frac), 0);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * -ox * width * (1 - frac), mul * -oy * width * (1 - frac), 0);
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, 0, 0, 0);
 
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, 0, 0, 0);
-            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setColor(0, 0, 0, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * ox * width * (1 - frac), mul * oy * width * (1 - frac), 0);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * ox * width * (1 - frac), mul * oy * width * (1 - frac), 0);
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, 0, 0, 0);
 
             Game.game.window.setBatchMode(false, true, depth, true);
@@ -170,10 +170,10 @@ public class Laser implements IDrawable
 
                 for (int i = 30; i < 50; i++)
                 {
-                    Drawing.drawing.setColor(0, 0, 0);
+                    Drawing.drawing.setColor(0, 0, 0, 255, 1);
                     Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+                    Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
                     Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }
 

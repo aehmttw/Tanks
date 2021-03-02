@@ -12,8 +12,10 @@ public class EventShootBullet extends PersonalEvent
 	public int tank;
 	public double posX;
 	public double posY;
+	public double posZ;
 	public double vX;
 	public double vY;
+	public double vZ;
 	public String name;
 	public String type;
 	public String effect;
@@ -33,8 +35,10 @@ public class EventShootBullet extends PersonalEvent
 		this.tank = b.tank.networkID;
 		this.posX = b.posX;
 		this.posY = b.posY;
+		this.posZ = b.posZ;
 		this.vX = b.vX;
 		this.vY = b.vY;
+		this.vZ = b.vZ;
 		this.name = b.name;
 		this.effect = b.effect.name();
 		this.bounces = b.bounces;
@@ -57,32 +61,22 @@ public class EventShootBullet extends PersonalEvent
 		if (t == null)
 			return;
 
-		switch (this.name)
+		try
 		{
-			case "electric":
-				bullet = new BulletElectric(0, 0, 0, t);
-				break;
-			case "flame":
-				bullet = new BulletFlame(0, 0, 0, t);
-				break;
-			case "freeze":
-				bullet = new BulletFreeze(0, 0, 0, t);
-				break;
-			case "heal":
-				bullet = new BulletHealing(0, 0, 0, t);
-				break;
-			case "laser":
-				bullet = new BulletLaser(0, 0, 0, t);
-				break;
-			default:
-				bullet = new Bullet(0, 0, 0, t);
-				break;
+			bullet = Game.registryBullet.getEntry(this.name).bullet.getConstructor(double.class, double.class, int.class, Tank.class).newInstance(0.0, 0.0, 0, t);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
 		}
 		
 		bullet.posX = this.posX;
 		bullet.posY = this.posY;
+		bullet.posZ = this.posZ;
 		bullet.vX = this.vX;
 		bullet.vY = this.vY;
+		bullet.vZ = this.vZ;
 		bullet.name = this.name;
 
 		switch (this.type)
@@ -105,6 +99,9 @@ public class EventShootBullet extends PersonalEvent
 			case "ice":
 				bullet.effect = Bullet.BulletEffect.ice;
 				break;
+			case "ember":
+				bullet.effect = Bullet.BulletEffect.ember;
+				break;
 		}
 		
 		bullet.bounces = this.bounces;
@@ -126,8 +123,10 @@ public class EventShootBullet extends PersonalEvent
 		b.writeInt(this.tank);
 		b.writeDouble(this.posX);
 		b.writeDouble(this.posY);
+		b.writeDouble(this.posZ);
 		b.writeDouble(this.vX);
 		b.writeDouble(this.vY);
+		b.writeDouble(this.vZ);
 		NetworkUtils.writeString(b, this.name);
 		NetworkUtils.writeString(b, this.type);
 		NetworkUtils.writeString(b, this.effect);
@@ -144,8 +143,10 @@ public class EventShootBullet extends PersonalEvent
 		this.tank = b.readInt();
 		this.posX = b.readDouble();
 		this.posY = b.readDouble();
+		this.posZ = b.readDouble();
 		this.vX = b.readDouble();
 		this.vY = b.readDouble();
+		this.vZ = b.readDouble();
 		this.name = NetworkUtils.readString(b);
 		this.type = NetworkUtils.readString(b);
 		this.effect = NetworkUtils.readString(b);

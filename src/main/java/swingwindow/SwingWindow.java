@@ -99,6 +99,12 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void fillPartialOval(double x, double y, double sX, double sY, double start, double end)
+    {
+
+    }
+
+    @Override
     public void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest)
     {
         throw new UnsupportedOperationException("The Swing renderer does not support 3D!");
@@ -129,7 +135,19 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light)
+    {
+
+    }
+
+    @Override
     public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
+    {
+
+    }
+
+    @Override
+    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
     {
 
     }
@@ -138,6 +156,18 @@ public class SwingWindow extends BaseWindow
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
 
+    }
+
+    @Override
+    public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
+    {
+
+    }
+
+    @Override
+    public void setColor(double r, double g, double b, double a, double glow)
+    {
+        this.setColor(r, g, b, a);
     }
 
     @Override
@@ -333,6 +363,12 @@ public class SwingWindow extends BaseWindow
     }
 
     @Override
+    public void calculateBillboard()
+    {
+
+    }
+
+    @Override
     public double getEdgeBounds()
     {
         return 0;
@@ -346,6 +382,12 @@ public class SwingWindow extends BaseWindow
 
     @Override
     public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow)
+    {
+
+    }
+
+    @Override
+    public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask)
     {
 
     }
@@ -382,5 +424,23 @@ public class SwingWindow extends BaseWindow
         }
 
         Runtime.getRuntime().exec(cmd);
+    }
+
+    @Override
+    public void setShadowQuality(double quality)
+    {
+
+    }
+
+    @Override
+    public double getShadowQuality()
+    {
+        return 0;
+    }
+
+    @Override
+    public void setLighting(double light, double glowLight, double shadow, double glowShadow)
+    {
+
     }
 }

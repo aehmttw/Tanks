@@ -3,9 +3,11 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.BaseFileManager;
 import basewindow.BaseWindow;
-import tanks.bullet.Bullet;
+import tanks.bullet.*;
 import tanks.event.*;
 import tanks.event.online.*;
+import tanks.extension.Extension;
+import tanks.extension.ExtensionRegistry;
 import tanks.gui.Button;
 import tanks.gui.ChatFilter;
 import tanks.gui.input.InputBindingGroup;
@@ -18,6 +20,7 @@ import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SynchronizedList;
 import tanks.obstacle.*;
+import tanks.registry.RegistryBullet;
 import tanks.registry.RegistryItem;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
@@ -67,6 +70,9 @@ public class Game
 	public static Team playerTeam = new Team("ally");
 	public static Team enemyTeam = new Team("enemy");
 
+	// Use this if you want to spawn a mine not allied with any tank, or such
+	public static Tank dummyTank = new TankDummy("dummy",0, 0, 0);
+
 	public static int currentSizeX = 28;
 	public static int currentSizeY = 18;
 	public static double bgResMultiplier = 1;
@@ -80,9 +86,10 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.0.0";
-	public static final int network_protocol = 25;
+	public static final String version = "Tanks v1.1.0";
+	public static final int network_protocol = 30;
 	public static boolean debug = false;
+	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
 
 	public static String lastVersion = "Tanks v0";
@@ -115,6 +122,7 @@ public class Game
 	public static boolean enableVibrations = true;
 
 	public static boolean enableChatFilter = true;
+	public static boolean showSpeedrunTimer = false;
 
 	public static String crashMessage = "Yay! The game hasn't crashed yet!";
 	public static String crashLine = "Yay! The game hasn't crashed yet!";
@@ -130,18 +138,25 @@ public class Game
 	public static boolean fancyGraphics = true;
 	public static boolean superGraphics = true;
 
+	public static boolean shadowsEnabled = false;
+	public static int shadowQuality = 10;
+
 	public static boolean autostart = true;
 	public static double startTime = 400;
 
 	public static Screen lastOfflineScreen = null;
 
-	public static boolean enableCustomTankRegistry = false;
-	public static boolean enableCustomObstacleRegistry = false;
-	public static boolean enableCustomItemRegistry = false;
-
 	public static RegistryTank registryTank = new RegistryTank();
+	public static RegistryBullet registryBullet = new RegistryBullet();
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
 	public static RegistryItem registryItem = new RegistryItem();
+
+	public static boolean enableExtensions = false;
+	public static boolean autoLoadExtensions = true;
+	public static ExtensionRegistry extensionRegistry = new ExtensionRegistry();
+
+	public static Extension[] extraExtensions;
+	public static int[] extraExtensionOrder;
 
 	public BaseWindow window;
 
@@ -160,27 +175,22 @@ public class Game
 	public static String directoryPath = "/.tanks";
 
 	public static final String logPath = directoryPath + "/logfile.txt";
-	public static final String crashesPath = directoryPath + "/crashes/";
-	public static final String tankRegistryPath = directoryPath + "/tank-registry.txt";
-	public static final String obstacleRegistryPath = directoryPath + "/obstacle-registry.txt";
-	public static final String itemRegistryPath = directoryPath + "/item-registry.txt";
+	public static final String extensionRegistryPath = directoryPath + "/extensions.txt";
 	public static final String optionsPath = directoryPath + "/options.txt";
 	public static final String controlsPath = directoryPath + "/controls.txt";
 	public static final String tutorialPath = directoryPath + "/tutorial.txt";
 	public static final String uuidPath = directoryPath + "/uuid";
-	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String levelDir = directoryPath + "/levels";
 	public static final String crusadeDir = directoryPath + "/crusades";
+	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
+	public static final String extensionDir = directoryPath + "/extensions/";
+	public static final String crashesPath = directoryPath + "/crashes/";
 
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
 
 	public static String homedir;
-
-	public static ArrayList<RegistryTank.DefaultTankEntry> defaultTanks = new ArrayList<RegistryTank.DefaultTankEntry>();
-	public static ArrayList<RegistryObstacle.DefaultObstacleEntry> defaultObstacles = new ArrayList<RegistryObstacle.DefaultObstacleEntry>();
-	public static ArrayList<RegistryItem.DefaultItemEntry> defaultItems = new ArrayList<RegistryItem.DefaultItemEntry>();
 
 	public static Game game = new Game();
 
@@ -241,9 +251,11 @@ public class Game
 		NetworkEventMap.register(EventMineChangeTimer.class);
 		NetworkEventMap.register(EventTankTeleport.class);
 		NetworkEventMap.register(EventTankUpdateVisibility.class);
+		NetworkEventMap.register(EventTankUpdateColor.class);
 		NetworkEventMap.register(EventTankRedUpdateCharge.class);
 		NetworkEventMap.register(EventTankAddAttributeModifier.class);
 		NetworkEventMap.register(EventCreateFreezeEffect.class);
+		NetworkEventMap.register(EventObstacleHit.class);
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
 		NetworkEventMap.register(EventObstacleSnowMelt.class);
 		NetworkEventMap.register(EventPlaySound.class);
@@ -275,10 +287,32 @@ public class Game
 		NetworkEventMap.register(EventCleanUp.class);
 	}
 
+	public static void registerObstacle(Class<? extends Obstacle> obstacle, String name)
+	{
+		new RegistryObstacle.ObstacleEntry(Game.registryObstacle, obstacle, name);
+	}
+
+	public static void registerTank(Class<? extends Tank> tank, String name, double weight)
+	{
+		new RegistryTank.TankEntry(Game.registryTank, tank, name, weight);
+	}
+
+	public static void registerBullet(Class<? extends Bullet> bullet, String name, String icon)
+	{
+		new RegistryBullet.BulletEntry(Game.registryBullet, bullet, name, icon);
+	}
+
+	public static void registerItem(Class<? extends Item> item, String name, String image)
+	{
+		new RegistryItem.ItemEntry(Game.registryItem, item, name, image);
+	}
+
 	public static void initScript()
 	{
 		player = new Player(clientID, "");
 		Game.players.add(player);
+
+		dummyTank.team = null;
 
 		Drawing.initialize();
 		Panel.initialize();
@@ -298,38 +332,56 @@ public class Game
 
 		ItemBullet.initializeMaps();
 
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(Obstacle.class, "normal"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIndestructible.class, "hard"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleHole.class, "hole"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleBouncy.class, "bouncy"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleShrubbery.class, "shrub"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleMud.class, "mud"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleIce.class, "ice"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleSnow.class, "snow"));
-		defaultObstacles.add(new RegistryObstacle.DefaultObstacleEntry(ObstacleTeleporter.class, "teleporter"));
+		registerObstacle(Obstacle.class, "normal");
+		registerObstacle(ObstacleIndestructible.class, "hard");
+		registerObstacle(ObstacleHole.class, "hole");
+		registerObstacle(ObstacleBouncy.class, "bouncy");
+		registerObstacle(ObstacleNoBounce.class, "nobounce");
+		registerObstacle(ObstacleBreakable.class, "breakable");
+		registerObstacle(ObstacleExplosive.class, "explosive");
+		registerObstacle(ObstacleLight.class, "light");
+		registerObstacle(ObstacleShrubbery.class, "shrub");
+		registerObstacle(ObstacleMud.class, "mud");
+		registerObstacle(ObstacleIce.class, "ice");
+		registerObstacle(ObstacleSnow.class, "snow");
+		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
+		registerObstacle(ObstacleTeleporter.class, "teleporter");
 
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBrown.class, "brown", 1));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGray.class, "gray", 1));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMint.class, "mint", 1.0 / 2));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankYellow.class, "yellow", 1.0 / 2));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMagenta.class, "magenta", 1.0 / 3));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankRed.class, "red", 1.0 / 6));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankGreen.class, "green", 1.0 / 10));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPurple.class, "purple", 1.0 / 10));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlue.class, "blue", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankWhite.class, "white", 1.0 / 10));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankCyan.class, "cyan", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankOrange.class, "orange", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMaroon.class, "maroon", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankMedic.class, "medic", 1.0 / 4));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankDarkGreen.class, "darkgreen", 1.0 / 10));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBlack.class, "black", 1.0 / 10));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankPink.class, "pink", 1.0 / 12));
-		defaultTanks.add(new RegistryTank.DefaultTankEntry(TankBoss.class, "boss", 1.0 / 40));
+		registerTank(TankBrown.class, "brown", 1);
+		registerTank(TankGray.class, "gray", 1);
+		registerTank(TankMint.class, "mint", 1.0 / 2);
+		registerTank(TankYellow.class, "yellow", 1.0 / 2);
+		registerTank(TankMagenta.class, "magenta", 1.0 / 3);
+		registerTank(TankRed.class, "red", 1.0 / 6);
+		registerTank(TankGreen.class, "green", 1.0 / 10);
+		registerTank(TankPurple.class, "purple", 1.0 / 10);
+		registerTank(TankBlue.class, "blue", 1.0 / 4);
+		registerTank(TankWhite.class, "white", 1.0 / 10);
+		registerTank(TankCyan.class, "cyan", 1.0 / 4);
+		registerTank(TankOrange.class, "orange", 1.0 / 4);
+		registerTank(TankMaroon.class, "maroon", 1.0 / 4);
+		registerTank(TankMustard.class, "mustard", 1.0 / 4);
+		registerTank(TankMedic.class, "medic", 1.0 / 4);
+		registerTank(TankOrangeRed.class, "orangered", 1.0 / 4);
+		registerTank(TankGold.class, "gold", 1.0 / 4);
+		registerTank(TankDarkGreen.class, "darkgreen", 1.0 / 10);
+		registerTank(TankBlack.class, "black", 1.0 / 10);
+		registerTank(TankPink.class, "pink", 1.0 / 12);
+		registerTank(TankBoss.class, "boss", 1.0 / 40);
 
-		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png"));
-		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemMine.class, ItemMine.item_name, "mine.png"));
-		defaultItems.add(new RegistryItem.DefaultItemEntry(ItemShield.class, ItemShield.item_name, "shield.png"));
+		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
+		registerBullet(BulletFlame.class, BulletFlame.bullet_name, "bullet_flame.png");
+		registerBullet(BulletLaser.class, BulletLaser.bullet_name, "bullet_laser.png");
+		registerBullet(BulletFreeze.class, BulletFreeze.bullet_name, "bullet_freeze.png");
+		registerBullet(BulletElectric.class, BulletElectric.bullet_name, "bullet_electric.png");
+		registerBullet(BulletHealing.class, BulletHealing.bullet_name, "bullet_healing.png");
+		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
+		registerBullet(BulletExplosive.class, BulletExplosive.bullet_name, "bullet_explosive.png");
+		registerBullet(BulletBoost.class, BulletBoost.bullet_name, "bullet_boost.png");
+
+		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
+		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
+		registerItem(ItemShield.class, ItemShield.item_name, "shield.png");
 
 		homedir = System.getProperty("user.home");
 
@@ -352,22 +404,10 @@ public class Game
 			}
 		}
 
-		BaseFile tankRegistryFile = game.fileManager.getFile(homedir + tankRegistryPath);
-		if (!tankRegistryFile.exists())
+		BaseFile extensionRegistryFile = game.fileManager.getFile(homedir + extensionRegistryPath);
+		if (!extensionRegistryFile.exists())
 		{
-			RegistryTank.initRegistry(homedir);
-		}
-
-		BaseFile obstacleRegistryFile = game.fileManager.getFile(homedir + obstacleRegistryPath);
-		if (!obstacleRegistryFile.exists())
-		{
-			RegistryObstacle.initRegistry(homedir);
-		}
-
-		BaseFile itemRegistryFile = game.fileManager.getFile(homedir + itemRegistryPath);
-		if (!itemRegistryFile.exists())
-		{
-			RegistryItem.initRegistry(homedir);
+			extensionRegistry.initRegistry();
 		}
 
 		BaseFile levelsFile = game.fileManager.getFile(homedir + levelDir);
@@ -392,6 +432,12 @@ public class Game
 		if (!itemsFile.exists())
 		{
 			itemsFile.mkdirs();
+		}
+
+		BaseFile extensionsFile = game.fileManager.getFile(homedir + extensionDir);
+		if (!extensionsFile.exists())
+		{
+			extensionsFile.mkdirs();
 		}
 
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
@@ -436,10 +482,6 @@ public class Game
 			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 
-		RegistryTank.loadRegistry(homedir);
-		RegistryObstacle.loadRegistry(homedir);
-		RegistryItem.loadRegistry(homedir);
-
 		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
 		if (!optionsFile.exists())
 		{
@@ -447,6 +489,26 @@ public class Game
 		}
 
 		ScreenOptions.loadOptions(Game.homedir);
+
+		extensionRegistry.loadRegistry();
+
+		if (extraExtensions != null)
+		{
+			for (int i = 0; i < extraExtensions.length; i++)
+			{
+				if (extraExtensionOrder != null && i < extraExtensionOrder.length)
+					extensionRegistry.extensions.add(extraExtensionOrder[i], extraExtensions[i]);
+				else
+					extensionRegistry.extensions.add(extraExtensions[i]);
+			}
+		}
+
+		for (Extension e: extensionRegistry.extensions)
+			e.setUp();
+
+		for (RegistryTank.TankEntry e: registryTank.tankEntries)
+			e.initialize();
+
 		game.input.file = game.fileManager.getFile(Game.homedir + Game.controlsPath);
 		game.input.load();
 
@@ -947,6 +1009,7 @@ public class Game
 		Game.tilesB = new double[28][18];
 		Game.tilesDepth = new double[28][18];
 		Game.game.heightGrid = new double[28][18];
+		//Game.game.shadeGrid = new double[28][18];
 		Game.tileDrawables = new Obstacle[28][18];
 
 		for (int i = 0; i < 28; i++)
@@ -963,6 +1026,9 @@ public class Game
 		Level.currentColorR = 235;
 		Level.currentColorG = 207;
 		Level.currentColorB = 166;
+
+		Level.currentLightIntensity = 1.0;
+		Level.currentShadowIntensity = 0.75;
 	}
 
 	public static double sampleGroundHeight(double px, double py)
@@ -1182,6 +1248,7 @@ public class Game
 	public static void start()
 	{
 		//Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-purple2-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
+		//Level level = new Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-green-2,20-14-green,22-3-green-2,8-8.5-green,19-8.5-green-2,13.5-5-green-1}");
 
 		//System.out.println(LevelGenerator.generateLevelString());
 		//Game.currentLevel = "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();

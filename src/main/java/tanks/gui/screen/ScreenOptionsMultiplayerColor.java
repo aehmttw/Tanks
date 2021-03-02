@@ -266,6 +266,10 @@ public class ScreenOptionsMultiplayerColor extends Screen
             colorRed2.value = Game.player.turretColorR;
             colorGreen2.value = Game.player.turretColorG;
             colorBlue2.value = Game.player.turretColorB;
+
+            colorRed2.value = Game.player.turretColorR;
+            colorGreen2.value = Game.player.turretColorG;
+            colorBlue2.value = Game.player.turretColorB;
         }
 
         colorRed.r1 = 0;

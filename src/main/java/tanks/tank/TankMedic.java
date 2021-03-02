@@ -7,6 +7,7 @@ import tanks.Team;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletHealing;
 import tanks.event.EventLayMine;
+import tanks.event.EventTankUpdateColor;
 
 public class TankMedic extends TankAIControlled
 {
@@ -32,6 +33,7 @@ public class TankMedic extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
+		this.dealsDamage = false;
 
 		this.coinValue = 4;
 
@@ -47,7 +49,7 @@ public class TankMedic extends TankAIControlled
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m != this && m.team == this.team && !(m instanceof TankMedic) && !m.destroy)
+				if (m != this && m.team == this.team && m.dealsDamage && !m.destroy)
 				{
 					die = false;
 					break;
@@ -77,6 +79,8 @@ public class TankMedic extends TankAIControlled
 				this.colorG = 255;
 				this.colorB = 0;
 			}
+
+			Game.eventsOut.add(new EventTankUpdateColor(this));
 		}
 
 		if (this.timeUntilDeath <= 0)
@@ -92,7 +96,7 @@ public class TankMedic extends TankAIControlled
 	@Override
 	public void shoot()
 	{
-		if (this.cooldown > 0 || this.suicidal)
+		if (this.cooldown > 0 || this.suicidal || this.disabled || this.destroy)
 			return;
 
 		Ray r = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
@@ -152,7 +156,7 @@ public class TankMedic extends TankAIControlled
 
 	public void reactToTargetEnemySight()
 	{
-		if (this.suicidal)
+		if (this.suicidal && this.targetEnemy != null)
 		{
 			this.overrideDirection = true;
 			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, acceleration);

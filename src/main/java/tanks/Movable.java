@@ -1,6 +1,5 @@
 package tanks;
 
-import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.NameTag;
@@ -25,7 +24,12 @@ public abstract class Movable implements IDrawableForInterface
 	public double lastFinalVY;
 	public double lastFinalVZ;
 
+	public double lastVX;
+	public double lastVY;
+	public double lastVZ;
+
 	public boolean destroy = false;
+	public boolean dealsDamage = true;
 
 	public NameTag nameTag;
 	public boolean showName = false;
@@ -52,6 +56,10 @@ public abstract class Movable implements IDrawableForInterface
 
 	public void preUpdate()
 	{
+		this.lastVX = (this.posX - this.lastPosX) / Panel.frameFrequency;
+		this.lastVY = (this.posY - this.lastPosY) / Panel.frameFrequency;
+		this.lastVZ = (this.posZ - this.lastPosZ) / Panel.frameFrequency;
+
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
@@ -198,9 +206,16 @@ public abstract class Movable implements IDrawableForInterface
 
 	public double getPolarDirection()
 	{
-		double x = this.vX;
-		double y = this.vY;
+		return Movable.getPolarDirection(this.vX, this.vY);
+	}
 
+	public double getLastPolarDirection()
+	{
+		return Movable.getPolarDirection(this.lastVX, this.lastVY);
+	}
+
+	public static double getPolarDirection(double x, double y)
+	{
 		double angle = 0;
 		if (x > 0)
 			angle = Math.atan(y/x);
@@ -259,6 +274,26 @@ public abstract class Movable implements IDrawableForInterface
 	{
 		this.posX += amount * x;
 		this.posY += amount * y;	
+	}
+
+	public double getSpeed()
+	{
+		return Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2));
+	}
+
+	public double getLastSpeed()
+	{
+		return Math.sqrt(Math.pow(this.lastVX, 2) + Math.pow(this.lastVY, 2));
+	}
+
+	public double getMotionInDirection(double angle)
+	{
+		return this.getSpeed() * Math.cos(this.getPolarDirection() - angle);
+	}
+
+	public double getLastMotionInDirection(double angle)
+	{
+		return this.getLastSpeed() * Math.cos(this.getLastPolarDirection() - angle);
 	}
 
 	public void drawTeam()
@@ -328,6 +363,6 @@ public abstract class Movable implements IDrawableForInterface
 
 	public static double absoluteAngleBetween(double a, double b)
 	{
-		return Math.abs((a - b + Math.PI * 3) % (Math.PI*2) - Math.PI);
+		return Math.abs((a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI);
 	}
 }

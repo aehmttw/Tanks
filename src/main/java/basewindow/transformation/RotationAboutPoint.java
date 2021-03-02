@@ -27,12 +27,16 @@ public class RotationAboutPoint extends Transformation
 
     public void apply()
     {
+        this.applyToWindow();
+        transform(window, yaw, pitch, roll, x, y, z);
+    }
+
+    public void applyToWindow()
+    {
         window.yaw += yaw;
         window.pitch += pitch;
         window.roll += roll;
-
-        window.angled = !(window.yaw == 0 && window.pitch == 0 && window.roll == 0);
-        transform(window, yaw, pitch, roll, x, y, z);
+        window.calculateBillboard();
     }
 
     public static void transform(BaseWindow window, double yaw, double pitch, double roll, double x, double y, double z)

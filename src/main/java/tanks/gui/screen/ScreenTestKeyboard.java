@@ -8,7 +8,7 @@ public class ScreenTestKeyboard extends Screen
 {
     public ScreenTestKeyboard()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
     }
 
@@ -35,8 +35,10 @@ public class ScreenTestKeyboard extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Key test");
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 100, "Press a key to show its code");
 
+        Drawing.drawing.setInterfaceFontSize(40);
         if (!Game.game.window.validPressedKeys.isEmpty())
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "" + Game.game.window.validPressedKeys.get(0));
 

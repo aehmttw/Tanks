@@ -10,7 +10,7 @@ public class ScreenTestTextbox extends Screen
 {
     public ScreenTestTextbox()
     {
-        this.music = "tomato_feast_1.ogg";
+        this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
 
         box.allowAll = true;

@@ -1,7 +1,7 @@
 package basewindow;
 
-import basewindow.transformation.Transformation;
-import basewindow.transformation.Translation;
+import basewindow.transformation.*;
+import lwjglwindow.ShadowMap;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -71,7 +71,8 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
-    public Transformation baseTransformation = new Translation(this, -0.5, -0.5, -1);
+    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1)};
+    public Transformation[] lightBaseTransformation = new Transformation[]{new ScaleAboutPoint(this, 0.8, 0.8, 0.8, 0.5, 0.5, 0.5), new Shear(this, 0, 0, 0, 0, 0.5, 0.5)};
 
     public BaseSoundPlayer soundPlayer;
     public boolean soundsEnabled = false;
@@ -81,6 +82,8 @@ public abstract class BaseWindow
 
     public boolean antialiasingSupported = false;
     public boolean antialiasingEnabled = false;
+
+    public boolean drawingShadow = false;
 
     public static final HashMap<Integer, String> keyNames = new HashMap<>();
 
@@ -165,6 +168,8 @@ public abstract class BaseWindow
 
     public abstract void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest);
 
+    public abstract void fillPartialOval(double x, double y, double sX, double sY, double start, double end);
+
     public abstract void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest);
 
     public abstract void fillGlow(double x, double y, double sX, double sY);
@@ -175,9 +180,17 @@ public abstract class BaseWindow
 
     public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade);
 
+    public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light);
+
     public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
 
+    public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light);
+
     public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
+
+    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light);
+
+    public abstract void setColor(double r, double g, double b, double a, double glow);
 
     public abstract void setColor(double r, double g, double b, double a);
 
@@ -248,17 +261,27 @@ public abstract class BaseWindow
 
     public abstract void transform(double[] matrix);
 
+    public abstract void calculateBillboard();
+
     public abstract double getEdgeBounds();
 
     public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth);
 
     public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow);
 
+    public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask);
+
     public abstract void addVertex(double x, double y, double z);
 
     public abstract void addVertex(double x, double y);
 
     public abstract void openLink(URL url) throws Exception;
+
+    public abstract void setShadowQuality(double quality);
+
+    public abstract double getShadowQuality();
+
+    public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
 
     public void setupKeyCodes()
     {

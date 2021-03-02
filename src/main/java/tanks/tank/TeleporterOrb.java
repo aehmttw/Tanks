@@ -47,6 +47,9 @@ public class TeleporterOrb extends Movable
     @Override
 	public void draw() 
 	{
+		Drawing.drawing.setColor(255, 255, 255);
+		Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
+
 		for (int i = 0; i < this.size - this.tank.size; i++)
 		{
 			Drawing.drawing.setColor(255, 255, 255, 20);

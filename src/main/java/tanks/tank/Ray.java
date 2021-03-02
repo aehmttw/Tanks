@@ -20,8 +20,9 @@ public class Ray
 	public double vY;
 
 	public boolean enableBounciness = true;
+	public boolean ignoreDestructible = false;
 
-	public boolean trace = false;
+	public boolean trace = Game.traceAllRays;
 	public boolean dotted = false;
 
 	public double speed = 10;
@@ -191,7 +192,8 @@ public class Ray
 				{
 					Face f = Game.verticalFaces.get(i);
 
-					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce))
+					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
+							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
 						continue;
 
 					double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
@@ -211,7 +213,8 @@ public class Ray
 				{
 					Face f = Game.verticalFaces.get(i);
 
-					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce))
+					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
+							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
 						continue;
 
 					double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
@@ -233,7 +236,8 @@ public class Ray
 				{
 					Face f = Game.horizontalFaces.get(i);
 
-					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce))
+					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
+							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
 						continue;
 
 					double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
@@ -261,7 +265,8 @@ public class Ray
 				{
 					Face f = Game.horizontalFaces.get(i);
 
-					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce))
+					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
+							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
 						continue;
 
 					double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
@@ -327,6 +332,8 @@ public class Ray
 				}
 				else if (collisionFace.owner instanceof Obstacle && ((Obstacle) collisionFace.owner).bouncy)
 					this.bouncyBounces--;
+				else if (collisionFace.owner instanceof Obstacle && !((Obstacle) collisionFace.owner).allowBounce)
+					this.bounces = -1;
 				else
 					this.bounces--;
 

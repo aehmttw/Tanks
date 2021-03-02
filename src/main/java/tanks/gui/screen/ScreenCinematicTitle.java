@@ -21,7 +21,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
 
     public ScreenCinematicTitle()
     {
-        /*this.logo = new TankDummyLoadingScreen(-200, Drawing.drawing.sizeY / 2);
+        this.logo = new TankDummyLoadingScreen(-200, Drawing.drawing.sizeY / 2);
         this.logo.size *= 2;
         this.logo.turret.length *= 2 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
         this.logo.invulnerable = true;
@@ -34,19 +34,19 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         mine = new Mine(this.centerX + 200, this.centerY, this.logo);
         mine.size *= 2;
         mine.radius *= 2;
-        mine.timer = 100000;*/
+        mine.timer = 100000;
     }
 
     @Override
     public void drawWithoutBackground()
     {
-        Drawing.drawing.setInterfaceFontSize(70);
+        /*Drawing.drawing.setInterfaceFontSize(70);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 70, "But be careful!");
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 70,"One mistake, and its over!");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 70,"One mistake, and its over!");*/
         //Drawing.drawing.drawInterfaceText(this.centerX, this.centerY,"Make your own levels!");
 
-        /*Drawing.drawing.setColor(255, 255, 255);
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.drawInterfaceImage("img.png", this.centerX, this.centerY, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
 
         Drawing.drawing.setColor(255, 255, 255, 127);
@@ -61,6 +61,15 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
             Drawing.drawing.drawInterfaceText(mine.posX, mine.posY - t2 * 0.5, "Tanks");
             Drawing.drawing.setInterfaceFontSize(64 * t2 / 50);
             Drawing.drawing.drawInterfaceText(mine.posX, mine.posY + t2 * 1.5, "The Crusades");
+        }
+
+        if (t >= 600)
+        {
+            double a = Math.min(t - 600, 50) * 2.55 * 2;
+            Drawing.drawing.setColor(180, 180, 180, a);
+            Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 170, 600, 140);
+            Drawing.drawing.setColor(0, 0, 0, a);
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.1");
         }
 
         for (int i = 0; i < Game.tracks.size(); i++)
@@ -81,13 +90,13 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         for (int i = 0; i < Game.effects.size(); i++)
         {
             Game.effects.get(i).drawGlow();
-        }*/
+        }
     }
 
     @Override
     public void update()
     {
-        /*if (t > 75 && !Game.movables.contains(mine) && !mine.destroy)
+        if (t > 75 && !Game.movables.contains(mine) && !mine.destroy)
             Game.movables.add(mine);
 
         if (t > 0 && t < 100)
@@ -138,13 +147,13 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         Game.removeMovables.clear();
 
         Game.effects.removeAll(Game.removeEffects);
-        Game.removeEffects.clear();*/
+        Game.removeEffects.clear();
     }
 
     @Override
     public void draw()
     {
-        //t += Panel.frameFrequency;
+        t += Panel.frameFrequency;
 
         this.drawDefaultBackground();
         this.drawWithoutBackground();

@@ -2,7 +2,7 @@ package tanks.obstacle;
 
 import tanks.*;
 
-public class Obstacle implements IDrawableForInterface, ISolidObject
+public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow
 {
 	public static final int default_max_height = 4;
 
@@ -29,6 +29,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 	public boolean update = false;
 	public boolean draggable = true;
 	public boolean bouncy = false;
+	public boolean allowBounce = true;
 	public boolean replaceTiles = true;
 
 	public double posX;
@@ -37,6 +38,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 	public double colorG;
 	public double colorB;
 	public double colorA = 255;
+	public double glow = 0;
 
 	public double[] stackColorR = new double[default_max_height];
 	public double[] stackColorG = new double[default_max_height];
@@ -87,14 +89,14 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 
 		Drawing drawing = Drawing.drawing;
 		
-		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA, this.glow);
 
 		if (Game.enable3d)
 		{
 			for (int i = 0; i < Math.min(this.stackHeight, 4); i++)
 			{
 				int in = default_max_height - 1 - i;
-				drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA);
+				drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA, this.glow);
 
 				byte option = 0;
 
@@ -107,16 +109,30 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 						option += 2;
 				}
 
+				double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
+
 				if (stackHeight % 1 == 0)
 					drawing.fillBox(this.posX, this.posY, i * Game.tile_size, draw_size, draw_size, draw_size, (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size)));
 				else
-					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size, draw_size, draw_size, draw_size, (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size)));
+					drawing.fillBox(this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size)));
 			}
 		}
 		else
 			drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
 	}
-	
+
+	@Override
+	public void drawGlow()
+	{
+
+	}
+
+	@Override
+	public boolean isGlowEnabled()
+	{
+		return false;
+	}
+
 	@Override
 	public void drawAt(double x, double y)
 	{	
@@ -162,6 +178,11 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 	public void update()
 	{
 		
+	}
+
+	public void reactToHit(double bx, double by)
+	{
+
 	}
 	
 	public boolean hasLeftNeighbor()
@@ -337,5 +358,84 @@ public class Obstacle implements IDrawableForInterface, ISolidObject
 			o += 32;
 
 		return o;
+	}
+
+	public void onDestroy()
+	{
+
+	}
+
+	public void playDestroyAnimation(double posX, double posY, double radius)
+	{
+		if (Game.fancyGraphics)
+		{
+			Effect.EffectType effect = this.destroyEffect;
+			double freq = Math.min((Math.sqrt(Math.pow(posX - this.posX, 2) + Math.pow(posY - this.posY, 2)) + Game.tile_size * 2.5) / radius, 1);
+
+			if (Game.enable3d)
+			{
+				if (effect == Effect.EffectType.obstaclePiece)
+					effect = Effect.EffectType.obstaclePiece3d;
+
+				for (int j = 0; j < Game.tile_size; j += 10)
+				{
+					for (int k = 0; k < Game.tile_size; k += 10)
+					{
+						for (int l = 0; l < Game.tile_size * this.stackHeight; l += 10)
+						{
+							if (Math.random() > this.destroyEffectAmount * freq * freq)
+								continue;
+
+							Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, l, effect);
+
+							int block = (int) ((this.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
+
+							if (this.enableStacking)
+							{
+								e.colR = this.stackColorR[block];
+								e.colG = this.stackColorG[block];
+								e.colB = this.stackColorB[block];
+							}
+							else
+							{
+								e.colR = this.colorR;
+								e.colG = this.colorG;
+								e.colB = this.colorB;
+							}
+
+							double dist = Movable.distanceBetween(this, e);
+							double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
+							double rad = radius - Game.tile_size / 2;
+							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
+							e.addPolarMotion(angle, v + Math.random() * 2);
+							e.vZ = v + Math.random() * 2;
+
+							Game.effects.add(e);
+						}
+					}
+				}
+			}
+			else
+			{
+				for (int j = 0; j < Game.tile_size - 6; j += 4)
+				{
+					for (int k = 0; k < Game.tile_size - 6; k += 4)
+					{
+						Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, effect);
+
+						e.colR = this.colorR;
+						e.colG = this.colorG;
+						e.colB = this.colorB;
+
+						double dist = Movable.distanceBetween(this, e);
+						double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
+						double rad = radius - Game.tile_size / 2;
+						e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
+
+						Game.effects.add(e);
+					}
+				}
+			}
+		}
 	}
 }

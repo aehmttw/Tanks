@@ -99,7 +99,11 @@ public class ItemBar
 					return true;
 				}
 			}
-			else if (this.slots[x] instanceof ItemEmpty)
+		}
+
+		for (int x = 0; x < this.slots.length; x++)
+		{
+			if (this.slots[x] instanceof ItemEmpty)
 			{
 				if (i.stackSize <= i.maxStackSize)
 				{
@@ -217,7 +221,7 @@ public class ItemBar
 
 		double slotBgBrightness = 0;
 
-		if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+		if (Level.isDark())
 			slotBgBrightness = 255;
 
 		for (int i = -2; i <= 2; i++)
@@ -264,7 +268,7 @@ public class ItemBar
 
 		if (selected >= 0 && slots[selected] != null)
 		{
-			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, Math.min(this.selectedTimer * 2.55 * 2, 255) * (100 - this.player.hotbar.percentHidden) * 0.01);
 			else
 				Drawing.drawing.setColor(0, 0, 0, Math.min(this.selectedTimer * 2.55 * 2, 255) * (100 - this.player.hotbar.percentHidden) * 0.01);

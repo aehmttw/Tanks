@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
+import tanks.gui.SpeedrunTimer;
 
 import java.util.ArrayList;
 
@@ -124,7 +125,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     }
     );
 
-    public ScreenPartyCrusadeInterlevel()
+    public ScreenPartyCrusadeInterlevel(boolean win)
     {
         Game.player.hotbar.percentHidden = 100;
 
@@ -141,6 +142,8 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         else
             this.music = "lose_music.ogg";
 
+        if (win)
+            this.music = "win_crusade.ogg";
 
         if (Panel.win && Game.fancyGraphics)
         {
@@ -190,50 +193,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         this.drawDefaultBackground();
 
-        if (Panel.win && Game.fancyGraphics)
-            Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
-
-        if (ScreenPartyLobby.isClient)
-        {
-            next.draw();
-        }
-        else
-        {
-            if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
-                quitCrusadeEnd.draw();
-            else
-            {
-                if (Panel.levelPassed || Crusade.currentCrusade.replay)
-                {
-                    quit.draw();
-                    replayCrusadeWin.draw();
-                    nextLevel.draw();
-                }
-                else
-                {
-                    quitLose.draw();
-                    replayCrusade.draw();
-                }
-            }
-        }
-
-        if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
-            Drawing.drawing.setColor(255, 255, 255);
-        else
-            Drawing.drawing.setColor(0, 0, 0);
-
-        Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, msg1);
-        Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: " + Game.player.remainingLives);
-        Drawing.drawing.setInterfaceFontSize(this.textSize);
-
-        if (Drawing.drawing.interfaceScaleZoom > 1)
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 23 / 6, msg2);
-        else
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
-
-        if (Panel.win && Game.fancyGraphics)
+        if (Panel.win && Game.fancyGraphics && !Game.game.window.drawingShadow)
         {
             ArrayList<Firework> fireworks = getFireworkArray();
             if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency)
@@ -264,6 +224,52 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             fireworks.clear();
             odd = !odd;
         }
+
+        if (Panel.win && Game.fancyGraphics)
+            Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+
+        if (ScreenPartyLobby.isClient)
+        {
+            next.draw();
+        }
+        else
+        {
+            if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
+                quitCrusadeEnd.draw();
+            else
+            {
+                if (Panel.levelPassed || Crusade.currentCrusade.replay)
+                {
+                    quit.draw();
+                    replayCrusadeWin.draw();
+                    nextLevel.draw();
+                }
+                else
+                {
+                    quitLose.draw();
+                    replayCrusade.draw();
+                }
+            }
+        }
+
+        if (Game.showSpeedrunTimer)
+            SpeedrunTimer.draw();
+
+        if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
+
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, msg1);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: " + Game.player.remainingLives);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 23 / 6, msg2);
+        else
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
     }
 
 

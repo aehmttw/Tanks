@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public class BulletElectric extends BulletInstant
 {
+	public static String bullet_name = "electric";
+
 	public int chain;
 	public double delay = 0;
 	public ArrayList<Movable> targets;
@@ -182,7 +184,7 @@ public class BulletElectric extends BulletInstant
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (!Team.isAllied(this, m) && this != m && !m.destroy && !this.targets.contains(m))
+				if (!Team.isAllied(this, m) && this != m && !m.destroy && !this.targets.contains(m) && !(m instanceof AreaEffect))
 				{
 					double d = Movable.distanceBetween(this, m);
 					if (d < nd)

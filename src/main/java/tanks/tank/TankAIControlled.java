@@ -45,6 +45,9 @@ public class TankAIControlled extends Tank
 	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
 	public boolean enableLookingAtTargetEnemy = true;
 
+	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
+	public boolean ignoreDestructible = false;
+
 	public int bulletBounces = 1;
 	public double bulletSize = Bullet.bullet_size;
 	public double bulletDamage = 1;
@@ -225,7 +228,7 @@ public class TankAIControlled extends Tank
 	@Override
 	public void update()
 	{
-		this.angle = this.angle % (Math.PI * 2);
+		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 
 		this.age += Panel.frameFrequency;
 
@@ -276,12 +279,13 @@ public class TankAIControlled extends Tank
 		{
 			double an = this.angle;
 
-			if (this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
+			if (this.targetEnemy != null && this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
 				an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 			Ray a2 = new Ray(this.posX, this.posY, an, this.bulletBounces, this);
 			a2.size = this.bulletSize;
 			a2.getTarget();
+			a2.ignoreDestructible = this.ignoreDestructible;
 
 			double dist = a2.age;
 			// Cancels if the bullet will hit another enemy
@@ -391,6 +395,9 @@ public class TankAIControlled extends Tank
 
 	public void reactToTargetEnemySight()
 	{
+		if (this.targetEnemy == null)
+			return;
+
 		this.overrideDirection = true;
 		this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 	}
@@ -608,7 +615,7 @@ public class TankAIControlled extends Tank
 			if (Game.movables.get(i) instanceof Bullet && !Game.movables.get(i).destroy)
 			{
 				Bullet b = (Bullet) Game.movables.get(i);
-				if (!(b.tank == this && b.age < 20) && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10)
+				if (!(b.tank == this && b.age < 20) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10 && b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0)
 				{
 					Ray r = b.getRay();
 
@@ -684,6 +691,7 @@ public class TankAIControlled extends Tank
 		Ray a = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
 		a.moveOut(this.size / 10);
 		a.size = this.bulletSize;
+		a.ignoreDestructible = this.ignoreDestructible;
 
 		Movable m = a.getTarget();
 
@@ -710,60 +718,30 @@ public class TankAIControlled extends Tank
 
 	public void updateTurretStraight()
 	{
-		if (!this.hasTarget)
-			return;
-
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy)
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled)
 		{
-			double instant = (int) (25 / this.bulletSpeed * 2 * this.size / Game.tile_size);
-			double s = this.bulletSpeed / Math.sqrt(this.nearestBullet.vX * this.nearestBullet.vX + this.nearestBullet.vY * this.nearestBullet.vY) / 2;
-			this.aimAngle = this.getAngleInDirection(
-					this.nearestBullet.posX + this.nearestBullet.vX * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s,
-					this.nearestBullet.posY + this.nearestBullet.vY * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s);
+			double a = this.nearestBullet.getAngleInDirection(this.posX + 50 / this.bulletSpeed * this.nearestBullet.vX, this.posY + 50 / this.bulletSpeed * this.nearestBullet.vY);
+			double speed = this.nearestBullet.getLastMotionInDirection(a + Math.PI / 2);
+
+			if (speed < this.bulletSpeed)
+			{
+				double d = this.getAngleInDirection(nearestBullet.posX, nearestBullet.posY) - Math.asin(speed / this.bulletSpeed);
+
+				if (!Double.isNaN(d))
+					this.aimAngle = d;
+			}
 
 			this.disableOffset = true;
-
-			if (!Team.isAllied(this.nearestBullet, this))
-				this.cooldown -= Panel.frameFrequency;
-		}
-		else if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
-		{
-			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getPolarDirection(), 0, (Tank) targetEnemy);
-			r.size = Game.tile_size;
-			r.enableBounciness = false;
-
-			this.disableOffset = false;
-			double dist = Math.sqrt(Math.pow(targetEnemy.posX + targetEnemy.vX * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed - this.targetEnemy.posX, 2) +
-					Math.pow(targetEnemy.posY + targetEnemy.vY * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed - this.targetEnemy.posY, 2));
-
-			double d = r.getDist();
-
-			if (d * 10 > dist)
-			{
-				this.aimAngle = this.getAngleInDirection(targetEnemy.posX + targetEnemy.vX * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed, targetEnemy.posY + targetEnemy.vY * Movable.distanceBetween(this, targetEnemy) / this.bulletSpeed);
-			}
-			else
-			{
-				this.aimAngle = this.getAngleInDirection(r.posX, r.posY);
-			}
 		}
 		else
 		{
-			this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
-			this.disableOffset = false;
+			if (this.hasTarget && this.targetEnemy != null)
+			{
+				this.setAimAngleStraight();
+			}
 		}
 
-		double a = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
-
-		Ray r = new Ray(this.posX, this.posY, a, 0, this);
-		r.moveOut(this.size / 10);
-		r.size = this.bulletSize;
-
-		Movable m = r.getTarget();
-
-		if (m != null)
-			if (m.equals(this.targetEnemy))
-				this.shoot();
+		this.checkAndShoot();
 
 		double speed = this.aimTurretSpeed;
 
@@ -776,22 +754,69 @@ public class TankAIControlled extends Tank
 		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 			speed /= 2;
 
-
-		if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold / 2)
+		if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold)
 		{
-			if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
+			if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
 				this.angle += speed * Panel.frameFrequency;
 			else
 				this.angle -= speed * Panel.frameFrequency;
 
-			this.angle = this.angle % (Math.PI * 2);
+			this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 		}
-
-		if (Math.abs(this.angle - this.aimAngle) < this.aimThreshold && !this.disableOffset)
+		else
 			this.angle = this.aimAngle;
 
-		if (this.seesTargetEnemy && Movable.distanceBetween(this, this.targetEnemy) < 6)
+		if (this.seesTargetEnemy && this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < Game.tile_size * 6)
 			this.cooldown -= Panel.frameFrequency;
+	}
+
+	public void setAimAngleStraight()
+	{
+		if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
+		{
+			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
+			r.ignoreDestructible = this.ignoreDestructible;
+			r.size = Game.tile_size * this.hitboxSize;
+			r.enableBounciness = false;
+			this.disableOffset = false;
+
+			double a = this.targetEnemy.getAngleInDirection(this.posX, this.posY);
+			double speed = this.targetEnemy.getLastMotionInDirection(a + Math.PI / 2);
+
+			double distBtwn = Movable.distanceBetween(this, this.targetEnemy);
+			double time = distBtwn / Math.sqrt(this.bulletSpeed * this.bulletSpeed - speed * speed);
+
+			double distSq = Math.pow(targetEnemy.lastFinalVX * time, 2) + Math.pow(targetEnemy.lastFinalVY * time, 2);
+
+			double d = r.getDist();
+
+			if (d * d * 100 > distSq && speed < this.bulletSpeed)
+				this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY) - Math.asin(speed / this.bulletSpeed);
+			else
+				this.aimAngle = this.getAngleInDirection(r.posX, r.posY);
+		}
+		else
+		{
+			this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
+			this.disableOffset = false;
+		}
+	}
+
+	public void checkAndShoot()
+	{
+		Movable m = null;
+
+		if (this.targetEnemy != null)
+		{
+			Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
+			r.moveOut(this.size / 10);
+			r.size = this.bulletSize;
+			r.ignoreDestructible = this.ignoreDestructible;
+			m = r.getTarget();
+		}
+
+		if ((m != null && m.equals(this.targetEnemy) || (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled) && Movable.absoluteAngleBetween(this.angle, this.aimAngle) <= this.aimThreshold))
+			this.shoot();
 	}
 
 	public void updateTurretReflect()
@@ -806,19 +831,26 @@ public class TankAIControlled extends Tank
 		if (!this.straightShoot)
 			this.search();
 
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy)
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled)
 		{
-			double instant = 50 / this.bulletSpeed * this.size / Game.tile_size;
-			this.aim = true;
-			double s = this.bulletSpeed / Math.sqrt(this.nearestBullet.vX * this.nearestBullet.vX + this.nearestBullet.vY * this.nearestBullet.vY) / 2;
-			this.aimAngle = this.getAngleInDirection(
-					this.nearestBullet.posX + this.nearestBullet.vX * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s,
-					this.nearestBullet.posY + this.nearestBullet.vY * (Movable.distanceBetween(this, nearestBullet) - instant) / this.bulletSpeed * s);
+			double a = this.nearestBullet.getAngleInDirection(this.posX + 50 / this.bulletSpeed * this.nearestBullet.vX, this.posY + 50 / this.bulletSpeed * this.nearestBullet.vY);
+			double speed = this.nearestBullet.getLastMotionInDirection(a + Math.PI / 2);
+
+			if (speed < this.bulletSpeed)
+			{
+				double d = this.getAngleInDirection(nearestBullet.posX, nearestBullet.posY) - Math.asin(speed / this.bulletSpeed);
+				
+				if (!Double.isNaN(d))
+				{
+					this.aimAngle = d;
+					this.aim = true;
+				}
+			}
+
 			this.disableOffset = true;
-			this.cooldown -= Panel.frameFrequency;
 		}
 
-		if (aim && this.hasTarget)
+		if (aim && (this.hasTarget || (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled)))
 			this.updateAimingTurret();
 		else if (currentlySeeking && this.seekPause <= 0)
 			this.updateSeekingTurret();
@@ -830,11 +862,11 @@ public class TankAIControlled extends Tank
 	{
 		if (this.searchPhase == RotationPhase.clockwise)
 		{
-			searchAngle += Math.random() * 0.2 * Panel.frameFrequency;
+			searchAngle += Math.random() * 0.1 * Panel.frameFrequency;
 		}
 		else if (this.searchPhase == RotationPhase.counterClockwise)
 		{
-			searchAngle -= Math.random() * 0.2 * Panel.frameFrequency;
+			searchAngle -= Math.random() * 0.1 * Panel.frameFrequency;
 		}
 		else
 		{
@@ -853,6 +885,7 @@ public class TankAIControlled extends Tank
 		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, this.bulletBounces, this);
 		ray.moveOut(this.size / 10);
 		ray.size = this.bulletSize;
+		ray.ignoreDestructible = this.ignoreDestructible;
 
 		Movable target = ray.getTarget();
 
@@ -878,19 +911,17 @@ public class TankAIControlled extends Tank
 
 	public void lookAtTargetEnemy()
 	{
-		if (!this.hasTarget)
+		if (!this.hasTarget || this.targetEnemy == null)
 			return;
 
 		double a;
 
-		if (this.enablePredictiveFiring)
-			a = this.getAngleInDirection(this.targetEnemy.posX + this.targetEnemy.vX * Movable.distanceBetween(this, this.targetEnemy) / this.bulletSpeed, this.targetEnemy.posY + this.targetEnemy.vY * Movable.distanceBetween(this, this.targetEnemy) / this.bulletSpeed);
-		else
-			a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
+		a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 		Ray rayToTarget = new Ray(this.posX, this.posY, a, 0, this);
 		rayToTarget.size = this.bulletSize;
 		rayToTarget.moveOut(this.size / 10);
+		rayToTarget.ignoreDestructible = this.ignoreDestructible;
 		Movable target = rayToTarget.getTarget();
 
 		if (target != null)
@@ -940,12 +971,20 @@ public class TankAIControlled extends Tank
 			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 				speed /= 2;
 
-			if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
-				this.angle += speed * Panel.frameFrequency;
-			else
-				this.angle -= speed * Panel.frameFrequency;
+			//System.out.println(Movable.absoluteAngleBetween(this.aimAngle, this.angle) + " " + this.angle + " " + this.aimAngle);
+			if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold)
+			{
+				if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
+					this.angle += speed * Panel.frameFrequency;
+				else
+					this.angle -= speed * Panel.frameFrequency;
 
-			this.angle = this.angle % (Math.PI * 2);
+				this.angle = this.angle % (Math.PI * 2);
+			}
+			else
+				this.angle = this.aimAngle;
+
+			this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 		}
 	}
 

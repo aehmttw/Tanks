@@ -10,7 +10,10 @@ public class ObstacleIce extends Obstacle
     {
         super(name, posX, posY);
 
-        this.drawLevel = 1;
+        if (Game.enable3d)
+            this.drawLevel = 6;
+        else
+            this.drawLevel = 1;
 
         this.destructible = false;
         this.tankCollision = false;
@@ -74,6 +77,7 @@ public class ObstacleIce extends Obstacle
 
     public double getTileHeight()
     {
-        return 0;
+        double frac = Obstacle.draw_size / Game.tile_size;
+        return -frac * 15;
     }
 }

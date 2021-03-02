@@ -50,10 +50,9 @@ public class ItemBullet extends Item
 		this.rightClick = false;
 		this.isConsumable = true;
 
-		new ItemPropertySelector(this.properties, "type", new String[]{"normal", "flamethrower", "laser", "freezing", "electric", "healing"},
-				new String[]{"bullet_normal.png", "bullet_flame.png", "bullet_laser.png", "bullet_freeze.png", "bullet_electric.png", "bullet_healing.png"}, 0);
-		new ItemPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice"},
-				new String[]{"bullet_large.png", "bullet_normal.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_freeze.png"}, 0);
+		new ItemPropertySelector(this.properties, "type", Game.registryBullet.getEntryNames(), Game.registryBullet.getImageNames(), 0);
+		new ItemPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice", "ember"},
+				new String[]{"bullet_large.png", "bullet_normal.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_freeze.png", "bullet_boost.png"}, 0);
 		new ItemPropertyDouble(this.properties, "speed", 3.125);
 		new ItemPropertyInt(this.properties, "bounces", 1);
 		new ItemPropertyDouble(this.properties, "damage", 1.0);
@@ -188,21 +187,23 @@ public class ItemBullet extends Item
 		this.heavy = (boolean) this.getProperty("heavy");
 	}
 
+	public double getRange()
+	{
+		if (BulletArc.class.isAssignableFrom(this.bulletClass))
+			return this.speed / 3.125 * 1000.0;
+		else
+			return -1;
+	}
+
 	public static void initializeMaps()
 	{
-		addToMaps(classMap1, classMap2, "normal", Bullet.class);
-		addToMaps(classMap1, classMap2, "flamethrower", BulletFlame.class);
-		addToMaps(classMap1, classMap2, "laser", BulletLaser.class);
-		addToMaps(classMap1, classMap2, "freezing", BulletFreeze.class);
-		addToMaps(classMap1, classMap2, "electric", BulletElectric.class);
-		addToMaps(classMap1, classMap2, "healing", BulletHealing.class);
-
 		addToMaps(effectsMap1, effectsMap2, "none", Bullet.BulletEffect.none);
 		addToMaps(effectsMap1, effectsMap2, "trail", Bullet.BulletEffect.trail);
 		addToMaps(effectsMap1, effectsMap2, "fire", Bullet.BulletEffect.fire);
 		addToMaps(effectsMap1, effectsMap2, "fire_and_smoke", Bullet.BulletEffect.fireTrail);
 		addToMaps(effectsMap1, effectsMap2, "dark_fire", Bullet.BulletEffect.darkFire);
 		addToMaps(effectsMap1, effectsMap2, "ice", Bullet.BulletEffect.ice);
+		addToMaps(effectsMap1, effectsMap2, "ember", Bullet.BulletEffect.ember);
 	}
 
 	public static <X, Y> void addToMaps(HashMap<X, Y> map1, HashMap<Y, X> map2, X a, Y b)

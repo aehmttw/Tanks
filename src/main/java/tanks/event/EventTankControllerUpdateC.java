@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Drawing;
 import tanks.Panel;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerController;
@@ -14,6 +15,8 @@ public class EventTankControllerUpdateC extends PersonalEvent
     public double vX;
     public double vY;
     public double angle;
+    public double mX;
+    public double mY;
     public boolean action1;
     public boolean action2;
     public double time;
@@ -31,6 +34,8 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.posY = t.posY;
         this.vX = t.vX;
         this.vY = t.vY;
+        this.mX = Drawing.drawing.getMouseX();
+        this.mY = Drawing.drawing.getMouseY();
         this.angle = t.angle;
         this.action1 = t.action1;
         this.action2 = t.action2;
@@ -46,6 +51,8 @@ public class EventTankControllerUpdateC extends PersonalEvent
         b.writeDouble(this.vX);
         b.writeDouble(this.vY);
         b.writeDouble(this.angle);
+        b.writeDouble(this.mX);
+        b.writeDouble(this.mY);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
         b.writeDouble(this.time);
@@ -60,6 +67,8 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.vX = b.readDouble();
         this.vY = b.readDouble();
         this.angle = b.readDouble();
+        this.mX = b.readDouble();
+        this.mY = b.readDouble();
         this.action1 = b.readBoolean();
         this.action2 = b.readBoolean();
         this.time = b.readDouble();
@@ -72,7 +81,7 @@ public class EventTankControllerUpdateC extends PersonalEvent
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
-            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.action1, this.action2, this.time, this.sysTime);
+            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.time, this.sysTime);
         }
     }
 }

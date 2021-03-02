@@ -7,11 +7,12 @@ import tanks.gui.InputSelector;
 
 public class ScreenControlsGame extends Screen
 {
-    InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 180, 700, 40, "Pause", Game.game.input.pause);
-    InputSelector toggleZoom = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 90, 700, 40, "Toggle zoom", Game.game.input.zoom);
-    InputSelector chat = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 0, 700, 40, "Chat", Game.game.input.chat);
-    InputSelector hidePause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 90, 700, 40, "Hide/show pause menu", Game.game.input.hidePause);
-    InputSelector fullscreen = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 180, 700, 40, "Toggle fullscreen", Game.game.input.fullscreen);
+    InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Pause", Game.game.input.pause);
+    InputSelector play = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Play", Game.game.input.play);
+    InputSelector toggleZoom = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle zoom", Game.game.input.zoom);
+    InputSelector chat = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Chat", Game.game.input.chat);
+    InputSelector hidePause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Hide/show pause menu", Game.game.input.hidePause);
+    InputSelector fullscreen = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Toggle fullscreen", Game.game.input.fullscreen);
 
     public ScreenControlsGame()
     {
@@ -23,6 +24,7 @@ public class ScreenControlsGame extends Screen
     public void update()
     {
         pause.update();
+        play.update();
         toggleZoom.update();
         chat.update();
         hidePause.update();
@@ -36,11 +38,12 @@ public class ScreenControlsGame extends Screen
     {
         this.drawDefaultBackground();
 
+        fullscreen.draw();
         hidePause.draw();
         chat.draw();
         toggleZoom.draw();
+        play.draw();
         pause.draw();
-        fullscreen.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);

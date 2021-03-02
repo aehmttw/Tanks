@@ -34,6 +34,9 @@ public class Trail implements IDrawable
     public double backB;
     public double backA;
 
+    public boolean glow;
+    public double luminosity;
+
     public boolean frontCircle = true;
     public boolean backCircle = true;
     public boolean showOutsides = true;
@@ -44,7 +47,8 @@ public class Trail implements IDrawable
 
     public Trail(Movable m, double backX, double backY, double backWidth, double frontWidth, double length, double angle,
                  double frontR, double frontG, double frontB, double frontA,
-                 double backR, double backG, double backB, double backA)
+                 double backR, double backG, double backB, double backA,
+                 boolean glow, double luminosity)
     {
         this.movable = m;
         this.speed = Math.sqrt(m.vX * m.vX + m.vY * m.vY);
@@ -67,6 +71,9 @@ public class Trail implements IDrawable
         this.backG = backG;
         this.backB = backB;
         this.backA = backA;
+        this.luminosity = luminosity;
+
+        this.glow = glow;
     }
 
     public double update(double trailLength)
@@ -116,11 +123,11 @@ public class Trail implements IDrawable
                         this.frontR * (1 - frac1) + this.backR * frac1,
                         this.frontG * (1 - frac1) + this.backG * frac1,
                         this.frontB * (1 - frac1) + this.backB * frac1,
-                        (this.frontA * (1 - frac1) + this.backA * frac1) * opacity);
+                        (this.frontA * (1 - frac1) + this.backA * frac1) * opacity, this.luminosity);
 
                 if (frontCircle || showOutsides)
                 {
-                    Game.game.window.setBatchMode(true, false, depth);
+                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 30; i < 50; i++)
                     {
@@ -129,10 +136,10 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.frontX, this.frontY, this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth);
+                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
                 }
 
-                Game.game.window.setBatchMode(true, true, depth);
+                Game.game.window.setBatchMode(true, true, depth, this.glow, false);
 
                 Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, ox * frontWidth, oy * frontWidth, 0);
                 Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, -ox * frontWidth, -oy * frontWidth, 0);
@@ -140,12 +147,12 @@ public class Trail implements IDrawable
             else
             {
                 frontWidth = this.frontWidth;
-                Drawing.drawing.setColor(this.frontR, this.frontG, this.frontB, this.frontA * opacity);
+                Drawing.drawing.setColor(this.frontR, this.frontG, this.frontB, this.frontA * opacity, this.luminosity);
                 double frac3 = (delay - this.age) / this.currentLength;
 
                 if (frontCircle)
                 {
-                    Game.game.window.setBatchMode(true, false, depth);
+                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 30; i < 50; i++)
                     {
@@ -154,10 +161,10 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth);
+                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
                 }
 
-                Game.game.window.setBatchMode(true, true, depth);
+                Game.game.window.setBatchMode(true, true, depth, this.glow, false);
 
                 Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1,ox * frontWidth, oy * frontWidth, 0);
                 Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1,-ox * frontWidth, -oy * frontWidth, 0);
@@ -169,16 +176,16 @@ public class Trail implements IDrawable
                         this.frontR * (1 - frac2) + this.backR * frac2,
                         this.frontG * (1 - frac2) + this.backG * frac2,
                         this.frontB * (1 - frac2) + this.backB * frac2,
-                        (this.frontA * (1 - frac2) + this.backA * frac2) * opacity);
+                        (this.frontA * (1 - frac2) + this.backA * frac2) * opacity, this.luminosity);
 
                 Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, -ox * backWidth, -oy * backWidth, 0);
                 Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, ox * backWidth, oy * backWidth, 0);
 
-                Game.game.window.setBatchMode(false, true, depth);
+                Game.game.window.setBatchMode(false, true, depth, this.glow, false);
 
                 if (backCircle || showOutsides)
                 {
-                    Game.game.window.setBatchMode(true, false, depth);
+                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 10; i < 30; i++)
                     {
@@ -187,23 +194,23 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.backX, this.backY, this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth);
+                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
                 }
             }
             else
             {
                 backWidth = this.backWidth;
-                Drawing.drawing.setColor(this.backR, this.backG, this.backB, this.backA * opacity);
+                Drawing.drawing.setColor(this.backR, this.backG, this.backB, this.backA * opacity, this.luminosity);
 
                 double frac3 = (this.age + this.currentLength - this.maxLength - delay) / this.currentLength;
                 Drawing.drawing.addFacingVertex(this.frontX * frac3 + this.backX * (1 - frac3), this.frontY * frac3 + this.backY * (1 - frac3), this.movable.posZ - 1, -ox * backWidth, -oy * backWidth, 0);
                 Drawing.drawing.addFacingVertex(this.frontX * frac3 + this.backX * (1 - frac3), this.frontY * frac3 + this.backY * (1 - frac3), this.movable.posZ - 1, ox * backWidth, oy * backWidth, 0);
 
-                Game.game.window.setBatchMode(false, true, depth);
+                Game.game.window.setBatchMode(false, true, depth, this.glow, false);
 
                 if (backCircle)
                 {
-                    Game.game.window.setBatchMode(true, false, depth);
+                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 10; i < 30; i++)
                     {
@@ -212,11 +219,11 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.frontX * frac3 + this.backX * (1 - frac3), this.frontY * frac3 + this.backY * (1 - frac3), this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth);
+                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
                 }
             }
 
-            Game.game.window.setBatchMode(false, true, depth);
+            Game.game.window.setBatchMode(false, true, depth, this.glow, false);
         }
     }
 }

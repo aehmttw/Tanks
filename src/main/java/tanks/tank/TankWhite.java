@@ -68,7 +68,7 @@ public class TankWhite extends TankAIControlled
 
 			if (this.size * 4 > this.age * 2)
 			{
-				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.setColor(255, 255, 255, 255, 1);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2, true, false);

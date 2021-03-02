@@ -49,6 +49,9 @@ public class LevelGeneratorVersus
 		boolean bouncy = Math.random() < 0.2;
 		double bouncyWeight = Math.random() * 0.5 + 0.2;
 
+		boolean nobounce = Math.random() < 0.2;
+		double noBounceWeight = Math.random() * 0.5 + 0.2;
+
 		boolean shrubs = Math.random() < 0.2;
 		int shrubCount = (int) (walls + Math.random() * 4 - 2);
 
@@ -58,11 +61,39 @@ public class LevelGeneratorVersus
 		boolean ice = Math.random() < 0.2;
 		int iceCount = (int) (walls + Math.random() * 4 - 2);
 
+		boolean snow = Math.random() < 0.2;
+		int snowCount = (int) (walls + Math.random() * 4 - 2);
+
 		boolean teleporters = Math.random() < 0.2;
 		int numTeleporters = walls / 5 + 2;
 		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * Math.random()) + 1;
 
-		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20|");
+		boolean boostPanels = Math.random() < 0.2;
+		int boostCount = (int) (walls + Math.random() * 4 - 2);
+
+		boolean explosives = Math.random() < 0.2;
+		int numExplosives = (int) (walls / 5 + Math.random() * 4 + 1);
+
+		int time = (int) (Math.random() * 24 + 12) * 5;
+
+		if (Math.random() > 0.2)
+			time = 0;
+
+		double light = 100;
+		double shadeFactor = 0.5;
+
+		if (Math.random() < 0.2)
+		{
+			light *= Math.random() * 1.25;
+		}
+
+		boolean dark = light < 50;
+		int numLights = (int) (walls / 5 + Math.random() * 6 + 1);
+
+		if (Math.random() < 0.2)
+			shadeFactor = Math.random() * 0.6 + 0.2;
+
+		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20," + time + "," + (int) light + "," + (int) (light * shadeFactor) + "|");
 
 		int[][] teleporterArray = new int[width][height];
 
@@ -108,6 +139,11 @@ public class LevelGeneratorVersus
 
 			if (bouncy && Math.random() < bouncyWeight)
 				type = "-bouncy";
+			else if (nobounce && Math.random() < noBounceWeight)
+			{
+				type = "-nobounce";
+				passable = false;
+			}
 			else if (Math.random() < 0.5)
 			{
 				type = "-hard";
@@ -117,6 +153,11 @@ public class LevelGeneratorVersus
 			{
 				type = "-hole";
 				passable = false;
+			}
+			else if (Math.random() < 0.25)
+			{
+				type = "-breakable";
+				passable = true;
 			}
 
 			if (Math.random() * (vertical + horizontal) < horizontal)
@@ -242,7 +283,6 @@ public class LevelGeneratorVersus
 					s.append("-").append(y);
 
 					s.append(type);
-
 				}
 
 				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++)
@@ -397,10 +437,9 @@ public class LevelGeneratorVersus
 				int x = (int) (Math.random() * width);
 				int y = (int) (Math.random() * height);
 
-
 				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
 				{
-					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
+					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
 						cells[x][y] = true;
 
@@ -424,6 +463,71 @@ public class LevelGeneratorVersus
 			}
 		}
 
+		if (boostPanels)
+		{
+			for (int j = 0; j < boostCount; j++)
+			{
+				int x1 = (int) (Math.random() * width);
+				int y1 = (int) (Math.random() * height);
+
+				int panelSize = (int)(Math.random() * 3) + 1;
+
+				for (int x = x1; x < x1 + panelSize; x++)
+				{
+					for (int y = y1; y < y1 + panelSize; y++)
+					{
+						if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
+						{
+							cells[x][y] = true;
+
+							if (!s.toString().endsWith(","))
+								s.append(",");
+
+							s.append(x).append("-").append(y).append("-boostpanel");
+						}
+					}
+				}
+			}
+		}
+
+		if (explosives)
+		{
+			for (int j = 0; j < numExplosives; j++)
+			{
+				int x = (int) (Math.random() * width);
+				int y = (int) (Math.random() * height);
+
+				if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
+				{
+					cells[x][y] = true;
+
+					if (!s.toString().endsWith(","))
+						s.append(",");
+
+					s.append(x).append("-").append(y).append("-explosive");
+				}
+			}
+		}
+
+		if (dark)
+		{
+			for (int j = 0; j < numLights; j++)
+			{
+				int x = (int) (Math.random() * width);
+				int y = (int) (Math.random() * height);
+
+				if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
+				{
+					cells[x][y] = true;
+
+					if (!s.toString().endsWith(","))
+						s.append(",");
+
+					s.append(x).append("-").append(y).append("-light-").append((int)(Math.random() * 5 + 1) / 2.0);
+				}
+			}
+		}
+
 		if (mud)
 		{
 			for (int j = 0; j < mudCount; j++)
@@ -434,7 +538,7 @@ public class LevelGeneratorVersus
 
 				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
 				{
-					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
+					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
 						cells[x][y] = true;
 
@@ -467,7 +571,7 @@ public class LevelGeneratorVersus
 
 				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
 				{
-					if (x < width && y < height && x > 0 && y > 0 && !cells[x][y])
+					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
 						cells[x][y] = true;
 
@@ -475,6 +579,39 @@ public class LevelGeneratorVersus
 							s.append(",");
 
 						s.append(x).append("-").append(y).append("-ice");
+					}
+
+					double rand = Math.random();
+
+					if (rand < 0.25)
+						x++;
+					else if (rand < 0.5)
+						x--;
+					else if (rand < 0.75)
+						y++;
+					else
+						y--;
+				}
+			}
+		}
+
+		if (snow)
+		{
+			for (int j = 0; j < snowCount; j++)
+			{
+				int x = (int) (Math.random() * width);
+				int y = (int) (Math.random() * height);
+
+				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
+				{
+					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
+					{
+						cells[x][y] = true;
+
+						if (!s.toString().endsWith(","))
+							s.append(",");
+
+						s.append(x).append("-").append(y).append("-snow");
 					}
 
 					double rand = Math.random();

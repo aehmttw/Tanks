@@ -5,7 +5,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
-import tanks.gui.Selector;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
@@ -15,7 +14,6 @@ import java.util.Date;
 
 public class ScreenOptions extends Screen
 {
-	public static final String autostartText = "Autostart: ";
 	public static final String infoBarText = "Info bar: ";
 
 	public static final String onText = "\u00A7000200000255on";
@@ -25,11 +23,6 @@ public class ScreenOptions extends Screen
 	{
 		this.music = "tomato_feast_1_options.ogg";
 		this.musicID = "menu";
-
-		if (Game.autostart)
-			autostart.text = autostartText + onText;
-		else
-			autostart.text = autostartText + offText;
 
 		if (Drawing.drawing.enableStats)
 			showStats.text = infoBarText + onText;
@@ -50,22 +43,6 @@ public class ScreenOptions extends Screen
 		}
 	}
 	);
-
-	Button autostart = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.autostart = !Game.autostart;
-
-			if (Game.autostart)
-				autostart.text = autostartText + onText;
-			else
-				autostart.text = autostartText + offText;
-		}
-	},
-			"When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
-
 
 	Button showStats = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
 	{
@@ -96,6 +73,16 @@ public class ScreenOptions extends Screen
 		public void run()
 		{
 			Game.screen = new ScreenOptionsMultiplayer();
+		}
+	}
+	);
+
+	Button gameOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Game options", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenOptionsGame();
 		}
 	}
 	);
@@ -138,7 +125,7 @@ public class ScreenOptions extends Screen
 	public void update()
 	{
 		soundOptions.update();
-		autostart.update();
+		gameOptions.update();
 		showStats.update();
 
 		graphicsOptions.update();
@@ -157,7 +144,7 @@ public class ScreenOptions extends Screen
 		inputOptions.draw();
 		graphicsOptions.draw();
 		showStats.draw();
-		autostart.draw();
+		gameOptions.draw();
 		soundOptions.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
@@ -196,6 +183,8 @@ public class ScreenOptions extends Screen
 			f.println("super_graphics=" + Game.superGraphics);
 			f.println("3d=" + Game.enable3d);
 			f.println("3d_ground=" + Game.enable3dBg);
+			f.println("shadows_enabled=" + Game.shadowsEnabled);
+			f.println("shadow_quality=" + Game.shadowQuality);
 			f.println("vsync=" + Game.vsync);
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("angled_perspective=" + Game.angledView);
@@ -209,6 +198,7 @@ public class ScreenOptions extends Screen
 			f.println("music=" + Game.musicEnabled);
 			f.println("music_volume=" + Game.musicVolume);
 			f.println("auto_start=" + Game.autostart);
+			f.println("timer=" + Game.showSpeedrunTimer);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
 			f.println("last_party=" + Game.lastParty);
@@ -223,9 +213,9 @@ public class ScreenOptions extends Screen
 			f.println("tank_red_2=" + Game.player.turretColorR);
 			f.println("tank_green_2=" + Game.player.turretColorG);
 			f.println("tank_blue_2=" + Game.player.turretColorB);
-			f.println("use_custom_tank_registry=" + Game.enableCustomTankRegistry);
-			f.println("use_custom_obstacle_registry=" + Game.enableCustomObstacleRegistry);
 			f.println("last_version=" + Game.lastVersion);
+			f.println("enable_extensions=" + Game.enableExtensions);
+			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -272,6 +262,12 @@ public class ScreenOptions extends Screen
 					case "3d_ground":
 						Game.enable3dBg = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "shadows_enabled":
+						Game.shadowsEnabled = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "shadow_quality":
+						Game.shadowQuality = Integer.parseInt(optionLine[1]);
+						break;
 					case "vsync":
 						Game.vsync = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -307,6 +303,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "auto_start":
 						Game.autostart = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "timer":
+						Game.showSpeedrunTimer = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "info_bar":
 						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));
@@ -359,15 +358,16 @@ public class ScreenOptions extends Screen
 					case "tank_blue_2":
 						Game.player.turretColorB = Integer.parseInt(optionLine[1]);
 						break;
-					case "use_custom_tank_registry":
-						Game.enableCustomTankRegistry = Boolean.parseBoolean(optionLine[1]);
-						break;
-					case "use_custom_obstacle_registry":
-						Game.enableCustomObstacleRegistry = Boolean.parseBoolean(optionLine[1]);
-						break;
 					case "last_version":
 						Game.lastVersion = optionLine[1];
 						break;
+					case "enable_extensions":
+						Game.enableExtensions = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "auto_load_extensions":
+						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
+						break;
+
 				}
 			}
 			f.stopReading();

@@ -38,7 +38,7 @@ public class EventLevelEnd extends PersonalEvent
 			Panel.winlose = "You were destroyed!";
 		}
 
-		Game.cleanUp();
+		Game.silentCleanUp();
 		Game.screen = new ScreenPartyInterlevel();
 
 		ScreenPartyLobby.readyPlayers.clear();

@@ -154,7 +154,7 @@ public class Button implements IDrawable, ITrigger
 			else
 				drawGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, 0.6, 0, 0, 0, 100, false);
 
-			if (this.lastFrame == Panel.panel.ageFrames - 1)
+			if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
 			{
 				for (Effect e : this.glowEffects)
 				{
@@ -267,7 +267,7 @@ public class Button implements IDrawable, ITrigger
 			}
 		}
 
-		if (Game.superGraphics)
+		if (Game.superGraphics && !Game.game.window.drawingShadow)
 		{
 			if (this.lastFrame < Panel.panel.ageFrames - 1)
 				this.glowEffects.clear();

@@ -103,6 +103,13 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen
                 b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
                 b.imageSizeX = b.sizeY;
                 b.imageSizeY = b.sizeY;
+
+                if (b.sizeX == b.sizeY)
+                {
+                    b.imageXOffset = 0;
+                    b.imageSizeX *= 0.8;
+                    b.imageSizeY *= 0.8;
+                }
             }
         }
 
@@ -134,7 +141,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+        if (Level.isDark())
             Drawing.drawing.setColor(255, 255, 255);
         else
             Drawing.drawing.setColor(0, 0, 0);

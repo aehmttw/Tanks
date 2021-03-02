@@ -5,7 +5,9 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
+import tanks.bullet.BulletElectric;
 import tanks.event.EventTankControllerUpdateC;
+import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
@@ -36,6 +38,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
     protected double prevDistSq;
 
     protected long lastTrace = 0;
+    protected double drawRange = -1;
 
     public TankPlayerController(double x, double y, double angle, UUID id)
     {
@@ -255,8 +258,10 @@ public class TankPlayerController extends Tank implements IPlayerTank
         this.action1 = shoot;
         this.action2 = mine;
 
-        if ((trace || TankPlayer.lockTrace) && !Game.bulletLocked && !this.disabled)
+        if ((trace || TankPlayer.lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
         {
+            double range = -1;
+
             Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 
             Hotbar h = Game.player.hotbar;
@@ -266,12 +271,18 @@ public class TankPlayerController extends Tank implements IPlayerTank
                 if (i instanceof ItemBullet)
                 {
                     r.bounces = ((ItemBullet) i).bounces;
+                    range = ((ItemBullet) i).getRange();
 
-                    if (((ItemBullet) i).className.equals("electric"))
+                    if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
                         r.bounces = 0;
                 }
-                else if (i instanceof ItemRemote && ((ItemRemote)i).bounces >= 0)
-                    r.bounces = ((ItemRemote)i).bounces;
+                else if (i instanceof ItemRemote)
+                {
+                    if (((ItemRemote)i).bounces >= 0)
+                        r.bounces = ((ItemRemote)i).bounces;
+
+                    range = ((ItemRemote) i).range;
+                }
             }
 
             r.vX /= 2;
@@ -279,7 +290,11 @@ public class TankPlayerController extends Tank implements IPlayerTank
             r.trace = true;
             r.dotted = true;
             r.moveOut(10 * this.size / Game.tile_size);
-            r.getTarget();
+
+            if (range >= 0)
+                this.drawRange = range;
+            else
+                r.getTarget();
         }
 
         super.update();
@@ -326,5 +341,17 @@ public class TankPlayerController extends Tank implements IPlayerTank
     public boolean showTouchCircle()
     {
         return this.drawTouchCircle;
+    }
+
+    @Override
+    public double getDrawRange()
+    {
+        return this.drawRange;
+    }
+
+    @Override
+    public void setDrawRange(double range)
+    {
+        this.drawRange = range;
     }
 }

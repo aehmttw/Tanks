@@ -28,7 +28,7 @@ public class TankPink extends TankAIControlled
 		
 		this.coinValue = 12;
 
-		this.description = "A tank which spawns mini tanks and---shoots rockets that bounce twice";
+		this.description = "A tank which spawns---mini tanks and shoots---2-bounce rockets";
 	}
 	
 	@Override

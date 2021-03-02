@@ -19,7 +19,7 @@ public class TankBlack extends TankAIControlled
 		this.bulletEffect = Bullet.BulletEffect.darkFire;
 		this.aimTurretSpeed = 0.06;
 		this.enablePathfinding = true;
-		
+
 		this.coinValue = 10;
 
 		this.description = "A smart, very fast tank---which fires rockets";

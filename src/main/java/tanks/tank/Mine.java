@@ -89,7 +89,7 @@ public class Mine extends Movable
     @Override
     public void draw()
     {
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
+        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 0.5);
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
         {
@@ -103,10 +103,12 @@ public class Mine extends Movable
         {
             for (double i = height; i < height + 6; i++)
             {
-                double frac = ((i - height) / 6 + 1) / 2;
-                Drawing.drawing.setColor(this.outlineColorR * frac, this.outlineColorG  * frac, this.outlineColorB * frac);
+                double frac = ((i - height + 1) / 6 + 1) / 2;
+                Drawing.drawing.setColor(this.outlineColorR * frac, this.outlineColorG  * frac, this.outlineColorB * frac, 255, 0.5);
                 Drawing.drawing.fillOval(this.posX, this.posY, i + 1.5, this.size, this.size, true, false);
             }
+
+            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 1);
 
             if (Game.superGraphics)
                 Drawing.drawing.fillGlow(this.posX, this.posY, height + 1, this.size * 4, this.size * 4, true, false);
@@ -119,10 +121,10 @@ public class Mine extends Movable
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
         }
 
-        Drawing.drawing.setColor(255, Math.min(1000, this.timer) / 1000.0 * 255, 0);
+        Drawing.drawing.setColor(255, Math.min(1000, this.timer) / 1000.0 * 255, 0, 255, 0.5);
 
         if (timer < 150 && ((int) timer % 20) / 10 == 1)
-            Drawing.drawing.setColor(255, 255, 0);
+            Drawing.drawing.setColor(255, 255, 0, 255, 0.5);
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, height + 7.5, this.size * 0.8, this.size * 0.8, true, false);
@@ -263,82 +265,11 @@ public class Mine extends Movable
             for (int i = 0; i < Game.obstacles.size(); i++)
             {
                 Obstacle o = Game.obstacles.get(i);
-                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible)
+                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible && !Game.removeObstacles.contains(o))
                 {
+                    o.onDestroy();
+                    o.playDestroyAnimation(this.posX, this.posY, this.radius);
                     Game.removeObstacles.add(o);
-
-                    if (Game.fancyGraphics)
-                    {
-                        Effect.EffectType effect = o.destroyEffect;
-
-                        if (Game.enable3d)
-                        {
-                            if (effect == Effect.EffectType.obstaclePiece)
-                                effect = Effect.EffectType.obstaclePiece3d;
-
-                            double freq = Math.min((Math.sqrt(Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2)) + Game.tile_size * 2.5) / radius, 1);
-
-                            for (int j = 0; j < Game.tile_size; j += 10)
-                            {
-                                for (int k = 0; k < Game.tile_size; k += 10)
-                                {
-                                    for (int l = 0; l < Game.tile_size * o.stackHeight; l += 10)
-                                    {
-                                        if (Math.random() > o.destroyEffectAmount * freq * freq)
-                                            continue;
-
-                                        Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, l, effect);
-
-                                        int block = (int) ((o.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
-
-                                        if (o.enableStacking)
-                                        {
-                                            e.colR = o.stackColorR[block];
-                                            e.colG = o.stackColorG[block];
-                                            e.colB = o.stackColorB[block];
-                                        }
-                                        else
-                                        {
-                                            e.colR = o.colorR;
-                                            e.colG = o.colorG;
-                                            e.colB = o.colorB;
-                                        }
-
-                                        double dist = Movable.distanceBetween(this, e);
-                                        double angle = this.getAngleInDirection(e.posX, e.posY);
-                                        double rad = radius - Game.tile_size / 2;
-                                        double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
-                                        e.addPolarMotion(angle, v + Math.random() * 2);
-                                        e.vZ = v + Math.random() * 2;
-
-                                        Game.effects.add(e);
-
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            for (int j = 0; j < Game.tile_size - 6; j += 4)
-                            {
-                                for (int k = 0; k < Game.tile_size - 6; k += 4)
-                                {
-                                    Effect e = Effect.createNewEffect(o.posX + j + 5 - Game.tile_size / 2, o.posY + k + 5 - Game.tile_size / 2, effect);
-
-                                    e.colR = o.colorR;
-                                    e.colG = o.colorG;
-                                    e.colB = o.colorB;
-
-                                    double dist = Movable.distanceBetween(this, e);
-                                    double angle = this.getAngleInDirection(e.posX, e.posY);
-                                    double rad = radius - Game.tile_size / 2;
-                                    e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
-
-                                    Game.effects.add(e);
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

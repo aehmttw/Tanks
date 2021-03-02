@@ -17,6 +17,9 @@ public class TankPlayerRemote extends Tank
     public double lastVX;
     public double lastVY;
 
+    public double mouseX;
+    public double mouseY;
+
     public double lastUpdateReportedTime = 0;
 
     public double lastUpdateTime = 0;
@@ -30,7 +33,7 @@ public class TankPlayerRemote extends Tank
 
     public Player player;
 
-    public static boolean checkMotion = true;
+    public static boolean checkMotion = false;
     public static boolean weakTimeCheck = false;
 
     public static final double anticheatStrongTimeOffset = 10;
@@ -128,7 +131,7 @@ public class TankPlayerRemote extends Tank
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, this.liveBullets, this.liveBulletMax, this.liveMines, this.liveMinesMax));
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, boolean action1, boolean action2, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)
     {
         if (checkMotion)
         {
@@ -270,6 +273,8 @@ public class TankPlayerRemote extends Tank
             this.vX = vX;
             this.vY = vY;
             this.angle = angle;
+            this.mouseX = mX;
+            this.mouseY = mY;
 
             this.lastPosX = x;
             this.lastPosY = y;
@@ -397,7 +402,10 @@ public class TankPlayerRemote extends Tank
         b.addPolarMotion(this.angle, speed);
         this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
-        b.moveOut(50 / speed * this.size / Game.tile_size);
+        if (b.moveOut)
+            b.moveOut(50 / speed * this.size / Game.tile_size);
+
+        b.setTargetLocation(this.mouseX, this.mouseY);
 
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);

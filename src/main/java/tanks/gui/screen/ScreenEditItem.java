@@ -308,7 +308,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
         {
             this.dismissMessage.draw();
 
-            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+            if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255);
             else
                 Drawing.drawing.setColor(0, 0, 0);
@@ -330,7 +330,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                 previous.draw();
                 next.draw();
 
-                if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+                if (Level.isDark())
                     Drawing.drawing.setColor(255, 255, 255);
                 else
                     Drawing.drawing.setColor(0, 0, 0);
@@ -345,7 +345,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                 properties.get(i).draw();
             }
 
-            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+            if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255);
             else
                 Drawing.drawing.setColor(0, 0, 0);

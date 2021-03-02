@@ -18,12 +18,17 @@ public class Rotation extends Transformation
 
     public void apply()
     {
+        this.applyToWindow();
+        transform(window, yaw, pitch, roll);
+    }
+
+    @Override
+    public void applyToWindow()
+    {
         window.yaw += yaw;
         window.pitch += pitch;
         window.roll += roll;
-
-        window.angled = !(window.yaw == 0 && window.pitch == 0 && window.roll == 0);
-        transform(window, yaw, pitch, roll);
+        window.calculateBillboard();
     }
 
     public static void transform(BaseWindow window, double yaw, double pitch, double roll)

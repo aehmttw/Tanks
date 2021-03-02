@@ -44,8 +44,10 @@ public class MessageReader
 						}
 						else if (ScreenPartyLobby.isClient)
 						{
-							Game.cleanUp();
-							Game.screen = new ScreenKicked("A network exception has occurred: message size " + endpoint + " is too big!");
+							EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
+							ev.clientID = null;
+							Game.eventsIn.add(ev);
+
 							Client.handler.ctx.close();
 							ScreenPartyLobby.connections.clear();
 						}
@@ -75,8 +77,10 @@ public class MessageReader
 							}
 							else if (ScreenPartyLobby.isClient)
 							{
-								Game.cleanUp();
-								Game.screen = new ScreenKicked("A network exception has occurred: message size " + endpoint + " is too big!");
+								EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
+								ev.clientID = null;
+								Game.eventsIn.add(ev);
+
 								Client.handler.ctx.close();
 								ScreenPartyLobby.connections.clear();
 							}
@@ -112,8 +116,10 @@ public class MessageReader
 			}
 			else if (ScreenPartyLobby.isClient)
 			{
-                Game.cleanUp();
-                Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
+				EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+				ev.clientID = null;
+				Game.eventsIn.add(ev);
+
 				Client.handler.ctx.close();
 				ScreenPartyLobby.connections.clear();
 			}

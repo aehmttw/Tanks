@@ -6,6 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
 import tanks.Panel;
+import tanks.event.EventKick;
 import tanks.event.EventPing;
 import tanks.event.EventSendClientDetails;
 import tanks.event.INetworkEvent;
@@ -102,8 +103,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     {
     	if (ScreenPartyLobby.isClient)
 		{
-			Game.screen = new ScreenKicked("You have lost connection");
-			Game.cleanUp();
+			EventKick e = new EventKick("You have lost connection");
+			e.clientID = null;
+			Game.eventsIn.add(e);
 		}
 
 		ScreenPartyLobby.isClient = false;
@@ -171,8 +173,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		Game.logger.println("A network exception has occurred: " + e.toString());
 		e.printStackTrace();
 		e.printStackTrace(Game.logger);
-		Game.cleanUp();
-		Game.screen = new ScreenKicked("A network exception has occurred: " + e.toString());
+
+		EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+		ev.clientID = null;
+		Game.eventsIn.add(ev);
+
 		ScreenPartyLobby.isClient = false;
         ctx.close();
     }

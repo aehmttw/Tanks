@@ -88,7 +88,7 @@ public class Hotbar
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
-			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
 
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
@@ -128,7 +128,7 @@ public class Hotbar
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
-			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
 
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
@@ -196,7 +196,7 @@ public class Hotbar
 			Drawing.drawing.setInterfaceFontSize(18);
 			Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
 
-			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
 
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: " + coins);
@@ -236,6 +236,70 @@ public class Hotbar
 			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.setInterfaceFontSize(24);
 			Drawing.drawing.drawInterfaceText(x - 17, y + 1, "" + count, true);
+		}
+
+		if (Game.currentLevel != null && Game.currentLevel.timed && Game.screen instanceof ScreenGame)
+		{
+			int secondsTotal = (int) (((ScreenGame) Game.screen).timeRemaining / 100 + 0.5);
+			double secondsFrac = (((ScreenGame) Game.screen).timeRemaining / 100 + 0.5) - secondsTotal;
+
+			int seconds60 = secondsTotal % 60;
+			int minutes = secondsTotal / 60;
+
+			double sizeMul = 1;
+			double alpha = 127;
+			double red = 0;
+
+			if (((ScreenGame) Game.screen).playing)
+			{
+				if (secondsTotal == 60 || secondsTotal == 30 || secondsTotal <= 10)
+				{
+					sizeMul = 1.5;
+
+					if (secondsFrac > 0.4 && secondsFrac <= 0.8 && secondsTotal > 9)
+						alpha = 0;
+
+					if (secondsTotal <= 9)
+						red = Math.max(0, secondsFrac * 2 - 1) * 255;
+
+					if (secondsTotal <= 5 && red == 0)
+						red = Math.max(0, secondsFrac * 2) * 255;
+				}
+				else if (secondsTotal == 59 || secondsTotal == 29)
+					sizeMul = 1.0 + Math.max(((((ScreenGame) Game.screen).timeRemaining / 100) - secondsTotal), 0);
+			}
+
+			String s = "Time: " + minutes + ":" + seconds60;
+			if (seconds60 < 10)
+				s = "Time: " + minutes + ":0" + seconds60;
+
+			Drawing.drawing.setInterfaceFontSize(32 * sizeMul);
+			Drawing.drawing.setColor(red, 0, 0, alpha + red / 2);
+
+			if (Level.isDark())
+				Drawing.drawing.setColor(255, 255 - red, 255 - red, alpha + red / 2);
+
+			double posX = Drawing.drawing.interfaceSizeX / 2;
+			double posY = 50;
+
+			if (ScreenGame.finishedQuick)
+			{
+				Drawing.drawing.setInterfaceFontSize(32);
+				Drawing.drawing.setColor(0, 0, 0, 127);
+
+				if (Level.isDark())
+					Drawing.drawing.setColor(255, 255, 255, 127);
+			}
+
+			if (((ScreenGame) Game.screen).timeRemaining <= 0)
+			{
+				Drawing.drawing.setColor(255, 0, 0);
+
+				Drawing.drawing.setInterfaceFontSize(100);
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Out of time!");
+			}
+			else
+				Drawing.drawing.drawInterfaceText(posX, posY, s);
 		}
 	}
 }

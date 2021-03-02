@@ -31,6 +31,8 @@ public class Crusade
 	public int currentLevel = 0;
 	public int saveLevel = 0;
 
+	public double timePassed = 0;
+
 	public ArrayList<String> levels = new ArrayList<String>();
 	public ArrayList<String> levelNames = new ArrayList<String>();
 
@@ -174,6 +176,7 @@ public class Crusade
 
 		Game.eventsOut.add(new EventBeginCrusade());
 
+		this.timePassed = 0;
 		this.started = true;
 		this.crusadeCoins.clear();
 		this.crusadeItembars.clear();

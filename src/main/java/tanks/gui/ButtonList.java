@@ -33,6 +33,8 @@ public class ButtonList
     public double objXSpace = 380;
     public double objYSpace = 60;
 
+    public boolean hideText = false;
+
     public BiConsumer<Integer, Integer> reorderBehavior;
 
     Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
@@ -108,6 +110,11 @@ public class ButtonList
 
             buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (i % rows - (rows - 1) / 2.0) * this.objYSpace;
             buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + ((i / rows) % columns) * this.objXSpace + xOffset;
+            buttons.get(i).sizeX = this.objWidth;
+            buttons.get(i).sizeY = this.objHeight;
+
+            if (hideText)
+                buttons.get(i).text = "";
         }
 
         if (this.arrowsEnabled)
@@ -207,7 +214,7 @@ public class ButtonList
         {
             Drawing.drawing.setInterfaceFontSize(objHeight * 0.6);
 
-            if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+            if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255);
             else
                 Drawing.drawing.setColor(0, 0, 0);

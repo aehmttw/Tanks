@@ -38,8 +38,8 @@ public class EventAddTextBox extends PersonalEvent
     public boolean enableCaps;
 
     public int maxChars;
-    public int maxValue;
-    public int minValue;
+    public double maxValue;
+    public double minValue;
 
     public int xAlignment;
     public int yAlignment;
@@ -113,8 +113,8 @@ public class EventAddTextBox extends PersonalEvent
         b.writeBoolean(enableCaps);
 
         b.writeInt(maxChars);
-        b.writeInt(maxValue);
-        b.writeInt(minValue);
+        b.writeDouble(maxValue);
+        b.writeDouble(minValue);
 
         b.writeInt(xAlignment);
         b.writeInt(yAlignment);
@@ -152,8 +152,8 @@ public class EventAddTextBox extends PersonalEvent
         enableCaps = b.readBoolean();
 
         maxChars = b.readInt();
-        maxValue = b.readInt();
-        minValue = b.readInt();
+        maxValue = b.readDouble();
+        minValue = b.readDouble();
 
         xAlignment = b.readInt();
         yAlignment = b.readInt();

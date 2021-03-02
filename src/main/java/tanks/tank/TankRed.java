@@ -65,6 +65,9 @@ public class TankRed extends TankAIControlled
 	@Override
 	public void shoot()
 	{
+		if (this.disabled || this.destroy)
+			return;
+
 		this.lineOfSight = true;
 
 		if (this.cooldown > 0)
@@ -99,7 +102,7 @@ public class TankRed extends TankAIControlled
 			Game.movables.add(b);
 			Drawing.drawing.playGlobalSound("laser.ogg");
 
-			if (this.targetEnemy.destroy)
+			if (this.targetEnemy == null || this.targetEnemy.destroy)
 				this.maxCooldown = 100;
 
 			this.cooldown = Math.max(this.cooldown, this.maxCooldown);

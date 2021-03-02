@@ -42,7 +42,7 @@ public class ScreenOverlayChat
 
         if (chatbox != null)
         {
-            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3))
+            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                 chatbox.defaultTextColor = "\u00A7255255255255";
 
             chatbox.draw(persistent);
@@ -72,9 +72,7 @@ public class ScreenOverlayChat
                         double height = 22 * c.lines.size() + 8 * (c.lines.size() - 1);
                         double radius = 13.5;
 
-                        String col;
-
-                        if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3))
+                        if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                             Drawing.drawing.setColor(0, 0, 0, 127);
                         else
                             Drawing.drawing.setColor(255, 255, 255, 127);
@@ -157,7 +155,7 @@ public class ScreenOverlayChat
                             double mx = 20;
                             double my = Drawing.drawing.interfaceSizeY - i * 30 - 70;
 
-                            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3))
+                            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                                 Drawing.drawing.setColor(255, 255, 255);
                             else
                                 Drawing.drawing.setColor(0, 0, 0);
@@ -170,7 +168,7 @@ public class ScreenOverlayChat
                 }
             }
 
-            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3))
+            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                 chatbox.defaultTextColor = "\u00A7127127127255";
         }
     }

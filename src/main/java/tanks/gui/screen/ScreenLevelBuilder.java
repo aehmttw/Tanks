@@ -45,6 +45,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	public boolean itemMenu = false;
 	public boolean startingItemMenu = false;
 	public boolean shopMenu = false;
+	public boolean timeMenu = false;
+	public boolean lightingMenu = false;
 	public boolean objectMenu;
 	public boolean selectTeamMenu;
 	public boolean rotateTankMenu;
@@ -76,8 +78,11 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	public int dr = 20;
 	public int dg = 20;
 	public int db = 20;
+	public double l = 1;
+	public double s = 0.5;
 	public int width = Game.currentSizeX;
 	public int height = Game.currentSizeY;
+	public int timer;
 	public String name;
 	public boolean movePlayer = true;
 	public boolean eraseMode = false;
@@ -168,7 +173,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button colorOptions = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 1.5), this.objWidth, this.objHeight, "Background colors", new Runnable()
+	public Button colorOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Background colors", new Runnable()
 	{
 		@Override
 		public void run()
@@ -178,7 +183,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button sizeOptions = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Level size", new Runnable()
+	public Button sizeOptions = new Button(this.centerX  - this.objXSpace / 2, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Level size", new Runnable()
 	{
 		@Override
 		public void run()
@@ -188,7 +193,27 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button teamsOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Teams", new Runnable()
+	public Button timerOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Time limit", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			timeMenu = true;
+		}
+	}
+	);
+
+	public Button lightingOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Lighting", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			lightingMenu = true;
+		}
+	}
+	);
+
+	public Button teamsOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Teams", new Runnable()
 	{
 		@Override
 		public void run()
@@ -204,7 +229,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button itemOptions = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Items", new Runnable()
+	public Button itemOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Items", new Runnable()
 	{
 		@Override
 		public void run()
@@ -214,7 +239,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button editShop = new Button(this.centerX, this.centerY + 0, this.objWidth, this.objHeight, "Shop", new Runnable()
+	public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop", new Runnable()
 	{
 		@Override
 		public void run()
@@ -224,7 +249,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Starting items", new Runnable()
+	public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items", new Runnable()
 	{
 		@Override
 		public void run()
@@ -259,7 +284,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
-	public Button back1 = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2.5), this.objWidth, this.objHeight, "Back", new Runnable()
+	public Button back1 = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", new Runnable()
 	{
 		@Override
 		public void run()
@@ -285,6 +310,16 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		public void run()
 		{
 			sizeMenu = false;
+		}
+	}
+	);
+
+	public Button back12 = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			timeMenu = false;
 		}
 	}
 	);
@@ -685,6 +720,17 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	}
 	);
 
+	public Button back13 = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			lightingMenu = false;
+		}
+	}
+	);
+
+
 	public Button teamColorEnabled = new Button(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Team color: off", new Runnable()
 	{
 		@Override
@@ -768,6 +814,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		@Override
 		public void run()
 		{
+			clickCooldown = 20;
 			play();
 		}
 	}, "Play (" + Game.game.input.editorPlay.getInputs() + ")"
@@ -957,9 +1004,13 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	public TextBox colorVarRed;
 	public TextBox colorVarGreen;
 	public TextBox colorVarBlue;
+	public TextBoxSlider light;
+	public TextBoxSlider shadow;
 	public TextBox teamName;
 	public TextBox groupID;
 	public TextBox editCoins;
+	public TextBox minutes;
+	public TextBox seconds;
 
 	public Button newTeam = new Button(this.centerX + 190, this.centerY + 300, 350, 40, "New team", new Runnable()
 	{
@@ -976,6 +1027,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		}
 	}
 	);
+
 	public TextBoxSlider teamRed;
 	public TextBoxSlider teamGreen;
 	public TextBoxSlider teamBlue;
@@ -1012,6 +1064,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	{
 		if (Game.game.window.touchscreen)
 			controlsSizeMultiplier = 1.0;
+
+		lightingOptions.enabled = Game.shadowsEnabled;
 
 		place.sizeX *= controlsSizeMultiplier;
 		place.sizeY *= controlsSizeMultiplier;
@@ -1136,7 +1190,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		else
 			mouseTank.team = this.teams.get(teamNum);
 
-		levelName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Level name", new Runnable()
+		levelName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Level name", new Runnable()
 		{
 			@Override
 			public void run()
@@ -1172,6 +1226,67 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 
 		levelName.enableCaps = true;
 
+		groupID = new TextBox(this.centerX, this.centerY + 15, 350, 40, "Group ID", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (groupID.inputText.length() <= 0)
+					groupID.inputText = mouseObstacleGroup + "";
+				else
+					mouseObstacleGroup = Integer.parseInt(groupID.inputText);
+
+				mouseObstacle.setMetadata(mouseObstacleGroup + "");
+			}
+
+		}
+				, mouseObstacleGroup + "");
+
+		groupID.allowLetters = false;
+		groupID.allowSpaces = false;
+		groupID.maxChars = 9;
+		groupID.minValue = 0;
+		groupID.checkMaxValue = true;
+		groupID.checkMinValue = true;
+
+		minutes = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Minutes", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+			}
+
+		}
+				, timer / 6000 + "", "Set minutes and seconds to 0---to disable the time limit");
+
+		minutes.allowLetters = false;
+		minutes.allowSpaces = false;
+		minutes.maxChars = 2;
+		minutes.minValue = 0;
+		minutes.maxValue = 59;
+		minutes.checkMaxValue = true;
+		minutes.checkMinValue = true;
+
+		seconds = new TextBox(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Seconds", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+			}
+
+		}
+				, (timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");
+
+		seconds.allowLetters = false;
+		seconds.allowSpaces = false;
+		seconds.maxChars = 2;
+		seconds.minValue = 0;
+		seconds.maxValue = 59;
+		seconds.checkMaxValue = true;
+		seconds.checkMinValue = true;
+
 		sizeX = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Width", new Runnable()
 		{
 			@Override
@@ -1196,29 +1311,6 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		sizeX.minValue = 1;
 		sizeX.checkMaxValue = true;
 		sizeX.checkMinValue = true;
-
-		groupID = new TextBox(this.centerX, this.centerY + 15, 350, 40, "Group ID", new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (groupID.inputText.length() <= 0)
-					groupID.inputText = mouseObstacleGroup + "";
-				else
-					mouseObstacleGroup = Integer.parseInt(groupID.inputText);
-
-				mouseObstacle.setMetadata(mouseObstacleGroup + "");
-			}
-
-		}
-				, mouseObstacleGroup + "");
-
-		groupID.allowLetters = false;
-		groupID.allowSpaces = false;
-		groupID.maxChars = 9;
-		groupID.minValue = 0;
-		groupID.checkMaxValue = true;
-		groupID.checkMinValue = true;
 
 		sizeY = new TextBox(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Height", new Runnable()
 		{
@@ -1392,6 +1484,56 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		colorVarBlue.maxChars = 3;
 		colorVarBlue.checkMaxValue = true;
 
+		light = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Direct light", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (light.inputText.length() <= 0)
+					light.inputText = light.previousInputText;
+
+				l = Integer.parseInt(light.inputText) / 100.0;
+				Level.currentLightIntensity = l;
+			}
+
+		}
+				, (int) Math.round(l * 100), 0, 200, 1);
+
+		light.allowLetters = false;
+		light.allowSpaces = false;
+		light.maxChars = 3;
+		light.checkMaxValue = true;
+		light.integer = true;
+
+		light.r1 = 0;
+		light.g1 = 0;
+		light.b1 = 0;
+
+		shadow = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Shadow light", new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (shadow.inputText.length() <= 0)
+					shadow.inputText = shadow.previousInputText;
+
+				s = Integer.parseInt(shadow.inputText) / 100.0;
+				Level.currentShadowIntensity = s;
+			}
+
+		}
+				, (int) Math.round(s * 100), 0, 200, 1);
+
+		shadow.allowLetters = false;
+		shadow.allowSpaces = false;
+		shadow.maxChars = 3;
+		shadow.checkMaxValue = true;
+		shadow.integer = true;
+
+		shadow.r1 = 0;
+		shadow.g1 = 0;
+		shadow.b1 = 0;
+
 		teamName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Team name", new Runnable()
 		{
 			@Override
@@ -1482,7 +1624,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		teamBlue.maxValue = 255;
 		teamBlue.checkMaxValue = true;
 
-		editCoins = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Starting coins", new Runnable()
+		editCoins = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Starting coins", new Runnable()
 		{
 			@Override
 			public void run()
@@ -1617,7 +1759,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 	@Override
 	public void update()
 	{
-		if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+		if (Level.isDark())
 			this.fontBrightness = 255;
 		else
 			this.fontBrightness = 0;
@@ -1844,6 +1986,18 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 					this.colorVarBlue.update();
 					this.back2.update();
 				}
+				else if (this.timeMenu)
+				{
+					this.minutes.update();
+					this.seconds.update();
+					this.back12.update();
+				}
+				else if (this.lightingMenu)
+				{
+					this.light.update();
+					this.shadow.update();
+					this.back13.update();
+				}
 				else if (this.teamsMenu)
 				{
 					if (this.editTeamMenu)
@@ -1905,10 +2059,14 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 				{
 					this.levelName.update();
 					this.back1.update();
-					this.colorOptions.update();
+
 					this.sizeOptions.update();
+					this.colorOptions.update();
+					this.lightingOptions.update();
+
 					this.teamsOptions.update();
 					this.itemOptions.update();
+					this.timerOptions.update();
 				}
 			}
 		}
@@ -2434,6 +2592,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		if (Game.game.input.editorPlay.isValid() && this.spawns.size() > 0)
 		{
 			this.play();
+			Game.game.input.play.invalidate();
 		}
 
 		if (Game.game.input.editorDeselect.isValid())
@@ -2952,7 +3111,8 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		if (!this.editable)
 			level.append("*");
 
-		level.append(width).append(",").append(height).append(",").append(r).append(",").append(g).append(",").append(b).append(",").append(dr).append(",").append(dg).append(",").append(db).append("|");
+		level.append(width).append(",").append(height).append(",").append(r).append(",").append(g).append(",").append(b).append(",").append(dr).append(",").append(dg).append(",").append(db)
+				.append(",").append(timer / 100).append(",").append((int) Math.round(l * 100)).append(",").append((int) Math.round(s * 100)).append("|");
 
 		ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
 		double[][][] obstacles = new double[Game.registryObstacle.obstacleEntries.size()][width][height];
@@ -3536,33 +3696,33 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 					}
 					else if (currentPlaceable == Placeable.enemyTank)
 					{
-						for (int i = tankButtons.size() - 1; i >= 0; i--)
-						{
-							if (i / (objectButtonCols * objectButtonRows) == tankButtonPage)
-								tankButtons.get(i).draw();
-						}
-
 						if ((tankButtons.size() - 1) / (objectButtonRows * objectButtonCols) > tankButtonPage)
 							nextTankPage.draw();
 
 						if (tankButtonPage > 0)
 							previousTankPage.draw();
 
+						for (int i = tankButtons.size() - 1; i >= 0; i--)
+						{
+							if (i / (objectButtonCols * objectButtonRows) == tankButtonPage)
+								tankButtons.get(i).draw();
+						}
+
 						this.drawMobileTooltip(this.tankButtons.get(this.tankNum).hoverTextRaw);
 					}
 					else if (currentPlaceable == Placeable.obstacle)
 					{
-						for (int i = obstacleButtons.size() - 1; i >= 0; i--)
-						{
-							if (i / (objectButtonCols * objectButtonRows) == obstacleButtonPage)
-								obstacleButtons.get(i).draw();
-						}
-
 						if ((obstacleButtons.size() - 1) / (objectButtonRows * objectButtonCols) > obstacleButtonPage)
 							nextObstaclePage.draw();
 
 						if (obstacleButtonPage > 0)
 							previousObstaclePage.draw();
+
+						for (int i = obstacleButtons.size() - 1; i >= 0; i--)
+						{
+							if (i / (objectButtonCols * objectButtonRows) == obstacleButtonPage)
+								obstacleButtons.get(i).draw();
+						}
 
 						if (mouseObstacle.enableStacking || mouseObstacle.enableGroupID)
 							this.metadataButton.draw();
@@ -3635,6 +3795,26 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 					Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);
 					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Background colors");
 					this.back2.draw();
+				}
+				else if (this.timeMenu)
+				{
+					this.seconds.draw();
+					this.minutes.draw();
+					this.back12.draw();
+
+					Drawing.drawing.setInterfaceFontSize(this.titleSize);
+					Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);
+					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Time limit");
+				}
+				else if (this.lightingMenu)
+				{
+					this.light.draw();
+					this.shadow.draw();
+					this.back13.draw();
+
+					Drawing.drawing.setInterfaceFontSize(this.titleSize);
+					Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);
+					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lighting");
 				}
 				else if (this.teamsMenu)
 				{
@@ -3746,19 +3926,19 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 				{
 					this.levelName.draw();
 					this.back1.draw();
+
+					this.timerOptions.draw();
 					this.itemOptions.draw();
+					this.teamsOptions.draw();
+
+					this.lightingOptions.draw();
 					this.colorOptions.draw();
 					this.sizeOptions.draw();
-					this.teamsOptions.draw();
 
 					Drawing.drawing.setColor(fontBrightness, fontBrightness, fontBrightness);
 
 					Drawing.drawing.setInterfaceFontSize(this.titleSize);
-
-					if (Drawing.drawing.interfaceScaleZoom <= 1)
-						Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Level options");
-					else
-						Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.75, "Level options");
+					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level options");
 				}
 			}
 		}
@@ -3899,6 +4079,10 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 				Game.game.solidGrid[x][y] = true;
 			}
 		}
+
+		Game.currentLevel = new Level(Game.currentLevelString);
+		Game.currentLevel.timed = timer > 0;
+		Game.currentLevel.timer = timer;
 
 		Game.screen = new ScreenGame(this.name);
 		Game.player.hotbar.coins = this.startingCoins;

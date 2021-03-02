@@ -83,6 +83,7 @@ public class Player
             }
 
             f.println(items.substring(0, items.length() - 1));
+            f.println(Crusade.currentCrusade.timePassed + "");
             f.stopWriting();
 
             if ((remainingLives <= 0 || Crusade.currentCrusade.win) && f.exists())
@@ -124,6 +125,10 @@ public class Player
             c.crusadeItembars.put(this, new ItemBar(this));
 
             String[] items = f.nextLine().split("\\|");
+
+            if (f.hasNextLine())
+                c.timePassed = Double.parseDouble(f.nextLine());
+
             f.stopReading();
 
             ArrayList<Item> shop = c.getShop();

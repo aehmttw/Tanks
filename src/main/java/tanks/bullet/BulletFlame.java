@@ -9,6 +9,8 @@ import tanks.tank.Tank;
 
 public class BulletFlame extends Bullet implements IDrawableWithGlow
 {
+	public static String bullet_name = "flamethrower";
+
 	double life = 100;
 	double age = 0;
 	public double sizeMul = 1;
@@ -31,7 +33,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		this.useCustomWallCollision = true;
 		this.playPopSound = false;
 		this.playBounceSound = false;
-		this.name = "flame";
+		this.name = bullet_name;
 		this.itemSound = "flame.ogg";
 	}
 	
@@ -64,7 +66,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		
 		double green = (255 - 255.0 * (this.age / life));
 		
-		Drawing.drawing.setColor(255, green, 0, opacity);
+		Drawing.drawing.setColor(255, green, 0, opacity, 1);
 		
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -79,7 +81,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 
 		double green = (255 - 255.0 * (this.age / life));
 		double mul = Math.sqrt(rawOpacity) / 2;
-		Drawing.drawing.setColor(255 * mul, green * mul, green * mul / 2);
+		Drawing.drawing.setColor(255 * mul, green * mul, green * mul / 2, 255, 1);
 
 		if (Game.enable3d)
 			Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, size * 3, size * 3, true, false);

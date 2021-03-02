@@ -46,8 +46,8 @@ public class TextBox implements IDrawable, ITrigger
 	public boolean enableCaps = false;
 
 	public int maxChars = 18;
-	public int maxValue = Integer.MAX_VALUE;
-	public int minValue = Integer.MIN_VALUE;
+	public double maxValue = Integer.MAX_VALUE;
+	public double minValue = Integer.MIN_VALUE;
 
 	public double colorR = 255;
 	public double colorG = 255;
@@ -173,7 +173,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (enableHover)
 		{
-			if (Game.superGraphics)
+			if (Game.superGraphics && !Game.game.window.drawingShadow)
 			{
 				if (infoSelected && !Game.game.window.touchscreen)
 				{
@@ -297,7 +297,7 @@ public class TextBox implements IDrawable, ITrigger
 			this.checkKeys();
 		}
 
-		if (Game.superGraphics)
+		if (Game.superGraphics && !Game.game.window.drawingShadow)
 		{
 			if (this.lastFrame < Panel.panel.ageFrames - 1)
 				this.glowEffects.clear();
@@ -530,11 +530,11 @@ public class TextBox implements IDrawable, ITrigger
 		{
 			if (checkMaxValue)
 				if (Integer.parseInt(inputText) > this.maxValue)
-					inputText = this.maxValue + "";
+					inputText = (int) this.maxValue + "";
 
 			if (checkMinValue)
 				if (Integer.parseInt(inputText) < this.minValue)
-					inputText = this.minValue + "";
+					inputText = (int) this.minValue + "";
 		}
 		catch (Exception ignored) {}
 	}

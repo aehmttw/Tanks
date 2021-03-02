@@ -4,11 +4,13 @@ import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import swingwindow.SwingWindow;
 import tanks.*;
+import tanks.extension.Extension;
 import tanksonline.CommandExecutor;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Tanks
 {
@@ -33,7 +35,7 @@ public class Tanks
             if (args[i].equals("debug"))
                 Game.debug = true;
 
-            if (args[i].equals("mac"))
+            if (args[i].equals("mac") || args[i].equals("no_relaunch"))
                 relaunch = false;
         }
 
@@ -82,5 +84,23 @@ public class Tanks
             new CommandExecutor().run();
             new TanksOnlineServer(port).run();
         }
+    }
+
+    /*
+        Call this method to launch Tanks with extensions directly instead of loading them from a jar file!
+        This is useful if you want to test an extension without exporting it as a jar file.
+        The integer array passed determines the order in which these extensions will be added to the full list
+        (which includes extensions loaded from separate jar files traditionally)
+     */
+    public static void launchWithExtensions(String[] args, Extension[] extensions, int[] order)
+    {
+        Game.extraExtensions = extensions;
+        Game.extraExtensionOrder = order;
+
+        String[] args2 = new String[args.length + 1];
+        System.arraycopy(args, 0, args2, 0, args.length);
+        args2[args.length] = "no_relaunch";
+
+        main(args2);
     }
 }

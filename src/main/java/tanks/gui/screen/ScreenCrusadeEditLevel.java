@@ -123,8 +123,8 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         index.maxValue = s2.crusade.levels.size() + 1;
         index.checkMaxValue = true;
         index.checkMinValue = true;
-        insertionIndex = index.maxValue - 1;
-        index.inputText = index.maxValue + "";
+        insertionIndex = (int) (index.maxValue - 1);
+        index.inputText = (int) index.maxValue + "";
         index.maxChars = 9;
     }
 

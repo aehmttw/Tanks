@@ -29,7 +29,9 @@ public class EventKick extends PersonalEvent
 			Game.cleanUp();
 			ScreenPartyLobby.isClient = false;
 			Client.handler.ctx.close();
-			Game.screen = new ScreenKicked(reason);
+
+			if (!(Game.screen instanceof ScreenKicked))
+				Game.screen = new ScreenKicked(reason);
 		}
 	}
 

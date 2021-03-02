@@ -32,7 +32,7 @@ public class TankOrange extends TankAIControlled
 	@Override
 	public void shoot()
 	{
-		if (Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0)
+		if (this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0 && !this.disabled && !this.destroy)
 		{
 			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
 			Movable m = a.getTarget();

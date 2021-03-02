@@ -9,10 +9,17 @@ import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 public abstract class Item 
 {
+	public static ArrayList<String> icons = new ArrayList<String>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
+			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png",
+			"mine.png",
+			"shield.png", "shield_gold.png"));
+
 	public boolean isConsumable;
 	public int levelUnlock;
 	public int price;
@@ -41,12 +48,13 @@ public abstract class Item
 
 	public Item()
 	{
+		String[] s = new String[icons.size()];
+
+		for (int i = 0; i < icons.size(); i++)
+			s[i] = icons.get(i);
+
 		new ItemPropertyString(this.properties,"name", this.name);
-		new ItemPropertyImageSelector(this.properties, "icon", new String[]
-				{"item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
-						"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png",
-						"mine.png",
-						"shield.png", "shield_gold.png"},0);
+		new ItemPropertyImageSelector(this.properties, "icon", s,0);
 		new ItemPropertyInt(this.properties, "amount", 1);
 		new ItemPropertyInt(this.properties, "max-stack-size", 100);
 		new ItemPropertyInt(this.properties, "unlocks-after-level", 0);

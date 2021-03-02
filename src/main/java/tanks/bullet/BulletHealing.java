@@ -8,6 +8,8 @@ import tanks.tank.Tank;
 
 public class BulletHealing extends BulletInstant
 {
+	public static String bullet_name = "healing";
+
 	public boolean hitTank = false;
 
 	public BulletHealing(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
@@ -17,9 +19,11 @@ public class BulletHealing extends BulletInstant
 		this.baseColorR = 0;
 		this.baseColorG = 255;
 		this.baseColorB = 0;
-		this.name = "heal";
+		this.name = bullet_name;
 		this.effect = Bullet.BulletEffect.none;
 		this.damage = 0.01;
+		this.shouldDodge = false;
+		this.dealsDamage = false;
 
 		this.itemSound = null;
 		// this.itemSound = "heal.ogg";
@@ -70,8 +74,11 @@ public class BulletHealing extends BulletInstant
 			freq = 1;
 
 		double before = t.health;
-		t.health = Math.min(t.baseHealth + 1, t.health + this.damage * this.frameDamageMultipler);
-		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((t.health / (t.baseHealth + 1) / 2) + 1f) / 2, freq / 2);
+
+		if (t.health < t.baseHealth + 1)
+			t.health = Math.min(t.baseHealth + 1, t.health + this.damage * this.frameDamageMultipler);
+
+		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((Math.min(t.health, t.baseHealth + 1) / (t.baseHealth + 1) / 2) + 1f) / 2, freq / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 

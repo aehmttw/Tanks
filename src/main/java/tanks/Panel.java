@@ -53,6 +53,7 @@ public class Panel
 	public long lastFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
 
 	public long startTime = System.currentTimeMillis();
+	public long frameStartTime = System.currentTimeMillis();
 
 	public int lastFPS = 0;
 
@@ -168,6 +169,8 @@ public class Panel
 
 				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
 				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
 			}
 
 			if (Game.game.window.soundsEnabled)
@@ -175,7 +178,9 @@ public class Panel
 				Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
 				Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
 				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
 				Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
 			}
 
 			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
@@ -189,11 +194,12 @@ public class Panel
 				Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
 			else
 			{
-				Drawing.drawing.playMusic("battle_intro.ogg", Game.musicVolume, false, "intro", 0, false);
+				Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
 				introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
 			}
 
 			zoomTranslation.window = Game.game.window;
+			zoomTranslation.applyAsShadow = true;
 		}
 
 		firstFrame = false;
@@ -203,6 +209,11 @@ public class Panel
 
 		if (!started)
 			this.startTime = System.currentTimeMillis();
+
+		if (!Game.shadowsEnabled)
+			Game.game.window.setShadowQuality(0);
+		else
+			Game.game.window.setShadowQuality(Game.shadowQuality / 10.0 * 1.25);
 
 		Screen prevScreen = Game.screen;
 
@@ -248,6 +259,11 @@ public class Panel
 			}
 
 			Game.eventsIn.clear();
+		}
+
+		for (int i = 0; i < Game.game.heightGrid.length; i++)
+		{
+			Arrays.fill(Game.game.heightGrid[i], -1000);
 		}
 
 		if (ScreenPartyHost.isServer)
@@ -409,7 +425,7 @@ public class Panel
 			Client.handler.reply();
 		}
 
-		if (forceRefreshMusic || (prevScreen != Game.screen && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
+		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
 		{
 			if (Game.stringsEqual(prevScreen.musicID, Game.screen.musicID))
 				this.playScreenMusic(500);
@@ -442,22 +458,9 @@ public class Panel
 		if (Game.cinematic)
 			introAnimationTime = 4000;
 
-		this.age += Panel.frameFrequency;
-
-		/*for (int i = 0; i < Game.tilesR.length; i++)
+		if (this.frameStartTime - startTime < introTime + introAnimationTime)
 		{
-			for (int j = 0; j < Game.tilesR[i].length; j++)
-			{
-				double[] col = Game.getRainbowColor((((i + j + Game.tilesDepth[i][j]) * 70 + System.currentTimeMillis()) / 10000.0) % 1);
-				Game.tilesR[i][j] = col[0];
-				Game.tilesG[i][j] = col[1];
-				Game.tilesB[i][j] = col[2];
-			}
-		}*/
-
-		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
-		{
-			double frac = ((System.currentTimeMillis() - startTime - introTime) / introAnimationTime);
+			double frac = ((this.frameStartTime - startTime - introTime) / introAnimationTime);
 
 			if (Game.enable3d && Game.fancyGraphics)
 			{
@@ -474,10 +477,6 @@ public class Panel
 
 			Game.game.window.transformations.clear();
 			Game.game.window.loadPerspective();
-
-			/*Drawing.drawing.setColor(255, 255, 255);
-			Drawing.drawing.drawInterfaceImage("/tanks//loading.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
-			*/
 
 			Game.game.window.setBatchMode(false, false, false, false);
 
@@ -511,6 +510,9 @@ public class Panel
 			Drawing.drawing.setColor(0, 0, 0, 0);
 			Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
 
+			if (!Game.game.window.drawingShadow)
+				this.frameStartTime = System.currentTimeMillis();
+
 			return;
 		}
 
@@ -520,21 +522,21 @@ public class Panel
 			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 		}
 
-		long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
-		if (lastFrameSec < time && lastFrameSec != firstFrameSec)
+		Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
+
+		if (!Game.game.window.drawingShadow)
 		{
-			lastFPS = (int) (frames * 1.0 * frameSampling);
-			frames = 0;
+			long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
+			if (lastFrameSec < time && lastFrameSec != firstFrameSec)
+			{
+				lastFPS = (int) (frames * 1.0 * frameSampling);
+				frames = 0;
+			}
+
+			lastFrameSec = time;
+			frames++;
+			ageFrames++;
 		}
-
-
-		lastFrameSec = time;
-		frames++;
-		ageFrames++;
-
-		//g.setColor(new Color(255, 227, 186));
-		//g.fillRect(0, 0, (int) (Screen.sizeX * Screen.scale), (int) (Screen.sizeY * Screen.scale));
-
 
 		if (onlinePaused)
 			this.onlineOverlay.draw();
@@ -550,6 +552,9 @@ public class Panel
 			this.drawMouseTarget();
 
 		Game.screen.drawPostMouse();
+
+		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+			this.age += Panel.frameFrequency;
 	}
 
 	public void drawMouseTarget()
@@ -567,7 +572,7 @@ public class Panel
 
 		if (showMouseTarget || force)
 		{
-			if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+			if (Level.isDark())
 			{
 				if (Game.superGraphics)
 				{

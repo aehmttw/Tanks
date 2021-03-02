@@ -267,10 +267,15 @@ public class Selector implements IDrawable, ITrigger
                 while (this.effectTimer >= 0.4 / Panel.frameFrequency)
                 {
                     this.effectTimer -= 0.4 / Panel.frameFrequency;
-                    Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
+                    this.addEffect();
                 }
             }
         }
+    }
+
+    public void addEffect()
+    {
+        Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
     }
 
     public boolean checkMouse(double mx, double my, boolean valid)

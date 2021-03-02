@@ -205,6 +205,7 @@ public class SoundPlayer extends BaseSoundPlayer
         }
         catch (IOException e)
         {
+            System.err.println("Failed to create sound " + path);
             e.printStackTrace();
         }
 

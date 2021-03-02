@@ -20,13 +20,20 @@ public class ScreenOptionsSound extends Screen
         musicVolume.checkMaxValue = true;
         musicVolume.integer = true;
 
-        soundVolume.r1 = 210;
-        soundVolume.g1 = 210;
-        soundVolume.b1 = 210;
-
         musicVolume.r1 = 210;
         musicVolume.g1 = 210;
         musicVolume.b1 = 210;
+
+        soundVolume.allowLetters = false;
+        soundVolume.allowSpaces = false;
+        soundVolume.maxChars = 3;
+        soundVolume.maxValue = 100;
+        soundVolume.checkMaxValue = true;
+        soundVolume.integer = true;
+
+        soundVolume.r1 = 210;
+        soundVolume.g1 = 210;
+        soundVolume.b1 = 210;
     }
 
     TextBoxSlider musicVolume = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Music volume", new Runnable()

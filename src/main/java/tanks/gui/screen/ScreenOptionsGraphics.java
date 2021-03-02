@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.gui.TextBoxSlider;
 
 public class ScreenOptionsGraphics extends Screen
 {
@@ -76,6 +77,7 @@ public class ScreenOptionsGraphics extends Screen
         {
             vsync.enabled = false;
             altPerspective.enabled = false;
+            shadows.enabled = false;
         }
 
         if (!Game.game.window.antialiasingSupported)
@@ -104,7 +106,7 @@ public class ScreenOptionsGraphics extends Screen
         }
     }
 
-    Button graphics = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button graphics = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -134,7 +136,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Fast graphics disable most graphical effects---and use solid colors for the background------Fancy graphics enable these effects but---may significantly reduce framerate------Super graphics enable glow and shadow---effects but may further reduce framerate");
 
-    Button graphics3d = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button graphics3d = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -151,7 +153,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "3D graphics may impact performance");
 
-    Button ground3d = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button ground3d = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -167,7 +169,7 @@ public class ScreenOptionsGraphics extends Screen
             "Enabling 3D ground may impact---performance in large levels");
 
 
-    Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -184,7 +186,7 @@ public class ScreenOptionsGraphics extends Screen
             "Changes the angle at which---you view the game field");
 
 
-    Button vsync = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button vsync = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -200,7 +202,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
 
-    Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -218,8 +220,7 @@ public class ScreenOptionsGraphics extends Screen
             ScreenOptions.saveOptions(Game.homedir);
         }
     },
-            "May fix flickering in thin edges---at the cost of performance.------Requires restarting the game---to take effect.");
-
+            "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -227,6 +228,16 @@ public class ScreenOptionsGraphics extends Screen
         public void run()
         {
             Game.screen = new ScreenOptions();
+        }
+    }
+    );
+
+    Button shadows = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Lighting", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.screen = new ScreenOptionsShadows();
         }
     }
     );
@@ -240,6 +251,7 @@ public class ScreenOptionsGraphics extends Screen
         altPerspective.update();
         vsync.update();
         antialiasing.update();
+        shadows.update();
         back.update();
 
         if (Game.antialiasing != Game.game.window.antialiasingEnabled)
@@ -260,6 +272,7 @@ public class ScreenOptionsGraphics extends Screen
         this.drawDefaultBackground();
 
         back.draw();
+        shadows.draw();
         antialiasing.draw();
         ground3d.draw();
         vsync.draw();

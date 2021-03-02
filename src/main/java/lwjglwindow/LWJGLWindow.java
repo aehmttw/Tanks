@@ -1,7 +1,7 @@
 package lwjglwindow;
 
 import basewindow.*;
-import basewindow.transformation.Rotation;
+import basewindow.transformation.Transformation;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.glfw.GLFW;
@@ -9,12 +9,14 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALC11;
+import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -24,7 +26,11 @@ import java.util.Scanner;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.AL10.AL_PITCH;
+import static org.lwjgl.openal.AL10.alSourcef;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.GL_ONE_MINUS_CONSTANT_COLOR;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -33,10 +39,13 @@ public class LWJGLWindow extends BaseWindow
 	protected long window;
 	protected GLFWVidMode vidmode;
 
+	protected String audioDevice;
+
 	public double colorR;
 	public double colorG;
 	public double colorB;
 	public double colorA;
+	public double glow;
 
 	protected double[] mx = new double[1];
 	protected double[] my = new double[1];
@@ -56,9 +65,34 @@ public class LWJGLWindow extends BaseWindow
 
 	public boolean batchMode = false;
 
+	protected boolean useShader = false;
+
+	protected int textureFlag;
+	protected int depthFlag;
+	protected int glowFlag;
+
+	public int lightFlag;
+	public int glowLightFlag;
+	public int shadowFlag;
+	public int glowShadowFlag;
+
+	public ShadowMap shadowMap;
+
+	double bbx1 = 1;
+	double bby1 = 0;
+	double bbz1 = 0;
+	double bbx2 = 0;
+	double bby2 = 1;
+	double bbz2 = 0;
+	double bbx3 = 0;
+	double bby3 = 0;
+	double bbz3 = 1;
+
 	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
 		super(name, x, y, z, u, d, w, vsync, showMouse);
+
+		this.audioDevice = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
 
 		try
 		{
@@ -90,11 +124,9 @@ public class LWJGLWindow extends BaseWindow
 		init();
 		loop();
 
-		// Free the window callbacks and destroy the window
 		glfwFreeCallbacks(window);
 		glfwDestroyWindow(window);
 
-		// Terminate GLFW and free the error callback
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}
@@ -103,28 +135,22 @@ public class LWJGLWindow extends BaseWindow
 	{
 		this.fontRenderer = new FontRenderer(this, "/font.png");
 
-		// Setup an error callback. The default implementation
-		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
 
-		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if (!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 
-		// Configure GLFW
-		glfwDefaultWindowHints(); // optional, the current window hints are already the default
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 		if (antialiasingEnabled)
 			glfwWindowHint(GLFW_SAMPLES, 4);
 
-		// Create the window
-		window = glfwCreateWindow((int)this.absoluteWidth, (int)this.absoluteHeight, this.name, NULL, NULL);
+		window = glfwCreateWindow((int) this.absoluteWidth, (int) this.absoluteHeight, this.name, NULL, NULL);
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) ->
 		{
 			if (action == GLFW_PRESS)
@@ -137,11 +163,11 @@ public class LWJGLWindow extends BaseWindow
 			}
 			else if (action == GLFW_RELEASE)
 			{
-				pressedKeys.remove((Integer)key);
-				validPressedKeys.remove((Integer)key);
+				pressedKeys.remove((Integer) key);
+				validPressedKeys.remove((Integer) key);
 
-				textPressedKeys.remove((Integer)key);
-				textValidPressedKeys.remove((Integer)key);
+				textPressedKeys.remove((Integer) key);
+				textValidPressedKeys.remove((Integer) key);
 			}
 		});
 
@@ -162,30 +188,21 @@ public class LWJGLWindow extends BaseWindow
 			}
 			else if (action == GLFW_RELEASE)
 			{
-				pressedButtons.remove((Integer)button);
-				validPressedButtons.remove((Integer)button);
+				pressedButtons.remove((Integer) button);
+				validPressedButtons.remove((Integer) button);
 			}
 		});
 
-		// Get the thread stack and push a new frame
 		try (MemoryStack stack = stackPush())
 		{
-			IntBuffer pWidth = stack.mallocInt(1); // int*
-			IntBuffer pHeight = stack.mallocInt(1); // int*
-
-			// Get the window size passed to glfwCreateWindow
+			IntBuffer pWidth = stack.mallocInt(1);
+			IntBuffer pHeight = stack.mallocInt(1);
 			glfwGetWindowSize(window, pWidth, pHeight);
-
-			// Get the resolution of the primary monitor
 			vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-			// Center the window
 			glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
-		} // the stack frame is popped automatically
+		}
 
-		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
-		// Enable v-sync
 
 		this.setShowCursor(this.showMouseOnLaunch);
 
@@ -194,28 +211,127 @@ public class LWJGLWindow extends BaseWindow
 		else
 			GLFW.glfwSwapInterval(0);
 
-		// Make the window visible
 		glfwShowWindow(window);
 	}
 
+	protected int createShader(String filename, int shaderType) throws Exception
+	{
+		int shader = 0;
+		try
+		{
+			shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType);
+
+			if (shader == 0)
+				return 0;
+
+			ARBShaderObjects.glShaderSourceARB(shader, readFileAsString(filename));
+			ARBShaderObjects.glCompileShaderARB(shader);
+
+			if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
+				throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
+
+			return shader;
+		}
+		catch (Exception exc)
+		{
+			ARBShaderObjects.glDeleteObjectARB(shader);
+			throw exc;
+		}
+	}
+
+	protected static String getLogInfo(int obj)
+	{
+		return ARBShaderObjects.glGetInfoLogARB(obj, ARBShaderObjects.glGetObjectParameteriARB(obj, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB));
+	}
+
+	protected String readFileAsString(String filename) throws Exception
+	{
+		StringBuilder source = new StringBuilder();
+
+		InputStream in = getClass().getResourceAsStream(filename);
+
+		Exception exception = null;
+
+		BufferedReader reader;
+		try
+		{
+			reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+
+			Exception innerExc = null;
+			try
+			{
+				String line;
+				while ((line = reader.readLine()) != null)
+					source.append(line).append('\n');
+			}
+			catch (Exception exc)
+			{
+				exception = exc;
+			}
+			finally
+			{
+				try
+				{
+					reader.close();
+				}
+				catch (Exception exc)
+				{
+					if (innerExc == null)
+						innerExc = exc;
+					else
+						exc.printStackTrace();
+				}
+			}
+
+			if (innerExc != null)
+				throw innerExc;
+		}
+		catch (Exception exc)
+		{
+			exception = exc;
+		}
+		finally
+		{
+			try
+			{
+				in.close();
+			}
+			catch (Exception exc)
+			{
+				if (exception == null)
+					exception = exc;
+				else
+					exc.printStackTrace();
+			}
+
+			if (exception != null)
+				throw exception;
+		}
+
+		return source.toString();
+	}
+
+
 	protected void loop()
 	{
-		// This line is critical for LWJGL's interoperation with GLFW's
-		// OpenGL context, or any context that is managed externally.
-		// LWJGL detects the context that is current in the current thread,
-		// creates the GLCapabilities instance and makes the OpenGL
-		// bindings available for use.
 		GL.createCapabilities();
 
-		// Set the clear color
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		this.shadowMap = new ShadowMap(this);
 
-		// Run the rendering loop until the user has attempted to close
-		// the window.
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		while (!glfwWindowShouldClose(window))
 		{
 			this.startTiming();
+
+			String audio = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
+
+			if (!(audio == null && this.audioDevice == null || (this.audioDevice != null && this.audioDevice.equals(audio))))
+			{
+				this.soundPlayer = new SoundPlayer();
+			}
+
+			this.audioDevice = audio;
 
 			SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
 
@@ -264,20 +380,24 @@ public class LWJGLWindow extends BaseWindow
 			absoluteMouseX = mx[0];
 			absoluteMouseY = my[0];
 
-			if (!mac)
-				glViewport(0, 0, (int)absoluteWidth, (int)absoluteHeight);
+			glfwGetFramebufferSize(window, w, h);
 
-			loadPerspective();
+			if (useShader)
+			{
+				this.shadowMap.renderShadowMap();
+				this.shadowMap.renderNormal();
+			}
+			else
+			{
+				if (!mac)
+					glViewport(0, 0, (int) absoluteWidth, (int) absoluteHeight);
 
-			//glOrtho(0, absoluteWidth, absoluteHeight, 0, 0, 1);
-
-			glMatrixMode(GL_MODELVIEW);
-
-			this.drawer.draw();
+				loadPerspective();
+				this.drawer.draw();
+			}
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-
 
 			this.stopTiming();
 		}
@@ -350,13 +470,24 @@ public class LWJGLWindow extends BaseWindow
 
 	public void fillGlow(double x, double y, double sX, double sY, boolean shade)
 	{
+		this.fillGlow(x, y, sX, sY, shade, false);
+	}
+
+	public void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light)
+	{
+		if (this.drawingShadow)
+			return;
+
 		x += sX / 2;
 		y += sY / 2;
 
 		int sides = (int) (sX + sY) / 16 + 5;
 
 		if (!shade)
-			glBlendFunc(GL_SRC_COLOR, GL_ONE);
+			this.setGlowBlendFunc();
+
+		if (light)
+			this.setLightBlendFunc();
 
 		glBegin(GL_TRIANGLES);
 		double step = Math.PI * 2 / sides;
@@ -389,7 +520,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 
 		if (!shade)
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			this.setTransparentBlendFunc();
 	}
 
 	@Override
@@ -397,7 +528,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		if (depthTest)
 		{
-			glEnable(GL_DEPTH_TEST);
+			enableDepthtest();
 
 			if (colorA < 1)
 				glDepthMask(false);
@@ -419,15 +550,42 @@ public class LWJGLWindow extends BaseWindow
 		if (depthTest)
 		{
 			glDepthMask(true);
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
 		}
+	}
+
+	@Override
+	public void fillPartialOval(double x, double y, double sX, double sY, double start, double end)
+	{
+		x += sX / 2;
+		y += sY / 2;
+
+		int sides = (int) (sX + sY) / 4 + 5;
+
+		glBegin(GL_TRIANGLES);
+		for (double i = start; i < end; i += (end - start) / sides)
+		{
+			glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
+			glVertex2d(x + Math.cos(i + 1) * sX / 2, y + Math.sin(i + 1) * sY / 2);
+			glVertex2d(x, y);
+		}
+
+		glEnd();
 	}
 
 	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
 	{
+		this.fillGlow(x, y, z, sX, sY, depthTest, shade, false);
+	}
+
+	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
+	{
+		if (this.drawingShadow)
+			return;
+
 		if (depthTest)
 		{
-			glEnable(GL_DEPTH_TEST);
+			enableDepthtest();
 			glDepthMask(false);
 		}
 
@@ -437,7 +595,10 @@ public class LWJGLWindow extends BaseWindow
 		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
 
 		if (!shade)
-			glBlendFunc(GL_SRC_COLOR, GL_ONE);
+			this.setGlowBlendFunc();
+
+		if (light)
+			this.setLightBlendFunc();
 
 		glBegin(GL_TRIANGLES);
 		double step = Math.PI * 2 / sides;
@@ -470,12 +631,12 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 
 		if (!shade)
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			this.setTransparentBlendFunc();
 
 		if (depthTest)
 		{
 			glDepthMask(true);
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
 		}
 	}
 
@@ -483,8 +644,10 @@ public class LWJGLWindow extends BaseWindow
 	{
 		if (depthTest)
 		{
-			glEnable(GL_DEPTH_TEST);
-			glDepthMask(false);
+			enableDepthtest();
+
+			if (colorA < 1)
+				glDepthMask(false);
 		}
 
 		x += sX / 2;
@@ -492,24 +655,20 @@ public class LWJGLWindow extends BaseWindow
 
 		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
 
-		loadPerspective();
-		glTranslated(x, y, z);
-		Rotation.transform(this, -this.yaw, -this.pitch, -this.roll);
-
 		glBegin(GL_TRIANGLE_FAN);
 		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
 		{
-			glVertex3d(Math.cos(i) * sX / 2, Math.sin(i) * sY / 2, 0);
+			double ox = Math.cos(i) * sX / 2;
+			double oy = Math.sin(i) * sY / 2;
+			glVertex3d(x + ox * bbx1 + oy * bbx2, y + ox * bby1 + oy * bby2, z + ox * bbz1 + oy * bbz2);
 		}
 
 		glEnd();
 
-		loadPerspective();
-
 		if (depthTest)
 		{
 			glDepthMask(true);
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
 		}
 	}
 
@@ -533,29 +692,36 @@ public class LWJGLWindow extends BaseWindow
 
 	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
 	{
+		this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade,false);
+	}
+
+	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
+	{
+		if (this.drawingShadow)
+			return;
+
 		if (depthTest)
 		{
-			glEnable(GL_DEPTH_TEST);
+			enableDepthtest();
 			glDepthMask(false);
 		}
-
-		if (!shade)
-			glBlendFunc(GL_SRC_COLOR, GL_ONE);
 
 		x += sX / 2;
 		y += sY / 2;
 
 		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
 
-		loadPerspective();
-		glTranslated(x, y, z);
-		Rotation.transform(this, -this.yaw, -this.pitch, -this.roll);
+		if (!shade)
+			this.setGlowBlendFunc();
+
+		if (light)
+			this.setLightBlendFunc();
 
 		glBegin(GL_TRIANGLES);
 		double step = Math.PI * 2 / sides;
 
-		double pX = Math.cos(0) * sX / 2;
-		double pY = Math.sin(0) * sY / 2;
+		double ox = Math.cos(0) * sX / 2;
+		double oy = Math.sin(0) * sY / 2;
 		double d = 0;
 		for (int n = 0; n < sides; n++)
 		{
@@ -566,31 +732,43 @@ public class LWJGLWindow extends BaseWindow
 			else
 				glColor4d(this.colorR, this.colorG, this.colorB, 0);
 
-			glVertex3d(pX, pY, 0);
-			pX = 0 + Math.cos(d) * sX / 2;
-			pY = 0 + Math.sin(d) * sY / 2;
-			glVertex3d(pX, pY, 0);
+			glVertex3d(x + ox * bbx1 + oy * bbx2, y + ox * bby1 + oy * bby2, z + ox * bbz1 + oy * bbz2);
+			ox = Math.cos(d) * sX / 2;
+			oy = Math.sin(d) * sY / 2;
+			glVertex3d(x + ox * bbx1 + oy * bbx2, y + ox * bby1 + oy * bby2, z + ox * bbz1 + oy * bbz2);
 
 			if (!shade)
 				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
 			else
 				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
-			glVertex3d(0, 0, 0);
+			glVertex3d(x, y, z);
 		}
 
 		glEnd();
 
+		if (!shade)
+			this.setTransparentBlendFunc();
+
 		if (depthTest)
 		{
-			glDisable(GL_DEPTH_TEST);
 			glDepthMask(true);
+			disableDepthtest();
 		}
+	}
 
-		loadPerspective();
+	public void setColor(double r, double g, double b, double a, double glow)
+	{
+		this.colorR = r / 255;
+		this.colorG = g / 255;
+		this.colorB = b / 255;
+		this.colorA = a / 255;
+		this.glow = glow;
 
-		if (!shade)
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
+
+		if (useShader)
+			GL20.glUniform1f(glowFlag, (float) glow);
 	}
 
 	public void setColor(double r, double g, double b, double a)
@@ -600,6 +778,9 @@ public class LWJGLWindow extends BaseWindow
 		this.colorB = b / 255;
 		this.colorA = a / 255;
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
+
+		if (useShader)
+			GL20.glUniform1f(glowFlag, 0);
 	}
 
 	public void setColor(double r, double g, double b)
@@ -609,6 +790,9 @@ public class LWJGLWindow extends BaseWindow
 		this.colorB = b / 255;
 		this.colorA = 1;
 		glColor3d(this.colorR, this.colorG, this.colorB);
+
+		if (useShader)
+			GL20.glUniform1f(glowFlag, 0);
 	}
 
 	public void drawOval(double x, double y, double sX, double sY)
@@ -678,7 +862,10 @@ public class LWJGLWindow extends BaseWindow
 	{
 		if (!batchMode)
 		{
-			glEnable(GL_DEPTH_TEST);
+			enableDepthtest();
+
+			if (colorA < 1)
+				glDepthMask(false);
 
 			if ((options >> 6) % 2 == 0)
 				glDepthFunc(GL_LEQUAL);
@@ -745,7 +932,8 @@ public class LWJGLWindow extends BaseWindow
 		if (!batchMode)
 		{
 			GL11.glEnd();
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
+			glDepthMask(true);
 		}
 	}
 
@@ -768,7 +956,7 @@ public class LWJGLWindow extends BaseWindow
 							double z, double sZ,
 							byte options)
 	{
-		glEnable(GL_DEPTH_TEST);
+		enableDepthtest();
 
 		if ((options >> 6) % 2 == 0)
 			glDepthFunc(GL_LEQUAL);
@@ -841,7 +1029,7 @@ public class LWJGLWindow extends BaseWindow
 			GL11.glEnd();
 		}
 
-		glDisable(GL_DEPTH_TEST);
+		disableDepthtest();
 	}
 
 	public void drawRect(double x, double y, double sX, double sY)
@@ -887,9 +1075,9 @@ public class LWJGLWindow extends BaseWindow
 				decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
 				buf.flip();
 
-				glEnable(GL_TEXTURE_2D);
+				enableTexture();
 				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				this.setTransparentBlendFunc();
 				int id = glGenTextures();
 
 				glBindTexture(GL_TEXTURE_2D, id);
@@ -968,7 +1156,11 @@ public class LWJGLWindow extends BaseWindow
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 100);
+
+		if (this.drawingShadow)
+			glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
+		else
+			glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 100);
 
 		this.angled = false;
 
@@ -978,30 +1170,63 @@ public class LWJGLWindow extends BaseWindow
 		this.xOffset = 0;
 		this.yOffset = 0;
 		this.zOffset = 0;
+
+		this.bbx1 = 1;
+		this.bby1 = 0;
+		this.bbz1 = 0;
+		this.bbx2 = 0;
+		this.bby2 = 1;
+		this.bbz2 = 0;
+		this.bbx3 = 0;
+		this.bby3 = 0;
+		this.bbz3 = 1;
 	}
 
 	public void applyTransformations()
 	{
-		//glTranslated(0, 0, -absoluteDepth);
-
-		///glMultMatrixd(new double[]{Math.cos(this.roll), -Math.sin(this.roll), 0, 0,  Math.sin(this.roll), Math.cos(this.roll), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1});
-		///glMultMatrixd(new double[]{1, 0, 0, 0,  0, Math.cos(this.pitch), -Math.sin(this.pitch), 0,  0, Math.sin(this.pitch), Math.cos(this.pitch), 0,  0, 0, 0, 1});
-		///glMultMatrixd(new double[]{Math.cos(this.yaw), 0, -Math.sin(this.yaw), 0,  0, 1, 0, 0,  Math.sin(this.yaw), 0, Math.cos(this.yaw), 0,  0, 0, 0, 1});
-
 		for (int i = this.transformations.size() - 1; i >= 0; i--)
 		{
 			this.transformations.get(i).apply();
 		}
+	}
 
-		//glTranslated(absoluteWidth * (-0.5 + xOffset), absoluteHeight * (-0.5 + yOffset), absoluteDepth * zOffset);
-		//glOrtho(0, absoluteWidth, absoluteHeight, 0, -1, 1);
+	public void applyShadowTransformations()
+	{
+		for (int i = this.transformations.size() - 1; i >= 0; i--)
+		{
+			Transformation t = this.transformations.get(i);
+
+			if (t.applyAsShadow)
+				t.apply();
+			else
+				t.applyToWindow();
+		}
 	}
 
 	public void loadPerspective()
 	{
 		setUpPerspective();
-		applyTransformations();
-		this.baseTransformation.apply();
+
+		if (this.drawingShadow)
+		{
+			applyShadowTransformations();
+			for (Transformation t: this.lightBaseTransformation)
+				t.apply();
+		}
+		else
+		{
+			applyTransformations();
+			for (Transformation t: this.baseTransformations)
+				t.apply();
+
+			if (this.useShader)
+			{
+				float[] projMatrix = new float[16];
+				glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
+
+				glUniformMatrix4fv(this.shadowMap.normalProgramVPUniform, false, projMatrix);
+			}
+		}
 	}
 
 	public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)
@@ -1026,17 +1251,19 @@ public class LWJGLWindow extends BaseWindow
 
 	public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
 	{
+		if (this.drawingShadow)
+			return;
+
 		if (!textures.containsKey(image))
 			createImage(image);
 
 		loadPerspective();
 
 		glMatrixMode(GL_MODELVIEW);
-		//glLoadIdentity();
-		glEnable(GL_TEXTURE_2D);
+		enableTexture();
 
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		this.setTransparentBlendFunc();
 
 		glBindTexture(GL_TEXTURE_2D, textures.get(image));
 
@@ -1062,21 +1289,27 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 
 		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
+		disableTexture();
+
+		if (useShader)
+			GL20.glUniform1i(textureFlag, 0);
 	}
 
 	public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
 	{
+		if (this.drawingShadow)
+			return;
+
 		if (!textures.containsKey(image))
 			createImage(image);
 
 		loadPerspective();
 
 		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_TEXTURE_2D);
+		enableTexture();
 
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		this.setTransparentBlendFunc();
 
 		glBindTexture(GL_TEXTURE_2D, textures.get(image));
 
@@ -1102,7 +1335,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 
 		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
+		disableTexture();
 	}
 
 	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
@@ -1112,6 +1345,9 @@ public class LWJGLWindow extends BaseWindow
 
 	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest)
 	{
+		if (this.drawingShadow)
+			return;
+
 		if (!textures.containsKey(image))
 			createImage(image);
 
@@ -1119,17 +1355,15 @@ public class LWJGLWindow extends BaseWindow
 		glLoadIdentity();
 
 		if (depthtest)
-			glEnable(GL_DEPTH_TEST);
+			enableDepthtest();
 
-		//glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 2);
-		//glTranslated(-absoluteWidth / 2, -absoluteHeight / 2, -absoluteDepth);
 		loadPerspective();
 
 		glMatrixMode(GL_MODELVIEW);
-		//glLoadIdentity();
-		glEnable(GL_TEXTURE_2D);
+
+		enableTexture();
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		this.setTransparentBlendFunc();
 
 		glDepthMask(false);
 
@@ -1157,12 +1391,12 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 
 		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
+		disableTexture();
 
 		glDepthMask(true);
 
 		if (depthtest)
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
 	}
 
 	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
@@ -1172,6 +1406,9 @@ public class LWJGLWindow extends BaseWindow
 
 	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
 	{
+		if (this.drawingShadow)
+			return;
+
 		if (!textures.containsKey(image))
 			createImage(image);
 
@@ -1179,14 +1416,14 @@ public class LWJGLWindow extends BaseWindow
 		glLoadIdentity();
 
 		if (depthtest)
-			glEnable(GL_DEPTH_TEST);
+			enableDepthtest();
 
 		loadPerspective();
-
 		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_TEXTURE_2D);
+
+		enableTexture();
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		this.setTransparentBlendFunc();
 
 		glDepthMask(false);
 
@@ -1214,12 +1451,12 @@ public class LWJGLWindow extends BaseWindow
 		glEnd();
 
 		glMatrixMode(GL_PROJECTION);
-		glDisable(GL_TEXTURE_2D);
+		disableTexture();
 
 		glDepthMask(true);
 
 		if (depthtest)
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
 	}
 
 	public double rotateX(double px, double py, double posX, double rotation)
@@ -1306,6 +1543,29 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
+	public void calculateBillboard()
+	{
+		angled = !(yaw == 0 && pitch == 0 && roll == 0);
+
+		double a = Math.cos(-roll);
+		double b = Math.sin(-roll);
+		double c = Math.cos(-pitch);
+		double d = Math.sin(-pitch);
+		double e = Math.cos(-yaw);
+		double f = Math.sin(-yaw);
+
+		bbx1 = e * a - b * d * f;
+		bby1 = -a * d * f - e * b;
+		bbz1 = -c * f;
+		bbx2 = b * c;
+		bby2 = a * c;
+		bbz2 = -d;
+		bbx3 = a * f + e * b * d;
+		bby3 = e * a * d - b * f;
+		bbz3 = e * c;
+	}
+
+	@Override
 	public double getEdgeBounds()
 	{
 		return 0;
@@ -1320,23 +1580,29 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow)
 	{
+		this.setBatchMode(enabled, quads, depth, glow, !(this.colorA < 1 || glow));
+	}
+
+	@Override
+	public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask)
+	{
 		this.batchMode = enabled;
 
 		if (enabled)
 		{
-			if (this.colorA < 1 || glow)
+			if (!depthMask)
 				glDepthMask(false);
 
 			if (depth)
 			{
-				glEnable(GL_DEPTH_TEST);
+				enableDepthtest();
 				glDepthFunc(GL_LEQUAL);
 			}
 
 			if (glow)
-				glBlendFunc(GL_SRC_COLOR, GL_ONE);
+				this.setGlowBlendFunc();
 			else
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				this.setTransparentBlendFunc();
 
 			if (quads)
 				glBegin(GL_QUADS);
@@ -1346,9 +1612,9 @@ public class LWJGLWindow extends BaseWindow
 		else
 		{
 			GL11.glEnd();
-			glDisable(GL_DEPTH_TEST);
+			disableDepthtest();
 			glDepthMask(true);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			this.setTransparentBlendFunc();
 		}
 	}
 
@@ -1384,5 +1650,97 @@ public class LWJGLWindow extends BaseWindow
 		}
 
 		Runtime.getRuntime().exec(cmd);
+	}
+
+	@Override
+	public void setShadowQuality(double quality)
+	{
+		if (quality <= 0)
+		{
+			this.shadowMap.quality = 1;
+			this.useShader = false;
+		}
+		else
+		{
+			this.shadowMap.quality = quality;
+			this.useShader = true;
+		}
+	}
+
+	@Override
+	public double getShadowQuality()
+	{
+		if (!this.useShader)
+			return 0;
+		else
+			return this.shadowMap.quality;
+	}
+
+	@Override
+	public void setLighting(double light, double glowLight, double shadow, double glowShadow)
+	{
+		if (useShader)
+		{
+			GL20.glUniform1f(this.lightFlag, (float) light);
+			GL20.glUniform1f(this.glowLightFlag, (float) glowLight);
+			GL20.glUniform1f(this.shadowFlag, (float) shadow);
+			GL20.glUniform1f(this.glowShadowFlag, (float) glowShadow);
+		}
+	}
+
+	public void enableTexture()
+	{
+		glEnable(GL_TEXTURE_2D);
+
+		if (useShader)
+		{
+			GL20.glUniform1i(textureFlag, 1);
+			GL20.glActiveTexture(GL13.GL_TEXTURE0);
+		}
+	}
+
+	public void disableTexture()
+	{
+		glDisable(GL_TEXTURE_2D);
+
+		if (useShader)
+		{
+			GL20.glUniform1i(textureFlag, 0);
+
+			glEnable(GL_TEXTURE_2D);
+			GL20.glActiveTexture(GL13.GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, this.shadowMap.depthTexture);
+		}
+	}
+
+	public void enableDepthtest()
+	{
+		glEnable(GL_DEPTH_TEST);
+
+		if (useShader)
+			GL20.glUniform1i(depthFlag, 1);
+	}
+
+	public void disableDepthtest()
+	{
+		glDisable(GL_DEPTH_TEST);
+
+		if (useShader)
+			GL20.glUniform1i(depthFlag, 0);
+	}
+
+	public void setGlowBlendFunc()
+	{
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+	}
+
+	public void setLightBlendFunc()
+	{
+		glBlendFunc(GL_DST_COLOR, GL_ONE);
+	}
+
+	public void setTransparentBlendFunc()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }

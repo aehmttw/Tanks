@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.obstacle.Obstacle;
 
 public abstract class Screen
@@ -66,6 +63,15 @@ public abstract class Screen
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
+		for (int i = 0; i < Game.currentSizeX; i++)
+		{
+			for (int j = 0; j < Game.currentSizeY; j++)
+			{
+				if (Game.game.heightGrid[i][j] <= -1000)
+					Game.game.heightGrid[i][j] = 0;
+			}
+		}
+
 		double frac = 0;
 
 		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen || (Game.screen instanceof IOverlayScreen
@@ -75,7 +81,13 @@ public abstract class Screen
 		if (!(Game.screen instanceof ScreenExit) && size >= 1)
 		{
 			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG,16 * frac + (1 - frac) * Level.currentColorB);
-			Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+
+			double mul = 1;
+			if (Game.angledView)
+				mul = 2;
+
+			Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+					mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
 			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
 			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
@@ -141,10 +153,26 @@ public abstract class Screen
 						if (Game.tileDrawables[i][j] != null && inBounds)
 						{
 							Game.tileDrawables[i][j].drawTile(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j], z1);
-							Game.tileDrawables[i][j] = null;
+
+							if (!Game.game.window.drawingShadow)
+								Game.tileDrawables[i][j] = null;
 						}
 						else
 						{
+							double extra = 0;
+
+							if (i > 0)
+								extra = Math.max(extra, -Game.game.heightGrid[i - 1][j]);
+
+							if (j > 0)
+								extra = Math.max(extra, -Game.game.heightGrid[i][j - 1]);
+
+							if (i < Game.currentSizeX - 1)
+								extra = Math.max(extra, -Game.game.heightGrid[i + 1][j]);
+
+							if (j < Game.currentSizeY - 1)
+								extra = Math.max(extra, -Game.game.heightGrid[i][j + 1]);
+
 							if (size != 1)
 								Drawing.drawing.fillBox(
 										(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
@@ -158,10 +186,10 @@ public abstract class Screen
 								Drawing.drawing.fillBox(
 										(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
 										(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-										0,
+										-extra,
 										Game.tile_size / Game.bgResMultiplier,
 										Game.tile_size / Game.bgResMultiplier,
-										z1 * (1 - frac2), o);
+										extra + z1 * (1 - frac2), o);
 							}
 						}
 					}

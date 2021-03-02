@@ -8,6 +8,7 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
+import tanks.tank.Turret;
 
 import java.net.URL;
 
@@ -27,6 +28,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		@Override
 		public void run() 
 		{
+			Game.exitToCrash(new RuntimeException("Lmao this is a crash screen"));
 			if (Game.framework == Game.Framework.libgdx)
 				Game.screen = new ScreenExit();
 			else
@@ -110,6 +112,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		this.logo.invulnerable = true;
 		this.logo.drawAge = 50;
 		this.logo.depthTest = false;
+
 		Game.movables.add(logo);
 		ScreenGame.finished = false;
 

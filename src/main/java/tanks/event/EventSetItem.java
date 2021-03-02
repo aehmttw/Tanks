@@ -20,6 +20,7 @@ public class EventSetItem extends PersonalEvent
     public String texture;
     public int count;
     public int bounces = -1;
+    public double range = -1;
 
     public EventSetItem()
     {
@@ -42,6 +43,7 @@ public class EventSetItem extends PersonalEvent
         if (item instanceof ItemBullet)
         {
             bounces = ((ItemBullet) item).bounces;
+            range = ((ItemBullet) item).getRange();
 
             if (((ItemBullet) item).className.equals("electric"))
                 bounces = 0;
@@ -58,6 +60,7 @@ public class EventSetItem extends PersonalEvent
         b.writeInt(this.count);
         NetworkUtils.writeString(b, this.name);
         b.writeInt(this.bounces);
+        b.writeDouble(this.range);
     }
 
     @Override
@@ -69,6 +72,7 @@ public class EventSetItem extends PersonalEvent
         this.count = b.readInt();
         this.name = NetworkUtils.readString(b);
         this.bounces = b.readInt();
+        this.range = b.readDouble();
     }
 
     @Override
@@ -81,6 +85,7 @@ public class EventSetItem extends PersonalEvent
             i.icon = this.texture;
             i.name = this.name;
             ((ItemRemote) i).bounces = this.bounces;
+            ((ItemRemote) i).range = this.range;
 
             if (i.stackSize == 0)
                 i = new ItemEmpty();

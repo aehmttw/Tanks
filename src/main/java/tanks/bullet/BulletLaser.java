@@ -8,6 +8,8 @@ import tanks.tank.Tank;
 
 public class BulletLaser extends BulletInstant
 {
+	public static String bullet_name = "laser";
+
 	public BulletLaser(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
@@ -15,7 +17,7 @@ public class BulletLaser extends BulletInstant
 		this.baseColorR = 255;
 		this.baseColorG = 0;
 		this.baseColorB = 0;
-		this.name = "laser";
+		this.name = bullet_name;
 		this.effect = Bullet.BulletEffect.none;
 		this.itemSound = "laser.ogg";
 	}

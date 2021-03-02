@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
+import tanks.gui.SpeedrunTimer;
 
 import java.util.ArrayList;
 
@@ -152,34 +153,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     {
         this.drawDefaultBackground();
 
-        if (Panel.win && Game.fancyGraphics)
-            Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
-
-        if (ScreenPartyLobby.isClient)
-        {
-            next.draw();
-        }
-        else if (ScreenInterlevel.fromSavedLevels)
-        {
-            quitHigherPos.draw();
-            replayHigherPos.draw();
-        }
-        else
-        {
-            quit.draw();
-            replay.draw();
-            newLevel.draw();
-        }
-
-        if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
-            Drawing.drawing.setColor(255, 255, 255);
-        else
-            Drawing.drawing.setColor(0, 0, 0);
-
-        Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
-
-        if (Panel.win && Game.fancyGraphics)
+        if (Panel.win && Game.fancyGraphics && !Game.game.window.drawingShadow)
         {
             ArrayList<Firework> fireworks = getFireworkArray();
             if (Math.random() < Panel.frameFrequency * ScreenInterlevel.firework_frequency)
@@ -210,6 +184,36 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             fireworks.clear();
             odd = !odd;
         }
+
+        if (Panel.win && Game.fancyGraphics)
+            Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+
+        if (ScreenPartyLobby.isClient)
+        {
+            next.draw();
+        }
+        else if (ScreenInterlevel.fromSavedLevels)
+        {
+            quitHigherPos.draw();
+            replayHigherPos.draw();
+        }
+        else
+        {
+            quit.draw();
+            replay.draw();
+            newLevel.draw();
+        }
+
+        if (Game.showSpeedrunTimer)
+            SpeedrunTimer.draw();
+
+        if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
+
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
     }
 
     public ArrayList<Firework> getFireworkArray()

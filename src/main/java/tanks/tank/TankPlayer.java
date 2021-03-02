@@ -4,12 +4,14 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletElectric;
 import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
+import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
 
@@ -19,8 +21,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 	public static Joystick shootStick;
 	public static Button mineButton;
 
-	public static boolean controlStickSnap;
-	public static boolean controlStickMobile;
+	public static boolean controlStickSnap = false;
+	public static boolean controlStickMobile = true;
 
 	public Player player = Game.player;
 	public boolean enableDestroyCheat = false;
@@ -37,6 +39,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 	protected static boolean lockTrace = false;
 
 	public static final double base_deceleration = 0.05;
+	protected double drawRange = -1;
 
 	public TankPlayer(double x, double y, double angle)
 	{
@@ -284,21 +287,29 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
 		{
+			double range = -1;
+
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 
 			Hotbar h = Game.player.hotbar;
 			if (h.enabledItemBar && h.itemBar.selected >= 0)
 			{
-				tanks.hotbar.item.Item i = h.itemBar.slots[h.itemBar.selected];
+				Item i = h.itemBar.slots[h.itemBar.selected];
 				if (i instanceof ItemBullet)
 				{
 					r.bounces = ((ItemBullet) i).bounces;
+					range = ((ItemBullet) i).getRange();
 
-					if (((ItemBullet) i).className.equals("electric"))
+					if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
 						r.bounces = 0;
 				}
-				else if (i instanceof ItemRemote && ((ItemRemote)i).bounces >= 0)
-					r.bounces = ((ItemRemote)i).bounces;
+                else if (i instanceof ItemRemote)
+                {
+                    if (((ItemRemote)i).bounces >= 0)
+                        r.bounces = ((ItemRemote)i).bounces;
+
+                    range = ((ItemRemote) i).range;
+                }
 			}
 
 			r.vX /= 2;
@@ -306,7 +317,11 @@ public class TankPlayer extends Tank implements IPlayerTank
 			r.trace = true;
 			r.dotted = true;
 			r.moveOut(10 * this.size / Game.tile_size);
-			r.getTarget();
+
+			if (range >= 0)
+				this.drawRange = range;
+			else
+				r.getTarget();
 		}
 
 		super.update();
@@ -335,7 +350,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 	{
 		Drawing.drawing.playGlobalSound("shoot.ogg");
 
-		tanks.bullet.Bullet b = new Bullet(posX, posY, bounces, this);
+		Bullet b = new Bullet(posX, posY, bounces, this);
 		b.setPolarMotion(this.angle, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
 
@@ -356,7 +371,10 @@ public class TankPlayer extends Tank implements IPlayerTank
 		b.setPolarMotion(this.angle, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
-		b.moveOut(50 / speed * this.size / Game.tile_size);
+		if (b.moveOut)
+			b.moveOut(50 / speed * this.size / Game.tile_size);
+
+		b.setTargetLocation(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
@@ -419,6 +437,18 @@ public class TankPlayer extends Tank implements IPlayerTank
 	public boolean showTouchCircle()
 	{
 		return this.drawTouchCircle;
+	}
+
+	@Override
+	public double getDrawRange()
+	{
+		return this.drawRange;
+	}
+
+	@Override
+	public void setDrawRange(double range)
+	{
+		this.drawRange = range;
 	}
 
 	public static void setShootStick(boolean enabled)

@@ -195,7 +195,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
             }
         }
 
-        if (Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3)
+        if (Level.isDark())
             Drawing.drawing.setColor(255, 255, 255);
         else
             Drawing.drawing.setColor(0, 0, 0);

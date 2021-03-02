@@ -35,6 +35,7 @@ public class ObstacleSnow extends Obstacle
         this.enableStacking = false;
         this.destroyEffect = Effect.EffectType.snow;
         this.destroyEffectAmount = 0.25;
+        this.replaceTiles = false;
 
         double darkness = Math.random() * 20;
 
@@ -146,8 +147,8 @@ public class ObstacleSnow extends Obstacle
             if (z > 0)
             {
                 this.lastFinalHeight = z * this.visualDepth;
-                int x = Math.min(Game.currentSizeX, (int) Math.max(0, this.posX / Game.tile_size));
-                int y = Math.min(Game.currentSizeY, (int) Math.max(0, this.posY / Game.tile_size));
+                int x = Math.min(Game.currentSizeX - 1, (int) Math.max(0, this.posX / Game.tile_size));
+                int y = Math.min(Game.currentSizeY - 1, (int) Math.max(0, this.posY / Game.tile_size));
 
                 double r = Game.tilesR[x][y];
                 double g = Game.tilesG[x][y];

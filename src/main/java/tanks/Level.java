@@ -35,9 +35,15 @@ public class Level
 	public static double currentColorG = 207;
 	public static double currentColorB = 166;
 
+	public static double currentLightIntensity = 1;
+	public static double currentShadowIntensity = 0.5;
+
 	public boolean editable = true;
 	public boolean remote = false;
 	public boolean preview = false;
+
+	public boolean timed = false;
+	public double timer;
 
 	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
 
@@ -157,9 +163,6 @@ public class Level
 		Tank.currentID = 0;
 		Tank.freeIDs.clear();
 
-		RegistryTank.loadRegistry(Game.homedir);
-		RegistryObstacle.loadRegistry(Game.homedir);
-
 		Game.currentLevel = this;
 		Game.currentLevelString = this.levelString;
 
@@ -178,6 +181,9 @@ public class Level
 		int dr = 20;
 		int dg = 20;
 		int db = 20;
+
+		double light = 1.0;
+		double shadow = 0.5;
 
 		if (enableTeams)
 		{
@@ -219,6 +225,23 @@ public class Level
 			}
 		}
 
+		if (screen.length >= 9)
+		{
+			int length = Integer.parseInt(screen[8]) * 100;
+
+			if (length > 0)
+			{
+				this.timed = true;
+				this.timer = length;
+			}
+		}
+
+		if (screen.length >= 11)
+		{
+			light = Integer.parseInt(screen[9]) / 100.0;
+			shadow = Integer.parseInt(screen[10]) / 100.0;
+		}
+
 		if (sc instanceof ScreenLevelBuilder)
 		{
 			ScreenLevelBuilder s = (ScreenLevelBuilder) sc;
@@ -228,6 +251,10 @@ public class Level
 
 			s.width = sX;
 			s.height = sY;
+			s.timer = (int) this.timer;
+			s.seconds.inputText = "" + ((int) timer % 6000) / 100;
+			s.minutes.inputText = "" + (int) timer / 6000;
+
 			s.selectedTiles = new boolean[sX][sY];
 
 			s.r = r;
@@ -236,6 +263,8 @@ public class Level
 			s.dr = dr;
 			s.dg = dg;
 			s.db = db;
+			s.l = light;
+			s.s = shadow;
 			s.editable = this.editable;
 			Game.movables.remove(Game.playerTank);
 
@@ -252,6 +281,11 @@ public class Level
 			s.colorVarRed.maxValue = 255 - r;
 			s.colorVarGreen.maxValue = 255 - g;
 			s.colorVarBlue.maxValue = 255 - b;
+
+			s.light.value = (int) Math.round(100 * light);
+			s.shadow.value = (int) Math.round(100 * shadow);
+			s.light.inputText = (int) Math.round(100 * light) + "";
+			s.shadow.inputText = (int) Math.round(100 * shadow) + "";
 
 			s.shop = this.shop;
 			s.startingItems = this.startingItems;
@@ -356,6 +390,9 @@ public class Level
 		currentColorG = g;
 		currentColorB = b;
 
+		currentLightIntensity = light;
+		currentShadowIntensity = shadow;
+
 		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
@@ -374,6 +411,7 @@ public class Level
 		}
 
 		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
+		//Game.game.shadeGrid = new double[Game.currentSizeX][Game.currentSizeY];
 
 		Drawing.drawing.setScreenBounds(Game.tile_size * sX, Game.tile_size * sY);
 
@@ -716,5 +754,10 @@ public class Level
 				i++;
 			}
 		}
+	}
+
+	public static boolean isDark()
+	{
+		return Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3 || (Game.shadowsEnabled && currentLightIntensity < 0.5);
 	}
 }

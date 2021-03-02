@@ -33,7 +33,7 @@ public class TankBlue extends TankAIControlled
 	@Override
 	public void shoot()
 	{
-		if (this.cooldown > 0)
+		if (this.cooldown > 0 || this.disabled || this.destroy)
 			return;
 
 		Drawing.drawing.playGlobalSound("laser.ogg");

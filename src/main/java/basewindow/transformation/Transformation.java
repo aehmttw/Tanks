@@ -7,12 +7,16 @@ public abstract class Transformation
     public BaseWindow window;
     protected static double[] matrix = new double[16];
 
+    public boolean applyAsShadow = false;
+
     public Transformation(BaseWindow window)
     {
         this.window = window;
     }
 
     public abstract void apply();
+
+    public abstract void applyToWindow();
 
     protected static void transform(BaseWindow w,
                                     double a1, double a2, double a3, double a4,

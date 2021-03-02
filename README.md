@@ -1,7 +1,7 @@
 # Tanks
 
 Tanks is a game written in Java inspired by a game of the same name on the Wii.<br>
-There are 18 unique enemies you can fight, but you can add more of your own too.<br>
+There are 21 unique enemies you can fight, but you can add more of your own too.<br>
 The game works in Windows, Mac or Linux.<br>
 Tanks can be found on [itch.io](https://aehmttw.itch.io/tanks) and the [iOS App Store](https://apps.apple.com/us/app/tanks-the-crusades/id1508772262)
 

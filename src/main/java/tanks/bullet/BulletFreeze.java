@@ -8,6 +8,8 @@ import tanks.tank.Tank;
 
 public class BulletFreeze extends Bullet
 {
+	public static String bullet_name = "freezing";
+
 	public BulletFreeze(double x, double y, int bounces, Tank t) 
 	{
 		this(x, y, bounces, t, true, null);
@@ -19,7 +21,7 @@ public class BulletFreeze extends Bullet
 		this.outlineColorR = 255;
 		this.outlineColorG = 255;
 		this.outlineColorB = 255;
-		this.name = "freeze";
+		this.name = bullet_name;
 
 		this.playPopSound = false;
 	}
@@ -45,7 +47,7 @@ public class BulletFreeze extends Bullet
 		{
 			for (int i = 0; i < 30 - 10 * Math.sin(this.age / 12.0); i++)
 			{
-				Drawing.drawing.setColor(255, 255, 255, 20);
+				Drawing.drawing.setColor(255, 255, 255, 20, 1);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, i * 4, i * 4);

@@ -201,6 +201,36 @@ public class ScreenChangelog extends Screen
                                     "New sound effects\n" +
                                     "\n\n...and countless bug fixes and other minor improvements. Enjoy!"
                     });
+
+            new Changelog("v1.1.0", new String[]
+                    {
+                            "*What's new in Tanks v1.1.0:\n\n" +
+                                    "*New features:\n\n" +
+                                    "Added mustard tank which shoots over walls\n" +
+                                    "Added orange-red tank which shoots explosive bullets\n" +
+                                    "Added gold tank which boosts its allies' speed\n" +
+                                    "Added boost panel\n" +
+                                    "Added no bounce block\n" +
+                                    "Added block which breaks when hit by a bullet\n" +
+                                    "Added block which explodes when touched\n" +
+                                    "Added light block\n\n" +
+
+                                    "*Levels:\n\n" +
+                                    "New time limit option for levels\n" +
+                                    "Added lighting options to levels",
+
+                                    "*Options:\n\n" +
+                                    "Added shadows and shadow quality option\n" +
+                                    "Added option to show time elapsed\n" +
+                                    "Added keybind to instantly start a level\n\n" +
+
+                                    "*More:\n\n" +
+                                    "Made some tanks smarter\n" +
+                                    "Bullets harmless to you (friendly fire off) now flash\n" +
+                                    "Added a new extension API\n" +
+                                    "...and the usual bug fixes and various minor improvements"
+
+                    });
         }
     }
 }

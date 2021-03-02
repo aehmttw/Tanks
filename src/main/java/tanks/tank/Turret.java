@@ -1,9 +1,6 @@
 package tanks.tank;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Model;
-import tanks.Movable;
+import tanks.*;
 
 public class Turret extends Movable
 {
@@ -29,6 +26,18 @@ public class Turret extends Movable
 
 	public void draw(double angle, boolean forInterface, boolean in3d, boolean transparent)
 	{
+		double glow = 0.5;
+
+		for (int i = 0; i < this.tank.attributes.size(); i++)
+		{
+			AttributeModifier a = this.tank.attributes.get(i);
+
+			if (a.type.equals("glow"))
+			{
+				glow = a.getValue(glow);
+			}
+		}
+
 		this.posX = tank.posX;
 		this.posY = tank.posY;
 
@@ -42,9 +51,9 @@ public class Turret extends Movable
 				l = Math.min(length, Game.tile_size * 1.5);
 
 			if (transparent)
-				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
+				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127, glow);
 			else
-				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, glow);
 
 			if (forInterface)
 				Drawing.drawing.drawInterfaceModel(turret_model, this.posX, this.posY, l, l * size / 8, angle);
@@ -54,9 +63,9 @@ public class Turret extends Movable
 				Drawing.drawing.drawModel(turret_model, this.posX, this.posY, (s * 1.3) / 2 , l, l * size / 8, l * size / 8, angle);
 
 			if (transparent)
-				Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127);
+				Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127, glow);
 			else
-				Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2);
+				Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 255, glow);
 
 			if (forInterface)
 				Drawing.drawing.drawInterfaceModel(base_model, this.posX, this.posY, l, l, angle);

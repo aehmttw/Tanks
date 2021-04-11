@@ -68,9 +68,10 @@ public class BulletBoost extends Bullet
 	@Override
 	public void draw()
 	{
-		if (Game.superGraphics)
+		if (Game.glowEnabled)
 		{
-			Drawing.drawing.setColor(255, 180, 0, 180, 1);
+			double frac = Math.min(1, this.destroyTimer / 60);
+			Drawing.drawing.setColor(255, 180, 0, 180 * frac, 1);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 8, this.size * 8);
@@ -86,9 +87,9 @@ public class BulletBoost extends Bullet
 	{
 		Drawing.drawing.playSound("boost.ogg", (float) (10.0 / this.size));
 
-		if (Game.fancyGraphics)
+		if (Game.effectsEnabled)
 		{
-			for (int i = 0; i < 50; i++)
+			for (int i = 0; i < 25 * Game.effectMultiplier; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
 				double var = 50;

@@ -1,5 +1,6 @@
 package basewindow;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -15,7 +16,12 @@ public class ComputerFileManager extends BaseFileManager
     @Override
     public ArrayList<String> getInternalFileContents(String file)
     {
-        Scanner s = new Scanner(new InputStreamReader(getClass().getResourceAsStream(file)));
+        InputStream st = getClass().getResourceAsStream(file);
+
+        if (st == null)
+            return null;
+
+        Scanner s = new Scanner(new InputStreamReader(st));
         ArrayList<String> al = new ArrayList<String>();
 
         while (s.hasNext())

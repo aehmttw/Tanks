@@ -246,6 +246,9 @@ public class TankAIControlled extends Tank
 			{
 				this.vX *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
 				this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+
+				if (this.enableDefensiveFiring)
+					this.checkForBulletThreats();
 			}
 
 			if (!ScreenGame.finished)

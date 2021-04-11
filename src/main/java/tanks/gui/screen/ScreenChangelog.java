@@ -229,7 +229,15 @@ public class ScreenChangelog extends Screen
                                     "Bullets harmless to you (friendly fire off) now flash\n" +
                                     "Added a new extension API\n" +
                                     "...and the usual bug fixes and various minor improvements"
+                    });
 
+            new Changelog("v1.1.1", new String[]
+                    {
+                            "*What's new in Tanks v1.1.1:\n\n" +
+                                    "Split fast/fancy/super graphics setting into multiple options\n" +
+                                    "Reduced certain particle effects to improve performance\n" +
+                                    "New option to change intensity of particle effects\n" +
+                                    "Several bug fixes and minor improvements"
                     });
         }
     }

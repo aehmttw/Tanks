@@ -65,7 +65,7 @@ public class ObstacleTeleporter extends Obstacle
 		{
 			Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2, 255, 1);
 
-			if (Game.superGraphics)
+			if (Game.glowEnabled)
 				Drawing.drawing.fillGlow(this.posX, this.posY, height + 7, draw_size * 20 / 8, draw_size * 20 / 8, true, false);
 
 			Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2, 255, (2 - this.brightness) / 2);
@@ -73,7 +73,7 @@ public class ObstacleTeleporter extends Obstacle
 			Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB  + 255 * (1 - this.brightness), 255, (2 - this.brightness) / 2);
 			Drawing.drawing.fillOval(this.posX, this.posY, height + 7, draw_size / 2, draw_size / 2, true, false);
 
-			if (Game.fancyGraphics)
+			if (Game.fancyTerrain)
 			{
 				glow.posX = this.posX;
 				glow.posY = this.posY;
@@ -88,7 +88,7 @@ public class ObstacleTeleporter extends Obstacle
 		{
 			Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2, 255, 1);
 
-			if (Game.superGraphics)
+			if (Game.glowEnabled)
 				Drawing.drawing.fillGlow(this.posX, this.posY, draw_size * 20 / 8, draw_size * 20 / 8);
 
 			Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2, 255, (2 - this.brightness) / 2);

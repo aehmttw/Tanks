@@ -98,6 +98,7 @@ public class Panel
 		{
 			boolean tutorial = false;
 
+			Game.createModels();
 			Game.game.window.setIcon("/images/icon.png");
 
 			double scale = 1;
@@ -239,7 +240,7 @@ public class Panel
 		double introTime = 1000;
 		double introAnimationTime = 500;
 
-		if (Game.fancyGraphics && Game.enable3d)
+		if (Game.fancyTerrain && Game.enable3d)
 			introAnimationTime = 1000;
 
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
@@ -425,7 +426,7 @@ public class Panel
 			Client.handler.reply();
 		}
 
-		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
+		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
 		{
 			if (Game.stringsEqual(prevScreen.musicID, Game.screen.musicID))
 				this.playScreenMusic(500);
@@ -452,7 +453,7 @@ public class Panel
 		double introTime = 1000;
 		double introAnimationTime = 500;
 
-		if (Game.fancyGraphics && Game.enable3d)
+		if (Game.fancyTerrain && Game.enable3d)
 			introAnimationTime = 1000;
 
 		if (Game.cinematic)
@@ -462,7 +463,7 @@ public class Panel
 		{
 			double frac = ((this.frameStartTime - startTime - introTime) / introAnimationTime);
 
-			if (Game.enable3d && Game.fancyGraphics)
+			if (Game.enable3d && Game.fancyTerrain)
 			{
 				zoomTranslation.z = -0.08 * frac;
 				Game.game.window.transformations.add(zoomTranslation);
@@ -574,7 +575,7 @@ public class Panel
 		{
 			if (Level.isDark())
 			{
-				if (Game.superGraphics)
+				if (Game.glowEnabled)
 				{
 					Drawing.drawing.setColor(0, 0, 0, 128);
 					Drawing.drawing.fillInterfaceGlow(mx, my, 64, 64, true);
@@ -584,7 +585,7 @@ public class Panel
 			}
 			else
 			{
-				if (Game.superGraphics)
+				if (Game.glowEnabled)
 				{
 					Drawing.drawing.setColor(255, 255, 255, 128);
 					Drawing.drawing.fillInterfaceGlow(mx, my, 64, 64);
@@ -608,7 +609,7 @@ public class Panel
 			return;
 
 		Drawing.drawing.setColor(87, 46, 8);
-		Game.game.window.fillRect(0, offset + (int) (Panel.windowHeight - 40), (int) (Panel.windowWidth), 40);
+		Game.game.window.shapeRenderer.fillRect(0, offset + (int) (Panel.windowHeight - 40), (int) (Panel.windowWidth), 40);
 
 		Drawing.drawing.setColor(255, 227, 186);
 

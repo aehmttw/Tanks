@@ -91,7 +91,7 @@ public class Mine extends Movable
     {
         Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 0.5);
 
-        if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
+        if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
             this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
             this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
@@ -110,14 +110,14 @@ public class Mine extends Movable
 
             Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 1);
 
-            if (Game.superGraphics)
+            if (Game.glowEnabled)
                 Drawing.drawing.fillGlow(this.posX, this.posY, height + 1, this.size * 4, this.size * 4, true, false);
         }
         else
         {
             Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 
-            if (Game.superGraphics)
+            if (Game.glowEnabled)
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
         }
 
@@ -184,9 +184,9 @@ public class Mine extends Movable
         Drawing.drawing.playSound("explosion.ogg", (float) (mine_size / this.size));
         this.exploded = true;
 
-        if (Game.fancyGraphics)
+        if (Game.effectsEnabled)
         {
-            for (int j = 0; j < 400 * this.radius / 125; j++)
+            for (int j = 0; j < 200 * this.radius / 125 * Game.effectMultiplier; j++)
             {
                 double random = Math.random();
                 Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);

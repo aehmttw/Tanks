@@ -28,7 +28,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		@Override
 		public void run() 
 		{
-			Game.exitToCrash(new RuntimeException("Lmao this is a crash screen"));
 			if (Game.framework == Game.Framework.libgdx)
 				Game.screen = new ScreenExit();
 			else

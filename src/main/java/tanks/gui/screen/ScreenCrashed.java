@@ -48,7 +48,7 @@ public class ScreenCrashed extends Screen
 	{
 		Drawing drawing = Drawing.drawing;
 		drawing.setColor(0, 0, 255);
-		Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+		Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 
 		drawing.setColor(255, 255, 255);
 		drawing.setInterfaceFontSize(100);

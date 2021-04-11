@@ -206,7 +206,7 @@ public class Hotbar
 		{
 			int count = 0;
 
-			for (Movable m: Game.movables)
+			for (Movable m : Game.movables)
 			{
 				if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy)
 					count++;
@@ -223,15 +223,10 @@ public class Hotbar
 
 			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);
 
-			if (Game.framework != Game.Framework.swing)
-			{
-				Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+			Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
-				Drawing.drawing.setColor(207, 16, 16, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
-			}
-			else
-				Drawing.drawing.fillInterfaceRect(x + Game.tile_size / 4, y, Game.tile_size / 2 + 4, 4);
+			Drawing.drawing.setColor(207, 16, 16, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
 			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.setInterfaceFontSize(24);

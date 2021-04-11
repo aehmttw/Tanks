@@ -151,6 +151,15 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
                     ((Movable) d).drawTeam();
             }
 
+            if (Game.glowEnabled)
+            {
+                for (IDrawable d : this.drawables[i])
+                {
+                    if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
+                        ((IDrawableWithGlow) d).drawGlow();
+                }
+            }
+
             drawables[i].clear();
         }
     }

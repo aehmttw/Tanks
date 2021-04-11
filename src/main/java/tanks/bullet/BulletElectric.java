@@ -215,11 +215,11 @@ public class BulletElectric extends BulletInstant
 
 		if (movable instanceof Tank && !this.tank.isRemote)
 		{
-			Game.eventsOut.add(new EventBulletElectricStunEffect(this.posX, this.posY, this.posZ));
+			Game.eventsOut.add(new EventBulletElectricStunEffect(this.posX, this.posY, this.posZ, 1));
 
-			if (Game.fancyGraphics)
+			if (Game.effectsEnabled)
 			{
-				for (int i = 0; i < 25; i++)
+				for (int i = 0; i < 25 * Game.effectMultiplier; i++)
 				{
 					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.stun);
 					double var = 50;
@@ -238,9 +238,9 @@ public class BulletElectric extends BulletInstant
 	@Override
 	public void addDestroyEffect()
 	{
-		if (Game.fancyGraphics)
+		if (Game.effectsEnabled)
 		{
-			for (int i = 0; i < this.size * 4; i++)
+			for (int i = 0; i < this.size * 4 * Game.effectMultiplier; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;

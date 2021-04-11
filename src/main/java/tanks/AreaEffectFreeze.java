@@ -23,9 +23,9 @@ public class AreaEffectFreeze extends AreaEffect
 	@Override
 	public void imbueEffects()
 	{
-		if (Game.fancyGraphics)
+		if (Game.effectsEnabled)
 		{
-			for (int i = 0; i < 200; i++)
+			for (int i = 0; i < 100 * Game.effectMultiplier; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 				double var = 50;

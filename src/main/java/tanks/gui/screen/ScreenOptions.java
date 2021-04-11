@@ -63,7 +63,6 @@ public class ScreenOptions extends Screen
 					"Game version---" +
 					"Framerate---" +
 					"Network latency (if in a party)---" +
-					"Screen hints---" +
 					"Memory usage");
 
 
@@ -179,8 +178,12 @@ public class ScreenOptions extends Screen
 			f.startWriting();
 			f.println("# This file stores game settings that you have set");
 			f.println("username=" + Game.player.username);
-			f.println("fancy_graphics=" + Game.fancyGraphics);
-			f.println("super_graphics=" + Game.superGraphics);
+			f.println("fancy_terrain=" + Game.fancyTerrain);
+			f.println("effects=" + Game.effectsEnabled);
+			f.println("effect_multiplier=" + (int) Math.round(Game.effectMultiplier * 100));
+			f.println("bullet_trails=" + Game.bulletTrails);
+			f.println("fancy_bullet_trails=" + Game.fancyBulletTrails);
+			f.println("glow=" + Game.glowEnabled);
 			f.println("3d=" + Game.enable3d);
 			f.println("3d_ground=" + Game.enable3dBg);
 			f.println("shadows_enabled=" + Game.shadowsEnabled);
@@ -250,11 +253,23 @@ public class ScreenOptions extends Screen
 						else
 							Game.player.username = "";
 						break;
-					case "fancy_graphics":
-						Game.fancyGraphics = Boolean.parseBoolean(optionLine[1]);
+					case "fancy_terrain":
+						Game.fancyTerrain = Boolean.parseBoolean(optionLine[1]);
 						break;
-					case "super_graphics":
-						Game.superGraphics = Boolean.parseBoolean(optionLine[1]);
+					case "effects":
+						Game.effectsEnabled = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "effect_multiplier":
+						Game.effectMultiplier = Integer.parseInt(optionLine[1]) / 100.0;
+						break;
+					case "bullet_trails":
+						Game.bulletTrails = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "fancy_bullet_trails":
+						Game.fancyBulletTrails = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "glow":
+						Game.glowEnabled = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "3d":
 						Game.enable3d = Boolean.parseBoolean(optionLine[1]);
@@ -371,15 +386,6 @@ public class ScreenOptions extends Screen
 				}
 			}
 			f.stopReading();
-
-			if (Game.framework == Game.Framework.swing)
-			{
-				Game.vsync = false;
-				Game.angledView = false;
-				Game.enable3d = false;
-				Game.enable3dBg = false;
-				Game.superGraphics = false;
-			}
 
 			if (Game.framework == Game.Framework.libgdx)
 			{

@@ -67,7 +67,7 @@ public class ScreenOverlayOnline extends Screen
         this.drawDefaultBackground();
 
         Drawing.drawing.setColor(127, 178, 228, 64);
-        Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
         double lowest = -1;
         for (int i = 0; i < max_button_count; i++)

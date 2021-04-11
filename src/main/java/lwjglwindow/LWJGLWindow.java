@@ -9,7 +9,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
@@ -19,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,11 +26,8 @@ import java.util.Scanner;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.openal.AL10.AL_PITCH;
-import static org.lwjgl.openal.AL10.alSourcef;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.GL_ONE_MINUS_CONSTANT_COLOR;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -40,12 +37,6 @@ public class LWJGLWindow extends BaseWindow
 	protected GLFWVidMode vidmode;
 
 	protected String audioDevice;
-
-	public double colorR;
-	public double colorG;
-	public double colorB;
-	public double colorA;
-	public double glow;
 
 	protected double[] mx = new double[1];
 	protected double[] my = new double[1];
@@ -64,19 +55,34 @@ public class LWJGLWindow extends BaseWindow
 	protected HashMap<String, Integer> textureSY = new HashMap<String, Integer>();
 
 	public boolean batchMode = false;
+	public boolean batchQuads = false;
+	public boolean batchDepth = false;
+	public boolean batchDepthMask = false;
+	public boolean batchGlow = false;
 
-	protected boolean useShader = false;
+	protected boolean shadowsEnabled = false;
 
 	protected int textureFlag;
 	protected int depthFlag;
 	protected int glowFlag;
 
-	public int lightFlag;
-	public int glowLightFlag;
-	public int shadowFlag;
-	public int glowShadowFlag;
+	protected int lightFlag;
+	protected int glowLightFlag;
+	protected int shadeFlag;
+	protected int glowShadeFlag;
 
-	public ShadowMap shadowMap;
+	protected int vboFlag;
+	protected int vboColorFlag;
+
+	protected int bonesEnabledFlag;
+	protected int boneMatricesFlag;
+
+	protected int shadowFlag;
+
+	protected int shadowMapBonesEnabledFlag;
+	protected int shadowMapBoneMatricesFlag;
+
+	public ShaderHandler shaderHandler;
 
 	double bbx1 = 1;
 	double bby1 = 0;
@@ -87,6 +93,8 @@ public class LWJGLWindow extends BaseWindow
 	double bbx3 = 0;
 	double bby3 = 0;
 	double bbz3 = 1;
+
+	public String currentTexture = null;
 
 	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
@@ -311,12 +319,12 @@ public class LWJGLWindow extends BaseWindow
 		return source.toString();
 	}
 
-
 	protected void loop()
 	{
 		GL.createCapabilities();
 
-		this.shadowMap = new ShadowMap(this);
+		this.shaderHandler = new ShaderHandler(this);
+		this.shapeRenderer = new ImmediateModeShapeRenderer(this);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -382,19 +390,10 @@ public class LWJGLWindow extends BaseWindow
 
 			glfwGetFramebufferSize(window, w, h);
 
-			if (useShader)
-			{
-				this.shadowMap.renderShadowMap();
-				this.shadowMap.renderNormal();
-			}
-			else
-			{
-				if (!mac)
-					glViewport(0, 0, (int) absoluteWidth, (int) absoluteHeight);
+			if (shadowsEnabled)
+				this.shaderHandler.renderShadowMap();
 
-				loadPerspective();
-				this.drawer.draw();
-			}
+			this.shaderHandler.renderNormal();
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
@@ -452,311 +451,6 @@ public class LWJGLWindow extends BaseWindow
 		this.setVsync(this.vsync);
 	}
 
-	public void fillOval(double x, double y, double sX, double sY)
-	{
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY) / 4 + 5;
-
-		glBegin(GL_TRIANGLE_FAN);
-		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-		{
-			glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
-		}
-
-		glEnd();
-	}
-
-	public void fillGlow(double x, double y, double sX, double sY, boolean shade)
-	{
-		this.fillGlow(x, y, sX, sY, shade, false);
-	}
-
-	public void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light)
-	{
-		if (this.drawingShadow)
-			return;
-
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY) / 16 + 5;
-
-		if (!shade)
-			this.setGlowBlendFunc();
-
-		if (light)
-			this.setLightBlendFunc();
-
-		glBegin(GL_TRIANGLES);
-		double step = Math.PI * 2 / sides;
-
-		double pX = x + Math.cos(0) * sX / 2;
-		double pY = y + Math.sin(0) * sY / 2;
-		double d = 0;
-		for (int n = 0; n < sides; n++)
-		{
-			d += step;
-
-			if (!shade)
-				glColor3d(0, 0, 0);
-			else
-				glColor4d(this.colorR, this.colorG, this.colorB, 0);
-
-			glVertex2d(pX, pY);
-			pX = x + Math.cos(d) * sX / 2;
-			pY = y + Math.sin(d) * sY / 2;
-			glVertex2d(pX, pY);
-
-			if (!shade)
-				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
-			else
-				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-
-			glVertex2d(x, y);
-		}
-
-		glEnd();
-
-		if (!shade)
-			this.setTransparentBlendFunc();
-	}
-
-	@Override
-	public void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest)
-	{
-		if (depthTest)
-		{
-			enableDepthtest();
-
-			if (colorA < 1)
-				glDepthMask(false);
-		}
-
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
-
-		glBegin(GL_TRIANGLE_FAN);
-		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-		{
-			glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
-		}
-
-		glEnd();
-
-		if (depthTest)
-		{
-			glDepthMask(true);
-			disableDepthtest();
-		}
-	}
-
-	@Override
-	public void fillPartialOval(double x, double y, double sX, double sY, double start, double end)
-	{
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY) / 4 + 5;
-
-		glBegin(GL_TRIANGLES);
-		for (double i = start; i < end; i += (end - start) / sides)
-		{
-			glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
-			glVertex2d(x + Math.cos(i + 1) * sX / 2, y + Math.sin(i + 1) * sY / 2);
-			glVertex2d(x, y);
-		}
-
-		glEnd();
-	}
-
-	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
-	{
-		this.fillGlow(x, y, z, sX, sY, depthTest, shade, false);
-	}
-
-	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
-	{
-		if (this.drawingShadow)
-			return;
-
-		if (depthTest)
-		{
-			enableDepthtest();
-			glDepthMask(false);
-		}
-
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
-
-		if (!shade)
-			this.setGlowBlendFunc();
-
-		if (light)
-			this.setLightBlendFunc();
-
-		glBegin(GL_TRIANGLES);
-		double step = Math.PI * 2 / sides;
-
-		double pX = x + Math.cos(0) * sX / 2;
-		double pY = y + Math.sin(0) * sY / 2;
-		double d = 0;
-		for (int n = 0; n < sides; n++)
-		{
-			d += step;
-
-			if (!shade)
-				glColor3d(0, 0, 0);
-			else
-				glColor4d(this.colorR, this.colorG, this.colorB, 0);
-
-			glVertex3d(pX, pY, z);
-			pX = x + Math.cos(d) * sX / 2;
-			pY = y + Math.sin(d) * sY / 2;
-			glVertex3d(pX, pY, z);
-
-			if (!shade)
-				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
-			else
-				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-
-			glVertex3d(x, y, z);
-		}
-
-		glEnd();
-
-		if (!shade)
-			this.setTransparentBlendFunc();
-
-		if (depthTest)
-		{
-			glDepthMask(true);
-			disableDepthtest();
-		}
-	}
-
-	public void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest)
-	{
-		if (depthTest)
-		{
-			enableDepthtest();
-
-			if (colorA < 1)
-				glDepthMask(false);
-		}
-
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
-
-		glBegin(GL_TRIANGLE_FAN);
-		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-		{
-			double ox = Math.cos(i) * sX / 2;
-			double oy = Math.sin(i) * sY / 2;
-			glVertex3d(x + ox * bbx1 + oy * bbx2, y + ox * bby1 + oy * bby2, z + ox * bbz1 + oy * bbz2);
-		}
-
-		glEnd();
-
-		if (depthTest)
-		{
-			glDepthMask(true);
-			disableDepthtest();
-		}
-	}
-
-	@Override
-	public void fillGlow(double x, double y, double sX, double sY)
-	{
-		this.fillGlow(x, y, sX, sY, false);
-	}
-
-	@Override
-	public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
-	{
-		this.fillGlow(x, y, z, sX, sY, false, false);
-	}
-
-	@Override
-	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
-	{
-		this.fillFacingGlow(x, y, z, sX, sY, depthTest,false);
-	}
-
-	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
-	{
-		this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade,false);
-	}
-
-	public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
-	{
-		if (this.drawingShadow)
-			return;
-
-		if (depthTest)
-		{
-			enableDepthtest();
-			glDepthMask(false);
-		}
-
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
-
-		if (!shade)
-			this.setGlowBlendFunc();
-
-		if (light)
-			this.setLightBlendFunc();
-
-		glBegin(GL_TRIANGLES);
-		double step = Math.PI * 2 / sides;
-
-		double ox = Math.cos(0) * sX / 2;
-		double oy = Math.sin(0) * sY / 2;
-		double d = 0;
-		for (int n = 0; n < sides; n++)
-		{
-			d += step;
-
-			if (!shade)
-				glColor3d(0, 0, 0);
-			else
-				glColor4d(this.colorR, this.colorG, this.colorB, 0);
-
-			glVertex3d(x + ox * bbx1 + oy * bbx2, y + ox * bby1 + oy * bby2, z + ox * bbz1 + oy * bbz2);
-			ox = Math.cos(d) * sX / 2;
-			oy = Math.sin(d) * sY / 2;
-			glVertex3d(x + ox * bbx1 + oy * bbx2, y + ox * bby1 + oy * bby2, z + ox * bbz1 + oy * bbz2);
-
-			if (!shade)
-				glColor3d(this.colorR * this.colorA, this.colorG * this.colorA, this.colorB * this.colorA);
-			else
-				glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-
-			glVertex3d(x, y, z);
-		}
-
-		glEnd();
-
-		if (!shade)
-			this.setTransparentBlendFunc();
-
-		if (depthTest)
-		{
-			glDepthMask(true);
-			disableDepthtest();
-		}
-	}
-
 	public void setColor(double r, double g, double b, double a, double glow)
 	{
 		this.colorR = r / 255;
@@ -767,7 +461,7 @@ public class LWJGLWindow extends BaseWindow
 
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
-		if (useShader)
+		if (!drawingShadow)
 			GL20.glUniform1f(glowFlag, (float) glow);
 	}
 
@@ -779,7 +473,7 @@ public class LWJGLWindow extends BaseWindow
 		this.colorA = a / 255;
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
-		if (useShader)
+		if (!drawingShadow)
 			GL20.glUniform1f(glowFlag, 0);
 	}
 
@@ -791,268 +485,8 @@ public class LWJGLWindow extends BaseWindow
 		this.colorA = 1;
 		glColor3d(this.colorR, this.colorG, this.colorB);
 
-		if (useShader)
+		if (!drawingShadow)
 			GL20.glUniform1f(glowFlag, 0);
-	}
-
-	public void drawOval(double x, double y, double sX, double sY)
-	{
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY) / 4 + 5;
-
-		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-		{
-			glBegin(GL_LINES);
-			glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
-			glVertex2d(x + Math.cos(i + Math.PI * 2 / sides) * sX / 2, y + Math.sin(i + Math.PI * 2 / sides) * sY / 2);
-			glEnd();
-		}
-	}
-
-	public void drawOval(double x, double y, double z, double sX, double sY)
-	{
-		x += sX / 2;
-		y += sY / 2;
-
-		int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
-
-		for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-		{
-			glBegin(GL_LINES);
-			glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
-			glVertex3d(x + Math.cos(i + Math.PI * 2 / sides) * sX / 2, y + Math.sin(i + Math.PI * 2 / sides) * sY / 2, z);
-			glEnd();
-		}
-	}
-
-	public void fillRect(double x, double y, double sX, double sY)
-	{
-		glBegin(GL_TRIANGLE_FAN);
-
-		glVertex2d(x, y);
-		glVertex2d(x + sX, y);
-		glVertex2d(x + sX, y + sY);
-		glVertex2d(x, y + sY);
-
-		glEnd();
-	}
-
-	public void fillBox(double x, double y, double z, double sX, double sY, double sZ)
-	{
-		fillBox(x, y, z, sX, sY, sZ, (byte) 0);
-	}
-
-	/**
-	 * Options byte:
-	 *
-	 * 0: default
-	 *
-	 * +1 hide behind face
-	 * +2 hide front face
-	 * +4 hide bottom face
-	 * +8 hide top face
-	 * +16 hide left face
-	 * +32 hide right face
-	 *
-	 * +64 draw on top
-	 * */
-	public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options)
-	{
-		if (!batchMode)
-		{
-			enableDepthtest();
-
-			if (colorA < 1)
-				glDepthMask(false);
-
-			if ((options >> 6) % 2 == 0)
-				glDepthFunc(GL_LEQUAL);
-			else
-				glDepthFunc(GL_ALWAYS);
-
-			GL11.glBegin(GL11.GL_QUADS);
-		}
-
-		if (options % 2 == 0)
-		{
-			GL11.glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-			GL11.glVertex3d(x + sX, y, z);
-			GL11.glVertex3d(x, y, z);
-			GL11.glVertex3d(x, y + sY, z);
-			GL11.glVertex3d(x + sX, y + sY, z);
-		}
-
-		if ((options >> 2) % 2 == 0)
-		{
-			GL11.glColor4d(this.colorR * 0.8, this.colorG * 0.8, this.colorB * 0.8, this.colorA);
-			GL11.glVertex3d(x + sX, y + sY, z + sZ);
-			GL11.glVertex3d(x, y + sY, z + sZ);
-			GL11.glVertex3d(x, y + sY, z);
-			GL11.glVertex3d(x + sX, y + sY, z);
-		}
-
-		if ((options >> 3) % 2 == 0)
-		{
-			GL11.glColor4d(this.colorR * 0.8, this.colorG * 0.8, this.colorB * 0.8, this.colorA);
-			GL11.glVertex3d(x + sX, y , z + sZ);
-			GL11.glVertex3d(x, y, z + sZ);
-			GL11.glVertex3d(x, y, z);
-			GL11.glVertex3d(x + sX, y, z);
-		}
-
-		if ((options >> 4) % 2 == 0)
-		{
-			GL11.glColor4d(this.colorR * 0.6, this.colorG * 0.6, this.colorB * 0.6, this.colorA);
-			GL11.glVertex3d(x, y + sY, z + sZ);
-			GL11.glVertex3d(x, y + sY, z);
-			GL11.glVertex3d(x, y, z);
-			GL11.glVertex3d(x, y, z + sZ);
-		}
-
-		if ((options >> 5) % 2 == 0)
-		{
-			GL11.glColor4d(this.colorR * 0.6, this.colorG * 0.6, this.colorB * 0.6, this.colorA);
-			GL11.glVertex3d(x + sX, y + sY, z);
-			GL11.glVertex3d(x + sX, y + sY, z + sZ);
-			GL11.glVertex3d(x + sX, y, z + sZ);
-			GL11.glVertex3d(x + sX, y, z);
-		}
-
-		if ((options >> 1) % 2 == 0)
-		{
-			GL11.glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-			GL11.glVertex3d(x + sX, y + sY, z + sZ);
-			GL11.glVertex3d(x, y + sY, z + sZ);
-			GL11.glVertex3d(x, y, z + sZ);
-			GL11.glVertex3d(x + sX, y, z + sZ);
-		}
-
-		if (!batchMode)
-		{
-			GL11.glEnd();
-			disableDepthtest();
-			glDepthMask(true);
-		}
-	}
-
-	public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
-	{
-		glBegin(GL_TRIANGLE_FAN);
-
-		glVertex2d(x1, y1);
-		glVertex2d(x2, y2);
-		glVertex2d(x3, y3);
-		glVertex2d(x4, y4);
-
-		glEnd();
-	}
-
-	public void fillQuadBox(double x1, double y1,
-							double x2, double y2,
-							double x3, double y3,
-							double x4, double y4,
-							double z, double sZ,
-							byte options)
-	{
-		enableDepthtest();
-
-		if ((options >> 6) % 2 == 0)
-			glDepthFunc(GL_LEQUAL);
-		else
-			glDepthFunc(GL_ALWAYS);
-
-		if (options % 2 == 0)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-			GL11.glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-			GL11.glVertex3d(x1, y1, z);
-			GL11.glVertex3d(x2, y2, z);
-			GL11.glVertex3d(x3, y3, z);
-			GL11.glVertex3d(x4, y4, z);
-			GL11.glEnd();
-		}
-
-		if ((options >> 2) % 2 == 0)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-			GL11.glColor4d(this.colorR * 0.6, this.colorG * 0.6, this.colorB * 0.6, this.colorA);
-			GL11.glVertex3d(x1, y1, z + sZ);
-			GL11.glVertex3d(x2, y2, z + sZ);
-			GL11.glVertex3d(x2, y2, z);
-			GL11.glVertex3d(x1, y1, z);
-			GL11.glEnd();
-		}
-
-		if ((options >> 3) % 2 == 0)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-			GL11.glColor4d(this.colorR * 0.6, this.colorG * 0.6, this.colorB * 0.6, this.colorA);
-			GL11.glVertex3d(x3, y3, z + sZ);
-			GL11.glVertex3d(x4, y4, z + sZ);
-			GL11.glVertex3d(x4, y4, z);
-			GL11.glVertex3d(x3, y3, z);
-			GL11.glEnd();
-		}
-
-		if ((options >> 4) % 2 == 0)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-			GL11.glColor4d(this.colorR * 0.8, this.colorG * 0.8, this.colorB * 0.8, this.colorA);
-			GL11.glVertex3d(x1, y1, z + sZ);
-			GL11.glVertex3d(x4, y4, z + sZ);
-			GL11.glVertex3d(x4, y4, z);
-			GL11.glVertex3d(x1, y1, z);
-			GL11.glEnd();
-		}
-
-		if ((options >> 5) % 2 == 0)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-			GL11.glColor4d(this.colorR * 0.6, this.colorG * 0.6, this.colorB * 0.6, this.colorA);
-			GL11.glVertex3d(x3, y3, z + sZ);
-			GL11.glVertex3d(x2, y2, z + sZ);
-			GL11.glVertex3d(x2, y2, z);
-			GL11.glVertex3d(x3, y3, z);
-			GL11.glEnd();
-		}
-
-		if ((options >> 1) % 2 == 0)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-			GL11.glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
-			GL11.glVertex3d(x1, y1, z + sZ);
-			GL11.glVertex3d(x2, y2, z + sZ);
-			GL11.glVertex3d(x3, y3, z + sZ);
-			GL11.glVertex3d(x4, y4, z + sZ);
-			GL11.glEnd();
-		}
-
-		disableDepthtest();
-	}
-
-	public void drawRect(double x, double y, double sX, double sY)
-	{
-		glBegin(GL_LINES);
-		glVertex2d(x, y);
-		glVertex2d(x + sX, y);
-		glEnd();
-
-		glBegin(GL_LINES);
-		glVertex2d(x, y);
-		glVertex2d(x, y + sY);
-		glEnd();
-
-		glBegin(GL_LINES);
-		glVertex2d(x, y + sY);
-		glVertex2d(x + sX, y + sY);
-		glEnd();
-
-		glBegin(GL_LINES);
-		glVertex2d(x + sX, y);
-		glVertex2d(x + sX, y + sY);
-		glEnd();
 	}
 
 	protected void createImage(String image)
@@ -1060,7 +494,6 @@ public class LWJGLWindow extends BaseWindow
 		try
 		{
 			InputStream in;
-
 
 			in = getClass().getResourceAsStream(image);
 
@@ -1219,254 +652,14 @@ public class LWJGLWindow extends BaseWindow
 			for (Transformation t: this.baseTransformations)
 				t.apply();
 
-			if (this.useShader)
+			if (!drawingShadow)
 			{
 				float[] projMatrix = new float[16];
 				glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
 
-				glUniformMatrix4fv(this.shadowMap.normalProgramVPUniform, false, projMatrix);
+				glUniformMatrix4fv(this.shaderHandler.normalProgramVPUniform, false, projMatrix);
 			}
 		}
-	}
-
-	public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)
-	{
-		drawImage(x, y, sX, sY, 0, 0, 1, 1, image, scaled);
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, String image, boolean scaled)
-	{
-		drawImage(x, y, z, sX, sY, 0, 0, 1, 1, image, scaled);
-	}
-
-	public void drawImage(double x, double y, double sX, double sY, String image, double rotation, boolean scaled)
-	{
-		drawImage(x, y, sX, sY, 0, 0, 1, 1, image, rotation, scaled);
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, String image, double rotation, boolean scaled)
-	{
-		drawImage(x, y, z, sX, sY, 0, 0, 1, 1, image, rotation, scaled);
-	}
-
-	public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
-	{
-		if (this.drawingShadow)
-			return;
-
-		if (!textures.containsKey(image))
-			createImage(image);
-
-		loadPerspective();
-
-		glMatrixMode(GL_MODELVIEW);
-		enableTexture();
-
-		glEnable(GL_BLEND);
-		this.setTransparentBlendFunc();
-
-		glBindTexture(GL_TEXTURE_2D, textures.get(image));
-
-		double width = sX * (u2 - u1);
-		double height = sY * (v2 - v1);
-
-		if (scaled)
-		{
-			width *= textureSX.get(image);
-			height *= textureSY.get(image);
-		}
-
-		glBegin(GL_TRIANGLE_FAN);
-		glTexCoord2d(u1, v1);
-		glVertex2d(x, y);
-		glTexCoord2d(u1, v2);
-		glVertex2d(x, y + height);
-		glTexCoord2d(u2, v2);
-		glVertex2d(x + width, y + height);
-		glTexCoord2d(u2, v1);
-		glVertex2d(x + width, y);
-
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		disableTexture();
-
-		if (useShader)
-			GL20.glUniform1i(textureFlag, 0);
-	}
-
-	public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
-	{
-		if (this.drawingShadow)
-			return;
-
-		if (!textures.containsKey(image))
-			createImage(image);
-
-		loadPerspective();
-
-		glMatrixMode(GL_MODELVIEW);
-		enableTexture();
-
-		glEnable(GL_BLEND);
-		this.setTransparentBlendFunc();
-
-		glBindTexture(GL_TEXTURE_2D, textures.get(image));
-
-		double width = sX * (u2 - u1);
-		double height = sY * (v2 - v1);
-
-		if (scaled)
-		{
-			width *= textureSX.get(image);
-			height *= textureSY.get(image);
-		}
-
-		glBegin(GL_TRIANGLE_FAN);
-		glTexCoord2d(u1, v1);
-		glVertex2d(rotateX(-width / 2, -height / 2, x, rotation), rotateY(-width / 2, -height / 2, y, rotation));
-		glTexCoord2d(u1, v2);
-		glVertex2d(rotateX(width / 2, -height / 2, x, rotation), rotateY(width / 2, -height / 2, y, rotation));
-		glTexCoord2d(u2, v2);
-		glVertex2d(rotateX(width / 2, height / 2, x, rotation), rotateY(width / 2, height / 2, y, rotation));
-		glTexCoord2d(u2, v1);
-		glVertex2d(rotateX(-width / 2, height / 2, x, rotation), rotateY(-width / 2, height / 2, y, rotation));
-
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		disableTexture();
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
-	{
-		this.drawImage(x, y, z, sX, sY, u1, v1, u2, v2, image, scaled, true);
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest)
-	{
-		if (this.drawingShadow)
-			return;
-
-		if (!textures.containsKey(image))
-			createImage(image);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		if (depthtest)
-			enableDepthtest();
-
-		loadPerspective();
-
-		glMatrixMode(GL_MODELVIEW);
-
-		enableTexture();
-		glEnable(GL_BLEND);
-		this.setTransparentBlendFunc();
-
-		glDepthMask(false);
-
-		glBindTexture(GL_TEXTURE_2D, textures.get(image));
-
-		double width = sX * (u2 - u1);
-		double height = sY * (v2 - v1);
-
-		if (scaled)
-		{
-			width *= textureSX.get(image);
-			height *= textureSY.get(image);
-		}
-
-		glBegin(GL_TRIANGLE_FAN);
-		glTexCoord2d(u1, v1);
-		glVertex3d(x, y, z);
-		glTexCoord2d(u1, v2);
-		glVertex3d(x, y + height, z);
-		glTexCoord2d(u2, v2);
-		glVertex3d(x + width, y + height, z);
-		glTexCoord2d(u2, v1);
-		glVertex3d(x + width, y, z);
-
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		disableTexture();
-
-		glDepthMask(true);
-
-		if (depthtest)
-			disableDepthtest();
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
-	{
-		this.drawImage(x, y, z, sX, sY, u1, v1, u2, v2, image, rotation, scaled, true);
-	}
-
-	public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
-	{
-		if (this.drawingShadow)
-			return;
-
-		if (!textures.containsKey(image))
-			createImage(image);
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		if (depthtest)
-			enableDepthtest();
-
-		loadPerspective();
-		glMatrixMode(GL_MODELVIEW);
-
-		enableTexture();
-		glEnable(GL_BLEND);
-		this.setTransparentBlendFunc();
-
-		glDepthMask(false);
-
-		glBindTexture(GL_TEXTURE_2D, textures.get(image));
-
-		double width = sX * (u2 - u1);
-		double height = sY * (v2 - v1);
-
-		if (scaled)
-		{
-			width *= textureSX.get(image);
-			height *= textureSY.get(image);
-		}
-
-		glBegin(GL_TRIANGLE_FAN);
-		glTexCoord2d(u1, v1);
-		glVertex3d(rotateX(-width / 2, -height / 2, x, rotation), rotateY(-width / 2, -height / 2, y, rotation), z);
-		glTexCoord2d(u1, v2);
-		glVertex3d(rotateX(width / 2, -height / 2, x, rotation), rotateY(width / 2, -height / 2, y, rotation), z);
-		glTexCoord2d(u2, v2);
-		glVertex3d(rotateX(width / 2, height / 2, x, rotation), rotateY(width / 2, height / 2, y, rotation), z);
-		glTexCoord2d(u2, v1);
-		glVertex3d(rotateX(-width / 2, height / 2, x, rotation), rotateY(-width / 2, height / 2, y, rotation), z);
-
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		disableTexture();
-
-		glDepthMask(true);
-
-		if (depthtest)
-			disableDepthtest();
-	}
-
-	public double rotateX(double px, double py, double posX, double rotation)
-	{
-		return (px * Math.cos(rotation) - py * Math.sin(rotation)) + posX;
-	}
-
-	public double rotateY(double px, double py, double posY, double rotation)
-	{
-		return (py * Math.cos(rotation) + px * Math.sin(rotation)) + posY;
 	}
 
 	@Override
@@ -1587,6 +780,10 @@ public class LWJGLWindow extends BaseWindow
 	public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask)
 	{
 		this.batchMode = enabled;
+		this.batchQuads = quads;
+		this.batchDepth = depth;
+		this.batchGlow = glow;
+		this.batchDepthMask = depthMask;
 
 		if (enabled)
 		{
@@ -1616,6 +813,96 @@ public class LWJGLWindow extends BaseWindow
 			glDepthMask(true);
 			this.setTransparentBlendFunc();
 		}
+	}
+
+	public void setDrawOptions(boolean depth, boolean glow)
+	{
+		this.batchDepth = depth;
+		this.batchGlow = glow;
+
+		if (depth)
+		{
+			enableDepthtest();
+			glDepthFunc(GL_LEQUAL);
+		}
+		else
+			disableDepthtest();
+
+		if (glow)
+			this.setGlowBlendFunc();
+		else
+			this.setTransparentBlendFunc();
+	}
+
+	public void setDrawOptions(boolean depth, boolean glow, boolean depthMask)
+	{
+		this.batchDepth = depth;
+		this.batchGlow = glow;
+		this.batchDepthMask = depthMask;
+
+		glDepthMask(depthMask);
+
+		if (depth)
+		{
+			enableDepthtest();
+			glDepthFunc(GL_LEQUAL);
+		}
+		else
+			disableDepthtest();
+
+		if (glow)
+			this.setGlowBlendFunc();
+		else
+			this.setTransparentBlendFunc();
+	}
+
+	public void setTexture(String image)
+	{
+		this.setTexture(image, true);
+	}
+
+	public void setTexture(String image, boolean batch)
+	{
+		if (image.equals(this.currentTexture))
+			return;
+
+		if (batch)
+			this.setBatchMode(false, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+
+		this.currentTexture = image;
+
+		if (!textures.containsKey(image))
+			createImage(image);
+
+		glMatrixMode(GL_MODELVIEW);
+		enableTexture();
+
+		glEnable(GL_BLEND);
+		this.setTransparentBlendFunc();
+
+		glBindTexture(GL_TEXTURE_2D, textures.get(image));
+
+		if (batch)
+			this.setBatchMode(true, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+	}
+
+	public void setTextureCoords(double u, double v)
+	{
+		glTexCoord2d(u, v);
+	}
+
+	public void stopTexture()
+	{
+		if (this.currentTexture == null)
+			return;
+
+		this.currentTexture = null;
+		glMatrixMode(GL_PROJECTION);
+
+		this.setBatchMode(false, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+		this.setBatchMode(true, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+
+		disableTexture();
 	}
 
 	@Override
@@ -1657,42 +944,57 @@ public class LWJGLWindow extends BaseWindow
 	{
 		if (quality <= 0)
 		{
-			this.shadowMap.quality = 1;
-			this.useShader = false;
+			this.shaderHandler.quality = 1;
+			this.shadowsEnabled = false;
 		}
 		else
 		{
-			this.shadowMap.quality = quality;
-			this.useShader = true;
+			this.shaderHandler.quality = quality;
+			this.shadowsEnabled = true;
 		}
 	}
 
 	@Override
 	public double getShadowQuality()
 	{
-		if (!this.useShader)
+		if (!this.shadowsEnabled)
 			return 0;
 		else
-			return this.shadowMap.quality;
+			return this.shaderHandler.quality;
 	}
 
 	@Override
 	public void setLighting(double light, double glowLight, double shadow, double glowShadow)
 	{
-		if (useShader)
-		{
-			GL20.glUniform1f(this.lightFlag, (float) light);
-			GL20.glUniform1f(this.glowLightFlag, (float) glowLight);
-			GL20.glUniform1f(this.shadowFlag, (float) shadow);
-			GL20.glUniform1f(this.glowShadowFlag, (float) glowShadow);
-		}
+		GL20.glUniform1f(this.lightFlag, (float) light);
+		GL20.glUniform1f(this.glowLightFlag, (float) glowLight);
+		GL20.glUniform1f(this.shadeFlag, (float) shadow);
+		GL20.glUniform1f(this.glowShadeFlag, (float) glowShadow);
+	}
+
+	@Override
+	public ModelPart createModelPart()
+	{
+		return new ImmediateModeModelPart(this);
+	}
+
+	@Override
+	public ModelPart createModelPart(Model model, ArrayList<ModelPart.Shape> shapes, Model.Material material)
+	{
+		return new VBOModelPart(this, model, shapes, material);
+	}
+
+	@Override
+	public PosedModel createPosedModel(Model m)
+	{
+		return new VBOPosedModel(m);
 	}
 
 	public void enableTexture()
 	{
 		glEnable(GL_TEXTURE_2D);
 
-		if (useShader)
+		if (!drawingShadow)
 		{
 			GL20.glUniform1i(textureFlag, 1);
 			GL20.glActiveTexture(GL13.GL_TEXTURE0);
@@ -1701,15 +1003,16 @@ public class LWJGLWindow extends BaseWindow
 
 	public void disableTexture()
 	{
+		this.currentTexture = null;
 		glDisable(GL_TEXTURE_2D);
 
-		if (useShader)
+		if (!drawingShadow)
 		{
 			GL20.glUniform1i(textureFlag, 0);
 
 			glEnable(GL_TEXTURE_2D);
 			GL20.glActiveTexture(GL13.GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, this.shadowMap.depthTexture);
+			glBindTexture(GL_TEXTURE_2D, this.shaderHandler.depthTexture);
 		}
 	}
 
@@ -1717,7 +1020,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		if (useShader)
+		if (!drawingShadow)
 			GL20.glUniform1i(depthFlag, 1);
 	}
 
@@ -1725,7 +1028,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		glDisable(GL_DEPTH_TEST);
 
-		if (useShader)
+		if (!drawingShadow)
 			GL20.glUniform1i(depthFlag, 0);
 	}
 
@@ -1742,5 +1045,111 @@ public class LWJGLWindow extends BaseWindow
 	public void setTransparentBlendFunc()
 	{
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	public int createVBO()
+	{
+		return GL15.glGenBuffers();
+	}
+
+	public void vertexBufferData(int id, FloatBuffer buffer)
+	{
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+	}
+
+	public void renderVBO(int vertexBufferID, int colorBufferID, int texBufferID, int numberIndices)
+	{
+		if (!this.drawingShadow)
+		{
+			glUniform1i(this.vboFlag, 1);
+			glUniform4f(this.vboColorFlag, (float) this.colorR, (float) this.colorG, (float) this.colorB, (float) this.colorA);
+		}
+
+		GL11.glEnableClientState(GL_COLOR_ARRAY);
+		GL11.glEnableClientState(GL_VERTEX_ARRAY);
+
+		if (texBufferID != 0)
+			GL11.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferID);
+		GL11.glVertexPointer(3, GL_FLOAT, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferID);
+		GL11.glColorPointer(4, GL_FLOAT, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		if (texBufferID != 0)
+		{
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferID);
+			GL11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		}
+
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, numberIndices);
+
+		GL11.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		GL11.glDisableClientState(GL_VERTEX_ARRAY);
+		GL11.glDisableClientState(GL_COLOR_ARRAY);
+
+		if (!this.drawingShadow)
+		{
+			glUniform1i(this.vboFlag, 0);
+		}
+	}
+
+	public void renderPosedVBO(int vertexBufferID, int colorBufferID, int texBufferID, int boneBufferID, int numberIndices)
+	{
+		if (!this.drawingShadow)
+		{
+			glUniform1i(this.vboFlag, 1);
+			glUniform1i(this.bonesEnabledFlag, 1);
+			glUniform4f(this.vboColorFlag, (float) this.colorR, (float) this.colorG, (float) this.colorB, (float) this.colorA);
+		}
+		else
+			glUniform1i(this.shadowMapBonesEnabledFlag, 1);
+
+		GL11.glEnableClientState(GL_COLOR_ARRAY);
+		GL11.glEnableClientState(GL_VERTEX_ARRAY);
+
+		if (texBufferID != 0)
+			GL11.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferID);
+		GL11.glVertexPointer(3, GL_FLOAT, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferID);
+		GL11.glColorPointer(4, GL_FLOAT, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, boneBufferID);
+		glEnableVertexAttribArray(6);
+		GL20.glVertexAttribPointer(6, 4, GL_FLOAT, false, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		if (texBufferID != 0)
+		{
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferID);
+			GL11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		}
+
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, numberIndices);
+
+		GL11.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		GL11.glDisableClientState(GL_VERTEX_ARRAY);
+		GL11.glDisableClientState(GL_COLOR_ARRAY);
+
+		if (!this.drawingShadow)
+		{
+			glUniform1i(this.vboFlag, 0);
+			glUniform1i(this.bonesEnabledFlag, 0);
+		}
+		else
+			glUniform1i(this.shadowMapBonesEnabledFlag, 0);
+
+		glDisableVertexAttribArray(6);
 	}
 }

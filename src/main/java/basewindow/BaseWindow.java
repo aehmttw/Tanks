@@ -1,7 +1,7 @@
 package basewindow;
 
 import basewindow.transformation.*;
-import lwjglwindow.ShadowMap;
+import lwjglwindow.ImmediateModeModelPart;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 public abstract class BaseWindow
 {
+    public BaseShapeRenderer shapeRenderer;
     public BaseFontRenderer fontRenderer;
 
     public boolean angled = false;
@@ -22,6 +23,12 @@ public abstract class BaseWindow
 
     public double absoluteMouseX;
     public double absoluteMouseY;
+
+    public double colorR;
+    public double colorG;
+    public double colorB;
+    public double colorA;
+    public double glow;
 
     public boolean fullscreen;
 
@@ -89,6 +96,8 @@ public abstract class BaseWindow
 
     public BasePlatformHandler platformHandler;
 
+    public ModelPart.ShapeDrawer shapeDrawer;
+
     public BaseWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
     {
         this.name = name;
@@ -100,6 +109,7 @@ public abstract class BaseWindow
         this.vsync = vsync;
         this.windowHandler = w;
         this.showMouseOnLaunch = showMouse;
+        this.shapeDrawer = new ImmediateModeModelPart.ImmediateModeShapeDrawer(this);
 
         if (System.getProperties().toString().contains("Mac OS X"))
             mac = true;
@@ -164,84 +174,17 @@ public abstract class BaseWindow
 
     public abstract void setIcon(String icon);
 
-    public abstract void fillOval(double x, double y, double sX, double sY);
-
-    public abstract void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest);
-
-    public abstract void fillPartialOval(double x, double y, double sX, double sY, double start, double end);
-
-    public abstract void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest);
-
-    public abstract void fillGlow(double x, double y, double sX, double sY);
-
-    public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
-
-    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
-
-    public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade);
-
-    public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light);
-
-    public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
-
-    public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light);
-
-    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
-
-    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light);
-
     public abstract void setColor(double r, double g, double b, double a, double glow);
 
     public abstract void setColor(double r, double g, double b, double a);
 
     public abstract void setColor(double r, double g, double b);
 
-    public abstract void drawOval(double x, double y, double sX, double sY);
-
-    public abstract void drawOval(double x, double y, double z, double sX, double sY);
-
-    public abstract void fillRect(double x, double y, double sX, double sY);
-
-    public abstract void fillBox(double x, double y, double z, double sX, double sY, double sZ);
-
-    public abstract void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options);
-
-    public abstract void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
-
-    public abstract void fillQuadBox(double x1, double y1,
-                                     double x2, double y2,
-                                     double x3, double y3,
-                                     double x4, double y4,
-                                     double z, double sZ,
-                                     byte options);
-
-    public abstract void drawRect(double x, double y, double sX, double sY);
-
     public abstract void setUpPerspective();
 
     public abstract void applyTransformations();
 
     public abstract void loadPerspective();
-
-    public abstract void drawImage(double x, double y, double sX, double sY, String image, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, String image, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest);
-
-    public abstract void drawImage(double x, double y, double sX, double sY, String image, double rotation, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, String image, double rotation, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled);
-
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest);
 
     public abstract String getClipboard();
 
@@ -271,6 +214,12 @@ public abstract class BaseWindow
 
     public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask);
 
+    public abstract void setTextureCoords(double u, double v);
+
+    public abstract void setTexture(String image);
+
+    public abstract void stopTexture();
+
     public abstract void addVertex(double x, double y, double z);
 
     public abstract void addVertex(double x, double y);
@@ -282,6 +231,12 @@ public abstract class BaseWindow
     public abstract double getShadowQuality();
 
     public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
+
+    public abstract ModelPart createModelPart();
+
+    public abstract ModelPart createModelPart(Model model, ArrayList<ModelPart.Shape> shapes, Model.Material material);
+
+    public abstract PosedModel createPosedModel(Model m);
 
     public void setupKeyCodes()
     {

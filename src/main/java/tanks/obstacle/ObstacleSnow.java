@@ -39,7 +39,7 @@ public class ObstacleSnow extends Obstacle
 
         double darkness = Math.random() * 20;
 
-        if (!Game.fancyGraphics)
+        if (!Game.fancyTerrain)
             darkness = 10;
 
         this.colorR = 255 - darkness;
@@ -84,13 +84,13 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void onObjectEntryLocal(Movable m)
     {
-        if (Game.fancyGraphics && !ScreenGame.finished)
+        if (Game.effectsEnabled && !ScreenGame.finished)
         {
             double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 
             double mul = 0.0625 / 4;
 
-            double amt = speed * mul * Panel.frameFrequency;
+            double amt = speed * mul * Panel.frameFrequency * Game.effectMultiplier;
 
             if (amt < 1 && Math.random() < amt % 1)
                 amt += 1;
@@ -154,7 +154,7 @@ public class ObstacleSnow extends Obstacle
                 double g = Game.tilesG[x][y];
                 double b = Game.tilesB[x][y];
 
-                if (!Game.fancyGraphics)
+                if (!Game.fancyTerrain)
                 {
                     r = Level.currentColorR;
                     g = Level.currentColorG;

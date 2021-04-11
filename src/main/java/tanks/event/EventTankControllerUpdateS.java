@@ -49,9 +49,6 @@ public class EventTankControllerUpdateS extends EventTankUpdate
         {
             if (t instanceof TankPlayerController && Game.clientID.equals(((TankPlayerController) t).clientID))
             {
-                Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.laser));
-                Game.effects.add(Effect.createNewEffect(t.posX, t.posY, Effect.EffectType.healing));
-
                 TankPlayerController p = (TankPlayerController) t;
                 p.interpolatedOffX = this.posX - (t.posX - p.interpolatedOffX * (TankPlayerController.interpolationTime - p.interpolatedProgress) / TankPlayerController.interpolationTime);
                 p.interpolatedOffY = this.posY - (t.posY - p.interpolatedOffY * (TankPlayerController.interpolationTime - p.interpolatedProgress) / TankPlayerController.interpolationTime);

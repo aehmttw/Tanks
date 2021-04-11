@@ -17,15 +17,22 @@ public class ObstacleBreakable extends Obstacle
 
         double frac = Math.random() * 0.2 + 0.8;
 
+        if (!Game.fancyTerrain)
+            frac = 0.9;
+
         this.colorR = 246 * frac;
         this.colorG = 206 * frac;
         this.colorB = 135 * frac;
+
         this.checkForObjects = true;
         this.update = true;
 
         for (int i = 0; i < default_max_height; i++)
         {
             double frac2 = Math.random() * 0.2 + 0.8;
+
+            if (!Game.fancyTerrain)
+                frac2 = 0.9;
 
             this.stackColorR[i] = 246 * frac2;
             this.stackColorG[i] = 206 * frac2;
@@ -52,7 +59,28 @@ public class ObstacleBreakable extends Obstacle
         this.fallAnimation = 100;
 
         this.stackHeight = Math.min(this.stackHeight, 1);
+
+        double r = this.stackColorR[0];
+        double g = this.stackColorG[0];
+        double b = this.stackColorB[0];
+
+        this.stackColorR[0] = this.stackColorR[this.stackColorR.length - 1];
+        this.stackColorG[0] = this.stackColorG[this.stackColorR.length - 1];
+        this.stackColorB[0] = this.stackColorB[this.stackColorR.length - 1];
+
         this.playDestroyAnimation(bx - (this.posX - bx) * 2, by - (this.posY - by) * 2, Game.tile_size);
+
+        this.stackColorR[0] = r;
+        this.stackColorG[0] = g;
+        this.stackColorB[0] = b;
+
+        for (int i = this.stackColorR.length - 1; i > 0; i--)
+        {
+            this.stackColorR[i] = this.stackColorR[i - 1];
+            this.stackColorG[i] = this.stackColorG[i - 1];
+            this.stackColorB[i] = this.stackColorB[i - 1];
+        }
+
         this.stackHeight = height - 1;
 
         if (this.stackHeight <= 0)
@@ -82,7 +110,7 @@ public class ObstacleBreakable extends Obstacle
         {
             for (int i = 0; i < Math.min(this.stackHeight, 4); i++)
             {
-                int in = (int) (default_max_height - this.stackHeight + i);
+                int in = default_max_height - 1 - i;
                 drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA);
 
                 byte option = 0;

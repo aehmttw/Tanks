@@ -46,9 +46,9 @@ public class TankWhite extends TankAIControlled
 			{
 				this.vanish = true;
 
-				if (Game.fancyGraphics)
+				if (Game.effectsEnabled)
 				{
-					for (int i = 0; i < 50; i++)
+					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 						double var = 50;

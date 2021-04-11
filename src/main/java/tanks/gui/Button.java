@@ -8,6 +8,7 @@ import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Button implements IDrawable, ITrigger
@@ -145,7 +146,7 @@ public class Button implements IDrawable, ITrigger
 
 		//drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 
-		if (Game.superGraphics)
+		if (Game.glowEnabled)
 		{
 			if (!enabled)
 				drawGlow(this.posX, this.posY + 3.5, this.sizeX, this.sizeY, 0.55, 0, 0, 0, 160, false);
@@ -193,7 +194,7 @@ public class Button implements IDrawable, ITrigger
 
 		if (enableHover)
 		{
-			if (Game.superGraphics && !fullInfo)
+			if (Game.glowEnabled && !fullInfo)
 			{
 				if (infoSelected && !Game.game.window.touchscreen)
 				{
@@ -267,7 +268,7 @@ public class Button implements IDrawable, ITrigger
 			}
 		}
 
-		if (Game.superGraphics && !Game.game.window.drawingShadow)
+		if (Game.glowEnabled && !Game.game.window.drawingShadow)
 		{
 			if (this.lastFrame < Panel.panel.ageFrames - 1)
 				this.glowEffects.clear();
@@ -288,7 +289,7 @@ public class Button implements IDrawable, ITrigger
 
 			if (this.selected && this.enabled && !Game.game.window.touchscreen)
 			{
-				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
+				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random() * Game.effectMultiplier;
 
 				while (this.effectTimer >= 0.4 / Panel.frameFrequency)
 				{

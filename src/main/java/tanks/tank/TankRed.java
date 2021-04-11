@@ -73,7 +73,7 @@ public class TankRed extends TankAIControlled
 		if (this.cooldown > 0)
 		{
 			this.idleTime = 0;
-			if (Math.random() * maxCooldown > cooldown && Game.fancyGraphics)
+			if (Math.random() * maxCooldown * Game.effectMultiplier > cooldown && Game.effectsEnabled)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.charge);
 

@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import basewindow.ModelPart;
 import tanks.*;
 import tanks.tank.*;
 
@@ -17,7 +18,7 @@ public class Tutorial
 
     public TankBrown brown;
 
-    public Model arrow;
+    public ModelPart arrow;
 
 
     public void loadTutorial(boolean initial, boolean touchscreen)
@@ -52,10 +53,10 @@ public class Tutorial
         this.brown.team = Game.enemyTeam;
         Game.movables.add(this.brown);
 
-        arrow = new Model();
-        arrow.shapes = new Model.Shape[2];
-        arrow.shapes[0] = new Model.Triangle(new Model.Point(-1, 0, 0), new Model.Point(-1.75, 0, 0), new Model.Point(-2, 0.25, 0), 1);
-        arrow.shapes[1] = new Model.Triangle(new Model.Point(-1, 0, 0), new Model.Point(-1.75, 0, 0), new Model.Point(-2, -0.25, 0), 1);
+        arrow = Drawing.drawing.createModel();
+        arrow.shapes = new ModelPart.Shape[2];
+        arrow.shapes[0] = new ModelPart.Triangle(new ModelPart.Point(-1, 0, 0), new ModelPart.Point(-1.75, 0, 0), new ModelPart.Point(-2, 0.25, 0), 1);
+        arrow.shapes[1] = new ModelPart.Triangle(new ModelPart.Point(-1, 0, 0), new ModelPart.Point(-1.75, 0, 0), new ModelPart.Point(-2, -0.25, 0), 1);
     }
 
     public void update()

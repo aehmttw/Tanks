@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.ModelPart;
 import tanks.*;
 import tanks.event.EventTankAddAttributeModifier;
 import tanks.event.EventTankUpdate;
@@ -82,10 +83,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
 
-	public static Model base_model = new Model();
-	public static Model color_model = new Model();
+	public static ModelPart base_model;
+	public static ModelPart color_model;
 
-	public static Model health_model = new Model();
+	public static ModelPart health_model;
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
@@ -299,9 +300,9 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				this.onDestroy();
 
-				if (Game.fancyGraphics)
+				if (Game.effectsEnabled)
 				{
-					for (int i = 0; i < this.size * 4; i++)
+					for (int i = 0; i < this.size * 2 * Game.effectMultiplier; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 						double var = 50;
@@ -359,7 +360,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				boost = a.getValue(boost);
 		}
 
-		if (Math.random() * Panel.frameFrequency < boost && Game.fancyGraphics)
+		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled)
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
 			double var = 50;
@@ -469,9 +470,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing drawing = Drawing.drawing;
 		double[] teamColor = Team.getObjectColor(this.turret.colorR, this.turret.colorG, this.turret.colorB, this);
 
-		if (Game.framework == Game.Framework.swing)
-			teamColor = Team.getObjectColor(this.colorR, this.colorG, this.colorB, this);
-
 		for (int i = 0; i < this.attributes.size(); i++)
 		{
 			AttributeModifier a = this.attributes.get(i);
@@ -483,7 +481,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		Drawing.drawing.setColor(teamColor[0] * glow * 2, teamColor[1] * glow * 2, teamColor[2] * glow * 2, 255, 1);
 
-		if (Game.superGraphics)
+		if (Game.glowEnabled)
 		{
 			double size = 4 * s;
 			if (forInterface)
@@ -552,9 +550,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			double size = s;
 			for (int i = 1; i < Math.min(health, 6); i++)
 			{
-				if (Game.framework == Game.Framework.swing)
-					drawing.drawRect(this.posX, this.posY, size * 1.2, size * 1.2);
-				else if (Game.enable3d)
+				if (Game.enable3d)
 					drawing.drawModel(health_model,
 							this.posX, this.posY, s / 4,
 							size, size, s,
@@ -702,7 +698,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void setEffectHeight(Effect e)
 	{
-		if (Game.enable3d && Game.enable3dBg && Game.fancyGraphics)
+		if (Game.enable3d && Game.enable3dBg && Game.glowEnabled)
 		{
 			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX - e.size / 2, e.posY - e.size / 2));
 			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX + e.size / 2, e.posY - e.size / 2));

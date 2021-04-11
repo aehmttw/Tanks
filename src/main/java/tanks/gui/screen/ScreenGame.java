@@ -1649,7 +1649,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (!(!Game.fancyGraphics || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
+			if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
 				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
 		}
 
@@ -1709,7 +1709,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					d.draw();
 			}
 
-			if (Game.superGraphics)
+			if (Game.glowEnabled)
 			{
 				for (int j = 0; j < this.drawables[i].size(); j++)
 				{
@@ -1783,7 +1783,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (Panel.darkness > 0)
 		{
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 		}
 
 		if (Game.game.window.touchscreen && TankPlayer.shootStickEnabled)
@@ -1838,7 +1838,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (shopScreen)
 			{
 				Drawing.drawing.setColor(127, 178, 228, 64);
-				Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+				Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 				Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
@@ -1987,7 +1987,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Drawing.drawing.setColor(255, 127, 0);
 					Drawing.drawing.fillInterfaceProgressRect(play.posX, play.posY + play.sizeY / 2 - 5, play.sizeX * 32 / 35, 3, Math.max(Game.startTime / 400, 0));
 
-					if (Game.superGraphics)
+					if (Game.glowEnabled)
 					{
 						Drawing.drawing.fillInterfaceGlow(play.posX + ((Game.startTime / 400 - 0.5) * (play.sizeX * 32 / 35)), play.posY + play.sizeY / 2 - 5, 20, 20);
 					}
@@ -2019,7 +2019,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (paused && !screenshotMode)
 		{
 			Drawing.drawing.setColor(127, 178, 228, 64);
-			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 			if (ScreenPartyLobby.isClient)
 			{

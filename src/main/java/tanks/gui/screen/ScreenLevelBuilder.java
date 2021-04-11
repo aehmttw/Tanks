@@ -2926,7 +2926,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 							{
 								Drawing.drawing.playVibration("click");
 
-								for (int z = 0; z < 100; z++)
+								for (int z = 0; z < 100 * Game.effectMultiplier; z++)
 								{
 									Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
 									double var = 50;
@@ -3458,7 +3458,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 					((Movable) d).drawTeam();
 			}
 
-			if (Game.superGraphics)
+			if (Game.glowEnabled)
 			{
 				for (int j = 0; j < this.drawables[i].size(); j++)
 				{
@@ -3579,7 +3579,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		if (Game.screen instanceof IOverlayScreen)
 		{
 			Drawing.drawing.setColor(127, 178, 228, 64);
-			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 		}
 
 		if (this.paused && !(Game.screen instanceof IOverlayScreen))
@@ -3587,7 +3587,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 			Drawing.drawing.setColor(127, 178, 228, 64);
 			//Drawing.drawing.setColor(0, 0, 0, 127);
 
-			Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 			if (this.confirmDeleteMenu)
 			{

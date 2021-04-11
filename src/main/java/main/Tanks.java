@@ -2,7 +2,6 @@ package main;
 
 import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
-import swingwindow.SwingWindow;
 import tanks.*;
 import tanks.extension.Extension;
 import tanksonline.CommandExecutor;
@@ -10,7 +9,6 @@ import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class Tanks
 {
@@ -28,9 +26,6 @@ public class Tanks
 
             if (args[i].startsWith("port="))
                 port = Integer.parseInt(args[i].split("=")[1]);
-
-            if (args[i].equals("swing"))
-                Game.framework = Game.Framework.swing;
 
             if (args[i].equals("debug"))
                 Game.debug = true;
@@ -61,7 +56,7 @@ public class Tanks
                 }
             }
 
-            if (Game.framework == Game.Framework.lwjgl || Game.framework == Game.Framework.swing)
+            if (Game.framework == Game.Framework.lwjgl)
                 Game.game.fileManager = new ComputerFileManager();
 
             Game.initScript();
@@ -71,8 +66,6 @@ public class Tanks
                 Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
                 ((LWJGLWindow)Game.game.window).antialiasingEnabled = Game.antialiasing;
             }
-            else if (Game.framework == Game.Framework.swing)
-                Game.game.window = new SwingWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
 
             Game.game.window.run();
         }

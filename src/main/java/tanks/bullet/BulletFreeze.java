@@ -43,7 +43,7 @@ public class BulletFreeze extends Bullet
 	@Override
 	public void draw()
 	{
-		if (Game.fancyGraphics)
+		if (Game.bulletTrails)
 		{
 			for (int i = 0; i < 30 - 10 * Math.sin(this.age / 12.0); i++)
 			{

@@ -470,7 +470,7 @@ public class Bullet extends Movable implements IDrawable
 
 				double bound = this.size / 2 + t.size * t.hitboxSize / 2;
 
-				if (horizontalDist < bound && verticalDist < bound)
+				if (horizontalDist < bound && verticalDist < bound && t.size > 0)
 				{
 					this.collisionX = this.posX;
 					this.collisionY = this.posY;
@@ -600,9 +600,9 @@ public class Bullet extends Movable implements IDrawable
 				this.onDestroy();
 			}
 
-			if (this.destroyTimer <= 0 && Game.fancyGraphics && !(this instanceof BulletFlame))
+			if (this.destroyTimer <= 0 && Game.effectsEnabled && !(this instanceof BulletFlame))
 			{
-				for (int i = 0; i < this.size * 4; i++)
+				for (int i = 0; i < this.size * 4 * Game.effectMultiplier; i++)
 				{
 					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 					double var = 50;
@@ -634,19 +634,15 @@ public class Bullet extends Movable implements IDrawable
 			if (this.autoZ)
 				this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
 
-			this.ageFrac += Panel.frameFrequency;
-			this.halfAgeFrac += Panel.frameFrequency;
-			this.quarterAgeFrac += Panel.frameFrequency;
+			this.ageFrac += Panel.frameFrequency * Game.effectMultiplier;
+			this.halfAgeFrac += Panel.frameFrequency * Game.effectMultiplier;
+			this.quarterAgeFrac += Panel.frameFrequency * Game.effectMultiplier;
 
-			if (Game.fancyGraphics)
+			if (Game.bulletTrails)
 			{
 				while (this.ageFrac >= 1)
 				{
 					this.ageFrac -= 1;
-
-					if (Game.framework == Game.Framework.swing)
-						if (this.effect.equals(BulletEffect.trail) || this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.darkFire))
-							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * ageFrac, this.posY - lastFinalVY * ageFrac, this.posZ - lastFinalVZ, Effect.EffectType.trail, ageFrac));
 
 					if (this.effect.equals(BulletEffect.ice) || this.effect.equals(BulletEffect.ember))
 					{
@@ -684,7 +680,7 @@ public class Bullet extends Movable implements IDrawable
 
 						Game.effects.add(e);
 					}
-					else if (Game.superGraphics && this.effect.equals(BulletEffect.darkFire))
+					else if (Game.fancyBulletTrails && this.effect.equals(BulletEffect.darkFire))
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 						double var = 50;
@@ -702,7 +698,7 @@ public class Bullet extends Movable implements IDrawable
 
 						Game.effects.add(e);
 					}
-					else if (Game.superGraphics && (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail)))
+					else if (Game.fancyBulletTrails && (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail)))
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 						double var = 50;
@@ -724,27 +720,11 @@ public class Bullet extends Movable implements IDrawable
 				while (this.quarterAgeFrac >= 0.25)
 				{
 					this.quarterAgeFrac -= 0.25;
-
-					//if (this.effect.equals(BulletEffect.fireTrail))
-					//	Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, quarterAgeFrac));
-
-					if (Game.framework == Game.Framework.swing)
-					{
-						if (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail))
-							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.fire, quarterAgeFrac));
-
-						if (this.effect.equals(BulletEffect.darkFire))
-							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * quarterAgeFrac, this.posY - lastFinalVY * quarterAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.darkFire, quarterAgeFrac));
-					}
 				}
 
 				while (this.halfAgeFrac >= 0.5)
 				{
 					this.halfAgeFrac -= 0.5;
-
-					if (Game.framework == Game.Framework.swing)
-						if (this.effect.equals(BulletEffect.fireTrail))
-							Game.effects.add(Effect.createNewEffect(this.posX - lastFinalVX * halfAgeFrac, this.posY - lastFinalVY * halfAgeFrac, this.posZ - lastFinalVZ, Effect.EffectType.smokeTrail, halfAgeFrac));
 				}
 			}
 		}
@@ -767,7 +747,7 @@ public class Bullet extends Movable implements IDrawable
 
 	public void addTrail()
 	{
-		if (!Game.fancyGraphics)
+		if (!Game.bulletTrails)
 			return;
 
 		double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
@@ -819,7 +799,7 @@ public class Bullet extends Movable implements IDrawable
 			}
 		}
 
-		if (Game.superGraphics)
+		if (Game.glowEnabled)
 		{
 			Drawing.drawing.setColor(this.outlineColorR * glow * 2, this.outlineColorG * glow * 2, this.outlineColorB * glow * 2, 255, 1);
 
@@ -838,12 +818,15 @@ public class Bullet extends Movable implements IDrawable
 				shade = true;
 			}
 
-			sizeMul *= 1 - destroyTimer / 60.0;
+			if (this.destroyTimer < 60.0)
+			{
+				sizeMul *= 1 - destroyTimer / 60.0;
 
-			if (Game.enable3d)
-				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 4 * sizeMul, this.size * 4 * sizeMul, true, true, shade);
-			else
-				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 * sizeMul, this.size * 4 * sizeMul, shade);
+				if (Game.enable3d)
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 4 * sizeMul, this.size * 4 * sizeMul, true, true, shade);
+				else
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 * sizeMul, this.size * 4 * sizeMul, shade);
+			}
 		}
 
 		for (int i = 0; i < this.trails.length; i++)

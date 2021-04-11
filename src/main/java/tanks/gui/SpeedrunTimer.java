@@ -13,7 +13,7 @@ public class SpeedrunTimer
         if (!(Game.screen instanceof ScreenGame) || ScreenGame.finishedQuick)
             alpha += 64 + 64 * Math.sin(System.currentTimeMillis() / 1000.0 * Math.PI * 4);
 
-        if (Level.isDark() || (Game.screen instanceof IDarkScreen && Panel.win && Game.fancyGraphics))
+        if (Level.isDark() || (Game.screen instanceof IDarkScreen && Panel.win && Game.effectsEnabled))
             Drawing.drawing.setColor(255, 255, 255, alpha);
         else
             Drawing.drawing.setColor(0, 0, 0, alpha);

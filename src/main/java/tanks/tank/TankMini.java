@@ -70,7 +70,6 @@ public class TankMini extends TankAIControlled
 				this.setAccelerationInDirection(this.tank.posX, this.tank.posY, this.acceleration);
 			}
 		}
-		
 	}
 	
 }

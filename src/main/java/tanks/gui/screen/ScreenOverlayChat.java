@@ -42,7 +42,7 @@ public class ScreenOverlayChat
 
         if (chatbox != null)
         {
-            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+            if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                 chatbox.defaultTextColor = "\u00A7255255255255";
 
             chatbox.draw(persistent);
@@ -72,17 +72,14 @@ public class ScreenOverlayChat
                         double height = 22 * c.lines.size() + 8 * (c.lines.size() - 1);
                         double radius = 13.5;
 
-                        if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+                        if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                             Drawing.drawing.setColor(0, 0, 0, 127);
                         else
                             Drawing.drawing.setColor(255, 255, 255, 127);
 
-                        if (Game.framework != Game.Framework.swing)
-                        {
-                            Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - i * 30 - 70 + radius / 2, width + xPad, radius);
-                            Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1)) * 30 - 70 - radius / 2, width + xPad, radius);
-                            Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1) / 2.0) * 30 - 70, width + xPad + radius * 2, height + yPad - radius * 2);
-                        }
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - i * 30 - 70 + radius / 2, width + xPad, radius);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1)) * 30 - 70 - radius / 2, width + xPad, radius);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1) / 2.0) * 30 - 70, width + xPad + radius * 2, height + yPad - radius * 2);
 
                         Game.game.window.setBatchMode(true, false, false);
 
@@ -138,16 +135,10 @@ public class ScreenOverlayChat
 
                             Drawing.drawing.setColor(c.r2, c.g2, c.b2);
 
-                            if (Game.framework != Game.Framework.swing)
-                            {
-                                Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, size, size, 0);
+                            Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, size, size, 0);
 
-                                Drawing.drawing.setColor((c.r1 + c.r2) / 2, (c.g1 + c.g2) / 2, (c.b1 + c.b2) / 2);
-                                Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, size, size, 0);
-                            }
-                            else
-                                Drawing.drawing.fillInterfaceRect(x + size / 2, y, size + size * 4 / 25, size * 4 / 25);
-
+                            Drawing.drawing.setColor((c.r1 + c.r2) / 2, (c.g1 + c.g2) / 2, (c.b1 + c.b2) / 2);
+                            Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, size, size, 0);
                         }
 
                         for (int j = c.lines.size() - 1; j >= 0; j--)
@@ -155,7 +146,7 @@ public class ScreenOverlayChat
                             double mx = 20;
                             double my = Drawing.drawing.interfaceSizeY - i * 30 - 70;
 
-                            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+                            if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                                 Drawing.drawing.setColor(255, 255, 255);
                             else
                                 Drawing.drawing.setColor(0, 0, 0);
@@ -168,7 +159,7 @@ public class ScreenOverlayChat
                 }
             }
 
-            if ((Panel.win && Game.fancyGraphics && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+            if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
                 chatbox.defaultTextColor = "\u00A7127127127255";
         }
     }

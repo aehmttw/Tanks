@@ -58,59 +58,46 @@ public class Laser implements IDrawable
         {
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
 
-            if (Game.framework == Game.Framework.swing)
+            if (frontCircle || showOutsides)
             {
-                double dist = Math.sqrt(Math.pow(this.frontX - this.backX, 2) + Math.pow(this.frontY - this.backY, 2));
+                Game.game.window.setBatchMode(true, false, depth);
 
-                for (int i = 0; i < dist; i++)
+                for (int i = 10; i < 30; i++)
                 {
-                    double f = i / dist;
-                    Drawing.drawing.fillOval(this.frontX * f + this.backX * (1 - f), this.frontY * f + this.backY * (1 - f), (1 - frac) * 2 * width, (1 - frac) * 2 * width);
+                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
+
+                Game.game.window.setBatchMode(false, false, depth);
             }
-            else
+
+            Game.game.window.setBatchMode(true, true, depth);
+
+            Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, ox * width * (1 - frac), oy * width * (1 - frac), 0);
+            Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, -ox * width * (1 - frac), -oy * width * (1 - frac), 0);
+
+            Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, -ox * width * (1 - frac), -oy * width * (1 - frac), 0);
+            Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, ox * width * (1 - frac), oy * width * (1 - frac), 0);
+
+            Game.game.window.setBatchMode(false, true, depth);
+
+            if (backCircle || showOutsides)
             {
-                if (frontCircle || showOutsides)
+                Game.game.window.setBatchMode(true, false, depth);
+
+                for (int i = 30; i < 50; i++)
                 {
-                    Game.game.window.setBatchMode(true, false, depth);
-
-                    for (int i = 10; i < 30; i++)
-                    {
-                        Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                        Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                        Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
-                    }
-
-                    Game.game.window.setBatchMode(false, false, depth);
+                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }
 
-                Game.game.window.setBatchMode(true, true, depth);
-
-                Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, ox * width * (1 - frac), oy * width * (1 - frac), 0);
-                Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, -ox * width * (1 - frac), -oy * width * (1 - frac), 0);
-
-                Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, -ox * width * (1 - frac), -oy * width * (1 - frac), 0);
-                Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, ox * width * (1 - frac), oy * width * (1 - frac), 0);
-
-                Game.game.window.setBatchMode(false, true, depth);
-
-                if (backCircle || showOutsides)
-                {
-                    Game.game.window.setBatchMode(true, false, depth);
-
-                    for (int i = 30; i < 50; i++)
-                    {
-                        Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                        Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                        Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
-                    }
-
-                    Game.game.window.setBatchMode(false, false, depth);
-                }
+                Game.game.window.setBatchMode(false, false, depth);
             }
         }
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
             drawGlow();
     }
 

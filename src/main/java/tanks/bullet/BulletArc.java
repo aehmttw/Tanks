@@ -85,7 +85,10 @@ public class BulletArc extends Bullet
             this.vX = 0;
             this.vY = 0;
             this.vZ = 0;
-            this.checkCollision();
+
+            if (!this.tank.isRemote)
+                this.checkCollision();
+
             this.checkCollisionLocal();
             this.destroy = true;
             Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
@@ -114,7 +117,7 @@ public class BulletArc extends Bullet
         if (!Game.enable3d)
             this.posY -= this.posZ - Game.tile_size / 2;
 
-        if (Game.fancyGraphics)
+        if (Game.bulletTrails)
         {
             boolean stop = false;
             double length = 100;

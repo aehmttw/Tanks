@@ -1,6 +1,7 @@
 package tanks.obstacle;
 
 import tanks.*;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.Tank;
 
@@ -45,19 +46,19 @@ public class ObstacleBoostPanel extends Obstacle
                 effect = false;
         }
 
-        if (effect)
+        if (effect && !(m instanceof Bullet && !((Bullet) m).playPopSound))
             Drawing.drawing.playSound("boost.ogg");
 
-        if (Game.fancyGraphics && !ScreenGame.finished)
+        if (Game.effectsEnabled && !ScreenGame.finished && !(m instanceof Bullet && !((Bullet) m).playPopSound))
         {
             if (effect)
             {
-                for (int i = 0; i < 50; i++)
+                for (int i = 0; i < 25 * Game.effectMultiplier; i++)
                 {
                     this.addEffect(m.posX, m.posY, 0.5);
                 }
             }
-            else
+            else if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.25)
                 this.addEffect(m.posX, m.posY, 0);
         }
     }
@@ -93,7 +94,7 @@ public class ObstacleBoostPanel extends Obstacle
     {
         double offset = 0;
 
-        if (Game.fancyGraphics)
+        if (Game.fancyTerrain)
             offset = Math.sin((this.posX + this.posY + System.currentTimeMillis() / 50.0) / 10) * 40 + 40;
 
         if (!Game.enable3d)
@@ -106,7 +107,7 @@ public class ObstacleBoostPanel extends Obstacle
             Drawing.drawing.setColor(this.colorR - offset / 2, Math.min(this.colorG - offset + this.brightness, 255), this.colorB + this.brightness, 255, 1.0);
             Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
 
-            if (Game.superGraphics)
+            if (Game.glowEnabled)
             {
                 glow.posX = this.posX;
                 glow.posY = this.posY;

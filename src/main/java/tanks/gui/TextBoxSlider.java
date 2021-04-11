@@ -53,7 +53,7 @@ public class TextBoxSlider extends TextBox
 
         drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
             drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 
         drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
@@ -81,7 +81,7 @@ public class TextBoxSlider extends TextBox
         double frac = Math.max(Math.min((this.value - this.min) / (this.max - this.min), 1), 0);
         double x = start1 * (1 - frac) + end1 * frac;
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
         {
             if (selected)
                 Button.drawGlow(mid2, this.posY + 3.5, end2 - start2 - this.sizeY * (- m), this.sizeY * m, 0.55, 0, 0, 0, 160, false);
@@ -122,7 +122,7 @@ public class TextBoxSlider extends TextBox
         Drawing.drawing.addInterfaceVertex(end1, posY - sizeY * m / 2, 0);
         Game.game.window.setBatchMode(false, true, false, false);
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
             Button.drawGlow(x, this.posY + 2.5, this.sizeY * m, this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
         if (selected)
@@ -146,7 +146,7 @@ public class TextBoxSlider extends TextBox
         drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m, this.sizeY * m * m);
         //drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
             Button.drawGlow(x, this.posY + 1.5, this.sizeY * m * m, this.sizeY * m * m, 0.6, 0, 0, 0, 100, false);
 
         drawing.setColor(this.r1 * (1 - frac) + this.r2 * frac, this.g1 * (1 - frac) + this.g2 * frac, this.b1 * (1 - frac) + this.b2 * frac);

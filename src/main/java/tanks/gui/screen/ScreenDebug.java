@@ -41,7 +41,7 @@ public class ScreenDebug extends Screen
     }
     );
 
-    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Test keyboard", new Runnable()
+    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Test keyboard", new Runnable()
     {
         @Override
         public void run()
@@ -51,7 +51,7 @@ public class ScreenDebug extends Screen
     }
     );
 
-    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Test text boxes", new Runnable()
+    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Test text boxes", new Runnable()
     {
         @Override
         public void run()
@@ -61,7 +61,17 @@ public class ScreenDebug extends Screen
     }
     );
 
-    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "", new Runnable()
+    Button modelTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Test models", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.screen = new ScreenTestModel(Game.triangle);
+        }
+    }
+    );
+
+    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -75,7 +85,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "", new Runnable()
+    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -89,7 +99,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "", new Runnable()
+    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -108,6 +118,7 @@ public class ScreenDebug extends Screen
     {
         keyboardTest.update();
         textboxTest.update();
+        modelTest.update();
         traceAllRays.update();
         followingCam.update();
         firstPerson.update();
@@ -124,6 +135,7 @@ public class ScreenDebug extends Screen
 
         firstPerson.draw();
         followingCam.draw();
+        modelTest.draw();
         keyboardTest.draw();
         textboxTest.draw();
         traceAllRays.draw();

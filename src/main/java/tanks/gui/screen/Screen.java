@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import lwjglwindow.ImmediateModeShapeRenderer;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 
@@ -93,11 +94,11 @@ public abstract class Screen
 			Drawing.drawing.fillBackgroundRect(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
 		}
 
-		if (Game.fancyGraphics)
+		if (Game.fancyTerrain)
 		{
 			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 
-			if (Game.framework != Game.Framework.libgdx)
+			if (Game.game.window.shapeRenderer.supportsBatching)
 				Game.game.window.setBatchMode(true, true, true);
 
 			if (Game.currentSizeX != Game.tilesR.length || Game.currentSizeY != Game.tilesR[0].length)
@@ -202,14 +203,8 @@ public abstract class Screen
 				}
 			}
 
-			if (Game.framework != Game.Framework.libgdx)
+			if (Game.game.window.shapeRenderer.supportsBatching)
 				Game.game.window.setBatchMode(false, true, true);
-
-			if (this.drawDarkness)
-			{
-				Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-				Game.game.window.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
-			}
 		}
 		else if (Game.enable3d && !(Game.screen instanceof ScreenExit))
 		{
@@ -222,7 +217,9 @@ public abstract class Screen
 					if (Game.tileDrawables[i][j] != null)
 					{
 						Game.tileDrawables[i][j].drawTile(Level.currentColorR, Level.currentColorG, Level.currentColorB, 0);
-						Game.tileDrawables[i][j] = null;
+
+						if (!Game.game.window.drawingShadow)
+							Game.tileDrawables[i][j] = null;
 					}
 					else
 					{
@@ -234,6 +231,12 @@ public abstract class Screen
 					}
 				}
 			}
+		}
+
+		if (this.drawDarkness)
+		{
+			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
+			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 		}
 	}
 

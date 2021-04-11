@@ -36,7 +36,7 @@ public class EventTankRedUpdateCharge extends PersonalEvent
 		t.colorG = charge * 100;
 		t.colorB = charge * 100;
 
-        if (Math.random() < charge && Game.fancyGraphics)
+        if (Math.random() * Game.effectMultiplier < charge && Game.effectsEnabled)
         {
             Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 4, Effect.EffectType.charge);
 

@@ -53,6 +53,9 @@ public class TankRemote extends Tank
 		this.tank = t;
 		this.turret.length = t.turret.length;
 		this.turret.size = t.turret.size;
+		this.turret.colorR = t.turret.colorR;
+		this.turret.colorG = t.turret.colorG;
+		this.turret.colorB = t.turret.colorB;
 		this.invulnerable = true;
 		this.networkID = t.networkID;
 		this.texture = t.texture;
@@ -95,9 +98,9 @@ public class TankRemote extends Tank
 			{
 				this.vanished = true;
 
-				if (Game.fancyGraphics)
+				if (Game.effectsEnabled)
 				{
-					for (int i = 0; i < 50; i++)
+					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 						double var = 50;

@@ -307,7 +307,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			this.music = "lose_music.ogg";
 		}
 
-		if (Panel.win && Game.fancyGraphics)
+		if (Panel.win && Game.effectsEnabled)
 		{
 			for (int i = 0; i < 5; i++)
 			{
@@ -325,11 +325,11 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	{
 		this.drawDefaultBackground();
 
-		if (Panel.win && Game.fancyGraphics && !Game.game.window.drawingShadow)
+		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
 		{
 			ArrayList<Firework> fireworks = getFireworkArray();
 
-			if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency)
+			if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency * Game.effectMultiplier)
 			{
 				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
 				f.setRandomColor();
@@ -342,7 +342,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
 			}
 
-			if (Game.superGraphics)
+			if (Game.glowEnabled)
 			{
 				for (int i = 0; i < getFireworkArray().size(); i++)
 				{
@@ -420,7 +420,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		if (Game.showSpeedrunTimer)
 			SpeedrunTimer.draw();
 
-		if ((Panel.win && Game.fancyGraphics) || (Level.currentColorR + Level.currentColorG + Level.currentColorB) / 3.0 < 127)
+		if ((Panel.win && Game.effectsEnabled) || Level.isDark())
 			Drawing.drawing.setColor(255, 255, 255);
 		else
 			Drawing.drawing.setColor(0, 0, 0);
@@ -463,7 +463,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
-		if (Panel.win && Game.fancyGraphics)
+		if (Panel.win && Game.effectsEnabled)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
 	}
 

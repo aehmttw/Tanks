@@ -425,6 +425,9 @@ public class Ray
 			{
 				return (int) this.age;
 			}
+
+			if (Double.isNaN(this.posX) || Double.isNaN(this.posY))
+				return (int) this.age;
 		}
 	}
 

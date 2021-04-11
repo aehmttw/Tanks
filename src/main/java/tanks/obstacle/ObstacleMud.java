@@ -45,7 +45,7 @@ public class ObstacleMud extends Obstacle
     @Override
     public void onObjectEntryLocal(Movable m)
     {
-        if (Game.fancyGraphics && m instanceof Tank && !ScreenGame.finished && Math.random() * Panel.frameFrequency <= 0.1)
+        if (Game.effectsEnabled && m instanceof Tank && !ScreenGame.finished && Math.random() * Panel.frameFrequency <= 0.1 * Game.effectMultiplier)
         {
             Tank t = (Tank) m;
             double a = m.getPolarDirection();

@@ -119,7 +119,7 @@ public class Selector implements IDrawable, ITrigger
 
         drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
             TextBox.drawTallGlow(this.posX, this.posY + 5, this.sizeX, this.sizeY, sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 
         drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
@@ -135,7 +135,7 @@ public class Selector implements IDrawable, ITrigger
 
         double m = 0.8;
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
         {
             if (selected && !Game.game.window.touchscreen)
                 Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
@@ -172,7 +172,7 @@ public class Selector implements IDrawable, ITrigger
 
         if (enableHover)
         {
-            if (Game.superGraphics)
+            if (Game.glowEnabled)
             {
                 if (infoSelected && !Game.game.window.touchscreen)
                 {
@@ -241,7 +241,7 @@ public class Selector implements IDrawable, ITrigger
             }
         }
 
-        if (Game.superGraphics)
+        if (Game.glowEnabled)
         {
             if (this.lastFrame < Panel.panel.ageFrames - 1)
                 this.glowEffects.clear();
@@ -262,7 +262,7 @@ public class Selector implements IDrawable, ITrigger
 
             if (this.selected && this.enabled && !Game.game.window.touchscreen)
             {
-                this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random();
+                this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random() * Game.effectMultiplier;
 
                 while (this.effectTimer >= 0.4 / Panel.frameFrequency)
                 {

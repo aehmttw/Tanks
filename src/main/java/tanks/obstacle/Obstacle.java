@@ -275,7 +275,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		double colorMul = Math.random() * 0.5 + 0.5;
 		double[] col = new double[3];
 		
-		if (Game.fancyGraphics)
+		if (Game.fancyTerrain)
 		{
 			col[0] = (colorMul * (176 - Math.random() * 70));
 			col[1] = (colorMul * (111 - Math.random() * 34));
@@ -367,7 +367,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public void playDestroyAnimation(double posX, double posY, double radius)
 	{
-		if (Game.fancyGraphics)
+		if (Game.effectsEnabled)
 		{
 			Effect.EffectType effect = this.destroyEffect;
 			double freq = Math.min((Math.sqrt(Math.pow(posX - this.posX, 2) + Math.pow(posY - this.posY, 2)) + Game.tile_size * 2.5) / radius, 1);
@@ -377,18 +377,19 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 				if (effect == Effect.EffectType.obstaclePiece)
 					effect = Effect.EffectType.obstaclePiece3d;
 
-				for (int j = 0; j < Game.tile_size; j += 10)
+				double s = 12.5;
+				for (double j = 0; j < Game.tile_size; j += s)
 				{
-					for (int k = 0; k < Game.tile_size; k += 10)
+					for (double k = 0; k < Game.tile_size; k += s)
 					{
-						for (int l = 0; l < Game.tile_size * this.stackHeight; l += 10)
+						for (double l = 0; l < Game.tile_size * this.stackHeight; l += s)
 						{
-							if (Math.random() > this.destroyEffectAmount * freq * freq)
+							if (Math.random() > this.destroyEffectAmount * freq * freq * Game.effectMultiplier)
 								continue;
 
-							Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, l, effect);
+							Effect e = Effect.createNewEffect(this.posX + j + s / 2 - Game.tile_size / 2, this.posY + k + s / 2 - Game.tile_size / 2, l, effect);
 
-							int block = (int) ((this.stackHeight * Game.tile_size - (l + 10)) / Game.tile_size);
+							int block = (int) ((this.stackHeight * Game.tile_size - (l + s)) / Game.tile_size);
 
 							if (this.enableStacking)
 							{
@@ -421,6 +422,9 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 				{
 					for (int k = 0; k < Game.tile_size - 6; k += 4)
 					{
+						if (Math.random() > this.destroyEffectAmount * freq * freq * Game.effectMultiplier)
+							continue;
+
 						Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, effect);
 
 						e.colR = this.colorR;

@@ -48,7 +48,9 @@ public class TeleporterOrb extends Movable
 	public void draw() 
 	{
 		Drawing.drawing.setColor(255, 255, 255);
-		Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
+
+		if (Game.enable3d)
+			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
 
 		for (int i = 0; i < this.size - this.tank.size; i++)
 		{
@@ -85,7 +87,7 @@ public class TeleporterOrb extends Movable
 			this.tank.inControlOfMotion = true;
 			this.tank.positionLock = false;
 
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 100 * Game.effectMultiplier; i++)
 			{
 				this.createEffect();
 			}
@@ -144,14 +146,15 @@ public class TeleporterOrb extends Movable
 		
 		this.tank.disabled = this.tank.size <= 0;
 
-		this.createEffect();
+		if (Math.random() < Panel.frameFrequency * Game.effectMultiplier)
+			this.createEffect();
 
 		super.update();
 	}
 	
 	public void createEffect()
 	{
-		if (!Game.fancyGraphics)
+		if (!Game.effectsEnabled)
 			return;
 
 		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);

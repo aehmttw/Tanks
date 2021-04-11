@@ -54,9 +54,9 @@ public class BulletLaser extends BulletInstant
 	@Override
 	public void addDestroyEffect()
 	{
-		if (Game.fancyGraphics)
+		if (Game.effectsEnabled)
 		{
-			for (int i = 0; i < this.size * 4; i++)
+			for (int i = 0; i < this.size * 4 * Game.effectMultiplier; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;

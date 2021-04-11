@@ -122,7 +122,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (type == EffectType.tread)
         {
             this.maxAge = 510;
-            if (Game.fancyGraphics)
+            if (Game.effectsEnabled)
                 this.maxAge *= 2;
         }
         else if (type == EffectType.darkFire)
@@ -321,7 +321,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         }
         else if (this.type == EffectType.obstaclePiece3d)
         {
-            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+            double size = 1 + (12.5 * (1 - this.age / this.maxAge));
             drawing.setColor(this.colR, this.colG, this.colB);
 
             drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
@@ -340,7 +340,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         {
             double opacityFactor = 2;
 
-            if (Game.fancyGraphics)
+            if (Game.effectsEnabled)
             {
                 opacityFactor = 4;
             }
@@ -477,7 +477,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             Drawing.drawing.setColor(255, 255, 255, 255, 1);
             Game.game.window.setBatchMode(true, true, true, true, false);
 
-            double max = (this.size + 100) / 2;
+            double max = (this.size);
             for (int i = 0; i < max; i++)
             {
                 double a = (max - i) / 400;

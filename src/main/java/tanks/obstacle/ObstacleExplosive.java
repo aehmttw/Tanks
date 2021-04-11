@@ -20,11 +20,17 @@ public class ObstacleExplosive extends Obstacle
         this.colorG = Math.random() * 40 + 80;
         this.colorB = 0;
 
+        if (!Game.fancyTerrain)
+            this.colorG = 100;
+
         for (int i = 0; i < default_max_height; i++)
         {
             this.stackColorR[i] = 255;
             this.stackColorG[i] = Math.random() * 40 + 80;
             this.stackColorB[i] = 0;
+
+            if (!Game.fancyTerrain)
+                this.stackColorG[i] = 100;
         }
 
         this.destroyEffectAmount = 0;

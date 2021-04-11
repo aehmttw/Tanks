@@ -1,10 +1,12 @@
 package tanks;
 
+import basewindow.IModel;
+import basewindow.ModelPart;
+import basewindow.Model;
 import tanks.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
 
 import java.util.ArrayList;
@@ -83,7 +85,7 @@ public class Drawing
 
 	public static final double track_offset = 20;
 
-	public static Model rotatedRect = new Model();
+	public static ModelPart rotatedRect;
 
 	private Drawing()
 	{
@@ -177,7 +179,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillGlow(double x, double y, double sizeX, double sizeY)
@@ -201,7 +203,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
+		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
 	}
 
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
@@ -223,9 +225,9 @@ public class Drawing
 		double dZ = z * scale;
 
 		if (Game.game.window.angled && facing)
-			Game.game.window.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 		else
-			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
 
 	public void fillForcedOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
@@ -239,9 +241,9 @@ public class Drawing
 		double dZ = z * scale;
 
 		if (Game.game.window.angled && facing)
-			Game.game.window.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 		else
-			Game.game.window.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
 
 	public void fillGlow(double x, double y, double z, double sizeX, double sizeY)
@@ -278,9 +280,9 @@ public class Drawing
 		double dZ = z * scale;
 
 		if (Game.game.window.angled && facing)
-			Game.game.window.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
+			Game.game.window.shapeRenderer.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
 		else
-			Game.game.window.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
+			Game.game.window.shapeRenderer.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
 	}
 
 	public void fillForcedGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade, boolean light)
@@ -294,9 +296,9 @@ public class Drawing
 		double dZ = z * scale;
 
 		if (Game.game.window.angled && facing)
-			Game.game.window.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
+			Game.game.window.shapeRenderer.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
 		else
-			Game.game.window.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
+			Game.game.window.shapeRenderer.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
 	}
 
 	public void fillForcedOval(double x, double y, double sizeX, double sizeY)
@@ -307,7 +309,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void drawOval(double x, double y, double sizeX, double sizeY)
@@ -321,7 +323,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.drawOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.drawOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillRect(double x, double y, double sizeX, double sizeY)
@@ -335,7 +337,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
@@ -349,7 +351,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
 	}
 
 	public void drawImage(double rotation, String img, double x, double y, double sizeX, double sizeY)
@@ -363,7 +365,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
 	}
 
 	public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
@@ -379,7 +381,7 @@ public class Drawing
 
 		double drawZ = z * scale;
 
-		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, false);
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, false);
 	}
 
 	public void drawImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
@@ -395,7 +397,7 @@ public class Drawing
 
 		double drawZ = z * scale;
 
-		Game.game.window.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
 	}
 
 
@@ -411,7 +413,7 @@ public class Drawing
 		double dY3 = getPointY(y3);
 		double dY4 = getPointY(y4);
 
-		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
+		Game.game.window.shapeRenderer.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
 	}
 
 	public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ)
@@ -434,7 +436,7 @@ public class Drawing
 		double dZ = z * scale;
 		double dsZ = sZ * scale;
 
-		Game.game.window.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, options);
+		Game.game.window.shapeRenderer.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, options);
 	}
 
 	public void fillInterfaceQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
@@ -449,7 +451,7 @@ public class Drawing
 		double dY3 = getInterfacePointY(y3);
 		double dY4 = getInterfacePointY(y4);
 
-		Game.game.window.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
+		Game.game.window.shapeRenderer.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
 	}
 
 	public double getPointX(double x)
@@ -486,7 +488,7 @@ public class Drawing
 		double drawSizeY = (sizeY * scale);
 
 		Game.game.window.setBatchMode(true, true, true, false, false);
-		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 		Game.game.window.setBatchMode(false, true, true, false, false);
 	}
 
@@ -537,7 +539,7 @@ public class Drawing
 				options = (byte) (options | 4);
 		}
 
-		Game.game.window.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
+		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
 	}
 
 	public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
@@ -550,10 +552,10 @@ public class Drawing
 		double drawSizeY = sizeY * scale;
 		double drawSizeZ = sizeZ * scale;
 
-		Game.game.window.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
+		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
 	}
 
-	public void drawModel(Model m, double x, double y, double width, double height, double angle)
+	public void drawModel(IModel m, double x, double y, double width, double height, double angle)
 	{
 		double drawX = gameToAbsoluteX(x, 0);
 		double drawY = gameToAbsoluteY(y, 0);
@@ -567,7 +569,7 @@ public class Drawing
 		m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
 	}
 
-	public void drawModel(Model m, double x, double y, double z, double width, double height, double depth, double angle)
+	public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double angle)
 	{
 		double drawX = gameToAbsoluteX(x, 0);
 		double drawY = gameToAbsoluteY(y, 0);
@@ -580,10 +582,10 @@ public class Drawing
 		double drawSizeY = height * scale;
 		double drawSizeZ = depth * scale;
 
-		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, angle);
+		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, angle, 0, 0, true);
 	}
 
-	public void drawInterfaceModel(Model m, double x, double y, double width, double height, double angle)
+	public void drawInterfaceModel(IModel m, double x, double y, double width, double height, double angle)
 	{
 		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
@@ -593,7 +595,7 @@ public class Drawing
 		m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
 	}
 
-	public void drawModel(Model m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
+	public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
 	{
 		double drawX = gameToAbsoluteX(x, 0);
 		double drawY = gameToAbsoluteY(y, 0);
@@ -606,7 +608,7 @@ public class Drawing
 		double drawSizeY = height * scale;
 		double drawSizeZ = depth * scale;
 
-		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll);
+		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
 	}
 
 	public void drawRect(double x, double y, double sizeX, double sizeY)
@@ -620,7 +622,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.drawRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillInterfaceOval(double x, double y, double sizeX, double sizeY)
@@ -630,7 +632,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillInterfaceOval(double x, double y, double z, double sizeX, double sizeY)
@@ -641,7 +643,7 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 		double drawZ = z * interfaceScale;
 
-		Game.game.window.fillOval(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
+		Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
 	}
 
 
@@ -652,7 +654,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillInterfaceGlow(double x, double y, double z, double sizeX, double sizeY)
@@ -663,7 +665,7 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 		double drawZ = interfaceScale * z;
 
-		Game.game.window.fillGlow(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
+		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
 	}
 
 	public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade)
@@ -673,7 +675,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade);
+		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade);
 	}
 
 	public void drawInterfaceOval(double x, double y, double sizeX, double sizeY)
@@ -683,7 +685,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.drawOval(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.drawOval(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillInterfaceRect(double x, double y, double sizeX, double sizeY)
@@ -693,7 +695,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillShadedInterfaceRect(double x, double y, double sizeX, double sizeY)
@@ -704,7 +706,7 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 
 		Game.game.window.setBatchMode(true, true, true, false, false);
-		Game.game.window.fillBox(drawX, drawY, 0, drawSizeX, drawSizeY, 0, (byte) 61);
+		Game.game.window.shapeRenderer.fillBox(drawX, drawY, 0, drawSizeX, drawSizeY, 0, (byte) 61);
 		Game.game.window.setBatchMode(false, true, true, false, false);
 	}
 
@@ -715,7 +717,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale * progress);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
@@ -725,7 +727,7 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
 	}
 
 	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)
@@ -735,7 +737,7 @@ public class Drawing
 		double drawSizeX = Math.round(sizeX * interfaceScale);
 		double drawSizeY = Math.round(sizeY * interfaceScale);
 
-		Game.game.window.drawRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void drawText(double x, double y, String text)
@@ -1292,5 +1294,15 @@ public class Drawing
 			lines.add(l.toString());
 
 		return lines;
+	}
+
+	public ModelPart createModel()
+	{
+		return Game.game.window.createModelPart();
+	}
+
+	public Model createModel(String dir)
+	{
+		return new Model(Game.game.window, Game.game.fileManager, dir);
 	}
 }

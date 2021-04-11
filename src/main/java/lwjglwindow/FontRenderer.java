@@ -47,7 +47,7 @@ public class FontRenderer extends BaseFontRenderer
 		int col = (int) (i % size);
 		int row = (int) (i / size);
 		int width = charSizes[i];
-		this.home.drawImage(x, y, z, sX * 32 * size, sY * 32 * size,
+		this.window.shapeRenderer.drawImage(x, y, z, sX * 32 * size, sY * 32 * size,
 				col / size, (row * hSpace) / size,
 				(col + width / 8f) / size, (row * hSpace + 1) / size,
 				image, false, depthtest);
@@ -71,7 +71,7 @@ public class FontRenderer extends BaseFontRenderer
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
 				int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
 				int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
-				this.home.setColor(r, g, b, a);
+				this.window.setColor(r, g, b, a);
 
 				i += 12;
 			}
@@ -97,7 +97,7 @@ public class FontRenderer extends BaseFontRenderer
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
 				int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
 				int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
-				this.home.setColor(r, g, b, a);
+				this.window.setColor(r, g, b, a);
 
 				i += 12;
 			}

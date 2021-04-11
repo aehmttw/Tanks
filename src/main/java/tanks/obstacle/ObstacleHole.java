@@ -44,7 +44,7 @@ public class ObstacleHole extends Obstacle
 	@Override
 	public void drawTile(double r, double g, double b, double d) 
 	{
-		if (Game.fancyGraphics)
+		if (Game.fancyTerrain)
 		{
 			double mul = 0.4 + 0.6 * (1 - draw_size / Game.tile_size);
 			Drawing.drawing.setColor(r * mul, g * mul, b * mul);

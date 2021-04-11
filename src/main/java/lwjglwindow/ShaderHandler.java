@@ -2,13 +2,14 @@ package lwjglwindow;
 
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class ShadowMap
+public class ShaderHandler
 {
     public int size = 2048;
     public double quality = 1.25;
@@ -38,7 +39,7 @@ public class ShadowMap
             0.5f, 0.5f, 0.5f, 1.0f
         };
 
-    public ShadowMap(LWJGLWindow window)
+    public ShaderHandler(LWJGLWindow window)
     {
         try
         {
@@ -93,7 +94,7 @@ public class ShadowMap
 
         glAttachShader(shadowProgram, vshader);
         glAttachShader(shadowProgram, fshader);
-        //glBindAttribLocation(shadowProgram, 0, "position");
+        GL20.glBindAttribLocation(shadowProgram, 6, "bones");
         glLinkProgram(shadowProgram);
 
         int linked = glGetProgrami(shadowProgram, GL_LINK_STATUS);
@@ -112,6 +113,10 @@ public class ShadowMap
     {
         glUseProgram(shadowProgram);
         shadowProgramVPUniform = glGetUniformLocation(shadowProgram, "viewProjectionMatrix");
+
+        this.window.shadowMapBonesEnabledFlag = GL20.glGetUniformLocation(shadowProgram, "bonesEnabled");
+        this.window.shadowMapBoneMatricesFlag = GL20.glGetUniformLocation(shadowProgram, "boneMatrices");
+
         glUseProgram(0);
     }
 
@@ -119,13 +124,12 @@ public class ShadowMap
     {
         normalProgram = glCreateProgram();
 
-        int vshader = window.createShader("/shaders/shadow_shade.vert", GL_VERTEX_SHADER);
-        int fshader = window.createShader("/shaders/shadow_shade.frag", GL_FRAGMENT_SHADER);
+        int vshader = window.createShader("/shaders/main.vert", GL_VERTEX_SHADER);
+        int fshader = window.createShader("/shaders/main.frag", GL_FRAGMENT_SHADER);
 
         glAttachShader(normalProgram, vshader);
         glAttachShader(normalProgram, fshader);
-        //glBindAttribLocation(normalProgram, 0, "position");
-        //glBindAttribLocation(normalProgram, 1, "normal");
+        GL20.glBindAttribLocation(normalProgram, 6, "bones");
         glLinkProgram(normalProgram);
 
         int linked = glGetProgrami(normalProgram, GL_LINK_STATUS);
@@ -157,8 +161,15 @@ public class ShadowMap
 
         this.window.lightFlag = GL20.glGetUniformLocation(normalProgram, "light");
         this.window.glowLightFlag = GL20.glGetUniformLocation(normalProgram, "glowLight");
+        this.window.shadeFlag = GL20.glGetUniformLocation(normalProgram, "shade");
+        this.window.glowShadeFlag = GL20.glGetUniformLocation(normalProgram, "glowShade");
+
         this.window.shadowFlag = GL20.glGetUniformLocation(normalProgram, "shadow");
-        this.window.glowShadowFlag = GL20.glGetUniformLocation(normalProgram, "glowShadow");
+        this.window.vboFlag = GL20.glGetUniformLocation(normalProgram, "vbo");
+        this.window.vboColorFlag = GL20.glGetUniformLocation(normalProgram, "originalColor");
+
+        this.window.bonesEnabledFlag = GL20.glGetUniformLocation(normalProgram, "bonesEnabled");
+        this.window.boneMatricesFlag = GL20.glGetUniformLocation(normalProgram, "boneMatrices");
 
         glUseProgram(0);
     }
@@ -197,6 +208,11 @@ public class ShadowMap
 
         glUseProgram(normalProgram);
         glUniform1i(this.resolutionFlag, this.size);
+
+        if (this.window.shadowsEnabled)
+            glUniform1i(this.window.shadowFlag, 1);
+        else
+            glUniform1i(this.window.shadowFlag, 0);
 
         if (!this.initialized)
         {

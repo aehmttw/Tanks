@@ -276,12 +276,6 @@ public class ChatBox extends TextBox
 
 	public void drawBox()
 	{
-		if (Game.framework == Game.Framework.swing)
-		{
-			Drawing.drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX, this.sizeY);
-			return;
-		}
-
 		double xPad = -40;
 		Drawing.drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX + xPad, this.sizeY);
 

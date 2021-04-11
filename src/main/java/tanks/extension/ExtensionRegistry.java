@@ -67,7 +67,7 @@ public class ExtensionRegistry
 
 					for (String file : files)
 					{
-						loadExtension(file.substring(file.lastIndexOf("/") + 1), null);
+						loadExtension(file.substring(file.replace("\\", "/").lastIndexOf("/") + 1), null);
 					}
 				}
 			}

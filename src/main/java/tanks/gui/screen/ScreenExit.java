@@ -15,7 +15,7 @@ public class ScreenExit extends Screen
 
     public ScreenExit()
     {
-        if (Game.fancyGraphics && Game.enable3d)
+        if (Game.fancyTerrain && Game.enable3d)
             outroAnimationTime = 1000;
     }
 

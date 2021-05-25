@@ -547,6 +547,11 @@ public class TankAIControlled extends Tank
 	{
 		this.seekTimer -= Panel.frameFrequency;
 
+		/*for (Tile t: this.path)
+		{
+			Game.effects.add(Effect.createNewEffect(t.posX, t.posY, 25, Effect.EffectType.laser));
+		}*/
+
 		if (this.path.isEmpty())
 		{
 			currentlySeeking = false;

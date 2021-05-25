@@ -239,6 +239,34 @@ public class ScreenChangelog extends Screen
                                     "New option to change intensity of particle effects\n" +
                                     "Several bug fixes and minor improvements"
                     });
+
+            new Changelog("v1.1.2", new String[]
+                    {
+                            "*What's new in Tanks v1.1.2:\n\n" +
+                                    "Added new sound for arc bullets\n" +
+                                    "Added support for custom resources in extensions\n" +
+                                    "Added support for custom tank models"
+                    });
+
+            new Changelog("v1.1.3", new String[]
+                    {
+                            "*What's new in Tanks v1.1.3:\n\n" +
+                                    "Explosive blocks now have a delay if triggered by other explosions\n" +
+                                    "Several bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.2.a", new String[]
+                    {
+                            "*What's new in Tanks v1.2.a:\n\n" +
+                                    "*New features:\n\n" +
+                                    "Added light pink tank which gets angry when it sees you\n" +
+                                    "Added mimic tank which mimics the behavior a nearby tank\n" +
+                                    "Dummy tanks can be now used in the level editor\n\n" +
+                                    "*Balancing:\n\n" +
+                                    "Blue tank electricity now only arcs between 4 targets (from 6)\n" +
+                                    "Cyan tank freeze duration decreased by 1 second\n\n" +
+                                    "...and the usual bug fixes and other minor improvements"
+                    });
         }
     }
 }

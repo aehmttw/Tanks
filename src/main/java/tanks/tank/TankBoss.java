@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
+import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateTank;
 import tanks.obstacle.Obstacle;
@@ -61,7 +62,7 @@ public class TankBoss extends TankAIControlled
 			this.spawned.remove(removeSpawned.get(i));
 		}
 		
-		if (Math.random() < 0.003 && this.spawned.size() < 6)
+		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawned.size() < 6)
 		{
 			this.spawnTank();
 		}

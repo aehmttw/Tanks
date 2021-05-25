@@ -84,8 +84,11 @@ public class ExtensionRegistry
 
 		if (main != null)
 		{
+			JarFile f = new JarFile(Game.homedir + Game.extensionDir + jar);
 			Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(main);
-			this.extensions.add(clasz.getConstructor().newInstance());
+			Extension e = clasz.getConstructor().newInstance();
+			e.jarFile = f;
+			this.extensions.add(e);
 		}
 		else
 		{
@@ -100,7 +103,9 @@ public class ExtensionRegistry
 					{
 						Scanner s = new Scanner(new InputStreamReader(i));
 						Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(s.nextLine());
-						this.extensions.add(clasz.getConstructor().newInstance());
+						Extension e = clasz.getConstructor().newInstance();
+						e.jarFile = f;
+						this.extensions.add(e);
 					}
 					catch (Exception e)
 					{

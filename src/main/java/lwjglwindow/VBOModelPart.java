@@ -26,14 +26,14 @@ public class VBOModelPart extends ModelPart
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(depthTest, this.material.glow);
+            window.setDrawOptions(depthTest, this.material.glow, this.window.colorA >= 1.0);
         else
             window.setDrawOptions(depthTest, this.material.glow, this.material.depthMask);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
-        Rotation.transform(window, yaw, pitch, roll);
+        Rotation.transform(window, -pitch, -roll, -yaw);
         Scale.transform(window, sX, sY, sZ);
 
         if (this.material.texture != null)
@@ -43,20 +43,22 @@ public class VBOModelPart extends ModelPart
         window.disableTexture();
 
         glPopMatrix();
+
+        window.disableDepthtest();
     }
 
     @Override
-    public void draw(double posX, double posY, double sX, double sY, double yaw)
+    public void draw(double posX, double posY, double sX, double sY, double angle)
     {
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(false, this.material.glow);
+            window.setDrawOptions(false, this.material.glow, this.window.colorA >= 1.0);
         else
             window.setDrawOptions(false, this.material.glow, this.material.depthMask);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, 0);
-        Rotation.transform(window, yaw, 0, 0);
+        Rotation.transform(window, 0, 0, -angle);
         Scale.transform(window, sX, sY, 0);
 
         if (this.material.texture != null)

@@ -3,7 +3,7 @@ package basewindow;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Model
+public class Model implements IModel
 {
     public static Material defaultMaterial = new Material("");
 

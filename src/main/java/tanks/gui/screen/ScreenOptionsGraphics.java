@@ -175,7 +175,7 @@ public class ScreenOptionsGraphics extends Screen
                 glow.text = glowText + ScreenOptions.offText;
         }
     },
-            "Glow effects may significantly impact performance");
+            "Glow effects may significantly---impact performance");
 
     Button graphics3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -290,7 +290,7 @@ public class ScreenOptionsGraphics extends Screen
         {
             Game.screen = new ScreenOptionsEffects();
         }
-    }, "Particle effects may significantly impact performance"
+    }, "Particle effects may significantly---impact performance"
     );
 
     @Override

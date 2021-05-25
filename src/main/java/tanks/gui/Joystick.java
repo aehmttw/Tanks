@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.IDrawable;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
+import tanks.tank.TankPlayer;
 
 public class Joystick implements IDrawable
 {
@@ -75,7 +76,7 @@ public class Joystick implements IDrawable
 
                 double distSq = Math.pow(px - this.posX, 2) + Math.pow(py - this.posY, 2);
                 if (!ScreenGame.finished && (p.tag.equals("") &&
-                        ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) || this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 || this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2))
+                        ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) || (this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden) || (this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden)))
                         || (this.activeInput == i && p.tag.equals(this.name)))
                 {
                     if (this.activeInput == -1 && (this.snap || this.mobile || this.domain > 0))

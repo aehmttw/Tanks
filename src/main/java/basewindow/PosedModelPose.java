@@ -3,12 +3,8 @@ package basewindow;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PosedModelPose
+public class PosedModelPose implements IPosedModelFrame
 {
-    public double duration;
-    public boolean looped;
-    public boolean cubic = true;
-
     public HashMap<String, PosedBone> bones = new HashMap<>();
 
     public PosedModelPose(BaseFileManager fileManager, String file)

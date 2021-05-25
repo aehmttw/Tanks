@@ -34,6 +34,8 @@ public abstract class Movable implements IDrawableForInterface
 	public NameTag nameTag;
 	public boolean showName = false;
 
+	public boolean skipNextUpdate = false;
+
 	public int drawLevel = 3;
 	//public boolean drawBelow = false;
 	//public boolean drawAbove = false;
@@ -85,7 +87,7 @@ public abstract class Movable implements IDrawableForInterface
 				
 				a.update();
 				
-				if (a.type.equals("velocity"))
+				if (!a.expired && a.type.equals("velocity"))
 				{
 					vX2 = a.getValue(vX2);
 					vY2 = a.getValue(vY2);

@@ -365,7 +365,7 @@ public class Ray
 		while (true)
 		{
 			if (trace && (!dotted || (this.age % 2 == 0)))
-				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 4, Effect.EffectType.ray));
+				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 4, Effect.EffectType.electric));
 
 			age++;
 

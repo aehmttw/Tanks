@@ -22,7 +22,7 @@ public class ScreenOptionsEffects extends Screen
                 effects.text = effectsText + ScreenOptions.offText;
         }
     },
-            "Particle effects may significantly impact performance");
+            "Particle effects may significantly---impact performance");
 
 
     TextBoxSlider effectMultiplier = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Particle percentage", new Runnable()
@@ -55,7 +55,8 @@ public class ScreenOptionsEffects extends Screen
 
         effectMultiplier.allowLetters = false;
         effectMultiplier.allowSpaces = false;
-        effectMultiplier.maxChars = 2;
+        effectMultiplier.maxChars = 3;
+        effectMultiplier.max = 100;
         effectMultiplier.checkMaxValue = true;
         effectMultiplier.checkMinValue = true;
         effectMultiplier.integer = true;

@@ -115,12 +115,9 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         @Override
         public void run()
         {
-            if (checkCrusadeEnd())
-            {
-                Game.resetTiles();
-                Game.screen = new ScreenPartyLobby();
-                ScreenGame.versus = false;
-            }
+            Game.resetTiles();
+            Game.screen = new ScreenPartyLobby();
+            ScreenGame.versus = false;
         }
     }
     );

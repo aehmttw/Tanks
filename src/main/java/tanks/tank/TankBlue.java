@@ -21,7 +21,7 @@ public class TankBlue extends TankAIControlled
 
 		this.coinValue = 4;
 
-		this.description = "A stationary tank which shoots---stunning electricity that arcs---between targets";
+		this.description = "A stationary tank---which shoots---stunning electricity---that arcs between---targets";
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class TankBlue extends TankAIControlled
 
 		Drawing.drawing.playGlobalSound("laser.ogg");
 
-		BulletElectric b = new BulletElectric(this.posX, this.posY, 5, this);
+		BulletElectric b = new BulletElectric(this.posX, this.posY, 3, this);
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/8);
 		b.moveOut(16);

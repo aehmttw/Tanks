@@ -602,25 +602,7 @@ public class Bullet extends Movable implements IDrawable
 
 			if (this.destroyTimer <= 0 && Game.effectsEnabled && !(this instanceof BulletFlame))
 			{
-				for (int i = 0; i < this.size * 4 * Game.effectMultiplier; i++)
-				{
-					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-					double var = 50;
-					e.maxAge /= 2;
-					e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
-					e.glowR = e.colR - this.outlineColorR;
-					e.glowG = e.colG - this.outlineColorG;
-					e.glowB = e.colB - this.outlineColorB;
-
-					if (Game.enable3d)
-						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
-					else
-						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-
-					Game.effects.add(e);
-				}
+				this.addDestroyEffect();
 			}
 
 			this.destroyTimer += Panel.frameFrequency;
@@ -890,5 +872,28 @@ public class Bullet extends Movable implements IDrawable
 	public void onDestroy()
 	{
 
+	}
+
+	public void addDestroyEffect()
+	{
+		for (int i = 0; i < this.size * 4 * Game.effectMultiplier; i++)
+		{
+			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+			double var = 50;
+			e.maxAge /= 2;
+			e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
+			e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
+			e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
+			e.glowR = e.colR - this.outlineColorR;
+			e.glowG = e.colG - this.outlineColorG;
+			e.glowB = e.colB - this.outlineColorB;
+
+			if (Game.enable3d)
+				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
+			else
+				e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+			Game.effects.add(e);
+		}
 	}
 }

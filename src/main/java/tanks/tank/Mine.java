@@ -269,7 +269,6 @@ public class Mine extends Movable
                 {
                     o.onDestroy();
                     o.playDestroyAnimation(this.posX, this.posY, this.radius);
-                    Game.removeObstacles.add(o);
                 }
             }
         }

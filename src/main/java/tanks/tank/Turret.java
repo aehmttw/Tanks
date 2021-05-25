@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 
@@ -13,8 +14,8 @@ public class Turret extends Movable
 
 	Tank tank;
 
-	public static ModelPart base_model;
-	public static ModelPart turret_model;
+	public static Model base_model;
+	public static Model turret_model;
 
 	public Turret(Tank t) 
 	{
@@ -55,11 +56,11 @@ public class Turret extends Movable
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, glow);
 
 		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(turret_model, this.posX, this.posY, l, l * size / 8, angle);
+			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, angle);
 		else if (!in3d)
-			Drawing.drawing.drawModel(turret_model, this.posX, this.posY, l, l * size / 8, angle);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, angle);
 		else
-			Drawing.drawing.drawModel(turret_model, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, angle);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, angle);
 
 		if (transparent)
 			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127, glow);
@@ -67,11 +68,11 @@ public class Turret extends Movable
 			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 255, glow);
 
 		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(base_model, this.posX, this.posY, l, l, angle);
+			Drawing.drawing.drawInterfaceModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, angle);
 		else if (!in3d)
-			Drawing.drawing.drawModel(base_model, this.posX, this.posY, l, l, angle);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, angle);
 		else
-			Drawing.drawing.drawModel(base_model, this.posX, this.posY, s / 2, l, l, l, angle);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, s / 2, l, l, l, angle);
 	}
 	
 	@Override

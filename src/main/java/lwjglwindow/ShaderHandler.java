@@ -2,7 +2,6 @@ package lwjglwindow;
 
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 import java.nio.ByteBuffer;
 

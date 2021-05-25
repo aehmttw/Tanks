@@ -1,5 +1,7 @@
 package basewindow;
 
+import java.io.InputStream;
+
 public abstract class BaseSoundPlayer
 {
     public boolean musicPlaying = false;
@@ -26,4 +28,11 @@ public abstract class BaseSoundPlayer
     public abstract void registerCombinedMusic(String path, String id);
 
     public abstract void exit();
+
+
+    public abstract void createSound(String path, InputStream in);
+
+    public abstract void createMusic(String path, InputStream in);
+
+    public abstract void loadMusic(String path, InputStream in);
 }

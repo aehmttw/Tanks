@@ -41,7 +41,7 @@ public class SpeedrunTimer
         String timer = "";
 
         if (hr > 0)
-            timer += hr % 60 + ":";
+            timer += hr + ":";
 
         if (min % 60 >= 10 || hr <= 0)
             timer += min % 60 + ":";

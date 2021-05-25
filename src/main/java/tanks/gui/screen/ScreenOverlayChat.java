@@ -54,6 +54,9 @@ public class ScreenOverlayChat
             {
                 for (int in = 0; in < chat.size(); in++)
                 {
+                    if (in >= 30)
+                        continue;
+
                     ChatMessage c = chat.get(in);
 
                     if (time - c.time <= 30000 || chatbox.selected)

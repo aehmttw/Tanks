@@ -16,69 +16,46 @@ public class Drawing
 	protected static boolean initialized = false;
 
 	public double sizeX = 1400;
-
 	public double sizeY = 900;
 
 	public double playerX = sizeX / 2;
-
 	public double playerY = sizeY / 2;
 
 	public double interfaceScaleZoom = 1;
-
 	public double baseInterfaceSizeX = 1400;
-
 	public double baseInterfaceSizeY = 900;
-
 	public double interfaceSizeX = baseInterfaceSizeX / interfaceScaleZoom;
-
 	public double interfaceSizeY = baseInterfaceSizeY / interfaceScaleZoom;
 
 	public double scale = 1;
-
 	public double unzoomedScale = 1;
-
 	public double interfaceScale = 1;
 
 	public boolean enableMovingCamera = false;
-
 	public boolean enableMovingCameraX = false;
-
 	public boolean enableMovingCameraY = false;
 
 	public int statsHeight = 40;
-
 	public boolean enableStats = false;
 
 	public boolean movingCamera = true;
 
 	public static Drawing drawing;
 
-	public int mouseXoffset = 0;
-
-	public int mouseYoffset = 0;
-
 	public double textSize = 24;
-
 	public double titleSize = 30;
 
 	public double objWidth = 350;
-
 	public double objHeight = 40;
-
 	public double objXSpace = 380;
-
 	public double objYSpace = 60;
 
 	public double fontSize = 1;
 
 	public double currentColorR;
-
 	public double currentColorG;
-
 	public double currentColorB;
-
 	public double currentColorA;
-
 	public double currentGlow = 1;
 
 	public boolean disableFaceRemoval = true;
@@ -1046,22 +1023,22 @@ public class Drawing
 
 	public double getInterfaceMouseX()
 	{
-		return (Game.game.window.absoluteMouseX - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale + mouseXoffset / interfaceScale;
+		return (Game.game.window.absoluteMouseX - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale;
 	}
 
 	public double getInterfaceMouseY()
 	{
-		return (Game.game.window.absoluteMouseY - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale + mouseYoffset / interfaceScale;
+		return (Game.game.window.absoluteMouseY - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale;
 	}
 
 	public double getInterfacePointerX(double x)
 	{
-		return (x - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale + mouseXoffset / interfaceScale;
+		return (x - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale;
 	}
 
 	public double getInterfacePointerY(double y)
 	{
-		return (y - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale + mouseYoffset / interfaceScale;
+		return (y - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale;
 	}
 
 	/*public void setScreenSize(int x, int y)

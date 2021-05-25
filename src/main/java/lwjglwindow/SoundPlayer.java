@@ -6,7 +6,6 @@ import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -68,6 +67,21 @@ public class SoundPlayer extends BaseSoundPlayer
         {
             musicsToLoad = false;
             int i = setupMusic(path);
+
+            synchronized (finishedMusicBuffers)
+            {
+                finishedMusicBuffers.put(path, i);
+                musicsToLoad = true;
+            }
+        }).start();
+    }
+
+    public void loadMusic(String path, InputStream in)
+    {
+        new Thread(() ->
+        {
+            musicsToLoad = false;
+            int i = setupMusic(path, in);
 
             synchronized (finishedMusicBuffers)
             {
@@ -179,6 +193,11 @@ public class SoundPlayer extends BaseSoundPlayer
 
     protected void createSound(String path)
     {
+        this.createSound(path, null);
+    }
+
+    public void createSound(String path, InputStream in)
+    {
         ShortBuffer rawAudioBuffer = null;
 
         int channels = -1;
@@ -190,7 +209,11 @@ public class SoundPlayer extends BaseSoundPlayer
             IntBuffer channelsBuffer = stack.mallocInt(1);
             IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
-            InputStream in = getClass().getResourceAsStream(path);
+            if (in == null)
+                in = getClass().getResourceAsStream(path);
+            else
+                path = "/" + path;
+
             byte[] bytes = IOUtils.toByteArray(in);
             ByteBuffer b = MemoryUtil.memAlloc(bytes.length);
             b.put(bytes);
@@ -203,7 +226,7 @@ public class SoundPlayer extends BaseSoundPlayer
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             System.err.println("Failed to create sound " + path);
             e.printStackTrace();
@@ -234,6 +257,11 @@ public class SoundPlayer extends BaseSoundPlayer
 
     protected int setupMusic(String path)
     {
+        return this.setupMusic(path, null);
+    }
+
+    protected int setupMusic(String path, InputStream in)
+    {
         ShortBuffer rawAudioBuffer = null;
 
         int channels = -1;
@@ -245,7 +273,11 @@ public class SoundPlayer extends BaseSoundPlayer
             IntBuffer channelsBuffer = stack.mallocInt(1);
             IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
-            InputStream in = getClass().getResourceAsStream(path);
+            if (in == null)
+                in = getClass().getResourceAsStream(path);
+            else
+                path = "/" + path;
+
             byte[] bytes = IOUtils.toByteArray(in);
             ByteBuffer b = MemoryUtil.memAlloc(bytes.length);
             b.put(bytes);
@@ -258,8 +290,9 @@ public class SoundPlayer extends BaseSoundPlayer
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
+            System.err.println("Failed to create music " + path);
             e.printStackTrace();
         }
 
@@ -284,6 +317,11 @@ public class SoundPlayer extends BaseSoundPlayer
         free(rawAudioBuffer);
 
         return bufferPointer;
+    }
+
+    public void createMusic(String path, InputStream in)
+    {
+        this.musicBuffers.put(path, this.setupMusic(path, in));
     }
 
     protected void createMusic(String path)

@@ -34,8 +34,8 @@ public class EventTankControllerUpdateC extends PersonalEvent
         this.posY = t.posY;
         this.vX = t.vX;
         this.vY = t.vY;
-        this.mX = Drawing.drawing.getMouseX();
-        this.mY = Drawing.drawing.getMouseY();
+        this.mX = t.mouseX;
+        this.mY = t.mouseY;
         this.angle = t.angle;
         this.action1 = t.action1;
         this.action2 = t.action2;

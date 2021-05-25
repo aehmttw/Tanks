@@ -33,7 +33,7 @@ public class BulletArc extends Bullet
         this.playPopSound = false;
         this.name = bullet_name;
         //this.effect = BulletEffect.trail;
-        this.itemSound = "damage.ogg";
+        this.itemSound = "arc.ogg";
 
         this.enableExternalCollisions = false;
         this.playPopSound = false;
@@ -184,5 +184,17 @@ public class BulletArc extends Bullet
     {
         double dist = Math.min(1000 * this.getSpeed() / 3.125, Math.sqrt(Math.pow(x - this.posX, 2) + Math.pow(y - this.posY, 2)));
         this.vZ = dist / this.getSpeed() * 0.5 * BulletArc.gravity;
+    }
+
+    @Override
+    public void addDestroyEffect()
+    {
+        if (!Game.enable3d)
+            this.posY -= this.posZ - Game.tile_size / 2;
+
+        super.addDestroyEffect();
+
+        if (!Game.enable3d)
+            this.posY += this.posZ - Game.tile_size / 2;
     }
 }

@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import lwjglwindow.ImmediateModeShapeRenderer;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 

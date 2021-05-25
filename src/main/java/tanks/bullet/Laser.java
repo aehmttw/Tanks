@@ -1,8 +1,10 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.gui.screen.ScreenGame;
+import tanks.tank.Tank;
 
-public class Laser implements IDrawable
+public class Laser extends Movable implements IDrawableWithGlow
 {
     public double backX;
     public double backY;
@@ -28,8 +30,13 @@ public class Laser implements IDrawable
     public boolean backCircle = true;
     public boolean showOutsides = true;
 
+    public Tank tank1;
+    public Tank tank2;
+
     public Laser(double backX, double backY, double backZ, double frontX, double frontY, double frontZ, double width, double angle, double colR, double colG, double colB)
     {
+        super(backX, backY);
+
         this.angle = angle;
         this.backX = backX;
         this.backY = backY;
@@ -42,11 +49,19 @@ public class Laser implements IDrawable
         this.colorR = colR;
         this.colorG = colG;
         this.colorB = colB;
+
+        this.drawLevel = 2;
     }
 
     @Override
     public void draw()
     {
+        if (Game.movables.contains(this))
+        {
+            if (this.tank1 == null || this.tank2 == null || this.tank1.destroy || this.tank2.destroy || ScreenGame.finishedQuick)
+                Game.removeMovables.add(this);
+        }
+
         double ox = Math.cos(this.angle + Math.PI / 2);
         double oy = Math.sin(this.angle + Math.PI / 2);
 
@@ -167,5 +182,11 @@ public class Laser implements IDrawable
                 Game.game.window.setBatchMode(false, false, depth, true);
             }
         }
+    }
+
+    @Override
+    public boolean isGlowEnabled()
+    {
+        return true;
     }
 }

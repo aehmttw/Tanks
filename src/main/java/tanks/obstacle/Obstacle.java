@@ -362,7 +362,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public void onDestroy()
 	{
-
+		Game.removeObstacles.add(this);
 	}
 
 	public void playDestroyAnimation(double posX, double posY, double radius)

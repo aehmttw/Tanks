@@ -106,7 +106,7 @@ public class TankMustard extends TankAIControlled
                 Movable.angleBetween(this.aimAngle, this.angle) > this.aimThreshold && !this.disabled && !this.destroy)
             return;
 
-        Drawing.drawing.playGlobalSound("damage.ogg", 0.5f);
+        Drawing.drawing.playGlobalSound("arc.ogg", 1 / 2.5f);
 
         BulletArc b = new BulletArc(this.posX, this.posY, 5, this);
         b.team = this.team;

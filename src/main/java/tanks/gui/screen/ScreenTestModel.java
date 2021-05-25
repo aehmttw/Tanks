@@ -1,16 +1,13 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
-import basewindow.PosedModel;
-import basewindow.PosedModelAnimation;
-import basewindow.PosedModelPose;
+import basewindow.*;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 
 public class ScreenTestModel extends Screen
 {
-    public PosedModel model;
+    public Model model;
     public double yaw;
     public double pitch;
     public double roll;
@@ -23,7 +20,7 @@ public class ScreenTestModel extends Screen
     //PosedModelAnimation animation;
     //PosedModelPose pose;
 
-    public ScreenTestModel(PosedModel m)
+    public ScreenTestModel(Model m)
     {
         this.music = "tomato_feast_1_options.ogg";
         this.musicID = "menu";
@@ -80,7 +77,7 @@ public class ScreenTestModel extends Screen
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_R))
             this.posZ += Panel.frameFrequency;
 
-        for (PosedModel.PoseBone b: model.bones)
+        /*for (PosedModel.PoseBone b: model.bones)
         {
             b.yaw = 0;
             b.pitch = 0;
@@ -88,7 +85,7 @@ public class ScreenTestModel extends Screen
             b.offX = 0;
             b.offY = 0;
             b.offZ = 0;
-        }
+        }*/
 
         //animation.apply(model, System.currentTimeMillis() / 10.0, 1);
         //pose.apply(model, 1);

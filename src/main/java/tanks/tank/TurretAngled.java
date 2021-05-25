@@ -10,7 +10,7 @@ public class TurretAngled extends Turret
         super(t);
     }
 
-    public void draw(double yaw, double pitch, boolean forInterface, boolean in3d, boolean transparent)
+    public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
     {
         this.posX = tank.posX;
         this.posY = tank.posY;
@@ -28,11 +28,11 @@ public class TurretAngled extends Turret
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 0.5);
 
         if (forInterface)
-            Drawing.drawing.drawInterfaceModel(turret_model, this.posX, this.posY, l, l * size / 8, yaw);
+            Drawing.drawing.drawInterfaceModel(turret_model, this.posX, this.posY, l, l * size / 8, rotation);
         else if (!in3d)
-            Drawing.drawing.drawModel(turret_model, this.posX, this.posY, l, l * size / 8, yaw);
+            Drawing.drawing.drawModel(turret_model, this.posX, this.posY, l, l * size / 8, rotation);
         else
-            Drawing.drawing.drawModel(turret_model, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, yaw, pitch, 0);
+            Drawing.drawing.drawModel(turret_model, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, rotation, vAngle, 0);
 
         if (transparent)
             Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127, 0.5);
@@ -40,10 +40,10 @@ public class TurretAngled extends Turret
             Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 255, 0.5);
 
         if (forInterface)
-            Drawing.drawing.drawInterfaceModel(base_model, this.posX, this.posY, l, l, yaw);
+            Drawing.drawing.drawInterfaceModel(base_model, this.posX, this.posY, l, l, rotation);
         else if (!in3d)
-            Drawing.drawing.drawModel(base_model, this.posX, this.posY, l, l, yaw);
+            Drawing.drawing.drawModel(base_model, this.posX, this.posY, l, l, rotation);
         else
-            Drawing.drawing.drawModel(base_model, this.posX, this.posY, s / 2, l, l, l, yaw);
+            Drawing.drawing.drawModel(base_model, this.posX, this.posY, s / 2, l, l, l, rotation);
     }
 }

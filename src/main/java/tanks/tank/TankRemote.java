@@ -51,16 +51,30 @@ public class TankRemote extends Tank
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = t;
+
+		this.copyTank(t);
+
+		this.invulnerable = true;
+		this.networkID = t.networkID;
+		Tank.idMap.put(this.networkID, this);
+	}
+
+	public void copyTank(Tank t)
+	{
 		this.turret.length = t.turret.length;
 		this.turret.size = t.turret.size;
+		this.colorR = t.colorR;
+		this.colorG = t.colorG;
+		this.colorB = t.colorB;
 		this.turret.colorR = t.turret.colorR;
 		this.turret.colorG = t.turret.colorG;
 		this.turret.colorB = t.turret.colorB;
-		this.invulnerable = true;
-		this.networkID = t.networkID;
 		this.texture = t.texture;
 		this.description = t.description;
-		Tank.idMap.put(this.networkID, this);
+		this.baseModel = t.baseModel;
+		this.colorModel = t.colorModel;
+		this.turretBaseModel = t.turretBaseModel;
+		this.turretModel = t.turretModel;
 	}
 
 	@Override

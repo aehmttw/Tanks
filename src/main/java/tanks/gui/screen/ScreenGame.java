@@ -1165,6 +1165,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			for (Movable m: Game.movables)
 			{
+				if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
+				{
+					throw new RuntimeException("Movable with NaN position: " + m.toString() + " " + m.lastPosX + " " + m.lastPosY);
+				}
+
 				if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).targetable))
 				{
 					for (Face f: ((ISolidObject) m).getHorizontalFaces())
@@ -1222,6 +1227,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
+
+				if (m.skipNextUpdate)
+				{
+					m.skipNextUpdate = false;
+					continue;
+				}
+
 				m.update();
 
 				if (m instanceof Tank)
@@ -1311,7 +1323,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			if (fullyAliveTeams.size() <= 1)
+			{
 				ScreenGame.finishedQuick = true;
+				TankPlayer.shootStickHidden = false;
+			}
 
 			if (aliveTeams.size() <= 1)
 			{
@@ -1680,7 +1695,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			drawables[9].add(TankPlayer.controlStick);
 
-			if (TankPlayer.shootStickEnabled)
+			if (TankPlayer.shootStickEnabled && !TankPlayer.shootStickHidden)
 				drawables[9].add(TankPlayer.shootStick);
 		}
 
@@ -1728,7 +1743,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						((IPlayerTank) Game.playerTank).getTouchCircleSize(), ((IPlayerTank) Game.playerTank).getTouchCircleSize());
 			}
 
-			if (i == 9 && (Game.playerTank instanceof IPlayerTank && ((IPlayerTank) Game.playerTank).getDrawRange() >= 0))
+			if (i == 9 && (Game.playerTank instanceof IPlayerTank && ((IPlayerTank) Game.playerTank).getDrawRange() >= 0) && !Game.game.window.drawingShadow)
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 50);

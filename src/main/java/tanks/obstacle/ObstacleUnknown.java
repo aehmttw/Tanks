@@ -4,6 +4,7 @@ import tanks.Drawing;
 
 public class ObstacleUnknown extends Obstacle
 {
+	public String metadata;
 
 	public ObstacleUnknown(String name, double posX, double posY) 
 	{
@@ -16,6 +17,7 @@ public class ObstacleUnknown extends Obstacle
 		this.destructible = false;
 		this.tankCollision = false;
 		this.bulletCollision = false;
+		this.enableStacking = false;
 		this.enableStacking = false;
 
 		this.description = "A block which could not be identified";
@@ -34,6 +36,12 @@ public class ObstacleUnknown extends Obstacle
 	public double getTileHeight()
 	{
 		return 0;
+	}
+
+	@Override
+	public void setMetadata(String data)
+	{
+		this.metadata = data;
 	}
 }
  

@@ -22,7 +22,7 @@ public class TankBlack extends TankAIControlled
 
 		this.coinValue = 10;
 
-		this.description = "A smart, very fast tank---which fires rockets";
+		this.description = "A smart, very fast---tank which fires---rockets";
 	}
 	
 	@Override

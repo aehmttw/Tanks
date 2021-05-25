@@ -24,6 +24,19 @@ public abstract class PosedModel implements IModel
         }
     }
 
+    public void resetBones()
+    {
+        for (PoseBone b: this.bones)
+        {
+            b.yaw = 0;
+            b.pitch = 0;
+            b.roll = 0;
+            b.offX = 0;
+            b.offY = 0;
+            b.offZ = 0;
+        }
+    }
+
     public static class PoseBone
     {
         public PosedModel posedModel;

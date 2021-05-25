@@ -36,28 +36,22 @@ void main(void)
     if (vbo)
         gl_FragColor *= originalColor;
 
-    if (shadow)
+    if (shadow && depthtest)
     {
         vec4 lightNDCPosition = lightBiasedClipPosition / lightBiasedClipPosition.w;
-
         vec4 depth = texture2D(depthTexture, lightNDCPosition.xy);
 
-        if (!depthtest)
-        gl_FragColor *= vec4(1.0, 1.0, 1.0, 1.0);
+        bool lit = depth.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
+
+        if (lit)
+        {
+            float col = light * (1.0 - glow) + glowLight * glow;
+            gl_FragColor *= vec4(col, col, col, 1.0);
+        }
         else
         {
-            bool lit = depth.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
-
-            if (lit)
-            {
-                float col = light * (1.0 - glow) + glowLight * glow;
-                gl_FragColor *= vec4(col, col, col, 1.0);
-            }
-            else
-            {
-                float col = shade * (1.0 - glow) + glowShade * glow;
-                gl_FragColor *= vec4(col, col, col, 1.0);
-            }
+            float col = shade * (1.0 - glow) + glowShade * glow;
+            gl_FragColor *= vec4(col, col, col, 1.0);
         }
     }
 }

@@ -6,7 +6,7 @@ import tanks.obstacle.Obstacle;
 
 public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight}
+    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight, exclamation}
 
     public enum State {live, removed, recycle}
 
@@ -158,6 +158,8 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.maxAge = 50;
         else if (type == EffectType.boostLight)
             this.maxAge = 0;
+        else if (type == EffectType.exclamation)
+            this.maxAge = 50;
     }
 
     protected void refurbish()
@@ -486,6 +488,30 @@ public class Effect extends Movable implements IDrawableWithGlow
             }
 
             Game.game.window.setBatchMode(false, true, true, true, false);
+        }
+        else if (this.type == EffectType.exclamation)
+        {
+            double a = Math.min(25, 50 - this.age) * 2.55 * 4;
+            drawing.setColor(255, 100, 255, a, 0.5);
+
+            if (Game.enable3d)
+            {
+                drawing.fillOval(this.posX, this.posY, this.posZ + this.age, this.size, this.size);
+                drawing.setColor(255, 200, 255, a, 0);
+                drawing.fillOval(this.posX, this.posY, this.posZ + this.age, this.size * 0.8, this.size * 0.8);
+                drawing.setFontSize(32 * this.size / Game.tile_size);
+                drawing.setColor(255, 0, 0, a, 1);
+                drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, this.posZ + this.age + 1, "!");
+            }
+            else
+            {
+                drawing.fillOval(this.posX, this.posY,this.size, this.size);
+                drawing.setColor(255, 200, 255, a, 0);
+                drawing.fillOval(this.posX, this.posY, this.posZ + this.age, this.size * 0.8, this.size * 0.8);
+                drawing.setFontSize(32 * this.size / Game.tile_size);
+                drawing.setColor(255, 0, 0, a, 1);
+                drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, "!");
+            }
         }
         else
         {

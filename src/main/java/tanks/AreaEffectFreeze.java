@@ -13,7 +13,7 @@ public class AreaEffectFreeze extends AreaEffect
 		this.isRemote = ScreenPartyLobby.isClient;
 		this.constantlyImbue = false;
 		this.imbueEffects();
-		this.maxAge = 600;
+		this.maxAge = 500;
 		this.drawLevel = 9;
 
 		if (!this.isRemote)
@@ -38,7 +38,7 @@ public class AreaEffectFreeze extends AreaEffect
 				else
 					e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 200.0);
 
-				e.maxAge *= 4;
+				e.maxAge *= 3;
 				Game.effects.add(e);
 			}
 		}
@@ -52,9 +52,9 @@ public class AreaEffectFreeze extends AreaEffect
 				if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
 				{
 					AttributeModifier a = new AttributeModifier("freeze", "velocity", Operation.multiply, -1);
-					a.duration = 600;
+					a.duration = 500;
 					a.warmupAge = 50;
-					a.deteriorationAge = 500;
+					a.deteriorationAge = 400;
 					m.addAttribute(a);
 				}
 			}
@@ -65,7 +65,7 @@ public class AreaEffectFreeze extends AreaEffect
 	public void draw()
 	{
 		double size = Math.min(this.size + Game.tile_size / 2, this.age * 8);
-		for (int i = (int) Math.max(0, size - ((int) (50 * Math.min(100, 600 - this.age) / 100.0))); i < size; i += 2)
+		for (int i = (int) Math.max(0, size - ((int) (50 * Math.min(100, this.maxAge - this.age) / 100.0))); i < size; i += 2)
 		{
 			Drawing.drawing.setColor(200, 255, 255, 10);
 

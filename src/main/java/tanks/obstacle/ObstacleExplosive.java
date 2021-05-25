@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import tanks.Game;
 import tanks.Movable;
+import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.event.EventLayMine;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -10,6 +11,8 @@ import tanks.tank.Tank;
 
 public class ObstacleExplosive extends Obstacle
 {
+    public double timer = 25;
+
     public ObstacleExplosive(String name, double posX, double posY)
     {
         super(name, posX, posY);
@@ -19,6 +22,7 @@ public class ObstacleExplosive extends Obstacle
         this.colorR = 255;
         this.colorG = Math.random() * 40 + 80;
         this.colorB = 0;
+        this.glow = 0.5;
 
         if (!Game.fancyTerrain)
             this.colorG = 100;
@@ -43,20 +47,35 @@ public class ObstacleExplosive extends Obstacle
     {
         if (m instanceof Bullet || m instanceof Tank)
         {
-            this.onDestroy();
+            this.explode();
         }
     }
 
     @Override
     public void onDestroy()
     {
+        this.update = true;
+    }
+
+    @Override
+    public void update()
+    {
+        if (this.timer <= 0)
+            this.explode();
+
+        this.timer -= Panel.frameFrequency;
+    }
+
+    public void explode()
+    {
         if (!ScreenPartyLobby.isClient)
         {
             Mine mi = new Mine(this.posX, this.posY, 0, Game.dummyTank);
             mi.radius *= (this.stackHeight - 1) / 2 + 1;
-            Game.removeObstacles.add(this);
             Game.eventsOut.add(new EventLayMine(mi));
             Game.movables.add(mi);
         }
+
+        Game.removeObstacles.add(this);
     }
 }

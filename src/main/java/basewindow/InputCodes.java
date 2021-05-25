@@ -1,7 +1,5 @@
 package basewindow;
 
-import java.util.HashMap;
-
 public class InputCodes
 {
     //Taken from GLFW so that we can use these key codes without having GLFW imported

@@ -103,7 +103,7 @@ public class ObstacleMud extends Obstacle
             Game.effects.add(e2);
         }
 
-        if (m instanceof Tank)
+        if (m instanceof Tank & Game.playerTank != null)
         {
             double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
             double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);

@@ -3,7 +3,7 @@ package basewindow;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PosedModelAnimation
+public class PosedModelAnimation implements IPosedModelFrame
 {
     public double duration;
     public boolean looped;
@@ -145,10 +145,10 @@ public class PosedModelAnimation
                     AnimatedBoneRotationFrame beforeLast = this.rotationFrames.get(getIndex(lastIndex - 1, this.rotationFrames.size()));
                     AnimatedBoneRotationFrame afterNext = this.rotationFrames.get(getIndex(lastIndex + 2, this.rotationFrames.size()));;
 
-                    beforeLast.applyCubic(b, frac2 * frac, 0);
-                    last.applyCubic(b, frac2 * frac, 1);
-                    next.applyCubic(b, frac2 * frac, 2);
-                    afterNext.applyCubic(b, frac2 * frac, 3);
+                    beforeLast.applyCubic(b, frac2, frac, 0);
+                    last.applyCubic(b, frac2, frac, 1);
+                    next.applyCubic(b, frac2, frac, 2);
+                    afterNext.applyCubic(b, frac2, frac, 3);
                 }
                 else
                 {
@@ -208,10 +208,10 @@ public class PosedModelAnimation
                     AnimatedBoneTranslationFrame beforeLast = this.translationFrames.get(getIndex(lastIndex - 1, this.translationFrames.size()));
                     AnimatedBoneTranslationFrame afterNext = this.translationFrames.get(getIndex(lastIndex + 2, this.translationFrames.size()));;
 
-                    beforeLast.applyCubic(b, frac2 * frac, 0);
-                    last.applyCubic(b, frac2 * frac, 1);
-                    next.applyCubic(b, frac2 * frac, 2);
-                    afterNext.applyCubic(b, frac2 * frac, 3);
+                    beforeLast.applyCubic(b, frac2, frac, 0);
+                    last.applyCubic(b, frac2, frac, 1);
+                    next.applyCubic(b, frac2, frac, 2);
+                    afterNext.applyCubic(b, frac2, frac, 3);
                 }
                 else
                 {
@@ -246,16 +246,16 @@ public class PosedModelAnimation
 
             public abstract void apply(PosedModel.PoseBone b, double frac);
 
-            public void applyCubic(PosedModel.PoseBone b, double frac, int index)
+            public void applyCubic(PosedModel.PoseBone b, double frac, double frac2, int index)
             {
                 if (index == 0)
-                    this.apply(b, -0.5 * Math.pow(frac, 3) + Math.pow(frac, 2) - 0.5 * frac);
+                    this.apply(b, (-0.5 * Math.pow(frac, 3) + Math.pow(frac, 2) - 0.5 * frac) * frac2);
                 else if (index == 1)
-                    this.apply(b, 1.5 * Math.pow(frac, 3) - 2.5 * Math.pow(frac, 2) + 1);
+                    this.apply(b, (1.5 * Math.pow(frac, 3) - 2.5 * Math.pow(frac, 2) + 1) * frac2);
                 else if (index == 2)
-                    this.apply(b, -1.5 * Math.pow(frac, 3) + 2 * Math.pow(frac, 2) + 0.5 * frac);
+                    this.apply(b, (-1.5 * Math.pow(frac, 3) + 2 * Math.pow(frac, 2) + 0.5 * frac) * frac2);
                 else if (index == 3)
-                    this.apply(b, 0.5 * Math.pow(frac, 3) - 0.5 * Math.pow(frac, 2));
+                    this.apply(b, (0.5 * Math.pow(frac, 3) - 0.5 * Math.pow(frac, 2)) * frac2);
             }
         }
 

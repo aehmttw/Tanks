@@ -1,8 +1,11 @@
 package basewindow;
 
-import basewindow.transformation.*;
-import lwjglwindow.ImmediateModeModelPart;
+import basewindow.transformation.ScaleAboutPoint;
+import basewindow.transformation.Shear;
+import basewindow.transformation.Transformation;
+import basewindow.transformation.Translation;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +112,6 @@ public abstract class BaseWindow
         this.vsync = vsync;
         this.windowHandler = w;
         this.showMouseOnLaunch = showMouse;
-        this.shapeDrawer = new ImmediateModeModelPart.ImmediateModeShapeDrawer(this);
 
         if (System.getProperties().toString().contains("Mac OS X"))
             mac = true;
@@ -208,6 +210,8 @@ public abstract class BaseWindow
 
     public abstract double getEdgeBounds();
 
+    public abstract void createImage(String image, InputStream in);
+
     public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth);
 
     public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow);
@@ -231,6 +235,14 @@ public abstract class BaseWindow
     public abstract double getShadowQuality();
 
     public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
+
+    public abstract void addMatrix();
+
+    public abstract void removeMatrix();
+
+    public abstract void setMatrixProjection();
+
+    public abstract void setMatrixModelview();
 
     public abstract ModelPart createModelPart();
 

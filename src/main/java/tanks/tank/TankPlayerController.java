@@ -40,6 +40,9 @@ public class TankPlayerController extends Tank implements IPlayerTank
     protected long lastTrace = 0;
     protected double drawRange = -1;
 
+    public double mouseX;
+    public double mouseY;
+
     public TankPlayerController(double x, double y, double angle, UUID id)
     {
         super("player", x, y, Game.tile_size, 0, 150, 255);
@@ -170,22 +173,40 @@ public class TankPlayerController extends Tank implements IPlayerTank
         if (!Game.game.window.touchscreen && Game.game.input.mine.isPressed())
             mine = true;
 
+        boolean showRange = false;
+        Hotbar h = Game.player.hotbar;
+        if (h.enabledItemBar && h.itemBar.selected >= 0)
+        {
+            Item i = h.itemBar.slots[h.itemBar.selected];
+            if (i instanceof ItemBullet)
+                showRange = ((ItemBullet) i).getRange() >= 0;
+            else if (i instanceof ItemRemote)
+                showRange = ((ItemRemote) i).range >= 0;
+        }
+
+        TankPlayer.shootStickHidden = showRange;
+
         boolean prevTouchCircle = this.drawTouchCircle;
         this.drawTouchCircle = false;
         if (Game.game.window.touchscreen)
         {
+            if (TankPlayer.shootStickEnabled)
+            {
+                if (!Game.bulletLocked && !this.disabled && !this.destroy)
+                    TankPlayer.mineButton.update();
+
+                if (!showRange)
+                    TankPlayer.shootStick.update();
+            }
+
             if (!Game.bulletLocked && !this.disabled && !this.destroy)
             {
                 double distSq = 0;
 
-                if (TankPlayer.shootStickEnabled)
+                if (TankPlayer.shootStickEnabled && !showRange)
                 {
-                    TankPlayer.mineButton.update();
-
                     if (TankPlayer.mineButton.justPressed)
                         mine = true;
-
-                    TankPlayer.shootStick.update();
 
                     if (TankPlayer.shootStick.inputIntensity >= 0.2)
                     {
@@ -196,7 +217,8 @@ public class TankPlayerController extends Tank implements IPlayerTank
                             shoot = true;
                     }
                 }
-                else
+
+                if (!TankPlayer.shootStickEnabled || TankPlayer.shootStickHidden)
                 {
                     for (int i : Game.game.window.touchPoints.keySet())
                     {
@@ -208,8 +230,12 @@ public class TankPlayerController extends Tank implements IPlayerTank
                         double px = Drawing.drawing.getInterfacePointerX(p.x);
                         double py = Drawing.drawing.getInterfacePointerY(p.y);
 
-                        this.angle = this.getAngleInDirection(Drawing.drawing.toGameCoordsX(px),
-                                Drawing.drawing.toGameCoordsY(py));
+                        if (!Game.followingCam)
+                        {
+                            this.mouseX = Drawing.drawing.toGameCoordsX(px);
+                            this.mouseY = Drawing.drawing.toGameCoordsY(py);
+                            this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
+                        }
 
                         distSq = Math.pow(px - Drawing.drawing.toInterfaceCoordsX(this.posX), 2)
                                 + Math.pow(py - Drawing.drawing.toInterfaceCoordsY(this.posY), 2);
@@ -252,8 +278,12 @@ public class TankPlayerController extends Tank implements IPlayerTank
                 this.prevDistSq = distSq;
             }
         }
-        else
-            this.angle = this.getAngleInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
+        else if (!Game.followingCam)
+        {
+            this.mouseX = Drawing.drawing.getMouseX();
+            this.mouseY = Drawing.drawing.getMouseY();
+            this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
+        }
 
         this.action1 = shoot;
         this.action2 = mine;
@@ -264,7 +294,6 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
             Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 
-            Hotbar h = Game.player.hotbar;
             if (h.enabledItemBar && h.itemBar.selected >= 0)
             {
                 Item i = h.itemBar.slots[h.itemBar.selected];

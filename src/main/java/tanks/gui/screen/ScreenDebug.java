@@ -3,6 +3,8 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.tank.Tank;
+import tanks.tank.TankMimic;
 
 public class ScreenDebug extends Screen
 {
@@ -66,7 +68,7 @@ public class ScreenDebug extends Screen
         @Override
         public void run()
         {
-            Game.screen = new ScreenTestModel(Game.triangle);
+            Game.screen = new ScreenTestModel(TankMimic.turret_base_model);
         }
     }
     );

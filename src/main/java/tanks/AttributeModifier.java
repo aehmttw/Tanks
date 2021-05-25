@@ -45,7 +45,7 @@ public class AttributeModifier
 	{
 		this.age += Panel.frameFrequency;
 	
-		if (this.duration > 0 && this.age > this.duration)
+		if (this.duration > 0 && this.age >= this.duration)
 			this.expired = true;
 	}
 	

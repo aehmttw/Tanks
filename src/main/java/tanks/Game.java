@@ -85,8 +85,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.1.1";
-	public static final int network_protocol = 31;
+	public static final String version = "Tanks v1.2.a";
+	public static final int network_protocol = 32;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -204,8 +204,6 @@ public class Game
 	public static boolean isOnlineServer;
 	public static boolean connectedToOnline = false;
 
-	public static PosedModel triangle;
-
 	private Game()
 	{
 		Game.game = this;
@@ -261,6 +259,9 @@ public class Game
 		NetworkEventMap.register(EventTankUpdateVisibility.class);
 		NetworkEventMap.register(EventTankUpdateColor.class);
 		NetworkEventMap.register(EventTankRedUpdateCharge.class);
+		NetworkEventMap.register(EventTankLightPinkAngry.class);
+		NetworkEventMap.register(EventTankMimicTransform.class);
+		NetworkEventMap.register(EventTankMimicLaser.class);
 		NetworkEventMap.register(EventTankAddAttributeModifier.class);
 		NetworkEventMap.register(EventCreateFreezeEffect.class);
 		NetworkEventMap.register(EventObstacleHit.class);
@@ -357,6 +358,7 @@ public class Game
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 
+		registerTank(TankDummy.class, "dummy", 0);
 		registerTank(TankBrown.class, "brown", 1);
 		registerTank(TankGray.class, "gray", 1);
 		registerTank(TankMint.class, "mint", 1.0 / 2);
@@ -376,7 +378,9 @@ public class Game
 		registerTank(TankGold.class, "gold", 1.0 / 4);
 		registerTank(TankDarkGreen.class, "darkgreen", 1.0 / 10);
 		registerTank(TankBlack.class, "black", 1.0 / 10);
+		registerTank(TankMimic.class, "mimic", 1.0 / 4);
 		registerTank(TankPink.class, "pink", 1.0 / 12);
+		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
 		registerTank(TankBoss.class, "boss", 1.0 / 40);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
@@ -525,194 +529,18 @@ public class Game
 
 	public static void createModels()
 	{
-		Tank.base_model = Drawing.drawing.createModel();
-		Tank.color_model = Drawing.drawing.createModel();
 		Tank.health_model = Drawing.drawing.createModel();
-		Turret.base_model = Drawing.drawing.createModel();
-		Turret.turret_model = Drawing.drawing.createModel();
 		Drawing.rotatedRect = Drawing.drawing.createModel();
 
-		Model m2 = Drawing.drawing.createModel("/models/triangle/");
-		triangle = Game.game.window.createPosedModel(m2);
+		Tank.base_model = Drawing.drawing.createModel("/models/tank/base/");
+		Tank.color_model = Drawing.drawing.createModel("/models/tank/color/");
+		Turret.base_model = Drawing.drawing.createModel("/models/tank/turretbase/");
+		Turret.turret_model = Drawing.drawing.createModel("/models/tank/turret/");
 
-		Tank.base_model.shapes = new ModelPart.Shape[10];
-
-		double size = 0.5;
-		double longSize = size + 0.1;
-		double height = size;
-		double halfHeight = height / 2;
-		double colorEdge = 0.35;
-		double colorMargin = 0.05;
-		double colorMarginEdge = colorMargin / 2;
-
-		Tank.base_model.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-size, -size, 0),
-				new ModelPart.Point(size, -size, 0),
-				new ModelPart.Point(size, size, 0),
-				new ModelPart.Point(-size, size, 0), 0.4);
-		Tank.base_model.shapes[1] = new ModelPart.Quad(
-				new ModelPart.Point(-longSize, -size, halfHeight),
-				new ModelPart.Point(-size, -size, 0),
-				new ModelPart.Point(-size, size, 0),
-				new ModelPart.Point(-longSize, size, halfHeight), 0.4);
-		Tank.base_model.shapes[2] = new ModelPart.Quad(
-				new ModelPart.Point(size, -size, 0),
-				new ModelPart.Point(longSize, -size, halfHeight),
-				new ModelPart.Point(longSize, size, halfHeight),
-				new ModelPart.Point(size, size, 0), 0.4);
-		Tank.base_model.shapes[3] = new ModelPart.Quad(
-				new ModelPart.Point(-longSize, -size, halfHeight),
-				new ModelPart.Point(-size, -size, height),
-				new ModelPart.Point(-size, size, height),
-				new ModelPart.Point(-longSize, size, halfHeight), 0.8);
-		Tank.base_model.shapes[4] = new ModelPart.Quad(
-				new ModelPart.Point(size, -size, height),
-				new ModelPart.Point(longSize, -size, halfHeight),
-				new ModelPart.Point(longSize, size, halfHeight),
-				new ModelPart.Point(size, size, height), 0.8);
-		Tank.base_model.shapes[5] = new ModelPart.Quad(
-				new ModelPart.Point(-longSize, -size, halfHeight),
-				new ModelPart.Point(-size, -size, height),
-				new ModelPart.Point(size, -size, height),
-				new ModelPart.Point(longSize, -size, halfHeight), 0.6);
-		Tank.base_model.shapes[6] = new ModelPart.Quad(
-				new ModelPart.Point(-longSize, -size, halfHeight),
-				new ModelPart.Point(-size, -size, 0),
-				new ModelPart.Point(size, -size, 0),
-				new ModelPart.Point(longSize, -size, halfHeight), 0.6);
-		Tank.base_model.shapes[7] = new ModelPart.Quad(
-				new ModelPart.Point(-longSize, size, halfHeight),
-				new ModelPart.Point(-size, size, height),
-				new ModelPart.Point(size, size, height),
-				new ModelPart.Point(longSize, size, halfHeight), 0.6);
-		Tank.base_model.shapes[8] = new ModelPart.Quad(
-				new ModelPart.Point(-longSize, size, halfHeight),
-				new ModelPart.Point(-size, size, 0),
-				new ModelPart.Point(size, size, 0),
-				new ModelPart.Point(longSize, size, halfHeight), 0.6);
-		Tank.base_model.shapes[9] = new ModelPart.Quad(
-				new ModelPart.Point(-size, -size, height),
-				new ModelPart.Point(size, -size, height),
-				new ModelPart.Point(size, size, height),
-				new ModelPart.Point(-size, size, height), 1);
-
-
-		Tank.color_model.shapes = new ModelPart.Shape[10];
-		Tank.color_model.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-size, -colorEdge, -colorMargin),
-				new ModelPart.Point(size, -colorEdge, -colorMargin),
-				new ModelPart.Point(size, colorEdge, -colorMargin),
-				new ModelPart.Point(-size, colorEdge, -colorMargin), 0.4);
-		Tank.color_model.shapes[1] = new ModelPart.Quad(
-				new ModelPart.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
-				new ModelPart.Point(-size, -colorEdge, -colorMargin),
-				new ModelPart.Point(-size, colorEdge, -colorMargin),
-				new ModelPart.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight), 0.4);
-		Tank.color_model.shapes[2] = new ModelPart.Quad(
-				new ModelPart.Point(size, -colorEdge, -colorMargin),
-				new ModelPart.Point((longSize + colorMarginEdge), -colorEdge, halfHeight),
-				new ModelPart.Point((longSize + colorMarginEdge), colorEdge, halfHeight),
-				new ModelPart.Point(size, colorEdge, -colorMargin), 0.4);
-		Tank.color_model.shapes[3] = new ModelPart.Quad(
-				new ModelPart.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
-				new ModelPart.Point(-size, -colorEdge, height + colorMargin),
-				new ModelPart.Point(-size, colorEdge, height + colorMargin),
-				new ModelPart.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight), 0.8);
-		Tank.color_model.shapes[4] = new ModelPart.Quad(
-				new ModelPart.Point(size, -colorEdge, height + colorMargin),
-				new ModelPart.Point((longSize + colorMarginEdge), -colorEdge, halfHeight),
-				new ModelPart.Point((longSize + colorMarginEdge), colorEdge, halfHeight),
-				new ModelPart.Point(size, colorEdge, height + colorMargin), 0.8);
-		Tank.color_model.shapes[5] = new ModelPart.Quad(
-				new ModelPart.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
-				new ModelPart.Point(-size, -colorEdge, height + colorMargin),
-				new ModelPart.Point(size, -colorEdge, height + colorMargin),
-				new ModelPart.Point((longSize + colorMarginEdge), -colorEdge, halfHeight), 0.6);
-		Tank.color_model.shapes[6] = new ModelPart.Quad(
-				new ModelPart.Point(-(longSize + colorMarginEdge), -colorEdge, halfHeight),
-				new ModelPart.Point(-size, -colorEdge, -colorMargin),
-				new ModelPart.Point(size, -colorEdge, -colorMargin),
-				new ModelPart.Point((longSize + colorMarginEdge), -colorEdge, halfHeight), 0.6);
-		Tank.color_model.shapes[7] = new ModelPart.Quad(
-				new ModelPart.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight),
-				new ModelPart.Point(-size, colorEdge, height + colorMargin),
-				new ModelPart.Point(size, colorEdge, height + colorMargin),
-				new ModelPart.Point((longSize + colorMarginEdge), colorEdge, halfHeight), 0.6);
-		Tank.color_model.shapes[8] = new ModelPart.Quad(
-				new ModelPart.Point(-(longSize + colorMarginEdge), colorEdge, halfHeight),
-				new ModelPart.Point(-size, colorEdge, -colorMargin),
-				new ModelPart.Point(size, colorEdge, -colorMargin),
-				new ModelPart.Point((longSize + colorMarginEdge), colorEdge, halfHeight), 0.6);
-		Tank.color_model.shapes[9] = new ModelPart.Quad(
-				new ModelPart.Point(-size, -colorEdge, height + colorMargin),
-				new ModelPart.Point(size, -colorEdge, height + colorMargin),
-				new ModelPart.Point(size, colorEdge, height + colorMargin),
-				new ModelPart.Point(-size, colorEdge, height + colorMargin), 1);
-
-		double turretThickness = 0.08;
-		double turretLength = 1.00;
-		Turret.turret_model.shapes = new ModelPart.Shape[6];
-		Turret.turret_model.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-turretThickness, -turretThickness, -turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, -turretThickness, -turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, turretThickness, -turretThickness),
-				new ModelPart.Point(-turretThickness, turretThickness, -turretThickness), 0.4);
-		Turret.turret_model.shapes[1] = new ModelPart.Quad(
-				new ModelPart.Point(-turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, -turretThickness, -turretThickness),
-				new ModelPart.Point(-turretThickness, -turretThickness, -turretThickness), 0.8);
-		Turret.turret_model.shapes[2] = new ModelPart.Quad(
-				new ModelPart.Point(-turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(-turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(-turretThickness, turretThickness, -turretThickness),
-				new ModelPart.Point(-turretThickness, turretThickness, -turretThickness), 0.6);
-		Turret.turret_model.shapes[3] = new ModelPart.Quad(
-				new ModelPart.Point(-turretThickness, turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, turretThickness, -turretThickness),
-				new ModelPart.Point(-turretThickness, turretThickness, -turretThickness), 0.8);
-		Turret.turret_model.shapes[4] = new ModelPart.Quad(
-				new ModelPart.Point(turretLength + turretThickness, -turretThickness, -turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, turretThickness, -turretThickness), 0.6);
-		Turret.turret_model.shapes[5] = new ModelPart.Quad(
-				new ModelPart.Point(-turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, -turretThickness, turretThickness),
-				new ModelPart.Point(turretLength + turretThickness, turretThickness, turretThickness),
-				new ModelPart.Point(-turretThickness, turretThickness, turretThickness), 1);
-
-		double turretTopSize = 0.25;
-		double turretBaseSize = 0.30;
-		double turretDepth = 0.30;
-
-		Turret.base_model.shapes = new ModelPart.Shape[5];
-		Turret.base_model.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-turretTopSize, -turretTopSize, turretDepth),
-				new ModelPart.Point(turretTopSize, -turretTopSize, turretDepth),
-				new ModelPart.Point(turretTopSize, turretTopSize, turretDepth),
-				new ModelPart.Point(-turretTopSize, turretTopSize, turretDepth), 1);
-		Turret.base_model.shapes[1] = new ModelPart.Quad(
-				new ModelPart.Point(-turretTopSize, -turretTopSize, turretDepth),
-				new ModelPart.Point(turretTopSize, -turretTopSize, turretDepth),
-				new ModelPart.Point(turretBaseSize, -turretBaseSize, 0),
-				new ModelPart.Point(-turretBaseSize, -turretBaseSize, 0), 0.8);
-		Turret.base_model.shapes[2] = new ModelPart.Quad(
-				new ModelPart.Point(turretTopSize, -turretTopSize, turretDepth),
-				new ModelPart.Point(turretTopSize, turretTopSize, turretDepth),
-				new ModelPart.Point(turretBaseSize, turretBaseSize, 0),
-				new ModelPart.Point(turretBaseSize, -turretBaseSize, 0), 0.6);
-		Turret.base_model.shapes[3] = new ModelPart.Quad(
-				new ModelPart.Point(-turretTopSize, turretTopSize, turretDepth),
-				new ModelPart.Point(turretTopSize, turretTopSize, turretDepth),
-				new ModelPart.Point(turretBaseSize, turretBaseSize, 0),
-				new ModelPart.Point(-turretBaseSize, turretBaseSize, 0), 0.8);
-		Turret.base_model.shapes[4] = new ModelPart.Quad(
-				new ModelPart.Point(-turretTopSize, -turretTopSize, turretDepth),
-				new ModelPart.Point(-turretTopSize, turretTopSize, turretDepth),
-				new ModelPart.Point(-turretBaseSize, turretBaseSize, 0),
-				new ModelPart.Point(-turretBaseSize, -turretBaseSize, 0), 0.6);
+		TankMimic.base_model = Drawing.drawing.createModel("/models/tankmimic/base/");
+		TankMimic.color_model = Drawing.drawing.createModel("/models/tankmimic/color/");
+		TankMimic.turret_model = Drawing.drawing.createModel("/models/tankmimic/turret/");
+		TankMimic.turret_base_model = Drawing.drawing.createModel("/models/tankmimic/turretbase/");
 
 		Drawing.rotatedRect.shapes = new ModelPart.Shape[1];
 		Drawing.rotatedRect.shapes[0] = new ModelPart.Quad(

@@ -5,6 +5,7 @@ import basewindow.InputCodes;
 import basewindow.transformation.Translation;
 import tanks.event.EventBeginLevelCountdown;
 import tanks.event.online.IOnlineServerEvent;
+import tanks.extension.Extension;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
@@ -61,7 +62,7 @@ public class Panel
 
 	protected static boolean initialized = false;
 
-	public Tank dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
+	public Tank dummySpin;
 
 	public boolean firstFrame = true;
 	public boolean firstDraw = true;
@@ -92,116 +93,124 @@ public class Panel
 
 	}
 
+	public void setUp()
+	{
+		boolean tutorial = false;
+
+		Game.createModels();
+		Game.game.window.setIcon("/images/icon.png");
+
+		double scale = 1;
+		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
+		{
+			scale = 1.25;
+
+			Drawing.drawing.objWidth *= 1.4;
+			Drawing.drawing.objHeight *= 1.4;
+			Drawing.drawing.objXSpace *= 1.4;
+			Drawing.drawing.objYSpace *= 1.4;
+
+			Drawing.drawing.textSize = Drawing.drawing.objHeight * 0.6;
+			Drawing.drawing.titleSize = Drawing.drawing.textSize * 1.25;
+		}
+
+		Drawing.drawing.setInterfaceScaleZoom(scale);
+		TankPlayer.setShootStick(TankPlayer.shootStickEnabled);
+		TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
+		TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
+
+		Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
+		Hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
+
+		if (Game.usernameInvalid(Game.player.username))
+			Game.screen = new ScreenUsernameInvalid();
+		else
+		{
+			if (Game.cinematic)
+				Game.screen = new ScreenCinematicTitle();
+			else
+				Game.screen = new ScreenTitle();
+		}
+
+		BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
+		if (!tutorialFile.exists())
+		{
+			tutorial = true;
+			Game.silentCleanUp();
+			Game.lastVersion = Game.version;
+			ScreenOptions.saveOptions(Game.homedir);
+			new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
+			((ScreenGame) Game.screen).introBattleMusicEnd = 0;
+		}
+
+		ScreenChangelog.Changelog.setupLogs();
+
+		ScreenChangelog s = new ScreenChangelog();
+		s.setup();
+
+		if (!s.pages.isEmpty())
+			Game.screen = s;
+
+		if (Game.game.window.soundsEnabled)
+		{
+			Game.game.window.soundPlayer.musicPlaying = true;
+
+			for (int i = 1; i <= 5; i++)
+			{
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
+			}
+
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_1_options.ogg", "menu");
+
+			for (int i = 1; i <= 2; i++)
+			{
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
+			}
+
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
+		}
+
+		if (Game.game.window.soundsEnabled)
+		{
+			Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
+		}
+
+		introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
+
+		introMusicEnd -= 40;
+
+		if (Game.framework == Game.Framework.libgdx)
+			introMusicEnd -= 100;
+
+		if (!tutorial)
+			Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
+		else
+		{
+			Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
+			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
+		}
+
+		zoomTranslation.window = Game.game.window;
+		zoomTranslation.applyAsShadow = true;
+
+		dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
+
+		for (Extension e: Game.extensionRegistry.extensions)
+			e.loadResources();
+	}
+
 	public void update()
 	{
 		if (firstFrame)
-		{
-			boolean tutorial = false;
-
-			Game.createModels();
-			Game.game.window.setIcon("/images/icon.png");
-
-			double scale = 1;
-			if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
-			{
-				scale = 1.25;
-
-				Drawing.drawing.objWidth *= 1.4;
-				Drawing.drawing.objHeight *= 1.4;
-				Drawing.drawing.objXSpace *= 1.4;
-				Drawing.drawing.objYSpace *= 1.4;
-
-				Drawing.drawing.textSize = Drawing.drawing.objHeight * 0.6;
-				Drawing.drawing.titleSize = Drawing.drawing.textSize * 1.25;
-			}
-
-			Drawing.drawing.setInterfaceScaleZoom(scale);
-			TankPlayer.setShootStick(TankPlayer.shootStickEnabled);
-			TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
-			TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
-
-			Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
-			Hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
-
-			if (Game.usernameInvalid(Game.player.username))
-				Game.screen = new ScreenUsernameInvalid();
-			else
-			{
-				if (Game.cinematic)
-					Game.screen = new ScreenCinematicTitle();
-				else
-					Game.screen = new ScreenTitle();
-			}
-
-			BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
-			if (!tutorialFile.exists())
-			{
-				tutorial = true;
-				Game.silentCleanUp();
-				Game.lastVersion = Game.version;
-				ScreenOptions.saveOptions(Game.homedir);
-				new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
-				((ScreenGame) Game.screen).introBattleMusicEnd = 0;
-			}
-
-			ScreenChangelog.Changelog.setupLogs();
-
-			ScreenChangelog s = new ScreenChangelog();
-			s.setup();
-
-			if (!s.pages.isEmpty())
-				Game.screen = s;
-
-			if (Game.game.window.soundsEnabled)
-			{
-				Game.game.window.soundPlayer.musicPlaying = true;
-
-				for (int i = 1; i <= 5; i++)
-				{
-					Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
-				}
-
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_1_options.ogg", "menu");
-
-				for (int i = 1; i <= 2; i++)
-				{
-					Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
-				}
-
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
-			}
-
-			if (Game.game.window.soundsEnabled)
-			{
-				Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
-			}
-
-			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
-
-			introMusicEnd -= 40;
-
-			if (Game.framework == Game.Framework.libgdx)
-				introMusicEnd -= 100;
-
-			if (!tutorial)
-				Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
-			else
-			{
-				Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
-				introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
-			}
-
-			zoomTranslation.window = Game.game.window;
-			zoomTranslation.applyAsShadow = true;
-		}
+			this.setUp();
 
 		firstFrame = false;
 

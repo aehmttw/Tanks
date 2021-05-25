@@ -100,6 +100,8 @@ public class VBOPosedModel extends PosedModel
 
             glPopMatrix();
         }
+
+        ((LWJGLWindow)this.model.window).setDrawOptions(false, false, true);
     }
 
     @Override

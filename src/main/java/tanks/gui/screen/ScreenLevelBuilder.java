@@ -8,6 +8,7 @@ import tanks.event.INetworkEvent;
 import tanks.gui.*;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleUnknown;
 import tanks.registry.RegistryItem;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
@@ -1254,7 +1255,14 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 			@Override
 			public void run()
 			{
-				timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+				try
+				{
+					timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+				}
+				catch (Exception e)
+				{
+					minutes.inputText = "" + timer / 6000;
+				}
 			}
 
 		}
@@ -1273,9 +1281,15 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 			@Override
 			public void run()
 			{
-				timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+				try
+				{
+					timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+				}
+				catch (Exception e)
+				{
+					seconds.inputText = "" + (timer % 6000) / 100;
+				}
 			}
-
 		}
 				, (timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");
 
@@ -2182,7 +2196,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 			if (selection)
 				selectClear.update();
 
-			if (selectMode)
+			if (selectMode && !changeCameraMode)
 			{
 				selectSquareToggle.update();
 
@@ -2765,15 +2779,15 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 				selectX2 = clampTileX(mouseObstacle.posX);
 				selectY2 = clampTileY(mouseObstacle.posY);
 
+				if (selectSquare || Game.game.input.editorHoldSquare.isPressed())
+				{
+					double size = Math.min(Math.abs(selectX2 - selectX1), Math.abs(selectY2 - selectY1));
+					selectX2 = Math.signum(selectX2 - selectX1) * size + selectX1;
+					selectY2 = Math.signum(selectY2 - selectY1) * size + selectY1;
+				}
+
 				if (prevSelectX2 != selectX2 || prevSelectY2 != selectY2)
 					Drawing.drawing.playVibration("selectionChanged");
-			}
-
-			if (selectSquare || Game.game.input.editorHoldSquare.isPressed())
-			{
-				double size = Math.min(Math.abs(selectX2 - selectX1), Math.abs(selectY2 - selectY1));
-				selectX2 = Math.signum(selectX2 - selectX1) * size + selectX1;
-				selectY2 = Math.signum(selectY2 - selectY1) * size + selectY1;
 			}
 
 			if (!pressed && selectHeld)
@@ -3230,7 +3244,18 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 		for (int i = 0; i < unmarked.size(); i++)
 		{
 			level.append((int)(unmarked.get(i).posX / Game.tile_size)).append("-").append((int)(unmarked.get(i).posY / Game.tile_size));
-			level.append("-").append(unmarked.get(i).name).append(",");
+			level.append("-").append(unmarked.get(i).name);
+
+			Obstacle u = unmarked.get(i);
+			if (u instanceof ObstacleUnknown && ((ObstacleUnknown) u).metadata != null)
+				level.append("-").append(((ObstacleUnknown) u).metadata);
+			else if (u.enableStacking)
+				level.append("-").append(u.stackHeight);
+			else if (u.enableGroupID)
+				level.append("-").append(u.groupID);
+
+
+			level.append(",");
 		}
 
 		if (level.charAt(level.length() - 1) == ',')
@@ -4032,7 +4057,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen, I
 			if (selection)
 				selectClear.draw();
 
-			if (selectMode)
+			if (selectMode && !changeCameraMode)
 			{
 				selectSquareToggle.draw();
 

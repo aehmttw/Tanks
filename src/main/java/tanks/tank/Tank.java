@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 import tanks.event.EventTankAddAttributeModifier;
@@ -19,6 +20,16 @@ public abstract class Tank extends Movable implements ISolidObject
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
 	public static HashMap<Integer, Tank> idMap = new HashMap<Integer, Tank>();
+
+	public static Model base_model;
+	public static Model color_model;
+
+	public static ModelPart health_model;
+
+	public Model baseModel = base_model;
+	public Model colorModel = color_model;
+	public Model turretBaseModel = Turret.base_model;
+	public Model turretModel = Turret.turret_model;
 
 	public double angle = 0;
 
@@ -83,10 +94,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
 
-	public static ModelPart base_model;
-	public static ModelPart color_model;
+	public HashMap<String, Object> extraProperties = new HashMap<>();
 
-	public static ModelPart health_model;
+	public Tank possessor;
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
@@ -130,6 +140,10 @@ public abstract class Tank extends Movable implements ISolidObject
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
+
+			if (o.skipNextUpdate)
+				continue;
+
 			if (this != o && o instanceof Tank && ((Tank)o).size > 0)
 			{
 				Tank t = (Tank) o;
@@ -421,6 +435,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.tookRecoil = false;
 			this.inControlOfMotion = true;
 		}
+
+		if (this.possessor != null)
+			this.possessor.updatePossessing();
 	}
 
 	public void drawTread()
@@ -506,12 +523,12 @@ public abstract class Tank extends Movable implements ISolidObject
 						if (!Game.enable3d)
 						{
 							Drawing.drawing.setColor(0, 255, 0, 255, 1);
-							drawing.drawModel(base_model, this.posX, this.posY, s * mod, s * mod, this.orientation);
+							drawing.drawModel(this.baseModel, this.posX, this.posY, s * mod, s * mod, this.orientation);
 						}
 						else
 						{
 							Drawing.drawing.setColor(0, 255, 0, 127, 1);
-							drawing.drawModel(base_model, this.posX, this.posY, 0, s * mod, s * mod, s - 2, this.orientation);
+							drawing.drawModel(this.baseModel, this.posX, this.posY, 0, s * mod, s * mod, s - 2, this.orientation);
 						}
 					}
 				}
@@ -521,13 +538,13 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], 255, glow);
 
 		if (forInterface)
-			drawing.drawInterfaceModel(base_model, this.posX, this.posY, s, s, this.orientation);
+			drawing.drawInterfaceModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
 		else
 		{
 			if (Game.enable3d)
-				drawing.drawModel(base_model, this.posX, this.posY, 0, s, s, s, this.orientation);
+				drawing.drawModel(this.baseModel, this.posX, this.posY, 0, s, s, s, this.orientation);
 			else
-				drawing.drawModel(base_model, this.posX, this.posY, s, s, this.orientation);
+				drawing.drawModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
 		}
 
 
@@ -536,13 +553,13 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash), this.colorB * (1 - flash), 255, glow);
 
 		if (forInterface)
-			drawing.drawInterfaceModel(color_model, this.posX, this.posY, s * sizeMod, s * sizeMod, this.orientation);
+			drawing.drawInterfaceModel(this.colorModel, this.posX, this.posY, s * sizeMod, s * sizeMod, this.orientation);
 		else
 		{
 			if (Game.enable3d)
-				drawing.drawModel(color_model, this.posX, this.posY, 0, s, s, s, this.orientation);
+				drawing.drawModel(this.colorModel, this.posX, this.posY, 0, s, s, s, this.orientation);
 			else
-				drawing.drawModel(color_model, this.posX, this.posY, s, s, this.orientation);
+				drawing.drawModel(this.colorModel, this.posX, this.posY, s, s, this.orientation);
 		}
 
 		if (this.health > 1 && this.size > 0 && !forInterface)
@@ -554,7 +571,7 @@ public abstract class Tank extends Movable implements ISolidObject
 					drawing.drawModel(health_model,
 							this.posX, this.posY, s / 4,
 							size, size, s,
-							this.orientation);
+							this.orientation, 0, 0);
 				else
 					drawing.drawModel(health_model,
 							this.posX, this.posY,
@@ -583,6 +600,10 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
+		//Drawing.drawing.setColor(0, 0, 0);
+		//Drawing.drawing.setFontSize(24);
+		//Drawing.drawing.drawText(posX, posY, 50, networkID + "");
+
 		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 
@@ -592,12 +613,18 @@ public abstract class Tank extends Movable implements ISolidObject
 	}
 
 	@Override
-	public void draw() 
+	public void draw()
 	{
 		if (!Game.game.window.drawingShadow)
 			drawAge += Panel.frameFrequency;
 
 		this.drawTank(false);
+
+		if (this.possessor != null)
+		{
+			this.possessor.drawPossessing();
+			this.possessor.drawGlowPossessing();
+		}
 	}
 
 	public void drawOutline() 
@@ -717,5 +744,20 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.inControlOfMotion = false;
 			this.recoilSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 		}
+	}
+
+	public void updatePossessing()
+	{
+
+	}
+
+	public void drawPossessing()
+	{
+
+	}
+
+	public void drawGlowPossessing()
+	{
+
 	}
 }

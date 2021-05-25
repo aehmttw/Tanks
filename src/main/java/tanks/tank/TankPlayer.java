@@ -32,6 +32,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 	public long prevTap = 0;
 
 	public static boolean shootStickEnabled = false;
+	public static boolean shootStickHidden = false;
 
 	protected double prevDistSq;
 
@@ -40,6 +41,9 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 	public static final double base_deceleration = 0.05;
 	protected double drawRange = -1;
+
+	public double mouseX;
+	public double mouseY;
 
 	public TankPlayer(double x, double y, double angle)
 	{
@@ -186,6 +190,19 @@ public class TankPlayer extends Tank implements IPlayerTank
 		if (!Game.game.window.touchscreen && Game.game.input.mine.isPressed())
 			mine = true;
 
+		boolean showRange = false;
+		Hotbar h = Game.player.hotbar;
+		if (h.enabledItemBar && h.itemBar.selected >= 0)
+		{
+			Item i = h.itemBar.slots[h.itemBar.selected];
+			if (i instanceof ItemBullet)
+				showRange = ((ItemBullet) i).getRange() >= 0;
+			else if (i instanceof ItemRemote)
+				showRange = ((ItemRemote) i).range >= 0;
+		}
+
+		TankPlayer.shootStickHidden = showRange;
+
 		boolean prevTouchCircle = this.drawTouchCircle;
 		this.drawTouchCircle = false;
 		if (Game.game.window.touchscreen)
@@ -195,7 +212,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 				if (!Game.bulletLocked && !this.disabled && !this.destroy)
 					mineButton.update();
 
-				shootStick.update();
+				if (!showRange)
+					shootStick.update();
 			}
 
 			if (!Game.bulletLocked && !this.disabled && !this.destroy)
@@ -207,7 +225,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 					if (mineButton.justPressed)
 						mine = true;
 
-					if (shootStick.inputIntensity >= 0.2)
+					if (shootStick.inputIntensity >= 0.2 && !showRange)
 					{
 						this.angle = shootStick.inputAngle;
 						trace = true;
@@ -216,7 +234,8 @@ public class TankPlayer extends Tank implements IPlayerTank
 							shoot = true;
 					}
 				}
-				else
+
+				if (!shootStickEnabled || shootStickHidden)
 				{
 					for (int i : Game.game.window.touchPoints.keySet())
 					{
@@ -230,8 +249,9 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 						if (!Game.followingCam)
 						{
-							this.angle = this.getAngleInDirection(Drawing.drawing.toGameCoordsX(px),
-									Drawing.drawing.toGameCoordsY(py));
+							this.mouseX = Drawing.drawing.toGameCoordsX(px);
+							this.mouseY = Drawing.drawing.toGameCoordsY(py);
+							this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
 						}
 
 						distSq = Math.pow(px - Drawing.drawing.toInterfaceCoordsX(this.posX), 2)
@@ -276,7 +296,11 @@ public class TankPlayer extends Tank implements IPlayerTank
 			}
 		}
 		else if (!Game.followingCam)
-			this.angle = this.getAngleInDirection(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
+		{
+			this.mouseX = Drawing.drawing.getMouseX();
+			this.mouseY = Drawing.drawing.getMouseY();
+			this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
+		}
 
 		if (shoot && this.cooldown <= 0 && !this.disabled)
 			this.shoot();
@@ -284,14 +308,12 @@ public class TankPlayer extends Tank implements IPlayerTank
 		if (mine && this.cooldown <= 0 && !this.disabled)
 			this.layMine();
 
-
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
 		{
 			double range = -1;
 
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 
-			Hotbar h = Game.player.hotbar;
 			if (h.enabledItemBar && h.itemBar.selected >= 0)
 			{
 				Item i = h.itemBar.slots[h.itemBar.selected];
@@ -303,13 +325,13 @@ public class TankPlayer extends Tank implements IPlayerTank
 					if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
 						r.bounces = 0;
 				}
-                else if (i instanceof ItemRemote)
-                {
-                    if (((ItemRemote)i).bounces >= 0)
-                        r.bounces = ((ItemRemote)i).bounces;
+				else if (i instanceof ItemRemote)
+				{
+					if (((ItemRemote)i).bounces >= 0)
+						r.bounces = ((ItemRemote)i).bounces;
 
-                    range = ((ItemRemote) i).range;
-                }
+					range = ((ItemRemote) i).range;
+				}
 			}
 
 			r.vX /= 2;
@@ -374,7 +396,7 @@ public class TankPlayer extends Tank implements IPlayerTank
 		if (b.moveOut)
 			b.moveOut(50 / speed * this.size / Game.tile_size);
 
-		b.setTargetLocation(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY());
+		b.setTargetLocation(this.mouseX, this.mouseY);
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);

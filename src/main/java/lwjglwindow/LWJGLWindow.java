@@ -119,6 +119,8 @@ public class LWJGLWindow extends BaseWindow
 
 		this.os = System.getProperty("os.name").toLowerCase();
 
+		this.shapeDrawer = new ImmediateModeModelPart.ImmediateModeShapeDrawer(this);
+
 		this.antialiasingSupported = true;
 	}
 
@@ -491,11 +493,17 @@ public class LWJGLWindow extends BaseWindow
 
 	protected void createImage(String image)
 	{
+		this.createImage(image, null);
+	}
+
+	public void createImage(String image, InputStream in)
+	{
 		try
 		{
-			InputStream in;
-
-			in = getClass().getResourceAsStream(image);
+			if (in == null)
+				in = getClass().getResourceAsStream(image);
+			else
+				image = "/" + image;
 
 			if (in == null)
 				in = getClass().getResourceAsStream("/missing.png");
@@ -970,6 +978,30 @@ public class LWJGLWindow extends BaseWindow
 		GL20.glUniform1f(this.glowLightFlag, (float) glowLight);
 		GL20.glUniform1f(this.shadeFlag, (float) shadow);
 		GL20.glUniform1f(this.glowShadeFlag, (float) glowShadow);
+	}
+
+	@Override
+	public void addMatrix()
+	{
+		glPushMatrix();
+	}
+
+	@Override
+	public void removeMatrix()
+	{
+		glPopMatrix();
+	}
+
+	@Override
+	public void setMatrixProjection()
+	{
+		glMatrixMode(GL_PROJECTION);
+	}
+
+	@Override
+	public void setMatrixModelview()
+	{
+		glMatrixMode(GL_MODELVIEW);
 	}
 
 	@Override

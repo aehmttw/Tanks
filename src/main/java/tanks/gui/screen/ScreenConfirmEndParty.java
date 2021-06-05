@@ -44,7 +44,7 @@ public class ScreenConfirmEndParty extends Screen
 
     public ScreenConfirmEndParty()
     {
-        this.music = "tomato_feast_3.ogg";
+        this.music = "menu_3.ogg";
         this.musicID = "menu";
     }
 

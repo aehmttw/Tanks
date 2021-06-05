@@ -18,7 +18,7 @@ public class ScreenChangelog extends Screen
     {
         super(350, 40, 380, 60);
 
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
 
         this.next.image = "play.png";
@@ -266,6 +266,22 @@ public class ScreenChangelog extends Screen
                                     "Blue tank electricity now only arcs between 4 targets (from 6)\n" +
                                     "Cyan tank freeze duration decreased by 1 second\n\n" +
                                     "...and the usual bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.2.b", new String[]
+                    {
+                            "*What's new in Tanks v1.2.b:\n\n" +
+                                    "You can now override the game's default resources\n" +
+                                    "Level editor code upgraded behind-the-scenes\n" +
+                                    "Several bug fixes and other minor improvements\n\n" +
+                                    "WARNING! The level editor's code has heavily changed!\n" +
+                                    "Due to bugs, levels you open may be corrupted - be careful!"
+                    });
+
+            new Changelog("v1.2.c", new String[]
+                    {
+                            "*What's new in Tanks v1.2.c:\n\n" +
+                                    "Fixed bugs with the level editor and mimic tanks"
                     });
         }
     }

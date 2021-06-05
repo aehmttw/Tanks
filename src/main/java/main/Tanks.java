@@ -67,6 +67,8 @@ public class Tanks
                 ((LWJGLWindow)Game.game.window).antialiasingEnabled = Game.antialiasing;
             }
 
+            Game.postInitScript();
+
             Game.game.window.run();
         }
         else

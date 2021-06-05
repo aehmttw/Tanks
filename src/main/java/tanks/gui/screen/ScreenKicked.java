@@ -11,7 +11,7 @@ public class ScreenKicked extends Screen
 	
 	public ScreenKicked(String reason)
 	{
-		this.music = "tomato_feast_1.ogg";
+		this.music = "menu_1.ogg";
 		this.musicID = "menu";
 
 		Drawing.drawing.playSound("leave.ogg");

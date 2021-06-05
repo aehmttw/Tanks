@@ -33,7 +33,7 @@ public class ScreenConfirmLeaveParty extends Screen
 
     public ScreenConfirmLeaveParty()
     {
-        this.music = "tomato_feast_4.ogg";
+        this.music = "menu_4.ogg";
         this.musicID = "menu";
     }
 

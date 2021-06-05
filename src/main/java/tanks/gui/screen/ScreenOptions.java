@@ -21,7 +21,7 @@ public class ScreenOptions extends Screen
 
 	public ScreenOptions()
 	{
-		this.music = "tomato_feast_1_options.ogg";
+		this.music = "menu_options.ogg";
 		this.musicID = "menu";
 
 		if (Drawing.drawing.enableStats)

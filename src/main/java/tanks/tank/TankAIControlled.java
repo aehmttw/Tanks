@@ -9,6 +9,7 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -129,10 +130,10 @@ public class TankAIControlled extends Tank
 	protected double age = 0;
 
 	/** Stores distances to obstacles or tanks in 8 directions*/
-	protected int[] distances = new int[8];
+	protected double[] distances = new double[8];
 
 	/** Stores distances to obstacles or tanks in 32 directions*/
-	protected int[] mineFleeDistances = new int[32];
+	protected double[] mineFleeDistances = new double[32];
 
 	/** Time in which the tank will follow its initial flee path from a mine*/
 	protected double mineFleeTimer = 0;
@@ -418,8 +419,8 @@ public class TankAIControlled extends Tank
 			for (double dir = 0; dir < 4; dir += 0.5)
 			{
 				Ray r = new Ray(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
-				r.size = Game.tile_size * this.hitboxSize;
-				int dist = r.getDist();
+				r.size = Game.tile_size * this.hitboxSize - 1;
+				double dist = r.getDist() / Game.tile_size;
 
 				distances[(int) (dir * 2)] = dist;
 
@@ -599,12 +600,12 @@ public class TankAIControlled extends Tank
 		double offsetMotion = Math.sin(this.age * 0.02);
 		if (offsetMotion < 0)
 		{
-			int dist = this.distances[(int) (this.direction * 2 + 6) % 8];
+			double dist = this.distances[(int) (this.direction * 2 + 6) % 8];
 			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 		}
 		else
 		{
-			int dist = this.distances[(int) (this.direction * 2 + 2) % 8];
+			double dist = this.distances[(int) (this.direction * 2 + 2) % 8];
 			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 		}
 
@@ -669,10 +670,10 @@ public class TankAIControlled extends Tank
 				this.avoidDirection = direction + Math.signum(diff) * Math.PI / 4;
 
 			Ray r = new Ray(this.posX, this.posY, this.avoidDirection, 0, this, Game.tile_size);
-			r.size = Game.tile_size;
-			int d = r.getDist();
+			r.size = Game.tile_size * this.hitboxSize - 1;
+			double d = r.getDist();
 
-			if (d < 2)
+			if (d < Game.tile_size * 2)
 				this.avoidDirection = direction - diff;
 
 			this.nearestBullet = nearest;
@@ -784,7 +785,7 @@ public class TankAIControlled extends Tank
 		{
 			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
 			r.ignoreDestructible = this.ignoreDestructible;
-			r.size = Game.tile_size * this.hitboxSize;
+			r.size = Game.tile_size * this.hitboxSize - 1;
 			r.enableBounciness = false;
 			this.disableOffset = false;
 
@@ -798,7 +799,7 @@ public class TankAIControlled extends Tank
 
 			double d = r.getDist();
 
-			if (d * d * 100 > distSq && speed < this.bulletSpeed)
+			if (d * d > distSq && speed < this.bulletSpeed)
 				this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY) - Math.asin(speed / this.bulletSpeed);
 			else
 				this.aimAngle = this.getAngleInDirection(r.posX, r.posY);
@@ -1137,23 +1138,23 @@ public class TankAIControlled extends Tank
 		this.mineTimer = (Math.random() * mineTimerRandom + mineTimerBase);
 
 		int count = mineFleeDistances.length;
-		int[] d = mineFleeDistances;
+		double[] d = mineFleeDistances;
 		this.mineFleeTimer = 100;
 
 		int k = 0;
 		for (double dir = 0; dir < 4; dir += 4.0 / count)
 		{
 			Ray r = new Ray(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
-			r.size = Game.tile_size;
+			r.size = Game.tile_size * this.hitboxSize - 1;
 
-			int dist = r.getDist();
+			double dist = r.getDist();
 
 			d[k] = dist;
 			k++;
 		}
 
 		int greatest = -1;
-		int gValue = -1;
+		double gValue = -1;
 		for (int i = 0; i < d.length; i++)
 		{
 			if (d[i] > gValue)

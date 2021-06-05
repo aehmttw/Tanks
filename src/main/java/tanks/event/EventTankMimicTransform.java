@@ -35,12 +35,14 @@ public class EventTankMimicTransform extends PersonalEvent
         if (this.clientID == null && t instanceof TankRemote)
         {
             Tank t1 = Game.registryTank.getEntry(type).getTank(t.posX, t.posY, t.angle);
+            Tank.freeIDs.add(t1.networkID);
 
             double r = t.turret.colorR;
             double g = t.turret.colorG;
             double b = t.turret.colorB;
 
             ((TankRemote) t).copyTank(t1);
+            ((TankRemote) t).invisible = false;
 
             if (this.isPlayer)
             {

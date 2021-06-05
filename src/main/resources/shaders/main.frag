@@ -54,4 +54,9 @@ void main(void)
             gl_FragColor *= vec4(col, col, col, 1.0);
         }
     }
+    else if (depthtest)
+    {
+        float col = light * (1.0 - glow) + glowLight * glow;
+        gl_FragColor *= vec4(col, col, col, 1.0);
+    }
 }

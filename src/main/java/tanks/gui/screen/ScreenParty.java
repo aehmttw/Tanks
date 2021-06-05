@@ -19,7 +19,7 @@ public class ScreenParty extends Screen
 		port.maxValue = 65535;
 		port.minValue = 0;
 
-		this.music = "tomato_feast_2.ogg";
+		this.music = "menu_2.ogg";
 		this.musicID = "menu";
 	}
 	

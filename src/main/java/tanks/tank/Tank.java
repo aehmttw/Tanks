@@ -32,6 +32,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public Model turretModel = Turret.turret_model;
 
 	public double angle = 0;
+	public double pitch = 0;
 
 	public boolean depthTest = true;
 
@@ -609,7 +610,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawTurret(boolean forInterface, boolean in3d, boolean transparent)
 	{
-		this.turret.draw(angle, forInterface, in3d, transparent);
+		this.turret.draw(angle, pitch, forInterface, in3d, transparent);
 	}
 
 	@Override

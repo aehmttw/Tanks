@@ -80,7 +80,7 @@ public class ScreenInsertAccessCode extends ScreenLayout
     {
         super(player);
 
-        this.music = "tomato_feast_2.ogg";
+        this.music = "menu_2.ogg";
         this.musicID = "menu";
 
         this.textBoxes.add(idBox);

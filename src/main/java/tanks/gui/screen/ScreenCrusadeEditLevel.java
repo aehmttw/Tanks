@@ -87,7 +87,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     {
         super(350, 40, 380, 60);
 
-        this.music = "tomato_feast_4.ogg";
+        this.music = "menu_4.ogg";
         this.musicID = "menu";
 
         this.name = name;

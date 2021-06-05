@@ -24,7 +24,7 @@ public class ScreenOptionsGraphics extends Screen
 
     public ScreenOptionsGraphics()
     {
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
 
         if (Game.fancyTerrain)

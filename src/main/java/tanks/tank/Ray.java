@@ -199,7 +199,7 @@ public class Ray
 					double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
 					if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
 					{
-						t = (f.startX - size / 2  - this.posX) / vX;
+						t = (f.startX - size / 2 - this.posX) / vX;
 						collisionX = f.startX - size / 2;
 						collisionY = y;
 						collisionFace = f;
@@ -220,7 +220,7 @@ public class Ray
 					double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
 					if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
 					{
-						t = (f.startX + size / 2  - this.posX) / vX;
+						t = (f.startX + size / 2 - this.posX) / vX;
 						collisionX = f.startX + size / 2;
 						collisionY = y;
 						collisionFace = f;
@@ -243,7 +243,7 @@ public class Ray
 					double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
 					if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
 					{
-						double t1 = (f.startY - size / 2  - this.posY) / vY;
+						double t1 = (f.startY - size / 2 - this.posY) / vY;
 
 						if (t1 == t)
 							corner = true;
@@ -272,7 +272,7 @@ public class Ray
 					double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
 					if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
 					{
-						double t1 = (f.startY + size / 2  - this.posY) / vY;
+						double t1 = (f.startY + size / 2 - this.posY) / vY;
 
 						if (t1 == t)
 							corner = true;
@@ -327,6 +327,8 @@ public class Ray
 				{
 					this.targetX = collisionX;
 					this.targetY = collisionY;
+					bounceX.add(collisionX);
+					bounceY.add(collisionY);
 
 					return (Movable) collisionFace.owner;
 				}
@@ -360,75 +362,20 @@ public class Ray
 		return null;
 	}
 
-	public int getDist()
+	public double getDist()
 	{
-		while (true)
+		this.bounceX.add(0, this.posX);
+		this.bounceY.add(0, this.posY);
+
+		this.getTarget();
+
+		double dist = 0;
+		for (int i = 0; i < this.bounceX.size() - 1; i++)
 		{
-			if (trace && (!dotted || (this.age % 2 == 0)))
-				Game.effects.add(Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 4, Effect.EffectType.electric));
-
-			age++;
-
-			this.posX += this.vX;
-			this.posY += this.vY;
-
-			for (int i = 0; i < Game.obstacles.size(); i++)
-			{
-				Obstacle o = Game.obstacles.get(i);
-
-				if (!o.tankCollision)
-					continue;
-
-				double horizontalDist = Math.abs(this.posX - o.posX);
-				double verticalDist = Math.abs(this.posY - o.posY);
-
-				double bound = this.size / 2 + Game.tile_size / 2;
-
-				if (horizontalDist < bound && verticalDist < bound)
-				{
-					return (int) age;
-				}
-			}
-
-			for (int i = 0; i < Game.movables.size(); i++)
-			{
-				Movable o = Game.movables.get(i);
-
-				if (o instanceof Tank && o != tank && ((Tank) o).targetable)
-				{
-					double horizontalDist = Math.abs(this.posX - o.posX);
-					double verticalDist = Math.abs(this.posY - o.posY);
-
-					double bound = this.size / 2 + ((Tank)o).size / 2;
-
-					if (horizontalDist < bound && verticalDist < bound)
-					{
-						return (int) age;
-					}
-				}
-
-			}
-
-			if (this.posX + this.size/2 > Drawing.drawing.sizeX)
-			{
-				return (int) this.age;
-			}
-			else if (this.posX - this.size/2 < 0)
-			{
-				return (int) this.age;
-			}
-			else if (this.posY + this.size/2 > Drawing.drawing.sizeY)
-			{
-				return (int) this.age;
-			}
-			else if (this.posY - this.size/2 < 0)
-			{
-				return (int) this.age;
-			}
-
-			if (Double.isNaN(this.posX) || Double.isNaN(this.posY))
-				return (int) this.age;
+			dist += Math.sqrt(Math.pow(this.bounceX.get(i + 1) - this.bounceX.get(i), 2) + Math.pow(this.bounceY.get(i + 1) - this.bounceY.get(i), 2));
 		}
+
+		return dist;
 	}
 
 	public static boolean isInsideObstacle(double x, double y)

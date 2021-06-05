@@ -15,7 +15,7 @@ public class ScreenJoinParty extends Screen
 
 	public ScreenJoinParty()
 	{
-		this.music = "tomato_feast_2.ogg";
+		this.music = "menu_2.ogg";
 		this.musicID = "menu";
 
 		ip.allowDots = true;
@@ -91,7 +91,7 @@ public class ScreenJoinParty extends Screen
 							s.exception = e.getLocalizedMessage();
 							s.finished = true;
 
-							s.music = "tomato_feast_1.ogg";
+							s.music = "menu_1.ogg";
 							Drawing.drawing.playSound("leave.ogg");
 
 							Panel.forceRefreshMusic = true;

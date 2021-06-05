@@ -21,6 +21,8 @@ import static org.lwjgl.system.libc.LibCStdlib.free;
 
 public class SoundPlayer extends BaseSoundPlayer
 {
+    public LWJGLWindow window;
+
     public long context;
     public long device;
 
@@ -47,7 +49,7 @@ public class SoundPlayer extends BaseSoundPlayer
     /**
      * Warning! This will give an exception if there are no audio devices plugged into the computer!
      */
-    public SoundPlayer()
+    public SoundPlayer(LWJGLWindow window)
     {
         String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
         device = alcOpenDevice(defaultDeviceName);
@@ -58,6 +60,8 @@ public class SoundPlayer extends BaseSoundPlayer
 
         ALCCapabilities alcCapabilities = ALC.createCapabilities(device);
         ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+
+        this.window = window;
     }
 
     @Override
@@ -210,7 +214,7 @@ public class SoundPlayer extends BaseSoundPlayer
             IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
             if (in == null)
-                in = getClass().getResourceAsStream(path);
+                in = this.window.getResource(path);
             else
                 path = "/" + path;
 
@@ -274,7 +278,7 @@ public class SoundPlayer extends BaseSoundPlayer
             IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
             if (in == null)
-                in = getClass().getResourceAsStream(path);
+                in = this.window.getResource(path);
             else
                 path = "/" + path;
 

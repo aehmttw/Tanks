@@ -14,7 +14,7 @@ public class ScreenDebug extends Screen
 
     public ScreenDebug()
     {
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
 
         if (Game.traceAllRays)

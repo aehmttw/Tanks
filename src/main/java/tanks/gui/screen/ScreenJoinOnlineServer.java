@@ -15,7 +15,7 @@ public class ScreenJoinOnlineServer extends Screen
 
     public ScreenJoinOnlineServer()
     {
-        this.music = "tomato_feast_2.ogg";
+        this.music = "menu_2.ogg";
         this.musicID = "menu";
 
         ip.allowDots = true;
@@ -90,7 +90,7 @@ public class ScreenJoinOnlineServer extends Screen
                                 s.exception = e.getLocalizedMessage();
                                 s.finished = true;
 
-                                s.music = "tomato_feast_1.ogg";
+                                s.music = "menu_1.ogg";
                                 Panel.forceRefreshMusic = true;
 
                                 e.printStackTrace(Game.logger);

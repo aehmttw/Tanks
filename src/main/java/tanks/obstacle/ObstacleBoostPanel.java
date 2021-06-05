@@ -46,8 +46,16 @@ public class ObstacleBoostPanel extends Obstacle
                 effect = false;
         }
 
-        if (effect && !(m instanceof Bullet && !((Bullet) m).playPopSound))
-            Drawing.drawing.playSound("boost.ogg");
+        if (Game.playerTank != null && !Game.playerTank.destroy && effect && !(m instanceof Bullet && !((Bullet) m).playPopSound))
+        {
+            double distsq = Math.pow(this.posX - Game.playerTank.posX, 2) + Math.pow(this.posY - Game.playerTank.posY, 2);
+
+            double radius = 250000;
+            if (distsq <= radius)
+            {
+                Drawing.drawing.playSound("boost.ogg", 1, (float) ((radius - distsq) / radius));
+            }
+        }
 
         if (Game.effectsEnabled && !ScreenGame.finished && !(m instanceof Bullet && !((Bullet) m).playPopSound))
         {

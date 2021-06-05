@@ -8,7 +8,7 @@ public class ScreenUsernameInvalid extends Screen
 {
 	public ScreenUsernameInvalid()
 	{
-		this.music = "tomato_feast_1_options.ogg";
+		this.music = "menu_options.ogg";
 		this.musicID = "menu";
 	}
 

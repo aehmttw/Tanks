@@ -2,8 +2,11 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.gui.screen.levelbuilder.OverlayEditorMenu;
+import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -28,11 +31,9 @@ public class ScreenSavedLevels extends Screen
 		{
 			String name = System.currentTimeMillis() + ".tanks";
 
-			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
-			s = (ScreenLevelBuilder) Game.screen;
-			s.paused = false;
-			s.optionsMenu = false;
-			Game.screen = s;
+			Level l = new Level("{28,18||0-0-player}");
+			Game.screen = new ScreenLevelBuilder(name, l);
+			l.loadLevel((ILevelPreviewScreen) Game.screen);
 		}
 	}
 			);
@@ -41,15 +42,20 @@ public class ScreenSavedLevels extends Screen
 	{
 		super(350, 40, 380, 60);
 
-		this.music = "tomato_feast_4.ogg";
+		this.music = "menu_4.ogg";
 		this.musicID = "menu";
 
 		savedFilesList = new SavedFilesList(Game.homedir + Game.levelDir, page, 0, -30,
 				(name, file) ->
 				{
-					ScreenLevelBuilder s = new ScreenLevelBuilder(name + ".tanks");
+					ScreenLevelBuilder s = new ScreenLevelBuilder(name + ".tanks", null);
+
 					if (Game.loadLevel(file, s))
-						Game.screen = s;
+					{
+						s.level = Game.currentLevel;
+						s.paused = true;
+						Game.screen = new OverlayEditorMenu(s, s);
+					}
 				},
 				(file) -> "Last opened---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 	}

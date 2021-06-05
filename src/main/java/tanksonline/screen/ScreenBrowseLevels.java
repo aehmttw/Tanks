@@ -60,7 +60,7 @@ public class ScreenBrowseLevels extends ScreenLayout
 
 		this.title = title;
 
-		this.music = "tomato_feast_3.ogg";
+		this.music = "menu_3.ogg";
 		this.musicID = "menu";
 
 		this.texts.add(new ScreenOnline.Text(title, sizeX / 2, sizeY / 2 - 210, 24, 0));

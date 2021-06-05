@@ -66,7 +66,7 @@ public class ScreenControlsEditor extends Screen
 
     public ScreenControlsEditor()
     {
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
 
         next.enabled = page < page_count - 1;

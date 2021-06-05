@@ -13,9 +13,7 @@ import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -104,7 +102,7 @@ public class LWJGLWindow extends BaseWindow
 
 		try
 		{
-			this.soundPlayer = new SoundPlayer();
+			this.soundPlayer = new SoundPlayer(this);
 			this.soundsEnabled = true;
 		}
 		catch (Exception e)
@@ -258,7 +256,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		StringBuilder source = new StringBuilder();
 
-		InputStream in = getClass().getResourceAsStream(filename);
+		InputStream in = this.getResource(filename);
 
 		Exception exception = null;
 
@@ -338,7 +336,7 @@ public class LWJGLWindow extends BaseWindow
 
 			if (!(audio == null && this.audioDevice == null || (this.audioDevice != null && this.audioDevice.equals(audio))))
 			{
-				this.soundPlayer = new SoundPlayer();
+				this.soundPlayer = new SoundPlayer(this);
 			}
 
 			this.audioDevice = audio;
@@ -453,6 +451,13 @@ public class LWJGLWindow extends BaseWindow
 		this.setVsync(this.vsync);
 	}
 
+	@Override
+	public void setOverrideLocations(ArrayList<String> loc, BaseFileManager fileManager)
+	{
+		this.overrideLocations = loc;
+		fileManager.setOverrideLocations(loc);
+	}
+
 	public void setColor(double r, double g, double b, double a, double glow)
 	{
 		this.colorR = r / 255;
@@ -501,7 +506,7 @@ public class LWJGLWindow extends BaseWindow
 		try
 		{
 			if (in == null)
-				in = getClass().getResourceAsStream(image);
+				in = this.getResource(image);
 			else
 				image = "/" + image;
 
@@ -580,7 +585,7 @@ public class LWJGLWindow extends BaseWindow
 	protected String loadResource(String fileName)
 	{
 		String result = null;
-		try (InputStream in = getClass().getResourceAsStream(fileName);
+		try (InputStream in = this.getResource(fileName);
 			 Scanner scanner = new Scanner(in, java.nio.charset.StandardCharsets.UTF_8.name()))
 		{
 			result = scanner.useDelimiter("\\A").next();
@@ -591,6 +596,11 @@ public class LWJGLWindow extends BaseWindow
 		}
 
 		return result;
+	}
+
+	public InputStream getResource(String path) throws FileNotFoundException
+	{
+		return ComputerFileManager.getResource(this.overrideLocations, path);
 	}
 
 	public void setUpPerspective()

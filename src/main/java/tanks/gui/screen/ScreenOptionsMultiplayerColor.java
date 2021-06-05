@@ -209,7 +209,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
             this.enableSecondary.posY -= this.objYSpace / 2;
         }
 
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
     }
 

@@ -94,7 +94,7 @@ public class ScreenCrusadeDetails extends Screen
     {
         this.crusade = c;
 
-        this.music = "tomato_feast_5.ogg";
+        this.music = "menu_5.ogg";
         this.musicID = "menu";
 
         if (c.levels.size() <= 0)

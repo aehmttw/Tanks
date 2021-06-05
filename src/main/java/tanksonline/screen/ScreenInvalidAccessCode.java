@@ -22,7 +22,7 @@ public class ScreenInvalidAccessCode extends ScreenLayout
         super(player);
         this.texts.add(new ScreenOnline.Text("Invalid access code!", sizeX / 2, sizeY / 2 - 60, 24, 0));
 
-        this.music = "tomato_feast_2.ogg";
+        this.music = "menu_2.ogg";
         this.musicID = "menu";
 
         back.wait = true;

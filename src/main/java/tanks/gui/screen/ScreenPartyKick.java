@@ -24,7 +24,7 @@ public class ScreenPartyKick extends Screen
 
     public ScreenPartyKick(ServerHandler h)
     {
-        this.music = "tomato_feast_3.ogg";
+        this.music = "menu_3.ogg";
         this.musicID = "menu";
 
         handler = h;

@@ -8,7 +8,6 @@ public class TankMustard extends TankAIControlled
 {
     public double radius = 1000;
     protected double distance;
-    protected double pitch = 0;
 
     public TankMustard(String name, double x, double y, double angle)
     {
@@ -24,7 +23,6 @@ public class TankMustard extends TankAIControlled
         this.cooldownRandom = 100;
 
         this.coinValue = 4;
-        this.turret = new TurretAngled(this);
         this.turret.size *= 1.75;
 
         this.description = "A stationary tank which lobs---bullets over walls";
@@ -51,7 +49,7 @@ public class TankMustard extends TankAIControlled
         if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
         {
             Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
-            r.size = Game.tile_size * this.hitboxSize;
+            r.size = Game.tile_size * this.hitboxSize - 1;
             r.enableBounciness = false;
             this.disableOffset = false;
 
@@ -65,7 +63,7 @@ public class TankMustard extends TankAIControlled
 
             double d = r.getDist();
 
-            if (d * d * 100 > distSq && speed < this.bulletSpeed)
+            if (d * d > distSq && speed < this.bulletSpeed)
             {
                 this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY) - Math.asin(speed / this.bulletSpeed);
 
@@ -91,12 +89,6 @@ public class TankMustard extends TankAIControlled
 
             this.disableOffset = false;
         }
-    }
-
-    @Override
-    public void drawTurret(boolean forInterface, boolean in3d, boolean transparent)
-    {
-        ((TurretAngled)this.turret).draw(angle, pitch, forInterface, in3d, transparent);
     }
 
     @Override

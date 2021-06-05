@@ -9,7 +9,7 @@ public class ScreenPlaySingleplayer extends Screen
 {
     public ScreenPlaySingleplayer()
     {
-        this.music = "tomato_feast_3.ogg";
+        this.music = "menu_3.ogg";
         this.musicID = "menu";
     }
 

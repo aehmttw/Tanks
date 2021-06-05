@@ -85,7 +85,16 @@ public class BulletBoost extends Bullet
 	@Override
 	public void onDestroy()
 	{
-		Drawing.drawing.playSound("boost.ogg", (float) (10.0 / this.size));
+		if (Game.playerTank != null && !Game.playerTank.destroy)
+		{
+			double distsq = Math.pow(this.posX - Game.playerTank.posX, 2) + Math.pow(this.posY - Game.playerTank.posY, 2);
+
+			double radius = 250000;
+			if (distsq <= radius)
+			{
+				Drawing.drawing.playSound("boost.ogg", (float) (10.0 / this.size), (float) ((radius - distsq) / radius));
+			}
+		}
 
 		if (Game.effectsEnabled)
 		{

@@ -22,7 +22,7 @@ public class ScreenTestModel extends Screen
 
     public ScreenTestModel(Model m)
     {
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
         this.model = m;
 

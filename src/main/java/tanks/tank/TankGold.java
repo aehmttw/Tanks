@@ -5,6 +5,7 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletBoost;
 import tanks.bullet.BulletHealing;
 import tanks.event.EventLayMine;
+import tanks.event.EventShootBullet;
 import tanks.event.EventTankUpdateColor;
 
 public class TankGold extends TankAIControlled
@@ -107,7 +108,9 @@ public class TankGold extends TankAIControlled
 		b.team = this.team;
 		b.setPolarMotion(this.angle, this.bulletSpeed);
 		b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
+
 		Game.movables.add(b);
+		Game.eventsOut.add(new EventShootBullet(b));
 
 		this.cooldown = this.cooldownBase;
 	}

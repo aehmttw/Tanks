@@ -155,7 +155,7 @@ public class ScreenAbout extends Screen
         this.privacy.imageSizeY = imgsize;
         this.privacy.imageXOffset = 145 * this.privacy.sizeX / 350;
 
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
     }
 

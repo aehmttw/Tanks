@@ -38,7 +38,7 @@ public class ScreenPartyLobby extends Screen
 	{
 		super(350, 40, 380, 60);
 
-		this.music = "tomato_feast_4.ogg";
+		this.music = "menu_4.ogg";
 		this.musicID = "menu";
 
 		ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, new Runnable()

@@ -45,7 +45,7 @@ public class ScreenDownloadLevel extends ScreenLayout
         super(player);
         this.screen = player.screen;
 
-        this.music = "tomato_feast_4.ogg";
+        this.music = "menu_4.ogg";
         this.musicID = "menu";
 
         quit.wait = true;

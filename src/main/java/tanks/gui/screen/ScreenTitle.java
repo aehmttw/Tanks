@@ -117,7 +117,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		takeControl.silent = true;
 
-		this.music = "tomato_feast_1.ogg";
+		this.music = "menu_1.ogg";
 		this.musicID = "menu";
 	}
 	

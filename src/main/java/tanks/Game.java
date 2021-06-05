@@ -1,7 +1,6 @@
 package tanks;
 
 import basewindow.*;
-import basewindow.Model;
 import tanks.bullet.*;
 import tanks.event.*;
 import tanks.event.online.*;
@@ -12,6 +11,7 @@ import tanks.gui.ChatFilter;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
+import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.*;
@@ -85,7 +85,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.2.a";
+	public static final String version = "Tanks v1.2.c";
 	public static final int network_protocol = 32;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -193,6 +193,8 @@ public class Game
 	public static final String itemDir = directoryPath + "/items";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
+
+	public static final String resourcesPath = directoryPath + "/resources/";
 
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
@@ -527,6 +529,13 @@ public class Game
 		game.input.load();
 	}
 
+	public static void postInitScript()
+	{
+		ArrayList<String> overrideLocations = new ArrayList<>();
+		overrideLocations.add(Game.homedir + Game.resourcesPath);
+		Game.game.window.setOverrideLocations(overrideLocations, Game.game.fileManager);
+	}
+
 	public static void createModels()
 	{
 		Tank.health_model = Drawing.drawing.createModel();
@@ -742,7 +751,7 @@ public class Game
 
 		System.gc();
 
-		ScreenLevelBuilder s = new ScreenLevelBuilder(name);
+		ScreenLevelBuilder s = new ScreenLevelBuilder(name, Game.currentLevel);
 		Game.loadLevel(game.fileManager.getFile(Game.homedir + levelDir + "/" + name), s);
 		Game.screen = s;
 	}
@@ -877,10 +886,19 @@ public class Game
 		int x = (int) (px / Game.tile_size);
 		int y = (int) (py / Game.tile_size);
 
+		if (px < 0)
+			x--;
+
+		if (py < 0)
+			y--;
+
+		double r;
 		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			return 0;
+			r = 0;
 		else
-			return Game.game.heightGrid[x][y];
+			r = Game.game.heightGrid[x][y];
+
+		return r;
 	}
 
 	public static boolean stringsEqual(String a, String b)

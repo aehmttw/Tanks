@@ -46,7 +46,7 @@ public class ScreenPlay extends Screen
 
 	public ScreenPlay()
 	{
-		this.music = "tomato_feast_2.ogg";
+		this.music = "menu_2.ogg";
 		this.musicID = "menu";
 	}
 

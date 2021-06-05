@@ -73,7 +73,7 @@ public class ScreenSaveSharedLevel extends Screen implements ILevelPreviewScreen
     {
         super(350, 40, 380, 60);
 
-        this.music = "tomato_feast_4.ogg";
+        this.music = "menu_4.ogg";
         this.musicID = "menu";
 
         this.screen = s;

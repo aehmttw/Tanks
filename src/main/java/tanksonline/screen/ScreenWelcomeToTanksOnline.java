@@ -24,7 +24,7 @@ public class ScreenWelcomeToTanksOnline extends ScreenLayout
         super(player);
         this.texts.add(new ScreenOnline.Text("Welcome to Tanks Online!", sizeX / 2, sizeY / 2 - 60, 24, 0));
 
-        this.music = "tomato_feast_3.ogg";
+        this.music = "menu_3.ogg";
         this.musicID = "menu";
 
         if (accessCode.expiration < 0)

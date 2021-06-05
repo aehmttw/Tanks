@@ -160,7 +160,7 @@ public class Panel
 				Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
 			}
 
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_1_options.ogg", "menu");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_options.ogg", "menu");
 
 			for (int i = 1; i <= 2; i++)
 			{
@@ -181,6 +181,8 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
+
+			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
 		}
 
 		introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
@@ -191,7 +193,7 @@ public class Panel
 			introMusicEnd -= 100;
 
 		if (!tutorial)
-			Drawing.drawing.playMusic("tomato_feast_0.ogg", Game.musicVolume, false, "intro", 0, false);
+			Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
 		else
 		{
 			Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
@@ -622,7 +624,7 @@ public class Panel
 
 		Drawing.drawing.setColor(255, 227, 186);
 
-		Drawing.drawing.setFontSize(12);
+		Drawing.drawing.setInterfaceFontSize(12);
 
 		double boundary = Game.game.window.getEdgeBounds();
 

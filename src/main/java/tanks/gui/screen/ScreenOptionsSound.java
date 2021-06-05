@@ -10,7 +10,7 @@ public class ScreenOptionsSound extends Screen
 {
     public ScreenOptionsSound()
     {
-        this.music = "tomato_feast_1_options.ogg";
+        this.music = "menu_options.ogg";
         this.musicID = "menu";
 
         musicVolume.allowLetters = false;

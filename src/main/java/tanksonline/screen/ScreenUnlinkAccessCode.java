@@ -49,7 +49,7 @@ public class ScreenUnlinkAccessCode extends ScreenLayout
         super(player);
         this.accessCode = ac;
 
-        this.music = "tomato_feast_3.ogg";
+        this.music = "menu_3.ogg";
         this.musicID = "menu";
 
         this.texts.add(new ScreenOnline.Text("Unlink access code", sizeX / 2, sizeY / 2 - 150, 24, 0));

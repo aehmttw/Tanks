@@ -11,7 +11,7 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
 
     public ScreenCrusadeAddLevel(ScreenCrusadeBuilder s)
     {
-        this.music = "tomato_feast_4.ogg";
+        this.music = "menu_4.ogg";
         this.musicID = "menu";
 
         this.instance = this;

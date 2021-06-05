@@ -6,10 +6,10 @@ import tanks.event.EventLoadLevel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
+import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.gui.screen.levelbuilder.ScreenLevelBuilderOverlay;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
-import tanks.registry.RegistryObstacle;
-import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
@@ -44,6 +44,20 @@ public class Level
 
 	public boolean timed = false;
 	public double timer;
+
+	public int sizeX = 28;
+	public int sizeY = 18;
+
+	public int colorR = 235;
+	public int colorG = 207;
+	public int colorB = 166;
+
+	public int colorVarR = 20;
+	public int colorVarG = 20;
+	public int colorVarB = 20;
+
+	public double light = 1.0;
+	public double shadow = 0.5;
 
 	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
 
@@ -171,20 +185,6 @@ public class Level
 		ScreenGame.finished = false;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 
-		int sX = Integer.parseInt(screen[0]);
-		int sY = Integer.parseInt(screen[1]);
-
-		int r = 235;
-		int g = 207;
-		int b = 166;
-
-		int dr = 20;
-		int dg = 20;
-		int db = 20;
-
-		double light = 1.0;
-		double shadow = 0.5;
-
 		if (enableTeams)
 		{
 			tankTeams = new Team[teams.length];
@@ -211,17 +211,20 @@ public class Level
 			teamsMap.put("enemy", Game.enemyTeam);
 		}
 
+		sizeX = Integer.parseInt(screen[0]);
+		sizeY = Integer.parseInt(screen[1]);
+
 		if (screen.length >= 5)
 		{
-			r = Integer.parseInt(screen[2]);
-			g = Integer.parseInt(screen[3]);
-			b = Integer.parseInt(screen[4]);
+			colorR = Integer.parseInt(screen[2]);
+			colorG = Integer.parseInt(screen[3]);
+			colorB = Integer.parseInt(screen[4]);
 
 			if (screen.length >= 8)
 			{
-				dr = Math.min(255 - r, Integer.parseInt(screen[5]));
-				dg = Math.min(255 - g, Integer.parseInt(screen[6]));
-				db = Math.min(255 - b, Integer.parseInt(screen[7]));
+				colorVarR = Math.min(255 - colorR, Integer.parseInt(screen[5]));
+				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
+				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
 			}
 		}
 
@@ -242,88 +245,20 @@ public class Level
 			shadow = Integer.parseInt(screen[10]) / 100.0;
 		}
 
+		for (Item i: this.shop)
+			i.importProperties();
+
+		for (Item i: this.startingItems)
+			i.importProperties();
+
 		if (sc instanceof ScreenLevelBuilder)
 		{
 			ScreenLevelBuilder s = (ScreenLevelBuilder) sc;
 
-			s.sizeX.inputText = sX + "";
-			s.sizeY.inputText = sY + "";
+			s.level = this;
 
-			s.width = sX;
-			s.height = sY;
-			s.timer = (int) this.timer;
-			s.seconds.inputText = "" + ((int) timer % 6000) / 100;
-			s.minutes.inputText = "" + (int) timer / 6000;
-
-			s.selectedTiles = new boolean[sX][sY];
-
-			s.r = r;
-			s.g = g;
-			s.b = b;
-			s.dr = dr;
-			s.dg = dg;
-			s.db = db;
-			s.l = light;
-			s.s = shadow;
-			s.editable = this.editable;
+			s.selectedTiles = new boolean[sizeX][sizeY];
 			Game.movables.remove(Game.playerTank);
-
-			s.colorRed.value = r;
-			s.colorGreen.value = g;
-			s.colorBlue.value = b;
-			s.colorRed.inputText = r + "";
-			s.colorGreen.inputText = g + "";
-			s.colorBlue.inputText = b + "";
-			s.colorVarRed.inputText = dr + "";
-			s.colorVarGreen.inputText = dg + "";
-			s.colorVarBlue.inputText = db + "";
-
-			s.colorVarRed.maxValue = 255 - r;
-			s.colorVarGreen.maxValue = 255 - g;
-			s.colorVarBlue.maxValue = 255 - b;
-
-			s.light.value = (int) Math.round(100 * light);
-			s.shadow.value = (int) Math.round(100 * shadow);
-			s.light.inputText = (int) Math.round(100 * light) + "";
-			s.shadow.inputText = (int) Math.round(100 * shadow) + "";
-
-			s.shop = this.shop;
-			s.startingItems = this.startingItems;
-			s.startingCoins = this.startingCoins;
-			s.editCoins.inputText = s.startingCoins + "";
-
-			s.shopList = new ButtonList(new ArrayList<>(), 0, 0, -30);
-			s.startingItemsList = new ButtonList(new ArrayList<>(), 0, 0, -30);
-			s.shopList.arrowsEnabled = true;
-			s.startingItemsList.arrowsEnabled = true;
-
-			s.shopList.reorderBehavior = (i, j) ->
-			{
-				s.shop.add(j, s.shop.remove((int)i));
-				s.refreshItemButtons(s.shop, s.shopList);
-			};
-
-			s.startingItemsList.reorderBehavior = (i, j) ->
-			{
-				s.startingItems.add(j, s.startingItems.remove((int)i));
-				s.refreshItemButtons(s.startingItems, s.startingItemsList);
-			};
-
-			for (Item i: this.shop)
-				i.importProperties();
-
-			for (Item i: this.startingItems)
-				i.importProperties();
-
-			s.refreshItemButtons(s.shop, s.shopList);
-			s.refreshItemButtons(s.startingItems, s.startingItemsList);
-
-			if (!editable)
-			{
-				s.play.posY += 60;
-				s.delete.posY -= 60;
-				s.quit.posY -= 60;
-			}
 
 			if (!enableTeams)
 			{
@@ -331,89 +266,10 @@ public class Level
 				this.teamsList.add(Game.enemyTeam);
 			}
 
-			for (int i = 0; i < this.teamsList.size(); i++)
-			{
-				final int j = i;
-				Team t = this.teamsList.get(i);
-				Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
-				{
-					@Override
-					public void run() 
-					{
-						s.teamName.inputText = t.name;
-						s.lastTeamButton = j;
-						s.editTeamMenu = true;
-						s.selectedTeam = t;
-						if (s.selectedTeam.friendlyFire)
-							s.teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.onText;
-						else
-							s.teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.offText;
-					}
-				}
-						);
-
-				s.teamEditButtons.add(buttonToAdd);
-
-				Button buttonToAdd2 = new Button(0, 0, 350, 40, t.name, new Runnable()
-				{
-					@Override
-					public void run() 
-					{
-						s.setEditorTeam(j);
-					}
-				}
-						);
-
-				s.teamSelectButtons.add(buttonToAdd2);
-			}
-
-			Button button = new Button(0, 0, 350, 40, "\u00A7127000000255none", new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					s.setEditorTeam(teamsList.size());
-				}
-			}
-			);
-			s.teamSelectButtons.add(button);
-
 			s.teams = this.teamsList;
-
-			s.sortButtons();
 		}
 
-		Game.currentSizeX = (int) (sX * Game.bgResMultiplier);
-		Game.currentSizeY = (int) (sY * Game.bgResMultiplier);
-
-		currentColorR = r;
-		currentColorG = g;
-		currentColorB = b;
-
-		currentLightIntensity = light;
-		currentShadowIntensity = shadow;
-
-		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesDepth = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
-
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				Game.tilesR[i][j] = (r + Math.random() * dr);
-				Game.tilesG[i][j] = (g + Math.random() * dg);
-				Game.tilesB[i][j] = (b + Math.random() * db);
-				Game.tilesDepth[i][j] = Math.random() * 10;
-			}
-		}
-
-		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
-		//Game.game.shadeGrid = new double[Game.currentSizeX][Game.currentSizeY];
-
-		Drawing.drawing.setScreenBounds(Game.tile_size * sX, Game.tile_size * sY);
+		this.reloadTiles();
 
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{
@@ -470,7 +326,6 @@ public class Level
 
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 		boolean[][] solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-
 
 		for (Obstacle o: Game.obstacles)
 		{
@@ -725,6 +580,60 @@ public class Level
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelBuilder))
 			Game.eventsOut.add(new EventEnterLevel());
+	}
+
+	public void reloadTiles()
+	{
+		Game.currentSizeX = (int) (sizeX * Game.bgResMultiplier);
+		Game.currentSizeY = (int) (sizeY * Game.bgResMultiplier);
+
+		currentColorR = colorR;
+		currentColorG = colorG;
+		currentColorB = colorB;
+
+		currentLightIntensity = light;
+		currentShadowIntensity = shadow;
+
+		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesDepth = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
+
+		for (int i = 0; i < Game.currentSizeX; i++)
+		{
+			for (int j = 0; j < Game.currentSizeY; j++)
+			{
+				Game.tilesR[i][j] = (colorR + Math.random() * colorVarR);
+				Game.tilesG[i][j] = (colorG + Math.random() * colorVarG);
+				Game.tilesB[i][j] = (colorB + Math.random() * colorVarB);
+				Game.tilesDepth[i][j] = Math.random() * 10;
+			}
+		}
+
+		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
+		Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
+
+		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+		for (Obstacle o: Game.obstacles)
+		{
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+				Game.game.solidGrid[x][y] = true;
+		}
+
+		ScreenLevelBuilder s = null;
+		
+		if (Game.screen instanceof ScreenLevelBuilder)
+			s = (ScreenLevelBuilder) Game.screen;
+		else if (Game.screen instanceof ScreenLevelBuilderOverlay)
+			s = ((ScreenLevelBuilderOverlay) Game.screen).screenLevelBuilder;
+
+		if (s != null)
+			s.selectedTiles = new boolean[Game.currentSizeX][Game.currentSizeY];
 	}
 
 	public static class Tile

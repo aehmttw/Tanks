@@ -13,6 +13,7 @@ public class EventTankUpdate extends PersonalEvent
 	public double vX;
 	public double vY;
 	public double angle;
+	public double pitch;
 	public long time = System.currentTimeMillis();
 
 
@@ -29,6 +30,7 @@ public class EventTankUpdate extends PersonalEvent
 		this.vX = t.vX;
 		this.vY = t.vY;
 		this.angle = t.angle;
+		this.pitch = t.pitch;
 	}
 	
 	@Override
@@ -40,6 +42,7 @@ public class EventTankUpdate extends PersonalEvent
 		b.writeDouble(this.vX);
 		b.writeDouble(this.vY);
 		b.writeDouble(this.angle);
+		b.writeDouble(this.pitch);
 	}
 
 	@Override
@@ -51,6 +54,7 @@ public class EventTankUpdate extends PersonalEvent
 		this.vX = b.readDouble();
 		this.vY = b.readDouble();
 		this.angle = b.readDouble();
+		this.pitch = b.readDouble();
 	}
 
 	@Override
@@ -77,6 +81,7 @@ public class EventTankUpdate extends PersonalEvent
 			t.vX = this.vX;
 			t.vY = this.vY;
 			t.angle = this.angle;
+			t.pitch = this.pitch;
 		}
 	}
 

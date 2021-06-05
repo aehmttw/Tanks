@@ -12,6 +12,8 @@ import java.util.HashMap;
 
 public abstract class BaseWindow
 {
+    protected ArrayList<String> overrideLocations = new ArrayList<>();
+
     public BaseShapeRenderer shapeRenderer;
     public BaseFontRenderer fontRenderer;
 
@@ -173,6 +175,8 @@ public abstract class BaseWindow
     public abstract void setCursorPos(double x, double y);
 
     public abstract void setFullscreen(boolean enabled);
+
+    public abstract void setOverrideLocations(ArrayList<String> loc, BaseFileManager fileManager);
 
     public abstract void setIcon(String icon);
 

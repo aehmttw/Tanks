@@ -133,7 +133,7 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
         this.previous = previous;
         this.uploadMode = upload;
 
-        this.music = "tomato_feast_4.ogg";
+        this.music = "menu_4.ogg";
         this.musicID = "menu";
 
         this.crusade = c;

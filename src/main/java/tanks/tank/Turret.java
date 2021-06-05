@@ -26,7 +26,7 @@ public class Turret extends Movable
 	    this.colorB = calculateSecondaryColor(this.tank.colorB);
 	}
 
-	public void draw(double angle, boolean forInterface, boolean in3d, boolean transparent)
+	public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
 	{
 		double glow = 0.5;
 
@@ -56,11 +56,11 @@ public class Turret extends Movable
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, glow);
 
 		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, angle);
+			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, rotation);
 		else if (!in3d)
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, angle);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, rotation);
 		else
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, angle);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, rotation, vAngle, 0);
 
 		if (transparent)
 			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127, glow);
@@ -68,11 +68,11 @@ public class Turret extends Movable
 			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 255, glow);
 
 		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, angle);
+			Drawing.drawing.drawInterfaceModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, rotation);
 		else if (!in3d)
-			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, angle);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, rotation);
 		else
-			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, s / 2, l, l, l, angle);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, s / 2, l, l, l, rotation);
 	}
 	
 	@Override

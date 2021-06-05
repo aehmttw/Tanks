@@ -8,7 +8,7 @@ public class ScreenPlayMultiplayer extends Screen
 {
     public ScreenPlayMultiplayer()
     {
-        this.music = "tomato_feast_2.ogg";
+        this.music = "menu_2.ogg";
         this.musicID = "menu";
     }
 

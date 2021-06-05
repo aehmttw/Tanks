@@ -9,6 +9,7 @@ import tanks.event.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SpeedrunTimer;
+import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;
@@ -336,7 +337,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			Game.cleanUp();
-			ScreenLevelBuilder s = new ScreenLevelBuilder(name);
+			ScreenLevelBuilder s = new ScreenLevelBuilder(name, Game.currentLevel);
 			Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name), s);
 			Game.screen = s;
 		}
@@ -793,15 +794,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				this.musicID = "battle";
 			}
 		}
-
-		if (Game.enable3d)
-			for (int i = 0; i < Game.obstacles.size(); i++)
-			{
-				Obstacle o = Game.obstacles.get(i);
-
-				if (o.replaceTiles)
-					o.postOverride();
-			}
 
 		if (Game.game.input.pause.isValid())
 		{
@@ -1623,6 +1615,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Game.game.window.transformations.add(this.slantTranslation);
 				Game.game.window.transformations.add(this.slantRotation);
 			}
+
 			Game.game.window.loadPerspective();
 		}
 
@@ -1653,6 +1646,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public void draw()
 	{
 		this.showDefaultMouse = !(!this.paused && this.playing && Game.angledView);
+
+		if (Game.enable3d)
+			for (int i = 0; i < Game.obstacles.size(); i++)
+			{
+				Obstacle o = Game.obstacles.get(i);
+
+				if (o.replaceTiles)
+					o.postOverride();
+			}
 
 		this.setPerspective();
 

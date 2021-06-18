@@ -33,6 +33,7 @@ void main(void)
 
     vec4 pos;
 
+    #ifdef BONES
     if (bonesEnabled)
     {
         int bone1 = int(bones.x - 0.0001);
@@ -47,6 +48,7 @@ void main(void)
         pos = (boneMatrices[bone1] * bone1w + boneMatrices[bone2] * bone2w + boneMatrices[bone3] * bone3w + boneMatrices[bone4] * bone4w) * gl_Vertex;
     }
     else
+    #endif
         pos = gl_Vertex;
 
     gl_Position = gl_ModelViewProjectionMatrix * pos;

@@ -9,6 +9,9 @@ public class GameWindowHandler implements IWindowHandler
 	@Override
 	public void onWindowClose() 
 	{
+		if (Game.steamNetworkHandler.initialized)
+			Game.steamNetworkHandler.exit();
+
 		if (ScreenPartyHost.isServer)
 		{
 			ScreenPartyHost.server.close("The party host has closed their game");

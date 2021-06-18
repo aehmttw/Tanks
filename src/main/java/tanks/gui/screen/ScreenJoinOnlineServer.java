@@ -52,7 +52,6 @@ public class ScreenJoinOnlineServer extends Screen
         public void run()
         {
             Game.lastOfflineScreen = Game.screen;
-
             {
                 Game.eventsOut.clear();
                 clientThread = new Thread(new Runnable()

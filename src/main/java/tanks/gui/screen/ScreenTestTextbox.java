@@ -5,6 +5,7 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.UUIDTextBox;
+import tanks.network.SteamNetworkHandler;
 
 public class ScreenTestTextbox extends Screen
 {

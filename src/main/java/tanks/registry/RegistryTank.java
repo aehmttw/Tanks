@@ -20,6 +20,8 @@ public class RegistryTank
 		protected double startWeight;
 		protected double endWeight;
 
+		public boolean isBoss;
+
 		protected RegistryTank registryTank;
 
 		public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight)
@@ -30,6 +32,12 @@ public class RegistryTank
 			this.registryTank = r;
 
 			r.tankEntries.add(this);
+		}
+
+		public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight, boolean isBoss)
+		{
+			this(r, tank, name, weight);
+			this.isBoss = isBoss;
 		}
 
 		public void initialize()

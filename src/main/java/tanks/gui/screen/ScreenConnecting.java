@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import com.codedisaster.steamworks.SteamID;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
@@ -12,6 +13,7 @@ public class ScreenConnecting extends Screen
 	public String exception = "";
 	public boolean finished = false;
 	public Thread thread;
+	public SteamID steamID;
 
 	double time = 0;
 

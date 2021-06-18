@@ -45,7 +45,7 @@ public class ObstacleLight extends Obstacle
 		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
 
 		double s = this.stackHeight * Game.tile_size * 4;
-		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s * 2, s * 2, false, false, false, true);
+		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s * 3, s * 3, false, false, false, true);
 
 	}
 
@@ -53,7 +53,7 @@ public class ObstacleLight extends Obstacle
 	public void drawGlow()
 	{
 		double s = this.stackHeight * Game.tile_size * 4;
-		double frac = Obstacle.draw_size / Game.tile_size;
+		double frac = Obstacle.draw_size / Game.tile_size * 0.75;
 		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
 		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
 	}

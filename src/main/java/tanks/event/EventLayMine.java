@@ -41,6 +41,9 @@ public class EventLayMine extends PersonalEvent
 		{
 			Tank t = Tank.idMap.get(tank);
 
+			if (tank == -1)
+				t = Game.dummyTank;
+
 			if (t == null)
 				return;
 

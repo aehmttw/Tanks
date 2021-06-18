@@ -4,8 +4,6 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.event.*;
 import tanks.event.online.IOnlineServerEvent;
-import tanks.gui.screen.ScreenHostingEnded;
-import tanks.gui.screen.ScreenKicked;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 
@@ -13,6 +11,9 @@ import java.util.UUID;
 
 public class MessageReader 
 {
+	public static final int max_event_size = 1048576;
+
+	public boolean useQueue = true;
 	public ByteBuf queue;
 	protected boolean reading = false;
 	protected int endpoint;
@@ -27,8 +28,14 @@ public class MessageReader
 		boolean reply = false;
 		
 		try
-		{	
-			queue.writeBytes(m);
+		{
+			byte[] bytes = new byte[59];
+			m.getBytes(0, bytes);
+
+			if (useQueue)
+				queue.writeBytes(m);
+			else
+				queue = m;
 
 			if (queue.readableBytes() >= 4)
 			{
@@ -36,7 +43,7 @@ public class MessageReader
 				{
 					endpoint = queue.readInt();
 
-					if (endpoint > 1048576)
+					if (endpoint > max_event_size)
 					{
 						if (ScreenPartyHost.isServer && s != null)
 						{
@@ -69,7 +76,7 @@ public class MessageReader
 					{
 						endpoint = queue.readInt();
 
-						if (endpoint > 1048576)
+						if (endpoint > MessageReader.max_event_size)
 						{
 							if (ScreenPartyHost.isServer && s != null)
 							{

@@ -1,6 +1,9 @@
 package tanks.network;
 
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
@@ -11,7 +14,6 @@ import tanks.event.EventPing;
 import tanks.event.EventSendClientDetails;
 import tanks.event.INetworkEvent;
 import tanks.event.online.EventSendOnlineClientDetails;
-import tanks.gui.screen.ScreenKicked;
 import tanks.gui.screen.ScreenOverlayOnline;
 import tanks.gui.screen.ScreenPartyLobby;
 
@@ -23,6 +25,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	public MessageReader reader = new MessageReader();
 	
 	public ChannelHandlerContext ctx;
+	public SteamID steamID;
 
 	public static long lastMessage = -1;
 	public static long latency = 0;
@@ -48,7 +51,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     	if (this.connectionID != Client.connectionID)
 		{
 			ScreenPartyLobby.isClient = false;
-			ctx.close();
+
+			if (ctx != null)
+				ctx.close();
+
 			return;
 		}
 
@@ -58,21 +64,45 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 			Panel.panel.onlineOverlay = new ScreenOverlayOnline();
 		}
 
-		this.reader.queue = ctx.channel().alloc().buffer();
+		if (ctx != null)
+			this.reader.queue = ctx.channel().alloc().buffer();
+		else
+			this.reader.queue = Unpooled.buffer();
+
 		this.ctx = ctx;
 
-		if (online)
-			this.sendEvent(new EventSendOnlineClientDetails(Game.network_protocol, Game.clientID, Game.player.username, Game.computerID));
-		else
-			this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
+		if (this.steamID == null)
+		{
+			if (online)
+				this.sendEvent(new EventSendOnlineClientDetails(Game.network_protocol, Game.clientID, Game.player.username, Game.computerID));
+			else
+				this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
+		}
 
 		ScreenPartyLobby.isClient = true;
 
 		this.sendEvent(new EventPing());
     }
+
+    public void close()
+	{
+		if (Client.handler.ctx != null)
+			Client.handler.ctx.close();
+		else if (Client.handler.steamID != null)
+		{
+			Game.steamNetworkHandler.queueClose(Client.handler.steamID.getAccountID());
+			Client.handler.channelInactive(null);
+		}
+	}
 	
 	public synchronized void sendEvent(INetworkEvent e)
 	{
+		if (steamID != null)
+		{
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+			return;
+		}
+
 		ByteBuf b = ctx.channel().alloc().buffer();
 		int i = NetworkEventMap.get(e.getClass());
 
@@ -92,16 +122,24 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	
 	public synchronized void sendEventAndClose(INetworkEvent e)
 	{
-		this.sendEvent(e);
+		if (steamID != null)
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+		else
+			this.sendEvent(e);
+
 		ScreenPartyLobby.isClient = false;
-		ctx.close();
+
+		if (ctx != null)
+			ctx.close();
+
+		if (steamID != null)
+			Game.steamNetworkHandler.queueClose(steamID.getAccountID());
 	}
 
-	
 	@Override
     public void channelInactive(ChannelHandlerContext ctx)
     {
-    	if (ScreenPartyLobby.isClient)
+		if (ScreenPartyLobby.isClient)
 		{
 			EventKick e = new EventKick("You have lost connection");
 			e.clientID = null;
@@ -110,7 +148,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
 		ScreenPartyLobby.isClient = false;
     	Game.connectedToOnline = false;
-		ReferenceCountUtil.release(this.reader.queue);
+
+    	if (steamID == null)
+			ReferenceCountUtil.release(this.reader.queue);
 
 		Client.connectionID = null;
     }
@@ -145,8 +185,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 			}
 
 			this.sendEvent(new EventPing());
-			//reply();
-		}	
+		}
     }
 
     public void reply()

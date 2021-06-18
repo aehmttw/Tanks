@@ -42,7 +42,7 @@ public class ScreenPlay extends Screen
 				Game.screen = new ScreenUsernamePrompt();
 		}
 	}
-	, "Play in a party with others---who are on your local---network or port forwarding---or play on the online server!");
+	, "Play, chat, and share levels---and crusades with other players!");
 
 	public ScreenPlay()
 	{

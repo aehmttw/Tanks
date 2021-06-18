@@ -24,7 +24,9 @@ public class ScreenConfirmLeaveParty extends Screen
         {
             Drawing.drawing.playSound("leave.ogg");
             ScreenPartyLobby.isClient = false;
-            Client.handler.ctx.close();
+
+            Client.handler.close();
+
             Game.screen = new ScreenJoinParty();
             ScreenPartyLobby.connections.clear();
         }

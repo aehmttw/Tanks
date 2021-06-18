@@ -1,6 +1,9 @@
 package tanks.network;
 
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
@@ -18,8 +21,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public SynchronizedList<INetworkEvent> events = new SynchronizedList<INetworkEvent>();
 
 	public ChannelHandlerContext ctx;
+	public SteamID steamID;
 
 	public Server server;
+
+	public boolean initialized = false;
 
 	public Player player;
 	public UUID clientID;
@@ -45,13 +51,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public void channelActive(ChannelHandlerContext ctx)
 	{
 		this.ctx = ctx;
-		this.reader.queue = ctx.channel().alloc().buffer();
+
+		if (ctx != null)
+			this.reader.queue = ctx.channel().alloc().buffer();
+		else
+			this.reader.queue = Unpooled.buffer();
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx)
 	{
-		ReferenceCountUtil.release(this.reader.queue);
+		if (steamID == null)
+			ReferenceCountUtil.release(this.reader.queue);
 
 		server.connections.remove(this);
 
@@ -82,7 +93,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
 		boolean reply = this.reader.queueMessage(this, buffy, this.clientID);
-		ReferenceCountUtil.release(msg);
+
+		if (steamID == null)
+			ReferenceCountUtil.release(msg);
 
 		if (reply)
 		{
@@ -106,8 +119,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			}
 
 			this.sendEvent(new EventPing());
-
-			//this.reply();
 		}
 	}
 
@@ -115,9 +126,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (this.events)
 		{
-			//EventKeepConnectionAlive k = new EventKeepConnectionAlive();
-			//this.events.add(k);
-
 			for (int i = 0; i < this.events.size(); i++)
 			{
 				INetworkEvent e = this.events.get(i);
@@ -130,6 +138,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public synchronized void sendEvent(INetworkEvent e)
 	{
+		if (steamID != null)
+		{
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+			return;
+		}
+
 		ByteBuf b = ctx.channel().alloc().buffer();
 
 		int i = NetworkEventMap.get(e.getClass());
@@ -150,8 +164,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public synchronized void sendEventAndClose(INetworkEvent e)
 	{
 		this.closed = true;
-		this.sendEvent(e);
-		ctx.close();
+		if (steamID != null)
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+		else
+			this.sendEvent(e);
+
+		if (ctx != null)
+			ctx.close();
+
+		if (steamID != null)
+			Game.steamNetworkHandler.queueClose(steamID.getAccountID());
 	}
 
 	@Override

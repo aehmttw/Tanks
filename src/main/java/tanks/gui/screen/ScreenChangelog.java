@@ -283,6 +283,24 @@ public class ScreenChangelog extends Screen
                             "*What's new in Tanks v1.2.c:\n\n" +
                                     "Fixed bugs with the level editor and mimic tanks"
                     });
+
+            new Changelog("v1.2.d", new String[]
+                    {
+                            "*What's new in Tanks v1.2.d:\n\n" +
+                                    "Added support for Steam peer-to-peer multiplayer\n" +
+                                    "Improved the crusade editor level edit menu\n" +
+                                    "Changed light block appearance\n" +
+                                    "Several other bug fixes and improvements"
+                    });
+
+            new Changelog("v1.2.e", new String[]
+                    {
+                            "*What's new in Tanks v1.2.e:\n\n" +
+                                    "Fireworks are more varied and prettier!\n" +
+                                    "Tanks no longer take damage after the battle has ended\n" +
+                                    "Performance improvements\n" +
+                                    "A multitude of other bug fixes and improvements"
+                    });
         }
     }
 }

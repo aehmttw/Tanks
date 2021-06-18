@@ -2,6 +2,7 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.event.*;
+import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Mine;
@@ -193,7 +194,7 @@ public class Bullet extends Movable implements IDrawable
 		if (!heavy)
 			this.destroy = true;
 
-		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable && this.tankInside != t)
+		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable && this.tankInside != t && !ScreenGame.finishedQuick)
 		{
 			t.flashAnimation = 1;
 			if (!this.heavy)

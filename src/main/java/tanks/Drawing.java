@@ -789,7 +789,7 @@ public class Drawing
 	{
 		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-		double drawZ = z * scale;
+		double drawZ = z * interfaceScale;
 
 		if (Game.enable3d)
 			Game.game.window.addVertex(drawX, drawY, drawZ);

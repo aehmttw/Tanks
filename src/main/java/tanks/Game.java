@@ -17,6 +17,7 @@ import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.*;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
+import tanks.network.SteamNetworkHandler;
 import tanks.network.SynchronizedList;
 import tanks.obstacle.*;
 import tanks.registry.RegistryBullet;
@@ -85,8 +86,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.2.c";
-	public static final int network_protocol = 32;
+	public static final String version = "Tanks v1.2.e";
+	public static final int network_protocol = 33;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -199,17 +200,19 @@ public class Game
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
 
-	public static String homedir;
-
-	public static Game game = new Game();
-
 	public static boolean isOnlineServer;
 	public static boolean connectedToOnline = false;
+
+	public static SteamNetworkHandler steamNetworkHandler;
+
+	public static String homedir;
+	public static Game game = new Game();
 
 	private Game()
 	{
 		Game.game = this;
 		input = new InputBindings();
+		dummyTank.networkID = -1;
 	}
 
 	public static void registerEvents()
@@ -266,6 +269,7 @@ public class Game
 		NetworkEventMap.register(EventTankMimicLaser.class);
 		NetworkEventMap.register(EventTankAddAttributeModifier.class);
 		NetworkEventMap.register(EventCreateFreezeEffect.class);
+		NetworkEventMap.register(EventObstacleDestroy.class);
 		NetworkEventMap.register(EventObstacleHit.class);
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
 		NetworkEventMap.register(EventObstacleSnowMelt.class);
@@ -310,6 +314,12 @@ public class Game
 			new RegistryTank.TankEntry(Game.registryTank, tank, name, weight);
 	}
 
+	public static void registerTank(Class<? extends Tank> tank, String name, double weight, boolean isBoss)
+	{
+		if (Game.registryTank.getEntry(name).tank == TankUnknown.class)
+			new RegistryTank.TankEntry(Game.registryTank, tank, name, weight, isBoss);
+	}
+
 	public static void registerBullet(Class<? extends Bullet> bullet, String name, String icon)
 	{
 		new RegistryBullet.BulletEntry(Game.registryBullet, bullet, name, icon);
@@ -340,6 +350,9 @@ public class Game
 			}
 		}
 		);
+
+		steamNetworkHandler = new SteamNetworkHandler();
+		steamNetworkHandler.load();
 
 		registerEvents();
 
@@ -383,7 +396,7 @@ public class Game
 		registerTank(TankMimic.class, "mimic", 1.0 / 4);
 		registerTank(TankPink.class, "pink", 1.0 / 12);
 		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
-		registerTank(TankBoss.class, "boss", 1.0 / 40);
+		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
 		registerBullet(BulletFlame.class, BulletFlame.bullet_name, "bullet_flame.png");

@@ -97,6 +97,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public HashMap<String, Object> extraProperties = new HashMap<>();
 
+	public boolean isBoss = false;
 	public Tank possessor;
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 

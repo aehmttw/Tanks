@@ -112,11 +112,11 @@ public class TankMimic extends TankAIControlled
                 this.possessingTank.colorR = 0;
                 this.possessingTank.colorG = 150;
                 this.possessingTank.colorB = 255;
-            }
 
-            this.possessingTank.turret.colorR = this.turret.colorR;
-            this.possessingTank.turret.colorG = this.turret.colorG;
-            this.possessingTank.turret.colorB = this.turret.colorB;
+                this.possessingTank.turret.colorR = Turret.calculateSecondaryColor(this.possessingTank.colorR);
+                this.possessingTank.turret.colorG = Turret.calculateSecondaryColor(this.possessingTank.colorG);
+                this.possessingTank.turret.colorB = Turret.calculateSecondaryColor(this.possessingTank.colorB);
+            }
 
             for (RegistryTank.TankEntry e: Game.registryTank.tankEntries)
             {

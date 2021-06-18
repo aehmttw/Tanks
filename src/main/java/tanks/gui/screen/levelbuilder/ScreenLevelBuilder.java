@@ -236,7 +236,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			paused = true;
 			Game.screen = new OverlayBlockHeight(Game.screen, (ScreenLevelBuilder) Game.screen);
 		}
-	}, "Obstacle height (\" + Game.game.input.editorHeight.getInputs() + \")"
+	}, "Block height (" + Game.game.input.editorHeight.getInputs() + ")"
 	);
 
 	Button groupShortcut = new Button(0, -1000, 70, 70, "", new Runnable()
@@ -247,7 +247,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			paused = true;
 			Game.screen = new OverlayBlockGroupID(Game.screen, (ScreenLevelBuilder) Game.screen);
 		}
-	}, "Obstacle group ID (" + Game.game.input.editorGroupID.getInputs() + ")"
+	}, "Block group ID (" + Game.game.input.editorGroupID.getInputs() + ")"
 	);
 
 	Button selectSquareToggle = new Button(0, -1000, 70, 70, "", new Runnable()

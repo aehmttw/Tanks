@@ -4,6 +4,8 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Obstacle;
 
@@ -53,7 +55,7 @@ public class Mine extends Movable
 
         this.item = item;
 
-        if (!this.tank.isRemote)
+        if (!ScreenPartyLobby.isClient)
         {
             if (this.item == null)
                 t.liveMines++;
@@ -67,7 +69,7 @@ public class Mine extends Movable
         this.outlineColorG = outlineCol[1];
         this.outlineColorB = outlineCol[2];
 
-        if (!this.tank.isRemote)
+        if (!ScreenPartyLobby.isClient)
         {
             if (freeIDs.size() > 0)
                 this.networkID = freeIDs.remove(0);
@@ -140,10 +142,7 @@ public class Mine extends Movable
         if (this.timer < 0)
             this.timer = 0;
 
-        if (destroy && !this.tank.isRemote)
-            this.explode();
-
-        if (this.timer <= 0 && !this.tank.isRemote)
+        if ((this.timer <= 0 || destroy) && !ScreenPartyLobby.isClient)
             this.explode();
 
         int beepTime = ((int)this.timer / 10);
@@ -205,7 +204,7 @@ public class Mine extends Movable
 
         this.destroy = true;
 
-        if (!this.tank.isRemote)
+        if (!ScreenPartyLobby.isClient)
         {
             Game.eventsOut.add(new EventMineExplode(this));
 
@@ -216,7 +215,7 @@ public class Mine extends Movable
                 {
                     if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable)
                     {
-                        if (!(Team.isAllied(this, o) && !this.team.friendlyFire))
+                        if (!(Team.isAllied(this, o) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
                         {
                             Tank t = (Tank) o;
                             t.health -= this.damage;
@@ -273,7 +272,7 @@ public class Mine extends Movable
             }
         }
 
-        if (!this.tank.isRemote)
+        if (!ScreenPartyLobby.isClient)
         {
             if (this.item == null)
                 this.tank.liveMines--;

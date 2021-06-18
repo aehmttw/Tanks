@@ -8,7 +8,7 @@ import java.net.URL;
 
 public class ScreenAbout extends Screen
 {
-    Button link = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Web page", new Runnable()
+    Button link = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "GitHub", new Runnable()
     {
         @Override
         public void run()
@@ -25,7 +25,7 @@ public class ScreenAbout extends Screen
     }
     );
 
-    Button chatroom = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Chatroom", new Runnable()
+    Button chatroom = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Discord", new Runnable()
     {
         @Override
         public void run()

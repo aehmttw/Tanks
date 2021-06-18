@@ -1,7 +1,5 @@
 package basewindow;
 
-import lwjglwindow.LWJGLWindow;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -57,6 +55,6 @@ public class ComputerFileManager extends BaseFileManager
                 return new FileInputStream(f);
         }
 
-        return LWJGLWindow.class.getResourceAsStream(path);
+        return ComputerFileManager.class.getResourceAsStream(path);
     }
 }

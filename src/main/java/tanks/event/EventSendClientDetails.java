@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.Player;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.IPartyGameScreen;
+import tanks.gui.screen.ScreenConnecting;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
@@ -56,12 +57,24 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 	@Override
 	public void execute(ServerHandler s)
 	{
+		if (Game.screen instanceof ScreenConnecting)
+		{
+			if (((ScreenConnecting) Game.screen).steamID != null)
+				Game.steamNetworkHandler.networking.closeP2PSessionWithUser(((ScreenConnecting) Game.screen).steamID);
+
+			return;
+		}
+
 		if (this.clientID == null || Game.isOnlineServer || !ScreenPartyHost.isServer)
 			return;
 
 		if (Game.screen instanceof IPartyGameScreen)
 		{
 			s.sendEventAndClose(new EventKick("Please wait for the current game to finish!"));
+
+			Game.eventsIn.add(new EventPlaySound("join.ogg", 0.75f, 1.0f));
+			ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
+			Game.eventsOut.add(new EventChat("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
 			return;
 		}
 
@@ -91,15 +104,20 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		{
 			for (int i = 0; i < s.server.connections.size(); i++)
 			{
-				if (this.clientID.equals(s.server.connections.get(i).clientID))
+				if (this.clientID.equals(s.server.connections.get(i).clientID) && s.server.connections.get(i).initialized)
 				{
-					s.sendEventAndClose(new EventKick("You are already in this party!"));
+					if (s.steamID == null)
+						s.sendEventAndClose(new EventKick("You are already in this party!"));
+
 					return;
 				}
 			}
-			
-			s.server.connections.add(s);
+
+			if (!s.server.connections.contains(s))
+				s.server.connections.add(s);
 		}
+
+		s.initialized = true;
 
 		synchronized (ScreenPartyHost.disconnectedPlayers)
 		{

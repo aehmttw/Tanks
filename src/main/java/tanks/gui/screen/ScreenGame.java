@@ -414,7 +414,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Drawing.drawing.playSound("leave.ogg");
 			ScreenPartyLobby.isClient = false;
 			Game.screen = new ScreenJoinParty();
-			Client.handler.ctx.close();
+
+			Client.handler.close();
+
 			ScreenPartyLobby.connections.clear();
 		}
 	}

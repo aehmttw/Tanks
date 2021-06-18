@@ -101,9 +101,17 @@ public class ScreenParty extends Screen
 		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Create or join a party");
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Make sure that everyone is using the same port!");
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "All players should be connected to the same");
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, " network, unless the host is port forwarding.");
+
+		double offset = 0;
+		if (Game.steamNetworkHandler.initialized)
+		{
+			offset = 0.25;
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * (0.75 + offset), "Joining via Steam peer-to-peer doesn't require port forwarding.");
+		}
+
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * (2.5 + offset), "Make sure that everyone is using the same port!");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * (2 + offset), "All players should be connected to the same");
+		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * (1.5 + offset), " network, unless the host is port forwarding.");
 
 		back.draw();
 		port.draw();

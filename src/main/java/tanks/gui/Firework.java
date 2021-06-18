@@ -9,19 +9,26 @@ import java.util.ArrayList;
 
 public class Firework extends Movable
 {
+	public static double trailLength = 50;
+
 	public enum FireworkType {rocket, particle, trail, flash}
 	public FireworkType type;
 
-	double age = 0;
-	int maxAge = (int) (Math.random() * 80 + 80);
+	public double age = 0;
+	public double maxAge = (int) (Math.random() * 80 + 80);
 
-	int size = 8;
+	public boolean exploded = false;
+
+	public double size = 8;
 
 	public double colorR;
 	public double colorG;
 	public double colorB;
 
 	public double aY = 0.0625 / 2;
+
+	public FireworkPosition position;
+	public FireworkPosition lastPosition;
 
 	public Firework(FireworkType t, double x, double y, ArrayList<Firework> list)
 	{
@@ -89,38 +96,73 @@ public class Firework extends Movable
 
 	public void drawUpdate(ArrayList<Firework> current, ArrayList<Firework> next)
 	{
-		this.posX += this.vX * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
-		this.posY += this.vY * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
-		this.posZ += this.vZ * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+		if (!this.exploded)
+		{
+			this.posX += this.vX * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+			this.posY += this.vY * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+			this.posZ += this.vZ * Panel.frameFrequency / Drawing.drawing.interfaceScaleZoom;
+		}
 
 		if (type == FireworkType.rocket)
 		{
-			this.vY += aY * Panel.frameFrequency;
+			if (this.position == null)
+			{
+				this.position = new FireworkPosition(this);
+				this.lastPosition = this.position;
+			}
 
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+			if (!this.exploded)
+			{
+				FireworkPosition pos = new FireworkPosition(this);
+				this.lastPosition.next = pos;
+				this.lastPosition = pos;
+			}
 
-			if (!Game.enable3d)
-				Drawing.drawing.fillInterfaceOval(posX, posY, this.size, this.size);
-			else
-				Drawing.drawing.fillInterfaceOval(posX, posY, posZ, this.size, this.size);
+			Game.game.window.setBatchMode(true, false, false, false, false);
+			this.position.draw();
+			Game.game.window.setBatchMode(false, false, false, false, false);
 
-			Firework f = new Firework(FireworkType.trail, this.posX, this.posY, next);
+			while (this.position.next != null && this.position.expired)
+			{
+				this.position = this.position.next;
+			}
+
+			if (!this.exploded)
+			{
+				this.vY += aY * Panel.frameFrequency;
+
+				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+
+				if (!Game.enable3d)
+					Drawing.drawing.fillInterfaceOval(posX, posY, this.size, this.size);
+				else
+					Drawing.drawing.fillInterfaceOval(posX, posY, posZ, this.size, this.size);
+			}
+
+			/*Firework f = new Firework(FireworkType.trail, this.posX, this.posY, next);
 			f.posZ = this.posZ;
 			f.maxAge = 30;
 			f.colorR = this.colorR;
 			f.colorG = this.colorG;
 			f.colorB = this.colorB;
 
-			f.size = this.size;
+			f.size = this.size;*/
 
-			if (this.age >= this.maxAge)
+			if (this.age >= this.maxAge && !this.exploded)
 			{
+				this.exploded = true;
+
 				Drawing.drawing.playSound("destroy.ogg", 0.75f, 0.75f);
 
-				for (int i = 0; i < 50; i++)
+				double powerBase = Math.random() * 2 + 1;
+				double powerRandom = Math.random() * 2;
+
+				double limit = Math.random() * 50 + 50;
+
+				for (int i = 0; i < limit; i++)
 				{
 					Firework e = new Firework(FireworkType.particle, this.posX, this.posY, next);
-					e.size = 4;
+					e.size = 4 + Math.random() * 2;
 					double var = 50;
 					e.colorR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
 					e.colorG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
@@ -130,14 +172,14 @@ public class Firework extends Movable
 					e.vY = this.vY;
 					e.vZ = this.vZ;
 
-					double power = Math.random() * 1 + 2;
+					double power = Math.random() * powerRandom + powerBase;
 
 					if (!Game.enable3d)
 						e.addPolarMotion(Math.random() * 2 * Math.PI, Math.random() * power);
 					else
 						e.add3dPolarMotion(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1), power);
 
-					e.maxAge = 200;
+					e.maxAge = e.size * 40;
 				}
 
 				Firework e = new Firework(FireworkType.flash, this.posX, this.posY, next);
@@ -150,7 +192,8 @@ public class Firework extends Movable
 				e.vZ = this.vZ;
 				e.maxAge = 25;
 			}
-			else
+
+			if (this.age < this.maxAge + trailLength)
 				next.add(this);
 		}
 		else if (type == FireworkType.trail)
@@ -171,11 +214,11 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.particle)
 		{
-			int opacity = Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
+			double opacity = Math.min(255, Math.max(0, (255 - this.age * 255.0 / this.maxAge)));
 			this.vY += 0.0625 * Panel.frameFrequency / 2;
 
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity);
-			double s = this.size - (int) (this.age * this.size / this.maxAge);
+			double s = this.size - (this.age * this.size / this.maxAge);
 
 			if (!Game.enable3d)
 				Drawing.drawing.fillInterfaceOval(posX, posY, s, s);
@@ -210,6 +253,13 @@ public class Firework extends Movable
 	{
 		if (type == FireworkType.rocket)
 		{
+			Game.game.window.setBatchMode(true, false, false, true, false);
+			this.position.drawGlow();
+			Game.game.window.setBatchMode(false, false, false, true, false);
+
+			if (this.exploded)
+				return;
+
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 
 			if (Game.enable3d)
@@ -219,7 +269,7 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.trail)
 		{
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (int) (this.age * 255.0 / this.maxAge))));
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, Math.max(0, Math.min(255, 255 - (this.age * 255.0 / this.maxAge))));
 
 			if (Game.enable3d)
 				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 2, this.size * 2);
@@ -228,7 +278,7 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.particle)
 		{
-			int opacity = Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
+			double opacity = Math.min(255, Math.max(0, (255 - this.age * 255.0 / this.maxAge)));
 
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity / 2.0);
 
@@ -239,7 +289,7 @@ public class Firework extends Movable
 		}
 		else if (type == FireworkType.flash)
 		{
-			int opacity = Math.min(255, Math.max(0, (int) (255 - this.age * 255.0 / this.maxAge)));
+			double opacity = Math.min(255, Math.max(0, (255 - this.age * 255.0 / this.maxAge)));
 
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity / 2.0);
 
@@ -253,4 +303,169 @@ public class Firework extends Movable
 
 	@Override
 	public void draw() { }
+
+	public static class FireworkPosition
+	{
+		public double posX;
+		public double posY;
+		public double posZ;
+		public double age;
+
+		public double oX;
+		public double oY;
+
+		public double maxAge = trailLength;
+		public boolean expired = false;
+
+		public Firework firework;
+
+		public FireworkPosition next;
+
+		public FireworkPosition(Firework f)
+		{
+			this.posX = f.posX;
+			this.posY = f.posY;
+			this.posZ = f.posZ;
+			this.age = 0;
+
+			this.firework = f;
+
+			double speed = Math.sqrt(f.vX * f.vX + f.vY * f.vY);
+			this.oX = -f.vY / speed / 2;
+			this.oY = f.vX / speed / 2;
+
+			if (speed == 0)
+			{
+				this.oX = 0.5;
+				this.oY = 0;
+			}
+		}
+
+		public void draw()
+		{
+			double s = Math.max(0, this.firework.size - (this.age * this.firework.size / this.maxAge)) * 0.75;
+			double a = 0.5;
+
+			if (s < 0)
+				s = 0;
+
+			if (next != null)
+			{
+				double s2 = Math.max(0, next.firework.size - (next.age * this.firework.size / next.maxAge)) * 0.75;
+
+				if (s2 < 0)
+				{
+					this.expired = true;
+					return;
+				}
+
+				Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a * Math.max(0, Math.min(255, 255 - (this.age * 255.0 / this.maxAge))));
+
+				Drawing.drawing.addInterfaceVertex(this.posX + this.oX * s, this.posY + this.oY * s, this.posZ);
+				Drawing.drawing.addInterfaceVertex(this.posX - this.oX * s, this.posY - this.oY * s, this.posZ);
+
+				Drawing.drawing.setColor(next.firework.colorR, next.firework.colorG, next.firework.colorB, a * Math.max(0, Math.min(255, 255 - (next.age * 255.0 / next.maxAge))));
+
+				Drawing.drawing.addInterfaceVertex(next.posX + next.oX * s2, next.posY + next.oY * s2, next.posZ);
+
+				Drawing.drawing.addInterfaceVertex(next.posX + next.oX * s2, next.posY + next.oY * s2, next.posZ);
+				Drawing.drawing.addInterfaceVertex(next.posX - next.oX * s2, next.posY - next.oY * s2, next.posZ);
+
+				Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a * Math.max(0, Math.min(255, 255 - (this.age * 255.0 / this.maxAge))));
+
+				Drawing.drawing.addInterfaceVertex(this.posX - this.oX * s, this.posY - this.oY * s, this.posZ);
+
+				this.next.draw();
+			}
+			else
+			{
+				double angle = Movable.getPolarDirection(this.oX, this.oY);
+
+				int sides = 12;
+				for (int i = 0; i < sides; i++)
+				{
+					double a1 = angle - Math.PI * i / sides;
+					double a2 = angle - Math.PI * (i + 1) / sides;
+
+					Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a * Math.max(0, Math.min(255, 255 - (this.age * 255.0 / this.maxAge))));
+					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a1) * s / 2, this.posY + Math.sin(a1) * s / 2, this.posZ);
+					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a2) * s / 2, this.posY + Math.sin(a2) * s / 2, this.posZ);
+					Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
+				}
+			}
+
+			this.age += Panel.frameFrequency;
+		}
+
+		public void drawGlow()
+		{
+			double s = Math.max(0, this.firework.size - (this.age * this.firework.size / this.maxAge)) * 3;
+			double a = Math.min(255, 255 - (this.age * 255.0 / this.maxAge)) / 255.0 * 0.75;
+
+			if (next != null)
+			{
+				double s2 = Math.max(0, next.firework.size - (next.age * this.firework.size / next.maxAge)) * 3;
+
+				double a2 = Math.min(255, 255 - (next.age * 255.0 / next.maxAge)) / 255.0 * 0.75;
+
+				if (s < 0)
+					s = 0;
+
+				if (s2 < 0)
+				{
+					this.expired = true;
+					return;
+				}
+
+				Drawing.drawing.setColor(0, 0, 0);
+				Drawing.drawing.addInterfaceVertex(this.posX + this.oX * s, this.posY + this.oY * s, this.posZ);
+
+				Drawing.drawing.setColor(firework.colorR * a, firework.colorG * a, firework.colorB * a);
+				Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
+
+				Drawing.drawing.setColor(0, 0, 0);
+				Drawing.drawing.addInterfaceVertex(next.posX + next.oX * s2, next.posY + next.oY * s2, next.posZ);
+				Drawing.drawing.addInterfaceVertex(next.posX + next.oX * s2, next.posY + next.oY * s2, next.posZ);
+
+				Drawing.drawing.setColor(firework.colorR * a2, firework.colorG * a2, firework.colorB * a2);
+				Drawing.drawing.addInterfaceVertex(next.posX, next.posY, next.posZ);
+
+				Drawing.drawing.setColor(firework.colorR * a, firework.colorG * a, firework.colorB * a);
+				Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
+
+				Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
+				Drawing.drawing.setColor(0, 0, 0);
+				Drawing.drawing.addInterfaceVertex(this.posX - this.oX * s, this.posY - this.oY * s, this.posZ);
+
+				Drawing.drawing.setColor(firework.colorR * a2, firework.colorG * a2, firework.colorB * a2);
+				Drawing.drawing.addInterfaceVertex(next.posX, next.posY, next.posZ);
+
+				Drawing.drawing.addInterfaceVertex(next.posX, next.posY, next.posZ);
+				Drawing.drawing.setColor(0, 0, 0);
+				Drawing.drawing.addInterfaceVertex(next.posX - next.oX * s2, next.posY - next.oY * s2, next.posZ);
+
+				Drawing.drawing.setColor(0, 0, 0);
+				Drawing.drawing.addInterfaceVertex(this.posX - this.oX * s, this.posY - this.oY * s, this.posZ);
+
+				this.next.drawGlow();
+			}
+			else
+			{
+				double angle = Movable.getPolarDirection(this.oX, this.oY);
+
+				int sides = 12;
+				for (int i = 0; i < sides; i++)
+				{
+					double a1 = angle - Math.PI * i / sides;
+					double a2 = angle - Math.PI * (i + 1) / sides;
+
+					Drawing.drawing.setColor(0, 0, 0);
+					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a1) * s / 2, this.posY + Math.sin(a1) * s / 2, this.posZ);
+					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a2) * s / 2, this.posY + Math.sin(a2) * s / 2, this.posZ);
+					Drawing.drawing.setColor(firework.colorR * a, firework.colorG * a, firework.colorB * a);
+					Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
+				}
+			}
+		}
+	}
 }

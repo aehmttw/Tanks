@@ -125,7 +125,10 @@ public class ScreenPartyLobby extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
-		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Party IP Address: " + Client.currentHost + " (Port: " + Client.currentPort + ")");
+		if (Client.handler.steamID == null)
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Party IP Address: " + Client.currentHost + " (Port: " + Client.currentPort + ")");
+		else
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Connected to party via Steam Peer-to-Peer");
 
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
 

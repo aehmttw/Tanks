@@ -7,6 +7,7 @@ import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankMimic;
 import tanks.tank.TankRemote;
+import tanks.tank.Turret;
 
 public class EventTankMimicTransform extends PersonalEvent
 {
@@ -37,10 +38,6 @@ public class EventTankMimicTransform extends PersonalEvent
             Tank t1 = Game.registryTank.getEntry(type).getTank(t.posX, t.posY, t.angle);
             Tank.freeIDs.add(t1.networkID);
 
-            double r = t.turret.colorR;
-            double g = t.turret.colorG;
-            double b = t.turret.colorB;
-
             ((TankRemote) t).copyTank(t1);
             ((TankRemote) t).invisible = false;
 
@@ -49,12 +46,13 @@ public class EventTankMimicTransform extends PersonalEvent
                 t.colorR = 0;
                 t.colorG = 150;
                 t.colorB = 255;
+
+                t.turret.colorR = Turret.calculateSecondaryColor(t.colorR);
+                t.turret.colorG = Turret.calculateSecondaryColor(t.colorG);
+                t.turret.colorB = Turret.calculateSecondaryColor(t.colorB);
+
                 t.colorModel = Tank.color_model;
             }
-
-            t.turret.colorR = r;
-            t.turret.colorG = g;
-            t.turret.colorB = b;
 
             if (!(t1 instanceof TankMimic))
             {

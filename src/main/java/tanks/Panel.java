@@ -157,7 +157,7 @@ public class Panel
 
 			for (int i = 1; i <= 5; i++)
 			{
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/tomato_feast_" + i + ".ogg", "menu");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_" + i + ".ogg", "menu");
 			}
 
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_options.ogg", "menu");
@@ -410,6 +410,9 @@ public class Panel
 			Game.game.input.fullscreen.invalidate();
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
+
+		if (Game.steamNetworkHandler.initialized)
+			Game.steamNetworkHandler.update();
 
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 		{

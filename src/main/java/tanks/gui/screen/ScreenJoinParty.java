@@ -1,8 +1,11 @@
 package tanks.gui.screen;
 
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.event.EventSendClientDetails;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
@@ -41,6 +44,15 @@ public class ScreenJoinParty extends Screen
 		}
 	}
 	);
+
+	Button steam = new Button(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Join Steam friends", new Runnable()
+	{
+		public void run()
+		{
+			Game.screen = new ScreenJoinSteamFriends((ScreenJoinParty) Game.screen);
+		}
+	}
+	);
 	
 	Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
 	{
@@ -53,7 +65,89 @@ public class ScreenJoinParty extends Screen
 			ScreenPartyLobby.chat.clear();
 			ScreenPartyLobby.sharedLevels.clear();
 
+			ScreenPartyLobby.connections.clear();
 			Game.eventsOut.clear();
+
+			if (ip.inputText.startsWith("steam:") && Game.steamNetworkHandler.initialized)
+			{
+				Client.connectionID = UUID.randomUUID();
+				int id = 0;
+
+				try
+				{
+					id = Integer.parseInt(ip.inputText.substring("steam:".length()));
+				}
+				catch (Exception e)
+				{
+					ScreenConnecting s = new ScreenConnecting(clientThread);
+					Game.screen = s;
+
+					s.text = "Failed to connect";
+					s.exception = e.getLocalizedMessage();
+					s.finished = true;
+
+					s.music = "menu_1.ogg";
+					Drawing.drawing.playSound("leave.ogg");
+
+					Panel.forceRefreshMusic = true;
+				}
+
+				SteamID target = Game.steamNetworkHandler.send(id, new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+
+				clientThread = new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						UUID connectionID = Client.connectionID;
+						ScreenConnecting s = new ScreenConnecting(clientThread);
+						Game.screen = s;
+						s.steamID = target;
+
+						while (true)
+						{
+							if (target == null)
+							{
+								sendToFail(s, connectionID);
+								break;
+							}
+
+							SteamNetworking.P2PSessionState state = new SteamNetworking.P2PSessionState();
+							Game.steamNetworkHandler.networking.getP2PSessionState(target, state);
+
+							if (!state.isConnecting() && !state.isConnectionActive())
+							{
+								sendToFail(s, connectionID);
+								break;
+							}
+
+							if (state.isConnectionActive())
+								break;
+						}
+					}
+
+					public void sendToFail(ScreenConnecting s, UUID connectionID)
+					{
+						if (Game.screen == s && Client.connectionID == connectionID)
+						{
+							s.text = "Failed to connect";
+							s.finished = true;
+
+							s.music = "menu_1.ogg";
+							Drawing.drawing.playSound("leave.ogg");
+
+							Panel.forceRefreshMusic = true;
+						}
+					}
+
+				});
+
+				clientThread.setDaemon(true);
+				clientThread.start();
+
+				return;
+			}
+
 			clientThread = new Thread(new Runnable()
 			{
 
@@ -129,6 +223,9 @@ public class ScreenJoinParty extends Screen
 		ip.update();
 		join.update();
 		back.update();
+
+		if (Game.steamNetworkHandler.initialized)
+			steam.update();
 	}
 
 	@Override
@@ -138,6 +235,9 @@ public class ScreenJoinParty extends Screen
 		join.draw();
 		ip.draw();
 		back.draw();
+
+		if (Game.steamNetworkHandler.initialized)
+			steam.draw();
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);

@@ -109,6 +109,7 @@ public class Firework extends Movable
 			{
 				this.position = new FireworkPosition(this);
 				this.lastPosition = this.position;
+				this.position.isFirst = true;
 			}
 
 			if (!this.exploded)
@@ -310,6 +311,7 @@ public class Firework extends Movable
 		public double posY;
 		public double posZ;
 		public double age;
+		public boolean isFirst = false;
 
 		public double oX;
 		public double oY;
@@ -377,15 +379,21 @@ public class Firework extends Movable
 
 				this.next.draw();
 			}
-			else
+
+			if (next == null || isFirst)
 			{
+				int sign = 1;
+
+				if (next == null)
+					sign = -1;
+
 				double angle = Movable.getPolarDirection(this.oX, this.oY);
 
 				int sides = 12;
 				for (int i = 0; i < sides; i++)
 				{
-					double a1 = angle - Math.PI * i / sides;
-					double a2 = angle - Math.PI * (i + 1) / sides;
+					double a1 = angle + Math.PI * i / sides * sign;
+					double a2 = angle + Math.PI * (i + 1) / sides * sign;
 
 					Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a * Math.max(0, Math.min(255, 255 - (this.age * 255.0 / this.maxAge))));
 					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a1) * s / 2, this.posY + Math.sin(a1) * s / 2, this.posZ);
@@ -449,15 +457,21 @@ public class Firework extends Movable
 
 				this.next.drawGlow();
 			}
-			else
+
+			if (next == null || isFirst)
 			{
+				int sign = 1;
+
+				if (next == null)
+					sign = -1;
+
 				double angle = Movable.getPolarDirection(this.oX, this.oY);
 
 				int sides = 12;
 				for (int i = 0; i < sides; i++)
 				{
-					double a1 = angle - Math.PI * i / sides;
-					double a2 = angle - Math.PI * (i + 1) / sides;
+					double a1 = angle + Math.PI * i / sides * sign;
+					double a2 = angle + Math.PI * (i + 1) / sides * sign;
 
 					Drawing.drawing.setColor(0, 0, 0);
 					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a1) * s / 2, this.posY + Math.sin(a1) * s / 2, this.posZ);

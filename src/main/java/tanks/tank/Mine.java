@@ -213,7 +213,7 @@ public class Mine extends Movable
                 Movable o = Game.movables.get(i);
                 if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
                 {
-                    if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable)
+                    if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable && !((Tank) o).resistExplosions)
                     {
                         if (!(Team.isAllied(this, o) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
                         {

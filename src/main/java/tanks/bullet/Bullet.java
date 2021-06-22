@@ -194,7 +194,7 @@ public class Bullet extends Movable implements IDrawable
 		if (!heavy)
 			this.destroy = true;
 
-		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable && this.tankInside != t && !ScreenGame.finishedQuick)
+		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable && this.tankInside != t && !ScreenGame.finishedQuick && !t.resistBullets)
 		{
 			t.flashAnimation = 1;
 			if (!this.heavy)

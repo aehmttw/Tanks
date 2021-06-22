@@ -255,51 +255,30 @@ public class ScreenChangelog extends Screen
                                     "Several bug fixes and other minor improvements"
                     });
 
-            new Changelog("v1.2.a", new String[]
+            new Changelog("v1.2.0", new String[]
                     {
-                            "*What's new in Tanks v1.2.a:\n\n" +
+                            "*What's new in Tanks v1.2.0:\n\n" +
                                     "*New features:\n\n" +
                                     "Added light pink tank which gets angry when it sees you\n" +
                                     "Added mimic tank which mimics the behavior a nearby tank\n" +
-                                    "Dummy tanks can be now used in the level editor\n\n" +
-                                    "*Balancing:\n\n" +
-                                    "Blue tank electricity now only arcs between 4 targets (from 6)\n" +
-                                    "Cyan tank freeze duration decreased by 1 second\n\n" +
-                                    "...and the usual bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.2.b", new String[]
-                    {
-                            "*What's new in Tanks v1.2.b:\n\n" +
-                                    "You can now override the game's default resources\n" +
-                                    "Level editor code upgraded behind-the-scenes\n" +
-                                    "Several bug fixes and other minor improvements\n\n" +
-                                    "WARNING! The level editor's code has heavily changed!\n" +
-                                    "Due to bugs, levels you open may be corrupted - be careful!"
-                    });
-
-            new Changelog("v1.2.c", new String[]
-                    {
-                            "*What's new in Tanks v1.2.c:\n\n" +
-                                    "Fixed bugs with the level editor and mimic tanks"
-                    });
-
-            new Changelog("v1.2.d", new String[]
-                    {
-                            "*What's new in Tanks v1.2.d:\n\n" +
+                                    "Dummy tanks can be now used in the level editor\n" +
                                     "Added support for Steam peer-to-peer multiplayer\n" +
+                                    "You can now override the game's default resources\n\n" +
+
+                                    "*Balancing:\n\n" +
+                                    "Tanks no longer take damage after the battle has ended\n" +
+                                    "Blue tank electricity now only arcs between 4 targets (from 6)\n" +
+                                    "Cyan tank freeze duration decreased by 1 second\n" +
+                                    "Large timed levels have longer timers\n" +
+                                    "Orangered tank is now immune to explosion damage\n\n",
+
+                                    "*More:\n\n" +
                                     "Improved the crusade editor level edit menu\n" +
                                     "Changed light block appearance\n" +
-                                    "Several other bug fixes and improvements"
-                    });
-
-            new Changelog("v1.2.e", new String[]
-                    {
-                            "*What's new in Tanks v1.2.e:\n\n" +
                                     "Fireworks are more varied and prettier!\n" +
-                                    "Tanks no longer take damage after the battle has ended\n" +
+                                    "Medic tank cross is now green\n" +
                                     "Performance improvements\n" +
-                                    "A multitude of other bug fixes and improvements"
+                                    "...and, of course, bug fixes and other improvements"
                     });
         }
     }

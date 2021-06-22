@@ -32,6 +32,8 @@ public class TankOrangeRed extends TankAIControlled
         this.enablePathfinding = true;
         this.ignoreDestructible = true;
         this.enableDefensiveFiring = true;
+        this.resistExplosions = true;
+        this.enableMineAvoidance = false;
 
         this.coinValue = 4;
 

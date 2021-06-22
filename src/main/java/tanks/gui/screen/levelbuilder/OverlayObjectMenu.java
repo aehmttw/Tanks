@@ -345,10 +345,15 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
 
         if (this.screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.enemyTank || this.screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.playerTank)
         {
-            if (screenLevelBuilder.teamNum == screenLevelBuilder.teams.size())
+            int teamNum = screenLevelBuilder.teamNum;
+
+            if (screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.playerTank)
+                teamNum = screenLevelBuilder.playerTeamNum;
+
+            if (teamNum == screenLevelBuilder.teams.size())
                 this.selectTeam.text = "No team";
             else
-                this.selectTeam.text = "Team: " + screenLevelBuilder.teams.get(screenLevelBuilder.teamNum).name;
+                this.selectTeam.text = "Team: " + screenLevelBuilder.teams.get(teamNum).name;
 
             this.selectTeam.draw();
             this.rotateTankButton.draw();
@@ -358,11 +363,6 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
 
         if (this.screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.playerTank)
         {
-            if (screenLevelBuilder.playerTeamNum == screenLevelBuilder.teams.size())
-                this.selectTeam.text = "No team";
-            else
-                this.selectTeam.text = "Team: " + screenLevelBuilder.teams.get(screenLevelBuilder.playerTeamNum).name;
-
             this.playerSpawnsButton.draw();
             this.movePlayerButton.draw();
 

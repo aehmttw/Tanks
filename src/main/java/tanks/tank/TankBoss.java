@@ -115,7 +115,7 @@ public class TankBoss extends TankAIControlled
 		
 		RegistryTank.TankEntry e = Game.registryTank.getEntry(this.name);
 
-		while (e.name.equals(this.name) && !e.isBoss)
+		while (e.name.equals(this.name) || e.isBoss)
 		{
 			e = Game.registryTank.getRandomTank();
 		}

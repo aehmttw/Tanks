@@ -173,6 +173,9 @@ public abstract class Screen
 							if (j < Game.currentSizeY - 1)
 								extra = Math.max(extra, -Game.game.heightGrid[i][j + 1]);
 
+							if (extra != 0)
+								o = 1;
+
 							if (size != 1)
 								Drawing.drawing.fillBox(
 										(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,

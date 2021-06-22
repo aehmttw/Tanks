@@ -509,7 +509,7 @@ public class LevelGeneratorVersus
 			}
 		}
 
-		if (dark)
+		if (dark && Game.framework != Game.Framework.libgdx)
 		{
 			for (int j = 0; j < numLights; j++)
 			{

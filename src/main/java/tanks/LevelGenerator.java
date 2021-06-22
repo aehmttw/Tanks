@@ -76,6 +76,8 @@ public class LevelGenerator
 
 		if (Math.random() > 0.2)
 			time = 0;
+		else
+			time += 45 * (size / Game.levelSize - 1);
 
 		double light = 100;
 		double shadeFactor = 0.5;
@@ -506,7 +508,7 @@ public class LevelGenerator
 			}
 		}
 
-		if (dark)
+		if (dark && Game.framework != Game.Framework.libgdx)
 		{
 			for (int j = 0; j < numLights; j++)
 			{

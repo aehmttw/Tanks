@@ -5,6 +5,7 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenSavedLevels;
+import tanks.rpc.RichPresenceEvent;
 
 public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
 {
@@ -23,6 +24,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         public void run()
         {
             screenLevelBuilder.play();
+            Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CUSTOM_LEVEL);
         }
     }
     );
@@ -72,6 +74,8 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
             delete.posY -= 60;
             quit.posY -= 60;
         }
+
+        Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.LEVEL_EDITOR);
 
     }
 

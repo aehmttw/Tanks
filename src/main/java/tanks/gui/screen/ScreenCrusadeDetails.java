@@ -4,6 +4,7 @@ import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.rpc.RichPresenceEvent;
 
 public class ScreenCrusadeDetails extends Screen
 {
@@ -18,6 +19,7 @@ public class ScreenCrusadeDetails extends Screen
             Crusade.crusadeMode = true;
             Crusade.currentCrusade.begin();
             Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CRUSADE);
         }
     });
 
@@ -30,6 +32,7 @@ public class ScreenCrusadeDetails extends Screen
             Crusade.crusadeMode = true;
             Crusade.currentCrusade.loadLevel();
             Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CRUSADE);
         }
     });
 
@@ -42,6 +45,7 @@ public class ScreenCrusadeDetails extends Screen
             Crusade.crusadeMode = true;
             Crusade.currentCrusade.begin();
             Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CRUSADE);
         }
     });
 

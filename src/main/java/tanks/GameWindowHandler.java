@@ -12,6 +12,8 @@ public class GameWindowHandler implements IWindowHandler
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.exit();
 
+		Game.game.discordRPC.exit();
+
 		if (ScreenPartyHost.isServer)
 		{
 			ScreenPartyHost.server.close("The party host has closed their game");

@@ -8,6 +8,7 @@ import tanks.gui.Selector;
 import tanks.gui.TextBox;
 import tanks.hotbar.item.Item;
 import tanks.registry.RegistryItem;
+import tanks.rpc.RichPresenceEvent;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         {
             save();
             Game.screen = new ScreenCrusadeDetails(new Crusade(Game.game.fileManager.getFile(crusade.fileName), crusade.name));
+            Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CRUSADE_SELECT);
         }
     }
     );
@@ -274,6 +276,8 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         this.refreshItemButtons();
 
         this.levelButtons.indexPrefix = true;
+
+        Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CRUSADE_EDITOR);
     }
 
     public void refreshLevelButtons()

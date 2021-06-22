@@ -7,6 +7,7 @@ import tanks.Movable;
 import tanks.Panel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
+import tanks.rpc.RichPresenceEvent;
 import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 
@@ -50,6 +51,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			Game.silentCleanUp();
 			Game.screen = new ScreenOptions();
+			Game.game.discordRPC.update(RichPresenceEvent.OPTIONS_MENU);
 		}
 	}
 			);
@@ -119,6 +121,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		this.music = "menu_1.ogg";
 		this.musicID = "menu";
+
+		if (Game.game.discordRPC != null)
+			Game.game.discordRPC.update(RichPresenceEvent.TITLE_SCREEN);
 	}
 	
 	@Override

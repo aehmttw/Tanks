@@ -119,6 +119,13 @@ public class ScreenOptions extends Screen
 	}
 	);
 
+	Button presenceOptions = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Discord Rich Presence", new Runnable() {
+		@Override
+		public void run() {
+			Game.screen = new ScreenOptionsPresence();
+		}
+	});
+
 
 	@Override
 	public void update()
@@ -131,6 +138,8 @@ public class ScreenOptions extends Screen
 		inputOptions.update();
 		multiplayerOptions.update();
 
+		presenceOptions.update();
+
 		back.update();
 	}
 
@@ -139,6 +148,7 @@ public class ScreenOptions extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
+		presenceOptions.draw();
 		multiplayerOptions.draw();
 		inputOptions.draw();
 		graphicsOptions.draw();
@@ -219,6 +229,7 @@ public class ScreenOptions extends Screen
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
+			f.println("enable_presence=" + Game.game.presenceEnabled);
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -382,7 +393,9 @@ public class ScreenOptions extends Screen
 					case "auto_load_extensions":
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
 						break;
-
+					case "enable_presence":
+						Game.game.presenceEnabled = Boolean.parseBoolean(optionLine[1]);
+						break;
 				}
 			}
 			f.stopReading();

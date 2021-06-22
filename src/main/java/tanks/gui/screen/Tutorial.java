@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.ModelPart;
 import tanks.*;
+import tanks.rpc.RichPresenceEvent;
 import tanks.tank.*;
 
 public class Tutorial
@@ -23,6 +24,7 @@ public class Tutorial
 
     public void loadTutorial(boolean initial, boolean touchscreen)
     {
+        Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.TUTORIAL);
         Level l = new Level("{50,18,235,207,166,20,20,20|" +
                 "27-10...14,37-7...11,12-0...13-hard,13...22-7-hard,27-0...9-hard,27-15...17-hard,37-0...6-hard,37-12...17-hard,23...26-7-hole|" +
                 "47-9-gray-2,5-7-player-1}");

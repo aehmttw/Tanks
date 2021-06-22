@@ -1,12 +1,15 @@
 package tanks.gui.screen;
 
 import tanks.*;
+import tanks.event.EventPartyRpcUpdate;
 import tanks.event.EventPlayerChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
+import tanks.rpc.RichPresence;
+import tanks.rpc.RichPresenceEvent;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -39,6 +42,8 @@ public class ScreenPartyHost extends Screen
     public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
     public SynchronizedList<SharedCrusade> sharedCrusades = new SynchronizedList<>();
 
+    public boolean updateStatus = false;
+
     Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Random level", new Runnable()
     {
         @Override
@@ -46,6 +51,9 @@ public class ScreenPartyHost extends Screen
         {
             Game.reset();
             Game.screen = new ScreenGame();
+
+            Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER, RichPresenceEvent.RANDOM_LEVEL);
+            Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.RANDOM_LEVEL));
         }
     }
             , "Generate a random level to play");
@@ -84,6 +92,9 @@ public class ScreenPartyHost extends Screen
             ScreenGame.versus = true;
 
             Game.screen = new ScreenGame();
+
+            Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER, RichPresenceEvent.VERSUS);
+            Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.VERSUS));
         }
     }
             , "Fight other players in this party---in a randomly generated level");
@@ -97,6 +108,8 @@ public class ScreenPartyHost extends Screen
                 Game.screen = new ScreenPartyCrusades();
             else
                 Game.screen = new ScreenPartyResumeCrusade();
+            Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER, RichPresenceEvent.CRUSADE);
+            Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.CRUSADE));
         }
     },
             "Fight battles in an order,---and see how long you can survive!");
@@ -107,6 +120,8 @@ public class ScreenPartyHost extends Screen
         public void run()
         {
             Game.screen = new ScreenPlaySavedLevels();
+            Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER, RichPresenceEvent.LEVEL_SELECT);
+            Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.LEVEL_SELECT));
         }
     },
             "Play levels you have created");
@@ -269,6 +284,13 @@ public class ScreenPartyHost extends Screen
             {
                 this.kickButtons[i].update();
             }
+        }
+
+        if (Game.screen != this) {
+            this.updateStatus = true; // update shouldn't get called until the screen switches back again
+        } else if (this.updateStatus) {
+            Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER);
+            Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.IDLE));
         }
     }
 

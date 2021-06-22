@@ -7,6 +7,7 @@ import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.screen.levelbuilder.OverlayEditorMenu;
 import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.rpc.RichPresenceEvent;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -55,9 +56,13 @@ public class ScreenSavedLevels extends Screen
 						s.level = Game.currentLevel;
 						s.paused = true;
 						Game.screen = new OverlayEditorMenu(s, s);
+
+						Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.LEVEL_EDITOR);
 					}
 				},
 				(file) -> "Last opened---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+
+		Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.LEVEL_SELECT);
 	}
 
 	@Override

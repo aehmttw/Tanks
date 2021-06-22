@@ -97,7 +97,16 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
+	<repositories>
+		<repository>
+			<!-- Needed for java-discord-rpc -->
+			<id>jcenter</id>
+			<url>https://jcenter.bintray.com</url>
+			<name>jcenter-bintray</name>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>io.netty</groupId>
@@ -182,6 +191,12 @@
 			<groupId>com.code-disaster.steamworks4j</groupId>
 			<artifactId>steamworks4j</artifactId>
 			<version>1.8.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>club.minnced</groupId>
+			<artifactId>java-discord-rpc</artifactId>
+			<version>2.0.2</version>
 		</dependency>
 	</dependencies>
 </project>

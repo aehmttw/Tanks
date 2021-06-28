@@ -37,6 +37,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 				Game.game.window.windowHandler.onWindowClose();
 
+				ScreenOptions.saveOptions(Game.homedir);
+
 				System.exit(0);
 			}
 		}

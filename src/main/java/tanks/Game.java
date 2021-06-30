@@ -208,6 +208,11 @@ public class Game
 	public static String homedir;
 	public static Game game = new Game();
 
+	// Note: this is not used by the game to determine fullscreen status
+	// It is simply a value defined before
+	// Refer to Game.game.window.fullscreen for true fullscreen status
+	public boolean fullscreen = false;
+
 	private Game()
 	{
 		Game.game = this;

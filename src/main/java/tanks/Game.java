@@ -11,7 +11,8 @@ import tanks.gui.ChatFilter;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
-import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.gui.screen.levelbuilder.OverlayEditorMenu;
+import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.*;
@@ -70,6 +71,9 @@ public class Game
 	public static Team playerTeam = new Team("ally");
 	public static Team enemyTeam = new Team("enemy");
 
+	public static Team playerTeamNoFF = new Team("ally", false);
+	public static Team enemyTeamNoFF = new Team("enemy", false);
+
 	// Use this if you want to spawn a mine not allied with any tank, or such
 	public static Tank dummyTank = new TankDummy("dummy",0, 0, 0);
 
@@ -86,8 +90,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.2.0";
-	public static final int network_protocol = 33;
+	public static final String version = "Tanks v1.2.1";
+	public static final int network_protocol = 35;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -150,7 +154,11 @@ public class Game
 	public static int shadowQuality = 10;
 
 	public static boolean autostart = true;
+	public static boolean autoReady = false;
 	public static double startTime = 400;
+
+	public static double partyStartTime = 400;
+	public static boolean disablePartyFriendlyFire = false;
 
 	public static Screen lastOfflineScreen = null;
 
@@ -211,6 +219,7 @@ public class Game
 	// Note: this is not used by the game to determine fullscreen status
 	// It is simply a value defined before
 	// Refer to Game.game.window.fullscreen for true fullscreen status
+	// Value is set before Game.game.window is initialized
 	public boolean fullscreen = false;
 
 	private Game()
@@ -245,6 +254,8 @@ public class Game
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
+		NetworkEventMap.register(EventPlayerAutoReady.class);
+		NetworkEventMap.register(EventPlayerAutoReadyConfirm.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
@@ -769,9 +780,11 @@ public class Game
 
 		System.gc();
 
-		ScreenLevelBuilder s = new ScreenLevelBuilder(name, Game.currentLevel);
+		ScreenLevelEditor s = new ScreenLevelEditor(name, Game.currentLevel);
 		Game.loadLevel(game.fileManager.getFile(Game.homedir + levelDir + "/" + name), s);
-		Game.screen = s;
+		s.paused = true;
+
+		Game.screen = new OverlayEditorMenu(s, s);
 	}
 
 	public static void exitToCrash(Throwable e)

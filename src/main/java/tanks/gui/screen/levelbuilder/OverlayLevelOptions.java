@@ -26,7 +26,7 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptionsColor(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptionsColor(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -36,7 +36,7 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptionsSize(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptionsSize(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -46,7 +46,7 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptionsTimer(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptionsTimer(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -56,7 +56,7 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptionsLighting(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptionsLighting(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -66,7 +66,7 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptionsTeams(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptionsTeams(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -76,21 +76,21 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptionsItems(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptionsItems(Game.screen, screenLevelEditor);
         }
     }
     );
 
-    public OverlayLevelOptions(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptions(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         levelName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Level name", new Runnable()
         {
             @Override
             public void run()
             {
-                BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelBuilder.name);
+                BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelEditor.name);
 
                 String input = levelName.inputText.replace(" ", "_");
                 if (levelName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + input + ".tanks").exists())
@@ -105,19 +105,19 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
                         file.delete();
                     }
 
-                    screenLevelBuilder.name = input + ".tanks";
+                    screenLevelEditor.name = input + ".tanks";
 
                     //screenLevelBuilder.reload(false);
                 }
                 else
                 {
-                    levelName.inputText =  screenLevelBuilder.name.split("\\.")[0].replace("_", " ");
+                    levelName.inputText =  screenLevelEditor.name.split("\\.")[0].replace("_", " ");
                 }
 
             }
 
         }
-                ,  screenLevelBuilder.name.split("\\.")[0].replace("_", " "));
+                ,  screenLevelEditor.name.split("\\.")[0].replace("_", " "));
 
         levelName.enableCaps = true;
 
@@ -155,7 +155,7 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         this.colorOptions.draw();
         this.sizeOptions.draw();
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level options");

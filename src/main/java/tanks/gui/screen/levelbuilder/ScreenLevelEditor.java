@@ -17,7 +17,7 @@ import tanks.tank.TankSpawnMarker;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
+public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
 	public ArrayList<Action> actions = new ArrayList<Action>();
 	public ArrayList<Action> redoActions = new ArrayList<Action>();
@@ -83,7 +83,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			paused = true;
-			Game.screen = new OverlayEditorMenu(Game.screen, (ScreenLevelBuilder) Game.screen);
+			Game.screen = new OverlayEditorMenu(Game.screen, (ScreenLevelEditor) Game.screen);
 		}
 	}, "Level menu (" + Game.game.input.editorPause.getInputs() + ")"
 	);
@@ -95,7 +95,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		{
 			paused = true;
 			objectMenu = true;
-			Game.screen = new OverlayObjectMenu(Game.screen, (ScreenLevelBuilder) Game.screen);
+			Game.screen = new OverlayObjectMenu(Game.screen, (ScreenLevelEditor) Game.screen);
 		}
 	}, "Object menu (" + Game.game.input.editorObjectMenu.getInputs() + ")"
 	);
@@ -212,7 +212,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			paused = true;
-			Game.screen = new OverlayRotateTank(Game.screen, (ScreenLevelBuilder) Game.screen);
+			Game.screen = new OverlayRotateTank(Game.screen, (ScreenLevelEditor) Game.screen);
 		}
 	}, "Tank orientation (" + Game.game.input.editorRotate.getInputs() + ")"
 	);
@@ -223,7 +223,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			paused = true;
-			Game.screen = new OverlaySelectTeam(Game.screen, (ScreenLevelBuilder) Game.screen);
+			Game.screen = new OverlaySelectTeam(Game.screen, (ScreenLevelEditor) Game.screen);
 		}
 	}, "Tank team (" + Game.game.input.editorTeam.getInputs() + ")"
 	);
@@ -234,7 +234,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			paused = true;
-			Game.screen = new OverlayBlockHeight(Game.screen, (ScreenLevelBuilder) Game.screen);
+			Game.screen = new OverlayBlockHeight(Game.screen, (ScreenLevelEditor) Game.screen);
 		}
 	}, "Block height (" + Game.game.input.editorHeight.getInputs() + ")"
 	);
@@ -245,7 +245,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			paused = true;
-			Game.screen = new OverlayBlockGroupID(Game.screen, (ScreenLevelBuilder) Game.screen);
+			Game.screen = new OverlayBlockGroupID(Game.screen, (ScreenLevelEditor) Game.screen);
 		}
 	}, "Block group ID (" + Game.game.input.editorGroupID.getInputs() + ")"
 	);
@@ -292,7 +292,7 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 	@SuppressWarnings("unchecked")
 	protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
-	public ScreenLevelBuilder(String lvlName, Level level)
+	public ScreenLevelEditor(String lvlName, Level level)
 	{
 		if (Game.game.window.touchscreen)
 			controlsSizeMultiplier = 1.0;
@@ -2177,13 +2177,13 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 
 		static class ActionPlayerSpawn extends Action
 		{
-			public ScreenLevelBuilder screenLevelBuilder;
+			public ScreenLevelEditor screenLevelEditor;
 			public boolean add;
 			public TankSpawnMarker tank;
 
-			public ActionPlayerSpawn(ScreenLevelBuilder s, TankSpawnMarker t, boolean add)
+			public ActionPlayerSpawn(ScreenLevelEditor s, TankSpawnMarker t, boolean add)
 			{
-				this.screenLevelBuilder = s;
+				this.screenLevelEditor = s;
 				this.tank = t;
 				this.add = add;
 			}
@@ -2194,12 +2194,12 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				if (add)
 				{
 					Game.removeMovables.add(this.tank);
-					screenLevelBuilder.spawns.remove(this.tank);
+					screenLevelEditor.spawns.remove(this.tank);
 				}
 				else
 				{
 					Game.movables.add(this.tank);
-					screenLevelBuilder.spawns.add(this.tank);
+					screenLevelEditor.spawns.add(this.tank);
 				}
 			}
 
@@ -2209,25 +2209,25 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 				if (!add)
 				{
 					Game.removeMovables.add(this.tank);
-					screenLevelBuilder.spawns.remove(this.tank);
+					screenLevelEditor.spawns.remove(this.tank);
 				}
 				else
 				{
 					Game.movables.add(this.tank);
-					screenLevelBuilder.spawns.add(this.tank);
+					screenLevelEditor.spawns.add(this.tank);
 				}
 			}
 		}
 
 		static class ActionMovePlayer extends Action
 		{
-			public ScreenLevelBuilder screenLevelBuilder;
+			public ScreenLevelEditor screenLevelEditor;
 			public ArrayList<TankSpawnMarker> oldSpawns;
 			public TankSpawnMarker newSpawn;
 
-			public ActionMovePlayer(ScreenLevelBuilder s, ArrayList<TankSpawnMarker> o, TankSpawnMarker n)
+			public ActionMovePlayer(ScreenLevelEditor s, ArrayList<TankSpawnMarker> o, TankSpawnMarker n)
 			{
-				this.screenLevelBuilder = s;
+				this.screenLevelEditor = s;
 				this.oldSpawns = o;
 				this.newSpawn = n;
 			}
@@ -2236,11 +2236,11 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			public void undo()
 			{
 				Game.removeMovables.add(newSpawn);
-				screenLevelBuilder.spawns.clear();
+				screenLevelEditor.spawns.clear();
 
 				for (TankSpawnMarker t: oldSpawns)
 				{
-					screenLevelBuilder.spawns.add(t);
+					screenLevelEditor.spawns.add(t);
 					Game.movables.add(t);
 				}
 			}
@@ -2250,23 +2250,23 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			{
 				Game.removeMovables.addAll(oldSpawns);
 
-				screenLevelBuilder.spawns.clear();
+				screenLevelEditor.spawns.clear();
 
 				Game.movables.add(newSpawn);
-				screenLevelBuilder.spawns.add(newSpawn);
+				screenLevelEditor.spawns.add(newSpawn);
 			}
 		}
 
 		static class ActionSelectTiles extends Action
 		{
-			public ScreenLevelBuilder screenLevelBuilder;
+			public ScreenLevelEditor screenLevelEditor;
 			public ArrayList<Integer> x;
 			public ArrayList<Integer> y;
 			public boolean select;
 
-			public ActionSelectTiles(ScreenLevelBuilder s, boolean select, ArrayList<Integer> x, ArrayList<Integer> y)
+			public ActionSelectTiles(ScreenLevelEditor s, boolean select, ArrayList<Integer> x, ArrayList<Integer> y)
 			{
-				this.screenLevelBuilder = s;
+				this.screenLevelEditor = s;
 				this.select = select;
 				this.x = x;
 				this.y = y;
@@ -2277,10 +2277,10 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			{
 				for (int i = 0; i < this.x.size(); i++)
 				{
-					screenLevelBuilder.selectedTiles[this.x.get(i)][this.y.get(i)] = !select;
+					screenLevelEditor.selectedTiles[this.x.get(i)][this.y.get(i)] = !select;
 				}
 
-				screenLevelBuilder.refreshSelection();
+				screenLevelEditor.refreshSelection();
 			}
 
 			@Override
@@ -2288,21 +2288,21 @@ public class ScreenLevelBuilder extends Screen implements ILevelPreviewScreen
 			{
 				for (int i = 0; i < this.x.size(); i++)
 				{
-					screenLevelBuilder.selectedTiles[this.x.get(i)][this.y.get(i)] = select;
+					screenLevelEditor.selectedTiles[this.x.get(i)][this.y.get(i)] = select;
 				}
 
-				screenLevelBuilder.refreshSelection();
+				screenLevelEditor.refreshSelection();
 			}
 		}
 
 		static class ActionGroup extends Action
 		{
-			public ScreenLevelBuilder screenLevelBuilder;
+			public ScreenLevelEditor screenLevelEditor;
 			public ArrayList<Action> actions;
 
-			public ActionGroup(ScreenLevelBuilder s, ArrayList<Action> actions)
+			public ActionGroup(ScreenLevelEditor s, ArrayList<Action> actions)
 			{
-				this.screenLevelBuilder = s;
+				this.screenLevelEditor = s;
 				this.actions = actions;
 			}
 

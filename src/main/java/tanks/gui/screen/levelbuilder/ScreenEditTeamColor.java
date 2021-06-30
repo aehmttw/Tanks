@@ -39,9 +39,9 @@ public class ScreenEditTeamColor extends ScreenLevelBuilderOverlay
     }
     );
 
-    public ScreenEditTeamColor(Screen previous, ScreenLevelBuilder screenLevelBuilder, Team team)
+    public ScreenEditTeamColor(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
         this.team = team;
 
         if (team.enableColor)
@@ -169,7 +169,7 @@ public class ScreenEditTeamColor extends ScreenLevelBuilderOverlay
 
         teamColorEnabled.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Team color: " + this.team.name);
     }
 }

@@ -15,7 +15,7 @@ public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayEditLevelShop(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayEditLevelShop(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -25,7 +25,7 @@ public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayEditLevelStartingItems(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayEditLevelStartingItems(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -40,9 +40,9 @@ public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlayLevelOptionsItems(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptionsItems(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         editCoins = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Starting coins", new Runnable()
         {
@@ -52,11 +52,11 @@ public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
                 if (editCoins.inputText.length() <= 0)
                     editCoins.inputText = "0";
 
-                screenLevelBuilder.level.startingCoins = Integer.parseInt(editCoins.inputText);
+                screenLevelEditor.level.startingCoins = Integer.parseInt(editCoins.inputText);
             }
 
         }
-                ,  screenLevelBuilder.level.startingCoins + "");
+                ,  screenLevelEditor.level.startingCoins + "");
 
         editCoins.allowLetters = false;
         editCoins.allowSpaces = false;
@@ -78,7 +78,7 @@ public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
     {
         super.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Items");
         this.editCoins.draw();
         this.editShop.draw();

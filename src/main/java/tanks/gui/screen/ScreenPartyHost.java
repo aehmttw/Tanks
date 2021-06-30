@@ -30,7 +30,7 @@ public class ScreenPartyHost extends Screen
 
     public static int entries_per_page = 10;
     public static int username_spacing = 30;
-    public static int username_y_offset = -180;
+    public static int username_y_offset = -240;
 
     public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 
@@ -39,7 +39,7 @@ public class ScreenPartyHost extends Screen
     public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
     public SynchronizedList<SharedCrusade> sharedCrusades = new SynchronizedList<>();
 
-    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Random level", new Runnable()
+    Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 240, this.objWidth, this.objHeight, "Random level", new Runnable()
     {
         @Override
         public void run()
@@ -72,7 +72,7 @@ public class ScreenPartyHost extends Screen
     }
     );
 
-    Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Versus", new Runnable()
+    Button versus = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Versus", new Runnable()
     {
         @Override
         public void run()
@@ -88,7 +88,7 @@ public class ScreenPartyHost extends Screen
     }
             , "Fight other players in this party---in a randomly generated level");
 
-    Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Crusades", new Runnable()
+    Button crusades = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Crusades", new Runnable()
     {
         @Override
         public void run()
@@ -101,7 +101,7 @@ public class ScreenPartyHost extends Screen
     },
             "Fight battles in an order,---and see how long you can survive!");
 
-    Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "My levels", new Runnable()
+    Button myLevels = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "My levels", new Runnable()
     {
         @Override
         public void run()
@@ -111,7 +111,7 @@ public class ScreenPartyHost extends Screen
     },
             "Play levels you have created");
 
-    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Upload", new Runnable()
+    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 40, this.objWidth, this.objHeight, "Upload", new Runnable()
     {
         @Override
         public void run()
@@ -120,12 +120,22 @@ public class ScreenPartyHost extends Screen
         }
     });
 
-    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Download", new Runnable()
+    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 100, this.objWidth, this.objHeight, "Download", new Runnable()
     {
         @Override
         public void run()
         {
             Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades);
+        }
+    }
+    );
+
+    Button partyOptions = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Party options", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.screen = new ScreenOptionsPartyHost();
         }
     }
     );
@@ -253,6 +263,7 @@ public class ScreenPartyHost extends Screen
         versus.update();
         share.update();
         shared.update();
+        partyOptions.update();
         quit.update();
 
         if (server != null && server.connections != null)
@@ -277,6 +288,7 @@ public class ScreenPartyHost extends Screen
     {
         this.drawDefaultBackground();
 
+        partyOptions.draw();
         crusades.draw();
         myLevels.draw();
         versus.draw();
@@ -290,21 +302,19 @@ public class ScreenPartyHost extends Screen
 
         if (Game.steamNetworkHandler.initialized)
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, this.ip);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 260, "Also hosting on Steam peer-to-peer (Steam friends can join)");
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 360, this.ip);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 320, "Also hosting on Steam peer-to-peer (Steam friends can join)");
         }
         else
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, this.ip);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 330, this.ip);
         }
 
-        //Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 400, Panel.winlose);
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 280, "Play:");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Play:");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, "Level and crusade sharing:");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 80, "Level and crusade sharing:");
-
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 280, "Players in this party:");
 
         if (server != null && server.connections != null)
         {

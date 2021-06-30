@@ -24,7 +24,7 @@ public class OverlayConfirmDelete extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelBuilder.name);
+            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelEditor.name);
 
             Game.cleanUp();
 
@@ -38,9 +38,9 @@ public class OverlayConfirmDelete extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlayConfirmDelete(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayConfirmDelete(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
     }
 
     public void update()
@@ -55,7 +55,7 @@ public class OverlayConfirmDelete extends ScreenLevelBuilderOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to delete the level?");
 

@@ -110,7 +110,7 @@ public class BulletArc extends Bullet
 
     public void draw()
     {
-        Drawing.drawing.setColor(0, 0, 0, (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)));
+        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 1);
         Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
         Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 

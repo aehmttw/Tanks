@@ -95,6 +95,8 @@ public class Panel
 
 	public void setUp()
 	{
+		Game.game.window.setFullscreen(Game.game.fullscreen);
+
 		boolean tutorial = false;
 
 		Game.createModels();
@@ -330,7 +332,7 @@ public class Panel
 
 		if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) && !ScreenGame.finished
 				&& (Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale || Game.followingCam)
-				&& Game.screen instanceof ScreenGame && (((ScreenGame) (Game.screen)).playing || ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && Game.startTime < 400)))
+				&& Game.screen instanceof ScreenGame && (((ScreenGame) (Game.screen)).playing || ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && Game.startTime < Game.currentLevel.startTime)))
 		{
 			Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
 
@@ -371,7 +373,7 @@ public class Panel
 				this.zoomTimer += 0.04 * Panel.frameFrequency;
 
 				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-					this.zoomTimer = Math.min(this.zoomTimer, 1 - Game.startTime / 400);
+					this.zoomTimer = Math.min(this.zoomTimer, 1 - Game.startTime / Game.currentLevel.startTime);
 			}
 		}
 		else

@@ -4,17 +4,17 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
-import tanks.tank.TankPlayerRemote;
 
 public class ScreenOptionsMultiplayer extends Screen
 {
 	public static final String chatFilterText = "Chat filter: ";
+	public static final String autoReadyText = "Auto ready: ";
 	public static final String anticheatText = "Anticheat: ";
 
 	public static final String weakText = "\u00A7200100000255weak";
 	public static final String strongText = "\u00A7000200000255strong";
 
-	TextBox username = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Username", new Runnable()
+	TextBox username = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Username", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -28,7 +28,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			Game.player.username, "Pick a username that players---will see in multiplayer");
 
-	Button chatFilter = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
+	Button chatFilter = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -43,36 +43,22 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"Filters chat of potentially---inappropriate words");
 
-	Button anticheat = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+	Button autoReady = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			if (!TankPlayerRemote.checkMotion)
-			{
-				TankPlayerRemote.checkMotion = true;
-				TankPlayerRemote.weakTimeCheck = false;
-				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatStrongTimeOffset;
-			}
-			else if (!TankPlayerRemote.weakTimeCheck)
-			{
-				TankPlayerRemote.weakTimeCheck = true;
-				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatWeakTimeOffset;
-			}
-			else
-				TankPlayerRemote.checkMotion = false;
+			Game.autoReady = !Game.autoReady;
 
-			if (!TankPlayerRemote.checkMotion)
-				anticheat.text = anticheatText + ScreenOptions.offText;
-			else if (!TankPlayerRemote.weakTimeCheck)
-				anticheat.text = anticheatText + strongText;
+			if (Game.autoReady)
+				autoReady.text = autoReadyText + ScreenOptions.onText;
 			else
-				anticheat.text = anticheatText + weakText;
+				autoReady.text = autoReadyText + ScreenOptions.offText;
 		}
 	},
-			"When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
+			"When enabled, automatically presses---the ready button if there is no shop");
 
-	Button color = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Tank color", new Runnable()
+	Button color = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Tank color", new Runnable()
 	{
 		@Override
 		public void run()
@@ -81,6 +67,15 @@ public class ScreenOptionsMultiplayer extends Screen
 		}
 	},
 			"Personalize your tank---to stand out in multiplayer!");
+
+	Button hostOptions = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Party host options", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.screen = new ScreenOptionsPartyHost();
+		}
+	}, "Options for parties you host");
 
 
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
@@ -106,12 +101,10 @@ public class ScreenOptionsMultiplayer extends Screen
 		else
 			chatFilter.text = chatFilterText + ScreenOptions.offText;
 
-		if (!TankPlayerRemote.checkMotion)
-			anticheat.text = anticheatText + ScreenOptions.offText;
-		else if (!TankPlayerRemote.weakTimeCheck)
-			anticheat.text = anticheatText + strongText;
+		if (Game.autoReady)
+			autoReady.text = autoReadyText + ScreenOptions.onText;
 		else
-			anticheat.text = anticheatText + weakText;
+			autoReady.text = autoReadyText + ScreenOptions.offText;
 	}
 	
 	@Override
@@ -121,7 +114,8 @@ public class ScreenOptionsMultiplayer extends Screen
 		back.update();
 		username.update();
 		color.update();
-		anticheat.update();
+		hostOptions.update();
+		autoReady.update();
 	}
 
 	@Override
@@ -129,7 +123,8 @@ public class ScreenOptionsMultiplayer extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
-		anticheat.draw();
+		autoReady.draw();
+		hostOptions.draw();
 		chatFilter.draw();
 		color.draw();
 		username.draw();

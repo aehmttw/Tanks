@@ -3,10 +3,8 @@ package tanks;
 import tanks.event.EventCreatePlayer;
 import tanks.event.EventEnterLevel;
 import tanks.event.EventLoadLevel;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
-import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
 import tanks.gui.screen.levelbuilder.ScreenLevelBuilderOverlay;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
@@ -76,6 +74,9 @@ public class Level
 	public ArrayList<Item> shop = new ArrayList<Item>();
 	public ArrayList<Item> startingItems = new ArrayList<Item>();
 
+	public double startTime = 400;
+	public boolean disableFriendlyFire = false;
+
 	/**
 	 * A level string is structured like this:
 	 * (parentheses signify required parameters, and square brackets signify optional parameters. 
@@ -85,6 +86,9 @@ public class Level
 	 */
 	public Level(String level)
 	{
+		if (ScreenPartyHost.isServer)
+			this.startTime = Game.partyStartTime;
+
 		this.levelString = level.replaceAll("\u0000", "");
 
 		int parsing = 0;
@@ -138,6 +142,9 @@ public class Level
 					break;
 			}
 		}
+
+		if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
+			this.disableFriendlyFire = true;
 	}
 
 	public void loadLevel()
@@ -169,7 +176,7 @@ public class Level
 
 		this.remote = remote;
 
-		if (!remote && sc == null || (sc instanceof ScreenLevelBuilder))
+		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
 
 		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<EventCreatePlayer>();
@@ -200,6 +207,9 @@ public class Level
 				else
 					tankTeams[i] = new Team(t[0]);
 
+				if (disableFriendlyFire)
+					tankTeams[i].friendlyFire = false;
+
 				teamsMap.put(t[0], tankTeams[i]);
 
 				teamsList.add(tankTeams[i]);
@@ -207,8 +217,16 @@ public class Level
 		}
 		else
 		{
-			teamsMap.put("ally", Game.playerTeam);
-			teamsMap.put("enemy", Game.enemyTeam);
+			if (disableFriendlyFire)
+			{
+				teamsMap.put("ally", Game.playerTeamNoFF);
+				teamsMap.put("enemy", Game.enemyTeamNoFF);
+			}
+			else
+			{
+				teamsMap.put("ally", Game.playerTeam);
+				teamsMap.put("enemy", Game.enemyTeam);
+			}
 		}
 
 		sizeX = Integer.parseInt(screen[0]);
@@ -251,9 +269,9 @@ public class Level
 		for (Item i: this.startingItems)
 			i.importProperties();
 
-		if (sc instanceof ScreenLevelBuilder)
+		if (sc instanceof ScreenLevelEditor)
 		{
-			ScreenLevelBuilder s = (ScreenLevelBuilder) sc;
+			ScreenLevelEditor s = (ScreenLevelEditor) sc;
 
 			s.level = this;
 
@@ -369,6 +387,10 @@ public class Level
 					angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
 
 				Team team = Game.enemyTeam;
+
+				if (this.disableFriendlyFire)
+					team = Game.enemyTeamNoFF;
+
 				if (enableTeams)
 				{
 					if (tank.length >= 5)
@@ -382,6 +404,9 @@ public class Level
 				{
 					if (team == Game.enemyTeam)
 						team = Game.playerTeam;
+
+					if (team == Game.enemyTeamNoFF)
+						team = Game.playerTeamNoFF;
 
 					this.playerSpawnsX.add(x);
 					this.playerSpawnsY.add(y);
@@ -399,7 +424,10 @@ public class Level
 				t.team = team;
 
 				if (remote)
+				{
+					t.registerNetworkID();
 					Game.movables.add(new TankRemote(t));
+				}
 				else
 					Game.movables.add(t);
 			}
@@ -571,14 +599,14 @@ public class Level
 					sc.getSpawns().add(t);
 			}
 
-			if (sc instanceof ScreenLevelBuilder)
-				((ScreenLevelBuilder) sc).movePlayer = (sc.getSpawns().size() <= 1);
+			if (sc instanceof ScreenLevelEditor)
+				((ScreenLevelEditor) sc).movePlayer = (sc.getSpawns().size() <= 1);
 		}
 
 		for (EventCreatePlayer e: playerEvents)
 			e.execute();
 
-		if (!remote && sc == null || (sc instanceof ScreenLevelBuilder))
+		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());
 	}
 
@@ -625,12 +653,12 @@ public class Level
 				Game.game.solidGrid[x][y] = true;
 		}
 
-		ScreenLevelBuilder s = null;
+		ScreenLevelEditor s = null;
 		
-		if (Game.screen instanceof ScreenLevelBuilder)
-			s = (ScreenLevelBuilder) Game.screen;
+		if (Game.screen instanceof ScreenLevelEditor)
+			s = (ScreenLevelEditor) Game.screen;
 		else if (Game.screen instanceof ScreenLevelBuilderOverlay)
-			s = ((ScreenLevelBuilderOverlay) Game.screen).screenLevelBuilder;
+			s = ((ScreenLevelBuilderOverlay) Game.screen).screenLevelEditor;
 
 		if (s != null)
 			s.selectedTiles = new boolean[Game.currentSizeX][Game.currentSizeY];

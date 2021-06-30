@@ -280,6 +280,21 @@ public class ScreenChangelog extends Screen
                                     "Performance improvements\n" +
                                     "...and, of course, bug fixes and other improvements"
                     });
+
+            new Changelog("v1.2.1", new String[]
+                    {
+                            "*What's new in Tanks v1.2.1:\n\n" +
+                                    "Added party host options menu\n" +
+                                    "Added option to disable all friendly fire in parties\n" +
+                                    "Added option to change the party countdown timer\n" +
+                                    "Added auto ready multiplayer option\n" +
+                                    "Added fullscreen button (in addition to the key)" +
+                                    "Arc bullets now have colored shadows\n" +
+                                    "Player spawns are now more spread out in versus mode\n" +
+                                    "Bullets harmless to you (friendly fire off) flash is bigger\n" +
+                                    "Bug fixes and other minor improvements"
+
+                    });
         }
     }
 }

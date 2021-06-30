@@ -1,7 +1,6 @@
 package tanks.gui.screen.levelbuilder;
 
 import tanks.Drawing;
-import tanks.Game;
 import tanks.Team;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -24,20 +23,20 @@ public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlaySelectTeam(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
-        for (int i = 0; i < screenLevelBuilder.teams.size(); i++)
+        for (int i = 0; i < screenLevelEditor.teams.size(); i++)
         {
-            Team t = screenLevelBuilder.teams.get(i);
+            Team t = screenLevelEditor.teams.get(i);
             int j = i;
             Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    screenLevelBuilder.setEditorTeam(j);
+                    screenLevelEditor.setEditorTeam(j);
                 }
             }
             );
@@ -50,7 +49,7 @@ public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
             @Override
             public void run()
             {
-                screenLevelBuilder.setEditorTeam(screenLevelBuilder.teams.size());
+                screenLevelEditor.setEditorTeam(screenLevelEditor.teams.size());
             }
         }
         );
@@ -67,10 +66,10 @@ public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
             b.enabled = true;
         }
 
-        if (screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.playerTank)
-            teamSelectButtons.get(screenLevelBuilder.playerTeamNum).enabled = false;
-        else if (screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.enemyTank)
-            teamSelectButtons.get(screenLevelBuilder.teamNum).enabled = false;
+        if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.playerTank)
+            teamSelectButtons.get(screenLevelEditor.playerTeamNum).enabled = false;
+        else if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
+            teamSelectButtons.get(screenLevelEditor.teamNum).enabled = false;
 
         this.teamSelectList.update();
         this.back.update();
@@ -82,14 +81,14 @@ public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
         String teamSelectTitle = null;
 
-        if (screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.enemyTank)
+        if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
             teamSelectTitle = "Select tank team";
-        else if (screenLevelBuilder.currentPlaceable == ScreenLevelBuilder.Placeable.playerTank)
+        else if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.playerTank)
             teamSelectTitle = "Select player team";
 
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 270, teamSelectTitle);

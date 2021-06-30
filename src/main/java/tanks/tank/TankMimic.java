@@ -63,9 +63,6 @@ public class TankMimic extends TankAIControlled
         {
             this.timeToRevert = this.reversionCooldown;
 
-            Tank.freeIDs.add(this.networkID);
-            Tank.idMap.remove(this.networkID);
-
             Class<? extends Movable> c = this.targetEnemy.getClass();
 
             boolean player = false;
@@ -95,12 +92,11 @@ public class TankMimic extends TankAIControlled
             t.turretModel = this.turretModel;
             t.turretBaseModel = this.turretBaseModel;
 
-            if (t.networkID != this.networkID)
-            {
-                Tank.freeIDs.add(t.networkID);
-                Tank.idMap.remove(t.networkID);
-                t.networkID = this.networkID;
-            }
+            Tank.idMap.remove(t.networkID);
+            Tank.freeIDs.add(t.networkID);
+
+            t.networkID = this.networkID;
+            Tank.idMap.put(this.networkID, t);
 
             Game.movables.add(t);
             Game.removeMovables.add(this);
@@ -197,7 +193,7 @@ public class TankMimic extends TankAIControlled
     @Override
     public void updatePossessing()
     {
-        if (this.possessingTank.destroy || this.destroy || ScreenGame.finishedQuick)
+        if (this.possessingTank.destroy || this.destroy || ScreenGame.finishedQuick || this.positionLock)
             return;
 
         this.updateTarget();
@@ -255,7 +251,7 @@ public class TankMimic extends TankAIControlled
             this.tryPossess();
         }
 
-        if (this.targetEnemy != null && !this.targetEnemy.destroy && !this.possessingTank.destroy && this.canPossess)
+        if (this.targetEnemy != null && !this.targetEnemy.destroy && !this.possessingTank.destroy && this.canPossess && !this.positionLock)
         {
             this.laser = new Laser(this.possessingTank.posX, this.possessingTank.posY, this.possessingTank.size / 2, this.targetEnemy.posX, this.targetEnemy.posY, ((Tank)this.targetEnemy).size / 2,
                     (this.range - Movable.distanceBetween(this.possessingTank, this.targetEnemy)) / this.range * 10, this.targetEnemy.getAngleInDirection(this.possessingTank.posX, this.possessingTank.posY),

@@ -219,6 +219,7 @@ public class ScreenOptions extends Screen
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
+			f.println("fullscreen=" + Game.game.window.fullscreen);
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -381,6 +382,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "auto_load_extensions":
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "fullscreen":
+						Game.game.fullscreen = Boolean.parseBoolean(optionLine[1]);
 						break;
 
 				}

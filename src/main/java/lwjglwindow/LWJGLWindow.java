@@ -219,7 +219,10 @@ public class LWJGLWindow extends BaseWindow
 		else
 			GLFW.glfwSwapInterval(0);
 
+		setFullscreen(tanks.Game.game.fullscreen);
+
 		glfwShowWindow(window);
+
 	}
 
 	protected int createShader(String filename, int shaderType) throws Exception

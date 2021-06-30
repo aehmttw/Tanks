@@ -22,6 +22,8 @@ public class ScreenOptionsGraphics extends Screen
     public static final String birdsEyeText = "\u00A7000100200255bird's-eye";
     public static final String angledText = "\u00A7200100000255angled";
 
+    public static final String fullscreenText = "Fullscreen: ";
+
     public ScreenOptionsGraphics()
     {
         this.music = "menu_options.ogg";
@@ -97,6 +99,8 @@ public class ScreenOptionsGraphics extends Screen
             effects.text += "\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%";
         else
             effects.text += ScreenOptions.onText;
+
+        fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
     }
 
     protected void update3dGroundButton()
@@ -263,7 +267,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
         public void run()
@@ -281,6 +285,17 @@ public class ScreenOptionsGraphics extends Screen
             Game.screen = new ScreenOptionsShadows();
         }
     }, "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate"
+    );
+
+    Button fullscreen = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        { 
+            Game.game.window.setFullscreen(!Game.game.window.fullscreen);
+            fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
+        }
+    }, "Toggle fullscreen"
     );
 
     Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
@@ -307,6 +322,8 @@ public class ScreenOptionsGraphics extends Screen
         altPerspective.update();
         shadows.update();
         antialiasing.update();
+        
+        fullscreen.update();
 
         back.update();
 
@@ -328,6 +345,10 @@ public class ScreenOptionsGraphics extends Screen
         this.drawDefaultBackground();
 
         back.draw();
+        
+        // Need to update fullscreen text in case user changes it via F11
+        fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
+        fullscreen.draw();
 
         antialiasing.draw();
         shadows.draw();

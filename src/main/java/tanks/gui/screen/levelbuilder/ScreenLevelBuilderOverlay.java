@@ -1,8 +1,6 @@
 package tanks.gui.screen.levelbuilder;
 
-import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
 import tanks.tank.TankSpawnMarker;
@@ -12,12 +10,12 @@ import java.util.ArrayList;
 public abstract class ScreenLevelBuilderOverlay extends Screen implements ILevelPreviewScreen
 {
     public Screen previous;
-    public ScreenLevelBuilder screenLevelBuilder;
+    public ScreenLevelEditor screenLevelEditor;
 
-    public ScreenLevelBuilderOverlay(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public ScreenLevelBuilderOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         this.previous = previous;
-        this.screenLevelBuilder = screenLevelBuilder;
+        this.screenLevelEditor = screenLevelEditor;
 
         this.music = previous.music;
         this.musicID = previous.musicID;
@@ -32,10 +30,10 @@ public abstract class ScreenLevelBuilderOverlay extends Screen implements ILevel
         if (previous instanceof ScreenLevelBuilderOverlay)
             ((ScreenLevelBuilderOverlay) previous).load();
 
-        if (previous == screenLevelBuilder)
+        if (previous == screenLevelEditor)
         {
-            screenLevelBuilder.clickCooldown = 20;
-            screenLevelBuilder.paused = false;
+            screenLevelEditor.clickCooldown = 20;
+            screenLevelEditor.paused = false;
         }
     }
 
@@ -53,41 +51,41 @@ public abstract class ScreenLevelBuilderOverlay extends Screen implements ILevel
             this.escape();
         }
 
-        if (Game.game.input.editorObjectMenu.isValid() && screenLevelBuilder.objectMenu)
+        if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
         {
             Game.game.input.editorObjectMenu.invalidate();
-            Game.screen = screenLevelBuilder;
-            screenLevelBuilder.clickCooldown = 20;
-            screenLevelBuilder.paused = false;
+            Game.screen = screenLevelEditor;
+            screenLevelEditor.clickCooldown = 20;
+            screenLevelEditor.paused = false;
         }
     }
 
     @Override
     public void draw()
     {
-        this.screenLevelBuilder.draw();
+        this.screenLevelEditor.draw();
     }
 
     public ArrayList<TankSpawnMarker> getSpawns()
     {
-        return screenLevelBuilder.spawns;
+        return screenLevelEditor.spawns;
     }
 
     @Override
     public double getOffsetX()
     {
-        return screenLevelBuilder.getOffsetX();
+        return screenLevelEditor.getOffsetX();
     }
 
     @Override
     public double getOffsetY()
     {
-        return screenLevelBuilder.getOffsetY();
+        return screenLevelEditor.getOffsetY();
     }
 
     @Override
     public double getScale()
     {
-        return screenLevelBuilder.getScale();
+        return screenLevelEditor.getScale();
     }
 }

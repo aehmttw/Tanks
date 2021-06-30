@@ -12,10 +12,16 @@ public class EventEnterLevel extends PersonalEvent
 	}
 
 	@Override
-	public void execute() 
+	public void execute()
 	{
 		if (this.clientID == null)
-			Game.screen = new ScreenGame();
+		{
+			ScreenGame s = new ScreenGame();
+			Game.screen = s;
+
+			if (Game.autoReady)
+				Game.eventsOut.add(new EventPlayerAutoReady());
+		}
 	}
 
 	@Override

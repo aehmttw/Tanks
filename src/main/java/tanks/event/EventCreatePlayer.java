@@ -79,7 +79,10 @@ public class EventCreatePlayer extends PersonalEvent
 			if (ScreenPartyHost.isServer)
 				t = new TankPlayer(posX, posY, angle);
 			else
+			{
 				t = new TankPlayerController(posX, posY, angle, clientIdTarget);
+				t.registerNetworkID();
+			}
 
 			Game.playerTank = t;
 		}
@@ -89,6 +92,7 @@ public class EventCreatePlayer extends PersonalEvent
 			{
 				TankPlayer t2 = new TankPlayer(posX, posY, angle);
 				t2.player = new Player(clientIdTarget, "");
+				t2.registerNetworkID();
 				t = new TankRemote(t2);
 			}
 			else

@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.IWindowHandler;
+import tanks.gui.screen.ScreenOptions;
 import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
 
@@ -11,6 +12,8 @@ public class GameWindowHandler implements IWindowHandler
 	{
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.exit();
+
+		ScreenOptions.saveOptions(Game.homedir);
 
 		if (ScreenPartyHost.isServer)
 		{

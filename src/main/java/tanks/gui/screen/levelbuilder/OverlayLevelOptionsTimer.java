@@ -20,9 +20,9 @@ public class OverlayLevelOptionsTimer extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlayLevelOptionsTimer(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptionsTimer(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         minutes = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Minutes", new Runnable()
         {
@@ -31,16 +31,16 @@ public class OverlayLevelOptionsTimer extends ScreenLevelBuilderOverlay
             {
                 try
                 {
-                    screenLevelBuilder.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+                    screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
                 }
                 catch (Exception e)
                 {
-                    minutes.inputText = "" + screenLevelBuilder.level.timer / 6000;
+                    minutes.inputText = "" + screenLevelEditor.level.timer / 6000;
                 }
             }
 
         }
-                , (int) (screenLevelBuilder.level.timer / 6000) + "", "Set minutes and seconds to 0---to disable the time limit");
+                , (int) (screenLevelEditor.level.timer / 6000) + "", "Set minutes and seconds to 0---to disable the time limit");
 
         minutes.allowLetters = false;
         minutes.allowSpaces = false;
@@ -57,15 +57,15 @@ public class OverlayLevelOptionsTimer extends ScreenLevelBuilderOverlay
             {
                 try
                 {
-                    screenLevelBuilder.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+                    screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
                 }
                 catch (Exception e)
                 {
-                    seconds.inputText = "" + (screenLevelBuilder.level.timer % 6000) / 100;
+                    seconds.inputText = "" + (screenLevelEditor.level.timer % 6000) / 100;
                 }
             }
         }
-                , (int)(screenLevelBuilder.level.timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");
+                , (int)(screenLevelEditor.level.timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");
 
         seconds.allowLetters = false;
         seconds.allowSpaces = false;
@@ -93,7 +93,7 @@ public class OverlayLevelOptionsTimer extends ScreenLevelBuilderOverlay
         this.back.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Time limit");
     }
 }

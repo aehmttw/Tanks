@@ -21,9 +21,9 @@ public class OverlayLevelOptionsSize extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlayLevelOptionsSize(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptionsSize(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         sizeX = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Width", new Runnable()
         {
@@ -31,18 +31,18 @@ public class OverlayLevelOptionsSize extends ScreenLevelBuilderOverlay
             public void run()
             {
                 if (sizeX.inputText.length() <= 0)
-                    sizeX.inputText = screenLevelBuilder.level.sizeX + "";
+                    sizeX.inputText = screenLevelEditor.level.sizeX + "";
                 else
                 {
-                    screenLevelBuilder.level.sizeX = Integer.parseInt(sizeX.inputText);
-                    Game.currentSizeX = screenLevelBuilder.level.sizeX;
+                    screenLevelEditor.level.sizeX = Integer.parseInt(sizeX.inputText);
+                    Game.currentSizeX = screenLevelEditor.level.sizeX;
                 }
 
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.sizeX + "");
+                , screenLevelEditor.level.sizeX + "");
 
         sizeX.allowLetters = false;
         sizeX.allowSpaces = false;
@@ -58,18 +58,18 @@ public class OverlayLevelOptionsSize extends ScreenLevelBuilderOverlay
             public void run()
             {
                 if (sizeY.inputText.length() <= 0)
-                    sizeY.inputText = screenLevelBuilder.level.sizeY + "";
+                    sizeY.inputText = screenLevelEditor.level.sizeY + "";
                 else
                 {
-                    screenLevelBuilder.level.sizeY = Integer.parseInt(sizeY.inputText);
-                    Game.currentSizeY = screenLevelBuilder.level.sizeY;
+                    screenLevelEditor.level.sizeY = Integer.parseInt(sizeY.inputText);
+                    Game.currentSizeY = screenLevelEditor.level.sizeY;
                 }
 
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.sizeY + "");
+                , screenLevelEditor.level.sizeY + "");
 
         sizeY.allowLetters = false;
         sizeY.allowSpaces = false;
@@ -96,7 +96,7 @@ public class OverlayLevelOptionsSize extends ScreenLevelBuilderOverlay
         this.sizeX.draw();
         this.back3.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Level size");
     }
 }

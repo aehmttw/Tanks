@@ -68,8 +68,12 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
             double a = Math.min(t - 600, 50) * 2.55 * 2;
             Drawing.drawing.setColor(180, 180, 180, a);
             Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 170, 600, 140);
+            Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 340, 1200, 140);
             Drawing.drawing.setColor(0, 0, 0, a);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.1");
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.2");
+
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 340, "Now coming to Steam!");
+
         }
 
         for (int i = 0; i < Game.tracks.size(); i++)

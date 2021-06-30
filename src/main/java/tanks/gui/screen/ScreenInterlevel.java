@@ -5,7 +5,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
-import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,7 +107,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				Crusade.currentCrusade = null;
 			}
 
-			ScreenLevelBuilder s = new ScreenLevelBuilder(System.currentTimeMillis() + ".tanks", Game.currentLevel);
+			ScreenLevelEditor s = new ScreenLevelEditor(System.currentTimeMillis() + ".tanks", Game.currentLevel);
 			Level level = new Level(Game.currentLevelString);
 			level.loadLevel(s);
 			Game.screen = s;

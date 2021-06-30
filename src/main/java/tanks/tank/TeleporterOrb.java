@@ -47,14 +47,16 @@ public class TeleporterOrb extends Movable
     @Override
 	public void draw() 
 	{
-		Drawing.drawing.setColor(255, 255, 255);
+		//Drawing.drawing.setColor(255, 255, 255);
+		Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB);
 
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
 
 		for (int i = 0; i < this.size - this.tank.size; i++)
 		{
-			Drawing.drawing.setColor(255, 255, 255, 20);
+			Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB, 20);
+			//Drawing.drawing.setColor(255, 255, 255, 20);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i, false, true);
@@ -160,9 +162,9 @@ public class TeleporterOrb extends Movable
 		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);
 		double var = 50;
 		
-		e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.colR = Math.min(this.tank.colorR, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.colG = Math.min(this.tank.colorG, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.colB = Math.min(this.tank.colorB, Math.max(0, 255 + Math.random() * var - var / 2));
 		e.drawLayer = 9;
 
 		if (Game.enable3d)

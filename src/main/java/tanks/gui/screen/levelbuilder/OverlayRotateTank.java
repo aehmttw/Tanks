@@ -11,7 +11,7 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseTankOrientation = 3;
+            screenLevelEditor.mouseTankOrientation = 3;
         }
     }
     );
@@ -21,7 +21,7 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseTankOrientation = 0;
+            screenLevelEditor.mouseTankOrientation = 0;
         }
     }
     );
@@ -31,7 +31,7 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseTankOrientation = 1;
+            screenLevelEditor.mouseTankOrientation = 1;
         }
     }
     );
@@ -41,7 +41,7 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseTankOrientation = 2;
+            screenLevelEditor.mouseTankOrientation = 2;
         }
     }
     );
@@ -56,9 +56,9 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlayRotateTank(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayRotateTank(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         this.rotateDown.fontSize = 24;
         this.rotateRight.fontSize = 24;
@@ -74,11 +74,11 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
         this.rotateLeft.enabled = true;
         this.rotateRight.enabled = true;
 
-        if (screenLevelBuilder.mouseTankOrientation == 0)
+        if (screenLevelEditor.mouseTankOrientation == 0)
             this.rotateRight.enabled = false;
-        else if (screenLevelBuilder.mouseTankOrientation == 1)
+        else if (screenLevelEditor.mouseTankOrientation == 1)
             this.rotateDown.enabled = false;
-        else if (screenLevelBuilder.mouseTankOrientation == 2)
+        else if (screenLevelEditor.mouseTankOrientation == 2)
             this.rotateLeft.enabled = false;
         else
             this.rotateUp.enabled = false;
@@ -97,7 +97,7 @@ public class OverlayRotateTank extends ScreenLevelBuilderOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select tank orientation");
 

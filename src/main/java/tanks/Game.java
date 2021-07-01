@@ -219,6 +219,8 @@ public class Game
 	public static boolean useSeed = false;
 	public static long seed = 0;
 
+	public static boolean fixedFrameFrequency = false;
+
 	// Note: this is not used by the game to determine fullscreen status
 	// It is simply a value defined before
 	// Refer to Game.game.window.fullscreen for true fullscreen status

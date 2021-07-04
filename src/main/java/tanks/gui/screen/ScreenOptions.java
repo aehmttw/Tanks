@@ -220,6 +220,9 @@ public class ScreenOptions extends Screen
 			f.println("tank_red_2=" + Game.player.turretColorR);
 			f.println("tank_green_2=" + Game.player.turretColorG);
 			f.println("tank_blue_2=" + Game.player.turretColorB);
+			f.println("seed=" + Game.seed);
+			f.println("use_seed=" + Game.useSeed);
+			f.println("fixed_frame_frequency=" + Game.fixedFrameFrequency);
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
@@ -388,6 +391,15 @@ public class ScreenOptions extends Screen
 						break;
 					case "tank_blue_2":
 						Game.player.turretColorB = Integer.parseInt(optionLine[1]);
+						break;
+					case "seed":
+						Game.seed = Integer.parseInt(optionLine[1]);
+						break;
+					case "use_seed":
+						Game.useSeed = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "fixed_frame_frequency":
+						Game.fixedFrameFrequency = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "last_version":
 						Game.lastVersion = optionLine[1];

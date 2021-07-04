@@ -828,10 +828,12 @@ public class Bullet extends Movable implements IDrawable
 				double opacityMod = 0.25 + 0.25 * Math.sin(this.age / 100.0 * Math.PI * 4);
 				Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMod, glow);
 
+				double s = 2.5;
+
 				if (Game.enable3d)
-					Drawing.drawing.fillOval(posX, posY, posZ, 2 * size + sizeModifier, 2 * size + sizeModifier);
+					Drawing.drawing.fillOval(posX, posY, posZ, s * size + sizeModifier, s * size + sizeModifier);
 				else
-					Drawing.drawing.fillOval(posX, posY, 2 * size + sizeModifier, 2 * size + sizeModifier);
+					Drawing.drawing.fillOval(posX, posY, s * size + sizeModifier, s * size + sizeModifier);
 			}
 
 

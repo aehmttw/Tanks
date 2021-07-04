@@ -6,7 +6,7 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.screen.levelbuilder.OverlayEditorMenu;
-import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
 import tanks.rpc.RichPresenceEvent;
 
 public class ScreenSavedLevels extends Screen
@@ -33,7 +33,7 @@ public class ScreenSavedLevels extends Screen
 			String name = System.currentTimeMillis() + ".tanks";
 
 			Level l = new Level("{28,18||0-0-player}");
-			Game.screen = new ScreenLevelBuilder(name, l);
+			Game.screen = new ScreenLevelEditor(name, l);
 			l.loadLevel((ILevelPreviewScreen) Game.screen);
 		}
 	}
@@ -49,7 +49,7 @@ public class ScreenSavedLevels extends Screen
 		savedFilesList = new SavedFilesList(Game.homedir + Game.levelDir, page, 0, -30,
 				(name, file) ->
 				{
-					ScreenLevelBuilder s = new ScreenLevelBuilder(name + ".tanks", null);
+					ScreenLevelEditor s = new ScreenLevelEditor(name + ".tanks", null);
 
 					if (Game.loadLevel(file, s))
 					{

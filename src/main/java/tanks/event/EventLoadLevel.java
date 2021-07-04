@@ -11,6 +11,9 @@ public class EventLoadLevel extends PersonalEvent
 {
 	public String level;
 
+	public double startTime;
+	public boolean disableFriendlyFire;
+
 	public EventLoadLevel()
 	{
 		
@@ -19,6 +22,9 @@ public class EventLoadLevel extends PersonalEvent
 	public EventLoadLevel(Level l)
 	{
 		this.level = l.levelString;
+
+		this.startTime = l.startTime;
+		this.disableFriendlyFire = l.disableFriendlyFire;
 	}
 
 	@Override
@@ -36,6 +42,8 @@ public class EventLoadLevel extends PersonalEvent
 			ScreenPartyLobby.includedPlayers.clear();
 			Game.cleanUp();
 			Game.currentLevel = new Level(level);
+			Game.currentLevel.startTime = startTime;
+			Game.currentLevel.disableFriendlyFire = disableFriendlyFire;
 			Game.currentLevel.loadLevel(true);
 		}
 		catch (Exception e)
@@ -48,11 +56,15 @@ public class EventLoadLevel extends PersonalEvent
 	public void write(ByteBuf b)
 	{
 		NetworkUtils.writeString(b, this.level);
+		b.writeDouble(this.startTime);
+		b.writeBoolean(this.disableFriendlyFire);
 	}
 
 	@Override
 	public void read(ByteBuf b)
 	{
 		this.level = NetworkUtils.readString(b);
+		this.startTime = b.readDouble();
+		this.disableFriendlyFire = b.readBoolean();
 	}
 }

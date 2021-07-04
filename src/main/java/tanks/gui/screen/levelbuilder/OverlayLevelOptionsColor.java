@@ -1,7 +1,6 @@
 package tanks.gui.screen.levelbuilder;
 
 import tanks.Drawing;
-import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
@@ -16,9 +15,9 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
     public TextBox colorVarGreen;
     public TextBox colorVarBlue;
 
-    public OverlayLevelOptionsColor(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptionsColor(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         colorRed = new TextBoxSlider(this.centerX - objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", new Runnable()
         {
@@ -28,17 +27,17 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
                 if (colorRed.inputText.length() <= 0)
                     colorRed.inputText = colorRed.previousInputText;
 
-                screenLevelBuilder.level.colorR = Integer.parseInt(colorRed.inputText);
+                screenLevelEditor.level.colorR = Integer.parseInt(colorRed.inputText);
 
-                colorVarRed.maxValue = 255 - screenLevelBuilder.level.colorR;
+                colorVarRed.maxValue = 255 - screenLevelEditor.level.colorR;
                 colorVarRed.performValueCheck();
 
-                screenLevelBuilder.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.colorR, 0, 255, 1);
+                , screenLevelEditor.level.colorR, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -55,17 +54,17 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
                 if (colorGreen.inputText.length() <= 0)
                     colorGreen.inputText = colorGreen.previousInputText;
 
-                screenLevelBuilder.level.colorG = Integer.parseInt(colorGreen.inputText);
+                screenLevelEditor.level.colorG = Integer.parseInt(colorGreen.inputText);
 
-                colorVarGreen.maxValue = 255 - screenLevelBuilder.level.colorG;
+                colorVarGreen.maxValue = 255 - screenLevelEditor.level.colorG;
                 colorVarGreen.performValueCheck();
 
-                screenLevelBuilder.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.colorG, 0, 255, 1);
+                , screenLevelEditor.level.colorG, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -82,17 +81,17 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
                 if (colorBlue.inputText.length() <= 0)
                     colorBlue.inputText = colorBlue.previousInputText;
 
-                screenLevelBuilder.level.colorB = Integer.parseInt(colorBlue.inputText);
+                screenLevelEditor.level.colorB = Integer.parseInt(colorBlue.inputText);
 
-                colorVarBlue.maxValue = 255 - screenLevelBuilder.level.colorB;
+                colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
                 colorVarBlue.performValueCheck();
 
-                screenLevelBuilder.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.colorB, 0, 255, 1);
+                , screenLevelEditor.level.colorB, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;
@@ -109,13 +108,13 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
                 if (colorVarRed.inputText.length() <= 0)
                     colorVarRed.inputText = colorVarRed.previousInputText;
 
-                screenLevelBuilder.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
+                screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
 
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.colorVarR + "");
+                , screenLevelEditor.level.colorVarR + "");
 
         colorVarRed.allowLetters = false;
         colorVarRed.allowSpaces = false;
@@ -130,13 +129,13 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
                 if (colorVarGreen.inputText.length() <= 0)
                     colorVarGreen.inputText = colorVarGreen.previousInputText;
 
-                screenLevelBuilder.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
+                screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
 
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.colorVarG + "");
+                , screenLevelEditor.level.colorVarG + "");
 
         colorVarGreen.allowLetters = false;
         colorVarGreen.allowSpaces = false;
@@ -151,22 +150,22 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
                 if (colorVarBlue.inputText.length() <= 0)
                     colorVarBlue.inputText = colorVarBlue.previousInputText;
 
-                screenLevelBuilder.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
+                screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
 
-                screenLevelBuilder.level.reloadTiles();
+                screenLevelEditor.level.reloadTiles();
             }
 
         }
-                , screenLevelBuilder.level.colorVarB + "");
+                , screenLevelEditor.level.colorVarB + "");
 
         colorVarBlue.allowLetters = false;
         colorVarBlue.allowSpaces = false;
         colorVarBlue.maxChars = 3;
         colorVarBlue.checkMaxValue = true;
 
-        colorVarRed.maxValue = 255 - screenLevelBuilder.level.colorR;
-        colorVarGreen.maxValue = 255 - screenLevelBuilder.level.colorG;
-        colorVarBlue.maxValue = 255 - screenLevelBuilder.level.colorB;
+        colorVarRed.maxValue = 255 - screenLevelEditor.level.colorR;
+        colorVarGreen.maxValue = 255 - screenLevelEditor.level.colorG;
+        colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
     }
 
     public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 3), this.objWidth, this.objHeight, "Back", new Runnable()
@@ -225,7 +224,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         this.colorVarRed.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Background colors");
         this.back.draw();
     }

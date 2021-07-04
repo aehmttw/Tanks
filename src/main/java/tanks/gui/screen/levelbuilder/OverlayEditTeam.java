@@ -2,6 +2,7 @@ package tanks.gui.screen.levelbuilder;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Movable;
 import tanks.Team;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
@@ -12,9 +13,9 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
     public TextBox teamName;
     public Team team;
 
-    public OverlayEditTeam(OverlayLevelOptionsTeams previous, ScreenLevelBuilder screenLevelBuilder, Team team)
+    public OverlayEditTeam(OverlayLevelOptionsTeams previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         this.team = team;
 
@@ -25,9 +26,9 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
             {
                 boolean duplicate = false;
 
-                for (int i = 0; i < screenLevelBuilder.teams.size(); i++)
+                for (int i = 0; i < screenLevelEditor.teams.size(); i++)
                 {
-                    if (teamName.inputText.equals(screenLevelBuilder.teams.get(i).name))
+                    if (teamName.inputText.equals(screenLevelEditor.teams.get(i).name))
                     {
                         duplicate = true;
                         break;
@@ -51,6 +52,9 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
             teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.onText;
         else
             teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.offText;
+
+        if (screenLevelEditor.teams.size() <= 1)
+            this.deleteTeam.enabled = false;
     }
 
     public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", new Runnable()
@@ -68,7 +72,14 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.teams.remove(team);
+            screenLevelEditor.teams.remove(team);
+
+            for (Movable m: Game.movables)
+            {
+                if (m.team == team)
+                    m.team = null;
+            }
+
             escape();
         }
     }
@@ -93,7 +104,7 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new ScreenEditTeamColor(Game.screen, screenLevelBuilder, team);
+            Game.screen = new ScreenEditTeamColor(Game.screen, screenLevelEditor, team);
         }
     }
     );
@@ -119,7 +130,7 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
         teamFriendlyFire.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, this.team.name);
     }
 }

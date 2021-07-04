@@ -23,6 +23,8 @@ public class EventCreateCustomTank extends PersonalEvent
 	public double lives;
 	public double baseLives;
 
+	public int id;
+
 	public EventCreateCustomTank()
 	{
 	
@@ -50,6 +52,8 @@ public class EventCreateCustomTank extends PersonalEvent
 		this.blue = t.colorB;
 		this.lives = t.health;
 		this.baseLives = t.baseHealth;
+
+		this.id = t.networkID;
 	}
 	
 	@Override
@@ -62,8 +66,12 @@ public class EventCreateCustomTank extends PersonalEvent
 		
 		if (this.team.equals("**"))
 			t = Game.enemyTeam;
-		
-		Game.movables.add(new TankRemote(name, posX, posY, angle, t, size, turretSize, turretLength, red, green, blue, lives, baseLives));
+
+		TankRemote tank = new TankRemote(name, posX, posY, angle, t, size, turretSize, turretLength, red, green, blue, lives, baseLives);
+		tank.networkID = this.id;
+		Tank.idMap.put(tank.networkID, tank);
+
+		Game.movables.add(tank);
 	}
 
 	@Override
@@ -82,6 +90,8 @@ public class EventCreateCustomTank extends PersonalEvent
 		b.writeDouble(this.blue);
 		b.writeDouble(this.lives);
 		b.writeDouble(this.baseLives);
+
+		b.writeInt(this.id);
 	}
 
 	@Override
@@ -100,5 +110,7 @@ public class EventCreateCustomTank extends PersonalEvent
 		this.blue = b.readDouble();
 		this.lives = b.readDouble();
 		this.baseLives = b.readDouble();
+
+		this.id = b.readInt();
 	}
 }

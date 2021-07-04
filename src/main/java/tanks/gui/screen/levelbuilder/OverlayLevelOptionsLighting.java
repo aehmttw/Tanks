@@ -21,9 +21,9 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
     }
     );
 
-    public OverlayLevelOptionsLighting(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptionsLighting(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         light = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Direct light", new Runnable()
         {
@@ -33,12 +33,12 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
                 if (light.inputText.length() <= 0)
                     light.inputText = light.previousInputText;
 
-                screenLevelBuilder.level.light = Integer.parseInt(light.inputText) / 100.0;
-                Level.currentLightIntensity = screenLevelBuilder.level.light;
+                screenLevelEditor.level.light = Integer.parseInt(light.inputText) / 100.0;
+                Level.currentLightIntensity = screenLevelEditor.level.light;
             }
 
         }
-                , (int) Math.round(screenLevelBuilder.level.light * 100), 0, 200, 1);
+                , (int) Math.round(screenLevelEditor.level.light * 100), 0, 200, 1);
 
         light.allowLetters = false;
         light.allowSpaces = false;
@@ -58,12 +58,12 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
                 if (shadow.inputText.length() <= 0)
                     shadow.inputText = shadow.previousInputText;
 
-                screenLevelBuilder.level.shadow = Integer.parseInt(shadow.inputText) / 100.0;
-                Level.currentShadowIntensity = screenLevelBuilder.level.shadow;
+                screenLevelEditor.level.shadow = Integer.parseInt(shadow.inputText) / 100.0;
+                Level.currentShadowIntensity = screenLevelEditor.level.shadow;
             }
 
         }
-                , (int) Math.round(screenLevelBuilder.level.shadow * 100), 0, 200, 1);
+                , (int) Math.round(screenLevelEditor.level.shadow * 100), 0, 200, 1);
 
         shadow.allowLetters = false;
         shadow.allowSpaces = false;
@@ -93,7 +93,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
         this.back13.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lighting");
     }
 }

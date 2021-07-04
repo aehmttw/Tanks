@@ -11,7 +11,7 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseObstacleHeight += 0.5;
+            screenLevelEditor.mouseObstacleHeight += 0.5;
         }
     }
     );
@@ -21,7 +21,7 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseObstacleHeight -= 0.5;
+            screenLevelEditor.mouseObstacleHeight -= 0.5;
         }
     }
     );
@@ -41,28 +41,28 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            if (!screenLevelBuilder.stagger)
+            if (!screenLevelEditor.stagger)
             {
-                screenLevelBuilder.mouseObstacleHeight = Math.max(screenLevelBuilder.mouseObstacleHeight, 1);
-                screenLevelBuilder.stagger = true;
+                screenLevelEditor.mouseObstacleHeight = Math.max(screenLevelEditor.mouseObstacleHeight, 1);
+                screenLevelEditor.stagger = true;
             }
-            else if (!screenLevelBuilder.oddStagger)
+            else if (!screenLevelEditor.oddStagger)
             {
-                screenLevelBuilder.mouseObstacleHeight = Math.max(screenLevelBuilder.mouseObstacleHeight, 1);
-                screenLevelBuilder.oddStagger = true;
+                screenLevelEditor.mouseObstacleHeight = Math.max(screenLevelEditor.mouseObstacleHeight, 1);
+                screenLevelEditor.oddStagger = true;
             }
             else
             {
-                screenLevelBuilder.oddStagger = false;
-                screenLevelBuilder.stagger = false;
+                screenLevelEditor.oddStagger = false;
+                screenLevelEditor.stagger = false;
             }
         }
     }, " --- "
     );
 
-    public OverlayBlockHeight(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayBlockHeight(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         staggering.imageSizeX = 40;
         staggering.imageSizeY = 40;
@@ -77,23 +77,23 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
 
     public void update()
     {
-        this.increaseHeight.enabled = screenLevelBuilder.mouseObstacleHeight < 4;
-        this.decreaseHeight.enabled = screenLevelBuilder.mouseObstacleHeight > 0.5;
+        this.increaseHeight.enabled = screenLevelEditor.mouseObstacleHeight < 4;
+        this.decreaseHeight.enabled = screenLevelEditor.mouseObstacleHeight > 0.5;
 
-        if (screenLevelBuilder.stagger)
-            this.decreaseHeight.enabled = screenLevelBuilder.mouseObstacleHeight > 1;
+        if (screenLevelEditor.stagger)
+            this.decreaseHeight.enabled = screenLevelEditor.mouseObstacleHeight > 1;
 
         this.increaseHeight.update();
         this.decreaseHeight.update();
         this.staggering.update();
 
-        if (!screenLevelBuilder.stagger)
+        if (!screenLevelEditor.stagger)
         {
             this.staggering.image = "nostagger.png";
             this.staggering.hoverText[0] = "Blocks will all be placed";
             this.staggering.hoverText[1] = "with the same height";
         }
-        else if (screenLevelBuilder.oddStagger)
+        else if (screenLevelEditor.oddStagger)
         {
             this.staggering.image = "oddstagger.png";
             this.staggering.hoverText[0] = "Every other block on the grid";
@@ -114,7 +114,7 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
     public void draw()
     {
         super.draw();
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Block height");
 
@@ -124,7 +124,7 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(36);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, screenLevelBuilder.mouseObstacleHeight + "");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, screenLevelEditor.mouseObstacleHeight + "");
 
         this.increaseHeight.draw();
         this.decreaseHeight.draw();

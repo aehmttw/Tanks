@@ -202,6 +202,7 @@ public class ScreenOptions extends Screen
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("angled_perspective=" + Game.angledView);
 			f.println("mouse_target=" + Panel.showMouseTarget);
+			f.println("fullscreen=" + Game.game.window.fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
 			f.println("mobile_joystick=" + TankPlayer.controlStickMobile);
 			f.println("snap_joystick=" + TankPlayer.controlStickSnap);
@@ -217,8 +218,11 @@ public class ScreenOptions extends Screen
 			f.println("last_party=" + Game.lastParty);
 			f.println("last_online_server=" + Game.lastOnlineServer);
 			f.println("chat_filter=" + Game.enableChatFilter);
+			f.println("auto_ready=" + Game.autoReady);
 			f.println("anticheat=" + TankPlayerRemote.checkMotion);
 			f.println("anticheat_weak=" + TankPlayerRemote.weakTimeCheck);
+			f.println("disable_party_friendly_fire=" + Game.disablePartyFriendlyFire);
+			f.println("party_countdown=" + Game.partyStartTime);
 			f.println("tank_secondary_color=" + Game.player.enableSecondaryColor);
 			f.println("tank_red=" + Game.player.colorR);
 			f.println("tank_green=" + Game.player.colorG);
@@ -339,6 +343,9 @@ public class ScreenOptions extends Screen
 					case "angled_perspective":
 						Game.angledView = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "fullscreen":
+						Game.game.fullscreen = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "port":
 						Game.port = Integer.parseInt(optionLine[1]);
 						break;
@@ -357,11 +364,20 @@ public class ScreenOptions extends Screen
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "auto_ready":
+						Game.autoReady = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "anticheat":
 						TankPlayerRemote.checkMotion = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "anticheat_weak":
 						TankPlayerRemote.weakTimeCheck = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "disable_party_friendly_fire":
+						Game.disablePartyFriendlyFire = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "party_countdown":
+						Game.partyStartTime = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_secondary_color":
 						Game.player.enableSecondaryColor = Boolean.parseBoolean(optionLine[1]);

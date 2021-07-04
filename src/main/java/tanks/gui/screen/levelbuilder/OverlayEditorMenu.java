@@ -23,7 +23,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.play();
+            screenLevelEditor.play();
             Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CUSTOM_LEVEL);
         }
     }
@@ -36,7 +36,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayLevelOptions(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayLevelOptions(Game.screen, screenLevelEditor);
         }
     }
     );
@@ -46,7 +46,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.save();
+            screenLevelEditor.save();
 
             Game.cleanUp();
             Game.screen = new ScreenSavedLevels();
@@ -59,16 +59,16 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new OverlayConfirmDelete(Game.screen, screenLevelBuilder);
+            Game.screen = new OverlayConfirmDelete(Game.screen, screenLevelEditor);
         }
     }
     );
 
-    public OverlayEditorMenu(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayEditorMenu(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
-        if (!screenLevelBuilder.level.editable)
+        if (!screenLevelEditor.level.editable)
         {
             play.posY += 60;
             delete.posY -= 60;
@@ -81,7 +81,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
 
     public void update()
     {
-        if (screenLevelBuilder.level.editable)
+        if (screenLevelEditor.level.editable)
         {
             resume.update();
             options.update();
@@ -90,19 +90,25 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         delete.update();
         quit.update();
 
-        if (screenLevelBuilder.spawns.size() > 0)
+        if (screenLevelEditor.spawns.size() > 0)
             play.update();
         else
             playUnavailable.update();
 
         super.update();
+
+        if (Game.game.input.editorPlay.isValid() && screenLevelEditor.spawns.size() > 0)
+        {
+            screenLevelEditor.play();
+            Game.game.input.play.invalidate();
+        }
     }
 
     public void draw()
     {
         super.draw();
 
-        if (screenLevelBuilder.level.editable)
+        if (screenLevelEditor.level.editable)
         {
             resume.draw();
             options.draw();
@@ -111,13 +117,13 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         delete.draw();
         quit.draw();
 
-        if (screenLevelBuilder.spawns.size() > 0)
+        if (screenLevelEditor.spawns.size() > 0)
             play.draw();
         else
             playUnavailable.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level menu");
     }
 }

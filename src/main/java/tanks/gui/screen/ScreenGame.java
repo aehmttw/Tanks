@@ -9,7 +9,7 @@ import tanks.event.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SpeedrunTimer;
-import tanks.gui.screen.levelbuilder.ScreenLevelBuilder;
+import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;
@@ -237,7 +237,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			playing = false;
-			Game.startTime = 400;
 			paused = false;
 
 			if (ScreenPartyHost.isServer)
@@ -257,6 +256,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			else
 				Game.reset();
 
+			Game.startTime = Game.currentLevel.startTime;
 			Game.screen = new ScreenGame();
 		}
 	}
@@ -268,7 +268,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			playing = false;
-			Game.startTime = 400;
 			paused = false;
 
 			if (ScreenPartyHost.isServer)
@@ -297,7 +296,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			playing = false;
-			Game.startTime = 400;
 			paused = false;
 
 			if (ScreenPartyHost.isServer)
@@ -337,7 +335,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			Game.cleanUp();
-			ScreenLevelBuilder s = new ScreenLevelBuilder(name, Game.currentLevel);
+			ScreenLevelEditor s = new ScreenLevelEditor(name, Game.currentLevel);
 			Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name), s);
 			Game.screen = s;
 		}
@@ -463,7 +461,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			playing = false;
-			Game.startTime = 400;
 			paused = false;
 
 			if (ScreenPartyHost.isServer)
@@ -531,7 +528,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			playing = false;
-			Game.startTime = 400;
 			paused = false;
 
 			ready = false;
@@ -598,7 +594,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		this.drawDarkness = false;
 
-		Game.startTime = 400;
+		Game.startTime = Game.currentLevel.startTime;
 		ScreenGame.lastTimePassed = 0;
 
 		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
@@ -750,6 +746,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	@Override
 	public void update()
 	{
+		if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)
+			this.readyButton.function.run();
+
 		Game.player.hotbar.update();
 
 		String prevMusic = this.music;
@@ -1773,7 +1772,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
 					&& Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing && Game.movables.contains(Game.playerTank))
 			{
-				double fade = Math.max(0, Math.sin(Math.min(Game.startTime, 50) / 100 * Math.PI));
+				double s = Game.startTime;
+
+				if (cancelCountdown)
+					s = 400;
+
+				double fade = Math.max(0, Math.sin(Math.min(s, 50) / 100 * Math.PI));
 
 				double frac = (System.currentTimeMillis() % 2000) / 2000.0;
 				double size = Math.max(800 * (0.5 - frac), 0) * fade;
@@ -1902,10 +1906,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					else
 						readyPlayers = ScreenPartyLobby.readyPlayers;
 
+					double s = Game.startTime;
+
+					if (cancelCountdown)
+						s = 400;
+
 					double extraWidth = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
 					double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;
 
-					Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (readyPanelCounter * 10) / 200) * Math.min(Game.startTime / 25, 1)));
+					Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (readyPanelCounter * 10) / 200) * Math.min(s / 25, 1)));
 					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX + extraWidth / 2, Drawing.drawing.interfaceSizeY / 2, extraWidth, height);
 					Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - Math.min(readyPanelCounter * 10, 200), Drawing.drawing.interfaceSizeY / 2,
 							Math.min(readyPanelCounter * 20, 400), height);
@@ -1914,7 +1923,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (c > 0)
 					{
-						Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(Game.startTime / 25, 1) * 255, 0));
+						Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(s / 25, 1) * 255, 0));
 						Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
 						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 50, "Ready players:");
@@ -1958,7 +1967,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					{
 						if (i < readyNamesCount)
 						{
-							Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(Game.startTime / 25, 1) * 255, 0));
+							Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(s / 25, 1) * 255, 0));
 							Drawing.drawing.setInterfaceFontSize(this.textSize);
 
 							if (i >= base)
@@ -1973,7 +1982,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (c >= 0)
 					{
-						Drawing.drawing.setColor(255, 255, 255, Math.min(Game.startTime / 25, 1) * 127);
+						Drawing.drawing.setColor(255, 255, 255, Math.min(s / 25, 1) * 127);
 						Drawing.drawing.setInterfaceFontSize(this.textSize);
 
 						for (int i = readyNamesCount; i < Math.min(includedPlayers, slots); i++)
@@ -2010,11 +2019,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Drawing.drawing.setColor(127, 127, 127);
 					Drawing.drawing.fillInterfaceRect(play.posX, play.posY + play.sizeY / 2 - 5, play.sizeX * 32 / 35, 3);
 					Drawing.drawing.setColor(255, 127, 0);
-					Drawing.drawing.fillInterfaceProgressRect(play.posX, play.posY + play.sizeY / 2 - 5, play.sizeX * 32 / 35, 3, Math.max(Game.startTime / 400, 0));
+					Drawing.drawing.fillInterfaceProgressRect(play.posX, play.posY + play.sizeY / 2 - 5, play.sizeX * 32 / 35, 3, Math.max(Game.startTime / Game.currentLevel.startTime, 0));
 
 					if (Game.glowEnabled)
 					{
-						Drawing.drawing.fillInterfaceGlow(play.posX + ((Game.startTime / 400 - 0.5) * (play.sizeX * 32 / 35)), play.posY + play.sizeY / 2 - 5, 20, 20);
+						Drawing.drawing.fillInterfaceGlow(play.posX + ((Game.startTime / Game.currentLevel.startTime - 0.5) * (play.sizeX * 32 / 35)), play.posY + play.sizeY / 2 - 5, 20, 20);
 					}
 				}
 			}

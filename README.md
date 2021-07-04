@@ -61,8 +61,15 @@ Steamworks4j
 
 ## Credits:
 
+### Main Developer:
 Matei Budiu (Aehmttw)<br>
+
+### Code Contributors:
 Karan Gurazada<br>
 Hallowizer<br>
 Grify<br>
-...and everyone else from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!
+Mihai Budiu<br>
+Panadero1<br>
+
+### Special Thanks:
+Everyone from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!

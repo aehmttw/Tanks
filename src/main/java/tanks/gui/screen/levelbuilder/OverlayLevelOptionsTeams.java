@@ -6,7 +6,6 @@ import tanks.Team;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.Screen;
-import tanks.gui.screen.ScreenOptions;
 
 import java.util.ArrayList;
 
@@ -31,30 +30,30 @@ public class OverlayLevelOptionsTeams extends ScreenLevelBuilderOverlay
         public void run()
         {
             Team t = new Team(System.currentTimeMillis() + "");
-            screenLevelBuilder.teams.add(t);
-            Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelBuilder, t);
+            screenLevelEditor.teams.add(t);
+            Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelEditor, t);
         }
     }
     );
 
-    public OverlayLevelOptionsTeams(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayLevelOptionsTeams(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
         this.load();
     }
 
     public void load()
     {
         this.teamEditButtons.clear();
-        for (int i = 0; i < screenLevelBuilder.teams.size(); i++)
+        for (int i = 0; i < screenLevelEditor.teams.size(); i++)
         {
-            Team t = screenLevelBuilder.teams.get(i);
+            Team t = screenLevelEditor.teams.get(i);
             Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelBuilder, t);
+                    Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelEditor, t);
                 }
             }
             );
@@ -84,7 +83,7 @@ public class OverlayLevelOptionsTeams extends ScreenLevelBuilderOverlay
         newTeam.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 270, "Teams");
     }
 }

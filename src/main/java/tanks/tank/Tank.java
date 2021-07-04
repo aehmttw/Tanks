@@ -8,6 +8,7 @@ import tanks.event.EventTankUpdate;
 import tanks.event.EventTankUpdateHealth;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -116,20 +117,23 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.drawLevel = 4;
 
-		if (countID)
-		{
-			if (freeIDs.size() > 0)
-				this.networkID = freeIDs.remove(0);
-			else
-			{
-				this.networkID = currentID;
-				currentID++;
-			}
-
-			idMap.put(this.networkID, this);
-		}
+		if (countID && ScreenPartyHost.isServer)
+			this.registerNetworkID();
 		else
 			this.networkID = -1;
+	}
+
+	public void registerNetworkID()
+	{
+		if (freeIDs.size() > 0)
+			this.networkID = freeIDs.remove(0);
+		else
+		{
+			this.networkID = currentID;
+			currentID++;
+		}
+
+		idMap.put(this.networkID, this);
 	}
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b) 
@@ -605,10 +609,10 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		//Drawing.drawing.setColor(0, 0, 0);
-		//Drawing.drawing.setFontSize(24);
-		//Drawing.drawing.drawText(posX, posY, 50, networkID + "");
-
+		/*Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setFontSize(24);
+		Drawing.drawing.drawText(posX, posY, 50, networkID + "");
+		*/
 		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 

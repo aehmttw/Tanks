@@ -24,10 +24,10 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseObstacleGroup += 1;
-            groupID.inputText = screenLevelBuilder.mouseObstacleGroup + "";
-            groupID.previousInputText = screenLevelBuilder.mouseObstacleGroup + "";
-            screenLevelBuilder.mouseObstacle.setMetadata(screenLevelBuilder.mouseObstacleGroup + "");
+            screenLevelEditor.mouseObstacleGroup += 1;
+            groupID.inputText = screenLevelEditor.mouseObstacleGroup + "";
+            groupID.previousInputText = screenLevelEditor.mouseObstacleGroup + "";
+            screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
         }
     }
     );
@@ -37,17 +37,17 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            screenLevelBuilder.mouseObstacleGroup -= 1;
-            groupID.inputText = screenLevelBuilder.mouseObstacleGroup + "";
-            groupID.previousInputText = screenLevelBuilder.mouseObstacleGroup + "";
-            screenLevelBuilder.mouseObstacle.setMetadata(screenLevelBuilder.mouseObstacleGroup + "");
+            screenLevelEditor.mouseObstacleGroup -= 1;
+            groupID.inputText = screenLevelEditor.mouseObstacleGroup + "";
+            groupID.previousInputText = screenLevelEditor.mouseObstacleGroup + "";
+            screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
         }
     }
     );
 
-    public OverlayBlockGroupID(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayBlockGroupID(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
 
         groupID = new TextBox(this.centerX, this.centerY + 15, 350, 40, "Group ID", new Runnable()
         {
@@ -55,15 +55,15 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
             public void run()
             {
                 if (groupID.inputText.length() <= 0)
-                    groupID.inputText = screenLevelBuilder.mouseObstacleGroup + "";
+                    groupID.inputText = screenLevelEditor.mouseObstacleGroup + "";
                 else
-                    screenLevelBuilder.mouseObstacleGroup = Integer.parseInt(groupID.inputText);
+                    screenLevelEditor.mouseObstacleGroup = Integer.parseInt(groupID.inputText);
 
-                screenLevelBuilder.mouseObstacle.setMetadata(screenLevelBuilder.mouseObstacleGroup + "");
+                screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
             }
 
         }
-                , screenLevelBuilder.mouseObstacleGroup + "");
+                , screenLevelEditor.mouseObstacleGroup + "");
 
         groupID.allowLetters = false;
         groupID.allowSpaces = false;
@@ -81,8 +81,8 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
 
     public void update()
     {
-        this.increaseID.enabled = screenLevelBuilder.mouseObstacleGroup < 999999999;
-        this.decreaseID.enabled = screenLevelBuilder.mouseObstacleGroup > 0;
+        this.increaseID.enabled = screenLevelEditor.mouseObstacleGroup < 999999999;
+        this.decreaseID.enabled = screenLevelEditor.mouseObstacleGroup > 0;
 
         this.increaseID.update();
         this.decreaseID.update();
@@ -97,7 +97,7 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Group ID");
 

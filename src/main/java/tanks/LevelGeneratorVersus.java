@@ -697,7 +697,9 @@ public class LevelGeneratorVersus
 
 			int bound;
 
-			if (numTanks < 6)
+			if (numTanks < 4)
+				bound = 8;
+			else if (numTanks < 6)
 				bound = 4;
 			else if (numTanks < 10)
 				bound = 3;

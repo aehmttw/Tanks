@@ -50,9 +50,9 @@ public class OverlayEditLevelStartingItems extends ScreenLevelBuilderOverlay imp
     }
     );
 
-    public OverlayEditLevelStartingItems(Screen previous, ScreenLevelBuilder screenLevelBuilder)
+    public OverlayEditLevelStartingItems(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        super(previous, screenLevelBuilder);
+        super(previous, screenLevelEditor);
         this.load();
 
         String[] itemNames = new String[Game.registryItem.itemEntries.size() + 1];
@@ -94,11 +94,11 @@ public class OverlayEditLevelStartingItems extends ScreenLevelBuilderOverlay imp
 
         startingItemsList.reorderBehavior = (i, j) ->
         {
-            screenLevelBuilder.level.startingItems.add(j, screenLevelBuilder.level.startingItems.remove((int)i));
-            ScreenLevelBuilder.refreshItemButtons(screenLevelBuilder.level.startingItems, startingItemsList, true);
+            screenLevelEditor.level.startingItems.add(j, screenLevelEditor.level.startingItems.remove((int)i));
+            ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, startingItemsList, true);
         };
 
-        ScreenLevelBuilder.refreshItemButtons(screenLevelBuilder.level.startingItems, startingItemsList, true);
+        ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, startingItemsList, true);
     }
 
     public void update()
@@ -118,7 +118,7 @@ public class OverlayEditLevelStartingItems extends ScreenLevelBuilderOverlay imp
         if (Game.screen != this)
             return;
 
-        Drawing.drawing.setColor(screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness, screenLevelBuilder.fontBrightness);
+        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 270, "Starting items");
         this.startingItemsList.draw();
@@ -136,7 +136,7 @@ public class OverlayEditLevelStartingItems extends ScreenLevelBuilderOverlay imp
     @Override
     public void addItem(Item i)
     {
-        screenLevelBuilder.level.startingItems.add(i);
+        screenLevelEditor.level.startingItems.add(i);
 
         ScreenEditItem s = new ScreenEditItem(i, this, true, true);
         s.drawBehindScreen = true;
@@ -146,14 +146,14 @@ public class OverlayEditLevelStartingItems extends ScreenLevelBuilderOverlay imp
     @Override
     public void removeItem(Item i)
     {
-        screenLevelBuilder.level.startingItems.remove(i);
-        ScreenLevelBuilder.refreshItemButtons(screenLevelBuilder.level.startingItems, this.startingItemsList, true);
+        screenLevelEditor.level.startingItems.remove(i);
+        ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, this.startingItemsList, true);
     }
 
     @Override
     public void refreshItems()
     {
-        ScreenLevelBuilder.refreshItemButtons(screenLevelBuilder.level.startingItems, this.startingItemsList, true);
+        ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, this.startingItemsList, true);
     }
 
 }

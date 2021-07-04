@@ -16,6 +16,8 @@ public class ScreenOptionsGraphics extends Screen
     public static final String perspectiveText = "View: ";
     public static final String antialiasingText = "Antialiasing: ";
 
+    public static final String fullscreenText = "Fullscreen: ";
+
     public static final String fancyText = "\u00A7000100200255fancy";
     public static final String fastText = "\u00A7200100000255fast";
 
@@ -118,7 +120,7 @@ public class ScreenOptionsGraphics extends Screen
         }
     }
 
-    Button terrain = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button terrain = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -135,7 +137,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
 
-    Button bulletTrails = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button bulletTrails = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -162,7 +164,7 @@ public class ScreenOptionsGraphics extends Screen
         }
     }, "Bullet trails show the paths of bullets------Fancy bullet trails enable some extra particle---effects for certain bullet types");
 
-    Button glow = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button glow = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -177,7 +179,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Glow effects may significantly---impact performance");
 
-    Button graphics3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button graphics3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -194,7 +196,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "3D graphics may impact performance");
 
-    Button ground3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button ground3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -210,7 +212,7 @@ public class ScreenOptionsGraphics extends Screen
             "Enabling 3D ground may impact---performance in large levels");
 
 
-    Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -227,7 +229,7 @@ public class ScreenOptionsGraphics extends Screen
             "Changes the angle at which---you view the game field");
 
 
-    Button vsync = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button vsync = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -243,7 +245,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
 
-    Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -263,6 +265,17 @@ public class ScreenOptionsGraphics extends Screen
     },
             "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
+    Button fullscreen = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.game.window.setFullscreen(!Game.game.window.fullscreen);
+            fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
+        }
+    }, "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs()
+    );
+
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
@@ -273,7 +286,7 @@ public class ScreenOptionsGraphics extends Screen
     }
     );
 
-    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -283,7 +296,7 @@ public class ScreenOptionsGraphics extends Screen
     }, "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate"
     );
 
-    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -308,6 +321,8 @@ public class ScreenOptionsGraphics extends Screen
         shadows.update();
         antialiasing.update();
 
+        fullscreen.update();
+
         back.update();
 
         if (Game.antialiasing != Game.game.window.antialiasingEnabled)
@@ -328,6 +343,10 @@ public class ScreenOptionsGraphics extends Screen
         this.drawDefaultBackground();
 
         back.draw();
+
+        // Need to update fullscreen text in case user changes it via F11
+        fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
+        fullscreen.draw();
 
         antialiasing.draw();
         shadows.draw();

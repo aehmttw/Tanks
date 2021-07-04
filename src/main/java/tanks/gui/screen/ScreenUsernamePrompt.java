@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.rpc.RichPresenceEvent;
 
 public class ScreenUsernamePrompt extends Screen
 {
@@ -18,6 +19,7 @@ public class ScreenUsernamePrompt extends Screen
 		public void run() 
 		{
 			Game.screen = new ScreenOptionsMultiplayer();
+			Game.game.discordRPC.update(RichPresenceEvent.OPTIONS_MENU);
 		}
 	}
 			);

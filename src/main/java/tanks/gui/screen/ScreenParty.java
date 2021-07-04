@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.rpc.RichPresenceEvent;
 
 public class ScreenParty extends Screen
 {
@@ -21,6 +22,8 @@ public class ScreenParty extends Screen
 
 		this.music = "menu_2.ogg";
 		this.musicID = "menu";
+
+		Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER);
 	}
 	
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()

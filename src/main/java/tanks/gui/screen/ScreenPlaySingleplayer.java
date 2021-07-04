@@ -4,6 +4,7 @@ import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.rpc.RichPresenceEvent;
 
 public class ScreenPlaySingleplayer extends Screen
 {
@@ -11,6 +12,8 @@ public class ScreenPlaySingleplayer extends Screen
     {
         this.music = "menu_3.ogg";
         this.musicID = "menu";
+
+        Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER);
     }
 
     Button randomLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Random level", new Runnable()
@@ -20,6 +23,8 @@ public class ScreenPlaySingleplayer extends Screen
         {
             Game.reset();
             Game.screen = new ScreenGame();
+
+            Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.RANDOM_LEVEL);
         }
     }
             , "Generate a random level to play");

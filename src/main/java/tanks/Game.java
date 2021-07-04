@@ -25,6 +25,8 @@ import tanks.registry.RegistryBullet;
 import tanks.registry.RegistryItem;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
+import tanks.rpc.RichPresence;
+import tanks.rpc.RichPresenceEvent;
 import tanks.tank.*;
 
 import java.io.FileNotFoundException;
@@ -216,6 +218,11 @@ public class Game
 	public static String homedir;
 	public static Game game = new Game();
 
+	public RichPresence discordRPC;
+	public boolean presenceEnabled = true;
+
+	public long gameStartTime = System.currentTimeMillis() / 1000; // long is used by the api
+  
 	// Note: this is not used by the game to determine fullscreen status
 	// It is simply a value defined before
 	// Refer to Game.game.window.fullscreen for true fullscreen status
@@ -316,6 +323,8 @@ public class Game
 		NetworkEventMap.register(EventUploadLevel.class);
 		NetworkEventMap.register(EventSendLevelToDownload.class);
 		NetworkEventMap.register(EventCleanUp.class);
+
+		NetworkEventMap.register(EventPartyRpcUpdate.class);
 	}
 
 	public static void registerObstacle(Class<? extends Obstacle> obstacle, String name)
@@ -535,6 +544,8 @@ public class Game
 
 		ScreenOptions.loadOptions(Game.homedir);
 
+		Game.game.discordRPC = new RichPresence();
+
 		extensionRegistry.loadRegistry();
 
 		if (extraExtensions != null)
@@ -563,6 +574,7 @@ public class Game
 		ArrayList<String> overrideLocations = new ArrayList<>();
 		overrideLocations.add(Game.homedir + Game.resourcesPath);
 		Game.game.window.setOverrideLocations(overrideLocations, Game.game.fileManager);
+		Game.game.discordRPC.update(RichPresenceEvent.TITLE_SCREEN);
 	}
 
 	public static void createModels()
@@ -865,6 +877,8 @@ public class Game
 		removeEffects.clear();
 		removeTracks.clear();
 
+		Game.game.discordRPC.update(RichPresenceEvent.BSOD);
+
 		System.gc();
 
 		Drawing.drawing.playSound("leave.ogg");
@@ -998,6 +1012,8 @@ public class Game
 		cleanUp();
 		Panel.panel.zoomTimer = 0;
 		screen = new ScreenTitle();
+		if (Game.game.discordRPC != null)
+			Game.game.discordRPC.update(RichPresenceEvent.TITLE_SCREEN);
 		System.gc();
 	}
 

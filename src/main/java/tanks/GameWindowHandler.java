@@ -13,6 +13,9 @@ public class GameWindowHandler implements IWindowHandler
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.exit();
 
+
+		Game.game.discordRPC.exit();
+
 		ScreenOptions.saveOptions(Game.homedir);
 
 		if (ScreenPartyHost.isServer)

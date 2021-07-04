@@ -2,8 +2,10 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.event.EventPartyRpcUpdate;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.rpc.RichPresenceEvent;
 
 public class ScreenPlaySavedLevels extends Screen
 {
@@ -32,6 +34,13 @@ public class ScreenPlaySavedLevels extends Screen
 		this.musicID = "menu";
 
 		this.initializeLevels();
+
+		if (ScreenPartyHost.isServer) {
+			Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER, RichPresenceEvent.LEVEL_SELECT);
+			Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.LEVEL_SELECT));
+		} else {
+			Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.LEVEL_SELECT);
+		}
 	}
 
 	public void initializeLevels()
@@ -44,6 +53,13 @@ public class ScreenPlaySavedLevels extends Screen
 					{
 						Game.screen = new ScreenGame();
 						ScreenInterlevel.fromSavedLevels = true;
+
+						if (ScreenPartyHost.isServer) {
+							Game.game.discordRPC.update(RichPresenceEvent.MULTIPLAYER, RichPresenceEvent.CUSTOM_LEVEL);
+							Game.eventsOut.add(new EventPartyRpcUpdate(RichPresenceEvent.CUSTOM_LEVEL));
+						} else {
+							Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CUSTOM_LEVEL);
+						}
 					}
 				}, (file) -> null);
 	}

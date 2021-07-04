@@ -6,6 +6,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.rpc.RichPresenceEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,6 +126,8 @@ public class ScreenCrusades extends Screen
 		));
 
 		crusadesList.sortButtons();
+
+		Game.game.discordRPC.update(RichPresenceEvent.SINGLEPLAYER, RichPresenceEvent.CRUSADE_SELECT);
 	}
 
 	public Crusade findExistingCrusadeProgress(String name)

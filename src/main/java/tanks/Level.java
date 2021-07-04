@@ -15,6 +15,7 @@ import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Level 
 {
@@ -77,6 +78,8 @@ public class Level
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
 
+	public Random random;
+
 	/**
 	 * A level string is structured like this:
 	 * (parentheses signify required parameters, and square brackets signify optional parameters. 
@@ -86,6 +89,11 @@ public class Level
 	 */
 	public Level(String level)
 	{
+		if (Game.useSeed)
+			this.random = new Random(Game.seed);
+		else
+			this.random = new Random();
+
 		if (ScreenPartyHost.isServer)
 			this.startTime = Game.partyStartTime;
 

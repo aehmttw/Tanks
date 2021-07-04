@@ -26,8 +26,14 @@ public class ScreenOptionsSpeedrun extends Screen
 
     TextBox seedEntry = new TextBox(this.centerX, this.centerY, this.objWidth, this.objHeight, "Seed", new Runnable() {
         @Override
-        public void run() {
-            Game.seed = Integer.parseInt(seedEntry.inputText);
+        public void run()
+        {
+            try {
+                Game.seed = Integer.parseInt(seedEntry.inputText);
+            } catch (NumberFormatException e)
+            {
+                seedEntry.inputText = seedEntry.previousInputText;
+            }
         }
     }, "0", "Seed for random number generator");
 

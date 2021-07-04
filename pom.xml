@@ -10,7 +10,7 @@
 	<description>A game where you shoot other Tanks</description>
 	
 	<properties>
-		<netty.version>4.1.42</netty.version>
+		<netty.version>4.1.42.Final</netty.version>
 		<lwjgl.version>3.2.0</lwjgl.version>
 		<pngdecoder.version>1.0</pngdecoder.version>
 		<mavennatives.version>0.0.3</mavennatives.version>

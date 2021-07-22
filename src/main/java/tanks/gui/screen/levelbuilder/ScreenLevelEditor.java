@@ -16,11 +16,13 @@ import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
-	public ArrayList<Action> actions = new ArrayList<Action>();
-	public ArrayList<Action> redoActions = new ArrayList<Action>();
+	public ArrayList<Action> actions = new ArrayList<>();
+	public ArrayList<Action> redoActions = new ArrayList<>();
+	public static int prevUndoLength = 0;
 	public int redoLength = -1;
 
 	public Placeable currentPlaceable = Placeable.enemyTank;
@@ -39,8 +41,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public boolean objectMenu = false;
 
 	public double clickCooldown = 0;
-	public ArrayList<Team> teams = new ArrayList<Team>();
-	public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
+	public ArrayList<Team> teams = new ArrayList<>();
+	public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
 	public Level level;
 	public String name;
@@ -77,26 +79,18 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public double fontBrightness = 0;
 
-	Button pause = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			paused = true;
-			Game.screen = new OverlayEditorMenu(Game.screen, (ScreenLevelEditor) Game.screen);
-		}
+	public boolean saved = true;
+
+	Button pause = new Button(0, -1000, 70, 70, "", () -> {
+		paused = true;
+		Game.screen = new OverlayEditorMenu(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Level menu (" + Game.game.input.editorPause.getInputs() + ")"
 	);
 
-	Button menu = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			paused = true;
-			objectMenu = true;
-			Game.screen = new OverlayObjectMenu(Game.screen, (ScreenLevelEditor) Game.screen);
-		}
+	Button menu = new Button(0, -1000, 70, 70, "", () -> {
+		paused = true;
+		objectMenu = true;
+		Game.screen = new OverlayObjectMenu(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Object menu (" + Game.game.input.editorObjectMenu.getInputs() + ")"
 	);
 
@@ -112,180 +106,117 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	}
 	);
 
-	Button playControl = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			clickCooldown = 20;
-			play();
-		}
-	}, "Play (" + Game.game.input.editorPlay.getInputs() + ")"
-	);
+	Button playControl = new Button(0, -1000, 70, 70, "", () -> {
+		clickCooldown = 20;
+		play();
+	}, "Play (" + Game.game.input.editorPlay.getInputs() + ")");
 
-	Button place = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button save = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			selectMode = false;
-			changeCameraMode = false;
-			eraseMode = false;
-		}
+		this.saved = true;
+		prevUndoLength = actions.size();
+
+		save();
+	}, "Save (keybind coming soon)");
+
+	Button place = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
+
+		selectMode = false;
+		changeCameraMode = false;
+		eraseMode = false;
 	}, "Build (" + Game.game.input.editorBuild.getInputs() + ")"
 	);
 
-	Button erase = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button erase = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			selectMode = false;
-			changeCameraMode = false;
-			eraseMode = true;
-		}
+		selectMode = false;
+		changeCameraMode = false;
+		eraseMode = true;
 	}, "Erase (" + Game.game.input.editorErase.getInputs() + ")"
 	);
 
-	Button panZoom = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			changeCameraMode = true;
-		}
-	}, "Adjust camera (" + Game.game.input.editorCamera.getInputs() + ")"
+	Button panZoom = new Button(0, -1000, 70, 70, "", () -> changeCameraMode = true, "Adjust camera (" + Game.game.input.editorCamera.getInputs() + ")"
 	);
 
-	Button select = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			selectMode = true;
-			changeCameraMode = false;
-		}
+	Button select = new Button(0, -1000, 70, 70, "", () -> {
+		selectMode = true;
+		changeCameraMode = false;
 	}, "Select (" + Game.game.input.editorSelect.getInputs() + ")"
 	);
 
-	Button undo = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button undo = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			Action a = actions.remove(actions.size() - 1);
-			a.undo();
-			redoActions.add(a);
-			redoLength = actions.size();
-		}
+		Action a = actions.remove(actions.size() - 1);
+		a.undo();
+		redoActions.add(a);
+		redoLength = actions.size();
 	}, "Undo (" + Game.game.input.editorUndo.getInputs() + ")"
 	);
 
-	Button redo = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button redo = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			Action a = redoActions.remove(redoActions.size() - 1);
-			a.redo();
-			actions.add(a);
-			redoLength = actions.size();
-		}
+		Action a = redoActions.remove(redoActions.size() - 1);
+		a.redo();
+		actions.add(a);
+		redoLength = actions.size();
 	}, "Redo (" + Game.game.input.editorRedo.getInputs() + ")"
 	);
 
-	Button rotateShortcut = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			paused = true;
-			Game.screen = new OverlayRotateTank(Game.screen, (ScreenLevelEditor) Game.screen);
-		}
+	Button rotateShortcut = new Button(0, -1000, 70, 70, "", () -> {
+		paused = true;
+		Game.screen = new OverlayRotateTank(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Tank orientation (" + Game.game.input.editorRotate.getInputs() + ")"
 	);
 
-	Button teamShortcut = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			paused = true;
-			Game.screen = new OverlaySelectTeam(Game.screen, (ScreenLevelEditor) Game.screen);
-		}
+	Button teamShortcut = new Button(0, -1000, 70, 70, "", () -> {
+		paused = true;
+		Game.screen = new OverlaySelectTeam(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Tank team (" + Game.game.input.editorTeam.getInputs() + ")"
 	);
 
-	Button heightShortcut = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			paused = true;
-			Game.screen = new OverlayBlockHeight(Game.screen, (ScreenLevelEditor) Game.screen);
-		}
+	Button heightShortcut = new Button(0, -1000, 70, 70, "", () -> {
+		paused = true;
+		Game.screen = new OverlayBlockHeight(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Block height (" + Game.game.input.editorHeight.getInputs() + ")"
 	);
 
-	Button groupShortcut = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			paused = true;
-			Game.screen = new OverlayBlockGroupID(Game.screen, (ScreenLevelEditor) Game.screen);
-		}
+	Button groupShortcut = new Button(0, -1000, 70, 70, "", () -> {
+		paused = true;
+		Game.screen = new OverlayBlockGroupID(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Block group ID (" + Game.game.input.editorGroupID.getInputs() + ")"
 	);
 
-	Button selectSquareToggle = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button selectSquareToggle = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			selectSquare = !selectSquare;
-		}
+		selectSquare = !selectSquare;
 	}, "Lock square selecting (Hold: " + Game.game.input.editorHoldSquare.getInputs() + ", Toggle: " + Game.game.input.editorLockSquare.getInputs() + ")"
 	);
 
-	Button selectAddToggle = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button selectAddToggle = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			selectAdd = !selectAdd;
-		}
+		selectAdd = !selectAdd;
 	}, "Toggle select/deselect (" + Game.game.input.editorSelectAddToggle.getInputs() + ")"
 	);
 
-	Button selectClear = new Button(0, -1000, 70, 70, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.pressedKeys.clear();
-			Game.game.window.pressedButtons.clear();
+	Button selectClear = new Button(0, -1000, 70, 70, "", () -> {
+		Game.game.window.pressedKeys.clear();
+		Game.game.window.pressedButtons.clear();
 
-			clearSelection();
-		}
+		clearSelection();
 	}, "Clear selection (" + Game.game.input.editorDeselect.getInputs() + ")"
 	);
 
@@ -363,11 +294,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		selectSquareToggle.sizeY *= controlsSizeMultiplier;
 		selectSquareToggle.fullInfo = true;
 
+		save.sizeX *= controlsSizeMultiplier;
+		save.sizeY *= controlsSizeMultiplier;
+		save.fullInfo = true;
+
 		this.enableMargins = false;
 
 		for (int i = 0; i < drawables.length; i++)
 		{
-			drawables[i] = new ArrayList<IDrawable>();
+			drawables[i] = new ArrayList<>();
 		}
 
 		Obstacle.draw_size = Game.tile_size;
@@ -386,6 +321,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	@Override
 	public void update()
 	{
+		if (actions.size() != prevUndoLength)
+			this.saved = false;
+
 		if (Level.isDark())
 			this.fontBrightness = 255;
 		else
@@ -424,6 +362,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				erase.enabled = true;
 				select.enabled = true;
 				panZoom.enabled = false;
+				save.enabled = false;
 			}
 			else if (selectMode)
 			{
@@ -431,6 +370,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				erase.enabled = true;
 				select.enabled = false;
 				panZoom.enabled = true;
+				save.enabled = true;
 			}
 			else if (eraseMode)
 			{
@@ -438,6 +378,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				erase.enabled = false;
 				select.enabled = true;
 				panZoom.enabled = true;
+				save.enabled = true;
 			}
 			else
 			{
@@ -445,6 +386,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				erase.enabled = true;
 				select.enabled = true;
 				panZoom.enabled = true;
+				save.enabled = true;
 			}
 
 			place.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
@@ -495,6 +437,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			selectAddToggle.posX = selectSquareToggle.posX - hStep;
 			selectAddToggle.posY = selectSquareToggle.posY - vStep;
+
+			save.posX = playControl.posX - hStep;
+			save.posY = playControl.posY + vStep;
+			save.update();
 
 			selectClear.posX = playControl.posX - hStep;
 			selectClear.posY = playControl.posY + vStep;
@@ -862,13 +808,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (this.changeCameraMode)
 			{
 				this.selectMode = true;
-				this.changeCameraMode = false;
 			}
 			else
 			{
 				this.selectMode = !this.selectMode;
-				this.changeCameraMode = false;
 			}
+			this.changeCameraMode = false;
 
 			Game.game.input.editorSelect.invalidate();
 		}
@@ -1368,14 +1313,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
 		double[][][] obstacles = new double[Game.registryObstacle.obstacleEntries.size()][this.level.sizeX][this.level.sizeY];
 
-		for (int i = 0; i < obstacles.length; i++)
-		{
-			for (int j = 0; j < obstacles[i].length; j++)
-			{
-				for (int k = 0; k < obstacles[i][j].length; k++)
-				{
-					obstacles[i][j][k] = -1;
-				}
+		for (double[][] obstacle : obstacles) {
+			for (double[] doubles : obstacle) {
+				Arrays.fill(doubles, -1);
 			}
 		}
 
@@ -1478,18 +1418,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		for (int i = 0; i < unmarked.size(); i++)
-		{
-			level.append((int)(unmarked.get(i).posX / Game.tile_size)).append("-").append((int)(unmarked.get(i).posY / Game.tile_size));
-			level.append("-").append(unmarked.get(i).name);
+		for (Obstacle obstacle : unmarked) {
+			level.append((int) (obstacle.posX / Game.tile_size)).append("-").append((int) (obstacle.posY / Game.tile_size));
+			level.append("-").append(obstacle.name);
 
-			Obstacle u = unmarked.get(i);
-			if (u instanceof ObstacleUnknown && ((ObstacleUnknown) u).metadata != null)
-				level.append("-").append(((ObstacleUnknown) u).metadata);
-			else if (u.enableStacking)
-				level.append("-").append(u.stackHeight);
-			else if (u.enableGroupID)
-				level.append("-").append(u.groupID);
+			if (obstacle instanceof ObstacleUnknown && ((ObstacleUnknown) obstacle).metadata != null)
+				level.append("-").append(((ObstacleUnknown) obstacle).metadata);
+			else if (obstacle.enableStacking)
+				level.append("-").append(obstacle.stackHeight);
+			else if (obstacle.enableGroupID)
+				level.append("-").append(obstacle.groupID);
 
 
 			level.append(",");
@@ -1529,9 +1467,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		level.append("|");
 
-		for (int i = 0; i < teams.size(); i++)
-		{
-			Team t = teams.get(i);
+		for (Team t : teams) {
 			level.append(t.name).append("-").append(t.friendlyFire);
 			if (t.enableColor)
 				level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
@@ -1818,6 +1754,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			selectClear.imageSizeX = 40 * controlsSizeMultiplier;
 			selectClear.imageSizeY = 40 * controlsSizeMultiplier;
 
+			save.image = "save.png";
+			save.imageSizeX = 40 * controlsSizeMultiplier;
+			save.imageSizeY = 40 * controlsSizeMultiplier;
+
 			if (selectAdd)
 				selectAddToggle.image = "select_add.png";
 			else
@@ -1858,6 +1798,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			select.draw();
 			erase.draw();
 			place.draw();
+			save.draw();
 
 			undo.draw();
 			redo.draw();
@@ -1930,8 +1871,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null)
 			playerCount += ScreenPartyHost.server.connections.size();
 
-		ArrayList<Integer> availablePlayerSpawns = new ArrayList<Integer>();
-		ArrayList<INetworkEvent> playerEvents = new ArrayList<INetworkEvent>();
+		ArrayList<Integer> availablePlayerSpawns = new ArrayList<>();
+		ArrayList<INetworkEvent> playerEvents = new ArrayList<>();
 
 		for (int i = 0; i < playerCount; i++)
 		{
@@ -2016,8 +1957,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			for (int y = 0; y < Game.currentSizeY; y++)
 			{
-				if (selectedTiles[x][y])
+				if (selectedTiles[x][y]) {
 					selection = true;
+					break;
+				}
 			}
 		}
 	}
@@ -2074,15 +2017,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			int j = i;
 
-			Button b = new Button(0, 0, 350, 40, items.get(i).name, new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					ScreenEditItem s = new ScreenEditItem(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
-					s.drawBehindScreen = true;
-					Game.screen = s;
-				}
+			Button b = new Button(0, 0, 350, 40, items.get(i).name, () -> {
+				ScreenEditItem s = new ScreenEditItem(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
+				s.drawBehindScreen = true;
+				Game.screen = s;
 			});
 
 			b.image = items.get(j).icon;
@@ -2110,7 +2048,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		buttons.sortButtons();
 	}
 
-	static abstract class Action
+	public static abstract class Action
 	{
 		public abstract void undo();
 		public abstract void redo();

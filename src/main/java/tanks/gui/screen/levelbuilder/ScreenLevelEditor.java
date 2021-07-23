@@ -119,7 +119,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		prevUndoLength = actions.size();
 
 		save();
-	}, "Save (keybind coming soon)");
+	}, "Save (" + Game.game.input.editorSave.getInputs() + ")");
 
 	Button place = new Button(0, -1000, 70, 70, "", () -> {
 		Game.game.window.pressedKeys.clear();

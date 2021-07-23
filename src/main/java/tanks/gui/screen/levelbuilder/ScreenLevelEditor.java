@@ -115,9 +115,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.game.window.pressedKeys.clear();
 		Game.game.window.pressedButtons.clear();
 
-		this.saved = true;
-		prevUndoLength = actions.size();
-
 		save();
 	}, "Save (" + Game.game.input.editorSave.getInputs() + ")");
 
@@ -318,11 +315,21 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			mouseTank.team = this.teams.get(teamNum);
 	}
 
+	boolean savePressed = false;
+
 	@Override
 	public void update()
 	{
 		if (actions.size() != prevUndoLength)
 			this.saved = false;
+
+		if (Game.game.input.editorSave.isValid() && Game.game.input.editorSave.isPressed() && !savePressed) {
+			save();
+			savePressed = true;
+		}
+
+		else if (savePressed && !Game.game.input.editorSave.isPressed())
+			savePressed = false;
 
 		if (Level.isDark())
 			this.fontBrightness = 255;
@@ -1302,6 +1309,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void save()
 	{
+		this.saved = true;
+		prevUndoLength = actions.size();
+
 		StringBuilder level = new StringBuilder("{");
 
 		if (!this.level.editable)

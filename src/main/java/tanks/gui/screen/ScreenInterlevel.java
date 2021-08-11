@@ -40,8 +40,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run()
 		{
-			Level level = new Level(Game.currentLevelString);
-			level.loadLevel();
+			Crusade.currentCrusade.loadLevel();
 			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 		}
 	}
@@ -83,10 +82,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run()
 		{
-			Level level = new Level(Game.currentLevelString);
-			level.loadLevel();
-			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+			Crusade.currentCrusade.loadLevel();
 			Crusade.currentCrusade.replay = true;
+			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 		}
 	}
 			, "You will not gain extra lives---"
@@ -103,7 +101,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 			if (Crusade.currentCrusade != null)
 			{
-				Game.player.saveCrusade();
+				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 				Crusade.currentCrusade = null;
 			}
 
@@ -139,14 +137,17 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitCrusadeEnd = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back to title", new Runnable()
+	Button quitCrusadeEnd = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Continue", new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			Crusade.crusadeMode = false;
-			Crusade.currentCrusade = null;
-			Game.exitToTitle();
+			Game.cleanUp();
+			Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade);
+			//Crusade.crusadeMode = false;
+			//Crusade.currentCrusade = null;
+			//Game.exitToTitle();
+
 		}
 	}
 	);
@@ -213,7 +214,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				Crusade.currentCrusade.replay = false;
 			}
 
-			Game.player.saveCrusade();
+			Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 			Crusade.crusadeMode = false;
 			Crusade.currentCrusade = null;
 			Game.exitToTitle();

@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
+import tanks.event.EventUpdateCoins;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemMine;
@@ -213,34 +214,25 @@ public class Mine extends Movable
                 Movable o = Game.movables.get(i);
                 if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
                 {
-                    if (o instanceof Tank && !o.destroy && !((Tank) o).invulnerable && !((Tank) o).resistExplosions)
+                    if (o instanceof Tank && !o.destroy && ((Tank) o).getDamageMultiplier(this) > 0)
                     {
                         if (!(Team.isAllied(this, o) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
                         {
                             Tank t = (Tank) o;
-                            t.health -= this.damage;
-                            t.flashAnimation = 1;
+                            boolean kill = t.damage(this.damage, this);
 
-                            if (t.health > 6 && (int) (t.health + this.damage) != (int) (t.health))
+                            if (kill)
                             {
-                                Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
-                                e.size = t.size;
-                                e.radius = t.health - 1;
-                                Game.effects.add(e);
-                            }
-
-                            if (t.health <= 0)
-                            {
-                                t.flashAnimation = 0;
-                                o.destroy = true;
-
                                 if (this.tank.equals(Game.playerTank))
                                     Game.player.hotbar.coins += t.coinValue;
+                                else if (this.tank instanceof TankPlayerRemote && Crusade.crusadeMode)
+                                {
+                                    ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
+                                    Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+                                }
                             }
                             else
-                            {
                                 Drawing.drawing.playGlobalSound("damage.ogg");
-                            }
                         }
                     }
                     else if (o instanceof Mine && !o.destroy)
@@ -266,7 +258,7 @@ public class Mine extends Movable
                 Obstacle o = Game.obstacles.get(i);
                 if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible && !Game.removeObstacles.contains(o))
                 {
-                    o.onDestroy();
+                    o.onDestroy(this);
                     o.playDestroyAnimation(this.posX, this.posY, this.radius);
                 }
             }

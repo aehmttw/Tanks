@@ -194,31 +194,20 @@ public class Bullet extends Movable implements IDrawable
 		if (!heavy)
 			this.destroy = true;
 
-		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !t.invulnerable && this.tankInside != t && !ScreenGame.finishedQuick && !t.resistBullets)
+		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && this.tankInside != t && !ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)
 		{
-			t.flashAnimation = 1;
 			if (!this.heavy)
 			{
 				this.vX = 0;
 				this.vY = 0;
 			}
 
-			t.health -= this.damage * this.frameDamageMultipler;
+			boolean kill = t.damage(this.damage * this.frameDamageMultipler, this);
 
-			Game.eventsOut.add(new EventTankUpdateHealth(t));
-
-			if (t.health > 6 && (int) (t.health + this.damage * this.frameDamageMultipler) != (int) (t.health))
+			if (kill)
 			{
-				Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
-				e.size = t.size;
-				e.radius = t.health - 1;
-				Game.effects.add(e);
-			}
-
-			if (t.health <= 0)
-			{
-				t.flashAnimation = 0;
-				t.destroy = true;
+				if (!this.heavy)
+					this.destroy = true;
 
 				if (this.tank.equals(Game.playerTank))
 					Game.player.hotbar.coins += t.coinValue;
@@ -228,15 +217,11 @@ public class Bullet extends Movable implements IDrawable
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
 			}
-			else if (this.playPopSound)
-			{
+			else
 				Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
-			}
 		}
 		else if (this.playPopSound && !this.heavy)
-		{
 			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
-		}
 
 		this.tankInside = t;
 	}

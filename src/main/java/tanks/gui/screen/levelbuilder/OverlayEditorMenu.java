@@ -2,6 +2,7 @@ package tanks.gui.screen.levelbuilder;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenSavedLevels;
@@ -102,6 +103,11 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
 
     public void draw()
     {
+        if (Level.isDark())
+            this.screenLevelEditor.fontBrightness = 255;
+        else
+            this.screenLevelEditor.fontBrightness = 0;
+
         super.draw();
 
         if (screenLevelEditor.level.editable)

@@ -47,15 +47,17 @@ public class TeleporterOrb extends Movable
     @Override
 	public void draw() 
 	{
+		double frac = 1 - Math.min(this.posZ / 200, 1);
+
 		//Drawing.drawing.setColor(255, 255, 255);
-		Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB);
+		Drawing.drawing.setColor(this.tank.colorR * (1 - frac) + 255 * frac, this.tank.colorG * (1 - frac) + 255 * frac, this.tank.colorB * (1 - frac) + 255 * frac);
 
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
 
 		for (int i = 0; i < this.size - this.tank.size; i++)
 		{
-			Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB, 20);
+			Drawing.drawing.setColor(this.tank.colorR * (1 - frac) + 255 * frac, this.tank.colorG * (1 - frac) + 255 * frac, this.tank.colorB * (1 - frac) + 255 * frac, 20);
 			//Drawing.drawing.setColor(255, 255, 255, 20);
 
 			if (Game.enable3d)

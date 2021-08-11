@@ -98,8 +98,10 @@ public class SteamNetworkHandler
 			{
 				synchronized (ScreenPartyHost.server.connections)
 				{
-					for (ServerHandler s : ScreenPartyHost.server.connections)
+					for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
 					{
+						ServerHandler s = ScreenPartyHost.server.connections.get(i);
+
 						if (s.steamID != null && serverHandlersBySteamID.get(s.steamID.getAccountID()) == null && !toClose.containsKey(s.steamID.getAccountID()))
 						{
 							s.channelInactive(null);

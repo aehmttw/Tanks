@@ -288,12 +288,21 @@ public class ScreenChangelog extends Screen
                                     "Added option to disable all friendly fire in parties\n" +
                                     "Added option to change the party countdown timer\n" +
                                     "Added auto ready multiplayer option\n" +
-                                    "Added fullscreen button (in addition to the key)" +
+                                    "Added fullscreen button (in addition to the key)\n" +
                                     "Arc bullets now have colored shadows\n" +
+                                    "Teleporter orbs are now the color of the teleporting tank\n" +
                                     "Player spawns are now more spread out in versus mode\n" +
-                                    "Bullets harmless to you (friendly fire off) flash is bigger\n" +
+                                    "Flash from bullets harmless to you (friendly fire off) is bigger\n" +
                                     "Bug fixes and other minor improvements"
+                    });
 
+            new Changelog("v1.2.2a", new String[]
+                    {
+                            "*What's new in Tanks v1.2.2:\n\n" +
+                                    "Added indicator for where arc bullets will land\n" +
+                                    "Hovering over the item bar slots shows keybinds\n" +
+                                    "Added option to show level names in crusades\n" +
+                                    "Bug fixes and other minor improvements"
                     });
         }
     }

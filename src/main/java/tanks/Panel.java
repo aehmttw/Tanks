@@ -95,7 +95,8 @@ public class Panel
 
 	public void setUp()
 	{
-		Game.game.window.setFullscreen(Game.game.fullscreen);
+		if (Game.game.fullscreen)
+			Game.game.window.setFullscreen(Game.game.fullscreen);
 
 		boolean tutorial = false;
 
@@ -303,8 +304,8 @@ public class Panel
 
 							if (Crusade.currentCrusade != null)
 							{
-								Crusade.currentCrusade.crusadeCoins.remove(p);
-								Crusade.currentCrusade.crusadeItembars.remove(p);
+								Crusade.currentCrusade.crusadePlayers.get(p).coins = p.hotbar.coins;
+								Crusade.currentCrusade.disconnectedPlayers.add(Crusade.currentCrusade.crusadePlayers.remove(p));
 							}
 						}
 					}

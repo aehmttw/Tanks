@@ -86,6 +86,9 @@ public class ScreenOptionsGraphics extends Screen
 
         shadows.text = "Fancy lighting: ";
 
+        if (Game.framework == Game.Framework.libgdx)
+            Game.shadowsEnabled = false;
+
         if (!Game.shadowsEnabled)
             shadows.text += ScreenOptions.offText;
         else
@@ -271,7 +274,6 @@ public class ScreenOptionsGraphics extends Screen
         public void run()
         {
             Game.game.window.setFullscreen(!Game.game.window.fullscreen);
-            fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
         }
     }, "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs()
     );
@@ -321,6 +323,12 @@ public class ScreenOptionsGraphics extends Screen
         shadows.update();
         antialiasing.update();
 
+        if (Game.framework == Game.Framework.libgdx)
+        {
+            fullscreen.enabled = false;
+            fullscreen.hoverText[0] = "This option is unavailable on mobile---because all apps are fullscreen!";
+        }
+
         fullscreen.update();
 
         back.update();
@@ -346,6 +354,10 @@ public class ScreenOptionsGraphics extends Screen
 
         // Need to update fullscreen text in case user changes it via F11
         fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
+
+        if (Game.framework == Game.Framework.libgdx)
+            fullscreen.text = fullscreenText + ScreenOptions.onText;
+
         fullscreen.draw();
 
         antialiasing.draw();

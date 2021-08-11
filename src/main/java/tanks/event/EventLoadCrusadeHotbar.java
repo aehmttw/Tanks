@@ -9,27 +9,31 @@ import tanks.network.NetworkUtils;
 public class EventLoadCrusadeHotbar extends PersonalEvent
 {
     public String title;
+    public String subtitle;
 
     public EventLoadCrusadeHotbar()
     {
 
     }
 
-    public EventLoadCrusadeHotbar(String title)
+    public EventLoadCrusadeHotbar(String title, String subtitle)
     {
         this.title = title;
+        this.subtitle = subtitle;
     }
 
     @Override
     public void write(ByteBuf b)
     {
         NetworkUtils.writeString(b, this.title);
+        NetworkUtils.writeString(b, this.subtitle);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.title = NetworkUtils.readString(b);
+        this.subtitle = NetworkUtils.readString(b);
     }
 
     @Override
@@ -42,5 +46,6 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
         }
 
         ((ScreenGame)(Game.screen)).title = this.title;
+        ((ScreenGame)(Game.screen)).subtitle = this.subtitle;
     }
 }

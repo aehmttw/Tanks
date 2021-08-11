@@ -2,7 +2,7 @@ package tanks.obstacle;
 
 import tanks.*;
 
-public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow
+public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IGameObject
 {
 	public static final int default_max_height = 4;
 
@@ -20,8 +20,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public boolean enableGroupID = false;
 	public int groupID = 0;
-	//public boolean drawBelow = false;
-	//public boolean drawAbove = false;
 
 	public int drawLevel = 5;
 	
@@ -360,7 +358,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		return o;
 	}
 
-	public void onDestroy()
+	public void onDestroy(Movable source)
 	{
 		Game.removeObstacles.add(this);
 	}

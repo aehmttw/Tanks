@@ -4,6 +4,7 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateTank;
+import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 
@@ -39,7 +40,7 @@ public class TankBoss extends TankAIControlled
 	@Override
 	public void update()
 	{
-		if (this.age <= 0)
+		if (this.age <= 0 && !this.destroy && !ScreenGame.finishedQuick)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -62,7 +63,7 @@ public class TankBoss extends TankAIControlled
 			this.spawned.remove(removeSpawned.get(i));
 		}
 		
-		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawned.size() < 6)
+		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawned.size() < 6 && !this.destroy && !ScreenGame.finishedQuick)
 		{
 			this.spawnTank();
 		}

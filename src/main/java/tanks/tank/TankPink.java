@@ -4,6 +4,7 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.event.EventCreateCustomTank;
+import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 
@@ -35,7 +36,7 @@ public class TankPink extends TankAIControlled
 	@Override
 	public void update()
 	{
-		if (this.age <= 0)
+		if (this.age <= 0 && !this.destroy && !ScreenGame.finishedQuick)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -45,7 +46,7 @@ public class TankPink extends TankAIControlled
 		
 		super.update();
 		
-		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawnedMinis < 6)
+		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawnedMinis < 6 && !this.destroy && !ScreenGame.finishedQuick)
 		{
 			spawnTank();
 		}

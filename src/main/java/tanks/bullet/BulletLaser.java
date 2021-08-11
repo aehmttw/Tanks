@@ -18,7 +18,7 @@ public class BulletLaser extends BulletInstant
 		this.baseColorG = 0;
 		this.baseColorB = 0;
 		this.name = bullet_name;
-		this.effect = Bullet.BulletEffect.none;
+		this.effect = BulletEffect.none;
 		this.itemSound = "laser.ogg";
 	}
 

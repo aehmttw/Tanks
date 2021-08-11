@@ -20,7 +20,7 @@ public class BulletHealing extends BulletInstant
 		this.baseColorG = 255;
 		this.baseColorB = 0;
 		this.name = bullet_name;
-		this.effect = Bullet.BulletEffect.none;
+		this.effect = BulletEffect.none;
 		this.damage = 0.01;
 		this.shouldDodge = false;
 		this.dealsDamage = false;

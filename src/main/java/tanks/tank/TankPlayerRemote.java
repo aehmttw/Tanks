@@ -10,7 +10,7 @@ import tanks.hotbar.item.ItemMine;
 
 import java.util.ArrayList;
 
-public class TankPlayerRemote extends Tank
+public class TankPlayerRemote extends Tank implements IServerPlayerTank
 {
     public double lastPosX;
     public double lastPosY;
@@ -455,5 +455,11 @@ public class TankPlayerRemote extends Tank
 
         this.posX = realPosX;
         this.posY = realPosY;
+    }
+
+    @Override
+    public Player getPlayer()
+    {
+        return this.player;
     }
 }

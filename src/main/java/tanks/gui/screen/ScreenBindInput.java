@@ -91,6 +91,7 @@ public class ScreenBindInput extends Screen
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 800, 400);
+        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 780 * this.objWidth / 350, 380 * this.objHeight / 40);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.textSize);

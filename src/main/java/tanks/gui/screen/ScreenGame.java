@@ -53,6 +53,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public static boolean versus = false;
 	public String title = "";
+	public String subtitle = "";
 
 	public long introMusicEnd;
 	public long introBattleMusicEnd;
@@ -426,7 +427,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			Crusade.crusadeMode = false;
-			Game.player.saveCrusade();
+			Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 			Crusade.currentCrusade = null;
 
 			for (int i = 0; i < Game.movables.size(); i++)
@@ -448,7 +449,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		public void run()
 		{
 			Crusade.crusadeMode = false;
-			Game.player.saveCrusade();
+			Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 			Crusade.currentCrusade = null;
 			Game.exitToTitle();
 		}
@@ -473,7 +474,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			Crusade.currentCrusade.saveHotbars();
-			Game.player.saveCrusade();
+			Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 			Game.silentCleanUp();
 
 			Crusade.currentCrusade.loadLevel();
@@ -1851,6 +1852,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				Drawing.drawing.setInterfaceFontSize(100);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
+
+				if (Crusade.currentCrusade != null && Crusade.currentCrusade.showNames)
+				{
+					Drawing.drawing.setInterfaceFontSize(50);
+					Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 75, Crusade.currentCrusade.levelNames.get(Crusade.currentCrusade.currentLevel).replace("_", " "));
+				}
 			}
 
 			if (!title.equals(""))
@@ -1862,6 +1869,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				Drawing.drawing.setInterfaceFontSize(100);
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, title);
+			}
+
+			if (!subtitle.equals(""))
+			{
+				if (Level.isDark())
+					Drawing.drawing.setColor(255, 255, 255, 127);
+				else
+					Drawing.drawing.setColor(0, 0, 0, 127);
+
+				Drawing.drawing.setInterfaceFontSize(50);
+				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 75, subtitle);
 			}
 
 			if (shopScreen)

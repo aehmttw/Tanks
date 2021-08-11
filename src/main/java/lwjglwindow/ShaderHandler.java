@@ -93,7 +93,7 @@ public class ShaderHandler
 
         glAttachShader(shadowProgram, vshader);
         glAttachShader(shadowProgram, fshader);
-        GL20.glBindAttribLocation(shadowProgram, 6, "bones");
+        //GL20.glBindAttribLocation(shadowProgram, 6, "bones");
         glLinkProgram(shadowProgram);
 
         int linked = glGetProgrami(shadowProgram, GL_LINK_STATUS);
@@ -128,7 +128,7 @@ public class ShaderHandler
 
         glAttachShader(normalProgram, vshader);
         glAttachShader(normalProgram, fshader);
-        GL20.glBindAttribLocation(normalProgram, 6, "bones");
+        //GL20.glBindAttribLocation(normalProgram, 6, "bones");
         glLinkProgram(normalProgram);
 
         int linked = glGetProgrami(normalProgram, GL_LINK_STATUS);

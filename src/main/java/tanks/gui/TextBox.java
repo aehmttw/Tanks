@@ -547,6 +547,8 @@ public class TextBox implements IDrawable, ITrigger
 		if (key == InputCodes.KEY_SPACE)
 			text = " ";
 
+		text = text.replace("Keypad ", "");
+
 		if (key == InputCodes.KEY_BACKSPACE || key == '\b')
 			inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
 

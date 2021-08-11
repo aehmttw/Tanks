@@ -6,7 +6,7 @@ import tanks.tank.NameTag;
 
 import java.util.ArrayList;
 
-public abstract class Movable implements IDrawableForInterface
+public abstract class Movable implements IDrawableForInterface, IGameObject
 {
 	public double posX;
 	public double posY;
@@ -37,11 +37,7 @@ public abstract class Movable implements IDrawableForInterface
 	public boolean skipNextUpdate = false;
 
 	public int drawLevel = 3;
-	//public boolean drawBelow = false;
-	//public boolean drawAbove = false;
 	public boolean isRemote = false;
-	
-	//public double hiddenTimer = 0;
 
 	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>();
 	
@@ -71,8 +67,6 @@ public abstract class Movable implements IDrawableForInterface
 	{
 		if (!destroy)
 		{
-			//this.hiddenTimer = Math.max(0, this.hiddenTimer - Panel.frameFrequency);
-			
 			double vX2 = this.vX;
 			double vY2 = this.vY;
 			double vZ2 = this.vZ;

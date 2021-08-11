@@ -166,7 +166,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         }
         else
         {
-            if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
+            if (Crusade.currentCrusade == null || Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
                 quitCrusadeEnd.update();
             else
             {
@@ -231,7 +231,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         }
         else
         {
-            if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
+            if (Crusade.currentCrusade == null || Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
                 quitCrusadeEnd.draw();
             else
             {

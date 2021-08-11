@@ -3,9 +3,11 @@ package tanks.tank;
 import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
+import tanks.bullet.Bullet;
 import tanks.event.EventTankAddAttributeModifier;
 import tanks.event.EventTankUpdate;
 import tanks.event.EventTankUpdateHealth;
+import tanks.event.EventUpdateCoins;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -470,6 +472,21 @@ public abstract class Tank extends Movable implements ISolidObject
 		Game.tracks.add(e2);
 	}
 
+	public void drawForInterface(double x, double y, double sizeMul)
+	{
+		double s = this.size;
+
+		if (this.size > Game.tile_size * 1.5)
+			this.size = Game.tile_size * 1.5;
+
+		this.size *= sizeMul;
+		this.turret.length *= this.size / s;
+		this.drawForInterface(x, y);
+		this.turret.length *= s / this.size;
+
+		this.size = s;
+	}
+
 	@Override
 	public void drawForInterface(double x, double y)
 	{
@@ -481,7 +498,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.posX = x1;
 		this.posY = y1;	
 	}
-
 
 	public void drawTank(boolean forInterface)
 	{
@@ -730,6 +746,80 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		return this.verticalFaces;
+	}
+
+	public boolean damage(double amount, IGameObject source)
+	{
+		this.health -= amount * this.getDamageMultiplier(source);
+		Game.eventsOut.add(new EventTankUpdateHealth(this));
+
+		if (this.health > 0)
+			this.flashAnimation = 1;
+		else
+		{
+			Tank owner = null;
+
+			if (source instanceof Bullet)
+				owner = ((Bullet) source).tank;
+			else if (source instanceof Mine)
+				owner = ((Mine) source).tank;
+			else if (source instanceof Tank)
+				owner = (Tank) source;
+
+			if (!ScreenPartyLobby.isClient && owner instanceof IServerPlayerTank && Crusade.crusadeMode && Crusade.currentCrusade != null)
+			{
+				Player p = ((IServerPlayerTank) owner).getPlayer();
+				CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
+
+				if (cp == null)
+				{
+					for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
+					{
+						if (dp.player == p)
+							cp = dp;
+					}
+				}
+
+				if (cp != null)
+					cp.addKill(this);
+			}
+
+			if (owner != null && !ScreenPartyLobby.isClient && this instanceof IServerPlayerTank && Crusade.crusadeMode && Crusade.currentCrusade != null)
+			{
+				Player p = ((IServerPlayerTank) this).getPlayer();
+				CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
+
+				if (cp == null)
+				{
+					for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
+					{
+						if (dp.player == p)
+							cp = dp;
+					}
+				}
+
+				if (cp != null)
+					cp.addDeath(owner);
+			}
+		}
+
+		if (this.health > 6 && (int) (this.health + amount) != (int) (this.health))
+		{
+			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
+			e.size = this.size;
+			e.radius = this.health - 1;
+			Game.effects.add(e);
+		}
+
+		return this.health <= 0;
+	}
+
+	public double getDamageMultiplier(IGameObject source)
+	{
+		if (this.invulnerable || (source instanceof Bullet && this.resistBullets) || (source instanceof Mine && this.resistExplosions))
+			return 0;
+
+		return 1;
 	}
 
 	public void setEffectHeight(Effect e)

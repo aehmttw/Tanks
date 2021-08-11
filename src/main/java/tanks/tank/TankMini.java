@@ -30,6 +30,7 @@ public class TankMini extends TankAIControlled
 		this.health = 0.25;
 		this.baseHealth = 0.25;
 		this.mineSensitivity = 0.5;
+		this.turret.length /= 2;
 
 		this.description = "A small, primitive tank which---shoots tiny, low damage bullets";
 	}
@@ -39,9 +40,6 @@ public class TankMini extends TankAIControlled
 		this(name, x, y, angle);
 		this.tank = t;
 		t.spawnedMinis++;
-		
-		this.turret.length /= 2;
-		
 		this.team = t.team;
 	}
 	

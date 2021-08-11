@@ -4,6 +4,7 @@ import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
@@ -82,6 +83,10 @@ public class BulletArc extends Bullet
 
         if (this.posZ <= Game.tile_size / 2 && !this.destroy)
         {
+            double dif = (this.posZ - Game.tile_size / 2) / this.vZ;
+            this.posX -= dif * this.vX;
+            this.posY -= dif * this.vY;
+
             this.vX = 0;
             this.vY = 0;
             this.vZ = 0;
@@ -110,7 +115,7 @@ public class BulletArc extends Bullet
 
     public void draw()
     {
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 1);
+        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
         Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
         Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 
@@ -177,6 +182,31 @@ public class BulletArc extends Bullet
 
         if (!Game.enable3d)
             this.posY += this.posZ - Game.tile_size / 2;
+
+        double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
+
+        if (destroy)
+            time = 0;
+
+        double limit = 50;
+        if (time <= limit && !ScreenGame.finishedQuick)
+        {
+            double frac;
+
+            frac = 1 - time / limit;
+
+            double s = (1.5 - frac) * this.size * 4;
+            double d = Math.max(1 - (this.destroyTimer / this.maxDestroyTimer) * 2, 0);
+
+            Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+            Drawing.drawing.drawImage(frac * Math.PI / 2, "cursor.png", this.posX + this.vX * time, this.posY + this.vY * time, s, s);
+
+            if (Game.glowEnabled)
+            {
+                Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+                Drawing.drawing.fillGlow(this.posX + this.vX * time, this.posY + this.vY * time, this.size * 4, this.size * 4);
+            }
+        }
     }
 
     @Override

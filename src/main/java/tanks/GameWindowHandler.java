@@ -24,7 +24,7 @@ public class GameWindowHandler implements IWindowHandler
 		{
 			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer)
 			{
-				Game.player.saveCrusade();
+				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 			}
 		}
 		catch (Exception e)

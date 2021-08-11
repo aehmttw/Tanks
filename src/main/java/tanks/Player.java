@@ -6,9 +6,11 @@ import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Player
@@ -41,60 +43,6 @@ public class Player
         return this.username + " (" + this.clientID + ")";
     }
 
-    public void saveCrusade()
-    {
-        saveCrusade(false);
-    }
-
-    public void saveCrusade(boolean win)
-    {
-        try
-        {
-            BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + Crusade.currentCrusade.name);
-
-            if (Crusade.currentCrusade.internal)
-                f = Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + "internal/" + Crusade.currentCrusade.name);
-
-            if (Crusade.currentCrusade == null)
-            {
-                if (f.exists())
-                    f.delete();
-
-                return;
-            }
-
-            f.create();
-            f.startWriting();
-            f.println(Crusade.currentCrusade.name);
-            f.println(Crusade.currentCrusade.fileName);
-            f.println(Crusade.currentCrusade.internal + "");
-            f.println(Crusade.currentCrusade.saveLevel + "");
-
-            if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy)
-                remainingLives--;
-
-            f.println(remainingLives + "");
-            f.println(Crusade.currentCrusade.crusadeCoins.get(this) + "");
-
-            StringBuilder items = new StringBuilder();
-            for (Item i : Crusade.currentCrusade.crusadeItembars.get(this).slots)
-            {
-                items.append(i.name).append(",").append(i.stackSize).append("|");
-            }
-
-            f.println(items.substring(0, items.length() - 1));
-            f.println(Crusade.currentCrusade.timePassed + "");
-            f.stopWriting();
-
-            if ((remainingLives <= 0 || Crusade.currentCrusade.win) && f.exists())
-                f.delete();
-        }
-        catch (Exception e)
-        {
-            Game.exitToCrash(e);
-        }
-    }
-
     public Crusade loadCrusade(BaseFile f)
     {
         try
@@ -114,20 +62,29 @@ public class Player
             else
                 c = new Crusade(Game.game.fileManager.getFile(fileName), name);
 
-            hotbar = new Hotbar();
-            hotbar.itemBar = new ItemBar(this);
+            this.hotbar = new Hotbar();
+            this.hotbar.itemBar = new ItemBar(this);
 
             c.currentLevel = Integer.parseInt(f.nextLine());
             c.saveLevel = c.currentLevel;
             c.started = true;
+
+            CrusadePlayer cp = new CrusadePlayer(this);
             this.remainingLives = Integer.parseInt(f.nextLine());
-            c.crusadeCoins.put(this, Integer.parseInt(f.nextLine()));
-            c.crusadeItembars.put(this, new ItemBar(this));
+            cp.coins = Integer.parseInt(f.nextLine());
+            cp.itemBar = new ItemBar(this);
+            c.crusadePlayers.put(this, cp);
 
             String[] items = f.nextLine().split("\\|");
 
             if (f.hasNextLine())
                 c.timePassed = Double.parseDouble(f.nextLine());
+
+            if (f.hasNextLine())
+            {
+                parseStringIntHashMap(cp.tankKills, f.nextLine());
+                parseStringIntHashMap(cp.tankDeaths, f.nextLine());
+            }
 
             f.stopReading();
 
@@ -143,8 +100,8 @@ public class Player
                 {
                     if (it.name.equals(itemName))
                     {
-                        c.crusadeItembars.get(Game.player).slots[i] = Item.parseItem(this, it.toString());
-                        c.crusadeItembars.get(Game.player).slots[i].stackSize = count;
+                        cp.itemBar.slots[i] = Item.parseItem(this, it.toString());
+                        cp.itemBar.slots[i].stackSize = count;
                     }
                 }
             }
@@ -172,5 +129,19 @@ public class Player
         }
 
         return null;
+    }
+
+    public static void parseStringIntHashMap(HashMap<String, Integer> map, String str)
+    {
+        String[] parts = str.replace("{", "").replace("}", "").replace(" ", "").split(",");
+
+        for (String s: parts)
+        {
+            if (s.length() <= 0)
+                continue;
+
+            String[] sec = s.split("=");
+            map.put(sec[0], Integer.parseInt(sec[1]));
+        }
     }
 }

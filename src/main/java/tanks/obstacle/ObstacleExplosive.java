@@ -6,6 +6,7 @@ import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.event.EventLayMine;
 import tanks.event.EventObstacleDestroy;
+import tanks.gui.Button;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
@@ -13,6 +14,7 @@ import tanks.tank.Tank;
 public class ObstacleExplosive extends Obstacle
 {
     public double timer = 25;
+    public Tank trigger = Game.dummyTank;
 
     public ObstacleExplosive(String name, double posX, double posY)
     {
@@ -46,17 +48,31 @@ public class ObstacleExplosive extends Obstacle
     @Override
     public void onObjectEntry(Movable m)
     {
+        if (this.trigger != Game.dummyTank)
+            return;
+
         if (m instanceof Bullet || m instanceof Tank)
         {
+            if (m instanceof Bullet)
+                this.trigger = ((Bullet) m).tank;
+            else
+                this.trigger = (Tank) m;
+
             this.explode();
         }
     }
 
     @Override
-    public void onDestroy()
+    public void onDestroy(Movable m)
     {
+        if (this.trigger != Game.dummyTank)
+            return;
+
         if (!ScreenPartyLobby.isClient)
             this.update = true;
+
+        if (m instanceof Mine)
+            this.trigger = ((Mine) m).tank;
     }
 
     @Override
@@ -73,7 +89,7 @@ public class ObstacleExplosive extends Obstacle
         if (ScreenPartyLobby.isClient)
             return;
 
-        Mine mi = new Mine(this.posX, this.posY, 0, Game.dummyTank);
+        Mine mi = new Mine(this.posX, this.posY, 0, this.trigger);
         mi.radius *= (this.stackHeight - 1) / 2 + 1;
         Game.eventsOut.add(new EventLayMine(mi));
         Game.movables.add(mi);

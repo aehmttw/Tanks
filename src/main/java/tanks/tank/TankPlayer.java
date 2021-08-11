@@ -15,7 +15,7 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
 
-public class TankPlayer extends Tank implements IPlayerTank
+public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 {
 	public static Joystick controlStick;
 	public static Joystick shootStick;
@@ -365,10 +365,10 @@ public class TankPlayer extends Tank implements IPlayerTank
 
 		this.cooldown = 20;
 
-		fireBullet(25 / 8.0, 1, tanks.bullet.Bullet.BulletEffect.trail);
+		fireBullet(25 / 8.0, 1, Bullet.BulletEffect.trail);
 	}
 
-	public void fireBullet(double speed, int bounces, tanks.bullet.Bullet.BulletEffect effect)
+	public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
 	{
 		Drawing.drawing.playGlobalSound("shoot.ogg");
 
@@ -490,5 +490,11 @@ public class TankPlayer extends Tank implements IPlayerTank
 				shootStick.domain = 0;
 			}
 		}
+	}
+
+	@Override
+	public Player getPlayer()
+	{
+		return this.player;
 	}
 }

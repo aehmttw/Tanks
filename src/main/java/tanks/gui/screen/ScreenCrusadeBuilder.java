@@ -25,6 +25,21 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
     public TextBox startingLives;
     public TextBox bonusLifeFrequency;
 
+    public String toggleNamesText = "Level names: ";
+    public Button toggleNames = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            crusade.showNames = !crusade.showNames;
+
+            if (crusade.showNames)
+                toggleNames.text = toggleNamesText + ScreenOptions.onText;
+            else
+                toggleNames.text = toggleNamesText + ScreenOptions.offText;
+        }
+    });
+
     public Selector itemSelector;
 
     public ScreenCrusadeBuilder instance = this;
@@ -168,7 +183,12 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         itemSelector.images = itemImages;
         itemSelector.quick = true;
 
-        crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Crusade name", new Runnable()
+        if (crusade.showNames)
+            toggleNames.text = toggleNamesText + ScreenOptions.onText;
+        else
+            toggleNames.text = toggleNamesText + ScreenOptions.offText;
+
+        crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Crusade name", new Runnable()
         {
             @Override
             public void run()
@@ -200,7 +220,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
         crusadeName.enableCaps = true;
 
-        startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Starting lives", new Runnable()
+        startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", new Runnable()
         {
             @Override
             public void run()
@@ -219,7 +239,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         startingLives.checkMinValue = true;
         startingLives.maxChars = 9;
 
-        bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Bonus life frequency", new Runnable()
+        bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Bonus life frequency", new Runnable()
         {
             @Override
             public void run()
@@ -364,6 +384,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             crusadeName.update();
             startingLives.update();
             bonusLifeFrequency.update();
+            toggleNames.update();
             quit.update();
         }
         else if (mode == Mode.items)
@@ -408,6 +429,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             bonusLifeFrequency.draw();
             startingLives.draw();
             crusadeName.draw();
+            toggleNames.draw();
 
             quit.draw();
 
@@ -460,7 +482,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         {
             f.startWriting();
             f.println("properties");
-            f.println(this.crusade.startingLives + "," + this.crusade.bonusLifeFrequency);
+            f.println(this.crusade.startingLives + "," + this.crusade.bonusLifeFrequency + "," + this.crusade.showNames);
             f.println("items");
 
             for (Item i: this.crusade.crusadeItems)

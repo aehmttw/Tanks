@@ -5,6 +5,7 @@ import tanks.event.EventSetItem;
 import tanks.event.EventSetItemBarSlot;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
+import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemEmpty;
@@ -163,10 +164,12 @@ public class ItemBar
 		checkKey(Game.game.input.hotbar4, 3);
 		checkKey(Game.game.input.hotbar5, 4);
 
-		if (Game.game.window.touchscreen && this.player.hotbar.persistent)
+		if (this.player.hotbar.persistent || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).shopScreen))
 		{
 			for (int i = 0; i < this.slotButtons.length; i++)
 			{
+				this.slotButtons[i].enabled = Game.game.window.touchscreen;
+
 				Button b = this.slotButtons[i];
 				b.posX = ((i - 2) * gap) + (Drawing.drawing.interfaceSizeX / 2);
 				b.posY = Drawing.drawing.interfaceSizeY - bar_margin - this.player.hotbar.verticalOffset;
@@ -275,6 +278,48 @@ public class ItemBar
 
 			Drawing.drawing.setInterfaceFontSize(24);
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, y - 70, this.slots[selected].name);
+		}
+
+		if (this.player.hotbar.persistent || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).shopScreen))
+		{
+			for (int i = 0; i < this.slotButtons.length; i++)
+			{
+				if (this.slotButtons[i].selected)
+				{
+					InputBindingGroup g = null;
+
+					if (i == 0)
+						g = Game.game.input.hotbar1;
+					else if (i == 1)
+						g = Game.game.input.hotbar2;
+					else if (i == 2)
+						g = Game.game.input.hotbar3;
+					else if (i == 3)
+						g = Game.game.input.hotbar4;
+					else if (i == 4)
+						g = Game.game.input.hotbar5;
+
+					if (g == null)
+						continue;
+
+					Drawing.drawing.setColor(255, 127, 0);
+					Drawing.drawing.fillInterfaceGlow(this.slotButtons[i].posX, this.slotButtons[i].posY, 100, 100);
+
+					if (Level.isDark())
+						Drawing.drawing.setColor(0, 0, 0);
+					else
+						Drawing.drawing.setColor(255, 255, 255);
+
+					String s = g.getInputs();
+
+					if (s.length() > 1)
+						Drawing.drawing.setInterfaceFontSize(24);
+					else
+						Drawing.drawing.setInterfaceFontSize(32);
+
+					Drawing.drawing.drawInterfaceText(this.slotButtons[i].posX, this.slotButtons[i].posY, g.getInputs());
+				}
+			}
 		}
 	}
 }

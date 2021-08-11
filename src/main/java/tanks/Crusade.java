@@ -1,17 +1,13 @@
 package tanks;
 import basewindow.BaseFile;
 import tanks.event.*;
-import tanks.gui.screen.ScreenParty;
+import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
-import tanks.network.Server;
-import tanks.network.ServerHandler;
-import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +34,7 @@ public class Crusade
 
 	public int bonusLifeFrequency = 3;
 	public int startingLives = 3;
+	public boolean showNames = false;
 
 	public ArrayList<Item> crusadeItems = new ArrayList<Item>();
 
@@ -49,11 +46,14 @@ public class Crusade
 
 	public boolean started = false;
 
-	public HashMap<Player, ItemBar> crusadeItembars = new HashMap<>();
-	public HashMap<Player, Integer> crusadeCoins = new HashMap<>();
+	public HashMap<Player, CrusadePlayer> crusadePlayers = new HashMap<>();
+
+	public ArrayList<CrusadePlayer> disconnectedPlayers = new ArrayList<>();
 
 	public String contents = "";
 	public Exception error = null;
+
+	public ArrayList<LevelPerformance> performances = new ArrayList<>();
 
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
@@ -65,7 +65,7 @@ public class Crusade
 		for (String s: levelArray)
 			c.append(s).append("\n");
 
-		contents = c.toString().substring(0, c.length() - 1);
+		contents = c.substring(0, c.length() - 1);
 	}
 
 	public Crusade(String s, String name)
@@ -142,8 +142,13 @@ public class Crusade
 					}
 					else if (parsing == 2)
 					{
-						this.startingLives = Integer.parseInt(s.split(",")[0]);
-						this.bonusLifeFrequency = Integer.parseInt(s.split(",")[1]);
+						String[] z = s.split(",");
+
+						this.startingLives = Integer.parseInt(z[0]);
+						this.bonusLifeFrequency = Integer.parseInt(z[1]);
+
+						if (z.length > 2)
+							this.showNames = Boolean.parseBoolean(z[2]);
 					}
 					break;
 			}
@@ -178,11 +183,9 @@ public class Crusade
 
 		this.timePassed = 0;
 		this.started = true;
-		this.crusadeCoins.clear();
-		this.crusadeItembars.clear();
+		this.crusadePlayers.clear();
 
-        this.crusadeCoins.put(Game.player, 0);
-        this.crusadeItembars.put(Game.player, new ItemBar(Game.player));
+        this.crusadePlayers.put(Game.player, new CrusadePlayer(Game.player));
 
         this.loadLevel();
 	}
@@ -196,6 +199,26 @@ public class Crusade
 
 		for (Player player : Game.players)
 		{
+			if (crusadePlayers.get(player) == null)
+			{
+				boolean found = false;
+
+				for (CrusadePlayer cp: disconnectedPlayers)
+				{
+					if (cp.player.clientID.equals(player.clientID))
+					{
+						player.remainingLives = cp.player.remainingLives;
+						cp.player = player;
+						crusadePlayers.put(player, cp);
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+					crusadePlayers.put(player, new CrusadePlayer(player));
+			}
+
 			if (player.remainingLives > 0)
 				l.includedPlayers.add(player);
 
@@ -206,13 +229,9 @@ public class Crusade
 
 		for (Player player : Game.players)
 		{
-			Integer c = crusadeCoins.get(player);
-			if (c == null)
-				player.hotbar.coins = 0;
-			else
-				player.hotbar.coins = c;
+			player.hotbar.coins = crusadePlayers.get(player).coins;
 
-			ItemBar i = crusadeItembars.get(player);
+			ItemBar i = crusadePlayers.get(player).itemBar;
 
 			if (i == null)
 				player.hotbar.itemBar = new ItemBar(player);
@@ -230,11 +249,20 @@ public class Crusade
 			}
 		}
 
-		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle " + (this.currentLevel + 1)));
+		this.disconnectedPlayers.clear();
+
+		String sub = "";
+
+		if (Crusade.currentCrusade.showNames)
+			sub = Crusade.currentCrusade.levelNames.get(Crusade.currentCrusade.currentLevel).replace("_", " ");
+
+		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle " + (this.currentLevel + 1), sub));
 	}
 	
 	public void levelFinished(boolean win)
 	{
+		this.recordPerformance(ScreenGame.lastTimePassed);
+
 		this.lifeGained = false;
 
 		if (!win)
@@ -275,7 +303,7 @@ public class Crusade
 		try
 		{
 			if (!ScreenPartyHost.isServer)
-				Game.player.saveCrusade(win);
+				this.crusadePlayers.get(Game.player).saveCrusade(win);
 		}
 		catch (Exception e)
 		{
@@ -327,13 +355,49 @@ public class Crusade
 
 	public void saveHotbars()
 	{
-		this.crusadeItembars.clear();
-		this.crusadeCoins.clear();
-
 		for (Player p: Game.players)
 		{
-			this.crusadeItembars.put(p, p.hotbar.itemBar);
-			this.crusadeCoins.put(p, p.hotbar.coins);
+			CrusadePlayer cp = this.crusadePlayers.get(p);
+
+			if (cp == null)
+			{
+				cp = new CrusadePlayer(p);
+				this.crusadePlayers.put(p, cp);
+			}
+
+			cp.itemBar = p.hotbar.itemBar;
+			cp.coins = p.hotbar.coins;
 		}
+	}
+
+	public static class LevelPerformance
+	{
+		public int index;
+		public int attempts = 0;
+		public long bestTime = Long.MAX_VALUE;
+		public long totalTime = 0;
+
+		public LevelPerformance(int index)
+		{
+			this.index = index;
+		}
+
+		public void recordAttempt(long time)
+		{
+			this.bestTime = Math.min(this.bestTime, time);
+			this.totalTime += time;
+			this.attempts++;
+		}
+	}
+
+	public void recordPerformance(double time)
+	{
+		for (int i = performances.size(); i < currentLevel; i++)
+			performances.add(new LevelPerformance(i));
+
+		if (performances.size() <= currentLevel)
+			performances.add(new LevelPerformance(currentLevel));
+
+		performances.get(currentLevel).recordAttempt((long) (time * 10));
 	}
 }

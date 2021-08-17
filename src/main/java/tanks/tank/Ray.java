@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
+import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
@@ -314,7 +315,8 @@ public class Ray
 
 						double frac = 1 / (1 + this.traceAge / 100.0);
 						double z = this.tank.size / 2 + this.tank.turret.size / 2 * frac + (Game.tile_size / 4) * (1 - frac);
-						Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
+						if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).finished)
+							Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
 					}
 
 					remainder = s - steps;

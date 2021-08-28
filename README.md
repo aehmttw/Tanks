@@ -70,6 +70,7 @@ Hallowizer<br>
 Grify<br>
 Mihai Budiu<br>
 Panadero1<br>
+Arkar Tan<br>
 
 ### Special Thanks:
 Everyone from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!

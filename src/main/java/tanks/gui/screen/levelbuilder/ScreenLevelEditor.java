@@ -294,6 +294,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public ScreenLevelEditor(String lvlName, Level level)
 	{
+		this.music = "editor.ogg";
+		this.musicID = "editor";
+
 		if (Game.game.window.touchscreen)
 			controlsSizeMultiplier = 1.0;
 
@@ -1599,6 +1602,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	@Override
 	public void draw()
 	{
+		if (Level.isDark())
+			this.fontBrightness = 255;
+		else
+			this.fontBrightness = 0;
+
 		if (Game.enable3d)
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{

@@ -328,7 +328,7 @@ public class SteamNetworkHandler
 			this.initialized = true;
 			return true;
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 			Game.exitToCrash(e);
 		}

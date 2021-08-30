@@ -280,7 +280,7 @@ public class ItemBar
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, y - 70, this.slots[selected].name);
 		}
 
-		if (this.player.hotbar.persistent || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).shopScreen))
+		if ((this.player.hotbar.persistent || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).shopScreen)) && this.player.hotbar.percentHidden <= 0)
 		{
 			for (int i = 0; i < this.slotButtons.length; i++)
 			{
@@ -303,7 +303,7 @@ public class ItemBar
 						continue;
 
 					Drawing.drawing.setColor(255, 127, 0);
-					Drawing.drawing.fillInterfaceGlow(this.slotButtons[i].posX, this.slotButtons[i].posY, 100, 100);
+					Drawing.drawing.fillInterfaceGlow(this.slotButtons[i].posX, this.slotButtons[i].posY, 100, 100, true);
 
 					if (Level.isDark())
 						Drawing.drawing.setColor(0, 0, 0);

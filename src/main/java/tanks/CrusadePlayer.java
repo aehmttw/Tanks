@@ -1,18 +1,22 @@
 package tanks;
 
 import basewindow.BaseFile;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
+import tanks.tank.*;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 
 import java.util.HashMap;
 
 public class CrusadePlayer
 {
     public Player player;
+
     public ItemBar itemBar;
+
     public int coins;
 
     public CrusadePlayer(Player p)
@@ -23,17 +27,19 @@ public class CrusadePlayer
 
     public HashMap<String, Integer> tankKills = new HashMap<>();
     public HashMap<String, Integer> tankDeaths = new HashMap<>();
+    public HashMap<String, Integer> itemUses = new HashMap<>();
+    public HashMap<String, Integer> itemHits = new HashMap<>();
 
-    public void addKill(Tank t)
+    public void addKill(tanks.tank.Tank t)
     {
         String name = t.name;
 
         if (t instanceof TankPlayer)
             name = "player";
 
-        if (Crusade.currentCrusade != null)
+        if (Crusade.currentCrusade != null && !ScreenPartyLobby.isClient)
         {
-            this.tankKills.putIfAbsent(name, 0);
+            this.putIfAbsent(this.tankKills, name, 0);
             this.tankKills.put(name, this.tankKills.get(name) + 1);
         }
     }
@@ -45,10 +51,72 @@ public class CrusadePlayer
         if (t instanceof TankPlayer)
             name = "player";
 
+        if (Crusade.currentCrusade != null && !ScreenPartyLobby.isClient)
+        {
+            this.putIfAbsent(this.tankDeaths, name, 0);
+            this.tankDeaths.put(name, this.tankDeaths.get(name) + 1);
+        }
+    }
+
+    public void addItemUse(IGameObject i)
+    {
+        this.addItemStat(this.itemUses, i);
+    }
+
+    public void addItemHit(IGameObject i)
+    {
+        this.addItemStat(this.itemHits, i);
+    }
+
+    public int getItemUses(String i)
+    {
+        Integer n = this.itemUses.get(i);
+
+        if (n == null)
+            return 0;
+
+        return n;
+    }
+
+    public int getItemHits(String i)
+    {
+        Integer n = this.itemHits.get(i);
+
+        if (n == null)
+            return 0;
+
+        return n;
+    }
+
+    public void addItemStat(HashMap<String, Integer> stat, IGameObject i)
+    {
+        tanks.hotbar.item.Item item;
+
+        if (i instanceof tanks.hotbar.item.Item)
+            item = (tanks.hotbar.item.Item) i;
+        else if (i instanceof Bullet)
+        {
+            item = ((Bullet) i).item;
+
+            if (item == null)
+                item = TankPlayer.default_bullet;
+        }
+        else if (i instanceof Mine)
+        {
+            item = ((Mine) i).item;
+
+            if (item == null)
+                item = TankPlayer.default_mine;
+        }
+        else
+            return;
+
+        String name = item.name;
+
         if (Crusade.currentCrusade != null)
         {
-            this.tankDeaths.putIfAbsent(name, 0);
-            this.tankDeaths.put(name, this.tankDeaths.get(name) + 1);
+            this.putIfAbsent(stat, name, 0);
+            stat.put(name, stat.get(name) + 1);
         }
     }
 
@@ -82,7 +150,11 @@ public class CrusadePlayer
             f.println(Crusade.currentCrusade.saveLevel + "");
 
             if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy)
+            {
+                Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win);
+                this.coins = player.hotbar.coins;
                 player.remainingLives--;
+            }
 
             f.println(player.remainingLives + "");
             f.println(this.coins + "");
@@ -97,6 +169,9 @@ public class CrusadePlayer
             f.println(Crusade.currentCrusade.timePassed + "");
             f.println(this.tankKills.toString());
             f.println(this.tankDeaths.toString());
+            f.println(Crusade.currentCrusade.performances.toString());
+            f.println(this.itemUses.toString());
+            f.println(this.itemHits.toString());
             f.stopWriting();
 
             if ((player.remainingLives <= 0 || Crusade.currentCrusade.win) && f.exists())
@@ -106,5 +181,11 @@ public class CrusadePlayer
         {
             Game.exitToCrash(e);
         }
+    }
+
+    public <T, U> void putIfAbsent(HashMap<T, U> map, T key, U value)
+    {
+        if (!map.containsKey(key))
+            map.put(key, value);
     }
 }

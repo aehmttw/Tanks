@@ -7,7 +7,7 @@ import tanks.gui.Button;
 public class ScreenOptionsGame extends Screen
 {
     public static final String autostartText = "Autostart: ";
-    public static final String timerText = "Timer: ";
+    public static final String fullStatsText = "Advanced stats: ";
 
     Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -24,22 +24,22 @@ public class ScreenOptionsGame extends Screen
     },
             "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
-    Button timer = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button fullStats = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.showSpeedrunTimer = !Game.showSpeedrunTimer;
+            Game.fullStats = !Game.fullStats;
 
-            if (Game.showSpeedrunTimer)
-                timer.text = timerText + ScreenOptions.onText;
+            if (Game.fullStats)
+                fullStats.text = fullStatsText + ScreenOptions.onText;
             else
-                timer.text = timerText + ScreenOptions.offText;
+                fullStats.text = fullStatsText + ScreenOptions.offText;
         }
     },
-            "When enabled, time spent---in the current level attempt---and crusade will be displayed");
+            "Shows more detailed statistics---after a crusade ends.");
 
-    Button speedrunning = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning Options", new Runnable()
+    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", new Runnable()
     {
         @Override
         public void run()
@@ -68,19 +68,19 @@ public class ScreenOptionsGame extends Screen
         else
             autostart.text = autostartText + ScreenOptions.offText;
 
-        if (Game.showSpeedrunTimer)
-            timer.text = timerText + ScreenOptions.onText;
+        if (Game.fullStats)
+            fullStats.text = fullStatsText + ScreenOptions.onText;
         else
-            timer.text = timerText + ScreenOptions.offText;
+            fullStats.text = fullStatsText + ScreenOptions.offText;
     }
 
     @Override
     public void update()
     {
         back.update();
-        speedrunning.update();
-        timer.update();
+        speedrunOptions.update();
         autostart.update();
+        fullStats.update();
     }
 
     @Override
@@ -89,8 +89,8 @@ public class ScreenOptionsGame extends Screen
         this.drawDefaultBackground();
 
         back.draw();
-        speedrunning.draw();
-        timer.draw();
+        speedrunOptions.draw();
+        fullStats.draw();
         autostart.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

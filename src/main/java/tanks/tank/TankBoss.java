@@ -32,7 +32,7 @@ public class TankBoss extends TankAIControlled
 		this.health = 5;
 		this.baseHealth = 5;
 		this.turret.length *= 3;
-		this.coinValue = 40;
+		this.coinValue = 25;
 
 		this.description = "A big boss tank which spawns---other tanks and takes 5 regular---bullets to destroy";
 	}
@@ -63,7 +63,7 @@ public class TankBoss extends TankAIControlled
 			this.spawned.remove(removeSpawned.get(i));
 		}
 		
-		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawned.size() < 6 && !this.destroy && !ScreenGame.finishedQuick)
+		if (this.random.nextDouble() < 0.003 * Panel.frameFrequency && this.spawned.size() < 6 && !this.destroy && !ScreenGame.finishedQuick)
 		{
 			this.spawnTank();
 		}
@@ -79,8 +79,8 @@ public class TankBoss extends TankAIControlled
 		{
 			attempts++;
 
-			double pos = Math.random() * 200 - 100;
-			int side = (int) (Math.random() * 4);
+			double pos = this.random.nextDouble() * 200 - 100;
+			int side = (int) (this.random.nextDouble() * 4);
 
 			x = pos;
 			y = pos;
@@ -118,12 +118,11 @@ public class TankBoss extends TankAIControlled
 
 		while (e.name.equals(this.name) || e.isBoss)
 		{
-			e = Game.registryTank.getRandomTank();
+			e = Game.registryTank.getRandomTank(this.random);
 		}
 
 		Tank t = e.getTank(this.posX + x, this.posY + y, this.angle);
 		t.team = this.team;
-		t.coinValue = 0;
 
 		Game.eventsOut.add(new EventCreateTank(t));
 		this.spawned.add(t);

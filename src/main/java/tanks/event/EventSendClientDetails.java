@@ -160,7 +160,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		{
 			ServerHandler h = s.server.connections.get(i);
 
-			if (h != s)
+			if (h != s && h.clientID != null)
 			{
 				s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(h.clientID, h.rawUsername), true));
 			}

@@ -56,7 +56,7 @@ public class TankOrangeRed extends TankAIControlled
         Game.movables.add(b);
         Game.eventsOut.add(new EventShootBullet(b));
 
-        this.cooldown = Math.random() * this.cooldownRandom + this.cooldownBase;
+        this.cooldown = this.random.nextDouble() * this.cooldownRandom + this.cooldownBase;
 
         if (this.shootAIType.equals(ShootAI.alternate))
             this.straightShoot = !this.straightShoot;
@@ -81,7 +81,7 @@ public class TankOrangeRed extends TankAIControlled
 
             double dist = a2.age;
             // Cancels if the bullet will hit another enemy
-            double offset = (Math.random() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((dist / 100.0), 2);
+            double offset = (this.random.nextDouble() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((dist / 100.0), 2);
 
             if (this.disableOffset)
             {

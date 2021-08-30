@@ -3,13 +3,14 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 
 import java.util.ArrayList;
 
-public class ScreenSelector extends Screen implements IConditionalOverlayScreen
+public class ScreenSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen
 {
     public Screen screen;
     public Selector selector;
@@ -141,7 +142,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        if (Level.isDark())
+        if (Level.isDark() || Panel.darkness > 64)
             Drawing.drawing.setColor(255, 255, 255);
         else
             Drawing.drawing.setColor(0, 0, 0);

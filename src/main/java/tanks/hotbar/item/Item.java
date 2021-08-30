@@ -1,24 +1,26 @@
 package tanks.hotbar.item;
 
 import tanks.Game;
+import tanks.IGameObject;
 import tanks.Movable;
 import tanks.Player;
-import tanks.bullet.Bullet;
 import tanks.hotbar.item.property.*;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-public abstract class Item 
+public abstract class Item implements IGameObject
 {
 	public static ArrayList<String> icons = new ArrayList<String>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
 			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png",
 			"mine.png",
 			"shield.png", "shield_gold.png"));
+
+	// Items like bullets and mines can hit enemies, so this will be shown on the stats screen
+	public boolean supportsHits = false;
 
 	public boolean isConsumable;
 	public int levelUnlock;

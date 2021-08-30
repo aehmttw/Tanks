@@ -339,6 +339,12 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
+
+        if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+        {
+            CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+            cp.addItemUse(TankPlayer.default_mine);
+        }
     }
 
     public void layMine(Mine m)
@@ -352,6 +358,12 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
+
+        if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+        {
+            CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+            cp.addItemUse(m.item);
+        }
     }
 
     public void shoot()
@@ -392,6 +404,12 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.recoil = true;
 
         this.processRecoil();
+
+        if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+        {
+            CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+            cp.addItemUse(TankPlayer.default_bullet);
+        }
     }
 
     public void fireBullet(Bullet b, double speed)
@@ -417,6 +435,12 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.recoil = true;
 
         this.processRecoil();
+
+        if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+        {
+            CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+            cp.addItemUse(b.item);
+        }
     }
 
     public void addPolarMotion(double angle, double velocity)

@@ -11,6 +11,7 @@ import tanks.network.ConnectedPlayer;
 import tanks.network.SynchronizedList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ScreenPartyLobby extends Screen
@@ -20,6 +21,7 @@ public class ScreenPartyLobby extends Screen
 	public static ArrayList<UUID> includedPlayers = new ArrayList<UUID>();
 	public static ArrayList<String> readyPlayers = new ArrayList<String>();
 	public static int remainingLives = 0;
+	public static HashMap<UUID, String> stats = new HashMap<>();
 
 	public static SynchronizedList<ChatMessage> chat = new SynchronizedList<ChatMessage>();
 	public static SynchronizedList<ScreenPartyHost.SharedLevel> sharedLevels = new SynchronizedList<>();

@@ -28,6 +28,9 @@ public class Effect extends Movable implements IDrawableWithGlow
     public double angle;
     public double distance;
 
+    //Effects that have this set to true are removed faster when the level has ended
+    public boolean fastRemoveOnExit = false;
+
     public int drawLayer = 7;
 
     public State state = State.live;
@@ -187,6 +190,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         this.drawLayer = 7;
         this.state = State.live;
         this.force = false;
+        this.fastRemoveOnExit = false;
     }
 
     @Override
@@ -643,6 +647,9 @@ public class Effect extends Movable implements IDrawableWithGlow
 
         if (this.maxAge >= 0)
             this.age += Panel.frameFrequency;
+
+        if (this.fastRemoveOnExit && ScreenGame.finishedQuick)
+            this.age += Panel.frameFrequency * 4;
 
         if (this.maxAge > 0 && this.age > this.maxAge && this.state == State.live)
         {

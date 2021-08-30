@@ -94,6 +94,8 @@ public class LWJGLWindow extends BaseWindow
 
 	public String currentTexture = null;
 
+	public double lastDrawTime = Double.MIN_VALUE;
+
 	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
 		super(name, x, y, z, u, d, w, vsync, showMouse);

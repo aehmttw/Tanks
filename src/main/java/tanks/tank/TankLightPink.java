@@ -124,7 +124,7 @@ public class TankLightPink extends TankAIControlled
                 this.shooting = true;
                 this.shootTimer = -this.shootCycleTime / 2;
                 this.shots = 0;
-                this.fanDirection = Math.random() < 0.5 ? 1 : -1;
+                this.fanDirection = this.random.nextDouble() < 0.5 ? 1 : -1;
                 this.startAngle = this.angle;
             }
         }

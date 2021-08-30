@@ -251,7 +251,8 @@ public class SoundPlayer extends BaseSoundPlayer
         int bufferPointer = alGenBuffers();
 
         //Send the data to OpenAL
-        alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
+        if (rawAudioBuffer != null)
+            alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
 
         //Free the memory allocated by STB
         free(rawAudioBuffer);

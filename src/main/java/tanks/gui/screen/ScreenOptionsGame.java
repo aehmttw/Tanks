@@ -9,7 +9,7 @@ public class ScreenOptionsGame extends Screen
     public static final String autostartText = "Autostart: ";
     public static final String timerText = "Timer: ";
 
-    Button autostart = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -24,7 +24,7 @@ public class ScreenOptionsGame extends Screen
     },
             "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
-    Button timer = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button timer = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -38,6 +38,15 @@ public class ScreenOptionsGame extends Screen
         }
     },
             "When enabled, time spent---in the current level attempt---and crusade will be displayed");
+
+    Button speedrunning = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning Options", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.screen = new ScreenOptionsSpeedrun();
+        }
+    });
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -69,6 +78,7 @@ public class ScreenOptionsGame extends Screen
     public void update()
     {
         back.update();
+        speedrunning.update();
         timer.update();
         autostart.update();
     }
@@ -79,6 +89,7 @@ public class ScreenOptionsGame extends Screen
         this.drawDefaultBackground();
 
         back.draw();
+        speedrunning.draw();
         timer.draw();
         autostart.draw();
 

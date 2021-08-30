@@ -247,7 +247,10 @@ public class Panel
 
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
 
-		Panel.frameFrequency = Game.game.window.frameFrequency;
+		if (Game.fixedFrameFrequency)
+			Panel.frameFrequency = 100 / 60.0;
+		else
+			Panel.frameFrequency = Game.game.window.frameFrequency;
 
 		Game.game.window.showKeyboard = false;
 

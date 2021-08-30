@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import tanks.Crusade;
 import tanks.Game;
 import tanks.Panel;
 import tanks.event.EventKick;
@@ -149,7 +150,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		ScreenPartyLobby.isClient = false;
     	Game.connectedToOnline = false;
 
-    	if (steamID == null)
+		Crusade.crusadeMode = false;
+		Crusade.currentCrusade = null;
+
+		if (steamID == null)
 			ReferenceCountUtil.release(this.reader.queue);
 
 		Client.connectionID = null;

@@ -11,6 +11,7 @@ import tanks.tank.TankPlayerRemote;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Crusade 
 {
@@ -46,7 +47,7 @@ public class Crusade
 
 	public boolean started = false;
 
-	public HashMap<Player, CrusadePlayer> crusadePlayers = new HashMap<>();
+	public LinkedHashMap<Player, CrusadePlayer> crusadePlayers = new LinkedHashMap<>();
 
 	public ArrayList<CrusadePlayer> disconnectedPlayers = new ArrayList<>();
 
@@ -261,7 +262,7 @@ public class Crusade
 	
 	public void levelFinished(boolean win)
 	{
-		this.recordPerformance(ScreenGame.lastTimePassed);
+		this.recordPerformance(ScreenGame.lastTimePassed, win);
 
 		this.lifeGained = false;
 
@@ -370,27 +371,51 @@ public class Crusade
 		}
 	}
 
+	public CrusadePlayer getCrusadePlayer(Player p)
+	{
+		CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
+
+		if (cp == null)
+		{
+			for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
+			{
+				if (dp.player == p)
+					cp = dp;
+			}
+		}
+
+		return cp;
+	}
+
 	public static class LevelPerformance
 	{
 		public int index;
 		public int attempts = 0;
-		public long bestTime = Long.MAX_VALUE;
-		public long totalTime = 0;
+		public double bestTime = Double.MAX_VALUE;
+		public double totalTime = 0;
 
 		public LevelPerformance(int index)
 		{
 			this.index = index;
 		}
 
-		public void recordAttempt(long time)
+		public void recordAttempt(double time, boolean win)
 		{
-			this.bestTime = Math.min(this.bestTime, time);
+			if (win)
+				this.bestTime = Math.min(this.bestTime, time);
+
 			this.totalTime += time;
 			this.attempts++;
 		}
+
+		@Override
+		public String toString()
+		{
+			return index + "/" + attempts + "/" + bestTime + "/" + totalTime;
+		}
 	}
 
-	public void recordPerformance(double time)
+	public void recordPerformance(double time, boolean win)
 	{
 		for (int i = performances.size(); i < currentLevel; i++)
 			performances.add(new LevelPerformance(i));
@@ -398,6 +423,6 @@ public class Crusade
 		if (performances.size() <= currentLevel)
 			performances.add(new LevelPerformance(currentLevel));
 
-		performances.get(currentLevel).recordAttempt((long) (time * 10));
+		performances.get(currentLevel).recordAttempt(time, win);
 	}
 }

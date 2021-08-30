@@ -56,6 +56,8 @@ public class Panel
 	public long startTime = System.currentTimeMillis();
 	public long frameStartTime = System.currentTimeMillis();
 
+	public long lastFrameNano = 0;
+
 	public int lastFPS = 0;
 
 	public ScreenOverlayOnline onlineOverlay;
@@ -181,6 +183,7 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_night.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
@@ -225,6 +228,16 @@ public class Panel
 		if (!started)
 			this.startTime = System.currentTimeMillis();
 
+		if (Game.deterministicMode)
+		{
+			while (System.nanoTime() - lastFrameNano < 1000000000 / 60)
+			{
+
+			}
+
+			lastFrameNano = System.nanoTime();
+		}
+
 		if (!Game.shadowsEnabled)
 			Game.game.window.setShadowQuality(0);
 		else
@@ -247,8 +260,8 @@ public class Panel
 
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
 
-		if (Game.fixedFrameFrequency)
-			Panel.frameFrequency = 100 / 60.0;
+		if (Game.deterministicMode)
+			Panel.frameFrequency = 100.0 / 60;
 		else
 			Panel.frameFrequency = Game.game.window.frameFrequency;
 

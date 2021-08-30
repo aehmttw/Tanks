@@ -217,7 +217,7 @@ public class Bullet extends Movable implements IDrawable
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
 			}
-			else
+			else if (this.playPopSound)
 				Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
 		}
 		else if (this.playPopSound && !this.heavy)

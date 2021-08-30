@@ -2,6 +2,7 @@ package tanks;
 
 import tanks.AttributeModifier.Operation;
 import tanks.event.EventCreateFreezeEffect;
+import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 
 public class AreaEffectFreeze extends AreaEffect
@@ -29,6 +30,7 @@ public class AreaEffectFreeze extends AreaEffect
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 				double var = 50;
+				e.fastRemoveOnExit = true;
 				e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
 				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
@@ -79,6 +81,9 @@ public class AreaEffectFreeze extends AreaEffect
 	@Override
 	public void update()
 	{
+		if (ScreenGame.finishedQuick && this.age < 400)
+			this.age = 400;
+
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);

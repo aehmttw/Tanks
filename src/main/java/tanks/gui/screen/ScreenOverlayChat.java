@@ -42,7 +42,7 @@ public class ScreenOverlayChat
 
         if (chatbox != null)
         {
-            if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+            if (isDark())
                 chatbox.defaultTextColor = "\u00A7255255255255";
 
             chatbox.draw(persistent);
@@ -75,7 +75,7 @@ public class ScreenOverlayChat
                         double height = 22 * c.lines.size() + 8 * (c.lines.size() - 1);
                         double radius = 13.5;
 
-                        if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+                        if (isDark())
                             Drawing.drawing.setColor(0, 0, 0, 127);
                         else
                             Drawing.drawing.setColor(255, 255, 255, 127);
@@ -149,7 +149,7 @@ public class ScreenOverlayChat
                             double mx = 20;
                             double my = Drawing.drawing.interfaceSizeY - i * 30 - 70;
 
-                            if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+                            if (isDark())
                                 Drawing.drawing.setColor(255, 255, 255);
                             else
                                 Drawing.drawing.setColor(0, 0, 0);
@@ -162,8 +162,13 @@ public class ScreenOverlayChat
                 }
             }
 
-            if ((Panel.win && Game.effectsEnabled && Game.screen instanceof IDarkScreen) || (Level.isDark()))
+            if (isDark())
                 chatbox.defaultTextColor = "\u00A7127127127255";
         }
+    }
+
+    public static boolean isDark()
+    {
+        return (((Panel.win && Game.effectsEnabled) || Panel.darkness > 0) && Game.screen instanceof IDarkScreen) || (Level.isDark());
     }
 }

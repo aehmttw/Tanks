@@ -46,7 +46,7 @@ public class TankPink extends TankAIControlled
 		
 		super.update();
 		
-		if (Math.random() < 0.003 * Panel.frameFrequency && this.spawnedMinis < 6 && !this.destroy && !ScreenGame.finishedQuick)
+		if (this.random.nextDouble() < 0.003 * Panel.frameFrequency && this.spawnedMinis < 6 && !this.destroy && !ScreenGame.finishedQuick)
 		{
 			spawnTank();
 		}
@@ -63,8 +63,8 @@ public class TankPink extends TankAIControlled
 		{
 			attempts++;
 
-			double pos = Math.random() * 100 - 50;
-			int side = (int) (Math.random() * 4);
+			double pos = this.random.nextDouble() * 100 - 50;
+			int side = (int) (this.random.nextDouble() * 4);
 
 			x = pos;
 			y = pos;
@@ -102,7 +102,7 @@ public class TankPink extends TankAIControlled
 
 		while (e.name.equals(this.name))
 		{
-			e = Game.registryTank.getRandomTank();
+			e = Game.registryTank.getRandomTank(this.random);
 		}
 
 		TankMini t = new TankMini("mini", this.posX + x, this.posY + y, this.angle, this);

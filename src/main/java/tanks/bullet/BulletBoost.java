@@ -39,6 +39,8 @@ public class BulletBoost extends Bullet
 	{
 		this.destroy = true;
 
+		t.checkHit(this.tank, this);
+
 		AttributeModifier c = new AttributeModifier("boost_speed", "velocity", AttributeModifier.Operation.multiply, 3);
 		c.duration = 10 * this.size;
 		c.deteriorationAge = 5 * this.size;

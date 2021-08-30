@@ -753,55 +753,19 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.health -= amount * this.getDamageMultiplier(source);
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 
+		Tank owner = null;
+
+		if (source instanceof Bullet)
+			owner = ((Bullet) source).tank;
+		else if (source instanceof Mine)
+			owner = ((Mine) source).tank;
+		else if (source instanceof Tank)
+			owner = (Tank) source;
+
 		if (this.health > 0)
 			this.flashAnimation = 1;
-		else
-		{
-			Tank owner = null;
 
-			if (source instanceof Bullet)
-				owner = ((Bullet) source).tank;
-			else if (source instanceof Mine)
-				owner = ((Mine) source).tank;
-			else if (source instanceof Tank)
-				owner = (Tank) source;
-
-			if (!ScreenPartyLobby.isClient && owner instanceof IServerPlayerTank && Crusade.crusadeMode && Crusade.currentCrusade != null)
-			{
-				Player p = ((IServerPlayerTank) owner).getPlayer();
-				CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
-
-				if (cp == null)
-				{
-					for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
-					{
-						if (dp.player == p)
-							cp = dp;
-					}
-				}
-
-				if (cp != null)
-					cp.addKill(this);
-			}
-
-			if (owner != null && !ScreenPartyLobby.isClient && this instanceof IServerPlayerTank && Crusade.crusadeMode && Crusade.currentCrusade != null)
-			{
-				Player p = ((IServerPlayerTank) this).getPlayer();
-				CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
-
-				if (cp == null)
-				{
-					for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
-					{
-						if (dp.player == p)
-							cp = dp;
-					}
-				}
-
-				if (cp != null)
-					cp.addDeath(owner);
-			}
-		}
+		this.checkHit(owner, source);
 
 		if (this.health > 6 && (int) (this.health + amount) != (int) (this.health))
 		{
@@ -812,6 +776,31 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		return this.health <= 0;
+	}
+
+	public void checkHit(Tank owner, IGameObject source)
+	{
+		if (Crusade.crusadeMode && Crusade.currentCrusade != null && !ScreenPartyLobby.isClient)
+		{
+			if (owner instanceof IServerPlayerTank)
+			{
+				CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(((IServerPlayerTank) owner).getPlayer());
+
+				if (cp != null && this.health <= 0)
+					cp.addKill(this);
+
+				if (cp != null && (source instanceof Bullet || source instanceof Mine))
+					cp.addItemHit(source);
+			}
+
+			if (owner != null && this instanceof IServerPlayerTank && this.health <= 0)
+			{
+				CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(((IServerPlayerTank) this).getPlayer());
+
+				if (cp != null)
+					cp.addDeath(owner);
+			}
+		}
 	}
 
 	public double getDamageMultiplier(IGameObject source)

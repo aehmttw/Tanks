@@ -49,6 +49,9 @@ public class ItemShield extends Item
 
         Drawing.drawing.playGlobalSound("shield.ogg");
 
+        if (Crusade.crusadeMode && Crusade.currentCrusade != null && this.player != null)
+            Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this);
+
         this.stackSize--;
 
         if (this.stackSize <= 0)

@@ -61,6 +61,8 @@ public class ItemBullet extends Item
 		new ItemPropertyDouble(this.properties, "size", 10.0);
 		new ItemPropertyDouble(this.properties, "recoil", 1.0);
 		new ItemPropertyBoolean(this.properties, "heavy", false);
+
+		this.supportsHits = true;
 	}
 
 	public ItemBullet()

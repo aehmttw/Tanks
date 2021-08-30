@@ -7,6 +7,7 @@ import tanks.event.EventMineExplode;
 import tanks.event.EventUpdateCoins;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Obstacle;
 
@@ -30,7 +31,7 @@ public class Mine extends Movable
 
     public double radius = Game.tile_size * 2.5;
     public Tank tank;
-    public ItemMine item;
+    public Item item;
     public boolean exploded = false;
     public double cooldown = 0;
     public int lastBeep = Integer.MAX_VALUE;
@@ -61,7 +62,7 @@ public class Mine extends Movable
             if (this.item == null)
                 t.liveMines++;
             else
-                this.item.liveMines++;
+                ((ItemMine) this.item).liveMines++;
         }
 
         this.team = t.team;
@@ -266,10 +267,10 @@ public class Mine extends Movable
 
         if (!ScreenPartyLobby.isClient)
         {
-            if (this.item == null)
+            if (!(this.item instanceof ItemMine))
                 this.tank.liveMines--;
             else
-                this.item.liveMines--;
+                ((ItemMine) this.item).liveMines--;
         }
 
         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.mineExplosion);

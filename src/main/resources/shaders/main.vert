@@ -23,9 +23,9 @@ uniform bool shadow;
 uniform bool vbo;
 uniform vec4 originalColor;
 
-uniform bool bonesEnabled;
-uniform mat4 boneMatrices[128];
-attribute vec4 bones;
+//uniform bool bonesEnabled;
+//uniform mat4 boneMatrices[128];
+//attribute vec4 bones;
 
 void main(void)
 {

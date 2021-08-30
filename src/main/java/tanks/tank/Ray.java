@@ -13,6 +13,8 @@ import java.util.ArrayList;
 public class Ray
 {
 	public double size = 10;
+	public double tankHitSizeMul = 1;
+
 	public int bounces;
 	public int bouncyBounces = 100;
 	public double posX;
@@ -191,7 +193,11 @@ public class Ray
 			{
 				for (int i = 0; i < Game.verticalFaces.size(); i++)
 				{
+					double size = this.size;
+
 					Face f = Game.verticalFaces.get(i);
+					if (f.owner instanceof Movable)
+						size *= tankHitSizeMul;
 
 					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
 							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
@@ -213,6 +219,11 @@ public class Ray
 				for (int i = Game.verticalFaces.size() - 1; i >= 0; i--)
 				{
 					Face f = Game.verticalFaces.get(i);
+
+					double size = this.size;
+
+					if (f.owner instanceof Movable)
+						size *= tankHitSizeMul;
 
 					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
 							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
@@ -236,6 +247,11 @@ public class Ray
 				for (int i = 0; i < Game.horizontalFaces.size(); i++)
 				{
 					Face f = Game.horizontalFaces.get(i);
+
+					double size = this.size;
+
+					if (f.owner instanceof Movable)
+						size *= tankHitSizeMul;
 
 					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
 							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
@@ -265,6 +281,11 @@ public class Ray
 				for (int i = Game.horizontalFaces.size() - 1; i >= 0; i--)
 				{
 					Face f = Game.horizontalFaces.get(i);
+
+					double size = this.size;
+
+					if (f.owner instanceof Movable)
+						size *= tankHitSizeMul;
 
 					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
 							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
@@ -315,7 +336,7 @@ public class Ray
 
 						double frac = 1 / (1 + this.traceAge / 100.0);
 						double z = this.tank.size / 2 + this.tank.turret.size / 2 * frac + (Game.tile_size / 4) * (1 - frac);
-						if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).finished)
+						if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
 							Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
 					}
 

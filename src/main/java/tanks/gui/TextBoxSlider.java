@@ -141,7 +141,10 @@ public class TextBoxSlider extends TextBox
         drawing.fillInterfaceOval(end2, posY, sizeY * m, sizeY * m);
         drawing.fillInterfaceRect(mid2, posY, end2 - start2, sizeY * m);
 
-        drawing.setColor((this.bgColorR + this.colorR) / 2, (this.bgColorG + this.colorG) / 2, (this.bgColorB + this.colorB) / 2);
+        if (Game.glowEnabled)
+            drawing.setColor((this.bgColorR + this.colorR) / 2, (this.bgColorG + this.colorG) / 2, (this.bgColorB + this.colorB) / 2);
+        else
+            drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
 
         drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m, this.sizeY * m * m);
         //drawing.setColor(this.colorR, this.colorG, this.colorB);

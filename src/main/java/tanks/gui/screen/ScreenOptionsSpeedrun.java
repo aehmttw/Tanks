@@ -7,49 +7,39 @@ import tanks.gui.TextBox;
 
 public class ScreenOptionsSpeedrun extends Screen
 {
-    public static final String useSeedText = "Use seed: ";
-    public static final String fixedFrameFrequencyText = "Fixed frames: ";
+    public static final String deterministicText = "Deterministic: ";
+    public static final String timerText = "Timer: ";
 
-    Button useSeed = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button timer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.useSeed = !Game.useSeed;
+            Game.showSpeedrunTimer = !Game.showSpeedrunTimer;
 
-            if (Game.useSeed)
-                useSeed.text = useSeedText + ScreenOptions.onText;
+            if (Game.showSpeedrunTimer)
+                timer.text = timerText + ScreenOptions.onText;
             else
-                useSeed.text = useSeedText + ScreenOptions.offText;
+                timer.text = timerText + ScreenOptions.offText;
         }
-    }, "Use the seed below for Tank AI rng");
+    },
+            "When enabled, time spent---in the current level attempt---and crusade will be displayed");
 
-    TextBox seedEntry = new TextBox(this.centerX, this.centerY, this.objWidth, this.objHeight, "Seed", new Runnable() {
-        @Override
-        public void run()
-        {
-            try {
-                Game.seed = Integer.parseInt(seedEntry.inputText);
-            } catch (NumberFormatException e)
-            {
-                seedEntry.inputText = seedEntry.previousInputText;
-            }
-        }
-    }, "0", "Seed for random number generator");
-
-    Button fixedFrames = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button deterministic = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.fixedFrameFrequency = !Game.fixedFrameFrequency;
+            Game.deterministicMode = !Game.deterministicMode;
 
-            if (Game.fixedFrameFrequency)
-                fixedFrames.text = fixedFrameFrequencyText + ScreenOptions.onText;
+            if (Game.deterministicMode)
+                deterministic.text = deterministicText + ScreenOptions.onText;
             else
-                fixedFrames.text = fixedFrameFrequencyText + ScreenOptions.offText;
+                deterministic.text = deterministicText + ScreenOptions.offText;
         }
-    }, "Make the frame frequency fixed---so that Tank AI is consistent.---Can cause timing issues.");
+    },
+            "Deterministic mode changes the random number---generation to be fixed based on a seed, and---the game speed to be locked and independent---of framerate." +
+                    "------This is useful for fair speedruns but may---provide for a less smooth experience.");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -58,36 +48,31 @@ public class ScreenOptionsSpeedrun extends Screen
         {
             Game.screen = new ScreenOptionsGame();
         }
-    });
+    }
+    );
 
     public ScreenOptionsSpeedrun()
     {
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        if (Game.useSeed)
-            useSeed.text = useSeedText + ScreenOptions.onText;
+        if (Game.showSpeedrunTimer)
+            timer.text = timerText + ScreenOptions.onText;
         else
-            useSeed.text = useSeedText + ScreenOptions.offText;
+            timer.text = timerText + ScreenOptions.offText;
 
-        if (Game.fixedFrameFrequency)
-            fixedFrames.text = fixedFrameFrequencyText + ScreenOptions.onText;
+        if (Game.deterministicMode)
+            deterministic.text = deterministicText + ScreenOptions.onText;
         else
-            fixedFrames.text = fixedFrameFrequencyText + ScreenOptions.offText;
-
-        seedEntry.inputText = Long.toString(Game.seed);
-
-        seedEntry.allowLetters = false;
-        seedEntry.allowDots = false;
+            deterministic.text = deterministicText + ScreenOptions.offText;
     }
 
     @Override
     public void update()
     {
         back.update();
-        fixedFrames.update();
-        seedEntry.update();
-        useSeed.update();
+        timer.update();
+        deterministic.update();
     }
 
     @Override
@@ -96,9 +81,8 @@ public class ScreenOptionsSpeedrun extends Screen
         this.drawDefaultBackground();
 
         back.draw();
-        fixedFrames.draw();
-        seedEntry.draw();
-        useSeed.draw();
+        deterministic.draw();
+        timer.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);

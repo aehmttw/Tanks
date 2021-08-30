@@ -142,12 +142,11 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		@Override
 		public void run()
 		{
-			Game.cleanUp();
-			Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade);
-			//Crusade.crusadeMode = false;
-			//Crusade.currentCrusade = null;
-			//Game.exitToTitle();
+			if (Panel.win)
+				Crusade.currentCrusade.currentLevel++;
 
+			Game.cleanUp();
+			Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, Crusade.currentCrusade.getCrusadePlayer(Game.player), true);
 		}
 	}
 	);

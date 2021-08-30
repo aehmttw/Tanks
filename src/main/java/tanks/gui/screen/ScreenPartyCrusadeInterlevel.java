@@ -66,17 +66,18 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     }
     );
 
-    Button quitCrusadeEnd = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button quitCrusadeEnd = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", new Runnable()
     {
         @Override
         public void run()
         {
             if (checkCrusadeEnd())
             {
-                Game.resetTiles();
-                Crusade.crusadeMode = false;
-                Crusade.currentCrusade = null;
-                Game.screen = ScreenPartyHost.activeScreen;
+                if (Panel.win)
+                    Crusade.currentCrusade.currentLevel++;
+
+                Game.cleanUp();
+                Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, Crusade.currentCrusade.crusadePlayers.get(Game.player), true);
             }
         }
     }
@@ -116,8 +117,21 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         public void run()
         {
             Game.resetTiles();
-            Game.screen = new ScreenPartyLobby();
             ScreenGame.versus = false;
+
+            if (Crusade.currentCrusade != null)
+            {
+                CrusadePlayer us = null;
+                for (Player p: Crusade.currentCrusade.crusadePlayers.keySet())
+                {
+                    if (p.clientID.equals(Game.clientID))
+                        us = Crusade.currentCrusade.getCrusadePlayer(p);
+                }
+
+                Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, us, true);
+            }
+            else
+                Game.screen = new ScreenPartyLobby();
         }
     }
     );
@@ -295,9 +309,9 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         }
 
         Game.resetTiles();
-        Crusade.crusadeMode = false;
-        Crusade.currentCrusade = null;
-        Game.screen = ScreenPartyHost.activeScreen;
+
+        Game.cleanUp();
+        Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, Crusade.currentCrusade.getCrusadePlayer(Game.player), true);
 
         return false;
     }

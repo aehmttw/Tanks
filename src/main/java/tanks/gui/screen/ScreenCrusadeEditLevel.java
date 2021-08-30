@@ -344,7 +344,11 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             if (Game.game.input.editorPause.isValid())
             {
-                back.function.run();
+                if (this.edit)
+                    add.function.run();
+                else
+                    back.function.run();
+
                 Game.game.input.editorPause.invalidate();
             }
         }

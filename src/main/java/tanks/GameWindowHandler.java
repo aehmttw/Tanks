@@ -4,6 +4,7 @@ import basewindow.IWindowHandler;
 import tanks.gui.screen.ScreenOptions;
 import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class GameWindowHandler implements IWindowHandler
 {
@@ -22,7 +23,7 @@ public class GameWindowHandler implements IWindowHandler
 
 		try
 		{
-			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer)
+			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 			{
 				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 			}

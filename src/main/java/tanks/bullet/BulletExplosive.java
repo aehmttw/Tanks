@@ -1,7 +1,5 @@
 package tanks.bullet;
 
-import tanks.AreaEffectFreeze;
-import tanks.Drawing;
 import tanks.Game;
 import tanks.event.EventLayMine;
 import tanks.hotbar.item.ItemBullet;
@@ -39,6 +37,7 @@ public class BulletExplosive extends Bullet
     public void onDestroy()
     {
         Mine m = new Mine(this.posX, this.posY, 0, this.tank);
+        m.item = this.item;
         Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
     }

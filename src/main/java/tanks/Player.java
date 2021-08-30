@@ -86,6 +86,15 @@ public class Player
                 parseStringIntHashMap(cp.tankDeaths, f.nextLine());
             }
 
+            if (f.hasNextLine())
+                parseLevelPerformances(c.performances, f.nextLine());
+
+            if (f.hasNextLine())
+            {
+                parseStringIntHashMap(cp.itemUses, f.nextLine());
+                parseStringIntHashMap(cp.itemHits, f.nextLine());
+            }
+
             f.stopReading();
 
             ArrayList<Item> shop = c.getShop();
@@ -133,7 +142,7 @@ public class Player
 
     public static void parseStringIntHashMap(HashMap<String, Integer> map, String str)
     {
-        String[] parts = str.replace("{", "").replace("}", "").replace(" ", "").split(",");
+        String[] parts = str.replace("{", "").replace("}", "").split(", ");
 
         for (String s: parts)
         {
@@ -142,6 +151,24 @@ public class Player
 
             String[] sec = s.split("=");
             map.put(sec[0], Integer.parseInt(sec[1]));
+        }
+    }
+
+    public static void parseLevelPerformances(ArrayList<Crusade.LevelPerformance> performances, String str)
+    {
+        String[] parts = str.replace("[", "").replace("]", "").split(", ");
+
+        for (String s: parts)
+        {
+            if (s.length() <= 0)
+                continue;
+
+            String[] sec = s.split("/");
+            Crusade.LevelPerformance l = new Crusade.LevelPerformance(Integer.parseInt(sec[0]));
+            l.attempts = Integer.parseInt(sec[1]);
+            l.bestTime = Double.parseDouble(sec[2]);
+            l.totalTime = Double.parseDouble(sec[3]);
+            performances.add(l);
         }
     }
 }

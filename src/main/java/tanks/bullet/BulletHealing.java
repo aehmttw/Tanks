@@ -78,6 +78,8 @@ public class BulletHealing extends BulletInstant
 		if (t.health < t.baseHealth + 1)
 			t.health = Math.min(t.baseHealth + 1, t.health + this.damage * this.frameDamageMultipler);
 
+		t.checkHit(this.tank, this);
+
 		Drawing.drawing.playGlobalSound("heal2.ogg", (float) ((Math.min(t.health, t.baseHealth + 1) / (t.baseHealth + 1) / 2) + 1f) / 2, freq / 2);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));

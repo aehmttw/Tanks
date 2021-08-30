@@ -8,13 +8,16 @@ import tanks.event.EventLayMine;
 import tanks.event.EventObstacleDestroy;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.hotbar.item.Item;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 
 public class ObstacleExplosive extends Obstacle
 {
     public double timer = 25;
     public Tank trigger = Game.dummyTank;
+    public Item itemTrigger = null;
 
     public ObstacleExplosive(String name, double posX, double posY)
     {
@@ -54,7 +57,13 @@ public class ObstacleExplosive extends Obstacle
         if (m instanceof Bullet || m instanceof Tank)
         {
             if (m instanceof Bullet)
+            {
                 this.trigger = ((Bullet) m).tank;
+                this.itemTrigger = ((Bullet) m).item;
+
+                if (((Bullet) m).item == null)
+                    this.itemTrigger = TankPlayer.default_bullet;
+            }
             else
                 this.trigger = (Tank) m;
 
@@ -72,7 +81,13 @@ public class ObstacleExplosive extends Obstacle
             this.update = true;
 
         if (m instanceof Mine)
+        {
             this.trigger = ((Mine) m).tank;
+            this.itemTrigger = ((Mine) m).item;
+
+            if (((Mine) m).item == null)
+                this.itemTrigger = TankPlayer.default_mine;
+        }
     }
 
     @Override
@@ -90,6 +105,7 @@ public class ObstacleExplosive extends Obstacle
             return;
 
         Mine mi = new Mine(this.posX, this.posY, 0, this.trigger);
+        mi.item = this.itemTrigger;
         mi.radius *= (this.stackHeight - 1) / 2 + 1;
         Game.eventsOut.add(new EventLayMine(mi));
         Game.movables.add(mi);

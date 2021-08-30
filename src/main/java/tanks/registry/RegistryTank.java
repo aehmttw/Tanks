@@ -5,6 +5,7 @@ import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class RegistryTank 
 {
@@ -87,10 +88,20 @@ public class RegistryTank
 
 	public TankEntry getRandomTank()
 	{
+		return getRandomTank(null);
+	}
+
+	public TankEntry getRandomTank(Random rand)
+	{
+		double d = Math.random();
+
+		if (rand != null)
+			d = rand.nextDouble();
+
 		if (this.tankEntries.size() <= 0)
 			throw new RuntimeException("the tank registry file is empty. please register some tanks!");
 
-		double random = Math.random() * maxTankWeight;
+		double random = d * maxTankWeight;
 		for (int i = 0; i < tankEntries.size(); i++)
 		{
 			TankEntry r = tankEntries.get(i);

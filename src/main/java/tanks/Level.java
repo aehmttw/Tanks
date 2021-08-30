@@ -37,6 +37,8 @@ public class Level
 	public static double currentLightIntensity = 1;
 	public static double currentShadowIntensity = 0.5;
 
+	public static Random random = new Random();
+
 	public boolean editable = true;
 	public boolean remote = false;
 	public boolean preview = false;
@@ -78,8 +80,6 @@ public class Level
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
 
-	public Random random;
-
 	/**
 	 * A level string is structured like this:
 	 * (parentheses signify required parameters, and square brackets signify optional parameters. 
@@ -89,11 +89,6 @@ public class Level
 	 */
 	public Level(String level)
 	{
-		if (Game.useSeed)
-			this.random = new Random(Game.seed);
-		else
-			this.random = new Random();
-
 		if (ScreenPartyHost.isServer)
 			this.startTime = Game.partyStartTime;
 
@@ -172,6 +167,11 @@ public class Level
 
 	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
 	{
+		if (Game.deterministicMode)
+			random = new Random(Game.seed);
+		else
+			random = new Random();
+
 		if (ScreenPartyHost.isServer)
 			ScreenPartyHost.includedPlayers.clear();
 		else if (ScreenPartyLobby.isClient)
@@ -420,7 +420,12 @@ public class Level
 					this.playerSpawnsY.add(y);
 					this.playerSpawnsAngle.add(angle);
 					this.playerSpawnsTeam.add(team);
-					tankGrid[(int) Double.parseDouble(tank[0])][(int) Double.parseDouble(tank[1])] = true;
+
+					int x1 = (int) Double.parseDouble(tank[0]);
+					int y1 = (int) Double.parseDouble(tank[1]);
+
+					if (x1 >= 0 && y1 >= 0 && x1 < tankGrid.length && y1 < tankGrid[0].length)
+						tankGrid[x1][y1] = true;
 
 					continue;
 				}
@@ -703,6 +708,6 @@ public class Level
 
 	public static boolean isDark()
 	{
-		return Level.currentColorR + Level.currentColorG + Level.currentColorB < 127 * 3 || (Game.shadowsEnabled && currentLightIntensity < 0.5);
+		return Level.currentColorR + Level.currentColorG + Level.currentColorB <= 127 * 3 || (Game.framework != Game.Framework.libgdx && currentLightIntensity <= 0.5);
 	}
 }

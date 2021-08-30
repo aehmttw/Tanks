@@ -17,6 +17,9 @@ import tanks.hotbar.item.ItemRemote;
 
 public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 {
+	public static Item default_bullet;
+	public static Item default_mine;
+
 	public static Joystick controlStick;
 	public static Joystick shootStick;
 	public static Button mineButton;
@@ -53,6 +56,16 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		this.angle = angle;
 		this.orientation = angle;
 		this.player.tank = this;
+
+		if (enableDestroyCheat)
+		{
+			this.showName = true;
+			this.nameTag.colorR = 255;
+			this.nameTag.colorG = 0;
+			this.nameTag.colorB = 0;
+
+			this.nameTag.name = "Destroy cheat enabled!!!";
+		}
 	}
 
 	@Override
@@ -383,6 +396,12 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		Game.movables.add(b);
 
 		this.processRecoil();
+
+		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+		{
+			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+			cp.addItemUse(default_bullet);
+		}
 	}
 
 	public void fireBullet(Bullet b, double speed)
@@ -402,6 +421,12 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		Game.movables.add(b);
 
 		this.processRecoil();
+
+		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+		{
+			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+			cp.addItemUse(b.item);
+		}
 	}
 
 	public void layMine()
@@ -415,7 +440,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 				return;
 		}
 
-		if (this.liveMines >= this.liveMinesMax )
+		if (this.liveMines >= this.liveMinesMax)
 			return;
 
 		Drawing.drawing.playGlobalSound("lay_mine.ogg");
@@ -426,6 +451,12 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		Game.eventsOut.add(new EventLayMine(m));
 
 		Game.movables.add(m);
+
+		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+		{
+			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+			cp.addItemUse(default_mine);
+		}
 	}
 
 	public void layMine(Mine m)
@@ -439,6 +470,12 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 
 		Game.eventsOut.add(new EventLayMine(m));
 		Game.movables.add(m);
+
+		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+		{
+			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
+			cp.addItemUse(m.item);
+		}
 	}
 
 

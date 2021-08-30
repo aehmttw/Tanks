@@ -48,7 +48,7 @@ public class TankCyan extends TankAIControlled
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
 		
-		this.cooldown = Math.random() * this.cooldownRandom + this.cooldownBase;
+		this.cooldown = this.random.nextDouble() * this.cooldownRandom + this.cooldownBase;
 
 		if (this.shootAIType.equals(ShootAI.alternate))
 			this.straightShoot = !this.straightShoot;

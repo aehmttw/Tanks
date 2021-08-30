@@ -28,7 +28,7 @@ public class TankBlack extends TankAIControlled
 	@Override
 	public void reactToTargetEnemySight()
 	{
-		if (Math.random() < 0.01)
+		if (this.random.nextDouble() < 0.01)
 			strafeDirection = -strafeDirection;
 
 		this.setAccelerationInDirectionWithOffset(Game.playerTank.posX, Game.playerTank.posY, 3.5, strafeDirection);

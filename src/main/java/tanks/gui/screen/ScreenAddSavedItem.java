@@ -1,12 +1,15 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.hotbar.item.Item;
+
+import java.util.ArrayList;
 
 public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScreen
 {
@@ -21,6 +24,8 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
     public boolean deleting = false;
 
     public boolean removeNow = false;
+
+    public int builtInItemsCount = 0;
 
     public Button quit = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -115,6 +120,47 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
                     }
                 });
 
+        ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
+
+        for (String s: items)
+        {
+            builtInItemsCount++;
+            Item i = Item.parseItem(null, s);
+
+            Button b = new Button(0, 0, this.items.objWidth, this.items.objHeight, "", new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Item i = Item.parseItem(null, s);
+                    i.importProperties();
+                    itemScreen.addItem(i);
+                }
+            }
+            );
+
+            this.items.buttons.add(b);
+
+            b.text = i.name;
+
+            b.image = i.icon;
+            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+            b.imageSizeX = b.sizeY;
+            b.imageSizeY = b.sizeY;
+
+            int p = i.price;
+            String price = p + " ";
+            if (p == 0)
+                price = "Free!";
+            else if (p == 1)
+                price += "coin";
+            else
+                price += "coins";
+
+            b.subtext = price;
+        }
+
+        this.items.sortButtons();
 
         delete.textOffsetY = -1;
         delete.textOffsetX = 1;
@@ -145,6 +191,9 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
         {
             for (int i = Math.min(items.page * items.rows * items.columns + items.rows * items.columns, items.buttons.size()) - 1; i >= items.page * items.rows * items.columns; i--)
             {
+                if (i >= items.buttons.size() - builtInItemsCount)
+                    continue;
+
                 Button b = items.buttons.get(i);
                 delete.posX = b.posX + b.sizeX / 2 - b.sizeY / 2;
                 delete.posY = b.posY;
@@ -188,6 +237,9 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
         {
             for (int i = Math.min(items.page * items.rows * items.columns + items.rows * items.columns, items.buttons.size()) - 1; i >= items.page * items.rows * items.columns; i--)
             {
+                if (i >= items.buttons.size() - builtInItemsCount)
+                    continue;
+
                 Button b = items.buttons.get(i);
                 delete.posX = b.posX + b.sizeX / 2 - b.sizeY / 2;
                 delete.posY = b.posY;

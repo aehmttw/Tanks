@@ -40,6 +40,8 @@ public class ItemMine extends Item
         new ItemPropertyDouble(this.properties, "cooldown", 50.0);
         new ItemPropertyDouble(this.properties, "size", Mine.mine_size);
         new ItemPropertyBoolean(this.properties, "destroys_blocks", true);
+
+        this.supportsHits = true;
     }
 
     public ItemMine()

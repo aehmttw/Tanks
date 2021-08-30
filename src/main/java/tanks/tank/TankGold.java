@@ -11,7 +11,7 @@ import tanks.event.EventTankUpdateColor;
 public class TankGold extends TankAIControlled
 {
 	boolean suicidal = false;
-	double timeUntilDeath = 500 + Math.random() * 250;
+	double timeUntilDeath = 500 + this.random.nextDouble() * 250;
 
 	public TankGold(String name, double x, double y, double angle)
 	{

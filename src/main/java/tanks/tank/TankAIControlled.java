@@ -149,7 +149,7 @@ public class TankAIControlled extends Tank
 	protected double aimAngle = 0;
 
 	/** Direction in which the tank moves when idle*/
-	protected double direction = ((int)(Math.random() * 8))/2.0;
+	protected double direction;
 
 	/** When enabled, the current motion direction will be kept until the tank decides to change direction*/
 	protected boolean overrideDirection = false;
@@ -158,7 +158,7 @@ public class TankAIControlled extends Tank
 	protected double avoidDirection = 0;
 
 	/** Time until the tank will change its idle turret's direction*/
-	protected double idleTimer = (Math.random() * turretIdleTimerRandom) + turretIdleTimerBase;
+	protected double idleTimer;
 
 	/** Time between shooting bullets*/
 	protected double cooldown = 200;
@@ -219,13 +219,9 @@ public class TankAIControlled extends Tank
 	{
 		super(name, x, y, size, r, g, b);
 
-		if (Game.useSeed) {
-			this.random = new Random(Game.currentLevel.random.nextLong());
-			this.direction = ((this.random.nextInt() * 8)) / 2.0;
-			this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
-		}
-		else
-			this.random = new Random();
+		this.random = new Random(Level.random.nextLong());
+		this.direction = ((int)(this.random.nextDouble() * 8)) / 2.0;
+		this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
 
 		if (this.random.nextDouble() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;
@@ -481,7 +477,7 @@ public class TankAIControlled extends Tank
 			{
 				for (int j = 0; j < tiles[i].length; j++)
 				{
-					tiles[i][j] = new Tile(i, j);
+					tiles[i][j] = new Tile(this.random, i, j);
 				}
 			}
 
@@ -639,6 +635,7 @@ public class TankAIControlled extends Tank
 				if (!(b.tank == this && b.age < 20) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10 && b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0)
 				{
 					Ray r = b.getRay();
+					r.tankHitSizeMul = 4;
 
 					Movable m = r.getTarget(3, this);
 					if (m != null)
@@ -860,7 +857,7 @@ public class TankAIControlled extends Tank
 			if (speed < this.bulletSpeed)
 			{
 				double d = this.getAngleInDirection(nearestBullet.posX, nearestBullet.posY) - Math.asin(speed / this.bulletSpeed);
-				
+
 				if (!Double.isNaN(d))
 				{
 					this.aimAngle = d;
@@ -1196,8 +1193,8 @@ public class TankAIControlled extends Tank
 		public double posX;
 		public double posY;
 
-		public double shiftedX = (Math.random() - 0.5) * Game.tile_size / 2;
-		public double shiftedY = (Math.random() - 0.5) * Game.tile_size / 2;
+		public double shiftedX;
+		public double shiftedY;
 
 		public int tileX;
 		public int tileY;
@@ -1208,8 +1205,11 @@ public class TankAIControlled extends Tank
 		public boolean interesting = false;
 		public int unfavorability = 0;
 
-		public Tile(int x, int y)
+		public Tile(Random r, int x, int y)
 		{
+			this.shiftedX = (r.nextDouble() - 0.5) * Game.tile_size / 2;
+			this.shiftedY = (r.nextDouble() - 0.5) * Game.tile_size / 2;
+
 			this.posX = (x + 0.5) * Game.tile_size;
 			this.posY = (y + 0.5) * Game.tile_size;
 

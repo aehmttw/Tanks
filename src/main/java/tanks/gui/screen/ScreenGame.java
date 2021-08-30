@@ -762,6 +762,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			{
 				if (Game.currentLevel != null && Game.currentLevel.timed)
 					Drawing.drawing.playSound("battle_timed_intro.ogg", 1f, true);
+				else if (Level.isDark())
+					Drawing.drawing.playSound("battle_night_intro.ogg", 1f, true);
 				else
 					Drawing.drawing.playSound("battle_intro.ogg", 1f, true);
 			}
@@ -790,6 +792,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			{
 				if (this.paused || Game.playerTank == null || Game.playerTank.destroy)
 					this.music = "battle_paused.ogg";
+				else if (Level.isDark())
+					this.music = "battle_night.ogg";
 				else
 					this.music = "battle.ogg";
 
@@ -1416,8 +1420,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 								{
 									Crusade.currentCrusade.levelFinished(Panel.levelPassed);
 									EventReturnToCrusade e = new EventReturnToCrusade(Crusade.currentCrusade);
+
 									e.execute();
 									Game.eventsOut.add(e);
+
+									if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
+										Game.eventsOut.add(new EventShowCrusadeStats());
 
 									for (int i = 0; i < Game.players.size(); i++)
 									{
@@ -1714,7 +1722,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (i == 5 && Game.enable3d)
 			{
 				double frac = Obstacle.draw_size / Game.tile_size;
-				Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16  * frac + Level.currentColorB * (1 - frac));
+				Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16 * frac + Level.currentColorB * (1 - frac));
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
@@ -1802,7 +1810,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
 				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 200, 4, 0.3, 75 * fade, 0.5 * fade, false);
 				Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
-				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2,198, 3, 0.5, 60 * fade, 0.375 * fade, false);
+				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 198, 3, 0.5, 60 * fade, 0.375 * fade, false);
 			}
 
 			drawables[i].clear();
@@ -1918,7 +1926,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					{
 						readyPlayers.clear();
 
-						for (Player p: ScreenPartyHost.readyPlayers)
+						for (Player p : ScreenPartyHost.readyPlayers)
 							readyPlayers.add(p.username);
 					}
 					else
@@ -2067,6 +2075,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (Game.showSpeedrunTimer)
 			SpeedrunTimer.draw();
+
+		if (Game.deterministicMode && !ScreenPartyLobby.isClient)
+		{
+			if (Level.isDark() || (Game.screen instanceof IDarkScreen && Panel.win && Game.effectsEnabled))
+				Drawing.drawing.setColor(255, 255, 255, 127);
+			else
+				Drawing.drawing.setColor(0, 0, 0, 127);
+
+			double posX = Drawing.drawing.interfaceSizeX + (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale - 50;
+			double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
+
+			Drawing.drawing.setInterfaceFontSize(24);
+			Drawing.drawing.drawInterfaceText(posX, posY, "Deterministic mode", true);
+		}
 
 		if (paused && !screenshotMode)
 		{

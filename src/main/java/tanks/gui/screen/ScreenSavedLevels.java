@@ -5,8 +5,8 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
-import tanks.gui.screen.levelbuilder.OverlayEditorMenu;
-import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.OverlayEditorMenu;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
 public class ScreenSavedLevels extends Screen
 {

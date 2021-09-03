@@ -325,6 +325,16 @@ public class ScreenChangelog extends Screen
                                     "Added deterministic mode for speedrunners\n" +
                                     "Bug fixes and other minor improvements"
                     });
+
+            new Changelog("v1.2.2d", new String[]
+                    {
+                            "*What's new in Tanks v1.2.2d:\n\n" +
+                                    "Tweaked editor and dark level music\n" +
+                                    "Level timer now shows in editor after playing from 'My levels'\n" +
+                                    "Reworked the 'Save this level' button\n" +
+                                    "You can now save levels you play in parties\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
         }
     }
 }

@@ -9,7 +9,7 @@ import tanks.event.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SpeedrunTimer;
-import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;

@@ -136,6 +136,25 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     }
     );
 
+    Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+            Level lev = new Level(Game.currentLevelString);
+            lev.preview = true;
+            lev.loadLevel(sc);
+            Game.screen = sc;
+
+            sc.fromInterlevel = true;
+            sc.music = music;
+            sc.musicID = musicID;
+            sc.updateDownloadButton();
+        }
+    }
+    );
+
     public ScreenPartyCrusadeInterlevel(boolean win)
     {
         Game.player.hotbar.percentHidden = 100;
@@ -166,6 +185,13 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
                 getFireworkArray().add(f);
             }
         }
+
+        save.posX = Drawing.drawing.interfaceSizeX - 40;
+        save.posY = Drawing.drawing.interfaceSizeY - 90;
+        save.image = "save.png";
+
+        save.imageSizeX = this.objHeight;
+        save.imageSizeY = this.objHeight;
     }
 
     @Override
@@ -197,6 +223,8 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
                 }
             }
         }
+
+        save.update();
     }
 
     @Override
@@ -281,6 +309,8 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 23 / 6, msg2);
         else
             Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
+
+        save.draw();
     }
 
 

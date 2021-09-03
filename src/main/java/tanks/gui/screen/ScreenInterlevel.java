@@ -5,7 +5,6 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
-import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +22,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	public static double firework_frequency = 0.08;
 
-	Button replay = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+	Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -77,7 +76,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayCrusadeWin = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+	Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -92,28 +91,26 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			+ "However, you can still earn coins!---"
 			+ "You will still lose a life if you die.");
 
-	Button save = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Save this level", new Runnable()
+	Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			Crusade.crusadeMode = false;
+			ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+			Level lev = new Level(Game.currentLevelString);
+			lev.preview = true;
+			lev.loadLevel(sc);
+			Game.screen = sc;
 
-			if (Crusade.currentCrusade != null)
-			{
-				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
-				Crusade.currentCrusade = null;
-			}
-
-			ScreenLevelEditor s = new ScreenLevelEditor(System.currentTimeMillis() + ".tanks", Game.currentLevel);
-			Level level = new Level(Game.currentLevelString);
-			level.loadLevel(s);
-			Game.screen = s;
+			sc.fromInterlevel = true;
+			sc.music = music;
+			sc.musicID = musicID;
+			sc.updateDownloadButton();
 		}
 	}
 	);
 
-	Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
+	Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -124,7 +121,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Next level", new Runnable()
+	Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Next level", new Runnable()
 	{
 		@Override
 		public void run()
@@ -137,7 +134,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitCrusadeEnd = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Continue", new Runnable()
+	Button quitCrusadeEnd = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Continue", new Runnable()
 	{
 		@Override
 		public void run()
@@ -151,7 +148,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Quit to title", new Runnable()
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -202,7 +199,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitCrusade = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Quit to title", new Runnable()
+	Button quitCrusade = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Quit to title", new Runnable()
 	{
 		@Override
 		public void run()
@@ -288,10 +285,15 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	{
 		Game.player.hotbar.percentHidden = 100;
 
+		save.image = "save.png";
+
+		save.imageSizeX = this.objHeight;
+		save.imageSizeY = this.objHeight;
+
 		if (Crusade.crusadeMode)
-		{
 			Crusade.currentCrusade.levelFinished(Panel.win);
-		}
+
+		this.musicID = "interlevel";
 
 		if (Panel.win)
 		{
@@ -305,6 +307,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			Drawing.drawing.playSound("lose.ogg");
 			this.music = "lose_music.ogg";
+
+			quitCrusade.posY -= this.objYSpace / 2;
 		}
 
 		if (Panel.win && Game.effectsEnabled)
@@ -324,6 +328,11 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public void draw()
 	{
 		this.drawDefaultBackground();
+
+		save.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+				+ Drawing.drawing.interfaceSizeX - 50 - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+		save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+				+ Drawing.drawing.interfaceSizeY - 50;
 
 		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
 		{
@@ -400,6 +409,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			if (Crusade.crusadeMode)
 			{
+				quitCrusade.draw();
+
 				if (Panel.win || Crusade.currentCrusade.replay)
 				{
 					nextLevel.draw();
@@ -407,8 +418,6 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				}
 				else
 					replayCrusade.draw();
-
-				quitCrusade.draw();
 			}
 			else
 			{

@@ -11,8 +11,8 @@ import tanks.gui.ChatFilter;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
-import tanks.gui.screen.levelbuilder.OverlayEditorMenu;
-import tanks.gui.screen.levelbuilder.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.OverlayEditorMenu;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.*;
@@ -90,7 +90,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.2.2c";
+	public static final String version = "Tanks v1.2.2d";
 	public static final int network_protocol = 36;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -790,7 +790,9 @@ public class Game
 		Game.loadLevel(game.fileManager.getFile(Game.homedir + levelDir + "/" + name), s);
 		s.paused = true;
 
-		Game.screen = new OverlayEditorMenu(s, s);
+		OverlayEditorMenu m = new OverlayEditorMenu(s, s);
+		m.showTime = true;
+		Game.screen = m;
 	}
 
 	public static void exitToCrash(Throwable e)

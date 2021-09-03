@@ -93,7 +93,7 @@ public class ScreenSharedSummary extends Screen
                 @Override
                 public void run()
                 {
-                    ScreenSaveSharedLevel sc = new ScreenSaveSharedLevel(l.name, l.level, Game.screen);
+                    ScreenSaveLevel sc = new ScreenSaveLevel(l.name, l.level, Game.screen);
                     Level lev = new Level(l.level);
                     lev.preview = true;
                     lev.loadLevel(sc);

@@ -97,6 +97,25 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     }
     );
 
+    Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+            Level lev = new Level(Game.currentLevelString);
+            lev.preview = true;
+            lev.loadLevel(sc);
+            Game.screen = sc;
+
+            sc.fromInterlevel = true;
+            sc.music = music;
+            sc.musicID = musicID;
+            sc.updateDownloadButton();
+        }
+    }
+    );
+
     public ScreenPartyInterlevel()
     {
         Game.player.hotbar.percentHidden = 100;
@@ -122,6 +141,13 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
                 getFireworkArray().add(f);
             }
         }
+
+        save.posX = Drawing.drawing.interfaceSizeX - 40;
+        save.posY = Drawing.drawing.interfaceSizeY - 90;
+        save.image = "save.png";
+
+        save.imageSizeX = this.objHeight;
+        save.imageSizeY = this.objHeight;
     }
 
 
@@ -146,6 +172,8 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             replay.update();
             newLevel.update();
         }
+
+        save.update();
     }
 
     @Override
@@ -214,6 +242,8 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
+
+        save.draw();
     }
 
     public ArrayList<Firework> getFireworkArray()

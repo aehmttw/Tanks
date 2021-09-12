@@ -414,6 +414,9 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
     public void fireBullet(Bullet b, double speed)
     {
+        if (speed <= 0)
+            speed = Double.MIN_NORMAL;
+
         if (b.itemSound != null)
             Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 

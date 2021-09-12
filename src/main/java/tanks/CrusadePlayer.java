@@ -2,7 +2,9 @@ package tanks;
 
 import basewindow.BaseFile;
 import tanks.bullet.Bullet;
+import tanks.gui.screen.ScreenCrashed;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenOutOfMemory;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
@@ -153,7 +155,9 @@ public class CrusadePlayer
             {
                 Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win);
                 this.coins = player.hotbar.coins;
-                player.remainingLives--;
+
+                if (!(Game.screen instanceof ScreenCrashed || Game.screen instanceof ScreenOutOfMemory))
+                    player.remainingLives--;
             }
 
             f.println(player.remainingLives + "");

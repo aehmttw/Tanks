@@ -326,7 +326,8 @@ public class ScreenOptionsGraphics extends Screen
         if (Game.framework == Game.Framework.libgdx)
         {
             fullscreen.enabled = false;
-            fullscreen.hoverText[0] = "This option is unavailable on mobile---because all apps are fullscreen!";
+            fullscreen.hoverText[0] = "This option is unavailable on mobile";
+            fullscreen.hoverText[1] = "because all apps are fullscreen!";
         }
 
         fullscreen.update();

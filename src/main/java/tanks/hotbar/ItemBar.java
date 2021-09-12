@@ -284,7 +284,7 @@ public class ItemBar
 		{
 			for (int i = 0; i < this.slotButtons.length; i++)
 			{
-				if (this.slotButtons[i].selected)
+				if (this.slotButtons[i].selected && !Game.game.window.touchscreen)
 				{
 					InputBindingGroup g = null;
 

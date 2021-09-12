@@ -90,7 +90,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.2.2d";
+	public static final String version = "Tanks v1.2.2";
 	public static final int network_protocol = 36;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -232,6 +232,7 @@ public class Game
 
 	public static void registerEvents()
 	{
+		System.out.println(Integer.MIN_VALUE + (Integer.MAX_VALUE - 2));
 		NetworkEventMap.register(EventSendClientDetails.class);
 		NetworkEventMap.register(EventPing.class);
 		NetworkEventMap.register(EventConnectionSuccess.class);
@@ -807,6 +808,8 @@ public class Game
 		if (ScreenPartyLobby.isClient || Game.connectedToOnline)
 			Client.handler.ctx.close();
 
+		ScreenPartyLobby.connections.clear();
+
 		ScreenPartyHost.isServer = false;
 		ScreenPartyLobby.isClient = false;
 
@@ -868,6 +871,19 @@ public class Game
 			screen = new ScreenOutOfMemory();
 		else
 			screen = new ScreenCrashed();
+
+		try
+		{
+			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+			{
+				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
+			}
+		}
+		catch (Exception e1)
+		{
+			e1.printStackTrace(Game.logger);
+			e1.printStackTrace();
+		}
 
 		recycleEffects.clear();
 		removeEffects.clear();

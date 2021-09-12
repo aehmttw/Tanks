@@ -116,7 +116,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
                     }
                     catch (Exception e)
                     {
-                        Game.exitToCrash(e);
+                        e.printStackTrace();
                     }
                 });
 

@@ -168,6 +168,26 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
     {
         super(previous, screenLevelEditor);
 
+        rotateTankButton.imageXOffset = -155;
+        rotateTankButton.imageSizeX = 30;
+        rotateTankButton.imageSizeY = 30;
+        rotateTankButton.image = "rotate_tank.png";
+
+        selectTeam.imageXOffset = -150;
+        selectTeam.imageSizeX = 30;
+        selectTeam.imageSizeY = 30;
+        selectTeam.image = "team.png";
+
+        editHeight.imageXOffset = -155;
+        editHeight.imageSizeX = 30;
+        editHeight.imageSizeY = 30;
+        editHeight.image = "obstacle_height.png";
+
+        editGroupID.imageXOffset = -155;
+        editGroupID.imageSizeX = 30;
+        editGroupID.imageSizeY = 30;
+        editGroupID.image = "id.png";
+
         for (int i = 0; i < Game.registryTank.tankEntries.size(); i++)
         {
             int rows = objectButtonRows;

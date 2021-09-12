@@ -124,7 +124,7 @@ public class ScreenChangelog extends Screen
                 else
                     Drawing.drawing.setInterfaceFontSize(this.textSize);
 
-                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + (-(pageContents.length - 1) / 2.0 + i) * this.objYSpace / 2 - this.objYSpace, s);
+                Drawing.drawing.drawInterfaceText(this.centerX - 400, this.centerY + (-(pageContents.length - 1) / 2.0 + i) * this.objYSpace / 2 - this.objYSpace, s, false);
             }
         }
     }
@@ -296,40 +296,23 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements"
                     });
 
-            new Changelog("v1.2.2a", new String[]
+            new Changelog("v1.2.2", new String[]
                     {
-                            "*What's new in Tanks v1.2.2a:\n\n" +
-                                    "Added indicator for where arc bullets will land\n" +
-                                    "Hovering over the item bar slots shows keybinds\n" +
-                                    "Added option to show level names in crusades\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.2.2b", new String[]
-                    {
-                            "*What's new in Tanks v1.2.2b:\n\n" +
-                                    "Added crusade statistics screen (still work in progress)\n" +
-                                    "Leaving and rejoining a party crusade before a level is loaded recovers progress\n" +
-                                    "Explosive blocks now award players coins for kills\n" +
-                                    "Added mini tank to level editor\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.2.2c", new String[]
-                    {
-                            "*What's new in Tanks v1.2.2c:\n\n" +
-                                    "Added more stats to the crusade stats screen\n" +
-                                    "Added built-in item templates\n" +
-                                    "Crusade stats screen shows in multiplayer\n" +
+                            "*What's new in Tanks v1.2.2:\n\n" +
+                                    "*New features:\n\n" +
+                                    "Added crusade statistics screen\n" +
                                     "Added music for editor and dark levels\n" +
                                     "Added deterministic mode for speedrunners\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
+                                    "Added built-in item templates\n" +
+                                    "Added option to show level names in crusades\n" +
+                                    "Added indicator for where arc bullets will land\n" +
+                                    "Added mini tank to level editor\n",
 
-            new Changelog("v1.2.2d", new String[]
-                    {
-                            "*What's new in Tanks v1.2.2d:\n\n" +
-                                    "Tweaked editor and dark level music\n" +
+                                    "*Improvements:\n\n" +
+                                    "Hovering over the item bar slots shows keybinds\n" +
+                                    "Leaving and rejoining a party crusade before a new level is\n" +
+                                    "    loaded recovers progress\n" +
+                                    "Explosive blocks now award players coins for kills\n" +
                                     "Level timer now shows in editor after playing from 'My levels'\n" +
                                     "Reworked the 'Save this level' button\n" +
                                     "You can now save levels you play in parties\n" +

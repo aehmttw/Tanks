@@ -130,7 +130,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             playerNames[i] = pl.player.username;
             playerObjects[i] = pl;
 
-            if (pl.player.clientID.equals(Game.clientID))
+            if (pl.player.clientID.equals(p.player.clientID))
                 us = i;
 
             i++;
@@ -149,6 +149,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         changePlayer.selectedOption = us;
 
         changePlayer.quick = true;
+
+        if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
+            exit.text = "Back to party";
     }
 
     public void addTanks()

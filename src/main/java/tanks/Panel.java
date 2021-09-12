@@ -173,9 +173,13 @@ public class Panel
 			}
 
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
+
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
 		}
 
 		if (Game.game.window.soundsEnabled)
@@ -281,7 +285,7 @@ public class Panel
 			return;
 		}
 
-		synchronized(Game.eventsIn)
+		synchronized (Game.eventsIn)
 		{
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
@@ -312,7 +316,7 @@ public class Panel
 
 					ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
 
-					for (Player p: Game.players)
+					for (Player p : Game.players)
 					{
 						if (p.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
 						{
@@ -384,6 +388,13 @@ public class Panel
 			this.pastPlayerX.add(Drawing.drawing.playerX);
 			this.pastPlayerY.add(Drawing.drawing.playerY);
 			this.pastPlayerTime.add(this.age);
+
+			while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.track_offset)
+			{
+				Panel.panel.pastPlayerX.remove(0);
+				Panel.panel.pastPlayerY.remove(0);
+				Panel.panel.pastPlayerTime.remove(0);
+			}
 
 			if (Drawing.drawing.movingCamera)
 			{
@@ -468,6 +479,12 @@ public class Panel
 		}
 
 		forceRefreshMusic = false;
+
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_ALT) && Game.debug)
+		{
+			Game.game.window.validPressedKeys.clear();
+			Game.exitToCrash(new Exception("Manually initiated crash"));
+		}
 	}
 
 	public void playScreenMusic(long fadeTime)

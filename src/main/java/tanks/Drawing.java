@@ -1116,13 +1116,6 @@ public class Drawing
 		if (!enableMovingCameraY && !Game.followingCam)
 			return 0;
 
-		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - track_offset)
-		{
-			Panel.panel.pastPlayerX.remove(0);
-			Panel.panel.pastPlayerY.remove(0);
-			Panel.panel.pastPlayerTime.remove(0);
-		}
-
 		double y = playerY;
 
 		if (Panel.panel.pastPlayerTime.size() == 1)

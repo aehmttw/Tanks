@@ -131,8 +131,8 @@ public class Game
 	public static boolean deterministicMode = false;
 	public static int seed = 0;
 
-	public static String crashMessage = "Yay! The game hasn't crashed yet!";
-	public static String crashLine = "Yay! The game hasn't crashed yet!";
+	public static String crashMessage = "Yay! The game is running fine!";
+	public static String crashLine = "Yay! The game is running fine!";
 
 	public static long crashTime = 0;
 

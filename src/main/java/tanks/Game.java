@@ -68,6 +68,9 @@ public class Game
 	public static final SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<INetworkEvent>();
 	public static final SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<INetworkEvent>();
 
+	public static final ArrayList<Runnable> updateMethods = new ArrayList<Runnable>(); // Used to allow extensions to have a method called on every frame
+	public static final ArrayList<Runnable> drawMethods = new ArrayList<Runnable>(); // Same as above, but for drawing. These methods will get called after all the other draw calls, which could be undesirable, but it is less confusing.
+
 	public static Team playerTeam = new Team("ally");
 	public static Team enemyTeam = new Team("enemy");
 
@@ -347,6 +350,38 @@ public class Game
 	public static void registerItem(Class<? extends Item> item, String name, String image)
 	{
 		new RegistryItem.ItemEntry(Game.registryItem, item, name, image);
+	}
+
+	/**
+	 * Register a method to be called after every game tick.
+	 * Each tick may not be consistent. For timers and other
+	 * features that require knowing actual time elapsed,
+	 * see <code>Panel.frameFrequency</code>.
+	 *
+ 	 * @param method a method to be called after each game tick
+	 * @see Panel#frameFrequency
+	 */
+	public static void registerUpdateMethod(Runnable method) {
+		Game.updateMethods.add(method);
+	}
+
+	/**
+	 * Register a method to be called after every frame.
+	 * You can draw your own UI elements in your method.
+	 * Framerate may not be consistent. For frame
+	 * independent animations, the progress should be
+	 * updated using a method registered using
+	 * <code>Game.registerUpdateMethod</code>.
+	 * <p>
+	 * You should not do any processing in the registered
+	 * method. Instead, do processing in methods registered
+	 * in <code>Game.registerUpdateMethod</code>.
+	 *
+	 * @param method a method to be called after each frame
+	 * @see Game#registerUpdateMethod(Runnable)
+	 */
+	public static void registerDrawMethod(Runnable method) {
+		Game.drawMethods.add(method);
 	}
 
 	public static void initScript()

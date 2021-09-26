@@ -2,6 +2,7 @@ package tanks.extension;
 
 import basewindow.BaseFile;
 import tanks.Game;
+import tanks.IDrawable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.jar.JarFile;
 
-public class Extension
+public class Extension implements IDrawable
 {
     public final String name;
     public JarFile jarFile;
@@ -22,6 +23,26 @@ public class Extension
     // Register things like tanks, obstacles, items, or network events here
     public void setUp()
     {
+
+    }
+
+    // Called before every tick. Perform tasks that need to run before the vanilla update() is called. Can be left blank.
+    public void preUpdate() {
+
+    }
+
+    // Called before every frame. Draw items that appear beneath everything else or configure draw state. Can be left blank.
+    public void preDraw() {
+
+    }
+
+    // Called after every tick. Perform tasks that need processing but aren't tied to a specific tank/item/bullet here. Can be left blank.
+    public void update() {
+
+    }
+
+    // Called after every frame. Draw UI elements, etc. here. Can be left blank.
+    public void draw() {
 
     }
 

@@ -40,11 +40,11 @@ public class ScreenAntialiasingWarning extends Screen
 			s = "enabled";
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Notice!");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Notice!");
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "Antialiasing will be " + s);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "the next time you start the game.");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "Antialiasing will be %s", s);
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "the next time you start the game.");
 
 	}
 

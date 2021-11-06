@@ -1,6 +1,7 @@
 package tanks.gui.input;
 
 import tanks.Game;
+import tanks.translation.Translation;
 
 public class InputBindingGroup
 {
@@ -58,7 +59,7 @@ public class InputBindingGroup
                 (input2.getInputName().startsWith("Left") && input1.getInputName().startsWith("Right")))
             return Game.formatString(input1.getInputName().replace("Left ", "").replace("Right ", ""));
         else
-            return input1.getInputName() + " or " + input2.getInputName();
+            return Translation.translate("%s or %s", Translation.translate(input1.getInputName()), Translation.translate(input2.getInputName()));
     }
 
     public void reset()

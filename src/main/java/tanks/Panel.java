@@ -333,7 +333,7 @@ public class Panel
 					Game.removePlayer(ScreenPartyHost.disconnectedPlayers.get(i));
 				}
 
-				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
+				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).cancelCountdown)
 				{
 					Game.eventsOut.add(new EventBeginLevelCountdown());
 					((ScreenGame) Game.screen).cancelCountdown = false;

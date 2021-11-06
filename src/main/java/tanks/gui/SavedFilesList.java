@@ -15,10 +15,20 @@ public class SavedFilesList extends ButtonList
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {
-        this(dir, page, xOffset, yOffset, behavior, hover, null);
+        this(dir, page, xOffset, yOffset, behavior, hover, null, ".tanks");
+    }
+
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, String ext)
+    {
+        this(dir, page, xOffset, yOffset, behavior, hover, null, ext);
     }
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup)
+    {
+        this(dir, page, xOffset, yOffset, behavior, hover, auxiliarySetup, ".tanks");
+    }
+
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup, String ext)
     {
         super(new ArrayList<>(), page, xOffset, yOffset);
 
@@ -38,7 +48,7 @@ public class SavedFilesList extends ButtonList
 
             for (String p : ds)
             {
-                if (p.endsWith(".tanks"))
+                if (p.endsWith(ext))
                     files.add(p);
             }
         }

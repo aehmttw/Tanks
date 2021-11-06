@@ -36,9 +36,9 @@ public class ScreenOptionsMultiplayer extends Screen
 			Game.enableChatFilter = !Game.enableChatFilter;
 
 			if (Game.enableChatFilter)
-				chatFilter.text = chatFilterText + ScreenOptions.onText;
+				chatFilter.setText(chatFilterText, ScreenOptions.onText);
 			else
-				chatFilter.text = chatFilterText + ScreenOptions.offText;
+				chatFilter.setText(chatFilterText, ScreenOptions.offText);
 		}
 	},
 			"Filters chat of potentially---inappropriate words");
@@ -51,9 +51,9 @@ public class ScreenOptionsMultiplayer extends Screen
 			Game.autoReady = !Game.autoReady;
 
 			if (Game.autoReady)
-				autoReady.text = autoReadyText + ScreenOptions.onText;
+				autoReady.setText(autoReadyText, ScreenOptions.onText);
 			else
-				autoReady.text = autoReadyText + ScreenOptions.offText;
+				autoReady.setText(autoReadyText, ScreenOptions.offText);
 		}
 	},
 			"When enabled, automatically presses---the ready button if there is no shop");
@@ -97,14 +97,14 @@ public class ScreenOptionsMultiplayer extends Screen
 		username.enableSpaces = false;
 
 		if (Game.enableChatFilter)
-			chatFilter.text = chatFilterText + ScreenOptions.onText;
+			chatFilter.setText(chatFilterText, ScreenOptions.onText);
 		else
-			chatFilter.text = chatFilterText + ScreenOptions.offText;
+			chatFilter.setText(chatFilterText, ScreenOptions.offText);
 
 		if (Game.autoReady)
-			autoReady.text = autoReadyText + ScreenOptions.onText;
+			autoReady.setText(autoReadyText, ScreenOptions.onText);
 		else
-			autoReady.text = autoReadyText + ScreenOptions.offText;
+			autoReady.setText(autoReadyText, ScreenOptions.offText);
 	}
 	
 	@Override
@@ -131,7 +131,7 @@ public class ScreenOptionsMultiplayer extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Multiplayer options");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Multiplayer options");
 	}
 
 }

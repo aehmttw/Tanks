@@ -318,6 +318,15 @@ public class ScreenChangelog extends Screen
                                     "You can now save levels you play in parties\n" +
                                     "Bug fixes and other minor improvements"
                     });
+
+            new Changelog("v1.2.3a", new String[]
+                    {
+                            "*What's new in Tanks v1.2.3a:\n\n" +
+                                    "Added translation support\n" +
+                                    "Added multishot and shot spread options to bullets\n" +
+                                    "Cyan tanks are now immune to freeze bullets and ice\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
         }
     }
 }

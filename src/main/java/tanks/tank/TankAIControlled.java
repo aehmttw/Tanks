@@ -846,8 +846,7 @@ public class TankAIControlled extends Tank
 			this.cooldown -= Panel.frameFrequency;
 		}
 
-		if (!this.straightShoot)
-			this.search();
+		this.search();
 
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled)
 		{
@@ -878,7 +877,11 @@ public class TankAIControlled extends Tank
 
 	public void search()
 	{
-		if (this.searchPhase == RotationPhase.clockwise)
+		if (this.straightShoot)
+		{
+			this.searchAngle = this.aimAngle;
+		}
+		else if (this.searchPhase == RotationPhase.clockwise)
 		{
 			searchAngle += this.random.nextDouble() * 0.1 * Panel.frameFrequency;
 		}

@@ -5,21 +5,27 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.NetworkUtils;
+import tanks.translation.Translation;
 
 public class EventLoadCrusadeHotbar extends PersonalEvent
 {
     public String title;
     public String subtitle;
 
+    int index;
+    boolean translate;
+
     public EventLoadCrusadeHotbar()
     {
 
     }
 
-    public EventLoadCrusadeHotbar(String title, String subtitle)
+    public EventLoadCrusadeHotbar(String title, String subtitle, int index, boolean translate)
     {
         this.title = title;
         this.subtitle = subtitle;
+        this.index = index;
+        this.translate = translate;
     }
 
     @Override
@@ -27,6 +33,8 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
     {
         NetworkUtils.writeString(b, this.title);
         NetworkUtils.writeString(b, this.subtitle);
+        b.writeInt(this.index);
+        b.writeBoolean(this.translate);
     }
 
     @Override
@@ -34,6 +42,8 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
     {
         this.title = NetworkUtils.readString(b);
         this.subtitle = NetworkUtils.readString(b);
+        this.index = b.readInt();
+        this.translate = b.readBoolean();
     }
 
     @Override
@@ -45,7 +55,11 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
             Game.player.hotbar.enabledCoins = true;
         }
 
-        ((ScreenGame)(Game.screen)).title = this.title;
+        if (this.translate)
+            ((ScreenGame)(Game.screen)).title = Translation.translate(this.title, this.index);
+        else
+            ((ScreenGame)(Game.screen)).title = this.title;
+
         ((ScreenGame)(Game.screen)).subtitle = this.subtitle;
     }
 }

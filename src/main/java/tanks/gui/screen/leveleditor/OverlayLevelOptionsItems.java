@@ -79,7 +79,7 @@ public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
         super.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Items");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Items");
         this.editCoins.draw();
         this.editShop.draw();
         this.editStartingItems.draw();

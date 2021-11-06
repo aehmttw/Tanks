@@ -67,7 +67,7 @@ public class ScreenPlaySavedLevels extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
 	}
 	
 	@Override

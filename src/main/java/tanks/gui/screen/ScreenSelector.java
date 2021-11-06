@@ -7,6 +7,7 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -74,16 +75,17 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         }
 
         buttonList = new ButtonList(buttons, 0, 0, -30);
+        buttonList.translate = selector.translate;
 
         if (selector.quick)
-            quit.text = "Back";
+            quit.setText("Back");
 
         this.buttonList.sortButtons();
 
         this.music = sc.music;
         this.musicID = sc.musicID;
 
-        this.title = "Select " + s.text.toLowerCase();
+        this.title = Translation.translate("Select ") + s.translatedText.toLowerCase();
     }
 
     @Override

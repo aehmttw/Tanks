@@ -158,7 +158,7 @@ public class TextBoxSlider extends TextBox
 
         drawing.setColor(0, 0, 0);
 
-        drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, labelText);
+        drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedLabelText);
 
         this.drawInput();
     }

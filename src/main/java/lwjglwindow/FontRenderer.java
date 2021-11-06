@@ -23,7 +23,9 @@ public class FontRenderer extends BaseFontRenderer
 				"@ABCDEFGHIJKLMNO" +
 				"PQRSTUVWXYZ[\\]^_" +
 				"'abcdefghijklmno" +
-				"pqrstuvwxyz{|}~`";
+				"pqrstuvwxyz{|}~`" +
+				"âăîşţàçæèéêëïôœù" +
+				"úûüÿ";
 		this.charSizes = new int[]
 				{
 						3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 1, 5, 1, 5,
@@ -31,7 +33,9 @@ public class FontRenderer extends BaseFontRenderer
 						7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5,
 						2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
-						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2
+						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2,
+						5, 5, 5, 5, 3, 5, 5, 7, 5, 5, 5, 5, 3, 5, 7, 5,
+						5, 5, 5, 5
 				};
 
 		this.image = fontFile;
@@ -47,9 +51,9 @@ public class FontRenderer extends BaseFontRenderer
 		int col = (int) (i % size);
 		int row = (int) (i / size);
 		int width = charSizes[i];
-		this.window.shapeRenderer.drawImage(x, y, z, sX * 32 * size, sY * 32 * size,
+		this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * size, sY * 32 * size,
 				col / size, (row * hSpace) / size,
-				(col + width / 8f) / size, (row * hSpace + 1) / size,
+				(col + width / 8f) / size, (row * hSpace + 2) / size,
 				image, false, depthtest);
 		return width;
 	}

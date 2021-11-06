@@ -4,6 +4,7 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,10 @@ public class TextBox implements IDrawable, ITrigger
 	public double posY;
 	public double sizeX;
 	public double sizeY;
+
+	public String rawLabelText;
 	public String labelText;
+	public String translatedLabelText;
 
 	public String previousInputText;
 	public String inputText;
@@ -94,7 +98,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		this.sizeX = sX;
 		this.sizeY = sY;
-		this.labelText = text;
+		this.setText(text);
 
 		this.inputText = defaultText;
 		this.previousInputText = defaultText;
@@ -167,7 +171,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		drawing.setColor(0, 0, 0);
 
-		drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, labelText);
+		drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedLabelText);
 
 		this.drawInput();
 
@@ -359,7 +363,7 @@ public class TextBox implements IDrawable, ITrigger
 				handled = true;
 				Drawing.drawing.playVibration("click");
 				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
-				Game.screen = new ScreenInfo(Game.screen, this.labelText, this.hoverText);
+				Game.screen = new ScreenInfo(Game.screen, this.translatedLabelText, this.hoverText);
 			}
 			else if (!selected)
 			{
@@ -779,4 +783,32 @@ public class TextBox implements IDrawable, ITrigger
 
 		Game.game.window.setBatchMode(false, false, false, glow);
 	}
+
+	public void setText(String text)
+	{
+		this.rawLabelText = text;
+		this.labelText = text;
+		this.translatedLabelText = Translation.translate(text);
+	}
+
+	public void setText(String text, String text2)
+	{
+		this.rawLabelText = text + text2;
+		this.labelText = text + text2;
+		this.translatedLabelText = Translation.translate(text) + Translation.translate(text2);
+	}
+
+	public void setText(String text, Object... objects)
+	{
+		this.rawLabelText = text;
+		this.labelText = String.format(text, objects);
+		this.translatedLabelText = Translation.translate(text, objects);
+	}
+
+	public void setTextArgs(Object... objects)
+	{
+		this.labelText = String.format(this.rawLabelText, objects);
+		this.translatedLabelText = Translation.translate(this.rawLabelText, objects);
+	}
+
 }

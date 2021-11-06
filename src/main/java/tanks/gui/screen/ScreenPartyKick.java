@@ -54,7 +54,7 @@ public class ScreenPartyKick extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Would you like to kick " + handler.username + " from the party?");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Would you like to kick %s from the party?", handler.username);
 
         cancel.draw();
         kick.draw();

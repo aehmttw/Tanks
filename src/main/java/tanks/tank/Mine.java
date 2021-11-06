@@ -274,7 +274,7 @@ public class Mine extends Movable
         }
 
         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.mineExplosion);
-        e.radius = this.radius - Game.tile_size * 0.5;
+        e.radius = Math.max(this.radius - Game.tile_size * 0.5, 0);
         Game.effects.add(e);
 
         Game.removeMovables.add(this);

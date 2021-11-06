@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Crusade;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 
@@ -21,6 +22,8 @@ public class EventEnterLevel extends PersonalEvent
 
 			if (Game.autoReady)
 				Game.eventsOut.add(new EventPlayerAutoReady());
+
+			Crusade.currentCrusade = null;
 		}
 	}
 

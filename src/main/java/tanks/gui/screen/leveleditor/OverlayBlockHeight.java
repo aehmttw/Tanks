@@ -90,20 +90,17 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
         if (!screenLevelEditor.stagger)
         {
             this.staggering.image = "nostagger.png";
-            this.staggering.hoverText[0] = "Blocks will all be placed";
-            this.staggering.hoverText[1] = "with the same height";
+            this.staggering.setHoverText("Blocks will all be placed---with the same height");
         }
         else if (screenLevelEditor.oddStagger)
         {
             this.staggering.image = "oddstagger.png";
-            this.staggering.hoverText[0] = "Every other block on the grid";
-            this.staggering.hoverText[1] = "will be half a block shorter";
+            this.staggering.setHoverText("Every other block on the grid---will be half a block shorter");
         }
         else
         {
             this.staggering.image = "evenstagger.png";
-            this.staggering.hoverText[0] = "Every other block on the grid";
-            this.staggering.hoverText[1] = "will be half a block shorter";
+            this.staggering.setHoverText("Every other block on the grid---will be half a block shorter");
         }
 
         this.back.update();
@@ -116,7 +113,7 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
         super.draw();
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Block height");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Block height");
 
         Drawing.drawing.setColor(0, 0, 0, 127);
 
@@ -134,6 +131,6 @@ public class OverlayBlockHeight extends ScreenLevelBuilderOverlay
 
         Drawing.drawing.setInterfaceFontSize(12);
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceText(staggering.posX, staggering.posY - 40, "Staggering");
+        Drawing.drawing.displayInterfaceText(staggering.posX, staggering.posY - 40, "Staggering");
     }
 }

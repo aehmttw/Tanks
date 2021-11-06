@@ -151,7 +151,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         changePlayer.quick = true;
 
         if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
-            exit.text = "Back to party";
+            exit.setText("Back to party");
     }
 
     public void addTanks()
@@ -188,7 +188,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.tanks.add(new TankEntry(this, kills, deaths));
 
         if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            exit.text = "Back to party";
+            exit.setText("Back to party");
     }
 
     public void addLevels()
@@ -532,7 +532,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             offset = -200;
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize * 1.2);
-        Drawing.drawing.drawInterfaceText(this.centerX + offset, 40, this.crusade.name.replace("_", " "));
+
+        if (this.crusade.internal)
+            Drawing.drawing.displayInterfaceText(this.centerX + offset, 40, this.crusade.name.replace("_", " "));
+        else
+            Drawing.drawing.drawInterfaceText(this.centerX + offset, 40, this.crusade.name.replace("_", " "));
+
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
         this.nextPage.image = "vertical_arrow.png";
@@ -546,7 +551,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.previousPage.imageXOffset = -225;
 
         if (this.age > 12 || this.wizardFinished)
-            Drawing.drawing.drawInterfaceText(this.centerX + offset, 80, "statistics");
+            Drawing.drawing.displayInterfaceText(this.centerX + offset, 80, "statistics");
 
         if ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && this.wizardFinished)
         {
@@ -575,13 +580,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 drawBar(aboveY, 50, 127);
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(24);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_1, aboveY, "Tank");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_2, aboveY, "Kills");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + tanks_1, aboveY, "Tank");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + tanks_2, aboveY, "Kills");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_2a, aboveY, "x");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_3, aboveY, "Coins");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + tanks_3, aboveY, "Coins");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_3a, aboveY, "->");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_4, aboveY, "Total coins");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_5, aboveY, "Deaths");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + tanks_4, aboveY, "Total coins");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + tanks_5, aboveY, "Deaths");
             }
 
             if (tankEntriesShown > this.tanks.size())
@@ -589,7 +594,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 drawBar(belowY, 50, 127);
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(32);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_1, belowY, "Total");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + tanks_1, belowY, "Total");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_2, belowY, this.totalKills + "");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_4, belowY, this.totalCoins + "");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_5, belowY, this.totalDeaths + "");
@@ -619,10 +624,10 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 drawBar(aboveY, 50, 127);
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(24);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_1, aboveY, "Battle");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_2, aboveY, "Attempts");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_3, aboveY, "Clear time");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_4, aboveY, "Total time");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + levels_1, aboveY, "Battle");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + levels_2, aboveY, "Attempts");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + levels_3, aboveY, "Clear time");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + levels_4, aboveY, "Total time");
             }
 
             if (levelEntriesShown > this.levels.size())
@@ -630,7 +635,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 drawBar(belowY, 50, 127);
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(32);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_1, belowY, "Total");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + levels_1, belowY, "Total");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_2, belowY, this.totalAttempts + "");
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_3, belowY, SpeedrunTimer.getTime(this.totalBestTimes));
                 Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_4, belowY, SpeedrunTimer.getTime(crusade.timePassed));
@@ -660,10 +665,10 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 drawBar(aboveY, 50, 127);
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(24);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_1, aboveY, "Item");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_2, aboveY, "Times used");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_3, aboveY, "Hits landed");
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_4, aboveY, "Accuracy");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + items_1, aboveY, "Item");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + items_2, aboveY, "Times used");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + items_3, aboveY, "Hits landed");
+                Drawing.drawing.displayInterfaceText(Game.screen.centerX + items_4, aboveY, "Accuracy");
             }
 
             if (itemEntriesShown > this.items.size())
@@ -704,13 +709,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             else
             {
                 setWizardStyle(this.view == View.tanks);
-                Drawing.drawing.drawInterfaceText(this.centerX - s * 1.5, Drawing.drawing.interfaceSizeY - o, "Tanks");
+                Drawing.drawing.displayInterfaceText(this.centerX - s * 1.5, Drawing.drawing.interfaceSizeY - o, "Tanks");
                 setWizardStyle(this.view == View.levels);
-                Drawing.drawing.drawInterfaceText(this.centerX - s * 0.5, Drawing.drawing.interfaceSizeY - o, "Battles");
+                Drawing.drawing.displayInterfaceText(this.centerX - s * 0.5, Drawing.drawing.interfaceSizeY - o, "Battles");
                 setWizardStyle(this.view == View.items);
-                Drawing.drawing.drawInterfaceText(this.centerX + s * 0.5, Drawing.drawing.interfaceSizeY - o, "Items");
+                Drawing.drawing.displayInterfaceText(this.centerX + s * 0.5, Drawing.drawing.interfaceSizeY - o, "Items");
                 setWizardStyle(this.view == View.misc);
-                Drawing.drawing.drawInterfaceText(this.centerX + s * 1.5, Drawing.drawing.interfaceSizeY - o, "Summary");
+                Drawing.drawing.displayInterfaceText(this.centerX + s * 1.5, Drawing.drawing.interfaceSizeY - o, "Summary");
 
                 setWizardStyle(false);
                 Drawing.drawing.drawInterfaceText(this.centerX - s * 1, Drawing.drawing.interfaceSizeY - o, ">");
@@ -993,7 +998,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             Drawing.drawing.setInterfaceFontSize(24);
             Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + misc_1, this.yPos, this.stat);
+            Drawing.drawing.displayInterfaceText(Game.screen.centerX + misc_1, this.yPos, this.stat);
             Drawing.drawing.drawInterfaceText(Game.screen.centerX + misc_2, this.yPos, this.value);
         }
     }

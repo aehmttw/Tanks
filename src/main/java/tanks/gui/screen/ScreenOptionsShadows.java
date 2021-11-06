@@ -17,9 +17,9 @@ public class ScreenOptionsShadows extends Screen
             Game.shadowsEnabled = !Game.shadowsEnabled;
 
             if (Game.shadowsEnabled)
-                shadows.text = shadowsText + ScreenOptions.onText;
+                shadows.setText(shadowsText + ScreenOptions.onText);
             else
-                shadows.text = shadowsText + ScreenOptions.offText;
+                shadows.setText(shadowsText + ScreenOptions.offText);
         }
     },
             "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate");
@@ -65,9 +65,9 @@ public class ScreenOptionsShadows extends Screen
         shadowQuality.b1 = 210;
 
         if (Game.shadowsEnabled)
-            shadows.text = shadowsText + ScreenOptions.onText;
+            shadows.setText(shadowsText, ScreenOptions.onText);
         else
-            shadows.text = shadowsText + ScreenOptions.offText;
+            shadows.setText(shadowsText, ScreenOptions.offText);
     }
 
     @Override
@@ -88,6 +88,6 @@ public class ScreenOptionsShadows extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Lighting options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Lighting options");
     }
 }

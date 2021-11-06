@@ -7,6 +7,7 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
+import tanks.translation.Translation;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,9 +26,9 @@ public class ScreenOptions extends Screen
 		this.musicID = "menu";
 
 		if (Drawing.drawing.enableStats)
-			showStats.text = infoBarText + onText;
+			showStats.setText(infoBarText, onText);
 		else
-			showStats.text = infoBarText + offText;
+			showStats.setText(infoBarText, offText);
 
 		if (!Game.game.window.soundsEnabled)
 			soundOptions.enabled = false;
@@ -52,9 +53,9 @@ public class ScreenOptions extends Screen
 			Drawing.drawing.showStats(!Drawing.drawing.enableStats);
 
 			if (Drawing.drawing.enableStats)
-				showStats.text = infoBarText + onText;
+				showStats.setText(infoBarText, onText);
 			else
-				showStats.text = infoBarText + offText;
+				showStats.setText(infoBarText, offText);
 		}
 	},
 			"Shows the following information---" +
@@ -148,7 +149,7 @@ public class ScreenOptions extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
 	}
 
 	public static void initOptions(String homedir)
@@ -174,6 +175,11 @@ public class ScreenOptions extends Screen
 
 		try
 		{
+			boolean fullscreen = Game.game.fullscreen;
+
+			if (Game.game.window != null)
+				fullscreen = Game.game.window.fullscreen;
+
 			BaseFile f = Game.game.fileManager.getFile(path);
 			f.startWriting();
 			f.println("# This file stores game settings that you have set");
@@ -192,7 +198,7 @@ public class ScreenOptions extends Screen
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("angled_perspective=" + Game.angledView);
 			f.println("mouse_target=" + Panel.showMouseTarget);
-			f.println("fullscreen=" + Game.game.window.fullscreen);
+			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
 			f.println("mobile_joystick=" + TankPlayer.controlStickMobile);
 			f.println("snap_joystick=" + TankPlayer.controlStickSnap);
@@ -222,6 +228,7 @@ public class ScreenOptions extends Screen
 			f.println("tank_red_2=" + Game.player.turretColorR);
 			f.println("tank_green_2=" + Game.player.turretColorG);
 			f.println("tank_blue_2=" + Game.player.turretColorB);
+			f.println("translation=" + (Translation.currentTranslation == null ? "null" : Translation.currentTranslation.fileName));
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
@@ -396,6 +403,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "tank_blue_2":
 						Game.player.turretColorB = Integer.parseInt(optionLine[1]);
+						break;
+					case "translation":
+						Translation.setCurrentTranslation(optionLine[1]);
 						break;
 					case "last_version":
 						Game.lastVersion = optionLine[1];

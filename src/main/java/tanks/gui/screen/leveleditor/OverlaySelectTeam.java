@@ -91,7 +91,7 @@ public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
         else if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.playerTank)
             teamSelectTitle = "Select player team";
 
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 270, teamSelectTitle);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, teamSelectTitle);
 
         this.teamSelectList.draw();
 

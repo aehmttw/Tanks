@@ -14,9 +14,9 @@ public class ButtonObject extends Button
 		this.initialize(d);
 	}
 
-	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f, String hoverText)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f, String hoverText, Object... hoverTextOptions)
 	{
-		super(x, y, sX, sY, "", f, hoverText);	
+		super(x, y, sX, sY, "", f, hoverText, hoverTextOptions);
 		this.initialize(d);
 	}
 	
@@ -26,9 +26,9 @@ public class ButtonObject extends Button
 		this.initialize(d);
 	}
 	
-	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, String hoverText)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, String hoverText, Object... hoverTextOptions)
 	{
-		super(x, y, sX, sY, "", hoverText);
+		super(x, y, sX, sY, "", hoverText, hoverTextOptions);
 		this.initialize(d);
 	}
 	

@@ -18,19 +18,19 @@ public class ScreenDebug extends Screen
         this.musicID = "menu";
 
         if (Game.traceAllRays)
-            traceAllRays.text = traceText + ScreenOptions.onText;
+            traceAllRays.setText(traceText, ScreenOptions.onText);
         else
-            traceAllRays.text = traceText + ScreenOptions.offText;
+            traceAllRays.setText(traceText, ScreenOptions.offText);
 
         if (Game.firstPerson)
-            firstPerson.text = firstPersonText + ScreenOptions.onText;
+            firstPerson.setText(firstPersonText, ScreenOptions.onText);
         else
-            firstPerson.text = firstPersonText + ScreenOptions.offText;
+            firstPerson.setText(firstPersonText, ScreenOptions.offText);
 
         if (Game.followingCam)
-            followingCam.text = followingCamText + ScreenOptions.onText;
+            followingCam.setText(followingCamText, ScreenOptions.onText);
         else
-            followingCam.text = followingCamText + ScreenOptions.offText;
+            followingCam.setText(followingCamText, ScreenOptions.offText);
     }
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", new Runnable()
@@ -81,9 +81,9 @@ public class ScreenDebug extends Screen
             Game.traceAllRays = !Game.traceAllRays;
 
             if (Game.traceAllRays)
-                traceAllRays.text = traceText + ScreenOptions.onText;
+                traceAllRays.setText(traceText, ScreenOptions.onText);
             else
-                traceAllRays.text = traceText + ScreenOptions.offText;
+                traceAllRays.setText(traceText, ScreenOptions.offText);
         }
     });
 
@@ -95,9 +95,9 @@ public class ScreenDebug extends Screen
             Game.firstPerson = !Game.firstPerson;
 
             if (Game.firstPerson)
-                firstPerson.text = firstPersonText + ScreenOptions.onText;
+                firstPerson.setText(firstPersonText, ScreenOptions.onText);
             else
-                firstPerson.text = firstPersonText + ScreenOptions.offText;
+                firstPerson.setText(firstPersonText, ScreenOptions.offText);
         }
     });
 
@@ -109,9 +109,9 @@ public class ScreenDebug extends Screen
             Game.followingCam = !Game.followingCam;
 
             if (Game.followingCam)
-                followingCam.text = followingCamText + ScreenOptions.onText;
+                followingCam.setText(followingCamText, ScreenOptions.onText);
             else
-                followingCam.text = followingCamText + ScreenOptions.offText;
+                followingCam.setText(followingCamText, ScreenOptions.offText);
         }
     });
 
@@ -133,7 +133,7 @@ public class ScreenDebug extends Screen
         this.drawDefaultBackground();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Debug menu");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Debug menu");
 
         firstPerson.draw();
         followingCam.draw();

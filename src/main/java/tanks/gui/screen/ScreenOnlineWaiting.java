@@ -30,7 +30,7 @@ public class ScreenOnlineWaiting extends Screen implements IOnlineScreen
         {
             Drawing.drawing.setColor(0, 0, 0, Math.min(255, (age / 100) * 255 - 50));
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Waiting for server...");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Waiting for server...");
         }
 
         Drawing.drawing.setColor(0, 0, 0);

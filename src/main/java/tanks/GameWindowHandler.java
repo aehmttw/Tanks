@@ -5,6 +5,7 @@ import tanks.gui.screen.ScreenOptions;
 import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.translation.Translation;
 
 public class GameWindowHandler implements IWindowHandler
 {

@@ -5,6 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -300,15 +301,15 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             Drawing.drawing.setColor(0, 0, 0);
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, msg1);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, msg1);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: " + Game.player.remainingLives);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: %d", Game.player.remainingLives);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 
         if (Drawing.drawing.interfaceScaleZoom > 1)
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 23 / 6, msg2);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 23 / 6, msg2);
         else
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
 
         save.draw();
     }

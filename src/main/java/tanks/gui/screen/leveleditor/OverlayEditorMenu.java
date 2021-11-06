@@ -87,6 +87,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
         {
             resume.update();
             options.update();
+            super.update();
         }
 
         delete.update();
@@ -96,8 +97,6 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
             play.update();
         else
             playUnavailable.update();
-
-        super.update();
 
         if (Game.game.input.editorPlay.isValid() && screenLevelEditor.spawns.size() > 0)
         {
@@ -131,7 +130,7 @@ public class OverlayEditorMenu extends ScreenLevelBuilderOverlay
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level menu");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level menu");
 
         if (Game.showSpeedrunTimer && showTime)
             SpeedrunTimer.draw();

@@ -4,6 +4,7 @@ import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.translation.Translation;
 
 public class ScreenCrusadeDetails extends Screen
 {
@@ -101,7 +102,7 @@ public class ScreenCrusadeDetails extends Screen
         {
             begin.enabled = false;
             begin.enableHover = true;
-            begin.hoverText = new String[]{"This crusade has no levels.", "Add some to play it!"};
+            begin.setHoverText("This crusade has no levels.---Add some to play it!");
         }
     }
 
@@ -133,14 +134,19 @@ public class ScreenCrusadeDetails extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, crusade.name.replace("_", " "));
+
+        if (this.crusade.internal)
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, Translation.translate(crusade.name.replace("_", " ")));
+        else
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, crusade.name.replace("_", " "));
+
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Levels: " + crusade.levels.size());
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Levels: %d", crusade.levels.size());
 
         if (crusade.started && !ScreenPartyHost.isServer)
         {
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "Current battle: " + (crusade.currentLevel + 1));
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Remaining lives: " + Game.player.remainingLives);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "Current battle: %d", (crusade.currentLevel + 1));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Remaining lives: %d", Game.player.remainingLives);
         }
 
         if (!(crusade.readOnly || crusade.internal || ScreenPartyHost.isServer))

@@ -49,7 +49,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
             {
                 download.enabled = false;
                 downloaded = true;
-                download.text = "Level downloaded!";
+                download.setText("Level downloaded!");
             }
         }
     });
@@ -191,12 +191,12 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
         if (file.exists())
         {
-            download.text = "Pick a different name...";
+            download.setText("Pick a different name...");
             download.enabled = false;
         }
         else
         {
-            download.text = "Download";
+            download.setText("Download");
             download.enabled = true;
         }
     }

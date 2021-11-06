@@ -80,7 +80,7 @@ public class ScreenPlaySingleplayer extends Screen
         this.drawDefaultBackground();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a singleplayer game mode");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a singleplayer game mode");
         back.draw();
         tutorial.draw();
         create.draw();

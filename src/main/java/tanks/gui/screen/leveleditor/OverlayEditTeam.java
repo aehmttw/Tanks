@@ -49,9 +49,9 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
         teamName.lowerCase = true;
 
         if (team.friendlyFire)
-            teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.onText;
+            teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.onText);
         else
-            teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.offText;
+            teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.offText);
 
         if (screenLevelEditor.teams.size() <= 1)
             this.deleteTeam.enabled = false;
@@ -92,9 +92,9 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
         {
             team.friendlyFire = !team.friendlyFire;
             if (team.friendlyFire)
-                teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.onText;
+                teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.onText);
             else
-                teamFriendlyFire.text = "Friendly fire: " + ScreenOptions.offText;
+                teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.offText);
         }
     }
     );
@@ -104,7 +104,7 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
         @Override
         public void run()
         {
-            Game.screen = new ScreenEditTeamColor(Game.screen, screenLevelEditor, team);
+            Game.screen = new OverlayEditTeamColor(Game.screen, screenLevelEditor, team);
         }
     }
     );

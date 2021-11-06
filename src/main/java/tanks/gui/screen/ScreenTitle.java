@@ -1,16 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
-import tanks.tank.Turret;
-
-import java.net.URL;
 
 public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
@@ -103,6 +97,18 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	}
 		);
 
+	Button languages = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Game.silentCleanUp();
+			Game.screen = new ScreenLanguage();
+		}
+	}
+	);
+
+
 	public ScreenTitle()
 	{
 		Game.movables.clear();
@@ -119,6 +125,11 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		this.music = "menu_1.ogg";
 		this.musicID = "menu";
+
+		languages.image = "language.png";
+
+		languages.imageSizeX = this.objHeight;
+		languages.imageSizeY = this.objHeight;
 	}
 	
 	@Override
@@ -127,6 +138,15 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		play.update();
 		exit.update();
 		options.update();
+
+		languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+				+ Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
+		languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+				+ Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+
+		languages.update();
+
+		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
 
 		if (Drawing.drawing.interfaceScaleZoom == 1)
 			takeControl.update();
@@ -172,6 +192,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		play.draw();
 		exit.draw();
 		options.draw();
+		languages.draw();
 
 		if (Game.debug)
 			debug.draw();
@@ -180,9 +201,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
-		Drawing.drawing.drawInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
+		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.drawInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
 		for (int i = 0; i < Game.tracks.size(); i++)
 		{

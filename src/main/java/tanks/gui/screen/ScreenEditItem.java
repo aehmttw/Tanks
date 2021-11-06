@@ -7,6 +7,7 @@ import tanks.Level;
 import tanks.gui.*;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.property.*;
+import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -314,7 +315,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.setInterfaceFontSize(Drawing.drawing.textSize);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.message);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.message);
         }
         else
         {
@@ -336,8 +337,8 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                     Drawing.drawing.setColor(0, 0, 0);
 
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
-                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
-                        "Page " + (page + 1) + " of " + (properties.size() / (rows * 3) + Math.min(1, properties.size() % (rows * 3))));
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
+                        "Page %d of %d", (page + 1), (properties.size() / (rows * 3) + Math.min(1, properties.size() % (rows * 3))));
             }
 
             for (int i = Math.min(page * rows * 3 + rows * 3, properties.size()) - 1; i >= page * rows * 3; i--)
@@ -351,7 +352,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, item.getTypeName() + " item properties");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 300, "%s item properties", Translation.translate(item.getTypeName()));
         }
     }
 

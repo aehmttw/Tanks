@@ -5,6 +5,7 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,10 @@ public class Selector implements IDrawable, ITrigger
     public double posY;
     public double sizeX;
     public double sizeY;
+
+    public String rawText;
     public String text;
+    public String translatedText;
 
     public boolean enableHover = false;
     public String[] hoverText;
@@ -52,6 +56,7 @@ public class Selector implements IDrawable, ITrigger
     public boolean silent = false;
 
     public boolean format = true;
+    public boolean translate = true;
 
     public boolean drawBehindScreen = false;
 
@@ -80,7 +85,7 @@ public class Selector implements IDrawable, ITrigger
         this.posY = y;
         this.sizeX = sX;
         this.sizeY = sY;
-        this.text = text;
+        this.setText(text);
         this.options = o;
     }
 
@@ -163,12 +168,18 @@ public class Selector implements IDrawable, ITrigger
 
         drawing.setColor(0, 0, 0);
 
-        drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, text);
+        drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedText);
 
+        String s;
         if (format)
-            Drawing.drawing.drawInterfaceText(posX, posY, Game.formatString(options[selectedOption]));
+            s = Game.formatString(options[selectedOption]);
         else
-            Drawing.drawing.drawInterfaceText(posX, posY, options[selectedOption]);
+            s = options[selectedOption];
+
+        if (translate)
+            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
+        else
+            Drawing.drawing.drawInterfaceText(posX, posY, s);
 
         if (enableHover)
         {
@@ -299,7 +310,7 @@ public class Selector implements IDrawable, ITrigger
                 Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
                 //Drawing.drawing.playSound(this.sound, 1f, 1f);
                 Drawing.drawing.playVibration("click");
-                Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
+                Game.screen = new ScreenInfo(Game.screen, this.translatedText, this.hoverText);
             }
             else if (enabled)
             {
@@ -342,5 +353,32 @@ public class Selector implements IDrawable, ITrigger
     {
         this.posX = x;
         this.posY = y;
+    }
+
+    public void setText(String text)
+    {
+        this.rawText = text;
+        this.text = text;
+        this.translatedText = Translation.translate(text);
+    }
+
+    public void setText(String text, String text2)
+    {
+        this.rawText = text + text2;
+        this.text = text + text2;
+        this.translatedText = Translation.translate(text) + Translation.translate(text2);
+    }
+
+    public void setText(String text, Object... objects)
+    {
+        this.rawText = text;
+        this.text = String.format(text, objects);
+        this.translatedText = Translation.translate(text, objects);
+    }
+
+    public void setTextArgs(Object... objects)
+    {
+        this.text = String.format(this.rawText, objects);
+        this.translatedText = Translation.translate(this.rawText, objects);
     }
 }

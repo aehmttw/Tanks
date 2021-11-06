@@ -40,7 +40,8 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 	public boolean isRemote = false;
 
 	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>();
-	
+	public ArrayList<String> attributeImmunities = new ArrayList<>();
+
 	public Team team;
 
 	public Movable(double x, double y)
@@ -302,11 +303,15 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 
 	public void addAttribute(AttributeModifier m)
 	{
-		this.attributes.add(m);
+		if (!this.attributeImmunities.contains(m.name))
+			this.attributes.add(m);
 	}
 
 	public void addUnduplicateAttribute(AttributeModifier m)
 	{
+		if (this.attributeImmunities.contains(m.name))
+			return;
+
 		for (int i = 0; i < this.attributes.size(); i++)
 		{
 			if (this.attributes.get(i).name.equals(m.name))

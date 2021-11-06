@@ -3,6 +3,7 @@ package tanks.gui;
 import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Level;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -32,6 +33,8 @@ public class ButtonList
     public double objHeight = 40;
     public double objXSpace = 380;
     public double objYSpace = 60;
+
+    public boolean translate = false;
 
     public boolean hideText = false;
 
@@ -112,6 +115,7 @@ public class ButtonList
             buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + ((i / rows) % columns) * this.objXSpace + xOffset;
             buttons.get(i).sizeX = this.objWidth;
             buttons.get(i).sizeY = this.objHeight;
+            buttons.get(i).translated = this.translate;
 
             if (hideText)
                 buttons.get(i).text = "";
@@ -220,7 +224,7 @@ public class ButtonList
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + xOffset, 20 + Drawing.drawing.interfaceSizeY / 2 + yOffset + controlsYOffset + ((rows + 1) / 2.0) * this.objYSpace,
-                    "Page " + (page + 1) + " of " + (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns))));
+                    Translation.translate("Page %d of %d", (page + 1), (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns)))));
 
             previous.draw();
             next.draw();

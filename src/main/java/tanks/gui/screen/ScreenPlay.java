@@ -64,7 +64,7 @@ public class ScreenPlay extends Screen
 		this.drawDefaultBackground();
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a game mode");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a game mode");
 		back.draw();
 		multiplayer.draw();
 		singleplayer.draw();

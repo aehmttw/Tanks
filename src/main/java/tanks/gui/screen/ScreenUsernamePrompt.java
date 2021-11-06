@@ -47,9 +47,9 @@ public class ScreenUsernamePrompt extends Screen
 		quit.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "You must choose a username to play with others!");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "You must choose a username to play with others!");
 
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Would you like to go to multiplayer options and choose one now?");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Would you like to go to multiplayer options and choose one now?");
 	}
 
 }

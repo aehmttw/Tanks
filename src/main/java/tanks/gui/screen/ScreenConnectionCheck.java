@@ -74,12 +74,12 @@ public class ScreenConnectionCheck extends Screen
 
 		if (!this.connecting)
 		{
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, "You must connect to a network to play with others!");
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "You must connect to a network to play with others!");
 			back.draw();
 		}
 		else
 		{
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "One moment please...");
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "One moment please...");
 		}
 	}
 

@@ -7,8 +7,8 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.translation.Translation;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 public class Button implements IDrawable, ITrigger
@@ -18,12 +18,21 @@ public class Button implements IDrawable, ITrigger
 	public double posY;
 	public double sizeX;
 	public double sizeY;
+
+	public boolean translated = true;
+
+	public String rawText;
 	public String text;
-	public String subtext = null;
+	public String translatedText;
+
+	public String rawSubtext;
+	public String subtext;
+	public String translatedSubtext;
 
 	public boolean enableHover = false;
 	public String[] hoverText;
 	public String hoverTextRaw = "";
+	public String hoverTextRawTranslated = "";
 
 	public boolean selected = false;
 	public boolean infoSelected = false;
@@ -94,21 +103,18 @@ public class Button implements IDrawable, ITrigger
 		this.posY = y;
 		this.sizeX = sX;
 		this.sizeY = sY;
-		this.text = text;
 
-		//if (text.toLowerCase().contains("back") || text.toLowerCase().contains("quit"))
-		//	this.sound = "cancel.ogg";
+		this.setText(text);
 	}
 
-	public Button(double x, double y, double sX, double sY, String text, Runnable f, String hoverText)
+	public Button(double x, double y, double sX, double sY, String text, Runnable f, String hoverText, Object... hoverTextOptions)
 	{
 		this(x, y, sX, sY, text, f);
 
 		if (hoverText != null)
 		{
 			this.enableHover = true;
-			this.hoverText = hoverText.split("---");
-			this.hoverTextRaw = hoverText;
+			this.setHoverText(hoverText, hoverTextOptions);
 		}
 	}
 
@@ -118,20 +124,19 @@ public class Button implements IDrawable, ITrigger
 		this.posY = y;
 		this.sizeX = sX;
 		this.sizeY = sY;
-		this.text = text;
+		this.setText(text);
 
 		this.enabled = false;
 	}
 
-	public Button(double x, double y, double sX, double sY, String text, String hoverText)
+	public Button(double x, double y, double sX, double sY, String text, String hoverText, Object... hoverTextOptions)
 	{
 		this(x, y, sX, sY, text);
 
 		if (hoverText != null)
 		{
 			this.enableHover = true;
-			this.hoverText = hoverText.split("---");
-			this.hoverTextRaw = hoverText;
+			this.setHoverText(hoverText, hoverTextOptions);
 		}
 	}
 
@@ -178,7 +183,12 @@ public class Button implements IDrawable, ITrigger
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
 
 		drawing.setColor(this.textColR, this.textColG, this.textColB);
-		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, text);
+
+		String t = this.text;
+		if (this.translated)
+			t = this.translatedText;
+
+		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, t);
 
 		if (this.subtext != null)
 		{
@@ -323,9 +333,9 @@ public class Button implements IDrawable, ITrigger
 				Drawing.drawing.playVibration("click");
 
 				if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
-					((ScreenGame) Game.screen).overlay = new ScreenInfo(null, this.text, this.hoverText);
+					((ScreenGame) Game.screen).overlay = new ScreenInfo(null, this.translatedText, this.hoverText);
 				else
-					Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
+					Game.screen = new ScreenInfo(Game.screen, this.translatedText, this.hoverText);
 			}
 			else if (enabled)
 			{
@@ -450,5 +460,59 @@ public class Button implements IDrawable, ITrigger
 		e.vY /= 2;
 		e.maxAge *= max;
 		glowEffects.add(e);
+	}
+
+	public void setText(String text)
+	{
+		this.rawText = text;
+		this.text = text;
+		this.translatedText = Translation.translate(text);
+	}
+
+	public void setText(String text, String text2)
+	{
+		this.rawText = text + text2;
+		this.text = text + text2;
+		this.translatedText = Translation.translate(text) + Translation.translate(text2);
+	}
+
+	public void setText(String text, Object... objects)
+	{
+		this.rawText = text;
+		this.text = String.format(text, objects);
+		this.translatedText = Translation.translate(text, objects);
+	}
+
+	public void setTextArgs(Object... objects)
+	{
+		this.text = String.format(this.rawText, objects);
+		this.translatedText = Translation.translate(this.rawText, objects);
+	}
+
+	public void setSubtext(String text)
+	{
+		this.rawSubtext = text;
+		this.subtext = text;
+		this.translatedSubtext = Translation.translate(text);
+	}
+
+	public void setSubtext(String text, Object... objects)
+	{
+		this.rawSubtext = text;
+		this.subtext = String.format(text, objects);
+		this.translatedSubtext = Translation.translate(text, objects);
+	}
+
+	public void setSubtextArgs(Object... objects)
+	{
+		this.subtext = String.format(this.rawSubtext, objects);
+		this.translatedSubtext = Translation.translate(this.rawSubtext, objects);
+	}
+
+	public void setHoverText(String hoverText, Object... objects)
+	{
+		this.hoverTextRaw = hoverText;
+		this.hoverTextRawTranslated = Translation.translate(hoverText, objects);
+		this.hoverText = this.hoverTextRawTranslated.split("---");
 	}
 }

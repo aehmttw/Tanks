@@ -35,13 +35,13 @@ public class ScreenUsernameWarning extends Screen
 		back.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Notice!");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Notice!");
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "The username you picked will be redacted to players");
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, "who have not disabled the chat filter.");
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 0, "If you would like these players to see your username,");
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + this.objYSpace * 0.5, "please pick another one.");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "The username you picked will be redacted to players");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "who have not disabled the chat filter.");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 0, "If you would like these players to see your username,");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 0.5, "please pick another one.");
 
 	}
 

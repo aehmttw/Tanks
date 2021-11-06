@@ -7,6 +7,7 @@ import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
+import tanks.translation.Translation;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -233,21 +234,21 @@ public class ScreenPartyHost extends Screen
             @Override
             public void run()
             {
-                ip = "Getting your IP Address...";
+                ip = Translation.translate("Getting your IP Address...");
                 try
                 {
-                    ip = "Your Local IP Address: " + Inet4Address.getLocalHost().getHostAddress() + " (Port: " + Game.port + ")";
+                    ip = Translation.translate("Your Local IP Address: %s (Port: %d)", Inet4Address.getLocalHost().getHostAddress(), Game.port);
                 }
                 catch (UnknownHostException e)
                 {
-                    ip = "Connect to a non-cellular data network to play with others!";
+                    ip = Translation.translate("Connect to a non-cellular data network to play with others!");
                 }
 
                 if (ip.contains("%"))
-                    ip = "Connect to a network to play with others!";
+                    ip = Translation.translate("Connect to a network to play with others!");
 
                 if (ip.contains("127.0.0.1"))
-                    ip = "Party host";
+                    ip = Translation.translate("Party host");
 
             }
         }
@@ -303,18 +304,18 @@ public class ScreenPartyHost extends Screen
         if (Game.steamNetworkHandler.initialized)
         {
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 360, this.ip);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 320, "Also hosting on Steam peer-to-peer (Steam friends can join)");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 320, "Also hosting on Steam peer-to-peer (Steam friends can join)");
         }
         else
         {
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 330, this.ip);
         }
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 280, "Play:");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 280, "Play:");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, "Level and crusade sharing:");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 0, "Level and crusade sharing:");
 
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 280, "Players in this party:");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 280, "Players in this party:");
 
         if (server != null && server.connections != null)
         {

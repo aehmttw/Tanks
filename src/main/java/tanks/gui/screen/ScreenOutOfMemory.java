@@ -50,21 +50,21 @@ public class ScreenOutOfMemory extends Screen
 		drawing.drawInterfaceText(100, 100, ":(");
 
 		drawing.setInterfaceFontSize(48);
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran out of memory!");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran out of memory!");
 
 		drawing.setInterfaceFontSize(24);
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 200, "This could have happened due to not allocating enough memory to Tanks");
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 230, "or due to a memory leak bug in the program that needs to be fixed.");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 200, "This could have happened due to not allocating enough memory to Tanks");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 230, "or due to a memory leak bug in the program that needs to be fixed.");
 
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 290, "You may return to the game if you wish,");
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 320, "but be warned that things may become unstable.");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 290, "You may return to the game if you wish,");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 320, "but be warned that things may become unstable.");
 
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 380, "You may want to restart the game and allocate more");
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 410, "memory, with the Java launch argument -Xmx[memory],");
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 440, "where -Xmx100M allocates 100 MB of memory (should be sufficient).");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 380, "You may want to restart the game and allocate more");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 410, "memory, with the Java launch argument -Xmx[memory],");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 440, "where -Xmx100M allocates 100 MB of memory (should be sufficient).");
 
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 500, "If you see this screen again even after allocating more");
-		drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, 530, "memory, there is likely a bug, so please report it!");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 500, "If you see this screen again even after allocating more");
+		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 530, "memory, there is likely a bug, so please report it!");
 
 
 		this.quit.draw();

@@ -7,7 +7,6 @@ import tanks.bullet.Bullet;
 import tanks.event.EventTankAddAttributeModifier;
 import tanks.event.EventTankUpdate;
 import tanks.event.EventTankUpdateHealth;
-import tanks.event.EventUpdateCoins;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;

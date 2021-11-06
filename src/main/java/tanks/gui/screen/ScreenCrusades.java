@@ -6,6 +6,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class ScreenCrusades extends Screen
 				(name) -> null);
 
 
-		crusadesList.buttons.add(0, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Adventure crusade", new Runnable()
+		crusadesList.buttons.add(0, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, Translation.translate("Adventure crusade"), new Runnable()
 		{
 			@Override
 			public void run()
@@ -106,7 +107,7 @@ public class ScreenCrusades extends Screen
 		}
 		));
 
-		crusadesList.buttons.add(1, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, "Classic crusade", new Runnable()
+		crusadesList.buttons.add(1, new Button(0, 0, crusadesList.objWidth, crusadesList.objHeight, Translation.translate("Classic crusade"), new Runnable()
 		{
 			@Override
 			public void run()
@@ -173,6 +174,6 @@ public class ScreenCrusades extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Crusades");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Crusades");
 	}
 }

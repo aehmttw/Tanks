@@ -439,27 +439,27 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		if (tutorialInitial)
 		{
 			if (Panel.win)
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "Congratulations! You are now ready to play!");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "Congratulations! You are now ready to play!");
 			else
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, Panel.winlose);
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, Panel.winlose);
 		}
 		else if (Crusade.crusadeMode)
 		{
 			if (Crusade.currentCrusade.win)
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, "You finished the crusade!");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, "You finished the crusade!");
 			else if (Crusade.currentCrusade.lose)
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, "Game over!");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, "Game over!");
 			else
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, Panel.winlose);
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 19 / 6, Panel.winlose);
 		}
 		else
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
 		if (Crusade.crusadeMode)
 		{
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: " + Game.player.remainingLives);
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lives remaining: %d", Game.player.remainingLives);
 
 			if (Crusade.currentCrusade.lifeGained)
 			{
@@ -468,7 +468,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				if (Drawing.drawing.interfaceScaleZoom > 1)
 					frac = 23.0 / 6;
 
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * frac, "You gained a life for clearing Battle " + (Crusade.currentCrusade.currentLevel + 1) + "!");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * frac, "You gained a life for clearing Battle %d!", (Crusade.currentCrusade.currentLevel + 1));
 			}
 		}
 

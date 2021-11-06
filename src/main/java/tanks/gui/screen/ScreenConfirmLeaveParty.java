@@ -56,6 +56,6 @@ public class ScreenConfirmLeaveParty extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 / 3, "Are you sure you want to leave the party?");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 / 3, "Are you sure you want to leave the party?");
     }
 }

@@ -158,6 +158,6 @@ public class OverlayLevelOptions extends ScreenLevelBuilderOverlay
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level options");
     }
 }

@@ -8,6 +8,7 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.hotbar.item.Item;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -46,9 +47,9 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
             deleting = !deleting;
 
             if (deleting)
-                deleteMode.text = "Stop deleting";
+                deleteMode.setText("Stop deleting");
             else
-                deleteMode.text = "Delete templates";
+                deleteMode.setText("Delete templates");
 
             for (Button b: items.buttons)
                 b.enabled = !deleting;
@@ -104,15 +105,13 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
                         b.imageSizeY = b.sizeY;
 
                         int p = i.price;
-                        String price = p + " ";
-                        if (p == 0)
-                            price = "Free!";
-                        else if (p == 1)
-                            price += "coin";
-                        else
-                            price += "coins";
 
-                        b.subtext = price;
+                        if (p == 0)
+                            b.setSubtext("Free!");
+                        else if (p == 1)
+                            b.setSubtext("1 coin");
+                        else
+                            b.setSubtext("%d coins", p);
                     }
                     catch (Exception e)
                     {
@@ -126,13 +125,15 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
         {
             builtInItemsCount++;
             Item i = Item.parseItem(null, s);
+            i.name = Translation.translate(i.name);
 
-            Button b = new Button(0, 0, this.items.objWidth, this.items.objHeight, "", new Runnable()
+            Button b = new Button(0, 0, this.items.objWidth, this.items.objHeight, i.name, new Runnable()
             {
                 @Override
                 public void run()
                 {
                     Item i = Item.parseItem(null, s);
+                    i.name = Translation.translate(i.name);
                     i.importProperties();
                     itemScreen.addItem(i);
                 }
@@ -141,7 +142,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
 
             this.items.buttons.add(b);
 
-            b.text = i.name;
+            b.translated = false;
 
             b.image = i.icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
@@ -149,15 +150,13 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
             b.imageSizeY = b.sizeY;
 
             int p = i.price;
-            String price = p + " ";
-            if (p == 0)
-                price = "Free!";
-            else if (p == 1)
-                price += "coin";
-            else
-                price += "coins";
 
-            b.subtext = price;
+            if (p == 0)
+                b.setSubtext("Free!");
+            else if (p == 1)
+                b.setSubtext("1 coin");
+            else
+                b.setSubtext("%d coins", p);
         }
 
         this.items.sortButtons();
@@ -253,7 +252,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
             Drawing.drawing.setColor(0, 0, 0);
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Item templates");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Item templates");
     }
 
     @Override

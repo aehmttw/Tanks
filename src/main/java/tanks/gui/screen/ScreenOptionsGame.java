@@ -17,9 +17,9 @@ public class ScreenOptionsGame extends Screen
             Game.autostart = !Game.autostart;
 
             if (Game.autostart)
-                autostart.text = autostartText + ScreenOptions.onText;
+                autostart.setText(autostartText, ScreenOptions.onText);
             else
-                autostart.text = autostartText + ScreenOptions.offText;
+                autostart.setText(autostartText, ScreenOptions.offText);
         }
     },
             "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
@@ -32,9 +32,9 @@ public class ScreenOptionsGame extends Screen
             Game.fullStats = !Game.fullStats;
 
             if (Game.fullStats)
-                fullStats.text = fullStatsText + ScreenOptions.onText;
+                fullStats.setText(fullStatsText, ScreenOptions.onText);
             else
-                fullStats.text = fullStatsText + ScreenOptions.offText;
+                fullStats.setText(fullStatsText, ScreenOptions.offText);
         }
     },
             "Shows more detailed statistics---after a crusade ends.");
@@ -64,14 +64,14 @@ public class ScreenOptionsGame extends Screen
         this.musicID = "menu";
 
         if (Game.autostart)
-            autostart.text = autostartText + ScreenOptions.onText;
+            autostart.setText(autostartText, ScreenOptions.onText);
         else
-            autostart.text = autostartText + ScreenOptions.offText;
+            autostart.setText(autostartText, ScreenOptions.offText);
 
         if (Game.fullStats)
-            fullStats.text = fullStatsText + ScreenOptions.onText;
+            fullStats.setText(fullStatsText, ScreenOptions.onText);
         else
-            fullStats.text = fullStatsText + ScreenOptions.offText;
+            fullStats.setText(fullStatsText, ScreenOptions.offText);
     }
 
     @Override
@@ -95,6 +95,6 @@ public class ScreenOptionsGame extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Game options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Game options");
     }
 }

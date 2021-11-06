@@ -6,6 +6,8 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletFreeze;
 import tanks.event.EventShootBullet;
 
+import java.util.Arrays;
+
 public class TankCyan extends TankAIControlled
 {
 	public TankCyan(String name, double x, double y, double angle)
@@ -26,6 +28,8 @@ public class TankCyan extends TankAIControlled
 		this.bulletDamage = 0.25;
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
+
+		this.attributeImmunities.addAll(Arrays.asList("ice_slip", "ice_accel", "ice_max_speed", "freeze"));
 		
 		this.coinValue = 4;
 

@@ -404,7 +404,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		}
 	}
 
-	public void fireBullet(Bullet b, double speed)
+	public void fireBullet(Bullet b, double speed, double offset)
 	{
 		if (speed <= 0)
 			speed = Double.MIN_NORMAL;
@@ -412,7 +412,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		if (b.itemSound != null)
 			Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 
-		b.setPolarMotion(this.angle, speed);
+		b.setPolarMotion(this.angle + offset, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
 		if (b.moveOut)

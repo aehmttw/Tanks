@@ -50,7 +50,7 @@ public class ScreenControlsHotbar extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Hotbar controls");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Hotbar controls");
 
         ScreenOptionsInputDesktop.overlay.draw();
     }

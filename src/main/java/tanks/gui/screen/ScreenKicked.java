@@ -44,7 +44,7 @@ public class ScreenKicked extends Screen
 		this.drawDefaultBackground();
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);
 	
 		back.draw();
 	}

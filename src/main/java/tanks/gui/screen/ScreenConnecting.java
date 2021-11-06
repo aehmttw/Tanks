@@ -65,7 +65,7 @@ public class ScreenConnecting extends Screen
 
 		if (!this.finished)
 		{
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, this.text);
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, this.text);
 
 			Drawing.drawing.setColor(0, 0, 0);
 
@@ -75,7 +75,7 @@ public class ScreenConnecting extends Screen
 		}
 		else
 		{
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.text);
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, this.text);
 
 			if (Drawing.drawing.interfaceScaleZoom > 1)
 				Drawing.drawing.setInterfaceFontSize(this.textSize * 5 / 12);

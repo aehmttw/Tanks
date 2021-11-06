@@ -21,7 +21,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY) / 4 + 5;
+        int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
 
         glBegin(GL_TRIANGLE_FAN);
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
@@ -45,7 +45,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY) / 16 + 5;
+        int sides = Math.max(4, (int) (sX + sY) / 16 + 5);
 
         if (!shade)
             this.window.setGlowBlendFunc();
@@ -101,7 +101,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
 
         glBegin(GL_TRIANGLE_FAN);
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
@@ -124,7 +124,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY) / 4 + 5;
+        int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
 
         glBegin(GL_TRIANGLES);
         for (double i = start; i < end; i += (end - start) / sides)
@@ -156,7 +156,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5);
 
         if (!shade)
             this.window.setGlowBlendFunc();
@@ -217,7 +217,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
 
         glBegin(GL_TRIANGLE_FAN);
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
@@ -273,7 +273,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5;
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5);
 
         if (!shade)
             this.window.setGlowBlendFunc();
@@ -326,7 +326,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY) / 4 + 5;
+        int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
 
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
         {
@@ -342,7 +342,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         x += sX / 2;
         y += sY / 2;
 
-        int sides = (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5;
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
 
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
         {

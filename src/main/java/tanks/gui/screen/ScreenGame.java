@@ -704,14 +704,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (item instanceof ItemRemote)
 				continue;
 
-			String price = item.price + " ";
-			if (item.price == 0)
-				price = "Free!";
-			else if (item.price == 1)
-				price += "coin";
-			else
-				price += "coins";
-
 			Button b = new Button(0, 0, 350, 40, item.name, new Runnable()
 			{
 				@Override
@@ -727,11 +719,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 			);
 
-			b.subtext = price;
+			int p = item.price;
+
+			if (p == 0)
+				b.setSubtext("Free!");
+			else if (p == 1)
+				b.setSubtext("1 coin");
+			else
+				b.setSubtext("%d coins", p);
 
 			this.shopItemButtons.add(b);
 
-			Game.eventsOut.add(new EventAddShopItem(i, item.name, price, item.icon));
+			Game.eventsOut.add(new EventAddShopItem(i, item.name, b.rawSubtext, p, item.icon));
 		}
 
 		this.initializeShopList();
@@ -1054,11 +1053,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							}
 
 							this.readyPanelCounter += Panel.frameFrequency;
-							readyButton.text = "Waiting... (";
+							readyButton.setText("Waiting... (%d/%d)");
 						}
 						else
 						{
-							readyButton.text = "Ready (";
+							readyButton.setText("Ready (%d/%d)");
 							this.music = "waiting_music.ogg";
 							this.musicID = null;
 						}
@@ -1067,21 +1066,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						{
 							if (!ScreenPartyHost.includedPlayers.contains(Game.clientID))
 							{
-								readyButton.text = "Spectating... (";
+								readyButton.setText("Spectating... (%d/%d)");
 								readyButton.enabled = false;
 							}
 
-							readyButton.text += ScreenPartyHost.readyPlayers.size() + "/" + ScreenPartyHost.includedPlayers.size() + ")";
+							readyButton.setTextArgs(ScreenPartyHost.readyPlayers.size(), ScreenPartyHost.includedPlayers.size());
 						}
 						else
 						{
 							if (!ScreenPartyLobby.includedPlayers.contains(Game.clientID))
 							{
-								readyButton.text = "Spectating... (";
+								readyButton.setText("Spectating... (%d/%d)");
 								readyButton.enabled = false;
 							}
 
-							readyButton.text += ScreenPartyLobby.readyPlayers.size() + "/" + ScreenPartyLobby.includedPlayers.size() + ")";
+							readyButton.setTextArgs(ScreenPartyLobby.readyPlayers.size(), ScreenPartyLobby.includedPlayers.size());
 						}
 					}
 					else
@@ -1102,7 +1101,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 						this.readyPanelCounter += Panel.frameFrequency;
 						readyButton.enabled = false;
-						readyButton.text = "Starting in " + ((int)(Game.startTime / 100) + 1);
+						readyButton.setText("Starting in %d", ((int)(Game.startTime / 100) + 1));
 					}
 
 					readyButton.update();
@@ -1859,7 +1858,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Drawing.drawing.setColor(0, 0, 0, 127);
 
 				Drawing.drawing.setInterfaceFontSize(100);
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle " + (Crusade.currentCrusade.currentLevel + 1));
+				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Battle %d", (Crusade.currentCrusade.currentLevel + 1));
 
 				if (Crusade.currentCrusade != null && Crusade.currentCrusade.showNames)
 				{
@@ -1902,7 +1901,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				else
 					Drawing.drawing.setColor(0, 0, 0);
 
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210 + shopOffset, "Shop");
+				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210 + shopOffset, "Shop");
 
 				this.exitShop.draw();
 
@@ -1952,7 +1951,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(s / 25, 1) * 255, 0));
 						Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 50, "Ready players:");
+						Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 50, "Ready players:");
 					}
 
 					int includedPlayers = 0;
@@ -2013,16 +2012,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 						for (int i = readyNamesCount; i < Math.min(includedPlayers, slots); i++)
 						{
-							Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * i + 100, "Waiting...");
+							Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * i + 100, "Waiting...");
 						}
 
 						int extra = includedPlayers - Math.max(readyNamesCount, slots);
 						if (extra > 0)
 						{
 							if (extra == 1)
-								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * slots + 100, "Waiting...");
+								Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * slots + 100, "Waiting...");
 							else
-								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * slots + 100, extra + " waiting...");
+								Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * slots + 100, "%d waiting...", extra);
 						}
 					}
 
@@ -2188,9 +2187,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Drawing.drawing.setColor(255, 255, 255);
 
 			if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Game paused");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Game paused");
 			else
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Game menu");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Game menu");
 		}
 
 		if (this.overlay != null)

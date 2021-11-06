@@ -357,7 +357,7 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
         super.draw();
         Drawing.drawing.setColor(this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 240, "Object menu");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 240, "Object menu");
 
         this.placePlayer.draw();
         this.placeEnemy.draw();
@@ -371,9 +371,9 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
                 teamNum = screenLevelEditor.playerTeamNum;
 
             if (teamNum == screenLevelEditor.teams.size())
-                this.selectTeam.text = "No team";
+                this.selectTeam.setText("No team");
             else
-                this.selectTeam.text = "Team: " + screenLevelEditor.teams.get(teamNum).name;
+                this.selectTeam.setText("Team: %s", (Object) screenLevelEditor.teams.get(teamNum).name);
 
             this.selectTeam.draw();
             this.rotateTankButton.draw();
@@ -387,9 +387,9 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
             this.movePlayerButton.draw();
 
             if (this.screenLevelEditor.movePlayer)
-                this.drawMobileTooltip(this.movePlayerButton.hoverTextRaw);
+                this.drawMobileTooltip(this.movePlayerButton.hoverTextRawTranslated);
             else
-                this.drawMobileTooltip(this.playerSpawnsButton.hoverTextRaw);
+                this.drawMobileTooltip(this.playerSpawnsButton.hoverTextRawTranslated);
 
         }
         else if (this.screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
@@ -406,7 +406,7 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
                     tankButtons.get(i).draw();
             }
 
-            this.drawMobileTooltip(this.tankButtons.get(screenLevelEditor.tankNum).hoverTextRaw);
+            this.drawMobileTooltip(this.tankButtons.get(screenLevelEditor.tankNum).hoverTextRawTranslated);
         }
         else if (this.screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
         {
@@ -424,16 +424,16 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
 
             if (screenLevelEditor.mouseObstacle.enableStacking)
             {
-                this.editHeight.text = "Block height: " + screenLevelEditor.mouseObstacleHeight;
+                this.editHeight.setText("Block height: %.1f", screenLevelEditor.mouseObstacleHeight);
                 this.editHeight.draw();
             }
             else if (screenLevelEditor.mouseObstacle.enableGroupID)
             {
-                this.editGroupID.text = "Group ID: " + screenLevelEditor.mouseObstacleGroup;
+                this.editGroupID.setText("Group ID: %d", screenLevelEditor.mouseObstacleGroup);
                 this.editGroupID.draw();
             }
 
-            this.drawMobileTooltip(this.obstacleButtons.get(this.screenLevelEditor.obstacleNum).hoverTextRaw);
+            this.drawMobileTooltip(this.obstacleButtons.get(this.screenLevelEditor.obstacleNum).hoverTextRawTranslated);
         }
     }
 

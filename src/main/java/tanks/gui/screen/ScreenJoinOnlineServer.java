@@ -77,7 +77,7 @@ public class ScreenJoinOnlineServer extends Screen
                             }
 
                             if (ipaddress.equals(""))
-                                Client.connect("localhost", Game.port, true, connectionID); //TODO
+                                Client.connect("localhost", Game.port, true, connectionID);
                             else
                                 Client.connect(ipaddress, port, true, connectionID);
                         }
@@ -126,11 +126,11 @@ public class ScreenJoinOnlineServer extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Select online server");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Select online server");
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "The official online server is not yet available.");
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "However, you can join a 3rd party online server.");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "The official online server is not yet available.");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "However, you can join a 3rd party online server.");
 
     }
 }

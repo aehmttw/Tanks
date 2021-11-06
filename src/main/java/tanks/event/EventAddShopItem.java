@@ -12,6 +12,7 @@ public class EventAddShopItem extends PersonalEvent
     public int item;
     public String name;
     public String description;
+    public int price;
     public String icon;
 
     public EventAddShopItem()
@@ -19,11 +20,12 @@ public class EventAddShopItem extends PersonalEvent
 
     }
 
-    public EventAddShopItem(int item, String name, String desc, String icon)
+    public EventAddShopItem(int item, String name, String desc, int price, String icon)
     {
         this.item = item;
         this.name = name;
         this.description = desc;
+        this.price = price;
         this.icon = icon;
     }
 
@@ -33,6 +35,7 @@ public class EventAddShopItem extends PersonalEvent
         b.writeInt(item);
         NetworkUtils.writeString(b, name);
         NetworkUtils.writeString(b, description);
+        b.writeInt(price);
         NetworkUtils.writeString(b, icon);
     }
 
@@ -42,6 +45,7 @@ public class EventAddShopItem extends PersonalEvent
         item = b.readInt();
         name = NetworkUtils.readString(b);
         description = NetworkUtils.readString(b);
+        price = b.readInt();
         icon = NetworkUtils.readString(b);
     }
 
@@ -59,7 +63,7 @@ public class EventAddShopItem extends PersonalEvent
                 }
             });
 
-            b.subtext = description;
+            b.setSubtext(description, price);
 
             ((ScreenGame) Game.screen).shopItemButtons.add(b);
 

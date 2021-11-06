@@ -99,7 +99,7 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
 
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Group ID");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Group ID");
 
         Drawing.drawing.setColor(0, 0, 0, 127);
 

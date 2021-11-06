@@ -9,6 +9,7 @@ import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Ray
 {
@@ -181,7 +182,8 @@ public class Ray
 			}
 		}
 
-		boolean firstBounce = true;
+		boolean firstBounce = this.targetTank == null;
+
 		while (this.bounces >= 0 && this.bouncyBounces >= 0)
 		{
 			double t = Double.MAX_VALUE;

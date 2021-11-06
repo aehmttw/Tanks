@@ -185,9 +185,9 @@ public class ScreenAbout extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "About");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "About");
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: " + Game.version);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s", Game.version);
 
         int extensions = Game.extensionRegistry.extensions.size();
         if (extensions > 0)
@@ -195,9 +195,9 @@ public class ScreenAbout extends Screen
             Drawing.drawing.setInterfaceFontSize(this.textSize * 0.75);
 
             if (extensions > 1)
-                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, extensions + " extensions loaded");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "%d extensions loaded", extensions);
             else
-                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, extensions + " extension loaded");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "%d extension loaded", extensions);
         }
     }
 }

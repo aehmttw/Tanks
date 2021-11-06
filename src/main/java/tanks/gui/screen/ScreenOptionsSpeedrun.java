@@ -18,9 +18,9 @@ public class ScreenOptionsSpeedrun extends Screen
             Game.showSpeedrunTimer = !Game.showSpeedrunTimer;
 
             if (Game.showSpeedrunTimer)
-                timer.text = timerText + ScreenOptions.onText;
+                timer.setText(timerText, ScreenOptions.onText);
             else
-                timer.text = timerText + ScreenOptions.offText;
+                timer.setText(timerText, ScreenOptions.offText);
         }
     },
             "When enabled, time spent---in the current level attempt---and crusade will be displayed");
@@ -33,9 +33,9 @@ public class ScreenOptionsSpeedrun extends Screen
             Game.deterministicMode = !Game.deterministicMode;
 
             if (Game.deterministicMode)
-                deterministic.text = deterministicText + ScreenOptions.onText;
+                deterministic.setText(deterministicText, ScreenOptions.onText);
             else
-                deterministic.text = deterministicText + ScreenOptions.offText;
+                deterministic.setText(deterministicText, ScreenOptions.offText);
         }
     },
             "Deterministic mode changes the random number---generation to be fixed based on a seed, and---the game speed to be locked and independent---of framerate." +
@@ -57,14 +57,14 @@ public class ScreenOptionsSpeedrun extends Screen
         this.musicID = "menu";
 
         if (Game.showSpeedrunTimer)
-            timer.text = timerText + ScreenOptions.onText;
+            timer.setText(timerText, ScreenOptions.onText);
         else
-            timer.text = timerText + ScreenOptions.offText;
+            timer.setText(timerText, ScreenOptions.offText);
 
         if (Game.deterministicMode)
-            deterministic.text = deterministicText + ScreenOptions.onText;
+            deterministic.setText(deterministicText, ScreenOptions.onText);
         else
-            deterministic.text = deterministicText + ScreenOptions.offText;
+            deterministic.setText(deterministicText, ScreenOptions.offText);
     }
 
     @Override
@@ -86,6 +86,6 @@ public class ScreenOptionsSpeedrun extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Speedrunning options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Speedrunning options");
     }
 }

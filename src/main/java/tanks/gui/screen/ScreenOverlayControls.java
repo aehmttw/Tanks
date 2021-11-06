@@ -99,7 +99,7 @@ public class ScreenOverlayControls
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(Game.screen.titleSize);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 350, "Controls");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 350, "Controls");
 
         game.draw();
         tank.draw();

@@ -8,6 +8,7 @@ import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.TankPlayer;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -771,6 +772,21 @@ public class Drawing
 		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+	}
+
+	public void displayInterfaceText(double x, double y, String text, Object... objects)
+	{
+		drawInterfaceText(x, y, Translation.translate(text, objects));
+	}
+
+	public void displayInterfaceText(double x, double y, boolean rightAligned, String text, Object... objects)
+	{
+		drawInterfaceText(x, y, Translation.translate(text, objects), rightAligned);
+	}
+
+	public void displayUncenteredInterfaceText(double x, double y, String text, Object... objects)
+	{
+		drawUncenteredInterfaceText(x, y, Translation.translate(text, objects));
 	}
 
 	public void addVertex(double x, double y, double z)

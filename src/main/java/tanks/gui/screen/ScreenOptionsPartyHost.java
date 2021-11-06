@@ -37,11 +37,11 @@ public class ScreenOptionsPartyHost extends Screen
                 TankPlayerRemote.checkMotion = false;
 
             if (!TankPlayerRemote.checkMotion)
-                anticheat.text = anticheatText + ScreenOptions.offText;
+                anticheat.setText(anticheatText, ScreenOptions.offText);
             else if (!TankPlayerRemote.weakTimeCheck)
-                anticheat.text = anticheatText + strongText;
+                anticheat.setText(anticheatText, strongText);
             else
-                anticheat.text = anticheatText + weakText;
+                anticheat.setText(anticheatText, weakText);
         }
     },
             "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
@@ -54,9 +54,9 @@ public class ScreenOptionsPartyHost extends Screen
             Game.disablePartyFriendlyFire = !Game.disablePartyFriendlyFire;
 
             if (Game.disablePartyFriendlyFire)
-                disableFriendlyFire.text = disableFriendlyFireText + disabledText;
+                disableFriendlyFire.setText(disableFriendlyFireText, disabledText);
             else
-                disableFriendlyFire.text = disableFriendlyFireText + defaultText;
+                disableFriendlyFire.setText(disableFriendlyFireText, defaultText);
         }
     },
             "Disables all friendly fire in the party.---Useful for co-op in bigger parties.");
@@ -85,16 +85,16 @@ public class ScreenOptionsPartyHost extends Screen
         this.musicID = "menu";
 
         if (!TankPlayerRemote.checkMotion)
-            anticheat.text = anticheatText + ScreenOptions.offText;
+            anticheat.setText(anticheatText, ScreenOptions.offText);
         else if (!TankPlayerRemote.weakTimeCheck)
-            anticheat.text = anticheatText + strongText;
+            anticheat.setText(anticheatText, strongText);
         else
-            anticheat.text = anticheatText + weakText;
+            anticheat.setText(anticheatText, weakText);
 
         if (Game.disablePartyFriendlyFire)
-            disableFriendlyFire.text = disableFriendlyFireText + disabledText;
+            disableFriendlyFire.setText(disableFriendlyFireText, disabledText);
         else
-            disableFriendlyFire.text = disableFriendlyFireText + defaultText;
+            disableFriendlyFire.setText(disableFriendlyFireText, defaultText);
 
         timer = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Countdown time", new Runnable()
         {
@@ -136,7 +136,7 @@ public class ScreenOptionsPartyHost extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Party host options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Party host options");
     }
 
 }

@@ -7,7 +7,7 @@ import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenOptions;
 
-public class ScreenEditTeamColor extends ScreenLevelBuilderOverlay
+public class OverlayEditTeamColor extends ScreenLevelBuilderOverlay
 {
     public Team team;
 
@@ -32,22 +32,22 @@ public class ScreenEditTeamColor extends ScreenLevelBuilderOverlay
         {
             team.enableColor = !team.enableColor;
             if (team.enableColor)
-                teamColorEnabled.text = "Team color: " + ScreenOptions.onText;
+                teamColorEnabled.setText("Team color: ", ScreenOptions.onText);
             else
-                teamColorEnabled.text = "Team color: " + ScreenOptions.offText;
+                teamColorEnabled.setText("Team color: ", ScreenOptions.offText);
         }
     }
     );
 
-    public ScreenEditTeamColor(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
+    public OverlayEditTeamColor(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
         super(previous, screenLevelEditor);
         this.team = team;
 
         if (team.enableColor)
-            teamColorEnabled.text = "Team color: " + ScreenOptions.onText;
+            teamColorEnabled.setText("Team color: ", ScreenOptions.onText);
         else
-            teamColorEnabled.text = "Team color: " + ScreenOptions.offText;
+            teamColorEnabled.setText("Team color: ", ScreenOptions.offText);
 
         teamRed = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", new Runnable()
         {
@@ -170,6 +170,6 @@ public class ScreenEditTeamColor extends ScreenLevelBuilderOverlay
         teamColorEnabled.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Team color: " + this.team.name);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Team color: %s", this.team.name);
     }
 }

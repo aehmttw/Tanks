@@ -17,9 +17,9 @@ public class ScreenOptionsEffects extends Screen
             Game.effectsEnabled = !Game.effectsEnabled;
 
             if (Game.effectsEnabled)
-                effects.text = effectsText + ScreenOptions.onText;
+                effects.setText(effectsText, ScreenOptions.onText);
             else
-                effects.text = effectsText + ScreenOptions.offText;
+                effects.setText(effectsText, ScreenOptions.offText);
         }
     },
             "Particle effects may significantly---impact performance");
@@ -66,9 +66,9 @@ public class ScreenOptionsEffects extends Screen
         effectMultiplier.b1 = 210;
 
         if (Game.effectsEnabled)
-            effects.text = effectsText + ScreenOptions.onText;
+            effects.setText(effectsText, ScreenOptions.onText);
         else
-            effects.text = effectsText + ScreenOptions.offText;
+            effects.setText(effectsText, ScreenOptions.offText);
     }
 
     @Override
@@ -89,6 +89,6 @@ public class ScreenOptionsEffects extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Effect options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Effect options");
     }
 }

@@ -12,24 +12,28 @@ public class ImageSelector extends Selector
     {
         super(x, y, sX, sY, text, o, f);
         this.format = false;
+        this.translate = false;
     }
 
     public ImageSelector(double x, double y, double sX, double sY, String text, String[] o, Runnable f, String hoverText)
     {
         super(x, y, sX, sY, text, o, f, hoverText);
         this.format = false;
+        this.translate = false;
     }
 
     public ImageSelector(double x, double y, double sX, double sY, String text, String[] o)
     {
         super(x, y, sX, sY, text, o);
         this.format = false;
+        this.translate = false;
     }
 
     public ImageSelector(double x, double y, double sX, double sY, String text, String[] o, String hoverText)
     {
         super(x, y, sX, sY, text, o, hoverText);
         this.format = false;
+        this.translate = false;
     }
 
     @Override
@@ -92,7 +96,7 @@ public class ImageSelector extends Selector
 
         drawing.setColor(0, 0, 0);
 
-        drawing.drawInterfaceText(posX, posY - sizeY * 3 / 8, text);
+        drawing.drawInterfaceText(posX, posY - sizeY * 3 / 8, translatedText);
 
         if (enableHover)
         {

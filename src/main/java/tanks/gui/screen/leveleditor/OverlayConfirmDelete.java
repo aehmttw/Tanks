@@ -57,7 +57,7 @@ public class OverlayConfirmDelete extends ScreenLevelBuilderOverlay
 
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to delete the level?");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to delete the level?");
 
         this.cancelDelete.draw();
         this.confirmDelete.draw();

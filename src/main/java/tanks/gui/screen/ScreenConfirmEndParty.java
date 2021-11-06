@@ -65,16 +65,16 @@ public class ScreenConfirmEndParty extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 8 / 3, "Are you sure you want to end the party?");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 8 / 3, "Are you sure you want to end the party?");
 
         if (Crusade.currentCrusade != null)
         {
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 / 3, "All players will be disconnected,");
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, "and progress in the crusade will be lost!");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 / 3, "All players will be disconnected,");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "and progress in the crusade will be lost!");
         }
         else
         {
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4 / 3, "All players will be disconnected!");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4 / 3, "All players will be disconnected!");
         }
     }
 }

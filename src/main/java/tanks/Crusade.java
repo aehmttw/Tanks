@@ -257,7 +257,7 @@ public class Crusade
 		if (Crusade.currentCrusade.showNames)
 			sub = Crusade.currentCrusade.levelNames.get(Crusade.currentCrusade.currentLevel).replace("_", " ");
 
-		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle " + (this.currentLevel + 1), sub));
+		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle %d", sub, (this.currentLevel + 1), true));
 	}
 	
 	public void levelFinished(boolean win)

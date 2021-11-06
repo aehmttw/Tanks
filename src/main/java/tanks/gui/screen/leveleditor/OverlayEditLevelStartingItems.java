@@ -120,15 +120,15 @@ public class OverlayEditLevelStartingItems extends ScreenLevelBuilderOverlay imp
 
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 270, "Starting items");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Starting items");
         this.startingItemsList.draw();
         this.back.draw();
         this.addItem.draw();
 
         if (this.startingItemsList.reorder)
-            this.reorderItems.text = "Stop reordering";
+            this.reorderItems.setText("Stop reordering");
         else
-            this.reorderItems.text = "Reorder items";
+            this.reorderItems.setText("Reorder items");
 
         this.reorderItems.draw();
     }

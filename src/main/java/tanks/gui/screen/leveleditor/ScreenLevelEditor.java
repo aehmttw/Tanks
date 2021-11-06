@@ -1734,17 +1734,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Drawing.drawing.setColor(255, 255, 255);
 
 			Drawing.drawing.setInterfaceFontSize(this.textSize);
-			Drawing.drawing.drawInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - this.objYSpace / 2, "Drag to pan");
+			Drawing.drawing.displayInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - this.objYSpace / 2, "Drag to pan");
 
 			if (Game.game.window.touchscreen)
 			{
-				Drawing.drawing.drawInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - 0, "Pinch to zoom");
+				Drawing.drawing.displayInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - 0, "Pinch to zoom");
 				recenter.draw();
 			}
 			else
 			{
-				Drawing.drawing.drawInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - 0, "Scroll or press " + Game.game.input.editorZoomIn.getInputs() + " or " + Game.game.input.editorZoomOut.getInputs() + " to zoom");
-				Drawing.drawing.drawInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 + this.objYSpace / 2, "Press " + Game.game.input.editorRevertCamera.getInputs() + " to re-center");
+				Drawing.drawing.displayInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - 0, "Scroll or press %s or %s to zoom", Game.game.input.editorZoomIn.getInputs(), Game.game.input.editorZoomOut.getInputs());
+				Drawing.drawing.displayInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 + this.objYSpace / 2, "Press %s to re-center", Game.game.input.editorRevertCamera.getInputs());
 			}
 		}
 
@@ -2101,15 +2101,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!omitPrice)
 			{
 				int p = items.get(i).price;
-				String price = p + " ";
-				if (p == 0)
-					price = "Free!";
-				else if (p == 1)
-					price += "coin";
-				else
-					price += "coins";
 
-				b.subtext = price;
+				if (p == 0)
+					b.setSubtext("Free!");
+				else if (p == 1)
+					b.setSubtext("1 coin");
+				else
+					b.setSubtext("%d coins", p);
 			}
 
 			buttons.buttons.add(b);

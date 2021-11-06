@@ -41,9 +41,9 @@ public class ScreenOptionsMultiplayerColor extends Screen
             Game.player.enableSecondaryColor = !Game.player.enableSecondaryColor;
 
             if (Game.player.enableSecondaryColor)
-                enableSecondary.text = secondaryColorText + ScreenOptions.onText;
+                enableSecondary.setText(secondaryColorText, ScreenOptions.onText);
             else
-                enableSecondary.text = secondaryColorText + ScreenOptions.offText;
+                enableSecondary.setText(secondaryColorText, ScreenOptions.offText);
         }
     },
             "Allows you to pick---a custom secondary color");
@@ -55,9 +55,9 @@ public class ScreenOptionsMultiplayerColor extends Screen
             preview.posY += Game.tile_size;
 
         if (Game.player.enableSecondaryColor)
-            enableSecondary.text = secondaryColorText + ScreenOptions.onText;
+            enableSecondary.setText(secondaryColorText, ScreenOptions.onText);
         else
-            enableSecondary.text = secondaryColorText + ScreenOptions.offText;
+            enableSecondary.setText(secondaryColorText, ScreenOptions.offText);
 
         colorRed = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Primary red", new Runnable()
         {
@@ -339,6 +339,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
         back.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Multiplayer tank color");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Multiplayer tank color");
     }
 }

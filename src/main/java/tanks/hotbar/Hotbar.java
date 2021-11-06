@@ -8,6 +8,7 @@ import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
+import tanks.translation.Translation;
 
 public class Hotbar
 {
@@ -199,7 +200,7 @@ public class Hotbar
 			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
 
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: " + coins);
+			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: %d", coins);
 		}
 
 		if (this.enabledRemainingEnemies)
@@ -264,9 +265,10 @@ public class Hotbar
 					sizeMul = 1.0 + Math.max(((((ScreenGame) Game.screen).timeRemaining / 100) - secondsTotal), 0);
 			}
 
-			String s = "Time: " + minutes + ":" + seconds60;
+			String st = Translation.translate("Time: ");
+			String s = st + minutes + ":" + seconds60;
 			if (seconds60 < 10)
-				s = "Time: " + minutes + ":0" + seconds60;
+				s = st + minutes + ":0" + seconds60;
 
 			Drawing.drawing.setInterfaceFontSize(32 * sizeMul);
 			Drawing.drawing.setColor(red, 0, 0, alpha + red / 2);
@@ -291,10 +293,10 @@ public class Hotbar
 				Drawing.drawing.setColor(255, 0, 0);
 
 				Drawing.drawing.setInterfaceFontSize(100);
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Out of time!");
+				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Out of time!");
 			}
 			else
-				Drawing.drawing.drawInterfaceText(posX, posY, s);
+				Drawing.drawing.displayInterfaceText(posX, posY, s);
 		}
 	}
 }

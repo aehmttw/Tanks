@@ -99,7 +99,7 @@ public class TankOrangeRed extends TankAIControlled
             {
                 for (Movable mm: Game.movables)
                 {
-                    if (Team.isAllied(mm, this) && Math.pow(mm.posX - a.posX, 2) + Math.pow(mm.posY - a.posY, 2) <= Math.pow(Game.tile_size * 2.5, 2))
+                    if (Team.isAllied(mm, this) && mm instanceof Tank && !((Tank) mm).resistExplosions && this.team.friendlyFire && Math.pow(mm.posX - a.posX, 2) + Math.pow(mm.posY - a.posY, 2) <= Math.pow(Game.tile_size * 2.5, 2))
                         return;
                 }
 

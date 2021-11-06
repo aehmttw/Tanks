@@ -27,6 +27,9 @@ public class ItemBullet extends Item
 	public double size = Bullet.bullet_size;
 	public double recoil = 1.0;
 	public boolean heavy = false;
+	public double accuracy = 0;
+	public int shotCount = 1;
+	public double shotSpread = Math.PI / 6;
 
 	public double fractionUsed = 0;
 
@@ -61,6 +64,9 @@ public class ItemBullet extends Item
 		new ItemPropertyDouble(this.properties, "size", 10.0);
 		new ItemPropertyDouble(this.properties, "recoil", 1.0);
 		new ItemPropertyBoolean(this.properties, "heavy", false);
+		new ItemPropertyDouble(this.properties, "accuracy_spread_angle", 0.0);
+		new ItemPropertyInt(this.properties, "shot_count", 1);
+		new ItemPropertyDouble(this.properties, "multishot_spread_angle", 30.0);
 
 		this.supportsHits = true;
 	}
@@ -77,37 +83,54 @@ public class ItemBullet extends Item
 		{
 			Tank m = this.getUser();
 
-			Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, (Tank) m, this);
-
-			b.damage = this.damage;
-			b.effect = this.effect;
-			b.size = this.size;
-			b.heavy = heavy;
-			b.recoil = recoil;
+			double remainingQty = this.stackSize - this.fractionUsed;
+			double useAmt = 1;
 
 			if (this.cooldown <= 0)
+				useAmt = Panel.frameFrequency;
+
+			int q = (int) Math.min(this.shotCount, Math.ceil(remainingQty / useAmt));
+
+			for (int i = 0; i < q; i++)
 			{
-				b.frameDamageMultipler = Panel.frameFrequency;
-				this.fractionUsed += Panel.frameFrequency;
+				double baseOff = 0;
+
+				if (q > 1)
+					baseOff = Math.toRadians(this.shotSpread) * ((i * 1.0 / (q - 1)) - 0.5);
+
+				Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, (Tank) m, this);
+
+				b.damage = this.damage;
+				b.effect = this.effect;
+				b.size = this.size;
+				b.heavy = heavy;
+				b.recoil = recoil;
+
+				if (this.cooldown <= 0)
+				{
+					b.frameDamageMultipler = Panel.frameFrequency;
+					this.fractionUsed += Panel.frameFrequency;
+				}
+				else
+					this.fractionUsed++;
+
+				m.cooldown = this.cooldown;
+
+				double off = baseOff + (Math.random() - 0.5) * Math.toRadians(this.accuracy);
+				if (m instanceof TankPlayerRemote)
+					((TankPlayerRemote) m).fireBullet(b, speed, off);
+				else if (m instanceof TankPlayer)
+					((TankPlayer) m).fireBullet(b, speed, off);
+
+				while (this.fractionUsed >= 1)
+				{
+					this.stackSize--;
+					this.fractionUsed--;
+				}
+
+				if (this.stackSize <= 0)
+					this.destroy = true;
 			}
-			else
-				this.fractionUsed++;
-
-			m.cooldown = this.cooldown;
-
-			if (m instanceof TankPlayerRemote)
-				((TankPlayerRemote) m).fireBullet(b, speed);
-			else if (m instanceof TankPlayer)
-				((TankPlayer) m).fireBullet(b, speed);
-
-			while (this.fractionUsed >= 1)
-			{
-				this.stackSize--;
-				this.fractionUsed--;
-			}
-
-			if (this.stackSize <= 0)
-				this.destroy = true;
 		}
 		catch (Exception e)
 		{
@@ -119,14 +142,15 @@ public class ItemBullet extends Item
 	public boolean usable()
 	{
 		Tank t = this.getUser();
-		return t != null && (this.maxAmount <= 0 || this.liveBullets < this.maxAmount) && !(t.cooldown > 0) && this.stackSize > 0;
+		return t != null && (this.maxAmount <= 0 || this.liveBullets <= this.maxAmount - this.shotCount) && !(t.cooldown > 0) && this.stackSize > 0;
 	}
 
 	@Override
 	public String toString()
 	{
 		return super.toString() + "," + item_name + ","
-				+ className + "," + effectsMap2.get(effect) + "," + speed + "," + bounces + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + recoil + "," + heavy;
+				+ className + "," + effectsMap2.get(effect) + "," + speed + "," + bounces + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + recoil + "," + heavy +
+				"," + this.accuracy + "," + this.shotCount + "," + this.shotSpread;
 	}
 
 	@Override
@@ -146,6 +170,13 @@ public class ItemBullet extends Item
 		this.size = Double.parseDouble(p[7]);
 		this.recoil = Double.parseDouble(p[8]);
 		this.heavy = Boolean.parseBoolean(p[9]);
+
+		if (p.length > 10)
+		{
+			this.accuracy = Double.parseDouble(p[10]);
+			this.shotCount = Integer.parseInt(p[11]);
+			this.shotSpread = Double.parseDouble(p[12]);
+		}
 	}
 
 	@Override
@@ -163,6 +194,9 @@ public class ItemBullet extends Item
 		this.setProperty("size", this.size);
 		this.setProperty("recoil", this.recoil);
 		this.setProperty("heavy", this.heavy);
+		this.setProperty("accuracy_spread_angle", this.accuracy);
+		this.setProperty("shot_count", this.shotCount);
+		this.setProperty("multishot_spread_angle", this.shotSpread);
 	}
 
 	@Override
@@ -187,6 +221,9 @@ public class ItemBullet extends Item
 		this.size = (double) this.getProperty("size");
 		this.recoil = (double) this.getProperty("recoil");
 		this.heavy = (boolean) this.getProperty("heavy");
+		this.accuracy = (double) this.getProperty("accuracy_spread_angle");
+		this.shotCount = (int) this.getProperty("shot_count");
+		this.shotSpread = (double) this.getProperty("multishot_spread_angle");
 	}
 
 	public double getRange()

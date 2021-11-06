@@ -26,6 +26,7 @@ import tanks.registry.RegistryItem;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
+import tanks.translation.Translation;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -65,8 +66,8 @@ public class Game
 
 	public static Queue<Effect> recycleEffects = new LinkedList<Effect>();
 
-	public static final SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<INetworkEvent>();
-	public static final SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<INetworkEvent>();
+	public static final SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<>();
+	public static final SynchronizedList<INetworkEvent> eventsIn = new SynchronizedList<>();
 
 	public static Team playerTeam = new Team("ally");
 	public static Team enemyTeam = new Team("enemy");
@@ -90,7 +91,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.2.2";
+	public static final String version = "Tanks v1.2.3a";
 	public static final int network_protocol = 36;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -205,6 +206,7 @@ public class Game
 	public static final String crashesPath = directoryPath + "/crashes/";
 
 	public static final String resourcesPath = directoryPath + "/resources/";
+	public static final String languagesPath = resourcesPath + "languages/";
 
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
@@ -232,7 +234,6 @@ public class Game
 
 	public static void registerEvents()
 	{
-		System.out.println(Integer.MIN_VALUE + (Integer.MAX_VALUE - 2));
 		NetworkEventMap.register(EventSendClientDetails.class);
 		NetworkEventMap.register(EventPing.class);
 		NetworkEventMap.register(EventConnectionSuccess.class);
@@ -432,8 +433,8 @@ public class Game
 		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
 		registerItem(ItemShield.class, ItemShield.item_name, "shield.png");
 
-		TankPlayer.default_bullet = Item.parseItem(null, "Basic bullet,bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
-		TankPlayer.default_mine = Item.parseItem(null, "Basic mine,mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");
+		TankPlayer.default_bullet = Item.parseItem(null, Translation.translate("Basic bullet") + ",bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
+		TankPlayer.default_mine = Item.parseItem(null, Translation.translate("Basic mine") + ",mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");
 
 		homedir = System.getProperty("user.home");
 

@@ -29,9 +29,9 @@ public class ScreenOptionsInputDesktop extends Screen
             Panel.showMouseTarget = !Panel.showMouseTarget;
 
             if (Panel.showMouseTarget)
-                mouseTarget.text = mouseTargetText + ScreenOptions.onText;
+                mouseTarget.setText(mouseTargetText, ScreenOptions.onText);
             else
-                mouseTarget.text = mouseTargetText + ScreenOptions.offText;
+                mouseTarget.setText(mouseTargetText, ScreenOptions.offText);
 
             Game.game.window.setShowCursor(!Panel.showMouseTarget);
         }
@@ -54,9 +54,9 @@ public class ScreenOptionsInputDesktop extends Screen
         this.musicID = "menu";
 
         if (Panel.showMouseTarget)
-            mouseTarget.text = mouseTargetText + ScreenOptions.onText;
+            mouseTarget.setText(mouseTargetText, ScreenOptions.onText);
         else
-            mouseTarget.text = mouseTargetText + ScreenOptions.offText;
+            mouseTarget.setText(mouseTargetText, ScreenOptions.offText);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ScreenOptionsInputDesktop extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Input options and controls");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Input options and controls");
     }
 
 }

@@ -6,6 +6,7 @@ import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenBindInput;
 import tanks.gui.screen.ScreenInfo;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -16,7 +17,10 @@ public class InputSelector implements IDrawable, ITrigger
 	public double posY;
 	public double sizeX;
 	public double sizeY;
+
+	public String rawText;
 	public String text;
+	public String translatedText;
 
 	public boolean enableHover = false;
 	public String[] hoverText;
@@ -54,7 +58,7 @@ public class InputSelector implements IDrawable, ITrigger
 		this.posY = y;
 		this.sizeX = sX;
 		this.sizeY = sY;
-		this.text = text;
+		this.setText(text);
 
 		//if (text.toLowerCase().contains("back") || text.toLowerCase().contains("quit"))
 		//	this.sound = "cancel.ogg";
@@ -135,21 +139,21 @@ public class InputSelector implements IDrawable, ITrigger
 
 		drawing.setColor(0, 0, 0);
 
-		drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, text);
+		drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedText);
 
 		if (input.input1.inputType == null)
 			drawing.setColor(127, 127, 127);
 		else
 			drawing.setColor(0, 0, 0);
 
-		Drawing.drawing.drawInterfaceText(q1, posY, input.input1.getInputName());
+		Drawing.drawing.displayInterfaceText(q1, posY, input.input1.getInputName());
 
 		if (input.input2.inputType == null)
 			drawing.setColor(127, 127, 127);
 		else
 			drawing.setColor(0, 0, 0);
 
-		Drawing.drawing.drawInterfaceText(q3, posY, input.input2.getInputName());
+		Drawing.drawing.displayInterfaceText(q3, posY, input.input2.getInputName());
 
 		if (enableHover)
 		{
@@ -283,7 +287,7 @@ public class InputSelector implements IDrawable, ITrigger
 				Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
 				//Drawing.drawing.playSound(this.sound, 1f, 1f);
 				Drawing.drawing.playVibration("click");
-				Game.screen = new ScreenInfo(Game.screen, this.text, this.hoverText);
+				Game.screen = new ScreenInfo(Game.screen, this.translatedText, this.hoverText);
 			}
 			else
 			{
@@ -311,5 +315,32 @@ public class InputSelector implements IDrawable, ITrigger
 		}
 
 		return handled;
+	}
+
+	public void setText(String text)
+	{
+		this.rawText = text;
+		this.text = text;
+		this.translatedText = Translation.translate(text);
+	}
+
+	public void setText(String text, String text2)
+	{
+		this.rawText = text + text2;
+		this.text = text + text2;
+		this.translatedText = Translation.translate(text) + Translation.translate(text2);
+	}
+
+	public void setText(String text, Object... objects)
+	{
+		this.rawText = text;
+		this.text = String.format(text, objects);
+		this.translatedText = Translation.translate(text, objects);
+	}
+
+	public void setTextArgs(Object... objects)
+	{
+		this.text = String.format(this.rawText, objects);
+		this.translatedText = Translation.translate(this.rawText, objects);
 	}
 }

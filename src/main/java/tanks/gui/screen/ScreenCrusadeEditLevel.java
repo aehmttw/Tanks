@@ -161,7 +161,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             {
                 saveLevelConfirm.enabled = false;
                 saved = true;
-                saveLevelConfirm.text = "Level saved!";
+                saveLevelConfirm.setText("Level saved!");
             }
         }
     });
@@ -184,7 +184,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         this(name, level, s2, s2);
         this.edit = true;
 
-        add.text = "Ok";
+        add.setText("Ok");
 
         insertionIndex = in - 1;
         index.inputText = in + "";
@@ -276,12 +276,12 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
         if (file.exists())
         {
-            saveLevelConfirm.text = "Pick a different name...";
+            saveLevelConfirm.setText("Pick a different name...");
             saveLevelConfirm.enabled = false;
         }
         else
         {
-            saveLevelConfirm.text = "Save level";
+            saveLevelConfirm.setText("Save level");
             saveLevelConfirm.enabled = true;
         }
     }
@@ -418,7 +418,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove this level?");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove this level?");
 
             confirmRemove.draw();
             cancelRemove.draw();
@@ -434,7 +434,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Save level to my levels");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Save level to my levels");
 
             saveLevelConfirm.draw();
             levelName.draw();

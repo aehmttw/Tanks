@@ -30,46 +30,46 @@ public class ScreenOptionsGraphics extends Screen
         this.musicID = "menu";
 
         if (Game.fancyTerrain)
-            terrain.text = terrainText + fancyText;
+            terrain.setText(terrainText, fancyText);
         else
-            terrain.text = terrainText + fastText;
+            terrain.setText(terrainText, fastText);
 
         if (Game.bulletTrails)
         {
             if (Game.fancyBulletTrails)
-                bulletTrails.text = trailsText + fancyText;
+                bulletTrails.setText(trailsText, fancyText);
             else
-                bulletTrails.text = trailsText + fastText;
+                bulletTrails.setText(trailsText, fastText);
         }
         else
-            bulletTrails.text = trailsText + ScreenOptions.offText;
+            bulletTrails.setText(trailsText, ScreenOptions.offText);
 
         if (Game.glowEnabled)
-            glow.text = glowText + ScreenOptions.onText;
+            glow.setText(glowText, ScreenOptions.onText);
         else
-            glow.text = glowText + ScreenOptions.offText;
+            glow.setText(glowText, ScreenOptions.offText);
 
         if (Game.vsync)
-            vsync.text = vsyncText + ScreenOptions.onText;
+            vsync.setText(vsyncText, ScreenOptions.onText);
         else
-            vsync.text = vsyncText + ScreenOptions.offText;
+            vsync.setText(vsyncText, ScreenOptions.offText);
 
         if (Game.enable3d)
-            graphics3d.text = graphics3dText + ScreenOptions.onText;
+            graphics3d.setText(graphics3dText, ScreenOptions.onText);
         else
-            graphics3d.text = graphics3dText + ScreenOptions.offText;
+            graphics3d.setText(graphics3dText, ScreenOptions.offText);
 
         update3dGroundButton();
 
         if (Game.angledView)
-            altPerspective.text = perspectiveText + angledText;
+            altPerspective.setText(perspectiveText, angledText);
         else
-            altPerspective.text = perspectiveText + birdsEyeText;
+            altPerspective.setText(perspectiveText, birdsEyeText);
 
         if (!Game.antialiasing)
-            antialiasing.text = antialiasingText + ScreenOptions.offText;
+            antialiasing.setText(antialiasingText, ScreenOptions.offText);
         else
-            antialiasing.text = antialiasingText + ScreenOptions.onText;
+            antialiasing.setText(antialiasingText, ScreenOptions.onText);
 
         if (Game.framework == Game.Framework.libgdx)
         {
@@ -80,28 +80,24 @@ public class ScreenOptionsGraphics extends Screen
 
         if (!Game.game.window.antialiasingSupported)
         {
-            antialiasing.text = antialiasingText + ScreenOptions.offText;
+            antialiasing.setText(antialiasingText, ScreenOptions.offText);
             antialiasing.enabled = false;
         }
-
-        shadows.text = "Fancy lighting: ";
 
         if (Game.framework == Game.Framework.libgdx)
             Game.shadowsEnabled = false;
 
         if (!Game.shadowsEnabled)
-            shadows.text += ScreenOptions.offText;
+            shadows.setText("Fancy lighting: ", ScreenOptions.offText);
         else
-            shadows.text += "\u00A7000200000255" + Game.shadowQuality;
-
-        effects.text = "Particle effects: ";
+            shadows.setText("Fancy lighting: %s", (Object)("\u00A7000200000255" + Game.shadowQuality));
 
         if (!Game.effectsEnabled)
-            effects.text += ScreenOptions.offText;
+            effects.setText("Particle effects: ", ScreenOptions.offText);
         else if (Game.effectMultiplier < 1)
-            effects.text += "\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%";
+            effects.setText("Particle effects: %s", (Object)("\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
         else
-            effects.text += ScreenOptions.onText;
+            effects.setText("Particle effects: ", ScreenOptions.onText);
     }
 
     protected void update3dGroundButton()
@@ -111,15 +107,15 @@ public class ScreenOptionsGraphics extends Screen
             ground3d.enabled = true;
 
             if (Game.enable3dBg)
-                ground3d.text = ground3dText + ScreenOptions.onText;
+                ground3d.setText(ground3dText, ScreenOptions.onText);
             else
-                ground3d.text = ground3dText + ScreenOptions.offText;
+                ground3d.setText(ground3dText, ScreenOptions.offText);
         }
         else
         {
             ground3d.enabled = false;
 
-            ground3d.text = ground3dText + ScreenOptions.offText;
+            ground3d.setText(ground3dText, ScreenOptions.offText);
         }
     }
 
@@ -131,9 +127,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.fancyTerrain = !Game.fancyTerrain;
 
             if (Game.fancyTerrain)
-                terrain.text = terrainText + fancyText;
+                terrain.setText(terrainText, fancyText);
             else
-                terrain.text = terrainText + fastText;
+                terrain.setText(terrainText, fastText);
 
             update3dGroundButton();
         }
@@ -158,12 +154,12 @@ public class ScreenOptionsGraphics extends Screen
             if (Game.bulletTrails)
             {
                 if (Game.fancyBulletTrails)
-                    bulletTrails.text = trailsText + fancyText;
+                    bulletTrails.setText(trailsText, fancyText);
                 else
-                    bulletTrails.text = trailsText + fastText;
+                    bulletTrails.setText(trailsText, fastText);
             }
             else
-                bulletTrails.text = trailsText + ScreenOptions.offText;
+                bulletTrails.setText(trailsText, ScreenOptions.offText);
         }
     }, "Bullet trails show the paths of bullets------Fancy bullet trails enable some extra particle---effects for certain bullet types");
 
@@ -175,9 +171,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.glowEnabled = !Game.glowEnabled;
 
             if (Game.glowEnabled)
-                glow.text = glowText + ScreenOptions.onText;
+                glow.setText(glowText, ScreenOptions.onText);
             else
-                glow.text = glowText + ScreenOptions.offText;
+                glow.setText(glowText, ScreenOptions.offText);
         }
     },
             "Glow effects may significantly---impact performance");
@@ -190,9 +186,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.enable3d = !Game.enable3d;
 
             if (Game.enable3d)
-                graphics3d.text = graphics3dText + ScreenOptions.onText;
+                graphics3d.setText(graphics3dText, ScreenOptions.onText);
             else
-                graphics3d.text = graphics3dText + ScreenOptions.offText;
+                graphics3d.setText(graphics3dText, ScreenOptions.offText);
 
             update3dGroundButton();
         }
@@ -207,9 +203,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.enable3dBg = !Game.enable3dBg;
 
             if (Game.enable3dBg)
-                ground3d.text = ground3dText + ScreenOptions.onText;
+                ground3d.setText(ground3dText, ScreenOptions.onText);
             else
-                ground3d.text = ground3dText + ScreenOptions.offText;
+                ground3d.setText(ground3dText, ScreenOptions.offText);
         }
     },
             "Enabling 3D ground may impact---performance in large levels");
@@ -223,9 +219,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.angledView = !Game.angledView;
 
             if (Game.angledView)
-                altPerspective.text = perspectiveText + angledText;
+                altPerspective.setText(perspectiveText, angledText);
             else
-                altPerspective.text = perspectiveText + birdsEyeText;
+                altPerspective.setText(perspectiveText, birdsEyeText);
 
         }
     },
@@ -241,9 +237,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.game.window.setVsync(Game.vsync);
 
             if (Game.vsync)
-                vsync.text = vsyncText + ScreenOptions.onText;
+                vsync.setText(vsyncText, ScreenOptions.onText);
             else
-                vsync.text = vsyncText + ScreenOptions.offText;
+                vsync.setText(vsyncText, ScreenOptions.offText);
         }
     },
             "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
@@ -256,9 +252,9 @@ public class ScreenOptionsGraphics extends Screen
             Game.antialiasing = !Game.antialiasing;
 
             if (!Game.antialiasing)
-                antialiasing.text = antialiasingText + ScreenOptions.offText;
+                antialiasing.setText(antialiasingText, ScreenOptions.offText);
             else
-                antialiasing.text = antialiasingText + ScreenOptions.onText;
+                antialiasing.setText(antialiasingText, ScreenOptions.onText);
 
             if (Game.antialiasing != Game.game.window.antialiasingEnabled)
                 Game.screen = new ScreenAntialiasingWarning();
@@ -326,8 +322,7 @@ public class ScreenOptionsGraphics extends Screen
         if (Game.framework == Game.Framework.libgdx)
         {
             fullscreen.enabled = false;
-            fullscreen.hoverText[0] = "This option is unavailable on mobile";
-            fullscreen.hoverText[1] = "because all apps are fullscreen!";
+            fullscreen.setHoverText("This option is unavailable on mobile---because all apps are fullscreen!");
         }
 
         fullscreen.update();
@@ -354,10 +349,10 @@ public class ScreenOptionsGraphics extends Screen
         back.draw();
 
         // Need to update fullscreen text in case user changes it via F11
-        fullscreen.text = fullscreenText + (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText);
+        fullscreen.setText(fullscreenText, (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText));
 
         if (Game.framework == Game.Framework.libgdx)
-            fullscreen.text = fullscreenText + ScreenOptions.onText;
+            fullscreen.setText(fullscreenText, ScreenOptions.onText);
 
         fullscreen.draw();
 
@@ -375,6 +370,6 @@ public class ScreenOptionsGraphics extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Graphics options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Graphics options");
     }
 }

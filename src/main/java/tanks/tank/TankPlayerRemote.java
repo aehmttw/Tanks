@@ -412,7 +412,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         }
     }
 
-    public void fireBullet(Bullet b, double speed)
+    public void fireBullet(Bullet b, double speed, double offset)
     {
         if (speed <= 0)
             speed = Double.MIN_NORMAL;
@@ -420,7 +420,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (b.itemSound != null)
             Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
 
-        b.addPolarMotion(this.angle, speed);
+        b.addPolarMotion(this.angle + offset, speed);
         this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
         if (b.moveOut)

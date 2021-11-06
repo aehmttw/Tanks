@@ -34,9 +34,9 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             crusade.showNames = !crusade.showNames;
 
             if (crusade.showNames)
-                toggleNames.text = toggleNamesText + ScreenOptions.onText;
+                toggleNames.setText(toggleNamesText, ScreenOptions.onText);
             else
-                toggleNames.text = toggleNamesText + ScreenOptions.offText;
+                toggleNames.setText(toggleNamesText, ScreenOptions.offText);
         }
     });
 
@@ -108,9 +108,9 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             levelButtons.reorder = !levelButtons.reorder;
 
             if (levelButtons.reorder)
-                reorderLevels.text = "Stop reordering";
+                reorderLevels.setText("Stop reordering");
             else
-                reorderLevels.text = "Reorder levels";
+                reorderLevels.setText("Reorder levels");
         }
     }
     );
@@ -123,9 +123,9 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             itemButtons.reorder = !itemButtons.reorder;
 
             if (itemButtons.reorder)
-                reorderItems.text = "Stop reordering";
+                reorderItems.setText("Stop reordering");
             else
-                reorderItems.text = "Reorder items";
+                reorderItems.setText("Reorder items");
         }
     }
     );
@@ -184,9 +184,9 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         itemSelector.quick = true;
 
         if (crusade.showNames)
-            toggleNames.text = toggleNamesText + ScreenOptions.onText;
+            toggleNames.setText(toggleNamesText, ScreenOptions.onText);
         else
-            toggleNames.text = toggleNamesText + ScreenOptions.offText;
+            toggleNames.setText(toggleNamesText, ScreenOptions.offText);
 
         crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Crusade name", new Runnable()
         {
@@ -344,15 +344,13 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
             b.imageSizeY = b.sizeY;
 
             int p = crusade.crusadeItems.get(i).price;
-            String price = p + " ";
-            if (p == 0)
-                price = "Free!";
-            else if (p == 1)
-                price += "coin";
-            else
-                price += "coins";
 
-            b.subtext = price;
+            if (p == 0)
+                b.setSubtext("Free!");
+            else if (p == 1)
+                b.setSubtext("1 coin");
+            else
+                b.setSubtext("%d coins", p);
 
             this.itemButtons.buttons.add(b);
         }
@@ -422,7 +420,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade levels");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade levels");
         }
         else if (mode == Mode.options)
         {
@@ -435,7 +433,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade options");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade options");
         }
         else if (mode == Mode.items)
         {
@@ -447,7 +445,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade items");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade items");
         }
     }
 

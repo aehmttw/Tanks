@@ -68,9 +68,9 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 downloaded = true;
 
                 if (fromInterlevel)
-                    download.text = "Level saved!";
+                    download.setText("Level saved!");
                 else
-                    download.text = "Level downloaded!";
+                    download.setText("Level downloaded!");
             }
         }
     });
@@ -211,15 +211,15 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         if (file.exists())
         {
-            download.text = "Pick a different name...";
+            download.setText("Pick a different name...");
             download.enabled = false;
         }
         else
         {
             if (fromInterlevel)
-                download.text = "Save";
+                download.setText("Save");
             else
-                download.text = "Download";
+                download.setText("Download");
 
             download.enabled = true;
         }

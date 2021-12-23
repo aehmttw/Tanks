@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class RegistryObstacle 
 {
-	public ArrayList<ObstacleEntry> obstacleEntries = new ArrayList<ObstacleEntry>();
+	public ArrayList<ObstacleEntry> obstacleEntries = new ArrayList<>();
 
 	public static class ObstacleEntry
 	{

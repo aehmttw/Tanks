@@ -1,12 +1,12 @@
-package tanks.hotbar.item.property;
+package tanks.gui.property;
 
 import java.util.LinkedHashMap;
 
-public class ItemPropertyImageSelector extends ItemProperty<Integer>
+public class UIPropertyImageSelector extends UIProperty<Integer>
 {
     public String[] values;
 
-    public ItemPropertyImageSelector(LinkedHashMap<String, ItemProperty> map, String name, String[] values, int value)
+    public UIPropertyImageSelector(LinkedHashMap<String, UIProperty> map, String name, String[] values, int value)
     {
         super(map, name, value);
         this.values = values;

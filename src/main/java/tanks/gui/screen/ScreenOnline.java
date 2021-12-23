@@ -11,29 +11,22 @@ import java.util.HashMap;
 
 public class ScreenOnline extends Screen implements IOnlineScreen
 {
-    public HashMap<Integer, Button> buttons = new HashMap<Integer, Button>();
-    public HashMap<Integer, TextBox> textboxes = new HashMap<Integer, TextBox>();
-    public HashMap<Integer, Text> texts = new HashMap<Integer, Text>();
-    public HashMap<Integer, Shape> shapes = new HashMap<Integer, Shape>();
+    public HashMap<Integer, Button> buttons = new HashMap<>();
+    public HashMap<Integer, TextBox> textboxes = new HashMap<>();
+    public HashMap<Integer, Text> texts = new HashMap<>();
+    public HashMap<Integer, Shape> shapes = new HashMap<>();
 
-    public ArrayList<Integer> buttonKeys = new ArrayList<Integer>();
-    public ArrayList<Integer> textboxKeys = new ArrayList<Integer>();
-    public ArrayList<Integer> textKeys = new ArrayList<Integer>();
-    public ArrayList<Integer> shapeKeys = new ArrayList<Integer>();
+    public ArrayList<Integer> buttonKeys = new ArrayList<>();
+    public ArrayList<Integer> textboxKeys = new ArrayList<>();
+    public ArrayList<Integer> textKeys = new ArrayList<>();
+    public ArrayList<Integer> shapeKeys = new ArrayList<>();
 
     public ScreenOnline()
     {
         super(350, 40, 380, 60);
     }
 
-    public Comparator<Integer> intComparator = new Comparator<Integer>()
-    {
-        @Override
-        public int compare(Integer o1, Integer o2)
-        {
-            return o1 - o2;
-        }
-    };
+    public Comparator<Integer> intComparator = Comparator.comparingInt(o -> o);
 
     public static class Text
     {
@@ -144,7 +137,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
         this.buttonKeys.remove((Integer)id);
         this.buttonKeys.add(id);
         this.buttons.put(id, b);
-        Collections.sort(this.buttonKeys, intComparator);
+        this.buttonKeys.sort(intComparator);
     }
 
     public void removeButton(int id)
@@ -158,7 +151,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
         this.textboxKeys.remove((Integer)id);
         this.textboxKeys.add(id);
         this.textboxes.put(id, b);
-        Collections.sort(this.textboxKeys, intComparator);
+        this.textboxKeys.sort(intComparator);
     }
 
     public void removeTextbox(int id)
@@ -172,7 +165,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
         this.textKeys.remove((Integer)id);
         this.textKeys.add(id);
         this.texts.put(id, t);
-        Collections.sort(this.textKeys, intComparator);
+        this.textKeys.sort(intComparator);
     }
 
     public void removeText(int id)
@@ -186,7 +179,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
         this.shapeKeys.remove((Integer)id);
         this.shapeKeys.add(id);
         this.shapes.put(id, s);
-        Collections.sort(this.shapeKeys, intComparator);
+        this.shapeKeys.sort(intComparator);
     }
 
     public void removeShape(int id)

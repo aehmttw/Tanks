@@ -111,6 +111,7 @@ public class TankRemote extends Tank
 			if (!this.vanished)
 			{
 				this.vanished = true;
+				Drawing.drawing.playGlobalSound("transform.ogg", 1.2f);
 
 				if (Game.effectsEnabled)
 				{

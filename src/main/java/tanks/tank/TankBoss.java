@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class TankBoss extends TankAIControlled
 {
-	public ArrayList<Tank> spawned = new ArrayList<Tank>();
+	public ArrayList<Tank> spawned = new ArrayList<>();
 	
 	public TankBoss(String name, double x, double y, double angle)
 	{
@@ -50,7 +50,7 @@ public class TankBoss extends TankAIControlled
 		
 		super.update();
 		
-		ArrayList<Tank> removeSpawned = new ArrayList<Tank>();
+		ArrayList<Tank> removeSpawned = new ArrayList<>();
 		
 		for (int i = 0; i < this.spawned.size(); i++)
 		{

@@ -16,34 +16,26 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
     boolean odd = false;
 
-    ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
-    ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
+    ArrayList<Firework> fireworks1 = new ArrayList<>();
+    ArrayList<Firework> fireworks2 = new ArrayList<>();
 
-    Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", new Runnable()
+    Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", () ->
     {
-        @Override
-        public void run()
+        if (checkCrusadeEnd())
         {
-            if (checkCrusadeEnd())
-            {
-                Crusade.currentCrusade.loadLevel();
-                Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
-            }
+            Crusade.currentCrusade.loadLevel();
+            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
         }
     }
     );
 
-    Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+    Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", () ->
     {
-        @Override
-        public void run()
+        if (checkCrusadeEnd())
         {
-            if (checkCrusadeEnd())
-            {
-                Crusade.currentCrusade.loadLevel();
-                Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
-                Crusade.currentCrusade.replay = true;
-            }
+            Crusade.currentCrusade.loadLevel();
+            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Crusade.currentCrusade.replay = true;
         }
     }
             , "You will not gain extra lives---"
@@ -51,108 +43,84 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             + "However, you can still earn coins!---"
             + "You will still lose a life if you die.");
 
-    Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Next level", new Runnable()
+    Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Next level", () ->
     {
-        @Override
-        public void run()
+        if (checkCrusadeEnd())
         {
-            if (checkCrusadeEnd())
-            {
+            Crusade.currentCrusade.currentLevel++;
+            Crusade.currentCrusade.replay = false;
+            Crusade.currentCrusade.loadLevel();
+            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+        }
+    }
+    );
+
+    Button quitCrusadeEnd = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", () ->
+    {
+        if (checkCrusadeEnd())
+        {
+            if (Panel.win)
                 Crusade.currentCrusade.currentLevel++;
-                Crusade.currentCrusade.replay = false;
-                Crusade.currentCrusade.loadLevel();
-                Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
-            }
+
+            Game.cleanUp();
+            Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, Crusade.currentCrusade.crusadePlayers.get(Game.player), true);
         }
     }
     );
 
-    Button quitCrusadeEnd = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", () ->
     {
-        @Override
-        public void run()
-        {
-            if (checkCrusadeEnd())
-            {
-                if (Panel.win)
-                    Crusade.currentCrusade.currentLevel++;
-
-                Game.cleanUp();
-                Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, Crusade.currentCrusade.crusadePlayers.get(Game.player), true);
-            }
-        }
-    }
-    );
-
-    Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            if (checkCrusadeEnd())
-            {
-                Game.resetTiles();
-                Crusade.crusadeMode = false;
-                Game.screen = ScreenPartyHost.activeScreen;
-                Crusade.currentCrusade.currentLevel++;
-            }
-        }
-    }
-    );
-
-    Button quitLose = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", new Runnable()
-    {
-        @Override
-        public void run()
+        if (checkCrusadeEnd())
         {
             Game.resetTiles();
             Crusade.crusadeMode = false;
             Game.screen = ScreenPartyHost.activeScreen;
+            Crusade.currentCrusade.currentLevel++;
         }
     }
     );
 
-    Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", new Runnable()
+    Button quitLose = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", () ->
     {
-        @Override
-        public void run()
-        {
-            Game.resetTiles();
-            ScreenGame.versus = false;
+        Game.resetTiles();
+        Crusade.crusadeMode = false;
+        Game.screen = ScreenPartyHost.activeScreen;
+    }
+    );
 
-            if (Crusade.currentCrusade != null)
+    Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", () ->
+    {
+        Game.resetTiles();
+        ScreenGame.versus = false;
+
+        if (Crusade.currentCrusade != null)
+        {
+            CrusadePlayer us = null;
+            for (Player p: Crusade.currentCrusade.crusadePlayers.keySet())
             {
-                CrusadePlayer us = null;
-                for (Player p: Crusade.currentCrusade.crusadePlayers.keySet())
-                {
-                    if (p.clientID.equals(Game.clientID))
-                        us = Crusade.currentCrusade.getCrusadePlayer(p);
-                }
-
-                Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, us, true);
+                if (p.clientID.equals(Game.clientID))
+                    us = Crusade.currentCrusade.getCrusadePlayer(p);
             }
-            else
-                Game.screen = new ScreenPartyLobby();
+
+            Game.screen = new ScreenCrusadeStats(Crusade.currentCrusade, us, true);
         }
+        else
+            Game.screen = new ScreenPartyLobby();
     }
     );
 
-    Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
+    Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
-            Level lev = new Level(Game.currentLevelString);
-            lev.preview = true;
-            lev.loadLevel(sc);
-            Game.screen = sc;
+        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+        Level lev = new Level(Game.currentLevelString);
+        lev.preview = true;
+        lev.loadLevel(sc);
+        Game.screen = sc;
 
-            sc.fromInterlevel = true;
-            sc.music = music;
-            sc.musicID = musicID;
-            sc.updateDownloadButton();
-        }
+        sc.fromInterlevel = true;
+        sc.music = music;
+        sc.musicID = musicID;
+        sc.updateDownloadButton();
     }
     );
 
@@ -160,13 +128,13 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         Game.player.hotbar.percentHidden = 100;
 
-        if (ScreenPartyHost.isServer)
+        /*if (ScreenPartyHost.isServer)
         {
             if (Panel.win)
                 Drawing.drawing.playSound("win.ogg");
             else
                 Drawing.drawing.playSound("lose.ogg");
-        }
+        }*/
 
         if (Panel.win)
             this.music = "win_music.ogg";

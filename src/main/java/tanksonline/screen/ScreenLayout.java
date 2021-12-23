@@ -16,10 +16,10 @@ public abstract class ScreenLayout
     public double sizeX = 1400;
     public double sizeY = 900;
 
-    public ArrayList<ScreenOnline.Shape> shapes = new ArrayList<ScreenOnline.Shape>();
-    public ArrayList<ScreenOnline.Text> texts = new ArrayList<ScreenOnline.Text>();
-    public ArrayList<Button> buttons = new ArrayList<Button>();
-    public ArrayList<TextBox> textBoxes = new ArrayList<TextBox>();
+    public ArrayList<ScreenOnline.Shape> shapes = new ArrayList<>();
+    public ArrayList<ScreenOnline.Text> texts = new ArrayList<>();
+    public ArrayList<Button> buttons = new ArrayList<>();
+    public ArrayList<TextBox> textBoxes = new ArrayList<>();
 
     public TanksOnlineServerHandler player;
 

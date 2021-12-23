@@ -8,7 +8,7 @@ import tanks.gui.InputSelector;
 public class ScreenControlsEditor extends Screen
 {
     public static int page = 0;
-    public static final int page_count = 5;
+    public static final int page_count = 6;
 
     InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Editor menu", Game.game.input.editorPause);
     InputSelector objectMenu = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Object menu", Game.game.input.editorObjectMenu);
@@ -44,24 +44,14 @@ public class ScreenControlsEditor extends Screen
     InputSelector lockSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle square selection", Game.game.input.editorLockSquare);
     InputSelector toggleAdd = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle remove from selection", Game.game.input.editorSelectAddToggle);
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page++;
-        }
-    }
+    InputSelector copy = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Copy", Game.game.input.editorCopy);
+    InputSelector cut = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Cut", Game.game.input.editorCut);
+    InputSelector paste = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Paste", Game.game.input.editorPaste);
+
+    Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++
     );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page--;
-        }
-    }
+    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", () -> page--
     );
 
     public ScreenControlsEditor()
@@ -130,6 +120,12 @@ public class ScreenControlsEditor extends Screen
             lockSquare.update();
             toggleAdd.update();
         }
+        else if (page == 5)
+        {
+            copy.update();
+            cut.update();
+            paste.update();
+        }
 
         next.enabled = page < page_count - 1;
         previous.enabled = page > 0;
@@ -189,6 +185,12 @@ public class ScreenControlsEditor extends Screen
             holdSquare.draw();
             deselect.draw();
             select.draw();
+        }
+        else if (page == 5)
+        {
+            copy.draw();
+            cut.draw();
+            paste.draw();
         }
 
         next.draw();

@@ -7,34 +7,23 @@ import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenSavedLevels;
 
-public class OverlayConfirmDelete extends ScreenLevelBuilderOverlay
+public class OverlayConfirmDelete extends ScreenLevelEditorOverlay
 {
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", this::escape
     );
 
-    public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", new Runnable()
+    public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
-        @Override
-        public void run()
+        BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelEditor.name);
+
+        Game.cleanUp();
+
+        while (file.exists())
         {
-            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelEditor.name);
-
-            Game.cleanUp();
-
-            while (file.exists())
-            {
-                file.delete();
-            }
-
-            Game.screen = new ScreenSavedLevels();
+            file.delete();
         }
+
+        Game.screen = new ScreenSavedLevels();
     }
     );
 

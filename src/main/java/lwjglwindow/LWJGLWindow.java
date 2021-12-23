@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -48,9 +49,9 @@ public class LWJGLWindow extends BaseWindow
 	protected int[] prevSizeX = new int[1];
 	protected int[] prevSizeY = new int[1];
 
-	protected HashMap<String, Integer> textures = new HashMap<String, Integer>();
-	protected HashMap<String, Integer> textureSX = new HashMap<String, Integer>();
-	protected HashMap<String, Integer> textureSY = new HashMap<String, Integer>();
+	protected HashMap<String, Integer> textures = new HashMap<>();
+	protected HashMap<String, Integer> textureSX = new HashMap<>();
+	protected HashMap<String, Integer> textureSY = new HashMap<>();
 
 	public boolean batchMode = false;
 	public boolean batchQuads = false;
@@ -203,6 +204,12 @@ public class LWJGLWindow extends BaseWindow
 			}
 		});
 
+		glfwSetFramebufferSizeCallback(window, (window, width, height) ->
+		{
+			glViewport(0, 0, width, height);
+			tick(true);
+		});
+
 		try (MemoryStack stack = stackPush())
 		{
 			IntBuffer pWidth = stack.mallocInt(1);
@@ -265,7 +272,7 @@ public class LWJGLWindow extends BaseWindow
 		BufferedReader reader;
 		try
 		{
-			reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
 			Exception innerExc = null;
 			try
@@ -330,77 +337,11 @@ public class LWJGLWindow extends BaseWindow
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-		while (!glfwWindowShouldClose(window))
+		boolean shouldClose = false;
+
+		while (!shouldClose)
 		{
-			this.startTiming();
-
-			String audio = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
-
-			if (!(audio == null && this.audioDevice == null || (this.audioDevice != null && this.audioDevice.equals(audio))))
-			{
-				this.soundPlayer = new SoundPlayer(this);
-			}
-
-			this.audioDevice = audio;
-
-			SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
-
-			if (soundPlayer != null)
-			{
-				soundPlayer.musicPlaying = soundPlayer.currentMusic != -1 && AL10.alGetSourcef(soundPlayer.currentMusic, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
-
-				if (soundPlayer.prevMusic != -1 && soundPlayer.fadeEnd < System.currentTimeMillis())
-				{
-					AL10.alSourceStop(soundPlayer.prevMusic);
-					soundPlayer.prevMusic = -1;
-
-					if (soundPlayer.currentMusic != -1)
-						AL10.alSourcef(soundPlayer.currentMusic, AL10.AL_GAIN, soundPlayer.currentVolume);
-				}
-
-				if (soundPlayer.prevMusic != -1 && soundPlayer.currentMusic != -1)
-				{
-					double frac = (System.currentTimeMillis() - soundPlayer.fadeBegin) * 1.0 / (soundPlayer.fadeEnd - soundPlayer.fadeBegin);
-
-					AL10.alSourcef(soundPlayer.prevMusic, AL10.AL_GAIN, (float) (soundPlayer.prevVolume * (1 - frac)));
-					AL10.alSourcef(soundPlayer.currentMusic, AL10.AL_GAIN, (float) (soundPlayer.currentVolume * frac));
-				}
-
-				if (soundPlayer.musicsToLoad)
-				{
-					synchronized (soundPlayer.finishedMusicBuffers)
-					{
-						for (String path : soundPlayer.finishedMusicBuffers.keySet())
-						{
-							soundPlayer.musicBuffers.put(path, soundPlayer.finishedMusicBuffers.get(path));
-						}
-					}
-				}
-			}
-
-			this.updater.update();
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			glfwGetWindowSize(window, w, h);
-			absoluteWidth = w[0];
-			absoluteHeight = h[0];
-
-			glfwGetCursorPos(window, mx, my);
-			absoluteMouseX = mx[0];
-			absoluteMouseY = my[0];
-
-			glfwGetFramebufferSize(window, w, h);
-
-			if (shadowsEnabled)
-				this.shaderHandler.renderShadowMap();
-
-			this.shaderHandler.renderNormal();
-
-			glfwSwapBuffers(window);
-			glfwPollEvents();
-
-			this.stopTiming();
+			shouldClose = this.tick(false);
 		}
 
 		this.windowHandler.onWindowClose();
@@ -409,6 +350,71 @@ public class LWJGLWindow extends BaseWindow
 			this.soundPlayer.exit();
 
 		System.exit(0);
+	}
+
+	protected boolean tick(boolean resizing)
+	{
+		this.startTiming();
+
+		String audio = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
+
+		if (!(audio == null && this.audioDevice == null || (this.audioDevice != null && this.audioDevice.equals(audio))))
+		{
+			this.soundPlayer = new SoundPlayer(this);
+		}
+
+		this.audioDevice = audio;
+
+		SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
+
+		if (soundPlayer != null)
+		{
+			soundPlayer.update();
+		}
+
+		this.updater.update();
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glfwGetWindowSize(window, w, h);
+
+		if (absoluteWidth != w[0] || absoluteHeight != h[0])
+			this.hasResized = true;
+
+		absoluteWidth = w[0];
+		absoluteHeight = h[0];
+
+		glfwGetCursorPos(window, mx, my);
+		absoluteMouseX = mx[0];
+		absoluteMouseY = my[0];
+
+		glfwGetFramebufferSize(window, w, h);
+
+		if (shadowsEnabled)
+			this.shaderHandler.renderShadowMap();
+
+		this.shaderHandler.renderNormal();
+
+		glfwSwapBuffers(window);
+
+		if (!resizing)
+			glfwPollEvents();
+
+		boolean shouldClose = glfwWindowShouldClose(window);
+
+		if (shouldClose)
+		{
+			shouldClose = windowHandler.attemptCloseWindow();
+
+			if (!shouldClose)
+			{
+				glfwSetWindowShouldClose(window, false);
+			}
+		}
+
+		this.stopTiming();
+
+		return shouldClose;
 	}
 
 	public void setShowCursor(boolean show)
@@ -432,6 +438,8 @@ public class LWJGLWindow extends BaseWindow
 	public void setCursorPos(double x, double y)
 	{
 		GLFW.glfwSetCursorPos(window, x, y);
+		absoluteMouseX = x;
+		absoluteMouseY = y;
 	}
 
 	public void setFullscreen(boolean enabled)
@@ -445,7 +453,12 @@ public class LWJGLWindow extends BaseWindow
 		{
 			glfwGetWindowSize(this.window, this.prevSizeX, this.prevSizeY);
 			glfwGetWindowPos(this.window, this.prevPosX, this.prevPosY);
-			glfwSetWindowMonitor(this.window, glfwGetPrimaryMonitor(), 0, 0, this.vidmode.width(), this.vidmode.height(), this.vidmode.refreshRate());
+
+			float[] d = new float[1];
+			float[] d2 = new float[1];
+			glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), d, d2);
+
+			glfwSetWindowMonitor(this.window, glfwGetPrimaryMonitor(), 0, 0, (int) (this.vidmode.width() * d[0]), (int) (this.vidmode.height() * d2[0]), this.vidmode.refreshRate());
 		}
 		else
 			glfwSetWindowMonitor(this.window, NULL, this.prevPosX[0], this.prevPosY[0], this.prevSizeX[0], this.prevSizeY[0], this.vidmode.refreshRate());
@@ -480,6 +493,7 @@ public class LWJGLWindow extends BaseWindow
 		this.colorG = g / 255;
 		this.colorB = b / 255;
 		this.colorA = a / 255;
+
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (!drawingShadow)
@@ -492,6 +506,7 @@ public class LWJGLWindow extends BaseWindow
 		this.colorG = g / 255;
 		this.colorB = b / 255;
 		this.colorA = 1;
+
 		glColor3d(this.colorR, this.colorG, this.colorB);
 
 		if (!drawingShadow)
@@ -576,7 +591,9 @@ public class LWJGLWindow extends BaseWindow
 			GLFWImage.Buffer imagebuf = GLFWImage.malloc(1);
 			image.set(decoder.getWidth(), decoder.getHeight(), buf);
 			imagebuf.put(0, image);
-			glfwSetWindowIcon(window, imagebuf);
+
+			if (!mac)
+				glfwSetWindowIcon(window, imagebuf);
 		}
 		catch (Exception e)
 		{
@@ -784,57 +801,6 @@ public class LWJGLWindow extends BaseWindow
 		return 0;
 	}
 
-	@Override
-	public void setBatchMode(boolean enabled, boolean quads, boolean depth)
-	{
-		this.setBatchMode(enabled, quads, depth, false);
-	}
-
-	@Override
-	public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow)
-	{
-		this.setBatchMode(enabled, quads, depth, glow, !(this.colorA < 1 || glow));
-	}
-
-	@Override
-	public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask)
-	{
-		this.batchMode = enabled;
-		this.batchQuads = quads;
-		this.batchDepth = depth;
-		this.batchGlow = glow;
-		this.batchDepthMask = depthMask;
-
-		if (enabled)
-		{
-			if (!depthMask)
-				glDepthMask(false);
-
-			if (depth)
-			{
-				enableDepthtest();
-				glDepthFunc(GL_LEQUAL);
-			}
-
-			if (glow)
-				this.setGlowBlendFunc();
-			else
-				this.setTransparentBlendFunc();
-
-			if (quads)
-				glBegin(GL_QUADS);
-			else
-				glBegin(GL_TRIANGLES);
-		}
-		else
-		{
-			GL11.glEnd();
-			disableDepthtest();
-			glDepthMask(true);
-			this.setTransparentBlendFunc();
-		}
-	}
-
 	public void setDrawOptions(boolean depth, boolean glow)
 	{
 		this.batchDepth = depth;
@@ -887,7 +853,7 @@ public class LWJGLWindow extends BaseWindow
 			return;
 
 		if (batch)
-			this.setBatchMode(false, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+			this.shapeRenderer.setBatchMode(false, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
 
 		this.currentTexture = image;
 
@@ -903,7 +869,7 @@ public class LWJGLWindow extends BaseWindow
 		glBindTexture(GL_TEXTURE_2D, textures.get(image));
 
 		if (batch)
-			this.setBatchMode(true, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+			this.shapeRenderer.setBatchMode(true, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
 	}
 
 	public void setTextureCoords(double u, double v)
@@ -919,8 +885,8 @@ public class LWJGLWindow extends BaseWindow
 		this.currentTexture = null;
 		glMatrixMode(GL_PROJECTION);
 
-		this.setBatchMode(false, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
-		this.setBatchMode(true, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+		this.shapeRenderer.setBatchMode(false, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
+		this.shapeRenderer.setBatchMode(true, this.batchQuads, this.batchDepth, this.batchGlow, this.batchDepthMask);
 
 		disableTexture();
 	}
@@ -1102,6 +1068,12 @@ public class LWJGLWindow extends BaseWindow
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 	}
 
+	public void vertexBufferDataDynamic(int id, FloatBuffer buffer)
+	{
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_DYNAMIC_DRAW);
+	}
+
 	public void renderVBO(int vertexBufferID, int colorBufferID, int texBufferID, int numberIndices)
 	{
 		if (!this.drawingShadow)
@@ -1195,5 +1167,11 @@ public class LWJGLWindow extends BaseWindow
 			glUniform1i(this.shadowMapBonesEnabledFlag, 0);
 
 		glDisableVertexAttribArray(6);
+	}
+
+	@Override
+	public BaseShapeBatchRenderer createShapeBatchRenderer()
+	{
+		return new VBOShapeBatchRenderer(this);
 	}
 }

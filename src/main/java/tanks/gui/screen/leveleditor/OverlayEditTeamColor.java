@@ -7,7 +7,7 @@ import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenOptions;
 
-public class OverlayEditTeamColor extends ScreenLevelBuilderOverlay
+public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
 {
     public Team team;
 
@@ -15,14 +15,7 @@ public class OverlayEditTeamColor extends ScreenLevelBuilderOverlay
     public TextBoxSlider teamGreen;
     public TextBoxSlider teamBlue;
 
-    public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", this::escape
     );
 
     public Button teamColorEnabled = new Button(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Team color: off", new Runnable()
@@ -49,17 +42,12 @@ public class OverlayEditTeamColor extends ScreenLevelBuilderOverlay
         else
             teamColorEnabled.setText("Team color: ", ScreenOptions.offText);
 
-        teamRed = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", new Runnable()
+        teamRed = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", () ->
         {
-            @Override
-            public void run()
-            {
-                if (teamRed.inputText.length() <= 0)
-                    teamRed.inputText = "0";
+            if (teamRed.inputText.length() <= 0)
+                teamRed.inputText = "0";
 
-                team.teamColorR = Integer.parseInt(teamRed.inputText);
-            }
-
+            team.teamColorR = Integer.parseInt(teamRed.inputText);
         }
                 , 0, 0, 255, 1);
 
@@ -69,17 +57,12 @@ public class OverlayEditTeamColor extends ScreenLevelBuilderOverlay
         teamRed.maxValue = 255;
         teamRed.checkMaxValue = true;
 
-        teamGreen = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green", new Runnable()
+        teamGreen = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green", () ->
         {
-            @Override
-            public void run()
-            {
-                if (teamGreen.inputText.length() <= 0)
-                    teamGreen.inputText = "0";
+            if (teamGreen.inputText.length() <= 0)
+                teamGreen.inputText = "0";
 
-                team.teamColorG = Integer.parseInt(teamGreen.inputText);
-            }
-
+            team.teamColorG = Integer.parseInt(teamGreen.inputText);
         }
                 , 0, 0, 255, 1);
 
@@ -89,17 +72,12 @@ public class OverlayEditTeamColor extends ScreenLevelBuilderOverlay
         teamGreen.maxValue = 255;
         teamGreen.checkMaxValue = true;
 
-        teamBlue = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue", new Runnable()
+        teamBlue = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue", () ->
         {
-            @Override
-            public void run()
-            {
-                if (teamBlue.inputText.length() <= 0)
-                    teamBlue.inputText = "0";
+            if (teamBlue.inputText.length() <= 0)
+                teamBlue.inputText = "0";
 
-                team.teamColorB = Integer.parseInt(teamBlue.inputText);
-            }
-
+            team.teamColorB = Integer.parseInt(teamBlue.inputText);
         }
                 , 0, 0, 255, 1);
 

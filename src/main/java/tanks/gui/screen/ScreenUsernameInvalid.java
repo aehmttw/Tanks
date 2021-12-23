@@ -12,16 +12,12 @@ public class ScreenUsernameInvalid extends Screen
 		this.musicID = "menu";
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", () ->
 	{
-		@Override
-		public void run() 
-		{
-			Game.player.username = "";
-			Game.screen = new ScreenTitle();
-		}
+		Game.player.username = "";
+		Game.screen = new ScreenTitle();
 	}
-			);
+	);
 	
 	@Override
 	public void update() 

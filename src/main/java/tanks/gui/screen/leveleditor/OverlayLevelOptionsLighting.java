@@ -6,37 +6,25 @@ import tanks.gui.Button;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
+public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
 {
     public TextBoxSlider light;
     public TextBoxSlider shadow;
 
-    public Button back13 = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape
     );
 
     public OverlayLevelOptionsLighting(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
 
-        light = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Direct light", new Runnable()
+        light = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Direct light", () ->
         {
-            @Override
-            public void run()
-            {
-                if (light.inputText.length() <= 0)
-                    light.inputText = light.previousInputText;
+            if (light.inputText.length() <= 0)
+                light.inputText = light.previousInputText;
 
-                screenLevelEditor.level.light = Integer.parseInt(light.inputText) / 100.0;
-                Level.currentLightIntensity = screenLevelEditor.level.light;
-            }
-
+            screenLevelEditor.level.light = Integer.parseInt(light.inputText) / 100.0;
+            Level.currentLightIntensity = screenLevelEditor.level.light;
         }
                 , (int) Math.round(screenLevelEditor.level.light * 100), 0, 200, 1);
 
@@ -50,18 +38,13 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
         light.g1 = 0;
         light.b1 = 0;
 
-        shadow = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Shadow light", new Runnable()
+        shadow = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Shadow light", () ->
         {
-            @Override
-            public void run()
-            {
-                if (shadow.inputText.length() <= 0)
-                    shadow.inputText = shadow.previousInputText;
+            if (shadow.inputText.length() <= 0)
+                shadow.inputText = shadow.previousInputText;
 
-                screenLevelEditor.level.shadow = Integer.parseInt(shadow.inputText) / 100.0;
-                Level.currentShadowIntensity = screenLevelEditor.level.shadow;
-            }
-
+            screenLevelEditor.level.shadow = Integer.parseInt(shadow.inputText) / 100.0;
+            Level.currentShadowIntensity = screenLevelEditor.level.shadow;
         }
                 , (int) Math.round(screenLevelEditor.level.shadow * 100), 0, 200, 1);
 
@@ -80,7 +63,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
     {
         this.light.update();
         this.shadow.update();
-        this.back13.update();
+        this.back.update();
 
         super.update();
     }
@@ -90,7 +73,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelBuilderOverlay
         super.draw();
         this.light.draw();
         this.shadow.draw();
-        this.back13.draw();
+        this.back.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);

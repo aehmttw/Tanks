@@ -1,15 +1,9 @@
 package tanks.hotbar.item;
 
 import tanks.*;
-import tanks.bullet.*;
 import tanks.event.EventTankUpdateHealth;
-import tanks.hotbar.item.property.*;
+import tanks.gui.property.*;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ItemShield extends Item
 {
@@ -25,9 +19,9 @@ public class ItemShield extends Item
         this.rightClick = true;
         this.isConsumable = true;
 
-        new ItemPropertyDouble(this.properties, "health_boost", 1.0);
-        new ItemPropertyDouble(this.properties, "max_extra_health", 5.0);
-        new ItemPropertyDouble(this.properties, "cooldown", 50.0);
+        new UIPropertyDouble(this.properties, "health_boost", 1.0);
+        new UIPropertyDouble(this.properties, "max_extra_health", 5.0);
+        new UIPropertyDouble(this.properties, "cooldown", 50.0);
     }
 
     public ItemShield()

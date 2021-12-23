@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public class AccessCode
 {
-    public static HashMap<UUID, AccessCode> accessCodes = new HashMap<UUID, AccessCode>();
+    public static HashMap<UUID, AccessCode> accessCodes = new HashMap<>();
 
     public UUID id;
     public long expiration;
     public int maxUses;
     public String comment = "";
-    public ArrayList<TanksOnlinePlayer> players = new ArrayList<TanksOnlinePlayer>();
+    public ArrayList<TanksOnlinePlayer> players = new ArrayList<>();
 
     public AccessCode(UUID id, long expiration, int maxUses)
     {

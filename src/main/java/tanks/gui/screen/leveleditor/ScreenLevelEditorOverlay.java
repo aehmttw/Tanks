@@ -7,13 +7,15 @@ import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
 
-public abstract class ScreenLevelBuilderOverlay extends Screen implements ILevelPreviewScreen
+public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelPreviewScreen
 {
     public Screen previous;
     public ScreenLevelEditor screenLevelEditor;
 
-    public ScreenLevelBuilderOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
+    public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
+        this.allowClose = false;
+
         this.previous = previous;
         this.screenLevelEditor = screenLevelEditor;
 
@@ -27,8 +29,8 @@ public abstract class ScreenLevelBuilderOverlay extends Screen implements ILevel
     {
         Game.screen = previous;
 
-        if (previous instanceof ScreenLevelBuilderOverlay)
-            ((ScreenLevelBuilderOverlay) previous).load();
+        if (previous instanceof ScreenLevelEditorOverlay)
+            ((ScreenLevelEditorOverlay) previous).load();
 
         if (previous == screenLevelEditor)
         {
@@ -87,5 +89,11 @@ public abstract class ScreenLevelBuilderOverlay extends Screen implements ILevel
     public double getScale()
     {
         return screenLevelEditor.getScale();
+    }
+
+    @Override
+    public void onAttemptClose()
+    {
+        Game.screen = new OverlayConfirmSave(Game.screen, this.screenLevelEditor);
     }
 }

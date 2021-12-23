@@ -37,8 +37,8 @@ public class Ray
 	public Tank tank;
 	public Tank targetTank;
 
-	public ArrayList<Double> bounceX = new ArrayList<Double>();
-	public ArrayList<Double> bounceY = new ArrayList<Double>();
+	public ArrayList<Double> bounceX = new ArrayList<>();
+	public ArrayList<Double> bounceY = new ArrayList<>();
 
 	public double targetX;
 	public double targetY;

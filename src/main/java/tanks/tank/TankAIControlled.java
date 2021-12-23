@@ -9,7 +9,6 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 /** This class is the 'skeleton' tank class.
@@ -38,7 +37,7 @@ public class TankAIControlled extends Tank
 	public boolean enableMineLaying = true;
 	public boolean enableMineAvoidance = true;
 	/** How close the tank needs to get to a mine to avoid it*/
-	public double mineSensitivity = 1.5;
+	public double avoidSensitivity = 1.5;
 	public boolean enableBulletAvoidance = true;
 	/** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!*/
 	public boolean enablePredictiveFiring = true;
@@ -422,7 +421,7 @@ public class TankAIControlled extends Tank
 
 			double prevDirection = this.direction;
 
-			ArrayList<Double> directions = new ArrayList<Double>();
+			ArrayList<Double> directions = new ArrayList<>();
 
 			for (double dir = 0; dir < 4; dir += 0.5)
 			{
@@ -515,7 +514,7 @@ public class TankAIControlled extends Tank
 					tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
 			}
 
-			ArrayList<Tile> queue = new ArrayList<Tile>();
+			ArrayList<Tile> queue = new ArrayList<>();
 
 			Tile t = tiles[(int)(this.posX / Game.tile_size)][(int)(this.posY / Game.tile_size)];
 			t.explored = true;
@@ -539,7 +538,7 @@ public class TankAIControlled extends Tank
 			{
 				this.seekTimer = this.seekTimerBase;
 				this.currentlySeeking = true;
-				this.path = new ArrayList<Tile>();
+				this.path = new ArrayList<>();
 
 				while (current.parent != null)
 				{
@@ -624,8 +623,8 @@ public class TankAIControlled extends Tank
 	{
 		boolean avoid = false;
 
-		ArrayList<Bullet> toAvoid = new ArrayList<Bullet>();
-		ArrayList<Ray> toAvoidTargets = new ArrayList<Ray>();
+		ArrayList<Bullet> toAvoid = new ArrayList<>();
+		ArrayList<Ray> toAvoidTargets = new ArrayList<>();
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -910,7 +909,7 @@ public class TankAIControlled extends Tank
 
 		Movable target = ray.getTarget();
 
-		if (target != null)
+		if (target != null && !(target instanceof TankNPC))
 		{
 			if (target.equals(this.targetEnemy))
 			{
@@ -1070,7 +1069,7 @@ public class TankAIControlled extends Tank
 				Movable m = Game.movables.get(i);
 				if (m instanceof Mine)
 				{
-					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius * this.mineSensitivity, 2))
+					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius * this.avoidSensitivity, 2))
 					{
 						if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
 						{

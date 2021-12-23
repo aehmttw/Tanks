@@ -2,10 +2,9 @@ package tanks.hotbar.item;
 
 import tanks.Game;
 import tanks.Player;
-import tanks.bullet.Bullet;
-import tanks.hotbar.item.property.ItemPropertyBoolean;
-import tanks.hotbar.item.property.ItemPropertyDouble;
-import tanks.hotbar.item.property.ItemPropertyInt;
+import tanks.gui.property.UIPropertyBoolean;
+import tanks.gui.property.UIPropertyDouble;
+import tanks.gui.property.UIPropertyInt;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
@@ -32,14 +31,14 @@ public class ItemMine extends Item
         this.rightClick = true;
         this.isConsumable = true;
 
-        new ItemPropertyDouble(this.properties, "fuse_length", 1000.0);
-        new ItemPropertyDouble(this.properties, "triggered_fuse", 50.0);
-        new ItemPropertyDouble(this.properties, "explosion_radius", Game.tile_size * 2.5);
-        new ItemPropertyDouble(this.properties, "damage", 2.0);
-        new ItemPropertyInt(this.properties, "max_live_mines", 2);
-        new ItemPropertyDouble(this.properties, "cooldown", 50.0);
-        new ItemPropertyDouble(this.properties, "size", Mine.mine_size);
-        new ItemPropertyBoolean(this.properties, "destroys_blocks", true);
+        new UIPropertyDouble(this.properties, "fuse_length", 1000.0);
+        new UIPropertyDouble(this.properties, "triggered_fuse", 50.0);
+        new UIPropertyDouble(this.properties, "explosion_radius", Game.tile_size * 2.5);
+        new UIPropertyDouble(this.properties, "damage", 2.0);
+        new UIPropertyInt(this.properties, "max_live_mines", 2);
+        new UIPropertyDouble(this.properties, "cooldown", 50.0);
+        new UIPropertyDouble(this.properties, "size", Mine.mine_size);
+        new UIPropertyBoolean(this.properties, "destroys_blocks", true);
 
         this.supportsHits = true;
     }

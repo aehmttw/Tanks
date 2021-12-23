@@ -33,14 +33,14 @@ public class BulletHealing extends BulletInstant
 	{
 		this(x, y, bounces, t, false, null);
 	}
-	
+
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
 	public BulletHealing(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
 	{
 		this(x, y, bounces, t, false, ib);
 	}
-	
+
 	@Override
 	public void update()
 	{
@@ -94,11 +94,11 @@ public class BulletHealing extends BulletInstant
 			Game.effects.add(e);
 		}
 	}
-	
+
 	@Override
 	public void collidedWithObject(Movable o)
 	{
-		
+
 	}
 
 	@Override

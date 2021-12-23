@@ -2,10 +2,15 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.event.EventChat;
 import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
 import tanks.event.EventUpdateCoins;
+import tanks.gui.ChatMessage;
+import tanks.gui.IFixedMenu;
+import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemMine;
@@ -14,7 +19,7 @@ import tanks.obstacle.Obstacle;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Mine extends Movable
+public class Mine extends Movable implements IAvoidObject
 {
     public static double mine_size = 30;
 
@@ -39,8 +44,8 @@ public class Mine extends Movable
     public int networkID;
 
     public static int currentID = 0;
-    public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
-    public static HashMap<Integer, Mine> idMap = new HashMap<Integer, Mine>();
+    public static ArrayList<Integer> freeIDs = new ArrayList<>();
+    public static HashMap<Integer, Mine> idMap = new HashMap<>();
 
     public Mine(double x, double y, double timer, Tank t)
     {
@@ -50,6 +55,9 @@ public class Mine extends Movable
     public Mine(double x, double y, double timer, Tank t, ItemMine item)
     {
         super(x, y);
+
+        if (t != null)
+            this.posZ = t.posZ;
 
         this.timer = timer;
         this.drawLevel = 2;
@@ -83,6 +91,21 @@ public class Mine extends Movable
 
             idMap.put(this.networkID, this);
         }
+
+        for (IFixedMenu m : ModAPI.menuGroup)
+        {
+            if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.mines_placed))
+            {
+                if (((Scoreboard) m).players.isEmpty())
+                    ((Scoreboard) m).addTeamScore(this.team, 1);
+
+                else if (this.tank instanceof TankPlayer)
+                    ((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
+
+                else if (this.tank instanceof TankPlayerRemote)
+                    ((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+            }
+        }
     }
 
     public Mine(double x, double y, Tank t)
@@ -97,10 +120,10 @@ public class Mine extends Movable
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
-            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
-            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
         }
 
         if (Game.enable3d)
@@ -109,13 +132,13 @@ public class Mine extends Movable
             {
                 double frac = ((i - height + 1) / 6 + 1) / 2;
                 Drawing.drawing.setColor(this.outlineColorR * frac, this.outlineColorG  * frac, this.outlineColorB * frac, 255, 0.5);
-                Drawing.drawing.fillOval(this.posX, this.posY, i + 1.5, this.size, this.size, true, false);
+                Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + i + 1.5, this.size, this.size, true, false);
             }
 
             Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 1);
 
             if (Game.glowEnabled)
-                Drawing.drawing.fillGlow(this.posX, this.posY, height + 1, this.size * 4, this.size * 4, true, false);
+                Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ + height + 1, this.size * 4, this.size * 4, true, false);
         }
         else
         {
@@ -131,7 +154,7 @@ public class Mine extends Movable
             Drawing.drawing.setColor(255, 255, 0, 255, 0.5);
 
         if (Game.enable3d)
-            Drawing.drawing.fillOval(this.posX, this.posY, height + 7.5, this.size * 0.8, this.size * 0.8, true, false);
+            Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + height + 7.5, this.size * 0.8, this.size * 0.8, true, false);
         else
             Drawing.drawing.fillOval(this.posX, this.posY, this.size * 0.8, this.size * 0.8);
     }
@@ -158,12 +181,11 @@ public class Mine extends Movable
 
         boolean enemyNear = false;
         boolean allyNear = false;
-        for (int i = 0; i < Game.movables.size(); i++)
+        for (Movable m: Game.movables)
         {
-            Movable m = Game.movables.get(i);
             if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(radius, 2))
             {
-                if (m instanceof Tank && !m.destroy)
+                if (m instanceof Tank && !m.destroy && ((Tank) m).targetable)
                 {
                     if (Team.isAllied(m, this.tank))
                         allyNear = true;
@@ -210,25 +232,61 @@ public class Mine extends Movable
         {
             Game.eventsOut.add(new EventMineExplode(this));
 
-            for (int i = 0; i < Game.movables.size(); i++)
+            for (Movable m: Game.movables)
             {
-                Movable o = Game.movables.get(i);
-                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2))
+                if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(radius, 2))
                 {
-                    if (o instanceof Tank && !o.destroy && ((Tank) o).getDamageMultiplier(this) > 0)
+                    if (m instanceof Tank && !m.destroy && ((Tank) m).getDamageMultiplier(this) > 0)
                     {
-                        if (!(Team.isAllied(this, o) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
+                        if (!(Team.isAllied(this, m) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
                         {
-                            Tank t = (Tank) o;
+                            Tank t = (Tank) m;
                             boolean kill = t.damage(this.damage, this);
 
                             if (kill)
                             {
-                                if (this.tank.equals(Game.playerTank))
-                                    Game.player.hotbar.coins += t.coinValue;
-                                else if (this.tank instanceof TankPlayerRemote && Crusade.crusadeMode)
+                                if (Game.currentLevel instanceof ModLevel)
                                 {
-                                    ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
+                                    for (IFixedMenu menu : ModAPI.menuGroup)
+                                    {
+                                        if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
+                                        {
+                                            if (!((Scoreboard) menu).teams.isEmpty())
+                                                ((Scoreboard) menu).addTeamScore(this.tank.team, 1);
+
+                                            else if (this.tank instanceof TankPlayer && !((Scoreboard) menu).players.isEmpty())
+                                                ((Scoreboard) menu).addPlayerScore(((TankPlayer) this.tank).player, 1);
+
+                                            else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) menu).players.isEmpty())
+                                                ((Scoreboard) menu).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+                                        }
+                                    }
+
+                                    if (((ModLevel) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
+                                    {
+                                        String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, false);
+                                        ScreenPartyHost.chat.add(0, new ChatMessage(message));
+                                        Game.eventsOut.add(new EventChat(message));
+                                    }
+                                }
+
+
+                                if (this.tank.equals(Game.playerTank))
+                                {
+                                    if (Game.currentLevel instanceof ModLevel && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
+                                        Game.player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+                                    else
+                                        Game.player.hotbar.coins += t.coinValue;
+                                }
+                                else if (this.tank instanceof TankPlayerRemote && (Crusade.crusadeMode || Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0))
+                                {
+                                    if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
+                                    {
+                                        if (Game.currentLevel instanceof ModLevel && ((ModLevel) Game.currentLevel).playerKillCoins > 0)
+                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+                                        else
+                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
+                                    }
                                     Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
                                 }
                             }
@@ -236,17 +294,17 @@ public class Mine extends Movable
                                 Drawing.drawing.playGlobalSound("damage.ogg");
                         }
                     }
-                    else if (o instanceof Mine && !o.destroy)
+                    else if (m instanceof Mine && !m.destroy)
                     {
-                        if (((Mine) o).timer > 10 && !this.isRemote)
+                        if (((Mine) m).timer > 10 && !this.isRemote)
                         {
-                            ((Mine) o).timer = 10;
-                            Game.eventsOut.add(new EventMineChangeTimer((Mine) o));
+                            ((Mine) m).timer = 10;
+                            Game.eventsOut.add(new EventMineChangeTimer((Mine) m));
                         }
                     }
-                    else if (o instanceof Bullet && !o.destroy)
+                    else if (m instanceof Bullet && !m.destroy)
                     {
-                        o.destroy = true;
+                        m.destroy = true;
                     }
                 }
             }
@@ -254,9 +312,8 @@ public class Mine extends Movable
 
         if (this.destroysObstacles)
         {
-            for (int i = 0; i < Game.obstacles.size(); i++)
+            for (Obstacle o: Game.obstacles)
             {
-                Obstacle o = Game.obstacles.get(i);
                 if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible && !Game.removeObstacles.contains(o))
                 {
                     o.onDestroy(this);
@@ -281,5 +338,11 @@ public class Mine extends Movable
 
         freeIDs.add(this.networkID);
         idMap.remove(this.networkID);
+    }
+
+    @Override
+    public double getRadius()
+    {
+        return this.radius;
     }
 }

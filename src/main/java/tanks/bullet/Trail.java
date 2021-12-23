@@ -127,7 +127,7 @@ public class Trail implements IDrawable
 
                 if (frontCircle || showOutsides)
                 {
-                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 30; i < 50; i++)
                     {
@@ -136,10 +136,10 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.frontX, this.frontY, this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(false, false, depth, this.glow, false);
                 }
 
-                Game.game.window.setBatchMode(true, true, depth, this.glow, false);
+                Game.game.window.shapeRenderer.setBatchMode(true, true, depth, this.glow, false);
 
                 Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, ox * frontWidth, oy * frontWidth, 0);
                 Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, -ox * frontWidth, -oy * frontWidth, 0);
@@ -152,7 +152,7 @@ public class Trail implements IDrawable
 
                 if (frontCircle)
                 {
-                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 30; i < 50; i++)
                     {
@@ -161,10 +161,10 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(false, false, depth, this.glow, false);
                 }
 
-                Game.game.window.setBatchMode(true, true, depth, this.glow, false);
+                Game.game.window.shapeRenderer.setBatchMode(true, true, depth, this.glow, false);
 
                 Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1,ox * frontWidth, oy * frontWidth, 0);
                 Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1,-ox * frontWidth, -oy * frontWidth, 0);
@@ -181,11 +181,11 @@ public class Trail implements IDrawable
                 Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, -ox * backWidth, -oy * backWidth, 0);
                 Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, ox * backWidth, oy * backWidth, 0);
 
-                Game.game.window.setBatchMode(false, true, depth, this.glow, false);
+                Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
                 if (backCircle || showOutsides)
                 {
-                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 10; i < 30; i++)
                     {
@@ -194,7 +194,7 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.backX, this.backY, this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(false, false, depth, this.glow, false);
                 }
             }
             else
@@ -206,11 +206,11 @@ public class Trail implements IDrawable
                 Drawing.drawing.addFacingVertex(this.frontX * frac3 + this.backX * (1 - frac3), this.frontY * frac3 + this.backY * (1 - frac3), this.movable.posZ - 1, -ox * backWidth, -oy * backWidth, 0);
                 Drawing.drawing.addFacingVertex(this.frontX * frac3 + this.backX * (1 - frac3), this.frontY * frac3 + this.backY * (1 - frac3), this.movable.posZ - 1, ox * backWidth, oy * backWidth, 0);
 
-                Game.game.window.setBatchMode(false, true, depth, this.glow, false);
+                Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
                 if (backCircle)
                 {
-                    Game.game.window.setBatchMode(true, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(true, false, depth, this.glow, false);
 
                     for (int i = 10; i < 30; i++)
                     {
@@ -219,11 +219,11 @@ public class Trail implements IDrawable
                         Drawing.drawing.addVertex(this.frontX * frac3 + this.backX * (1 - frac3), this.frontY * frac3 + this.backY * (1 - frac3), this.movable.posZ - 1);
                     }
 
-                    Game.game.window.setBatchMode(false, false, depth, this.glow, false);
+                    Game.game.window.shapeRenderer.setBatchMode(false, false, depth, this.glow, false);
                 }
             }
 
-            Game.game.window.setBatchMode(false, true, depth, this.glow, false);
+            Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
         }
     }
 }

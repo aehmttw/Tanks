@@ -322,18 +322,23 @@ public class TextBox implements IDrawable, ITrigger
 
 			if (this.shouldAddEffect())
 			{
-				this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random() * Game.effectMultiplier;
-
-				while (this.effectTimer >= 0.4 / Panel.frameFrequency)
-				{
-					this.effectTimer -= 0.4 / Panel.frameFrequency;
-					Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
-				}
+				this.addEffect();
 			}
 		}
 
 		if (this.selected)
 			Panel.selectedTextBox = this;
+	}
+
+	public void addEffect()
+	{
+		this.effectTimer += 0.25 * (this.sizeX + this.sizeY) / 400 * Math.random() * Game.effectMultiplier;
+
+		while (this.effectTimer >= 0.4 / Panel.frameFrequency)
+		{
+			this.effectTimer -= 0.4 / Panel.frameFrequency;
+			Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
+		}
 	}
 
 	public boolean shouldAddEffect()
@@ -463,9 +468,14 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (Game.glowEnabled)
 		{
-			for (int i = 0; i < 0.2 * (this.sizeX + this.sizeY) * Game.effectMultiplier; i++)
-				Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8, 0.25);
+			this.submitEffect();
 		}
+	}
+
+	public void submitEffect()
+	{
+		for (int i = 0; i < 0.2 * (this.sizeX + this.sizeY) * Game.effectMultiplier; i++)
+			Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8, 0.25);
 	}
 
 	public void checkKeys()
@@ -713,7 +723,7 @@ public class TextBox implements IDrawable, ITrigger
 
 	public static void drawTallGlow(double posX, double posY, double sizeX, double sizeY, double extra, double size, double r, double g, double b, double a, boolean glow)
 	{
-		Game.game.window.setBatchMode(true, true, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(true, true, false, glow);
 
 		Drawing drawing = Drawing.drawing;
 		drawing.setColor(0, 0, 0, 0);
@@ -751,8 +761,8 @@ public class TextBox implements IDrawable, ITrigger
 		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
 		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
 
-		Game.game.window.setBatchMode(false, true, false, glow);
-		Game.game.window.setBatchMode(true, false, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(false, true, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(true, false, false, glow);
 
 		for (int i = 0; i < 15; i++)
 		{
@@ -781,7 +791,7 @@ public class TextBox implements IDrawable, ITrigger
 			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 46) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 46) / 30.0 * Math.PI) * size, 0);
 		}
 
-		Game.game.window.setBatchMode(false, false, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(false, false, false, glow);
 	}
 
 	public void setText(String text)

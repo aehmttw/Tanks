@@ -108,12 +108,12 @@ public class ObstacleBoostPanel extends Obstacle
         if (!Game.enable3d)
         {
             Drawing.drawing.setColor(this.colorR - offset / 2, Math.min(this.colorG - offset + this.brightness, 255), this.colorB + this.brightness, 255, 1.0);
-            Drawing.drawing.fillRect(this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
+            Drawing.drawing.fillRect(this, this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
         }
         else
         {
             Drawing.drawing.setColor(this.colorR - offset / 2, Math.min(this.colorG - offset + this.brightness, 255), this.colorB + this.brightness, 255, 1.0);
-            Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
+            Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
 
             if (Game.glowEnabled)
             {
@@ -152,5 +152,15 @@ public class ObstacleBoostPanel extends Obstacle
     public double getTileHeight()
     {
         return 0;
+    }
+
+    public boolean colorChanged()
+    {
+        return !Drawing.drawing.isOutOfBounds(Drawing.drawing.gameToAbsoluteX(this.posX, Obstacle.draw_size), Drawing.drawing.gameToAbsoluteY(this.posY, Obstacle.draw_size));
+    }
+
+    public double getGroundHeight()
+    {
+        return 10;
     }
 }

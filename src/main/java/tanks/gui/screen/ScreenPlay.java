@@ -6,43 +6,25 @@ import tanks.gui.Button;
 
 public class ScreenPlay extends Screen
 {
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenTitle();
-		}
-	}
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
 	);
 
-	Button singleplayer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Singleplayer", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenPlaySingleplayer();
-		}
-	}
-	, "Play random levels, crusades,---the tutorial, or make your own levels!");
+	Button singleplayer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Singleplayer", () -> Game.screen = new ScreenPlaySingleplayer()
+			, "Play random levels, crusades,---the tutorial, or make your own levels!");
 
-	Button multiplayer = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Multiplayer", new Runnable()
+	Button multiplayer = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Multiplayer", () ->
 	{
-		@Override
-		public void run()
+		if (!Game.player.username.equals(""))
 		{
-			if (!Game.player.username.equals(""))
-			{
-				if (Game.game.input.hotbarToggle.isPressed())
-					Game.screen = new ScreenPlayMultiplayer();
-				else
-					Game.screen = new ScreenParty();
-			}
+			if (Game.game.input.hotbarToggle.isPressed())
+				Game.screen = new ScreenPlayMultiplayer();
 			else
-				Game.screen = new ScreenUsernamePrompt();
+				Game.screen = new ScreenParty();
 		}
+		else
+			Game.screen = new ScreenUsernamePrompt();
 	}
-	, "Play, chat, and share levels---and crusades with other players!");
+			, "Play, chat, and share levels---and crusades with other players!");
 
 	public ScreenPlay()
 	{

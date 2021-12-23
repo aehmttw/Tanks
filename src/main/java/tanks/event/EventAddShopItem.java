@@ -54,14 +54,7 @@ public class EventAddShopItem extends PersonalEvent
     {
         if (clientID == null && Game.screen instanceof ScreenGame)
         {
-            Button b = new Button(0, 0, 350, 40, name, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Game.eventsOut.add(new EventPurchaseItem(item));
-                }
-            });
+            Button b = new Button(0, 0, 350, 40, name, () -> Game.eventsOut.add(new EventPurchaseItem(item)));
 
             b.setSubtext(description, price);
 

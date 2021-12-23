@@ -134,7 +134,7 @@ public class BulletArc extends Bullet
                 Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 
             Drawing.drawing.setColor(0, 0, 0, 0, 0.5);
-            Game.game.window.setBatchMode(true, true, true, false);
+            Game.game.window.shapeRenderer.setBatchMode(true, true, true, false);
             for (int i = this.pastTime.size() - 1; i >= 1; i--)
             {
                 if (stop)
@@ -174,7 +174,7 @@ public class BulletArc extends Bullet
                     Drawing.drawing.addVertex(x1 + this.size / 2 * ax, y1 + this.size / 2 * ay, z1);
                 }
             }
-            Game.game.window.setBatchMode(false, true, true, false);
+            Game.game.window.shapeRenderer.setBatchMode(false, true, true, false);
         }
 
         if (this.destroyTimer <= 60)

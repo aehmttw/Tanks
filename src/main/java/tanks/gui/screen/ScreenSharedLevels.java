@@ -14,18 +14,14 @@ public class ScreenSharedLevels extends Screen
 
 	public ButtonList sharedLevels;
 
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () ->
 	{
-		@Override
-		public void run()
-		{
-			if (ScreenPartyHost.isServer)
-				Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
-			else if (ScreenPartyLobby.isClient)
-				Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
-		}
+		if (ScreenPartyHost.isServer)
+			Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
+		else if (ScreenPartyLobby.isClient)
+			Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
 	}
-			);
+	);
 
 	public ScreenSharedLevels(ArrayList<ScreenPartyHost.SharedLevel> levels)
 	{
@@ -37,17 +33,13 @@ public class ScreenSharedLevels extends Screen
 		ArrayList<Button> buttons = new ArrayList<>();
 		for (ScreenPartyHost.SharedLevel l: levels)
 		{
-			buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), new Runnable()
+			buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
 			{
-				@Override
-				public void run()
-				{
-					ScreenSaveLevel sc = new ScreenSaveLevel(l.name, l.level, Game.screen);
-					Level lev = new Level(l.level);
-					lev.preview = true;
-					lev.loadLevel(sc);
-					Game.screen = sc;
-				}
+				ScreenSaveLevel sc = new ScreenSaveLevel(l.name, l.level, Game.screen);
+				Level lev = new Level(l.level);
+				lev.preview = true;
+				lev.loadLevel(sc);
+				Game.screen = sc;
 			}
 					, "Shared by " + l.creator));
 		}

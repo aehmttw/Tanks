@@ -8,19 +8,12 @@ import tanks.gui.screen.Screen;
 
 import java.util.ArrayList;
 
-public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
+public class OverlaySelectTeam extends ScreenLevelEditorOverlay
 {
-    public ArrayList<Button> teamSelectButtons = new ArrayList<Button>();
+    public ArrayList<Button> teamSelectButtons = new ArrayList<>();
     public ButtonList teamSelectList;
 
-    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", this::escape
     );
 
     public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor)
@@ -31,27 +24,13 @@ public class OverlaySelectTeam extends ScreenLevelBuilderOverlay
         {
             Team t = screenLevelEditor.teams.get(i);
             int j = i;
-            Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    screenLevelEditor.setEditorTeam(j);
-                }
-            }
+            Button buttonToAdd = new Button(0, 0, 350, 40, t.name, () -> screenLevelEditor.setEditorTeam(j)
             );
 
             teamSelectButtons.add(buttonToAdd);
         }
 
-        Button button = new Button(0, 0, 350, 40, "\u00A7127000000255none", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                screenLevelEditor.setEditorTeam(screenLevelEditor.teams.size());
-            }
-        }
+        Button button = new Button(0, 0, 350, 40, "\u00A7127000000255none", () -> screenLevelEditor.setEditorTeam(screenLevelEditor.teams.size())
         );
 
         teamSelectButtons.add(button);

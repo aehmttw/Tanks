@@ -8,6 +8,7 @@ import tanks.event.EventBulletInstantWaypoint;
 import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
+import tanks.tank.Mine;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;
@@ -24,14 +25,14 @@ public class BulletElectric extends BulletInstant
 
 	public BulletElectric(double x, double y, int bounces, Tank t) 
 	{
-		this(x, y, bounces, t, new ArrayList<Movable>(), false, null);
+		this(x, y, bounces, t, new ArrayList<>(), false, null);
 	}
 	
 	/** Do not use, instead use the constructor with primitive data types. */
 	@Deprecated
 	public BulletElectric(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
 	{
-		this(x, y, bounces, t, new ArrayList<Movable>(), false, ib);
+		this(x, y, bounces, t, new ArrayList<>(), false, ib);
 	}
 	
 	public BulletElectric(double x, double y, int bounces, Tank t, ArrayList<Movable> targets, boolean affectsLiveBullets, ItemBullet ib)
@@ -184,7 +185,7 @@ public class BulletElectric extends BulletInstant
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (!Team.isAllied(this, m) && this != m && !m.destroy && !this.targets.contains(m) && !(m instanceof AreaEffect))
+				if (!Team.isAllied(this, m) && this != m && !m.destroy && !this.targets.contains(m) && ((m instanceof Bullet && ((Bullet) m).enableCollision && ((Bullet) m).bulletCollision) || m instanceof Mine || m instanceof Tank))
 				{
 					double d = Movable.distanceBetween(this, m);
 					if (d < nd)

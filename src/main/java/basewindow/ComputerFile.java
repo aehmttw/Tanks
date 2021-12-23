@@ -1,9 +1,6 @@
 package basewindow;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,7 +48,7 @@ public class ComputerFile extends BaseFile
     public ArrayList<String> getSubfiles() throws IOException
     {
         DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(this.path));
-        ArrayList<String> files = new ArrayList<String>();
+        ArrayList<String> files = new ArrayList<>();
 
         for (Path p: ds)
             files.add(p.toString());
@@ -64,7 +61,7 @@ public class ComputerFile extends BaseFile
     @Override
     public void startReading() throws FileNotFoundException
     {
-        scanner = new Scanner(this.file);
+        scanner = new Scanner(this.file, "UTF-8");
     }
 
     @Override

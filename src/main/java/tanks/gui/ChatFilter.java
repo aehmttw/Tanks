@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class ChatFilter
 {
-	protected ArrayList<String> badwords = new ArrayList<String>();
+	protected ArrayList<String> badwords = new ArrayList<>();
 	
 	public ChatFilter()
 	{

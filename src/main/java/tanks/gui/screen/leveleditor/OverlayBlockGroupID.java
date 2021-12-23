@@ -5,18 +5,11 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
-public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
+public class OverlayBlockGroupID extends ScreenLevelEditorOverlay
 {
     public TextBox groupID;
 
-    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", this::escape
     );
 
     public Button increaseID = new Button(this.centerX + 250, this.centerY, 60, 60, "+", new Runnable()
@@ -49,19 +42,14 @@ public class OverlayBlockGroupID extends ScreenLevelBuilderOverlay
     {
         super(previous, screenLevelEditor);
 
-        groupID = new TextBox(this.centerX, this.centerY + 15, 350, 40, "Group ID", new Runnable()
+        groupID = new TextBox(this.centerX, this.centerY + 15, 350, 40, "Group ID", () ->
         {
-            @Override
-            public void run()
-            {
-                if (groupID.inputText.length() <= 0)
-                    groupID.inputText = screenLevelEditor.mouseObstacleGroup + "";
-                else
-                    screenLevelEditor.mouseObstacleGroup = Integer.parseInt(groupID.inputText);
+            if (groupID.inputText.length() <= 0)
+                groupID.inputText = screenLevelEditor.mouseObstacleGroup + "";
+            else
+                screenLevelEditor.mouseObstacleGroup = Integer.parseInt(groupID.inputText);
 
-                screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
-            }
-
+            screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
         }
                 , screenLevelEditor.mouseObstacleGroup + "");
 

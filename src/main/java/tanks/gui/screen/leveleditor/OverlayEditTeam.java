@@ -6,43 +6,39 @@ import tanks.Movable;
 import tanks.Team;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenOptions;
 
-public class OverlayEditTeam extends ScreenLevelBuilderOverlay
+public class OverlayEditTeam extends ScreenLevelEditorOverlay
 {
     public TextBox teamName;
     public Team team;
 
-    public OverlayEditTeam(OverlayLevelOptionsTeams previous, ScreenLevelEditor screenLevelEditor, Team team)
+    public OverlayEditTeam(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
         super(previous, screenLevelEditor);
 
         this.team = team;
 
-        teamName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Team name", new Runnable()
+        teamName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Team name", () ->
         {
-            @Override
-            public void run()
+            boolean duplicate = false;
+
+            for (int i = 0; i < screenLevelEditor.teams.size(); i++)
             {
-                boolean duplicate = false;
-
-                for (int i = 0; i < screenLevelEditor.teams.size(); i++)
+                if (teamName.inputText.equals(screenLevelEditor.teams.get(i).name))
                 {
-                    if (teamName.inputText.equals(screenLevelEditor.teams.get(i).name))
-                    {
-                        duplicate = true;
-                        break;
-                    }
-                }
-
-                if (teamName.inputText.length() <= 0 || duplicate)
-                    teamName.inputText = team.name;
-                else
-                {
-                    team.name = teamName.inputText;
+                    duplicate = true;
+                    break;
                 }
             }
 
+            if (teamName.inputText.length() <= 0 || duplicate)
+                teamName.inputText = team.name;
+            else
+            {
+                team.name = teamName.inputText;
+            }
         }
                 , team.name);
 
@@ -57,14 +53,7 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
             this.deleteTeam.enabled = false;
     }
 
-    public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", this::escape
     );
 
     public Button deleteTeam = new Button(this.centerX, this.centerY + 300 - this.objYSpace, this.objWidth, this.objHeight, "Delete team", new Runnable()
@@ -99,14 +88,10 @@ public class OverlayEditTeam extends ScreenLevelBuilderOverlay
     }
     );
 
-    public Button teamColor = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Team color", new Runnable()
-    {
-        @Override
-        public void run()
+    public Button teamColor = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Team color", () ->
         {
             Game.screen = new OverlayEditTeamColor(Game.screen, screenLevelEditor, team);
         }
-    }
     );
 
     public void update()

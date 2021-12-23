@@ -24,37 +24,19 @@ public class ScreenPartyResumeCrusade extends Screen
 		}
 	}
 	
-	Button resume = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Resume crusade", new Runnable()
+	Button resume = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Resume crusade", () ->
 	{
-		@Override
-		public void run() 
-		{
-			Crusade.crusadeMode = true;
-			Crusade.currentCrusade.loadLevel();
-			Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
-		}
+		Crusade.crusadeMode = true;
+		Crusade.currentCrusade.loadLevel();
+		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 	}
-			);
+	);
 
-	Button selectOtherCrusade = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Start another crusade", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenPartyCrusades();
-		}
-	}
-			);
+	Button selectOtherCrusade = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Start another crusade", () -> Game.screen = new ScreenPartyCrusades()
+	);
 	
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = ScreenPartyHost.activeScreen;
-		}
-	}
-			);
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = ScreenPartyHost.activeScreen
+	);
 	
 	@Override
 	public void update() 

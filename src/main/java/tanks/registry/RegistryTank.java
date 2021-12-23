@@ -5,11 +5,14 @@ import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class RegistryTank 
 {
-	public ArrayList<TankEntry> tankEntries = new ArrayList<TankEntry>();
+	public HashMap<String, ArrayList<String>> tankMusics = new HashMap<>();
+
+	public ArrayList<TankEntry> tankEntries = new ArrayList<>();
 	protected double maxTankWeight = 0;
 
 	public static class TankEntry

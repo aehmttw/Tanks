@@ -2,13 +2,14 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.event.*;
+import tanks.gui.ChatMessage;
+import tanks.gui.IFixedMenu;
+import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Mine;
-import tanks.tank.Ray;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +17,8 @@ import java.util.HashMap;
 public class Bullet extends Movable implements IDrawable
 {
 	public static int currentID = 0;
-	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
-	public static HashMap<Integer, Bullet> idMap = new HashMap<Integer, Bullet>();
+	public static ArrayList<Integer> freeIDs = new ArrayList<>();
+	public static HashMap<Integer, Bullet> idMap = new HashMap<>();
 
 	public static String bullet_name = "normal";
 
@@ -74,6 +75,7 @@ public class Bullet extends Movable implements IDrawable
 	public double collisionX;
 	public double collisionY;
 
+	public boolean bulletCollision = true;
 	public boolean enableCollision = true;
 
 	public boolean affectsMaxLiveBullets;
@@ -156,7 +158,7 @@ public class Bullet extends Movable implements IDrawable
 		this.trails = (ArrayList<Trail>[])(new ArrayList[10]);
 
 		for (int i = 0; i < this.trails.length; i++)
-			this.trails[i] = new ArrayList<Trail>();
+			this.trails[i] = new ArrayList<>();
 
 		if (!this.tank.isRemote)
 		{
@@ -172,6 +174,24 @@ public class Bullet extends Movable implements IDrawable
 		}
 
 		this.drawLevel = 8;
+
+		for (IFixedMenu m : ModAPI.menuGroup)
+		{
+			if (m instanceof Scoreboard)
+			{
+				if (((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired) ||
+						(((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired_no_multiple_fire)
+								&& !(this instanceof BulletHealing || this instanceof BulletFlame)))
+				{
+					if (((Scoreboard) m).players.isEmpty())
+						((Scoreboard) m).addTeamScore(this.team, 1);
+					else if (this.tank instanceof TankPlayer)
+						((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
+					else if (this.tank instanceof TankPlayerRemote)
+						((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+				}
+			}
+		}
 	}
 
 	public void moveOut(double amount)
@@ -209,12 +229,64 @@ public class Bullet extends Movable implements IDrawable
 				if (!this.heavy)
 					this.destroy = true;
 
+				if (Game.currentLevel instanceof ModLevel)
+				{
+					if (((ModLevel) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
+					{
+						String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, true);
+						ScreenPartyHost.chat.add(0, new ChatMessage(message));
+						Game.eventsOut.add(new EventChat(message));
+					}
+
+					for (IFixedMenu m : ModAPI.menuGroup)
+					{
+						if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.kills))
+						{
+							if (!((Scoreboard) m).teams.isEmpty())
+								((Scoreboard) m).addTeamScore(this.tank.team, 1);
+
+							else if (this.tank instanceof TankPlayer && !((Scoreboard) m).players.isEmpty())
+								((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
+
+							else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) m).players.isEmpty())
+								((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+						}
+					}
+				}
+
 				if (this.tank.equals(Game.playerTank))
-					Game.player.hotbar.coins += t.coinValue;
+				{
+					if (Game.currentLevel instanceof ModLevel && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
+						Game.player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+					else
+						Game.player.hotbar.coins += t.coinValue;
+				}
 				else if (this.tank instanceof TankPlayerRemote && Crusade.crusadeMode)
 				{
 					((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+				}
+				else if ((Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
+				{
+					if (this.tank instanceof TankPlayerRemote)
+					{
+						((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
+						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+					}
+				}
+				else if (Game.currentLevel instanceof ModLevel && ((ModLevel) Game.currentLevel).playerKillCoins > 0)
+				{
+					if (this.tank instanceof TankPlayer)
+					{
+						((TankPlayer) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+						Game.eventsOut.add(new EventUpdateCoins(((TankPlayer) this.tank).player));
+					}
+
+					else if (this.tank instanceof TankPlayerRemote)
+					{
+						((TankPlayerRemote) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+					}
 				}
 			}
 			else if (this.playPopSound)
@@ -315,7 +387,7 @@ public class Bullet extends Movable implements IDrawable
 			{
 				Obstacle o = Game.obstacles.get(i);
 
-				if (!o.bulletCollision && !o.checkForObjects)
+				if ((!o.bulletCollision && !o.checkForObjects) || o.startHeight > 1)
 					continue;
 
 				double dx = this.posX - o.posX;
@@ -465,7 +537,7 @@ public class Bullet extends Movable implements IDrawable
 					collidedWithTank = true;
 				}
 			}
-			else if ((o instanceof Bullet || o instanceof Mine) && o != this && !o.destroy && !(o instanceof BulletFlame || this instanceof BulletFlame))
+			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && (((Bullet) o).bulletCollision && this.bulletCollision)) || o instanceof Mine) && o != this && !o.destroy)
 			{
 				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 
@@ -541,9 +613,8 @@ public class Bullet extends Movable implements IDrawable
 
 		boolean noTrails = true;
 
-		for (int j = 0; j < this.trails.length; j++)
+		for (ArrayList<Trail> trails : this.trails)
 		{
-			ArrayList<Trail> trails = this.trails[j];
 			double trailLength = 0;
 			for (int i = 0; i < trails.size(); i++)
 			{
@@ -720,11 +791,11 @@ public class Bullet extends Movable implements IDrawable
 
 		double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 
-		for (int i = 0; i < this.trails.length; i++)
+		for (ArrayList<Trail> trail : this.trails)
 		{
-			if (this.trails[i].size() > 0)
+			if (trail.size() > 0)
 			{
-				Trail t = this.trails[i].get(0);
+				Trail t = trail.get(0);
 				t.spawning = false;
 				t.frontX = this.collisionX;
 				t.frontY = this.collisionY;

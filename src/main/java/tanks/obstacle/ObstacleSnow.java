@@ -17,7 +17,8 @@ public class ObstacleSnow extends Obstacle
 
     public double visualDepth = 1;
 
-    protected double lastFinalHeight;
+    protected double finalHeight;
+    protected double previousFinalHeight;
 
     public ObstacleSnow(String name, double posX, double posY)
     {
@@ -115,17 +116,20 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw()
     {
-        if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
-            this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);
-
-        if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+        if (!Game.game.window.shapeRenderer.supportsBatching)
         {
-            this.visualDepth = 0.5;
-        }
+            if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
+                this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);
 
-        if (ScreenGame.finishedQuick && Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
-        {
-            this.visualDepth = Math.max(0.5, this.visualDepth - Panel.frameFrequency / 127);
+            if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+            {
+                this.visualDepth = 0.5;
+            }
+
+            if (ScreenGame.finishedQuick && Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
+            {
+                this.visualDepth = Math.max(0.5, this.visualDepth - Panel.frameFrequency / 127);
+            }
         }
 
         this.colorR = this.baseColorR * (this.depth + 4) / 5;
@@ -135,18 +139,23 @@ public class ObstacleSnow extends Obstacle
         if (!Game.enable3d)
         {
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.depth * this.visualDepth * 255);
-            Drawing.drawing.fillRect(this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
+            Drawing.drawing.fillRect(this, this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
         }
         else
         {
-            double base = Game.sampleGroundHeight(this.posX, this.posY);
-            double z = Math.max(this.depth * 0.8 * (Obstacle.draw_size - base), 0);
+            double mul = 1;
 
-            this.lastFinalHeight = 0;
+            if (Game.game.window.shapeRenderer.supportsBatching && Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size)
+                mul = 2;
+
+            double base = Game.sampleGroundHeight(this.posX, this.posY);
+            double z = Math.max(this.depth * 0.8 * (Obstacle.draw_size - base * (mul - 1)), 0);
+
+            this.finalHeight = 0;
 
             if (z > 0)
             {
-                this.lastFinalHeight = z * this.visualDepth;
+                this.finalHeight = z * this.visualDepth;
                 int x = Math.min(Game.currentSizeX - 1, (int) Math.max(0, this.posX / Game.tile_size));
                 int y = Math.min(Game.currentSizeY - 1, (int) Math.max(0, this.posY / Game.tile_size));
 
@@ -163,13 +172,31 @@ public class ObstacleSnow extends Obstacle
 
                 double frac = z / (this.depth * 0.8 * (Game.tile_size - base));
                 Drawing.drawing.setColor(this.colorR * frac + r * (1 - frac), this.colorG * frac + g * (1 - frac), this.colorB * frac + b * (1 - frac));
-                Drawing.drawing.fillBox(this.posX, this.posY, Game.sampleGroundHeight(this.posX, this.posY), Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+                Drawing.drawing.setShrubberyMode();
+                Drawing.drawing.fillBox(this, this.posX, this.posY, Game.sampleGroundHeight(this.posX, this.posY) * mul, Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
             }
         }
     }
 
+    public byte getOptionsByte(double h)
+    {
+        return 0;
+    }
+
     public double getTileHeight()
     {
-        return this.lastFinalHeight + Game.sampleGroundHeight(this.posX, this.posY);
+        double shrubScale = 0.5;
+        if (Game.screen instanceof ScreenGame)
+            shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
+
+        return shrubScale * (this.finalHeight + Game.sampleGroundHeight(this.posX, this.posY));
+    }
+
+    public boolean positionChanged()
+    {
+        boolean r = this.previousFinalHeight != this.finalHeight;
+        this.previousFinalHeight = this.finalHeight;
+
+        return r || super.positionChanged();
     }
 }

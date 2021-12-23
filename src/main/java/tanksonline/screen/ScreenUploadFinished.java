@@ -6,14 +6,10 @@ import tanksonline.TanksOnlineServerHandler;
 
 public class ScreenUploadFinished extends ScreenLayout
 {
-    Button back = new Button(sizeX / 2, sizeY / 2 + 30, 350, 40, "Ok", new Runnable()
+    Button back = new Button(sizeX / 2, sizeY / 2 + 30, 350, 40, "Ok", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenLayout s = new ScreenHome(player);
-            s.setScreen();
-        }
+        ScreenLayout s = new ScreenHome(player);
+        s.setScreen();
     }
     );
 

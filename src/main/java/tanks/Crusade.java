@@ -30,14 +30,14 @@ public class Crusade
 
 	public double timePassed = 0;
 
-	public ArrayList<String> levels = new ArrayList<String>();
-	public ArrayList<String> levelNames = new ArrayList<String>();
+	public ArrayList<String> levels = new ArrayList<>();
+	public ArrayList<String> levelNames = new ArrayList<>();
 
 	public int bonusLifeFrequency = 3;
 	public int startingLives = 3;
 	public boolean showNames = false;
 
-	public ArrayList<Item> crusadeItems = new ArrayList<Item>();
+	public ArrayList<Item> crusadeItems = new ArrayList<>();
 
 	public String name = "";
 	public String fileName = "";
@@ -81,7 +81,7 @@ public class Crusade
 		{
 			this.fileName = f.path;
 			f.startReading();
-			ArrayList<String> list = new ArrayList<String>();
+			ArrayList<String> list = new ArrayList<>();
 
 			StringBuilder c = new StringBuilder();
 
@@ -342,7 +342,7 @@ public class Crusade
 
 	public ArrayList<Item> getShop() 
 	{
-		ArrayList<Item> shop = new ArrayList<Item>();
+		ArrayList<Item> shop = new ArrayList<>();
 		
 		for (int i = 0; i < this.crusadeItems.size(); i++)
 		{

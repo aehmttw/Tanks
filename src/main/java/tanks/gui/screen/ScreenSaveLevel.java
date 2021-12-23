@@ -19,7 +19,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
     public Screen screen;
 
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
+    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -90,21 +90,16 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         for (int i = 0; i < drawables.length; i++)
         {
-            drawables[i] = new ArrayList<IDrawable>();
+            drawables[i] = new ArrayList<>();
         }
 
         Obstacle.draw_size = Game.tile_size;
 
-        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, this.objWidth, this.objHeight, "Level save name", new Runnable()
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            @Override
-            public void run()
-            {
-                if (levelName.inputText.equals(""))
-                    levelName.inputText = levelName.previousInputText;
-                updateDownloadButton();
-            }
-
+            if (levelName.inputText.equals(""))
+                levelName.inputText = levelName.previousInputText;
+            updateDownloadButton();
         }
                 , name.replace("_", " "));
 

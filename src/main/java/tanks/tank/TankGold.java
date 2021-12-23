@@ -132,7 +132,7 @@ public class TankGold extends TankAIControlled
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && m != this && Team.isAllied(this, m) && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).health - ((Tank) m).baseHealth < 1)
+			if (m instanceof Tank && m != this && Team.isAllied(this, m) && ((Tank) m).targetable && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).health - ((Tank) m).baseHealth < 1)
 			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 				r.moveOut(5);

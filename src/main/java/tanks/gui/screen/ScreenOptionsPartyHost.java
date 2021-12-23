@@ -61,19 +61,15 @@ public class ScreenOptionsPartyHost extends Screen
     },
             "Disables all friendly fire in the party.---Useful for co-op in bigger parties.");
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {
-        @Override
-        public void run()
+        if (ScreenPartyHost.isServer)
         {
-            if (ScreenPartyHost.isServer)
-            {
-                Game.screen = ScreenPartyHost.activeScreen;
-                ScreenOptions.saveOptions(Game.homedir);
-            }
-            else
-                Game.screen = new ScreenOptionsMultiplayer();
+            Game.screen = ScreenPartyHost.activeScreen;
+            ScreenOptions.saveOptions(Game.homedir);
         }
+        else
+            Game.screen = new ScreenOptionsMultiplayer();
     }
     );
 
@@ -96,16 +92,12 @@ public class ScreenOptionsPartyHost extends Screen
         else
             disableFriendlyFire.setText(disableFriendlyFireText, defaultText);
 
-        timer = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Countdown time", new Runnable()
+        timer = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Countdown time", () ->
         {
-            @Override
-            public void run()
-            {
-                if (timer.inputText.length() == 0)
-                    timer.inputText = Game.partyStartTime / 100.0 + "";
-                else
-                    Game.partyStartTime = Double.parseDouble(timer.inputText) * 100;
-            }
+            if (timer.inputText.length() == 0)
+                timer.inputText = Game.partyStartTime / 100.0 + "";
+            else
+                Game.partyStartTime = Double.parseDouble(timer.inputText) * 100;
         }, Game.partyStartTime / 100.0 + "", "The wait time in seconds after---all players are ready before---the battle begins.");
 
         timer.maxValue = 60;

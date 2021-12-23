@@ -75,7 +75,7 @@ public class Laser extends Movable implements IDrawableWithGlow
 
             if (frontCircle || showOutsides)
             {
-                Game.game.window.setBatchMode(true, false, depth);
+                Game.game.window.shapeRenderer.setBatchMode(true, false, depth);
 
                 for (int i = 10; i < 30; i++)
                 {
@@ -84,10 +84,10 @@ public class Laser extends Movable implements IDrawableWithGlow
                     Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
 
-                Game.game.window.setBatchMode(false, false, depth);
+                Game.game.window.shapeRenderer.setBatchMode(false, false, depth);
             }
 
-            Game.game.window.setBatchMode(true, true, depth);
+            Game.game.window.shapeRenderer.setBatchMode(true, true, depth);
 
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, ox * width * (1 - frac), oy * width * (1 - frac), 0);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, -ox * width * (1 - frac), -oy * width * (1 - frac), 0);
@@ -95,11 +95,11 @@ public class Laser extends Movable implements IDrawableWithGlow
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, -ox * width * (1 - frac), -oy * width * (1 - frac), 0);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, ox * width * (1 - frac), oy * width * (1 - frac), 0);
 
-            Game.game.window.setBatchMode(false, true, depth);
+            Game.game.window.shapeRenderer.setBatchMode(false, true, depth);
 
             if (backCircle || showOutsides)
             {
-                Game.game.window.setBatchMode(true, false, depth);
+                Game.game.window.shapeRenderer.setBatchMode(true, false, depth);
 
                 for (int i = 30; i < 50; i++)
                 {
@@ -108,7 +108,7 @@ public class Laser extends Movable implements IDrawableWithGlow
                     Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }
 
-                Game.game.window.setBatchMode(false, false, depth);
+                Game.game.window.shapeRenderer.setBatchMode(false, false, depth);
             }
         }
 
@@ -132,7 +132,7 @@ public class Laser extends Movable implements IDrawableWithGlow
 
             if (frontCircle || showOutsides)
             {
-                Game.game.window.setBatchMode(true, false, depth, true);
+                Game.game.window.shapeRenderer.setBatchMode(true, false, depth, true);
 
                 for (int i = 10; i < 30; i++)
                 {
@@ -143,10 +143,10 @@ public class Laser extends Movable implements IDrawableWithGlow
                     Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
 
-                Game.game.window.setBatchMode(false, false, depth, true);
+                Game.game.window.shapeRenderer.setBatchMode(false, false, depth, true);
             }
 
-            Game.game.window.setBatchMode(true, true, depth, true);
+            Game.game.window.shapeRenderer.setBatchMode(true, true, depth, true);
 
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, 0, 0, 0);
@@ -164,11 +164,11 @@ public class Laser extends Movable implements IDrawableWithGlow
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, 0, 0, 0);
 
-            Game.game.window.setBatchMode(false, true, depth, true);
+            Game.game.window.shapeRenderer.setBatchMode(false, true, depth, true);
 
             if (backCircle || showOutsides)
             {
-                Game.game.window.setBatchMode(true, false, depth, true);
+                Game.game.window.shapeRenderer.setBatchMode(true, false, depth, true);
 
                 for (int i = 30; i < 50; i++)
                 {
@@ -179,7 +179,7 @@ public class Laser extends Movable implements IDrawableWithGlow
                     Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }
 
-                Game.game.window.setBatchMode(false, false, depth, true);
+                Game.game.window.shapeRenderer.setBatchMode(false, false, depth, true);
             }
         }
     }

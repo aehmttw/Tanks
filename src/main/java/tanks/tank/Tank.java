@@ -20,8 +20,8 @@ import java.util.HashMap;
 public abstract class Tank extends Movable implements ISolidObject
 {
 	public static int currentID = 0;
-	public static ArrayList<Integer> freeIDs = new ArrayList<Integer>();
-	public static HashMap<Integer, Tank> idMap = new HashMap<Integer, Tank>();
+	public static ArrayList<Integer> freeIDs = new ArrayList<>();
+	public static HashMap<Integer, Tank> idMap = new HashMap<>();
 
 	public static Model base_model;
 	public static Model color_model;
@@ -87,6 +87,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double baseHealth = 1;
 	public double health = 1;
 
+	/** Whether this tank needs to be destroyed before the level ends. */
+	public boolean needsToKill = true;
+
 	public boolean[][] hiddenPoints = new boolean[3][3];
 	public boolean hidden = false;
 
@@ -104,6 +107,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean isBoss = false;
 	public Tank possessor;
+	public boolean overridePossessedKills = true;
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
@@ -149,15 +153,15 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
-			Movable o = Game.movables.get(i);
+			Movable m = Game.movables.get(i);
 
-			if (o.skipNextUpdate)
+			if (m.skipNextUpdate)
 				continue;
 
-			if (this != o && o instanceof Tank && ((Tank)o).size > 0)
+			if (this != m && m instanceof Tank && ((Tank)m).size > 0)
 			{
-				Tank t = (Tank) o;
-				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
+				Tank t = (Tank) m;
+				double distSq = Math.pow(this.posX - m.posX, 2) + Math.pow(this.posY - m.posY, 2);
 
 				if (distSq <= Math.pow((this.size + t.size) / 2, 2))
 				{
@@ -231,7 +235,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
 
-			if (!o.tankCollision && !o.checkForObjects)
+			if (!o.tankCollision && !o.checkForObjects || o.startHeight > 1)
 				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
@@ -295,7 +299,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void update()
 	{
-		this.treadAnimation += Math.sqrt(this.vX * this.vX + this.vY * this.vY) * Panel.frameFrequency;
+		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 
 		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy && !ScreenGame.finished)
 		{
@@ -408,6 +412,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkCollision();
 
+		this.orientation = (this.orientation + Math.PI * 2) % (Math.PI * 2);
+
 		if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
 		{
 			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
@@ -467,6 +473,8 @@ public abstract class Tank extends Movable implements ISolidObject
 		e2.angle = a;
 		e1.setPolarMotion(0, 0);
 		e2.setPolarMotion(0, 0);
+		this.setEffectHeight(e1);
+		this.setEffectHeight(e2);
 		Game.tracks.add(e1);
 		Game.tracks.add(e2);
 	}
@@ -530,7 +538,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			else if (!Game.enable3d)
 				Drawing.drawing.fillGlow(this.posX, this.posY, size, size);
 			else
-				Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, size, size,true, false);
+				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size,true, false);
 		}
 
 		if (!forInterface)
@@ -552,7 +560,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						else
 						{
 							Drawing.drawing.setColor(0, 255, 0, 127, 1);
-							drawing.drawModel(this.baseModel, this.posX, this.posY, 0, s * mod, s * mod, s - 2, this.orientation);
+							drawing.drawModel(this.baseModel, this.posX, this.posY, this.posZ, s * mod, s * mod, s - 2, this.orientation);
 						}
 					}
 				}
@@ -566,7 +574,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		else
 		{
 			if (Game.enable3d)
-				drawing.drawModel(this.baseModel, this.posX, this.posY, 0, s, s, s, this.orientation);
+				drawing.drawModel(this.baseModel, this.posX, this.posY, this.posZ, s, s, s, this.orientation);
 			else
 				drawing.drawModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
 		}
@@ -581,7 +589,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		else
 		{
 			if (Game.enable3d)
-				drawing.drawModel(this.colorModel, this.posX, this.posY, 0, s, s, s, this.orientation);
+				drawing.drawModel(this.colorModel, this.posX, this.posY, this.posZ, s, s, s, this.orientation);
 			else
 				drawing.drawModel(this.colorModel, this.posX, this.posY, s, s, this.orientation);
 		}
@@ -593,7 +601,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			{
 				if (Game.enable3d)
 					drawing.drawModel(health_model,
-							this.posX, this.posY, s / 4,
+							this.posX, this.posY, this.posZ + s / 4,
 							size, size, s,
 							this.orientation, 0, 0);
 				else
@@ -684,6 +692,17 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.posY = y1;	
 	}
 
+	public void drawOutlineAt(double x, double y)
+	{
+		double x1 = this.posX;
+		double y1 = this.posY;
+		this.posX = x;
+		this.posY = y;
+		this.drawOutline();
+		this.posX = x1;
+		this.posY = y1;
+	}
+
 	@Override
 	public void addAttribute(AttributeModifier m)
 	{
@@ -750,6 +769,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean damage(double amount, IGameObject source)
 	{
 		this.health -= amount * this.getDamageMultiplier(source);
+
+		if (this.health <= 1)
+			this.attributes.removeIf(a -> a.type.equals("healray"));
+
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 
 		Tank owner = null;
@@ -786,7 +809,12 @@ public abstract class Tank extends Movable implements ISolidObject
 				CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(((IServerPlayerTank) owner).getPlayer());
 
 				if (cp != null && this.health <= 0)
-					cp.addKill(this);
+				{
+					if (this.possessor != null && this.possessor.overridePossessedKills)
+						cp.addKill(this.possessor);
+					else
+						cp.addKill(this);
+				}
 
 				if (cp != null && (source instanceof Bullet || source instanceof Mine))
 					cp.addItemHit(source);
@@ -797,7 +825,12 @@ public abstract class Tank extends Movable implements ISolidObject
 				CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(((IServerPlayerTank) this).getPlayer());
 
 				if (cp != null)
-					cp.addDeath(owner);
+				{
+					if (owner.possessor != null && owner.possessor.overridePossessedKills)
+						cp.addDeath(owner.possessor);
+					else
+						cp.addDeath(owner);
+				}
 			}
 		}
 	}
@@ -814,10 +847,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if (Game.enable3d && Game.enable3dBg && Game.glowEnabled)
 		{
-			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX - e.size / 2, e.posY - e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX + e.size / 2, e.posY - e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX - e.size / 2, e.posY + e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleGroundHeight(e.posX + e.size / 2, e.posY + e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX - e.size / 2, e.posY - e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX + e.size / 2, e.posY - e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX - e.size / 2, e.posY + e.size / 2));
+			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX + e.size / 2, e.posY + e.size / 2));
+			e.posZ++;
 		}
 		else
 			e.posZ = 1;

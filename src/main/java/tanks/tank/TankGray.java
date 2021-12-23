@@ -21,7 +21,7 @@ public class TankGray extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
 		this.aimAccuracyOffset = 0;
-		this.mineSensitivity = 0.75;
+		this.avoidSensitivity = 0.75;
 
 		this.coinValue = 1;
 

@@ -31,19 +31,15 @@ public class EventAddMenuButton extends EventAddButton
             Button b;
 
             final int buttonID = this.id;
-            b = new Button(this.posX, this.posY, this.sizeX, this.sizeY, this.text, new Runnable()
+            b = new Button(this.posX, this.posY, this.sizeX, this.sizeY, this.text, () ->
             {
-                @Override
-                public void run()
-                {
-                    Game.eventsOut.add(new EventPressedButton(-1 - buttonID));
+                Game.eventsOut.add(new EventPressedButton(-1 - buttonID));
 
-                    if (wait)
-                        Game.screen = new ScreenOnlineWaiting();
+                if (wait)
+                    Game.screen = new ScreenOnlineWaiting();
 
-                    if (unpause)
-                        Panel.onlinePaused = false;
-                }
+                if (unpause)
+                    Panel.onlinePaused = false;
             }, hover);
 
             b.enabled = this.enabled;

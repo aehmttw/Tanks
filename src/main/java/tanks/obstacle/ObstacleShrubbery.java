@@ -14,8 +14,9 @@ public class ObstacleShrubbery extends Obstacle
 	public double height = 255;
 	public double heightMultiplier = Math.random() * 0.2 + 0.6;
 
-	protected double lastFinalHeight;
-	
+	protected double finalHeight;
+	protected double previousFinalHeight;
+
 	public ObstacleShrubbery(String name, double posX, double posY) 
 	{
 		super(name, posX, posY);
@@ -33,7 +34,7 @@ public class ObstacleShrubbery extends Obstacle
 		this.colorG = (Math.random() * 50) + 150;
 		this.colorB = (Math.random() * 20);
 		this.enableStacking = false;
-		
+
 		if (!Game.fancyTerrain)
 		{
 			this.colorR = 10;
@@ -50,35 +51,41 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void update()
 	{
+		this.previousFinalHeight = this.finalHeight;
+
 		this.height = Math.min(this.height + Panel.frameFrequency, 255);
 
-		if (ScreenGame.finishedQuick)
+		if (ScreenGame.finishedQuick && !Game.game.window.shapeRenderer.supportsBatching)
 		{
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
 
-		this.lastFinalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 	}
 
 	@Override
 	public void draw()
 	{
-		this.lastFinalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-		if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+		if (!Game.game.window.shapeRenderer.supportsBatching)
 		{
-			this.height = 127;
+			if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+			{
+				this.height = 127;
+			}
 		}
 
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillBox(this.posX, this.posY, 0, draw_size, draw_size, this.lastFinalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+			Drawing.drawing.setShrubberyMode();
+			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, draw_size, draw_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
 		}
 		else
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.height);
-			Drawing.drawing.fillRect(this.posX, this.posY, draw_size, draw_size);
+			Drawing.drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
 		}
 	}
 	
@@ -139,7 +146,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.onObjectEntryLocal(m);
 
-		this.lastFinalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 	}
 
 	@Override
@@ -166,6 +173,20 @@ public class ObstacleShrubbery extends Obstacle
 		if (Obstacle.draw_size < Game.tile_size)
 			return 0;
 
-		return this.lastFinalHeight;
+		double shrubScale = 0.5;
+		if (Game.screen instanceof ScreenGame)
+			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
+
+		return this.finalHeight * shrubScale;
+	}
+
+	public byte getOptionsByte(double h)
+	{
+		return 0;
+	}
+
+	public boolean positionChanged()
+	{
+		return this.previousFinalHeight != this.finalHeight || super.positionChanged();
 	}
 }

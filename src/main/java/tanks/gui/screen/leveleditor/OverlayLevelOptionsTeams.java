@@ -9,30 +9,18 @@ import tanks.gui.screen.Screen;
 
 import java.util.ArrayList;
 
-public class OverlayLevelOptionsTeams extends ScreenLevelBuilderOverlay
+public class OverlayLevelOptionsTeams extends ScreenLevelEditorOverlay
 {
-    public ArrayList<Button> teamEditButtons = new ArrayList<Button>();
+    public ArrayList<Button> teamEditButtons = new ArrayList<>();
     public ButtonList teamEditList;
 
-    public Button back = new Button(this.centerX - 190, this.centerY + 300, 350, 40, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
-    );
+    public Button back = new Button(this.centerX - 190, this.centerY + 300, 350, 40, "Back", this::escape);
 
-    public Button newTeam = new Button(this.centerX + 190, this.centerY + 300, 350, 40, "New team", new Runnable()
+    public Button newTeam = new Button(this.centerX + 190, this.centerY + 300, 350, 40, "New team", () ->
     {
-        @Override
-        public void run()
-        {
-            Team t = new Team(System.currentTimeMillis() + "");
-            screenLevelEditor.teams.add(t);
-            Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelEditor, t);
-        }
+        Team t = new Team(System.currentTimeMillis() + "");
+        screenLevelEditor.teams.add(t);
+        Game.screen = new OverlayEditTeam(Game.screen, screenLevelEditor, t);
     }
     );
 
@@ -48,14 +36,7 @@ public class OverlayLevelOptionsTeams extends ScreenLevelBuilderOverlay
         for (int i = 0; i < screenLevelEditor.teams.size(); i++)
         {
             Team t = screenLevelEditor.teams.get(i);
-            Button buttonToAdd = new Button(0, 0, 350, 40, t.name, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelEditor, t);
-                }
-            }
+            Button buttonToAdd = new Button(0, 0, 350, 40, t.name, () -> Game.screen = new OverlayEditTeam((OverlayLevelOptionsTeams) Game.screen, screenLevelEditor, t)
             );
 
             teamEditButtons.add(buttonToAdd);

@@ -19,15 +19,8 @@ public class ScreenConnectionCheck extends Screen
 		this.screen = s;
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenPlayMultiplayer();
-		}
-	}
-			);
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = new ScreenPlayMultiplayer()
+	);
 
 	@Override
 	public void update() 
@@ -36,27 +29,22 @@ public class ScreenConnectionCheck extends Screen
 			back.update();
 		else if (this.waiting)
 		{
-			new Thread(new Runnable()
+			new Thread(() ->
 			{
-
-				@Override
-				public void run() 
+				String ip = "%";
+				try
 				{
-					String ip = "%";
-					try 
-					{
-						ip = Inet4Address.getLocalHost().getHostAddress();
-					} 
-					catch (UnknownHostException ignored) { }
-					
-					if (!ip.contains("%"))
-						Game.screen = screen;
-					
-					Game.ip = ip;
-					connecting = false;
+					ip = Inet4Address.getLocalHost().getHostAddress();
 				}
+				catch (UnknownHostException ignored) { }
+
+				if (!ip.contains("%"))
+					Game.screen = screen;
+
+				Game.ip = ip;
+				connecting = false;
 			}
-					).start();
+			).start();
 			
 		}
 		

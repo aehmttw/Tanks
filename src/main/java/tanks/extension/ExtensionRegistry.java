@@ -19,7 +19,7 @@ import java.util.jar.JarFile;
 
 public class ExtensionRegistry
 {
-	public ArrayList<Extension> extensions = new ArrayList<Extension>();
+	public ArrayList<Extension> extensions = new ArrayList<>();
 
 	public void loadRegistry()
 	{

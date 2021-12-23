@@ -119,9 +119,9 @@ public class Firework extends Movable
 				this.lastPosition = pos;
 			}
 
-			Game.game.window.setBatchMode(true, false, false, false, false);
+			Game.game.window.shapeRenderer.setBatchMode(true, false, false, false, false);
 			this.position.draw();
-			Game.game.window.setBatchMode(false, false, false, false, false);
+			Game.game.window.shapeRenderer.setBatchMode(false, false, false, false, false);
 
 			while (this.position.next != null && this.position.expired)
 			{
@@ -254,9 +254,9 @@ public class Firework extends Movable
 	{
 		if (type == FireworkType.rocket)
 		{
-			Game.game.window.setBatchMode(true, false, false, true, false);
+			Game.game.window.shapeRenderer.setBatchMode(true, false, false, true, false);
 			this.position.drawGlow();
-			Game.game.window.setBatchMode(false, false, false, true, false);
+			Game.game.window.shapeRenderer.setBatchMode(false, false, false, true, false);
 
 			if (this.exploded)
 				return;

@@ -5,40 +5,28 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsTimer extends ScreenLevelBuilderOverlay
+public class OverlayLevelOptionsTimer extends ScreenLevelEditorOverlay
 {
     public TextBox minutes;
     public TextBox seconds;
 
-    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape
     );
 
     public OverlayLevelOptionsTimer(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
 
-        minutes = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Minutes", new Runnable()
+        minutes = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Minutes", () ->
         {
-            @Override
-            public void run()
+            try
             {
-                try
-                {
-                    screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
-                }
-                catch (Exception e)
-                {
-                    minutes.inputText = "" + screenLevelEditor.level.timer / 6000;
-                }
+                screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
             }
-
+            catch (Exception e)
+            {
+                minutes.inputText = "" + screenLevelEditor.level.timer / 6000;
+            }
         }
                 , (int) (screenLevelEditor.level.timer / 6000) + "", "Set minutes and seconds to 0---to disable the time limit");
 
@@ -50,19 +38,15 @@ public class OverlayLevelOptionsTimer extends ScreenLevelBuilderOverlay
         minutes.checkMaxValue = true;
         minutes.checkMinValue = true;
 
-        seconds = new TextBox(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Seconds", new Runnable()
+        seconds = new TextBox(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Seconds", () ->
         {
-            @Override
-            public void run()
+            try
             {
-                try
-                {
-                    screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
-                }
-                catch (Exception e)
-                {
-                    seconds.inputText = "" + (screenLevelEditor.level.timer % 6000) / 100;
-                }
+                screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
+            }
+            catch (Exception e)
+            {
+                seconds.inputText = "" + (screenLevelEditor.level.timer % 6000) / 100;
             }
         }
                 , (int)(screenLevelEditor.level.timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");

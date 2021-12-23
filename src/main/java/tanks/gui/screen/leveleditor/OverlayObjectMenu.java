@@ -11,7 +11,7 @@ import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
 
-public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
+public class OverlayObjectMenu extends ScreenLevelEditorOverlay
 {
     public int tankButtonPage = 0;
     public int obstacleButtonPage = 0;
@@ -19,150 +19,60 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
     public int objectButtonRows = 3;
     public int objectButtonCols = 10;
 
-    public ArrayList<ButtonObject> tankButtons = new ArrayList<ButtonObject>();
-    public ArrayList<ButtonObject> obstacleButtons = new ArrayList<ButtonObject>();
+    public ArrayList<ButtonObject> tankButtons = new ArrayList<>();
+    public ArrayList<ButtonObject> obstacleButtons = new ArrayList<>();
 
-    public Button nextTankPage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", new Runnable()
+    public Button nextTankPage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> tankButtonPage++
+    );
+
+    public Button previousTankPage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> tankButtonPage--
+    );
+
+    public Button nextObstaclePage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> obstacleButtonPage++
+    );
+
+    public Button previousObstaclePage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> obstacleButtonPage--
+    );
+
+    public Button exitObjectMenu = new Button(this.centerX, this.centerY + 240, 350, 40, "Ok", () ->
     {
-        @Override
-        public void run()
-        {
-            tankButtonPage++;
-        }
+        Game.screen = screenLevelEditor;
+        screenLevelEditor.paused = false;
+        screenLevelEditor.clickCooldown = 20;
     }
     );
 
-    public Button previousTankPage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", new Runnable()
+    public Button rotateTankButton = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "Tank orientation", () -> Game.screen = new OverlayRotateTank(Game.screen, screenLevelEditor)
+    );
+
+    public Button editHeight = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBlockHeight(Game.screen, screenLevelEditor)
+    );
+
+    public Button editGroupID = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBlockGroupID(Game.screen, screenLevelEditor)
+    );
+
+    public Button selectTeam = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlaySelectTeam(Game.screen, screenLevelEditor)
+    );
+
+    public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
-        @Override
-        public void run()
-        {
-            tankButtonPage--;
-        }
+        screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.playerTank;
+        screenLevelEditor.mouseTank = new TankPlayer(0, 0, 0);
     }
     );
 
-    public Button nextObstaclePage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", new Runnable()
+    public Button placeEnemy = new Button(this.centerX, this.centerY - 180, 350, 40, "Tank", () ->
     {
-        @Override
-        public void run()
-        {
-            obstacleButtonPage++;
-        }
+        screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.enemyTank;
+        screenLevelEditor.mouseTank = Game.registryTank.getEntry( screenLevelEditor.tankNum).getTank(0, 0, 0);
     }
     );
-
-    public Button previousObstaclePage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            obstacleButtonPage--;
-        }
-    }
+    public Button placeObstacle = new Button(this.centerX + 380, this.centerY - 180, 350, 40, "Block", () -> screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.obstacle
     );
 
-    public Button exitObjectMenu = new Button(this.centerX, this.centerY + 240, 350, 40, "Ok", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = screenLevelEditor;
-            screenLevelEditor.paused = false;
-            screenLevelEditor.clickCooldown = 20;
-        }
-    }
-    );
+    public ButtonObject movePlayerButton = new ButtonObject(new TankPlayer(0, 0, 0), this.centerX - 50, this.centerY, 75, 75, () -> screenLevelEditor.movePlayer = true, "Move the player");
 
-    public Button rotateTankButton = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "Tank orientation", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new OverlayRotateTank(Game.screen, screenLevelEditor);
-        }
-    }
-    );
-
-    public Button editHeight = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new OverlayBlockHeight(Game.screen, screenLevelEditor);
-
-        }
-    }
-    );
-
-    public Button editGroupID = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new OverlayBlockGroupID(Game.screen, screenLevelEditor);
-        }
-    }
-    );
-
-    public Button selectTeam = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new OverlaySelectTeam(Game.screen, screenLevelEditor);
-        }
-    }
-    );
-
-    public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.playerTank;
-            screenLevelEditor.mouseTank = new TankPlayer(0, 0, 0);
-        }
-    }
-    );
-
-    public Button placeEnemy = new Button(this.centerX, this.centerY - 180, 350, 40, "Tank", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.enemyTank;
-            screenLevelEditor.mouseTank = Game.registryTank.getEntry( screenLevelEditor.tankNum).getTank(0, 0, 0);
-        }
-    }
-    );
-    public Button placeObstacle = new Button(this.centerX + 380, this.centerY - 180, 350, 40, "Block", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.obstacle;
-        }
-    }
-    );
-
-    public ButtonObject movePlayerButton = new ButtonObject(new TankPlayer(0, 0, 0), this.centerX - 50, this.centerY, 75, 75, new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            screenLevelEditor.movePlayer = true;
-        }
-    }, "Move the player");
-
-    public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75, new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            screenLevelEditor.movePlayer = false;
-        }
-    }, "Add multiple player spawn points");
+    public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75, () -> screenLevelEditor.movePlayer = false, "Add multiple player spawn points");
 
     public OverlayObjectMenu(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -200,14 +110,10 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
 
             Tank t = Game.registryTank.tankEntries.get(i).getTank(x, y, 0);
 
-            ButtonObject b = new ButtonObject(t, x, y, 75, 75, new Runnable()
+            ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
             {
-                @Override
-                public void run()
-                {
-                    screenLevelEditor.tankNum = j;
-                    screenLevelEditor.mouseTank = Game.registryTank.getEntry(screenLevelEditor.tankNum).getTank(0, 0, 0);
-                }
+                screenLevelEditor.tankNum = j;
+                screenLevelEditor.mouseTank = Game.registryTank.getEntry(screenLevelEditor.tankNum).getTank(0, 0, 0);
             }
                     , t.description);
 
@@ -228,17 +134,13 @@ public class OverlayObjectMenu extends ScreenLevelBuilderOverlay
             final int j = i;
 
             tanks.obstacle.Obstacle o = Game.registryObstacle.obstacleEntries.get(i).getObstacle(x, y);
-            ButtonObject b = new ButtonObject(o, x, y, 75, 75, new Runnable()
+            ButtonObject b = new ButtonObject(o, x, y, 75, 75, () ->
             {
-                @Override
-                public void run()
-                {
-                    screenLevelEditor.obstacleNum = j;
-                    screenLevelEditor.mouseObstacle = Game.registryObstacle.getEntry(screenLevelEditor.obstacleNum).getObstacle(0, 0);
+                screenLevelEditor.obstacleNum = j;
+                screenLevelEditor.mouseObstacle = Game.registryObstacle.getEntry(screenLevelEditor.obstacleNum).getObstacle(0, 0);
 
-                    if (screenLevelEditor.mouseObstacle.enableGroupID)
-                        screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
-                }
+                if (screenLevelEditor.mouseObstacle.enableGroupID)
+                    screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleGroup + "");
             }
                     , o.description);
 

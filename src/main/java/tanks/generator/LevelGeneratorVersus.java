@@ -1,97 +1,109 @@
-package tanks;
+package tanks.generator;
 
+import tanks.Game;
 import tanks.gui.screen.ScreenPartyHost;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-public class LevelGenerator 
+public class LevelGeneratorVersus extends LevelGenerator
 {
-	public static String generateLevelString() 
+	public static String generateLevelString() {
+		return generateLevelString(-1);
+	}
+
+	public static String generateLevelString(int seed)
 	{
+		//int type = (int) (random.nextDouble()() * 13);
+		//test ^
+		//String name = Game.registryTank.getRandomTank().name;
+
+		Random random;
+		if (seed != -1)
+			random = new Random(seed);
+		else
+			random = new Random();
+
 		double size = Game.levelSize;
 
-		if (Math.random() < 0.2)
+		if (random.nextDouble() < 0.3)
 			size *= 2;
 
 		int height = (int)(18 * size);
 		int width = (int)(28 * size);
 		double amountWalls = 12 * size * size;
-		double amountTanks = 8 * size * size;
 
-		double random = Math.random();
-		int walls = (int) (random * amountWalls + 4);
+		int walls = (int) (random.nextDouble() * amountWalls + 4);
 
 		int vertical = 2;
 		int horizontal = 2;
 
 		int shade = 185;
 
-		if (Math.random() < 0.2)
-			shade = (int) (Math.random() * 60);
+		if (random.nextDouble() < 0.2)
+			shade = 30;
 
-		int r = (int)(Math.random() * 50) + shade;
-		int g = (int)(Math.random() * 50) + shade;
-		int b = (int)(Math.random() * 50) + shade;
+		int r = (int)(random.nextDouble() * 50) + shade;
+		int g = (int)(random.nextDouble() * 50) + shade;
+		int b = (int)(random.nextDouble() * 50) + shade;
 
 		double heavyTerrain = 1;
 
-		if (Math.random() < 0.2)
+		if (random.nextDouble() < 0.2)
 			heavyTerrain *= 2;
 
-		if (Math.random() < 0.2)
+		if (random.nextDouble() < 0.2)
 			heavyTerrain *= 2;
 
-		if (Math.random() < 0.2)
+		if (random.nextDouble() < 0.2)
 			heavyTerrain *= 4;
 
-		boolean bouncy = Math.random() < 0.2;
-		double bouncyWeight = Math.random() * 0.5 + 0.2;
+		boolean bouncy = random.nextDouble() < 0.2;
+		double bouncyWeight = random.nextDouble() * 0.5 + 0.2;
 
-		boolean nobounce = Math.random() < 0.2;
-		double noBounceWeight = Math.random() * 0.5 + 0.2;
+		boolean nobounce = random.nextDouble() < 0.2;
+		double noBounceWeight = random.nextDouble() * 0.5 + 0.2;
 
-		boolean shrubs = Math.random() < 0.2;
-		int shrubCount = (int) (walls + Math.random() * 4 - 2);
+		boolean shrubs = random.nextDouble() < 0.2;
+		int shrubCount = (int) (walls + random.nextDouble() * 4 - 2);
 
-		boolean mud = Math.random() < 0.2;
-		int mudCount = (int) (walls + Math.random() * 4 - 2);
+		boolean mud = random.nextDouble() < 0.2;
+		int mudCount = (int) (walls + random.nextDouble() * 4 - 2);
 
-		boolean ice = Math.random() < 0.2;
-		int iceCount = (int) (walls + Math.random() * 4 - 2);
+		boolean ice = random.nextDouble() < 0.2;
+		int iceCount = (int) (walls + random.nextDouble() * 4 - 2);
 
-		boolean snow = Math.random() < 0.2;
-		int snowCount = (int) (walls + Math.random() * 4 - 2);
+		boolean snow = random.nextDouble() < 0.2;
+		int snowCount = (int) (walls + random.nextDouble() * 4 - 2);
 
-		boolean teleporters = Math.random() < 0.2;
+		boolean teleporters = random.nextDouble() < 0.2;
 		int numTeleporters = walls / 5 + 2;
-		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * Math.random()) + 1;
+		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * random.nextDouble()) + 1;
 
-		boolean boostPanels = Math.random() < 0.2;
-		int boostCount = (int) (walls + Math.random() * 4 - 2);
+		boolean boostPanels = random.nextDouble() < 0.2;
+		int boostCount = (int) (walls + random.nextDouble() * 4 - 2);
 
-		boolean explosives = Math.random() < 0.2;
-		int numExplosives = (int) (walls / 5 + Math.random() * 4 + 1);
+		boolean explosives = random.nextDouble() < 0.2;
+		int numExplosives = (int) (walls / 5 + random.nextDouble() * 4 + 1);
 
-		int time = (int) (random * amountTanks + 4) * 5;
+		int time = (int) (random.nextDouble() * 24 + 12) * 5;
 
-		if (Math.random() > 0.2)
+		if (random.nextDouble() > 0.2)
 			time = 0;
-		else
-			time += 45 * (size / Game.levelSize - 1);
 
 		double light = 100;
 		double shadeFactor = 0.5;
 
-		if (Math.random() < 0.2)
+		if (random.nextDouble() < 0.2)
 		{
-			light *= Math.random() * 1.25;
+			light *= random.nextDouble() * 1.25;
 		}
 
 		boolean dark = light < 50;
-		int numLights = (int) (walls / 5 + Math.random() * 6 + 1);
+		int numLights = (int) (walls / 5 + random.nextDouble() * 6 + 1);
 
-		if (Math.random() < 0.2)
-			shadeFactor = Math.random() * 0.6 + 0.2;
+		if (random.nextDouble() < 0.2)
+			shadeFactor = random.nextDouble() * 0.6 + 0.2;
 
 		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20," + time + "," + (int) light + "," + (int) (light * shadeFactor) + "|");
 
@@ -106,66 +118,67 @@ public class LevelGenerator
 		}
 
 		boolean[][] solid = new boolean[width][height];
-		int[] tankX;
-		int[] tankY;
-		int[] playerTankX;
-		int[] playerTankY;
+
+		int[] playerX;
+		int[] playerY;
+		int firstPlayerX = 0;
+		int firstPlayerY = 0;
 
 		boolean[][] cells = new boolean[width][height];
 		double[][] cellWeights = new double[width][height];
 
-		ArrayList<Integer[]> startPointsH = new ArrayList<Integer[]>();
-		ArrayList<Integer[]> startPointsV = new ArrayList<Integer[]>();
+		ArrayList<Integer[]> startPointsH = new ArrayList<>();
+		ArrayList<Integer[]> startPointsV = new ArrayList<>();
 
-		for (int i = 0; i < width; i++) 
+		for (int i = 0; i < width; i++)
 		{
-			for (int j = 0; j < height; j++) 
+			for (int j = 0; j < height; j++)
 			{
 				cellWeights[i][j] = 1;
 			}
 		}
 
-		for (int i = 0; i < walls; i++) 
+		for (int i = 0; i < walls; i++)
 		{
 			int x = 0;
 			int y = 0;
 			int xEnd = 0;
 			int yEnd = 0;
-			int l = 1 + (int) Math.max(1, (Math.random() * (Math.min(height, width) - 3)));
+			int l = 1 + (int) Math.max(1, (random.nextDouble() * (Math.min(height, width) - 3)));
 
 			String type = "";
 			boolean passable = true;
 
-			if (bouncy && Math.random() < bouncyWeight)
+			if (bouncy && random.nextDouble() < bouncyWeight)
 				type = "-bouncy";
-			else if (nobounce && Math.random() < noBounceWeight)
+			else if (nobounce && random.nextDouble() < noBounceWeight)
 			{
 				type = "-nobounce";
 				passable = false;
 			}
-			else if (Math.random() < 0.5)
+			else if (random.nextDouble() < 0.5)
 			{
 				type = "-hard";
 				passable = false;
 			}
-			else if (Math.random() < 0.25)
+			else if (random.nextDouble() < 0.25)
 			{
 				type = "-hole";
 				passable = false;
 			}
-			else if (Math.random() < 0.25)
+			else if (random.nextDouble() < 0.25)
 			{
 				type = "-breakable";
 				passable = true;
 			}
 
-			if (Math.random() * (vertical + horizontal) < horizontal) 
+			if (random.nextDouble() * (vertical + horizontal) < horizontal)
 			{
 				vertical++;
 				int rand;
 				Integer[] sp = null;
 
-				if (Math.random() < 0.25 || startPointsH.isEmpty())
+				if (random.nextDouble() < 0.25 || startPointsH.isEmpty())
 				{
 					for (int in = 0; in < 50; in++)
 					{
@@ -173,8 +186,8 @@ public class LevelGenerator
 
 						while (!chosen)
 						{
-							x = (int) (Math.random() * (width - l));
-							y = (int) (Math.random() * (height));
+							x = (int) (random.nextDouble() * (width - l));
+							y = (int) (random.nextDouble() * (height));
 							xEnd = x + l;
 							yEnd = y;
 
@@ -185,7 +198,7 @@ public class LevelGenerator
 							}
 							weight /= (xEnd - x + 1);
 
-							if (Math.random() < weight)
+							if (random.nextDouble() < weight)
 								chosen = true;
 						}
 
@@ -212,14 +225,14 @@ public class LevelGenerator
 				}
 				else
 				{
-					rand = (int) (Math.random() * startPointsH.size());
+					rand = (int) (random.nextDouble() * startPointsH.size());
 					x = startPointsH.get(rand)[0] + 1;
 					y = startPointsH.get(rand)[1];
 					xEnd = x + l + 1;
 					yEnd = y;
 					sp = startPointsH.remove(rand);
 
-					if ((Math.random() < 0.5 && x > 1) || x >= width)
+					if ((random.nextDouble() < 0.5 && x > 1) || x >= width)
 					{
 						xEnd -= l + 2;
 						x -= l + 2;
@@ -284,30 +297,30 @@ public class LevelGenerator
 					s.append(type);
 				}
 
-				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++) 
+				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++)
 				{
-					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++) 
+					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++)
 					{
 						cellWeights[j][k] /= 2;
 					}
 				}
 			}
-			else 
+			else
 			{
 				horizontal++;
 				int rand;
 				Integer[] sp = null;
 
-				if (Math.random() < 0.25 || startPointsV.isEmpty())
-				{		
+				if (random.nextDouble() < 0.25 || startPointsV.isEmpty())
+				{
 					for (int in = 0; in < 50; in++)
 					{
 						boolean chosen = false;
 
 						while (!chosen)
 						{
-							x = (int) (Math.random() * (width));
-							y = (int) (Math.random() * (height - l));
+							x = (int) (random.nextDouble() * (width));
+							y = (int) (random.nextDouble() * (height - l));
 							xEnd = x;
 							yEnd = y + l;
 
@@ -318,7 +331,7 @@ public class LevelGenerator
 							}
 							weight /= (yEnd - y + 1);
 
-							if (Math.random() < weight)
+							if (random.nextDouble() < weight)
 								chosen = true;
 						}
 
@@ -345,14 +358,14 @@ public class LevelGenerator
 				}
 				else
 				{
-					rand = (int) (Math.random() * startPointsV.size());
+					rand = (int) (random.nextDouble() * startPointsV.size());
 					x = startPointsV.get(rand)[0];
 					y = startPointsV.get(rand)[1] + 1;
 					xEnd = x;
 					yEnd = y + l + 1;
 					sp = startPointsV.remove(rand);
 
-					if ((Math.random() < 0.5 && y > 1) || y >= height)
+					if ((random.nextDouble() < 0.5 && y > 1) || y >= height)
 					{
 						yEnd -= l + 2;
 						y -= l + 2;
@@ -413,9 +426,9 @@ public class LevelGenerator
 					s.append(type);
 				}
 
-				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++) 
+				for (int j = Math.max(0, x - 5); j <= Math.min(xEnd + 5, width - 1); j++)
 				{
-					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++) 
+					for (int k = Math.max(0, y - 5); k <= Math.min(yEnd + 5, height - 1); k++)
 					{
 						cellWeights[j][k] /= 2;
 					}
@@ -433,23 +446,23 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < shrubCount; j++)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
-				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
-				{						
+				for (int i = 0; i < (random.nextDouble() * 20 + 4) * heavyTerrain; i++)
+				{
 					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
 						cells[x][y] = true;
-						
+
 						if (!s.toString().endsWith(","))
 							s.append(",");
-						
+
 						s.append(x).append("-").append(y).append("-shrub");
 					}
-					
-					double rand = Math.random();
-					
+
+					double rand = random.nextDouble();
+
 					if (rand < 0.25)
 						x++;
 					else if (rand < 0.5)
@@ -466,10 +479,10 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < boostCount; j++)
 			{
-				int x1 = (int) (Math.random() * width);
-				int y1 = (int) (Math.random() * height);
+				int x1 = (int) (random.nextDouble() * width);
+				int y1 = (int) (random.nextDouble() * height);
 
-				int panelSize = (int)(Math.random() * 3) + 1;
+				int panelSize = (int)(random.nextDouble() * 3) + 1;
 
 				for (int x = x1; x < x1 + panelSize; x++)
 				{
@@ -493,8 +506,8 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < numExplosives; j++)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
 				if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 				{
@@ -512,8 +525,8 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < numLights; j++)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
 				if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 				{
@@ -522,7 +535,7 @@ public class LevelGenerator
 					if (!s.toString().endsWith(","))
 						s.append(",");
 
-					s.append(x).append("-").append(y).append("-light-").append((int)(Math.random() * 5 + 1) / 2.0);
+					s.append(x).append("-").append(y).append("-light-").append((int)(random.nextDouble() * 5 + 1) / 2.0);
 				}
 			}
 		}
@@ -531,11 +544,11 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < mudCount; j++)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
 
-				for (int i = 0; i < (Math.random() * 20 + 4) * heavyTerrain; i++)
+				for (int i = 0; i < (random.nextDouble() * 20 + 4) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
@@ -547,7 +560,7 @@ public class LevelGenerator
 						s.append(x).append("-").append(y).append("-mud");
 					}
 
-					double rand = Math.random();
+					double rand = random.nextDouble();
 
 					if (rand < 0.25)
 						x++;
@@ -565,10 +578,10 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < iceCount; j++)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
-				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
+				for (int i = 0; i < (random.nextDouble() * 40 + 8) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
@@ -580,7 +593,7 @@ public class LevelGenerator
 						s.append(x).append("-").append(y).append("-ice");
 					}
 
-					double rand = Math.random();
+					double rand = random.nextDouble();
 
 					if (rand < 0.25)
 						x++;
@@ -598,10 +611,10 @@ public class LevelGenerator
 		{
 			for (int j = 0; j < snowCount; j++)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
-				for (int i = 0; i < (Math.random() * 40 + 8) * heavyTerrain; i++)
+				for (int i = 0; i < (random.nextDouble() * 40 + 8) * heavyTerrain; i++)
 				{
 					if (x < width && y < height && x >= 0 && y >= 0 && !cells[x][y])
 					{
@@ -613,7 +626,7 @@ public class LevelGenerator
 						s.append(x).append("-").append(y).append("-snow");
 					}
 
-					double rand = Math.random();
+					double rand = random.nextDouble();
 
 					if (rand < 0.25)
 						x++;
@@ -626,7 +639,7 @@ public class LevelGenerator
 				}
 			}
 		}
-		
+
 		if (teleporters)
 		{
 			int n = numTeleporters;
@@ -634,15 +647,15 @@ public class LevelGenerator
 
 			while (n > 0)
 			{
-				int x = (int) (Math.random() * width);
-				int y = (int) (Math.random() * height);
+				int x = (int) (random.nextDouble() * width);
+				int y = (int) (random.nextDouble() * height);
 
 				if (!cells[x][y])
 				{
 					for (int i = Math.max(x - 2, 0); i <= Math.min(x + 2, width - 1); i++)
 						for (int j = Math.max(y - 2, 0); j <= Math.min(y + 2, height - 1); j++)
 							cells[i][j] = true;
-					
+
 					if (!s.toString().endsWith(","))
 						s.append(",");
 
@@ -654,8 +667,8 @@ public class LevelGenerator
 					groupProgress++;
 
 					if (id >= teleporterGroups)
-						id = (int) (Math.random() * teleporterGroups);
-					
+						id = (int) (random.nextDouble() * teleporterGroups);
+
 					s.append(x).append("-").append(y).append("-teleporter");
 					teleporterArray[x][y] = id;
 
@@ -669,50 +682,42 @@ public class LevelGenerator
 
 		s.append("|");
 
-		int numTanks = (int) (random * amountTanks + 1);
-		tankX = new int[numTanks];
-		tankY = new int[numTanks];
+		int numTanks = ScreenPartyHost.server.connections.size() + 1;
+		playerX = new int[ScreenPartyHost.server.connections.size()];
+		playerY = new int[ScreenPartyHost.server.connections.size()];
 
-		int x = (int) (Math.random() * (width));
-		int y = (int) (Math.random() * (height));
+		int x = (int) (random.nextDouble() * (width));
+		int y = (int) (random.nextDouble() * (height));
 
 		while (cells[x][y])
 		{
-			x = (int) (Math.random() * (width));
-			y = (int) (Math.random() * (height));
+			x = (int) (random.nextDouble() * (width));
+			y = (int) (random.nextDouble() * (height));
 		}
 
-		/*for (int i = -2; i <= 2; i++)
-			for (int j = -2; j <= 2; j++)
-				cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
-
-		s.append(x).append("-").append(y).append("-player-").append((int) (Math.random() * 4)).append(",");*/
-
-		int numPlayers = 1;
-
-		if (ScreenPartyHost.isServer)
-			numPlayers += ScreenPartyHost.server.connections.size();
-
-		playerTankX = new int[numPlayers];
-		playerTankY = new int[numPlayers];
-
-		for (int i = 0; i < numPlayers; i++)
+		for (int i = 0; i < numTanks; i++)
 		{
-			int angle = (int) (Math.random() * 4);
-			x = (int) (Math.random() * (width));
-			y = (int) (Math.random() * (height));
+			int angle = (int) (random.nextDouble() * 4);
+			x = (int) (random.nextDouble() * (width));
+			y = (int) (random.nextDouble() * (height));
 
 			while (cells[x][y])
 			{
-				x = (int) (Math.random() * (width));
-				y = (int) (Math.random() * (height));
+				x = (int) (random.nextDouble() * (width));
+				y = (int) (random.nextDouble() * (height));
 			}
 
 			int bound;
 
-			if (numPlayers < 20)
+			if (numTanks < 4)
+				bound = 8;
+			else if (numTanks < 6)
+				bound = 4;
+			else if (numTanks < 10)
+				bound = 3;
+			else if (numTanks < 20)
 				bound = 2;
-			else if (numPlayers < 56)
+			else if (numTanks < 56)
 				bound = 1;
 			else
 				bound = 0;
@@ -725,40 +730,22 @@ public class LevelGenerator
 			s.append("player");
 			s.append("-").append(angle);
 
-			playerTankX[i] = x;
-			playerTankY[i] = y;
-
-			s.append(",");
-		}
-
-		for (int i = 0; i < numTanks; i++)
-		{
-			int angle = (int) (Math.random() * 4);
-			x = (int) (Math.random() * (width));
-			y = (int) (Math.random() * (height));
-
-			while (cells[x][y])
+			if (i == 0)
 			{
-				x = (int) (Math.random() * (width));
-				y = (int) (Math.random() * (height));
+				firstPlayerX = x;
+				firstPlayerY = y;
+			}
+			else
+			{
+				playerX[i - 1] = x;
+				playerY[i - 1] = y;
 			}
 
-			for (int a = -1; a <= 1; a++)
-				for (int j = -1; j <= 1; j++)
-					cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
-
-			s.append(x).append("-").append(y).append("-");
-			s.append(Game.registryTank.getRandomTank().name);
-			s.append("-").append(angle);
-
-			tankX[i] = x;
-			tankY[i] = y;
-
-			if (i == numTanks - 1) 
+			if (i == numTanks - 1)
 			{
-				s.append("}");
-			} 
-			else 
+				s.append("|ally-true}");
+			}
+			else
 			{
 				s.append(",");
 			}
@@ -767,11 +754,8 @@ public class LevelGenerator
 		ArrayList<Integer> currentX = new ArrayList<>();
 		ArrayList<Integer> currentY = new ArrayList<>();
 
-		for (int i = 0; i < numPlayers; i++)
-		{
-			currentX.add(playerTankX[i]);
-			currentY.add(playerTankY[i]);
-		}
+		currentX.add(firstPlayerX);
+		currentY.add(firstPlayerY);
 
 		while (!currentX.isEmpty())
 		{
@@ -826,11 +810,11 @@ public class LevelGenerator
 			}
 		}
 
-		for (int i = 0; i < numTanks; i++)
+		for (int i = 0; i < numTanks - 1; i++)
 		{
-			if (!solid[tankX[i]][tankY[i]])
+			if (!solid[playerX[i]][playerY[i]])
 			{
-				return LevelGenerator.generateLevelString();
+				return LevelGeneratorVersus.generateLevelString(seed);
 			}
 		}
 

@@ -172,16 +172,12 @@ public class EventAddTextBox extends PersonalEvent
             final int textBoxID = this.id;
             t = new TextBox(this.posX, this.posY, this.sizeX, this.sizeY, this.label, null, this.defaultInput, this.hover);
 
-            t.function = new Runnable()
+            t.function = () ->
             {
-                @Override
-                public void run()
-                {
-                    Game.eventsOut.add(new EventSetTextBox(textBoxID, t.inputText));
+                Game.eventsOut.add(new EventSetTextBox(textBoxID, t.inputText));
 
-                    if (wait)
-                        Game.screen = new ScreenOnlineWaiting();
-                }
+                if (wait)
+                    Game.screen = new ScreenOnlineWaiting();
             };
 
             if (hover.equals(""))

@@ -16,7 +16,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     public TextBox levelName;
     public boolean downloaded = false;
 
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
+    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Download", new Runnable()
     {
@@ -63,21 +63,16 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
         for (int i = 0; i < drawables.length; i++)
         {
-            drawables[i] = new ArrayList<IDrawable>();
+            drawables[i] = new ArrayList<>();
         }
 
         Obstacle.draw_size = Game.tile_size;
 
-        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level save name", new Runnable()
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            @Override
-            public void run()
-            {
-                if (levelName.inputText.equals(""))
-                    levelName.inputText = levelName.previousInputText;
-                updateDownloadButton();
-            }
-
+            if (levelName.inputText.equals(""))
+                levelName.inputText = levelName.previousInputText;
+            updateDownloadButton();
         }
                 , name.replace("_", " "));
 

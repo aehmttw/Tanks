@@ -17,41 +17,29 @@ public class ScreenSharedSummary extends Screen
     public boolean showLevels;
     public boolean showCrusades;
 
-    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Back", () ->
     {
-        @Override
-        public void run()
-        {
-            if (ScreenPartyHost.isServer)
-                Game.screen = ScreenPartyHost.activeScreen;
-            else
-                Game.screen = new ScreenPartyLobby();
-        }
+        if (ScreenPartyHost.isServer)
+            Game.screen = ScreenPartyHost.activeScreen;
+        else
+            Game.screen = new ScreenPartyLobby();
     }
     );
 
-    public Button levels = new Button(this.centerX + this.objXSpace, this.centerY - 90, this.objWidth, this.objHeight, "More levels", new Runnable()
+    public Button levels = new Button(this.centerX + this.objXSpace, this.centerY - 90, this.objWidth, this.objHeight, "More levels", () ->
     {
-        @Override
-        public void run()
-        {
-            if (ScreenPartyHost.isServer)
-                Game.screen = new ScreenSharedLevels(ScreenPartyHost.activeScreen.sharedLevels);
-            else
-                Game.screen = new ScreenSharedLevels(ScreenPartyLobby.sharedLevels);
-        }
+        if (ScreenPartyHost.isServer)
+            Game.screen = new ScreenSharedLevels(ScreenPartyHost.activeScreen.sharedLevels);
+        else
+            Game.screen = new ScreenSharedLevels(ScreenPartyLobby.sharedLevels);
     });
 
-    public Button crusades = new Button(this.centerX + this.objXSpace, this.centerY + 150, this.objWidth, this.objHeight, "More crusades", new Runnable()
+    public Button crusades = new Button(this.centerX + this.objXSpace, this.centerY + 150, this.objWidth, this.objHeight, "More crusades", () ->
     {
-        @Override
-        public void run()
-        {
-            if (ScreenPartyHost.isServer)
-                Game.screen = new ScreenSharedCrusades(ScreenPartyHost.activeScreen.sharedCrusades);
-            else
-                Game.screen = new ScreenSharedCrusades(ScreenPartyLobby.sharedCrusades);
-        }
+        if (ScreenPartyHost.isServer)
+            Game.screen = new ScreenSharedCrusades(ScreenPartyHost.activeScreen.sharedCrusades);
+        else
+            Game.screen = new ScreenSharedCrusades(ScreenPartyLobby.sharedCrusades);
     });
 
     public ScreenSharedSummary(ArrayList<ScreenPartyHost.SharedLevel> levels, ArrayList<ScreenPartyHost.SharedCrusade> crusades)
@@ -68,14 +56,10 @@ public class ScreenSharedSummary extends Screen
         for (int i = Math.max(0, crusades.size() - 6); i < crusades.size(); i++)
         {
             ScreenPartyHost.SharedCrusade l = crusades.get(i);
-            buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), new Runnable()
+            buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
             {
-                @Override
-                public void run()
-                {
-                    Crusade c = new Crusade(l.crusade, l.name);
-                    Game.screen = new ScreenCrusadePreview(c, Game.screen, false);
-                }
+                Crusade c = new Crusade(l.crusade, l.name);
+                Game.screen = new ScreenCrusadePreview(c, Game.screen, false);
             }
                     , "Shared by " + l.creator));
         }
@@ -88,17 +72,13 @@ public class ScreenSharedSummary extends Screen
         {
             ScreenPartyHost.SharedLevel l = levels.get(i);
 
-            buttons2.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), new Runnable()
+            buttons2.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
             {
-                @Override
-                public void run()
-                {
-                    ScreenSaveLevel sc = new ScreenSaveLevel(l.name, l.level, Game.screen);
-                    Level lev = new Level(l.level);
-                    lev.preview = true;
-                    lev.loadLevel(sc);
-                    Game.screen = sc;
-                }
+                ScreenSaveLevel sc = new ScreenSaveLevel(l.name, l.level, Game.screen);
+                Level lev = new Level(l.level);
+                lev.preview = true;
+                lev.loadLevel(sc);
+                Game.screen = sc;
             }
                     , "Shared by " + l.creator));
         }

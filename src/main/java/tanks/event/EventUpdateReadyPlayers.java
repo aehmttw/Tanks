@@ -33,7 +33,7 @@ public class EventUpdateReadyPlayers extends PersonalEvent
 	public void execute() 
 	{
 		if (this.clientID == null)
-			ScreenPartyLobby.readyPlayers = new ArrayList<String>(Arrays.asList(readyPlayers.split(",")));
+			ScreenPartyLobby.readyPlayers = new ArrayList<>(Arrays.asList(readyPlayers.split(",")));
 	}
 
 	@Override

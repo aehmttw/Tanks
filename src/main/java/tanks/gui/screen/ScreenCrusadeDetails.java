@@ -54,7 +54,7 @@ public class ScreenCrusadeDetails extends Screen
             if (crusade.started)
                 Game.screen = new ScreenCrusadeEditWarning(Game.screen, crusade);
             else
-                Game.screen = new ScreenCrusadeBuilder(crusade);
+                Game.screen = new ScreenCrusadeEditor(crusade);
         }
     });
 
@@ -67,28 +67,20 @@ public class ScreenCrusadeDetails extends Screen
         }
     });
 
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {
-        @Override
-        public void run()
-        {
-            if (ScreenPartyHost.isServer)
-                Game.screen = new ScreenPartyCrusades();
-            else
-                Game.screen = new ScreenCrusades();
-        }
+        if (ScreenPartyHost.isServer)
+            Game.screen = new ScreenPartyCrusades();
+        else
+            Game.screen = new ScreenCrusades();
     });
 
-    public Button back2 = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    public Button back2 = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", () ->
     {
-        @Override
-        public void run()
-        {
-            if (ScreenPartyHost.isServer)
-                Game.screen = new ScreenPartyCrusades();
-            else
-                Game.screen = new ScreenCrusades();
-        }
+        if (ScreenPartyHost.isServer)
+            Game.screen = new ScreenPartyCrusades();
+        else
+            Game.screen = new ScreenCrusades();
     });
 
     public ScreenCrusadeDetails(Crusade c)

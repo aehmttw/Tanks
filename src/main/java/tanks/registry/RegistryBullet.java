@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class RegistryBullet
 {
-	public ArrayList<BulletEntry> bulletEntries = new ArrayList<BulletEntry>();
+	public ArrayList<BulletEntry> bulletEntries = new ArrayList<>();
 
 	public static class BulletEntry
 	{

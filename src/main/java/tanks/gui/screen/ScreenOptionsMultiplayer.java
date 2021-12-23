@@ -58,35 +58,14 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"When enabled, automatically presses---the ready button if there is no shop");
 
-	Button color = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Tank color", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenOptionsMultiplayerColor();
-		}
-	},
+	Button color = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Tank color", () -> Game.screen = new ScreenOptionsMultiplayerColor(),
 			"Personalize your tank---to stand out in multiplayer!");
 
-	Button hostOptions = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Party host options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenOptionsPartyHost();
-		}
-	}, "Options for parties you host");
+	Button hostOptions = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Party host options", () -> Game.screen = new ScreenOptionsPartyHost(), "Options for parties you host");
 
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenOptions();
-		}
-	}
-			);
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
+	);
 	
 	public ScreenOptionsMultiplayer()
 	{

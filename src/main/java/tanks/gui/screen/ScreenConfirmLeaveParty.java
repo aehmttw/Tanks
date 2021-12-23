@@ -7,29 +7,18 @@ import tanks.network.Client;
 
 public class ScreenConfirmLeaveParty extends Screen
 {
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenPartyLobby();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPartyLobby()
     );
 
-    public Button confirm = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Leave party", new Runnable()
+    public Button confirm = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Leave party", () ->
     {
-        @Override
-        public void run()
-        {
-            Drawing.drawing.playSound("leave.ogg");
-            ScreenPartyLobby.isClient = false;
+        Drawing.drawing.playSound("leave.ogg");
+        ScreenPartyLobby.isClient = false;
 
-            Client.handler.close();
+        Client.handler.close();
 
-            Game.screen = new ScreenJoinParty();
-            ScreenPartyLobby.connections.clear();
-        }
+        Game.screen = new ScreenJoinParty();
+        ScreenPartyLobby.connections.clear();
     }
     );
 

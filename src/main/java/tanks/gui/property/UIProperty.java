@@ -1,13 +1,13 @@
-package tanks.hotbar.item.property;
+package tanks.gui.property;
 
 import java.util.LinkedHashMap;
 
-public abstract class ItemProperty<T>
+public abstract class UIProperty<T>
 {
     public String name;
     public T value;
 
-    public ItemProperty(LinkedHashMap<String, ItemProperty> map, String name, T value)
+    public UIProperty(LinkedHashMap<String, UIProperty> map, String name, T value)
     {
         this.name = name;
         this.value = value;

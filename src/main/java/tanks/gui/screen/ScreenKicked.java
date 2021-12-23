@@ -5,6 +5,8 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
 
+import java.util.ArrayList;
+
 public class ScreenKicked extends Screen
 {
 	public String reason;
@@ -22,14 +24,7 @@ public class ScreenKicked extends Screen
 		ScreenPartyLobby.connections.clear();
 	}
 		
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = Game.lastOfflineScreen;
-		}
-	}
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = Game.lastOfflineScreen
 	);
 
 	@Override
@@ -44,8 +39,14 @@ public class ScreenKicked extends Screen
 		this.drawDefaultBackground();
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);
-	
+
+		ArrayList<String> lines = Drawing.drawing.wrapText(this.reason, Drawing.drawing.interfaceSizeX - 50, this.textSize);
+
+		for (int lineNo = 0; lineNo < lines.size(); lineNo++)
+		{
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5 + lineNo * 35, lines.get(lineNo));
+		}
+
 		back.draw();
 	}
 	

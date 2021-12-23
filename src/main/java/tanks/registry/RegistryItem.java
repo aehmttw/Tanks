@@ -18,7 +18,7 @@ import java.util.Date;
 
 public class RegistryItem
 {
-	public ArrayList<ItemEntry> itemEntries = new ArrayList<ItemEntry>();
+	public ArrayList<ItemEntry> itemEntries = new ArrayList<>();
 
 	public static class ItemEntry
 	{

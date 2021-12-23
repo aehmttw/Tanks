@@ -11,20 +11,16 @@ import java.util.HashMap;
 public class ScreenOverlayOnline extends Screen
 {
     public static final int max_button_count = 5;
-    public HashMap<Integer, Button> buttons = new HashMap<Integer, Button>();
-    public Button disconnect = new Button(0, 0, this.objWidth, this.objHeight, "Disconnect", new Runnable()
+    public HashMap<Integer, Button> buttons = new HashMap<>();
+    public Button disconnect = new Button(0, 0, this.objWidth, this.objHeight, "Disconnect", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenPartyLobby.isClient = false;
-            Client.handler.ctx.close();
+        ScreenPartyLobby.isClient = false;
+        Client.handler.ctx.close();
 
-            Game.cleanUp();
+        Game.cleanUp();
 
-            Panel.onlinePaused = false;
-            Game.screen = new ScreenPlayMultiplayer();
-        }
+        Panel.onlinePaused = false;
+        Game.screen = new ScreenPlayMultiplayer();
     }, "This button will disconnect---you from the online service");
 
     public String title = "Online server menu";

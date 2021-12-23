@@ -23,7 +23,7 @@ public class TankMint extends TankAIControlled
 		this.bulletSpeed = 25.0 / 4;
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
-		this.mineSensitivity = 1;
+		this.avoidSensitivity = 1;
 		
 		this.coinValue = 2;
 

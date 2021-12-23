@@ -71,4 +71,9 @@ public abstract class BaseShapeRenderer
 
     public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest);
 
+    public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth);
+
+    public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow);
+
+    public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask);
 }

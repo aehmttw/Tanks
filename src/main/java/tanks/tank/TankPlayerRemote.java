@@ -3,6 +3,8 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.*;
+import tanks.gui.IFixedMenu;
+import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.ItemBullet;
@@ -26,7 +28,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
 
-    public ArrayList<Bullet> recentBullets = new ArrayList<Bullet>();
+    public ArrayList<Bullet> recentBullets = new ArrayList<>();
 
     public boolean forceMotion = false;
     public boolean recoil = false;
@@ -200,10 +202,8 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 double vX2 = vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
                 double vY2 = vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
-                for (int i = 0; i < this.attributes.size(); i++)
+                for (AttributeModifier a : this.attributes)
                 {
-                    AttributeModifier a = this.attributes.get(i);
-
                     if (a.type.equals("velocity"))
                     {
                         vX2 = a.getValue(vX2);
@@ -462,6 +462,17 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     {
         if (Crusade.crusadeMode)
             this.player.remainingLives--;
+
+        for (IFixedMenu m : ModAPI.menuGroup)
+        {
+            if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
+            {
+                if (((Scoreboard) m).players.isEmpty())
+                    ((Scoreboard) m).addTeamScore(this.team, 1);
+                else
+                    ((Scoreboard) m).addPlayerScore(this.player, 1);
+            }
+        }
     }
 
     public void drawName()

@@ -1,8 +1,8 @@
 package tanks.gui.screen;
 
 import tanks.*;
+import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
 
@@ -12,107 +12,82 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 {
     boolean odd = false;
 
-    ArrayList<Firework> fireworks1 = new ArrayList<Firework>();
-    ArrayList<Firework> fireworks2 = new ArrayList<Firework>();
+    ArrayList<Firework> fireworks1 = new ArrayList<>();
+    ArrayList<Firework> fireworks2 = new ArrayList<>();
 
-    Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate a new level", new Runnable()
+    Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate a new level", () ->
     {
-        @Override
-        public void run()
+        if (ScreenGame.versus)
         {
-            if (ScreenGame.versus)
-            {
-                Game.cleanUp();
-                new Level(LevelGeneratorVersus.generateLevelString()).loadLevel();
-                Game.screen = new ScreenGame();
-            }
-            else
-            {
-                Game.reset();
-                Game.screen = new ScreenGame();
-            }
+            Game.cleanUp();
+            new Level(LevelGeneratorVersus.generateLevelString()).loadLevel();
+            Game.screen = new ScreenGame();
         }
-    }
-    );
-
-    Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", new Runnable()
-    {
-        @Override
-        public void run()
+        else
         {
-            Level level = new Level(Game.currentLevelString);
-            level.loadLevel();
+            Game.cleanUp();
+            Game.loadRandomLevel();
             Game.screen = new ScreenGame();
         }
     }
     );
 
-    Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", () ->
     {
-        @Override
-        public void run()
-        {
-            Game.resetTiles();
-            Game.screen = ScreenPartyHost.activeScreen;
-            ScreenGame.versus = false;
-            ScreenInterlevel.fromSavedLevels = false;
-        }
+        Level level = new Level(Game.currentLevelString);
+        level.loadLevel();
+        Game.screen = new ScreenGame();
     }
     );
 
-    Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", () ->
     {
-        @Override
-        public void run()
-        {
-            Level level = new Level(Game.currentLevelString);
-            level.loadLevel();
-            Game.screen = new ScreenGame();
-        }
+        Game.resetTiles();
+        Game.screen = ScreenPartyHost.activeScreen;
+        ScreenGame.versus = false;
+        ScreenInterlevel.fromSavedLevels = false;
+        ScreenInterlevel.fromModdedLevels = false;
     }
     );
 
-    Button quitHigherPos = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", new Runnable()
+    Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", () ->
     {
-        @Override
-        public void run()
-        {
-            Game.resetTiles();
-            Game.screen = ScreenPartyHost.activeScreen;
-            ScreenGame.versus = false;
-            ScreenInterlevel.fromSavedLevels = false;
-        }
+        Level level = new Level(Game.currentLevelString);
+        level.loadLevel();
+        Game.screen = new ScreenGame();
     }
     );
 
-    Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", new Runnable()
+    Button quitHigherPos = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", () ->
     {
-        @Override
-        public void run()
-        {
-            Game.resetTiles();
-            Game.screen = new ScreenPartyLobby();
-            ScreenGame.versus = false;
-        }
+        Game.resetTiles();
+        Game.screen = ScreenPartyHost.activeScreen;
+        ScreenGame.versus = false;
+        ScreenInterlevel.fromSavedLevels = false;
+        ScreenInterlevel.fromModdedLevels = false;
     }
     );
 
-    Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
+    Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
-            Level lev = new Level(Game.currentLevelString);
-            lev.preview = true;
-            lev.loadLevel(sc);
-            Game.screen = sc;
+        Game.resetTiles();
+        Game.screen = new ScreenPartyLobby();
+        ScreenGame.versus = false;
+    }
+    );
 
-            sc.fromInterlevel = true;
-            sc.music = music;
-            sc.musicID = musicID;
-            sc.updateDownloadButton();
-        }
+    Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
+    {
+        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+        Level lev = new Level(Game.currentLevelString);
+        lev.preview = true;
+        lev.loadLevel(sc);
+        Game.screen = sc;
+
+        sc.fromInterlevel = true;
+        sc.music = music;
+        sc.musicID = musicID;
+        sc.updateDownloadButton();
     }
     );
 
@@ -122,12 +97,12 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
         if (Panel.win)
         {
-            Drawing.drawing.playSound("win.ogg");
+            //Drawing.drawing.playSound("win.ogg");
             this.music = "win_music.ogg";
         }
         else
         {
-            Drawing.drawing.playSound("lose.ogg");
+            //Drawing.drawing.playSound("lose.ogg");
             this.music = "lose_music.ogg";
         }
 
@@ -161,7 +136,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         {
             next.update();
         }
-        else if (ScreenInterlevel.fromSavedLevels)
+        else if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromModdedLevels)
         {
             quitHigherPos.update();
             replayHigherPos.update();
@@ -220,7 +195,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         {
             next.draw();
         }
-        else if (ScreenInterlevel.fromSavedLevels)
+        else if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromModdedLevels)
         {
             quitHigherPos.draw();
             replayHigherPos.draw();

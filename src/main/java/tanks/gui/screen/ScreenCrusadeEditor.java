@@ -11,7 +11,7 @@ import tanks.registry.RegistryItem;
 
 import java.util.ArrayList;
 
-public class ScreenCrusadeBuilder extends Screen implements IItemScreen
+public class ScreenCrusadeEditor extends Screen implements IItemScreen
 {
     public enum Mode {options, levels, items}
 
@@ -42,7 +42,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
 
     public Selector itemSelector;
 
-    public ScreenCrusadeBuilder instance = this;
+    public ScreenCrusadeEditor instance = this;
 
     public int titleOffset = -270;
 
@@ -90,14 +90,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         }
     });
 
-    public Button addLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add level", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenCrusadeAddLevel((ScreenCrusadeBuilder) Game.screen);
-        }
-    }
+    public Button addLevel = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Add level", () -> Game.screen = new ScreenCrusadeAddLevel((ScreenCrusadeEditor) Game.screen)
     );
 
     public Button reorderLevels = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Reorder levels", new Runnable()
@@ -140,12 +133,14 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
     }
     );
 
-    public ScreenCrusadeBuilder(Crusade c)
+    public ScreenCrusadeEditor(Crusade c)
     {
         super(350, 40, 380, 60);
 
         this.music = "menu_4.ogg";
         this.musicID = "menu";
+
+        this.allowClose = false;
 
         this.crusade = c;
 
@@ -188,48 +183,40 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         else
             toggleNames.setText(toggleNamesText, ScreenOptions.offText);
 
-        crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Crusade name", new Runnable()
+        crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Crusade name", () ->
         {
-            @Override
-            public void run()
+            BaseFile file = Game.game.fileManager.getFile(crusade.fileName);
+
+            if (crusadeName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText + ".tanks").exists())
             {
-                BaseFile file = Game.game.fileManager.getFile(crusade.fileName);
-
-                if (crusadeName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText + ".tanks").exists())
+                if (file.exists())
                 {
-                    if (file.exists())
-                    {
-                        file.renameTo(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks");
-                    }
-
-                    while (file.exists())
-                    {
-                        file.delete();
-                    }
-
-                    crusade.name = crusadeName.inputText;
-                    crusade.fileName = Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks";
+                    file.renameTo(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks");
                 }
-                else
+
+                while (file.exists())
                 {
-                    crusadeName.inputText = crusade.name.split("\\.")[0].replace("_", " ");
+                    file.delete();
                 }
+
+                crusade.name = crusadeName.inputText;
+                crusade.fileName = Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText.replace(" ", "_") + ".tanks";
+            }
+            else
+            {
+                crusadeName.inputText = crusade.name.split("\\.")[0].replace("_", " ");
             }
         }
                 , crusade.name.split("\\.")[0].replace("_", " "));
 
         crusadeName.enableCaps = true;
 
-        startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", new Runnable()
+        startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", () ->
         {
-            @Override
-            public void run()
-            {
-                if (startingLives.inputText.length() == 0)
-                    startingLives.inputText = crusade.startingLives + "";
-                else
-                    crusade.startingLives = Integer.parseInt(startingLives.inputText);
-            }
+            if (startingLives.inputText.length() == 0)
+                startingLives.inputText = crusade.startingLives + "";
+            else
+                crusade.startingLives = Integer.parseInt(startingLives.inputText);
         }
                 , crusade.startingLives + "");
 
@@ -239,16 +226,12 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         startingLives.checkMinValue = true;
         startingLives.maxChars = 9;
 
-        bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Bonus life frequency", new Runnable()
+        bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Bonus life frequency", () ->
         {
-            @Override
-            public void run()
-            {
-                if (bonusLifeFrequency.inputText.length() == 0)
-                    bonusLifeFrequency.inputText = crusade.bonusLifeFrequency + "";
-                else
-                    crusade.bonusLifeFrequency = Integer.parseInt(bonusLifeFrequency.inputText);
-            }
+            if (bonusLifeFrequency.inputText.length() == 0)
+                bonusLifeFrequency.inputText = crusade.bonusLifeFrequency + "";
+            else
+                crusade.bonusLifeFrequency = Integer.parseInt(bonusLifeFrequency.inputText);
         }
                 , crusade.bonusLifeFrequency + "");
 
@@ -303,18 +286,14 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
             int j = i;
-            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), new Runnable()
+            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), () ->
             {
-                @Override
-                public void run()
-                {
-                    String name = crusade.levelNames.remove(j);
-                    String level = crusade.levels.remove(j);
+                String name = crusade.levelNames.remove(j);
+                String level = crusade.levels.remove(j);
 
-                    ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(name, level, j + 1, (ScreenCrusadeBuilder) Game.screen);
-                    new Level(level).loadLevel(s);
-                    Game.screen = s;
-                }
+                ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(name, level, j + 1, (ScreenCrusadeEditor) Game.screen);
+                new Level(level).loadLevel(s);
+                Game.screen = s;
             }));
         }
 
@@ -329,14 +308,7 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         {
             int j = i;
 
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeItems.get(i).name, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Game.screen = new ScreenEditItem(crusade.crusadeItems.get(j), (IItemScreen) Game.screen);
-                }
-            });
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeItems.get(i).name, () -> Game.screen = new ScreenEditItem(crusade.crusadeItems.get(j), (IItemScreen) Game.screen));
 
             b.image = crusade.crusadeItems.get(j).icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
@@ -500,5 +472,11 @@ public class ScreenCrusadeBuilder extends Screen implements IItemScreen
         {
             Game.exitToCrash(e);
         }
+    }
+
+    @Override
+    public void onAttemptClose()
+    {
+        Game.screen = new ScreenConfirmSaveCrusade(Game.screen, this);
     }
 }

@@ -17,7 +17,7 @@ public class TanksOnlineServer
     public int port;
     public EventLoopGroup bossGroup;
     public EventLoopGroup workerGroup;
-    public SynchronizedList<TanksOnlineServerHandler> connections = new SynchronizedList<TanksOnlineServerHandler>();
+    public SynchronizedList<TanksOnlineServerHandler> connections = new SynchronizedList<>();
 
     public static TanksOnlineServer instance;
     public ChannelFuture channel;

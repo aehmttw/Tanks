@@ -8,14 +8,10 @@ import tanksonline.TanksOnlineServerHandler;
 
 public class ScreenWelcomeToTanksOnline extends ScreenLayout
 {
-    Button play = new Button(sizeX / 2, sizeY / 2 + 30, 350, 40, "Ok", new Runnable()
+    Button play = new Button(sizeX / 2, sizeY / 2 + 30, 350, 40, "Ok", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenHome s = new ScreenHome(player);
-            s.setScreen();
-        }
+        ScreenHome s = new ScreenHome(player);
+        s.setScreen();
     }
     );
 

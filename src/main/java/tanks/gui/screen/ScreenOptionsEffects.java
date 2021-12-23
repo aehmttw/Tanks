@@ -38,14 +38,7 @@ public class ScreenOptionsEffects extends Screen
     }
             , (int) Math.round(Game.effectMultiplier * 100), 10, 100, 10);
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptionsGraphics();
-        }
-    }
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics()
     );
 
     public ScreenOptionsEffects()

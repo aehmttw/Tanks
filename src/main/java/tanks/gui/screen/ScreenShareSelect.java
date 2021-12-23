@@ -6,36 +6,18 @@ import tanks.gui.Button;
 
 public class ScreenShareSelect extends Screen
 {
-    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Back", () ->
     {
-        @Override
-        public void run()
-        {
-            if (ScreenPartyHost.isServer)
-                Game.screen = ScreenPartyHost.activeScreen;
-            else
-                Game.screen = new ScreenPartyLobby();
-        }
+        if (ScreenPartyHost.isServer)
+            Game.screen = ScreenPartyHost.activeScreen;
+        else
+            Game.screen = new ScreenPartyLobby();
     }
     );
 
-    Button level = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Share a level", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenShareLevel();
-        }
-    });
+    Button level = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Share a level", () -> Game.screen = new ScreenShareLevel());
 
-    Button crusade = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Share a crusade", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenShareCrusade();
-        }
-    });
+    Button crusade = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Share a crusade", () -> Game.screen = new ScreenShareCrusade());
 
     public ScreenShareSelect()
     {

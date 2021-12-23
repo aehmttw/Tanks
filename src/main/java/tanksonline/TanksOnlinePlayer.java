@@ -7,7 +7,7 @@ public class TanksOnlinePlayer
 {
     public UUID id;
     public String username;
-    public ArrayList<UploadedLevel> levels = new ArrayList<UploadedLevel>();
+    public ArrayList<UploadedLevel> levels = new ArrayList<>();
     public AccessCode accessCode;
     public boolean registered = false;
 

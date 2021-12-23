@@ -8,37 +8,26 @@ import tanks.gui.ChatMessage;
 
 public class ScreenConfirmEndParty extends Screen
 {
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = ScreenPartyHost.activeScreen;
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", () -> Game.screen = ScreenPartyHost.activeScreen
     );
 
-    public Button confirm = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "End party", new Runnable()
+    public Button confirm = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "End party", () ->
     {
-        @Override
-        public void run()
-        {
-            Drawing.drawing.playSound("leave.ogg");
+        Drawing.drawing.playSound("leave.ogg");
 
-            ScreenPartyHost.isServer = false;
-            ScreenPartyHost.server.close();
-            ScreenPartyHost.activeScreen = null;
-            Game.screen = new ScreenParty();
-            ScreenPartyHost.includedPlayers.clear();
-            ScreenPartyHost.readyPlayers.clear();
-            ScreenPartyHost.activeScreen = null;
-            Crusade.currentCrusade = null;
+        ScreenPartyHost.isServer = false;
+        ScreenPartyHost.server.close();
+        ScreenPartyHost.activeScreen = null;
+        Game.screen = new ScreenParty();
+        ScreenPartyHost.includedPlayers.clear();
+        ScreenPartyHost.readyPlayers.clear();
+        ScreenPartyHost.activeScreen = null;
+        Crusade.currentCrusade = null;
 
-            Game.players.clear();
-            Game.players.add(Game.player);
+        Game.players.clear();
+        Game.players.add(Game.player);
 
-            ScreenPartyHost.disconnectedPlayers.clear();
-        }
+        ScreenPartyHost.disconnectedPlayers.clear();
     }
     );
 

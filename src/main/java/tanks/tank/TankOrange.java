@@ -22,7 +22,7 @@ public class TankOrange extends TankAIControlled
 		this.enablePathfinding = true;
 
 		this.motionChangeChance = 0.001;
-		this.mineSensitivity = 1;
+		this.avoidSensitivity = 1;
 
 		this.coinValue = 4;
 

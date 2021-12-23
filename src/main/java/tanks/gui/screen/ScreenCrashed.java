@@ -16,25 +16,9 @@ public class ScreenCrashed extends Screen
 			sadFace = ":)";
 	}
 
-	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			System.exit(0);
-		}
-	}
-	);
+	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", () -> System.exit(0));
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, this.objWidth, this.objHeight, "Return to title", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.exitToTitle();
-		}
-	}
-	);
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, this.objWidth, this.objHeight, "Return to title", Game::exitToTitle);
 
 	@Override
 	public void update()

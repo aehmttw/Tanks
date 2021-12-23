@@ -45,13 +45,7 @@ public class ScreenJoinParty extends Screen
 	}
 	);
 
-	Button steam = new Button(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Join Steam friends", new Runnable()
-	{
-		public void run()
-		{
-			Game.screen = new ScreenJoinSteamFriends((ScreenJoinParty) Game.screen);
-		}
-	}
+	Button steam = new Button(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Join Steam friends", () -> Game.screen = new ScreenJoinSteamFriends((ScreenJoinParty) Game.screen)
 	);
 	
 	Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
@@ -148,54 +142,48 @@ public class ScreenJoinParty extends Screen
 				return;
 			}
 
-			clientThread = new Thread(new Runnable()
+			clientThread = new Thread(() ->
 			{
+				ScreenConnecting s = new ScreenConnecting(clientThread);
+				Game.screen = s;
 
-				@Override
-				public void run() 
+				UUID connectionID = UUID.randomUUID();
+				Client.connectionID = connectionID;
+
+				try
 				{
-					ScreenConnecting s = new ScreenConnecting(clientThread);
-					Game.screen = s;
+					String ipaddress = ip.inputText;
+					int port = Game.port;
 
-					UUID connectionID = UUID.randomUUID();
-					Client.connectionID = connectionID;
-
-					try 
+					if (ip.inputText.contains(":"))
 					{
-						String ipaddress = ip.inputText;
-						int port = Game.port;
-						
-						if (ip.inputText.contains(":"))
-						{
-							int colon = ip.inputText.lastIndexOf(":");
-							ipaddress = ip.inputText.substring(0, colon);
-							port = Integer.parseInt(ip.inputText.substring(colon + 1));
-						}
-						
-						if (ip.inputText.equals(""))
-							Client.connect("localhost", Game.port, false, connectionID);
-						else
-							Client.connect(ipaddress, port, false, connectionID);
-					} 
-					catch (Exception e) 
+						int colon = ip.inputText.lastIndexOf(":");
+						ipaddress = ip.inputText.substring(0, colon);
+						port = Integer.parseInt(ip.inputText.substring(colon + 1));
+					}
+
+					if (ip.inputText.equals(""))
+						Client.connect("localhost", Game.port, false, connectionID);
+					else
+						Client.connect(ipaddress, port, false, connectionID);
+				}
+				catch (Exception e)
+				{
+					if (Game.screen == s && Client.connectionID == connectionID)
 					{
-						if (Game.screen == s && Client.connectionID == connectionID)
-						{
-							s.text = "Failed to connect";
-							s.exception = e.getLocalizedMessage();
-							s.finished = true;
+						s.text = "Failed to connect";
+						s.exception = e.getLocalizedMessage();
+						s.finished = true;
 
-							s.music = "menu_1.ogg";
-							Drawing.drawing.playSound("leave.ogg");
+						s.music = "menu_1.ogg";
+						Drawing.drawing.playSound("leave.ogg");
 
-							Panel.forceRefreshMusic = true;
+						Panel.forceRefreshMusic = true;
 
-							e.printStackTrace(Game.logger);
-							e.printStackTrace();
-						}
+						e.printStackTrace(Game.logger);
+						e.printStackTrace();
 					}
 				}
-
 			});
 			
 			clientThread.setDaemon(true);
@@ -206,14 +194,12 @@ public class ScreenJoinParty extends Screen
 	
 	TextBox ip = new TextBox(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth * 16 / 7, this.objHeight, "Party IP Address", new Runnable()
 	{
-
 		@Override
 		public void run() 
 		{
 			Game.lastParty = ip.inputText;
 			ScreenOptions.saveOptions(Game.homedir);
 		}
-		
 	}	
 			, Game.lastParty, "You can find this on the---party host's screen");
 	

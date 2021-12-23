@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ServerHandler extends ChannelInboundHandlerAdapter
 {
 	public MessageReader reader = new MessageReader();
-	public SynchronizedList<INetworkEvent> events = new SynchronizedList<INetworkEvent>();
+	public SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
 
 	public ChannelHandlerContext ctx;
 	public SteamID steamID;

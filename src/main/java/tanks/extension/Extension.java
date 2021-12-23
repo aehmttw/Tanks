@@ -2,6 +2,8 @@ package tanks.extension;
 
 import basewindow.BaseFile;
 import tanks.Game;
+import tanks.ModAPI;
+import tanks.ModLevel;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -93,6 +95,48 @@ public class Extension
         {
             e.printStackTrace();
         }
+    }
+
+    public void registerLevel(Class<? extends ModLevel> c)
+    {
+        ModAPI.registeredCustomLevels.add(c);
+    }
+
+    public void registerLevel(String name)
+    {
+        try
+        {
+            Class<? extends ModLevel> c = (Class<? extends ModLevel>) Class.forName(name);
+            ModAPI.registeredCustomLevels.add(c);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    // Called before every frame. Perform tasks that need to run before the vanilla update() is called. Can be left blank.
+    public void preUpdate()
+    {
+
+    }
+
+    // Called before every frame. Draw items that appear beneath everything else or configure draw state. Can be left blank.
+    public void preDraw()
+    {
+
+    }
+
+    // Called after every tick. Perform tasks that need processing but aren't tied to a specific tank/item/bullet here. Can be left blank.
+    public void update()
+    {
+
+    }
+
+    // Called after every frame. Draw UI elements, etc. here. Can be left blank.
+    public void draw()
+    {
+
     }
 
     public ArrayList<String> getFileContents(String file)

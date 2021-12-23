@@ -23,12 +23,17 @@ public abstract class BaseSoundPlayer
 
     public abstract void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime, boolean stoppable);
 
+    public abstract void addSyncedMusic(String path, float volume, boolean looped, long fadeTime);
+
+    public abstract void removeSyncedMusic(String path, long fadeTime);
+
     public abstract void stopMusic();
 
     public abstract void registerCombinedMusic(String path, String id);
 
     public abstract void exit();
 
+    public abstract void update();
 
     public abstract void createSound(String path, InputStream in);
 

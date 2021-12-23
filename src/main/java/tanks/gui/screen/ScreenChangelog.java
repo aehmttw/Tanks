@@ -260,7 +260,7 @@ public class ScreenChangelog extends Screen
                             "*What's new in Tanks v1.2.0:\n\n" +
                                     "*New features:\n\n" +
                                     "Added light pink tank which gets angry when it sees you\n" +
-                                    "Added mimic tank which mimics the behavior a nearby tank\n" +
+                                    "Added mimic tank which mimics the behavior of a nearby tank\n" +
                                     "Dummy tanks can be now used in the level editor\n" +
                                     "Added support for Steam peer-to-peer multiplayer\n" +
                                     "You can now override the game's default resources\n\n" +
@@ -325,6 +325,35 @@ public class ScreenChangelog extends Screen
                                     "Added translation support\n" +
                                     "Added multishot and shot spread options to bullets\n" +
                                     "Cyan tanks are now immune to freeze bullets and ice\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.2.3b", new String[]
+                    {
+                            "*What's new in Tanks v1.2.3b:\n\n" +
+                                    "New option to warn before closing unsaved work\n" +
+                                    "Added cut, copy, and paste to level editor\n" +
+                                    "Added individual battle music tracks for each tanks\n" +
+                                    "Improved lists with search, sort, and jump buttons\n" +
+                                    "Added native support for ARM64 (M1) architecture on Mac\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.3.a", new String[]
+                    {
+                            "*What's new in Tanks v1.3.a:\n\n" +
+                                    "Added more battle music tracks for tanks\n" +
+                                    "Rendering improvements (things are still buggy)\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.3.b", new String[]
+                    {
+                            "*What's new in Tanks v1.3.b:\n\n" +
+                                    "Rendering improvements (things should be mostly stable now)\n" +
+                                    "Holes are now bigger\n" +
+                                    "New sounds for winning and losing battles\n" +
+                                    "More animations on the crusade stats screen\n" +
                                     "Bug fixes and other minor improvements"
                     });
         }

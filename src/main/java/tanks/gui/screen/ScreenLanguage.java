@@ -15,14 +15,7 @@ public class ScreenLanguage extends Screen
 
     public SavedFilesList languages;
 
-    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenTitle();
-        }
-    }
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
     );
 
     public ScreenLanguage()
@@ -62,7 +55,13 @@ public class ScreenLanguage extends Screen
         }
         ));
 
-        languages.buttons.add(2, new Button(0, 0, 350, 40, "Română", () ->
+        languages.buttons.add(2, new Button(0, 0, 350, 40, "Svenska", () ->
+        {
+            changeLanguage(new Translation("se.lang"));
+        }
+        ));
+
+        languages.buttons.add(3, new Button(0, 0, 350, 40, "Română", () ->
         {
             changeLanguage(new Translation("ro.lang"));
         }

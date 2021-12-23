@@ -15,8 +15,6 @@ import java.util.Date;
 
 public class ScreenOptions extends Screen
 {
-	public static final String infoBarText = "Info bar: ";
-
 	public static final String onText = "\u00A7000200000255on";
 	public static final String offText = "\u00A7200000000255off";
 
@@ -25,108 +23,50 @@ public class ScreenOptions extends Screen
 		this.music = "menu_options.ogg";
 		this.musicID = "menu";
 
-		if (Drawing.drawing.enableStats)
-			showStats.setText(infoBarText, onText);
-		else
-			showStats.setText(infoBarText, offText);
-
 		if (!Game.game.window.soundsEnabled)
 			soundOptions.enabled = false;
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
 	{
-		@Override
-		public void run()
-		{
-			saveOptions(Game.homedir);
-			Game.screen = new ScreenTitle();
-		}
+		saveOptions(Game.homedir);
+		Game.screen = new ScreenTitle();
 	}
 	);
 
-	Button showStats = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+
+
+
+	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer()
+	);
+
+	Button gameOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Game options", () -> Game.screen = new ScreenOptionsGame()
+	);
+
+	Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options", () -> Game.screen = new ScreenOptionsGraphics()
+	);
+
+	Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options", () -> Game.screen = new ScreenOptionsSound()
+	);
+
+	Button inputOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Input options", () ->
 	{
-		@Override
-		public void run()
-		{
-			Drawing.drawing.showStats(!Drawing.drawing.enableStats);
-
-			if (Drawing.drawing.enableStats)
-				showStats.setText(infoBarText, onText);
-			else
-				showStats.setText(infoBarText, offText);
-		}
-	},
-			"Shows the following information---" +
-					"at the bottom of the screen:---" +
-					"---" +
-					"Game version---" +
-					"Framerate---" +
-					"Network latency (if in a party)---" +
-					"Memory usage");
-
-
-	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenOptionsMultiplayer();
-		}
+		if (Game.game.window.touchscreen)
+			Game.screen = new ScreenOptionsInputTouchscreen();
+		else
+			Game.screen = new ScreenOptionsInputDesktop();
 	}
 	);
 
-	Button gameOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Game options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenOptionsGame();
-		}
-	}
+	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsInterface()
 	);
-
-	Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenOptionsGraphics();
-		}
-	}
-	);
-
-	Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.screen = new ScreenOptionsSound();
-		}
-	}
-	);
-
-	Button inputOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Input options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			if (Game.game.window.touchscreen)
-				Game.screen = new ScreenOptionsInputTouchscreen();
-			else
-				Game.screen = new ScreenOptionsInputDesktop();
-		}
-	}
-	);
-
 
 	@Override
 	public void update()
 	{
 		soundOptions.update();
 		gameOptions.update();
-		showStats.update();
+		interfaceOptions.update();
 
 		graphicsOptions.update();
 		inputOptions.update();
@@ -143,7 +83,7 @@ public class ScreenOptions extends Screen
 		multiplayerOptions.draw();
 		inputOptions.draw();
 		graphicsOptions.draw();
-		showStats.draw();
+		interfaceOptions.draw();
 		gameOptions.draw();
 		soundOptions.draw();
 
@@ -196,7 +136,7 @@ public class ScreenOptions extends Screen
 			f.println("shadow_quality=" + Game.shadowQuality);
 			f.println("vsync=" + Game.vsync);
 			f.println("antialiasing=" + Game.antialiasing);
-			f.println("angled_perspective=" + Game.angledView);
+			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
@@ -211,6 +151,7 @@ public class ScreenOptions extends Screen
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
 			f.println("deterministic=" + Game.deterministicMode);
+			f.println("warn_before_closing=" + Game.warnBeforeClosing);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
 			f.println("last_party=" + Game.lastParty);
@@ -344,8 +285,33 @@ public class ScreenOptions extends Screen
 					case "info_bar":
 						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));
 						break;
-					case "angled_perspective":
-						Game.angledView = Boolean.parseBoolean(optionLine[1]);
+					case "warn_before_closing":
+						Game.warnBeforeClosing = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "perspective":
+						ScreenOptionsGraphics.viewNo = Integer.parseInt(optionLine[1]);
+						switch (ScreenOptionsGraphics.viewNo)
+						{
+							case 0:
+								Game.angledView = false;
+								Game.followingCam = false;
+								Game.firstPerson = false;
+								break;
+							case 1:
+								Game.angledView = true;
+								Game.followingCam = false;
+								Game.firstPerson = false;
+								break;
+							case 2:
+								Game.angledView = false;
+								Game.followingCam = true;
+								Game.firstPerson = false;
+								break;
+							case 3:
+								Game.angledView = false;
+								Game.followingCam = true;
+								Game.firstPerson = true;
+						}
 						break;
 					case "fullscreen":
 						Game.game.fullscreen = Boolean.parseBoolean(optionLine[1]);

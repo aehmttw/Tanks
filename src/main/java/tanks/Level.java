@@ -5,13 +5,10 @@ import tanks.event.EventEnterLevel;
 import tanks.event.EventLoadLevel;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelBuilderOverlay;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
-import tanks.tank.TankSpawnMarker;
+import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +34,8 @@ public class Level
 	public static double currentLightIntensity = 1;
 	public static double currentShadowIntensity = 0.5;
 
+	public static int currentCloudCount = 0;
+
 	public static Random random = new Random();
 
 	public boolean editable = true;
@@ -60,22 +59,22 @@ public class Level
 	public double light = 1.0;
 	public double shadow = 0.5;
 
-	public HashMap<String, Team> teamsMap = new HashMap<String, Team>();
+	public HashMap<String, Team> teamsMap = new HashMap<>();
 
-	public ArrayList<Team> teamsList = new ArrayList<Team>();
+	public ArrayList<Team> teamsList = new ArrayList<>();
 
-	public ArrayList<Integer> availablePlayerSpawns = new ArrayList<Integer>();
+	public ArrayList<Integer> availablePlayerSpawns = new ArrayList<>();
 
-	public ArrayList<Double> playerSpawnsX = new ArrayList<Double>();
-	public ArrayList<Double> playerSpawnsY = new ArrayList<Double>();
-	public ArrayList<Double> playerSpawnsAngle = new ArrayList<Double>();
-	public ArrayList<Team> playerSpawnsTeam = new ArrayList<Team>();
+	public ArrayList<Double> playerSpawnsX = new ArrayList<>();
+	public ArrayList<Double> playerSpawnsY = new ArrayList<>();
+	public ArrayList<Double> playerSpawnsAngle = new ArrayList<>();
+	public ArrayList<Team> playerSpawnsTeam = new ArrayList<>();
 
-	public ArrayList<Player> includedPlayers = new ArrayList<Player>();
+	public ArrayList<Player> includedPlayers = new ArrayList<>();
 
 	public int startingCoins;
-	public ArrayList<Item> shop = new ArrayList<Item>();
-	public ArrayList<Item> startingItems = new ArrayList<Item>();
+	public ArrayList<Item> shop = new ArrayList<>();
+	public ArrayList<Item> startingItems = new ArrayList<>();
 
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
@@ -187,7 +186,7 @@ public class Level
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
 
-		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<EventCreatePlayer>();
+		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<>();
 
 		Tank.currentID = 0;
 		Tank.freeIDs.clear();
@@ -239,6 +238,8 @@ public class Level
 
 		sizeX = Integer.parseInt(screen[0]);
 		sizeY = Integer.parseInt(screen[1]);
+
+		currentCloudCount = (int)(Math.random() * (double)this.sizeX / 10.0D + Math.random() * (double)this.sizeY / 10.0D);
 
 		if (screen.length >= 5)
 		{
@@ -625,6 +626,8 @@ public class Level
 
 	public void reloadTiles()
 	{
+		Drawing.drawing.forceRedrawTerrain();
+
 		Game.currentSizeX = (int) (sizeX * Game.bgResMultiplier);
 		Game.currentSizeY = (int) (sizeY * Game.bgResMultiplier);
 
@@ -653,6 +656,7 @@ public class Level
 		}
 
 		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.game.groundHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
 		Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
 
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
@@ -670,8 +674,8 @@ public class Level
 		
 		if (Game.screen instanceof ScreenLevelEditor)
 			s = (ScreenLevelEditor) Game.screen;
-		else if (Game.screen instanceof ScreenLevelBuilderOverlay)
-			s = ((ScreenLevelBuilderOverlay) Game.screen).screenLevelEditor;
+		else if (Game.screen instanceof ScreenLevelEditorOverlay)
+			s = ((ScreenLevelEditorOverlay) Game.screen).screenLevelEditor;
 
 		if (s != null)
 			s.selectedTiles = new boolean[Game.currentSizeX][Game.currentSizeY];

@@ -11,7 +11,7 @@ import tanks.registry.RegistryItem;
 
 import java.util.ArrayList;
 
-public class OverlayEditLevelShop extends ScreenLevelBuilderOverlay implements IItemScreen
+public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IItemScreen
 {
     public ButtonList shopList;
     public Selector itemSelector;
@@ -40,14 +40,7 @@ public class OverlayEditLevelShop extends ScreenLevelBuilderOverlay implements I
     }
     );
 
-    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
+    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Back", this::escape
     );
 
     public OverlayEditLevelShop(Screen previous, ScreenLevelEditor screenLevelEditor)

@@ -37,15 +37,8 @@ public class ScreenHostingEnded extends Screen
 		ScreenPartyHost.activeScreen = null;
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenParty();
-		}
-	}
-			);
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = new ScreenParty()
+	);
 
 	@Override
 	public void update() 

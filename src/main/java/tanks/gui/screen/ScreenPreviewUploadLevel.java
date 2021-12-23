@@ -14,7 +14,7 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
     public Level level;
     public ScreenUploadLevel screen;
 
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
+    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -49,7 +49,7 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
 
         for (int i = 0; i < drawables.length; i++)
         {
-            drawables[i] = new ArrayList<IDrawable>();
+            drawables[i] = new ArrayList<>();
         }
 
         Obstacle.draw_size = Game.tile_size;

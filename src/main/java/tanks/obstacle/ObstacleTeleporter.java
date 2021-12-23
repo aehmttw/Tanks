@@ -32,6 +32,8 @@ public class ObstacleTeleporter extends Obstacle
 		this.draggable = false;
 		this.enableStacking = false;
 
+		this.batchDraw = false;
+
 		glow = Effect.createNewEffect(this.posX, this.posY, 0, Effect.EffectType.teleporterLight);
 
 		this.description = "A teleporter which randomly---transports you to another---teleporter in the level";
@@ -113,7 +115,7 @@ public class ObstacleTeleporter extends Obstacle
 	@Override
 	public void update()
 	{
-		ArrayList<ObstacleTeleporter> teleporters = new ArrayList<ObstacleTeleporter>();
+		ArrayList<ObstacleTeleporter> teleporters = new ArrayList<>();
 		Tank t = null;
 
 		if (!ScreenGame.finished)

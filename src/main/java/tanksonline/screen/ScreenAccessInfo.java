@@ -10,14 +10,10 @@ public class ScreenAccessInfo extends ScreenLayout
 {
     public AccessCode accessCode;
 
-    Button back = new Button(sizeX / 2, sizeY / 2 + 180, 350, 40, "Back", new Runnable()
+    Button back = new Button(sizeX / 2, sizeY / 2 + 180, 350, 40, "Back", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenHome s = new ScreenHome(player);
-            s.setScreen();
-        }
+        ScreenHome s = new ScreenHome(player);
+        s.setScreen();
     }
     );
 

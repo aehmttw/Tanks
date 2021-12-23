@@ -12,35 +12,14 @@ public class ScreenPlayMultiplayer extends Screen
         this.musicID = "menu";
     }
 
-    Button party = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Party", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenParty();
-        }
-    },
+    Button party = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Party", () -> Game.screen = new ScreenParty(),
             "Play with other people who are---connected to your local network---(or who are port forwarding)");
 
-    Button online = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Online", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenJoinOnlineServer();
-        }
-    },
+    Button online = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Online", () -> Game.screen = new ScreenJoinOnlineServer(),
             "Access the online Tanks community!");
 
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenPlay();
-        }
-    }
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
     );
 
     @Override

@@ -6,55 +6,26 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsItems extends ScreenLevelBuilderOverlay
+public class OverlayLevelOptionsItems extends ScreenLevelEditorOverlay
 {
     public TextBox editCoins;
 
-    public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new OverlayEditLevelShop(Game.screen, screenLevelEditor);
-        }
-    }
-    );
+    public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop", () -> Game.screen = new OverlayEditLevelShop(Game.screen, screenLevelEditor));
 
-    public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new OverlayEditLevelStartingItems(Game.screen, screenLevelEditor);
-        }
-    }
-    );
+    public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items", () -> Game.screen = new OverlayEditLevelStartingItems(Game.screen, screenLevelEditor));
 
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
-    );
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape);
 
     public OverlayLevelOptionsItems(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
 
-        editCoins = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Starting coins", new Runnable()
+        editCoins = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Starting coins", () ->
         {
-            @Override
-            public void run()
-            {
-                if (editCoins.inputText.length() <= 0)
-                    editCoins.inputText = "0";
+            if (editCoins.inputText.length() <= 0)
+                editCoins.inputText = "0";
 
-                screenLevelEditor.level.startingCoins = Integer.parseInt(editCoins.inputText);
-            }
-
+            screenLevelEditor.level.startingCoins = Integer.parseInt(editCoins.inputText);
         }
                 ,  screenLevelEditor.level.startingCoins + "");
 

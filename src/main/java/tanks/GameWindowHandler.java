@@ -10,6 +10,20 @@ import tanks.translation.Translation;
 public class GameWindowHandler implements IWindowHandler
 {
 	@Override
+	public boolean attemptCloseWindow()
+	{
+		if (!Game.warnBeforeClosing)
+			return true;
+
+		if (!Game.screen.allowClose)
+		{
+			Game.screen.onAttemptClose();
+		}
+
+		return Game.screen.allowClose;
+	}
+
+	@Override
 	public void onWindowClose() 
 	{
 		if (Game.steamNetworkHandler.initialized)

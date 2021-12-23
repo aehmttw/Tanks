@@ -39,7 +39,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 	public int drawLevel = 3;
 	public boolean isRemote = false;
 
-	public ArrayList<AttributeModifier> attributes = new ArrayList<AttributeModifier>();
+	public ArrayList<AttributeModifier> attributes = new ArrayList<>();
 	public ArrayList<String> attributeImmunities = new ArrayList<>();
 
 	public Team team;
@@ -72,7 +72,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 			double vY2 = this.vY;
 			double vZ2 = this.vZ;
 
-			ArrayList<AttributeModifier> removeAttributes = new ArrayList<AttributeModifier>(); 
+			ArrayList<AttributeModifier> removeAttributes = new ArrayList<>();
 			for (int i = 0; i < this.attributes.size(); i++)
 			{
 				AttributeModifier a = this.attributes.get(i);

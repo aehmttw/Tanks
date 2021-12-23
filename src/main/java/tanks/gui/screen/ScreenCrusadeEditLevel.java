@@ -15,7 +15,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     public String name;
     public String level;
     public Screen previous;
-    public ScreenCrusadeBuilder previous2;
+    public ScreenCrusadeEditor previous2;
     public TextBox index;
     public int insertionIndex;
 
@@ -27,7 +27,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public TextBox levelName;
 
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
+    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Cancel", new Runnable()
     {
@@ -41,32 +41,11 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
     });
 
-    public Button remove = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Remove level", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            removeMenu = true;
-        }
-    });
+    public Button remove = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Remove level", () -> removeMenu = true);
 
-    public Button saveLevel = new Button(200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Save to my levels", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            saveMenu = true;
-        }
-    });
+    public Button saveLevel = new Button(200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Save to my levels", () -> saveMenu = true);
 
-    public Button cancelRemove = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            removeMenu = false;
-        }
-    }
+    public Button cancelRemove = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> removeMenu = false
     );
 
     public Button confirmRemove = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", new Runnable()
@@ -166,20 +145,13 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
     });
 
-    public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            saveMenu = false;
-        }
-    }
+    public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> saveMenu = false
     );
 
     @SuppressWarnings("unchecked")
     protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
-    public ScreenCrusadeEditLevel(String name, String level, int in, ScreenCrusadeBuilder s2)
+    public ScreenCrusadeEditLevel(String name, String level, int in, ScreenCrusadeEditor s2)
     {
         this(name, level, s2, s2);
         this.edit = true;
@@ -194,9 +166,11 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
         next.enabled = insertionIndex < previous2.crusade.levels.size();
         prev.enabled = insertionIndex > 0;
+
+        this.allowClose = false;
     }
 
-    public ScreenCrusadeEditLevel(String name, String level, Screen s, ScreenCrusadeBuilder s2)
+    public ScreenCrusadeEditLevel(String name, String level, Screen s, ScreenCrusadeEditor s2)
     {
         super(350, 40, 380, 60);
 
@@ -208,40 +182,30 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
         for (int i = 0; i < drawables.length; i++)
         {
-            drawables[i] = new ArrayList<IDrawable>();
+            drawables[i] = new ArrayList<>();
         }
 
         Obstacle.draw_size = Game.tile_size;
         this.previous = s;
         this.previous2 = s2;
 
-        index = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level position", new Runnable()
+        index = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level position", () ->
         {
-            @Override
-            public void run()
-            {
-                if (index.inputText.length() <= 0)
-                    index.inputText = index.previousInputText;
+            if (index.inputText.length() <= 0)
+                index.inputText = index.previousInputText;
 
-                insertionIndex = Integer.parseInt(index.inputText) - 1;
+            insertionIndex = Integer.parseInt(index.inputText) - 1;
 
-                next.enabled = insertionIndex < previous2.crusade.levels.size();
-                prev.enabled = insertionIndex > 0;
-            }
-
+            next.enabled = insertionIndex < previous2.crusade.levels.size();
+            prev.enabled = insertionIndex > 0;
         }
                 , "");
 
-        levelName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Level save name", new Runnable()
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            @Override
-            public void run()
-            {
-                if (levelName.inputText.equals(""))
-                    levelName.inputText = levelName.previousInputText;
-                updateSaveButton();
-            }
-
+            if (levelName.inputText.equals(""))
+                levelName.inputText = levelName.previousInputText;
+            updateSaveButton();
         }
                 , name.replace("_", " "));
 
@@ -495,5 +459,11 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     public ArrayList<TankSpawnMarker> getSpawns()
     {
         return this.spawns;
+    }
+
+    @Override
+    public void onAttemptClose()
+    {
+        Game.screen = new ScreenConfirmSaveCrusade(Game.screen, this.previous2);
     }
 }

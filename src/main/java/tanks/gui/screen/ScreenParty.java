@@ -23,48 +23,30 @@ public class ScreenParty extends Screen
 		this.musicID = "menu";
 	}
 	
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
+	);
+	
+	Button create = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Create a party", () ->
 	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenPlay();
-		}
+		ScreenPartyHost.chat.clear();
+		ScreenPartyHost.isServer = false;
+		ScreenPartyHost.includedPlayers.clear();
+		ScreenPartyHost.readyPlayers.clear();
+		ScreenPartyHost.activeScreen = null;
+		ScreenSharedLevels.page = 0;
+
+		Game.players.clear();
+		Game.players.add(Game.player);
+
+		ScreenPartyHost.disconnectedPlayers.clear();
+
+		Drawing.drawing.playSound("join.ogg");
+
+		Game.screen = new ScreenPartyHost();
 	}
 	);
 	
-	Button create = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Create a party", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			ScreenPartyHost.chat.clear();
-			ScreenPartyHost.isServer = false;
-			ScreenPartyHost.includedPlayers.clear();
-			ScreenPartyHost.readyPlayers.clear();
-			ScreenPartyHost.activeScreen = null;
-			ScreenSharedLevels.page = 0;
-
-			Game.players.clear();
-			Game.players.add(Game.player);
-
-			ScreenPartyHost.disconnectedPlayers.clear();
-
-			Drawing.drawing.playSound("join.ogg");
-
-			Game.screen = new ScreenPartyHost();
-		}
-	}
-	);
-	
-	Button join = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Join a party", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.screen = new ScreenJoinParty();
-		}
-	}
+	Button join = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Join a party", () -> Game.screen = new ScreenJoinParty()
 	);
 	
 	TextBox port = new TextBox(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Port", new Runnable()

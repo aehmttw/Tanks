@@ -112,7 +112,7 @@ public class TextBoxSlider extends TextBox
         drawing.setColor(r2, g2, b2);
         drawing.fillInterfaceOval(end1, posY, sizeY * m, sizeY * m);
 
-        Game.game.window.setBatchMode(true, true, false, false);
+        Game.game.window.shapeRenderer.setBatchMode(true, true, false, false);
         drawing.setColor(r1, g1, b1);
         Drawing.drawing.addInterfaceVertex(start1, posY - sizeY * m / 2, 0);
         Drawing.drawing.addInterfaceVertex(start1, posY + sizeY * m / 2, 0);
@@ -120,7 +120,7 @@ public class TextBoxSlider extends TextBox
         drawing.setColor(r2, g2, b2);
         Drawing.drawing.addInterfaceVertex(end1, posY + sizeY * m / 2, 0);
         Drawing.drawing.addInterfaceVertex(end1, posY - sizeY * m / 2, 0);
-        Game.game.window.setBatchMode(false, true, false, false);
+        Game.game.window.shapeRenderer.setBatchMode(false, true, false, false);
 
         if (Game.glowEnabled)
             Button.drawGlow(x, this.posY + 2.5, this.sizeY * m, this.sizeY * m, 0.6, 0, 0, 0, 100, false);

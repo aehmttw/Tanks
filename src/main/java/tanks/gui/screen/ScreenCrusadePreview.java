@@ -99,32 +99,11 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
     }
     );
 
-    public Button options = new Button(this.centerX - this.objXSpace, 60, this.objWidth, this.objHeight, "Overview", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            mode = Mode.options;
-        }
-    });
+    public Button options = new Button(this.centerX - this.objXSpace, 60, this.objWidth, this.objHeight, "Overview", () -> mode = Mode.options);
 
-    public Button levels = new Button(this.centerX, 60, this.objWidth, this.objHeight, "Levels", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            mode = Mode.levels;
-        }
-    });
+    public Button levels = new Button(this.centerX, 60, this.objWidth, this.objHeight, "Levels", () -> mode = Mode.levels);
 
-    public Button items = new Button(this.centerX + this.objXSpace, 60, this.objWidth, this.objHeight, "Shop", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            mode = Mode.items;
-        }
-    });
+    public Button items = new Button(this.centerX + this.objXSpace, 60, this.objWidth, this.objHeight, "Shop", () -> mode = Mode.items);
 
     public ScreenCrusadePreview(Crusade c, Screen previous, boolean upload)
     {
@@ -167,16 +146,11 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
 
         this.levelButtons.indexPrefix = true;
 
-        crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Crusade save name", new Runnable()
+        crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Crusade save name", () ->
         {
-            @Override
-            public void run()
-            {
-                if (crusadeName.inputText.equals(""))
-                    crusadeName.inputText = crusadeName.previousInputText;
-                updateDownloadButton();
-            }
-
+            if (crusadeName.inputText.equals(""))
+                crusadeName.inputText = crusadeName.previousInputText;
+            updateDownloadButton();
         }
                 , crusade.name.replace("_", " "));
 
@@ -192,17 +166,13 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
             int j = i;
-            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), new Runnable()
+            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), () ->
             {
-                @Override
-                public void run()
-                {
-                    String level = crusade.levels.get(j);
+                String level = crusade.levels.get(j);
 
-                    ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, j, Game.screen);
-                    new Level(level).loadLevel(s);
-                    Game.screen = s;
-                }
+                ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, j, Game.screen);
+                new Level(level).loadLevel(s);
+                Game.screen = s;
             }));
         }
 

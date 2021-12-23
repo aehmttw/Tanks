@@ -16,7 +16,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
 
     public int index;
 
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<TankSpawnMarker>();
+    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -74,7 +74,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
 
         for (int i = 0; i < drawables.length; i++)
         {
-            drawables[i] = new ArrayList<IDrawable>();
+            drawables[i] = new ArrayList<>();
         }
 
         Obstacle.draw_size = Game.tile_size;

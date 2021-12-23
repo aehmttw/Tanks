@@ -5,14 +5,10 @@ import tanksonline.TanksOnlineServerHandler;
 
 public class ScreenUploadLevel extends ScreenSpecial
 {
-    Button quit = new Button(sizeX / 2, sizeY / 2 + 300, 350, 40, "Back", new Runnable()
+    Button quit = new Button(sizeX / 2, sizeY / 2 + 300, 350, 40, "Back", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenHome s = new ScreenHome(player);
-            s.setScreen();
-        }
+        ScreenHome s = new ScreenHome(player);
+        s.setScreen();
     }
     );
 

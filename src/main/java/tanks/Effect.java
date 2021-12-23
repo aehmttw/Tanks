@@ -353,7 +353,7 @@ public class Effect extends Movable implements IDrawableWithGlow
 
             double opacity = (255 - this.age / opacityFactor) / 4;
             drawing.setColor(0, 0, 0, opacity);
-            drawing.drawModel(Drawing.rotatedRect, this.posX, this.posY, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, angle);
+            drawing.drawModel(Drawing.rotatedRect, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, 1, angle, 0, 0);
         }
         else if (this.type == EffectType.darkFire)
         {
@@ -481,7 +481,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (this.type == EffectType.boostLight)
         {
             Drawing.drawing.setColor(255, 255, 255, 255, 1);
-            Game.game.window.setBatchMode(true, true, true, true, false);
+            Game.game.window.shapeRenderer.setBatchMode(true, true, true, true, false);
 
             double max = (this.size);
             for (int i = 0; i < max; i++)
@@ -491,7 +491,7 @@ public class Effect extends Movable implements IDrawableWithGlow
                 Drawing.drawing.fillBox(this.posX, this.posY, i, Obstacle.draw_size, Obstacle.draw_size, 0, (byte) 62);
             }
 
-            Game.game.window.setBatchMode(false, true, true, true, false);
+            Game.game.window.shapeRenderer.setBatchMode(false, true, true, true, false);
         }
         else if (this.type == EffectType.exclamation)
         {

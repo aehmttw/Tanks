@@ -17,8 +17,9 @@ public class ObstacleUnknown extends Obstacle
 		this.destructible = false;
 		this.tankCollision = false;
 		this.bulletCollision = false;
+		this.batchDraw = false;
 		this.enableStacking = false;
-		this.enableStacking = false;
+
 
 		this.description = "A block which could not be identified";
 	}

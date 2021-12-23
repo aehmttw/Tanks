@@ -17,32 +17,28 @@ public class ScreenTutorialGame extends ScreenGame
 		Game.playerTank.cooldown = 50;
 	}
 	
-	public Button skip = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 25, 350, 40, "Skip Tutorial", new Runnable()
+	public Button skip = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 25, 350, 40, "Skip Tutorial", () ->
 	{
-		@Override
-		public void run() 
+		try
 		{
-			try 
-			{
-				BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
+			BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
 
-				f.create();
-				f.startWriting();
-				f.println("Fake certificate of completion:");
-				f.println("Tanks: The Crusades tutorial");
-				f.println("Skipped " + new Date().toString());
-				f.stopWriting();
-			} 
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
-
-			active = false;
-			ScreenInterlevel.tutorialInitial = false;
-			ScreenInterlevel.tutorial = false;
-			Game.exitToTitle();
+			f.create();
+			f.startWriting();
+			f.println("Fake certificate of completion:");
+			f.println("Tanks: The Crusades tutorial");
+			f.println("Skipped " + new Date().toString());
+			f.stopWriting();
 		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		active = false;
+		ScreenInterlevel.tutorialInitial = false;
+		ScreenInterlevel.tutorial = false;
+		Game.exitToTitle();
 	});
 
 	@Override

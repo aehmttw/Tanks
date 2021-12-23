@@ -15,24 +15,13 @@ public class ScreenOptionsInputTouchscreen extends Screen
     public static final String singleText = "\u00A7000100200255single";
     public static final String dualText = "\u00A7200100000255dual";
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptions();
-        }
-    }
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
 
-    Button test = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test controls in tutorial", new Runnable()
+    Button test = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test controls in tutorial", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenOptions.saveOptions(Game.homedir);
-            new Tutorial().loadTutorial(false, Game.game.window.touchscreen);
-        }
+        ScreenOptions.saveOptions(Game.homedir);
+        new Tutorial().loadTutorial(false, Game.game.window.touchscreen);
     });
 
 

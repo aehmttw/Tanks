@@ -15,18 +15,14 @@ public class ScreenSharedCrusades extends Screen
 
 	public ButtonList sharedCrusades;
 
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", new Runnable()
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () ->
 	{
-		@Override
-		public void run()
-		{
-			if (ScreenPartyHost.isServer)
-				Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
-			else if (ScreenPartyLobby.isClient)
-				Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
-		}
+		if (ScreenPartyHost.isServer)
+			Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
+		else if (ScreenPartyLobby.isClient)
+			Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
 	}
-			);
+	);
 
 	public ScreenSharedCrusades(ArrayList<ScreenPartyHost.SharedCrusade> crusades)
 	{
@@ -38,14 +34,10 @@ public class ScreenSharedCrusades extends Screen
 		ArrayList<Button> buttons = new ArrayList<>();
 		for (ScreenPartyHost.SharedCrusade l: crusades)
 		{
-			buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), new Runnable()
+			buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
 			{
-				@Override
-				public void run()
-				{
-					Crusade c = new Crusade(l.crusade, l.name);
-					Game.screen = new ScreenCrusadePreview(c, Game.screen, false);
-				}
+				Crusade c = new Crusade(l.crusade, l.name);
+				Game.screen = new ScreenCrusadePreview(c, Game.screen, false);
 			}
 					, "Shared by " + l.creator));
 		}

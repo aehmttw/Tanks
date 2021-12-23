@@ -6,41 +6,28 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsSize extends ScreenLevelBuilderOverlay
+public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
 {
     public TextBox sizeX;
     public TextBox sizeY;
 
-    public Button back3 = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
-    );
+    public Button back3 = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape);
 
     public OverlayLevelOptionsSize(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
 
-        sizeX = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Width", new Runnable()
+        sizeX = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Width", () ->
         {
-            @Override
-            public void run()
+            if (sizeX.inputText.length() <= 0)
+                sizeX.inputText = screenLevelEditor.level.sizeX + "";
+            else
             {
-                if (sizeX.inputText.length() <= 0)
-                    sizeX.inputText = screenLevelEditor.level.sizeX + "";
-                else
-                {
-                    screenLevelEditor.level.sizeX = Integer.parseInt(sizeX.inputText);
-                    Game.currentSizeX = screenLevelEditor.level.sizeX;
-                }
-
-                screenLevelEditor.level.reloadTiles();
+                screenLevelEditor.level.sizeX = Integer.parseInt(sizeX.inputText);
+                Game.currentSizeX = screenLevelEditor.level.sizeX;
             }
 
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.sizeX + "");
 
@@ -52,22 +39,17 @@ public class OverlayLevelOptionsSize extends ScreenLevelBuilderOverlay
         sizeX.checkMaxValue = true;
         sizeX.checkMinValue = true;
 
-        sizeY = new TextBox(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Height", new Runnable()
+        sizeY = new TextBox(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Height", () ->
         {
-            @Override
-            public void run()
+            if (sizeY.inputText.length() <= 0)
+                sizeY.inputText = screenLevelEditor.level.sizeY + "";
+            else
             {
-                if (sizeY.inputText.length() <= 0)
-                    sizeY.inputText = screenLevelEditor.level.sizeY + "";
-                else
-                {
-                    screenLevelEditor.level.sizeY = Integer.parseInt(sizeY.inputText);
-                    Game.currentSizeY = screenLevelEditor.level.sizeY;
-                }
-
-                screenLevelEditor.level.reloadTiles();
+                screenLevelEditor.level.sizeY = Integer.parseInt(sizeY.inputText);
+                Game.currentSizeY = screenLevelEditor.level.sizeY;
             }
 
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.sizeY + "");
 

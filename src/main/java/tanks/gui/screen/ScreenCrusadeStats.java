@@ -136,14 +136,10 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             i++;
         }
 
-        changePlayer = new Selector(this.centerX + 200, 80, this.objWidth, this.objHeight, "Player", playerNames, new Runnable()
+        changePlayer = new Selector(this.centerX + 200, 80, this.objWidth, this.objHeight, "Player", playerNames, () ->
         {
-            @Override
-            public void run()
-            {
-                Game.screen = new ScreenCrusadeStats(crusade, playerObjects[changePlayer.selectedOption], false);
-                ((ScreenCrusadeStats)Game.screen).view = view;
-            }
+            Game.screen = new ScreenCrusadeStats(crusade, playerObjects[changePlayer.selectedOption], false);
+            ((ScreenCrusadeStats)Game.screen).view = view;
         });
 
         changePlayer.selectedOption = us;
@@ -244,131 +240,87 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             this.items.add(new ItemEntry(i, uses, hits));
     }
 
-    Button exit = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Return to title", new Runnable()
+    Button exit = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Return to title", () ->
     {
-        @Override
-        public void run()
-        {
-            Crusade.crusadeMode = false;
-            Crusade.currentCrusade = null;
+        Crusade.crusadeMode = false;
+        Crusade.currentCrusade = null;
 
-            if (ScreenPartyLobby.isClient)
-                Game.screen = new ScreenPartyLobby();
-            else if (ScreenPartyHost.isServer)
-                Game.screen = ScreenPartyHost.activeScreen;
-            else
-                Game.exitToTitle();
-        }
+        if (ScreenPartyLobby.isClient)
+            Game.screen = new ScreenPartyLobby();
+        else if (ScreenPartyHost.isServer)
+            Game.screen = ScreenPartyHost.activeScreen;
+        else
+            Game.exitToTitle();
     }
     );
 
     Selector changePlayer;
 
 
-    Button viewTanks = new Button(this.centerX - this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Tanks", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            view = View.tanks;
-        }
-    }
+    Button viewTanks = new Button(this.centerX - this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Tanks", () -> view = View.tanks
     );
 
-    Button viewLevels = new Button(this.centerX - this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Battles", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            view = View.levels;
-        }
-    }
+    Button viewLevels = new Button(this.centerX - this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Battles", () -> view = View.levels
     );
 
-    Button viewItems = new Button(this.centerX + this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Items", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            view = View.items;
-        }
-    }
+    Button viewItems = new Button(this.centerX + this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Items", () -> view = View.items
     );
 
-    Button viewMisc = new Button(this.centerX + this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Summary", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            view = View.misc;
-        }
-    }
+    Button viewMisc = new Button(this.centerX + this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Summary", () -> view = View.misc
     );
 
-    Button next = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Next", new Runnable()
+    Button next = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Next", () ->
     {
-        @Override
-        public void run()
+        if (view == View.tanks)
         {
-            if (view == View.tanks)
-            {
-                if (tankEntriesShown > tanks.size())
-                    view = View.levels;
-                else
-                    tankPage++;
-            }
-            else if (view == View.levels)
-            {
-                if (levelEntriesShown > levels.size())
-                    view = View.items;
-                else
-                    levelPage++;
-            }
-            else if (view == View.items)
-            {
-                if (itemEntriesShown > items.size())
-                    view = View.misc;
-                else
-                    itemPage++;
-            }
-
-            if (view == View.misc)
-                wizardFinished = true;
-        }
-    }
-    );
-
-    Button nextPage = new Button(this.centerX, 0, 500, 30, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            if (view == View.tanks)
+            if (tankEntriesShown > tanks.size())
+                view = View.levels;
+            else
                 tankPage++;
-            else if (view == View.levels)
-                levelPage++;
-            else if (view == View.items)
-                itemPage++;
-            else if (view == View.misc)
-                miscPage++;
         }
+        else if (view == View.levels)
+        {
+            if (levelEntriesShown > levels.size())
+                view = View.items;
+            else
+                levelPage++;
+        }
+        else if (view == View.items)
+        {
+            if (itemEntriesShown > items.size())
+                view = View.misc;
+            else
+                itemPage++;
+        }
+
+        if (view == View.misc)
+            wizardFinished = true;
     }
     );
 
-    Button previousPage = new Button(this.centerX, 0, 500, 30, "Previous page", new Runnable()
+    Button nextPage = new Button(this.centerX, 0, 500, 30, "Next page", () ->
     {
-        @Override
-        public void run()
-        {
-            if (view == View.tanks)
-                tankPage--;
-            else if (view == View.levels)
-                levelPage--;
-            else if (view == View.items)
-                itemPage--;
-            else if (view == View.misc)
-                miscPage--;
-        }
+        if (view == View.tanks)
+            tankPage++;
+        else if (view == View.levels)
+            levelPage++;
+        else if (view == View.items)
+            itemPage++;
+        else if (view == View.misc)
+            miscPage++;
+    }
+    );
+
+    Button previousPage = new Button(this.centerX, 0, 500, 30, "Previous page", () ->
+    {
+        if (view == View.tanks)
+            tankPage--;
+        else if (view == View.levels)
+            levelPage--;
+        else if (view == View.items)
+            itemPage--;
+        else if (view == View.misc)
+            miscPage--;
     }
     );
 
@@ -521,8 +473,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     {
         this.drawDefaultBackground();
 
-        this.drawTopBar(120);
-        this.drawBottomBar(120);
+        this.drawTopBar(Math.min(120, this.age * 10));
+        this.drawBottomBar(Math.min(120, this.age * 10));
 
         Drawing.drawing.setColor(255, 255, 255);
 
@@ -745,7 +697,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void increaseEntriesShown()
     {
-        Drawing.drawing.playSound("bullet_explode.ogg", 1.5f);
+        Drawing.drawing.playSound("boost.ogg", 2f);
 
         if (view == View.tanks)
             tankEntriesShown++;
@@ -803,8 +755,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     {
         public double yPos = 0;
 
+        public double age = 0;
+        public double maxAge = 10;
+
         public void draw(int num, int count, int pageSize)
         {
+            this.age = Math.min(this.age + Panel.frameFrequency, this.maxAge);
+
             int numOnPage = num % pageSize;
             int entriesOnPage = Math.min(pageSize, count);
             this.yPos = Game.screen.centerY + (numOnPage - ((entriesOnPage - 1.0) / 2.0)) * 30;
@@ -814,8 +771,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         {
             double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;
 
-            Drawing.drawing.setColor(0, 0, 0, opacity);
-            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, ypos, width, height);
+            Drawing.drawing.setColor(0, 0, 0, opacity * age / maxAge);
+            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, ypos, width, height * age / maxAge);
+        }
+
+        public double getXOffset()
+        {
+            return -50 * (1 - age / maxAge);
         }
     }
 
@@ -863,14 +825,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 this.drawBar(this.yPos, 30, 32);
 
             Drawing.drawing.setInterfaceFontSize(24);
-            this.tank.drawForInterface(Game.screen.centerX + tanks_1, this.yPos, 0.5);
-            Drawing.drawing.setColor(processColor(this.tank.colorR), processColor(this.tank.colorG), processColor(this.tank.colorB));
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_2, this.yPos, this.kills + "");
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_2a, this.yPos, "x");
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_3, this.yPos, this.coins + "");
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_3a, this.yPos, "->");
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_4, this.yPos, this.coins * this.kills + "");
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + tanks_5, this.yPos, this.deaths + "");
+            this.tank.drawForInterface(this.getXOffset() + Game.screen.centerX + tanks_1, this.yPos, 0.5 * age / maxAge);
+            Drawing.drawing.setColor(processColor(this.tank.colorR), processColor(this.tank.colorG), processColor(this.tank.colorB), 255 * age / maxAge);
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + tanks_2, this.yPos, this.kills + "");
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + tanks_2a, this.yPos, "x");
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + tanks_3, this.yPos, this.coins + "");
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + tanks_3a, this.yPos, "->");
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + tanks_4, this.yPos, this.coins * this.kills + "");
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + tanks_5, this.yPos, this.deaths + "");
         }
     }
 
@@ -896,34 +858,34 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 this.drawBar(this.yPos, 30, 32);
 
             Drawing.drawing.setInterfaceFontSize(24);
-            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setColor(255, 255, 255, 255 * age / maxAge);
 
             if (name.contains(". "))
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_1 - 110, this.yPos, this.name, false);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + levels_1 - 110, this.yPos, this.name, false);
             else
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_1, this.yPos, this.name);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + levels_1, this.yPos, this.name);
 
             if (this.level.attempts == 1 && level.bestTime < Double.MAX_VALUE)
-                Drawing.drawing.setColor(127, 255, 127);
+                Drawing.drawing.setColor(127, 255, 127, 255 * age / maxAge);
 
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_2, this.yPos, this.level.attempts + "");
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + levels_2, this.yPos, this.level.attempts + "");
 
-            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setColor(255, 255, 255, 255 * age / maxAge);
 
             if (this.level.bestTime >= Double.MAX_VALUE)
             {
-                Drawing.drawing.setColor(255, 255, 255, 127);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_3, this.yPos, "-", false);
+                Drawing.drawing.setColor(255, 255, 255, 127 * age / maxAge);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + levels_3, this.yPos, "-", false);
             }
             else
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_3 + 52, this.yPos, SpeedrunTimer.getTime(this.level.bestTime), true);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + levels_3 + 52, this.yPos, SpeedrunTimer.getTime(this.level.bestTime), true);
 
             if (this.level.attempts == 1)
-                Drawing.drawing.setColor(255, 255, 255, 127);
+                Drawing.drawing.setColor(255, 255, 255, 127 * age / maxAge);
             else
-                Drawing.drawing.setColor(255, 255, 255);
+                Drawing.drawing.setColor(255, 255, 255, 255 * age / maxAge);
 
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + levels_4 + 52, this.yPos, SpeedrunTimer.getTime(this.level.totalTime), true);
+            Drawing.drawing.drawInterfaceText( this.getXOffset() + Game.screen.centerX + levels_4 + 52, this.yPos, SpeedrunTimer.getTime(this.level.totalTime), true);
         }
     }
 
@@ -951,26 +913,26 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 this.drawBar(this.yPos, 30, 32);
 
             Drawing.drawing.setInterfaceFontSize(24);
-            Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.drawInterfaceImage(this.item.icon, Game.screen.centerX + items_1 - 140, this.yPos, 30, 30);
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_1 - 105, this.yPos, this.item.name, false);
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_2, this.yPos, this.uses + "");
+            Drawing.drawing.setColor(255, 255, 255, 255 * age / maxAge);
+            Drawing.drawing.drawInterfaceImage(this.item.icon, this.getXOffset() + Game.screen.centerX + items_1 - 140, this.yPos, 30, 30);
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_1 - 105, this.yPos, this.item.name, false);
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, this.uses + "");
 
             if (!this.item.supportsHits)
             {
-                Drawing.drawing.setColor(255, 255, 255, 127);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_3, this.yPos, "-");
+                Drawing.drawing.setColor(255, 255, 255, 127 * age / maxAge);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, "-");
             }
             else
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_3, this.yPos, this.hits + "");
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, this.hits + "");
 
             if (this.uses <= 0 || !this.item.supportsHits)
             {
-                Drawing.drawing.setColor(255, 255, 255, 127);
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_4, this.yPos, "-");
+                Drawing.drawing.setColor(255, 255, 255, 127 * age / maxAge);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, "-");
             }
             else
-                Drawing.drawing.drawInterfaceText(Game.screen.centerX + items_4, this.yPos, (this.hits * 1000 / this.uses) / 10.0 + "%");
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, (this.hits * 1000 / this.uses) / 10.0 + "%");
         }
     }
 
@@ -997,9 +959,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
 
             Drawing.drawing.setInterfaceFontSize(24);
-            Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.displayInterfaceText(Game.screen.centerX + misc_1, this.yPos, this.stat);
-            Drawing.drawing.drawInterfaceText(Game.screen.centerX + misc_2, this.yPos, this.value);
+            Drawing.drawing.setColor(255, 255, 255, 255 * age / maxAge);
+            Drawing.drawing.displayInterfaceText(this.getXOffset() + Game.screen.centerX + misc_1, this.yPos, this.stat);
+            Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + misc_2, this.yPos, this.value);
         }
     }
 

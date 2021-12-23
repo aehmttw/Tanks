@@ -17,69 +17,49 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	public double rCenterX;
 	public double rCenterY;
 
-	Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", new Runnable()
+	Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", () ->
 	{
-		@Override
-		public void run() 
+		if (Game.framework == Game.Framework.libgdx)
+			Game.screen = new ScreenExit();
+		else
 		{
-			if (Game.framework == Game.Framework.libgdx)
-				Game.screen = new ScreenExit();
-			else
-			{
-				if (Game.game.window.soundsEnabled)
-					Game.game.window.soundPlayer.exit();
+			if (Game.game.window.soundsEnabled)
+				Game.game.window.soundPlayer.exit();
 
-				Game.game.window.windowHandler.onWindowClose();
+			Game.game.window.windowHandler.onWindowClose();
 
-				System.exit(0);
-			}
-		}
-	}
-			);
-	
-	Button options = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Options", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.silentCleanUp();
-			Game.screen = new ScreenOptions();
-		}
-	}
-			);
-
-	Button debug = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 3, this.objWidth, this.objHeight, "Debug menu", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.silentCleanUp();
-			Game.screen = new ScreenDebug();
-		}
-	}
-	);
-
-	Button about = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "About", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.silentCleanUp();
-			Game.screen = new ScreenAbout();
+			System.exit(0);
 		}
 	}
 	);
 	
-	Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", new Runnable()
+	Button options = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Options", () ->
 	{
-		@Override
-		public void run() 
-		{
-			Game.silentCleanUp();
-			Game.screen = new ScreenPlay();
-		}
+		Game.silentCleanUp();
+		Game.screen = new ScreenOptions();
 	}
-			);
+	);
+
+	Button debug = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 3, this.objWidth, this.objHeight, "Debug menu", () ->
+	{
+		Game.silentCleanUp();
+		Game.screen = new ScreenDebug();
+	}
+	);
+
+	Button about = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "About", () ->
+	{
+		Game.silentCleanUp();
+		Game.screen = new ScreenAbout();
+	}
+	);
+	
+	Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", () ->
+	{
+		Game.silentCleanUp();
+		Game.screen = new ScreenPlay();
+	}
+	);
 
 	Button takeControl = new Button(logo.posX, logo.posY, Game.tile_size, Game.tile_size, "", new Runnable()
 	{
@@ -97,17 +77,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	}
 		);
 
-	Button languages = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", new Runnable()
+	Button languages = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
 	{
-		@Override
-		public void run()
-		{
-			Game.silentCleanUp();
-			Game.screen = new ScreenLanguage();
-		}
+		Game.silentCleanUp();
+		Game.screen = new ScreenLanguage();
 	}
 	);
-
 
 	public ScreenTitle()
 	{
@@ -146,10 +121,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		languages.update();
 
-		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
-
 		if (Drawing.drawing.interfaceScaleZoom == 1)
+		{
 			takeControl.update();
+		}
 
 		if (Game.debug)
 			debug.update();

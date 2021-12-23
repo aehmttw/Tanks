@@ -45,6 +45,7 @@ public class TankWhite extends TankAIControlled
 			if (!this.vanish)
 			{
 				this.vanish = true;
+				Drawing.drawing.playGlobalSound("transform.ogg", 1.2f);
 
 				if (Game.effectsEnabled)
 				{

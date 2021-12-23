@@ -1,8 +1,6 @@
 package tanks;
 
-import basewindow.IModel;
-import basewindow.ModelPart;
-import basewindow.Model;
+import basewindow.*;
 import tanks.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
@@ -36,7 +34,7 @@ public class Drawing
 	public boolean enableMovingCameraX = false;
 	public boolean enableMovingCameraY = false;
 
-	public int statsHeight = 40;
+	public int statsHeight = 0;
 	public boolean enableStats = false;
 
 	public boolean movingCamera = true;
@@ -61,7 +59,15 @@ public class Drawing
 
 	public boolean disableFaceRemoval = true;
 
-	public static final double track_offset = 20;
+	public BaseShapeBatchRenderer currentTerrainRenderer;
+
+	public BaseShapeBatchRenderer terrainRenderer;
+	public BaseShapeBatchRenderer terrainRendererTransparent;
+	public BaseShapeBatchRenderer terrainRendererGlow;
+	public BaseShapeBatchRenderer terrainRendererShrubbery;
+
+	public boolean terrainRendering = false;
+	public boolean shrubberyMode = false;
 
 	public static ModelPart rotatedRect;
 
@@ -95,14 +101,7 @@ public class Drawing
 
 		TankPlayer.controlStick = new Joystick(150, Drawing.drawing.interfaceSizeY - 150, 200);
 		TankPlayer.shootStick = new Joystick(Drawing.drawing.interfaceSizeX - 150, Drawing.drawing.interfaceSizeY - 150, 200);
-		TankPlayer.mineButton = new Button(Drawing.drawing.interfaceSizeX - 300, Drawing.drawing.interfaceSizeY - 75, 60, 60, "", new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Drawing.drawing.playVibration("heavyClick");
-			}
-		});
+		TankPlayer.mineButton = new Button(Drawing.drawing.interfaceSizeX - 300, Drawing.drawing.interfaceSizeY - 75, 60, 60, "", () -> Drawing.drawing.playVibration("heavyClick"));
 
 		TankPlayer.shootStick.clickIntensities[0] = 1.0;
 		TankPlayer.shootStick.mobile = false;
@@ -118,7 +117,17 @@ public class Drawing
 
 	public void setColor(double r, double g, double b)
 	{
-		Game.game.window.setColor(r, g, b);
+		this.shrubberyMode = false;
+
+		if (!terrainRendering)
+			Game.game.window.setColor(r, g, b);
+		else
+			this.terrainRenderer.setColor(r, g, b, 255, 0);
+
+		this.terrainRendererGlow.setColor(r, g, b, 255, 0);
+
+		this.currentTerrainRenderer = terrainRenderer;
+
 		this.currentColorR = r;
 		this.currentColorG = g;
 		this.currentColorB = b;
@@ -128,7 +137,26 @@ public class Drawing
 
 	public void setColor(double r, double g, double b, double a)
 	{
-		Game.game.window.setColor(r, g, b, a);
+		this.shrubberyMode = false;
+
+		if (!terrainRendering)
+			Game.game.window.setColor(r, g, b, a);
+		else
+		{
+			if (a < 255)
+			{
+				this.terrainRendererTransparent.setColor(r, g, b, a, 0);
+				this.currentTerrainRenderer = terrainRendererTransparent;
+			}
+			else
+			{
+				this.terrainRenderer.setColor(r, g, b, 255, 0);
+				this.currentTerrainRenderer = terrainRenderer;
+			}
+		}
+
+		this.terrainRendererGlow.setColor(r, g, b, a, 0);
+
 		this.currentColorR = r;
 		this.currentColorG = g;
 		this.currentColorB = b;
@@ -138,12 +166,38 @@ public class Drawing
 
 	public void setColor(double r, double g, double b, double a, double glow)
 	{
-		Game.game.window.setColor(r, g, b, a, glow);
+		this.shrubberyMode = false;
+
+		if (!terrainRendering)
+			Game.game.window.setColor(r, g, b, a, glow);
+		else
+		{
+			if (a < 255)
+			{
+				this.terrainRendererTransparent.setColor(r, g, b, a, glow);
+				this.currentTerrainRenderer = terrainRendererTransparent;
+			}
+			else
+			{
+				this.terrainRenderer.setColor(r, g, b, 255, glow);
+				this.currentTerrainRenderer = terrainRenderer;
+			}
+		}
+
+		this.terrainRendererGlow.setColor(r, g, b, a, glow);
+
 		this.currentColorR = r;
 		this.currentColorG = g;
 		this.currentColorB = b;
 		this.currentColorA = a;
 		this.currentGlow = glow;
+	}
+
+	public void setShrubberyMode()
+	{
+		this.shrubberyMode = true;
+		this.currentTerrainRenderer = terrainRendererShrubbery;
+		this.currentTerrainRenderer.setColor(this.currentColorR, this.currentColorG, this.currentColorB, this.currentColorA, this.currentGlow);
 	}
 
 	public void fillOval(double x, double y, double sizeX, double sizeY)
@@ -318,6 +372,14 @@ public class Drawing
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
+	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
+	{
+		if (this.terrainRendering)
+			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
+		else
+			this.fillRect(x, y, sizeX, sizeY);
+	}
+
 	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
@@ -465,9 +527,9 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.setBatchMode(true, true, true, false, false);
+		Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, false);
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
-		Game.game.window.setBatchMode(false, true, true, false, false);
+		Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, false);
 	}
 
 	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ)
@@ -518,6 +580,44 @@ public class Drawing
 		}
 
 		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
+	}
+
+	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ)
+	{
+		fillBox(o, x, y, z, sizeX, sizeY, sizeZ, (byte) 0);
+	}
+
+	/**
+	 * Options byte:
+	 * <p>
+	 * 0: default
+	 * <p>
+	 * +1 hide behind face
+	 * +2 hide front face
+	 * +4 hide bottom face
+	 * +8 hide top face
+	 * +16 hide left face
+	 * +32 hide right face
+	 * <p>
+	 * +64 draw on top
+	 */
+	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
+	{
+		if (this.terrainRendering)
+			this.currentTerrainRenderer.fillBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
+		else
+		{
+			double shrubMod = 1;
+
+			if (shrubberyMode)
+			{
+				shrubMod = 0.5;
+				if (Game.screen instanceof ScreenGame)
+					shrubMod = ((ScreenGame) Game.screen).shrubberyScale;
+			}
+
+			this.fillBox(x, y, z * shrubMod, sizeX, sizeY, sizeZ * shrubMod, options);
+		}
 	}
 
 	public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
@@ -683,9 +783,9 @@ public class Drawing
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.setBatchMode(true, true, true, false, false);
+		Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, false);
 		Game.game.window.shapeRenderer.fillBox(drawX, drawY, 0, drawSizeX, drawSizeY, 0, (byte) 61);
-		Game.game.window.setBatchMode(false, true, true, false, false);
+		Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, false);
 	}
 
 	public void fillInterfaceProgressRect(double x, double y, double sizeX, double sizeY, double progress)
@@ -706,6 +806,16 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 
 		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
+	}
+
+	public void drawInterfaceImage(double rotation, String img, double x, double y, double sizeX, double sizeY)
+	{
+		double drawX = (interfaceScale * (x) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
 	}
 
 	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)
@@ -859,9 +969,9 @@ public class Drawing
 		setInterfaceFontSize(14);
 
 		int sizeX = 0;
-		for (int i = 0; i < text.length; i++)
+		for (String s : text)
 		{
-			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, text[i]) / this.interfaceScale) + xPadding);
+			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
 		}
 
 		double sizeY = 14;
@@ -904,6 +1014,18 @@ public class Drawing
 	{
 		if (Game.game.window.soundsEnabled)
 			Game.game.window.soundPlayer.stopMusic();
+	}
+
+	public void addSyncedMusic(String sound, float volume, boolean looped, long fadeTime)
+	{
+		if (Game.game.window.soundsEnabled && Game.musicEnabled)
+			Game.game.window.soundPlayer.addSyncedMusic("/music/" + sound, volume, looped, fadeTime);
+	}
+
+	public void removeSyncedMusic(String sound, long fadeTime)
+	{
+		if (Game.game.window.soundsEnabled && Game.musicEnabled)
+			Game.game.window.soundPlayer.removeSyncedMusic("/music/" + sound, fadeTime);
 	}
 
 	public void playSound(String sound)
@@ -1077,7 +1199,7 @@ public class Drawing
 		if (!enableMovingCameraX && !Game.followingCam)
 			return 0;
 
-		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - track_offset)
+		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - getTrackOffset())
 		{
 			Panel.panel.pastPlayerX.remove(0);
 			Panel.panel.pastPlayerY.remove(0);
@@ -1090,7 +1212,7 @@ public class Drawing
 			x = Panel.panel.pastPlayerX.get(0);
 		else if (Panel.panel.pastPlayerTime.size() > 1)
 		{
-			double frac = (Panel.panel.age - track_offset - Panel.panel.pastPlayerTime.get(0)) * 1.0 / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
+			double frac = (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
 			x = Panel.panel.pastPlayerX.get(0) * (1 - frac) + Panel.panel.pastPlayerX.get(1) * frac;
 		}
 
@@ -1138,7 +1260,7 @@ public class Drawing
 			y = Panel.panel.pastPlayerY.get(0);
 		else if (Panel.panel.pastPlayerTime.size() > 1)
 		{
-			double frac = (Panel.panel.age - track_offset - Panel.panel.pastPlayerTime.get(0)) * 1.0 / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
+			double frac = (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
 			y = Panel.panel.pastPlayerY.get(0) * (1 - frac) + Panel.panel.pastPlayerY.get(1) * frac;
 		}
 
@@ -1201,6 +1323,43 @@ public class Drawing
 		return (Game.game.window.absoluteHeight - statsHeight - sizeY / scale) / 2;
 	}
 
+	public void forceRedrawTerrain()
+	{
+		this.terrainRenderer.forceRedraw();
+		this.terrainRendererShrubbery.forceRedraw();
+		this.terrainRendererTransparent.forceRedraw();
+	}
+
+	public void beginTerrainRenderers()
+	{
+		this.terrainRendering = true;
+
+		this.terrainRenderer.begin(true);
+		this.terrainRendererTransparent.begin(true, false, false);
+		this.terrainRendererShrubbery.begin(true);
+	}
+
+	public void drawTerrainRenderers()
+	{
+		this.terrainRendering = false;
+
+		this.terrainRenderer.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
+		this.terrainRenderer.setScale(scale, scale, scale);
+		this.terrainRenderer.end();
+
+		double shrubScale = 0.5;
+		if (Game.screen instanceof ScreenGame)
+			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
+
+		this.terrainRendererShrubbery.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
+		this.terrainRendererShrubbery.setScale(scale, scale, scale * shrubScale);
+		this.terrainRendererShrubbery.end();
+
+		this.terrainRendererTransparent.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
+		this.terrainRendererTransparent.setScale(scale, scale, scale);
+		this.terrainRendererTransparent.end();
+	}
+
 	public double gameToAbsoluteX(double x, double sizeX)
 	{
 		if (Game.screen.enableMargins)
@@ -1233,6 +1392,14 @@ public class Drawing
 		}
 	}
 
+	public double getTrackOffset()
+	{
+		if (Game.followingCam)
+			return 0;
+		else
+			return 20;
+	}
+
 	public ArrayList<String> wrapText(String msg, double max, double fontSize)
 	{
 		Drawing.drawing.setInterfaceFontSize(fontSize);
@@ -1243,6 +1410,13 @@ public class Drawing
 		boolean first = true;
 		for (String s : msg.split(" "))
 		{
+			if (s.equals("---"))
+			{
+				lines.add(l.toString());
+				l = new StringBuilder();
+				continue;
+			}
+
 			if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, l + " " + s) / Drawing.drawing.interfaceScale <= max)
 			{
 				if (!first)

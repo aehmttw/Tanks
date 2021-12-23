@@ -87,16 +87,12 @@ public class EventAddButton extends PersonalEvent
             Button b;
 
             final int buttonID = this.id;
-            b = new Button(this.posX, this.posY, this.sizeX, this.sizeY, this.text, new Runnable()
+            b = new Button(this.posX, this.posY, this.sizeX, this.sizeY, this.text, () ->
             {
-                @Override
-                public void run()
-                {
-                    Game.eventsOut.add(new EventPressedButton(buttonID));
+                Game.eventsOut.add(new EventPressedButton(buttonID));
 
-                    if (wait)
-                        Game.screen = new ScreenOnlineWaiting();
-                }
+                if (wait)
+                    Game.screen = new ScreenOnlineWaiting();
             }, hover);
 
             b.enabled = this.enabled;

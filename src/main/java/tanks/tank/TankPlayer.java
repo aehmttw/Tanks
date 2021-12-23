@@ -8,7 +8,9 @@ import tanks.bullet.BulletElectric;
 import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.gui.Button;
+import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
+import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;
@@ -487,6 +489,17 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 	{
 		if (Crusade.crusadeMode)
 			this.player.remainingLives--;
+
+		for (IFixedMenu m : ModAPI.menuGroup)
+		{
+			if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
+			{
+				if (((Scoreboard) m).players.isEmpty())
+					((Scoreboard) m).addTeamScore(this.team, 1);
+				else
+					((Scoreboard) m).addPlayerScore(this.player, 1);
+			}
+		}
 	}
 
 	@Override

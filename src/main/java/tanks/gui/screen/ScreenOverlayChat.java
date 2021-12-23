@@ -84,7 +84,7 @@ public class ScreenOverlayChat
                         Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1)) * 30 - 70 - radius / 2, width + xPad, radius);
                         Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1) / 2.0) * 30 - 70, width + xPad + radius * 2, height + yPad - radius * 2);
 
-                        Game.game.window.setBatchMode(true, false, false);
+                        Game.game.window.shapeRenderer.setBatchMode(true, false, false);
 
                         for (int j = 0; j < 15; j++)
                         {
@@ -122,7 +122,7 @@ public class ScreenOverlayChat
                                     Drawing.drawing.interfaceSizeY - i * 30 - 70 + Math.sin((j + 16) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
                         }
 
-                        Game.game.window.setBatchMode(false, false, false);
+                        Game.game.window.shapeRenderer.setBatchMode(false, false, false);
 
                         double x = 34;
                         double y = Drawing.drawing.interfaceSizeY - (i + (c.lines.size() - 1)) * 30 - 70;

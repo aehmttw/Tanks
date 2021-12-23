@@ -1,6 +1,7 @@
 package lwjglwindow;
 
 import basewindow.BaseShapeRenderer;
+import basewindow.IBatchRenderableObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -809,6 +810,56 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         if (depthtest)
             this.window.disableDepthtest();
+    }
+
+    @Override
+    public void setBatchMode(boolean enabled, boolean quads, boolean depth)
+    {
+        this.setBatchMode(enabled, quads, depth, false);
+    }
+
+    @Override
+    public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow)
+    {
+        this.setBatchMode(enabled, quads, depth, glow, !(this.window.colorA < 1 || glow));
+    }
+
+    @Override
+    public void setBatchMode(boolean enabled, boolean quads, boolean depth, boolean glow, boolean depthMask)
+    {
+        this.window.batchMode = enabled;
+        this.window.batchQuads = quads;
+        this.window.batchDepth = depth;
+        this.window.batchGlow = glow;
+        this.window.batchDepthMask = depthMask;
+
+        if (enabled)
+        {
+            glDepthMask(depthMask);
+
+            if (depth)
+            {
+                window.enableDepthtest();
+                glDepthFunc(GL_LEQUAL);
+            }
+
+            if (glow)
+                window.setGlowBlendFunc();
+            else
+                window.setTransparentBlendFunc();
+
+            if (quads)
+                glBegin(GL_QUADS);
+            else
+                glBegin(GL_TRIANGLES);
+        }
+        else
+        {
+            GL11.glEnd();
+            window.disableDepthtest();
+            glDepthMask(true);
+            window.setTransparentBlendFunc();
+        }
     }
 
     public double rotateX(double px, double py, double posX, double rotation)

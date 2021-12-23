@@ -24,6 +24,8 @@ public class ScreenOptionsGraphics extends Screen
     public static final String birdsEyeText = "\u00A7000100200255bird's-eye";
     public static final String angledText = "\u00A7200100000255angled";
 
+    public static int viewNo = 0;
+
     public ScreenOptionsGraphics()
     {
         this.music = "menu_options.ogg";
@@ -61,10 +63,37 @@ public class ScreenOptionsGraphics extends Screen
 
         update3dGroundButton();
 
-        if (Game.angledView)
-            altPerspective.setText(perspectiveText, angledText);
-        else
-            altPerspective.setText(perspectiveText, birdsEyeText);
+        switch (viewNo)
+        {
+            case 0:
+                altPerspective.setText(perspectiveText, birdsEyeText);
+
+                Game.angledView = false;
+                Game.followingCam = false;
+                Game.firstPerson = false;
+                break;
+            case 1:
+                altPerspective.setText(perspectiveText, angledText);
+
+                Game.angledView = true;
+                Game.followingCam = false;
+                Game.firstPerson = false;
+                break;
+            case 2:
+                altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
+
+                Game.angledView = false;
+                Game.followingCam = true;
+                Game.firstPerson = false;
+                break;
+            case 3:
+                altPerspective.setText(perspectiveText, "\u00a7255000000255first person");
+
+                Game.angledView = false;
+                Game.followingCam = true;
+                Game.firstPerson = true;
+                break;
+        }
 
         if (!Game.antialiasing)
             antialiasing.setText(antialiasingText, ScreenOptions.offText);
@@ -216,13 +245,38 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            Game.angledView = !Game.angledView;
+            viewNo = (viewNo + 1) % 2;
+            switch (viewNo)
+            {
+                case 0:
+                    altPerspective.setText(perspectiveText, birdsEyeText);
 
-            if (Game.angledView)
-                altPerspective.setText(perspectiveText, angledText);
-            else
-                altPerspective.setText(perspectiveText, birdsEyeText);
+                    Game.angledView = false;
+                    Game.followingCam = false;
+                    Game.firstPerson = false;
+                    break;
+                case 1:
+                    altPerspective.setText(perspectiveText, angledText);
 
+                    Game.angledView = true;
+                    Game.followingCam = false;
+                    Game.firstPerson = false;
+                    break;
+                case 2:
+                    altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
+
+                    Game.angledView = false;
+                    Game.followingCam = true;
+                    Game.firstPerson = false;
+                    break;
+                case 3:
+                    altPerspective.setText(perspectiveText, "\u00a7255000000255first person");
+
+                    Game.angledView = false;
+                    Game.followingCam = true;
+                    Game.firstPerson = true;
+                    break;
+            }
         }
     },
             "Changes the angle at which---you view the game field");
@@ -264,44 +318,16 @@ public class ScreenOptionsGraphics extends Screen
     },
             "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
-    Button fullscreen = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.game.window.setFullscreen(!Game.game.window.fullscreen);
-        }
-    }, "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs()
+    Button fullscreen = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs()
     );
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptions();
-        }
-    }
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
 
-    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptionsShadows();
-        }
-    }, "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate"
+    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsShadows(), "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate"
     );
 
-    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptionsEffects();
-        }
-    }, "Particle effects may significantly---impact performance"
+    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance"
     );
 
     @Override

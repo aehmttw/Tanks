@@ -46,9 +46,8 @@ public class TankMedic extends TankAIControlled
 		if (!this.suicidal)
 		{
 			boolean die = true;
-			for (int i = 0; i < Game.movables.size(); i++)
+			for (Movable m: Game.movables)
 			{
-				Movable m = Game.movables.get(i);
 				if (m != this && m.team == this.team && m.dealsDamage && !m.destroy)
 				{
 					die = false;
@@ -133,7 +132,7 @@ public class TankMedic extends TankAIControlled
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && m != this && Team.isAllied(this, m) && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).health - ((Tank) m).baseHealth < 1)
+			if (m instanceof Tank && m != this && Team.isAllied(this, m) && ((Tank) m).targetable && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).health - ((Tank) m).baseHealth < 1)
 			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 				r.moveOut(5);

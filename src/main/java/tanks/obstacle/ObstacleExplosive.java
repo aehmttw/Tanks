@@ -9,11 +9,12 @@ import tanks.event.EventObstacleDestroy;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
+import tanks.tank.IAvoidObject;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
-public class ObstacleExplosive extends Obstacle
+public class ObstacleExplosive extends Obstacle implements IAvoidObject
 {
     public double timer = 25;
     public Tank trigger = Game.dummyTank;
@@ -115,5 +116,11 @@ public class ObstacleExplosive extends Obstacle
 
         Game.removeObstacles.add(this);
         Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY));
+    }
+
+    @Override
+    public double getRadius()
+    {
+        return Game.tile_size * 1.25 * this.stackHeight;
     }
 }

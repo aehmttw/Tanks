@@ -6,7 +6,7 @@ import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
+public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 {
     public TextBoxSlider colorRed;
     public TextBoxSlider colorGreen;
@@ -19,23 +19,18 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
     {
         super(previous, screenLevelEditor);
 
-        colorRed = new TextBoxSlider(this.centerX - objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", new Runnable()
+        colorRed = new TextBoxSlider(this.centerX - objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", () ->
         {
-            @Override
-            public void run()
-            {
-                if (colorRed.inputText.length() <= 0)
-                    colorRed.inputText = colorRed.previousInputText;
+            if (colorRed.inputText.length() <= 0)
+                colorRed.inputText = colorRed.previousInputText;
 
-                screenLevelEditor.level.colorR = Integer.parseInt(colorRed.inputText);
+            screenLevelEditor.level.colorR = Integer.parseInt(colorRed.inputText);
 
-                colorVarRed.maxValue = 255 - screenLevelEditor.level.colorR;
-                colorVarRed.performValueCheck();
+            colorVarRed.maxValue = 255 - screenLevelEditor.level.colorR;
+            colorVarRed.performValueCheck();
 
-                screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
-                screenLevelEditor.level.reloadTiles();
-            }
-
+            screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.colorR, 0, 255, 1);
 
@@ -46,23 +41,18 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         colorRed.checkMaxValue = true;
         colorRed.integer = true;
 
-        colorGreen = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green", new Runnable()
+        colorGreen = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green", () ->
         {
-            @Override
-            public void run()
-            {
-                if (colorGreen.inputText.length() <= 0)
-                    colorGreen.inputText = colorGreen.previousInputText;
+            if (colorGreen.inputText.length() <= 0)
+                colorGreen.inputText = colorGreen.previousInputText;
 
-                screenLevelEditor.level.colorG = Integer.parseInt(colorGreen.inputText);
+            screenLevelEditor.level.colorG = Integer.parseInt(colorGreen.inputText);
 
-                colorVarGreen.maxValue = 255 - screenLevelEditor.level.colorG;
-                colorVarGreen.performValueCheck();
+            colorVarGreen.maxValue = 255 - screenLevelEditor.level.colorG;
+            colorVarGreen.performValueCheck();
 
-                screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
-                screenLevelEditor.level.reloadTiles();
-            }
-
+            screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.colorG, 0, 255, 1);
 
@@ -73,23 +63,18 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         colorGreen.checkMaxValue = true;
         colorGreen.integer = true;
 
-        colorBlue = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue", new Runnable()
+        colorBlue = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue", () ->
         {
-            @Override
-            public void run()
-            {
-                if (colorBlue.inputText.length() <= 0)
-                    colorBlue.inputText = colorBlue.previousInputText;
+            if (colorBlue.inputText.length() <= 0)
+                colorBlue.inputText = colorBlue.previousInputText;
 
-                screenLevelEditor.level.colorB = Integer.parseInt(colorBlue.inputText);
+            screenLevelEditor.level.colorB = Integer.parseInt(colorBlue.inputText);
 
-                colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
-                colorVarBlue.performValueCheck();
+            colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
+            colorVarBlue.performValueCheck();
 
-                screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
-                screenLevelEditor.level.reloadTiles();
-            }
-
+            screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.colorB, 0, 255, 1);
 
@@ -100,19 +85,14 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         colorBlue.checkMaxValue = true;
         colorBlue.integer = true;
 
-        colorVarRed = new TextBox(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red noise", new Runnable()
+        colorVarRed = new TextBox(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red noise", () ->
         {
-            @Override
-            public void run()
-            {
-                if (colorVarRed.inputText.length() <= 0)
-                    colorVarRed.inputText = colorVarRed.previousInputText;
+            if (colorVarRed.inputText.length() <= 0)
+                colorVarRed.inputText = colorVarRed.previousInputText;
 
-                screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
+            screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
 
-                screenLevelEditor.level.reloadTiles();
-            }
-
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.colorVarR + "");
 
@@ -121,19 +101,14 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         colorVarRed.maxChars = 3;
         colorVarRed.checkMaxValue = true;
 
-        colorVarGreen = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green noise", new Runnable()
+        colorVarGreen = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green noise", () ->
         {
-            @Override
-            public void run()
-            {
-                if (colorVarGreen.inputText.length() <= 0)
-                    colorVarGreen.inputText = colorVarGreen.previousInputText;
+            if (colorVarGreen.inputText.length() <= 0)
+                colorVarGreen.inputText = colorVarGreen.previousInputText;
 
-                screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
+            screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
 
-                screenLevelEditor.level.reloadTiles();
-            }
-
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.colorVarG + "");
 
@@ -142,19 +117,14 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         colorVarGreen.maxChars = 3;
         colorVarGreen.checkMaxValue = true;
 
-        colorVarBlue = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue noise", new Runnable()
+        colorVarBlue = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue noise", () ->
         {
-            @Override
-            public void run()
-            {
-                if (colorVarBlue.inputText.length() <= 0)
-                    colorVarBlue.inputText = colorVarBlue.previousInputText;
+            if (colorVarBlue.inputText.length() <= 0)
+                colorVarBlue.inputText = colorVarBlue.previousInputText;
 
-                screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
+            screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
 
-                screenLevelEditor.level.reloadTiles();
-            }
-
+            screenLevelEditor.level.reloadTiles();
         }
                 , screenLevelEditor.level.colorVarB + "");
 
@@ -168,15 +138,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelBuilderOverlay
         colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
     }
 
-    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 3), this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            escape();
-        }
-    }
-    );
+    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 3), this.objWidth, this.objHeight, "Back", this::escape);
 
     public void update()
     {

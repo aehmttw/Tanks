@@ -14,66 +14,51 @@ import java.util.UUID;
 
 public class ScreenInsertAccessCode extends ScreenLayout
 {
-    public UUIDTextBox idBox = new UUIDTextBox(sizeX / 2, sizeY / 2, 700, 40, "Access code", new Runnable()
+    public UUIDTextBox idBox = new UUIDTextBox(sizeX / 2, sizeY / 2, 700, 40, "Access code", () ->
     {
-        @Override
-        public void run()
-        {
 
-        }
     }, "", "You can obtain an access code---from the developers of Tanks");
 
-    public Button confirm = new Button(sizeX / 2, sizeY / 2 + 90, 350, 40, "Ok", new Runnable()
+    public Button confirm = new Button(sizeX / 2, sizeY / 2 + 90, 350, 40, "Ok", () ->
     {
-        @Override
-        public void run()
+        try
         {
-            try
+            String i = idBox.inputText;
+            UUID id = UUID.fromString(i.substring(0, 8) + "-" + i.substring(8, 12) + "-" + i.substring(12, 16) + "-" + i.substring(16, 20) + "-" + i.substring(20));
+            synchronized (AccessCode.accessCodes)
             {
-                String i = idBox.inputText;
-                UUID id = UUID.fromString(i.substring(0, 8) + "-" + i.substring(8, 12) + "-" + i.substring(12, 16) + "-" + i.substring(16, 20) + "-" + i.substring(20));
-                synchronized (AccessCode.accessCodes)
+                AccessCode c = AccessCode.accessCodes.get(id);
+                if (c != null && c.valid() && (c.players.size() < c.maxUses || c.maxUses < 0))
                 {
-                    AccessCode c = AccessCode.accessCodes.get(id);
-                    if (c != null && c.valid() && (c.players.size() < c.maxUses || c.maxUses < 0))
+                    synchronized (PlayerMap.instance)
                     {
-                        synchronized (PlayerMap.instance)
-                        {
-                            TanksOnlinePlayer p = PlayerMap.instance.getPlayer(player.computerID);
-                            p.registered = true;
-                            p.accessCode = c;
-                            c.players.add(p);
+                        TanksOnlinePlayer p = PlayerMap.instance.getPlayer(player.computerID);
+                        p.registered = true;
+                        p.accessCode = c;
+                        c.players.add(p);
 
-                            c.save(new File(PlayerMap.access_codes_dir + "/" + c.id + ".tanks"));
-                            PlayerMap.instance.save();
+                        c.save(new File(PlayerMap.access_codes_dir + "/" + c.id + ".tanks"));
+                        PlayerMap.instance.save();
 
-                            ScreenWelcomeToTanksOnline h = new ScreenWelcomeToTanksOnline(player, c);
-                            h.setScreen();
+                        ScreenWelcomeToTanksOnline h = new ScreenWelcomeToTanksOnline(player, c);
+                        h.setScreen();
 
-                            return;
-                        }
+                        return;
                     }
-
                 }
-            }
-            catch (Exception e)
-            {
 
             }
-
-            ScreenInvalidAccessCode s = new ScreenInvalidAccessCode(player);
-            s.setScreen();
         }
+        catch (Exception e)
+        {
+
+        }
+
+        ScreenInvalidAccessCode s = new ScreenInvalidAccessCode(player);
+        s.setScreen();
     });
 
-    Button back = new Button(sizeX / 2, sizeY / 2 + 150, 350, 40, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            player.sendEvent(new EventSilentDisconnect());
-        }
-    }
+    Button back = new Button(sizeX / 2, sizeY / 2 + 150, 350, 40, "Back", () -> player.sendEvent(new EventSilentDisconnect())
     );
 
     public ScreenInsertAccessCode(TanksOnlineServerHandler player)

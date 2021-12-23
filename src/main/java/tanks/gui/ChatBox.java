@@ -279,7 +279,7 @@ public class ChatBox extends TextBox
 		double xPad = -40;
 		Drawing.drawing.fillInterfaceRect(this.posX, this.posY, this.sizeX + xPad, this.sizeY);
 
-		Game.game.window.setBatchMode(true, false, false);
+		Game.game.window.shapeRenderer.setBatchMode(true, false, false);
 
 		for (int j = 0; j < 30; j++)
 		{
@@ -299,6 +299,6 @@ public class ChatBox extends TextBox
 					this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
 		}
 
-		Game.game.window.setBatchMode(false, false, false);
+		Game.game.window.shapeRenderer.setBatchMode(false, false, false);
 	}
 }

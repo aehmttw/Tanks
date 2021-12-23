@@ -23,7 +23,7 @@ public class ComputerFileManager extends BaseFileManager
                 return null;
 
             Scanner s = new Scanner(new InputStreamReader(st));
-            ArrayList<String> al = new ArrayList<String>();
+            ArrayList<String> al = new ArrayList<>();
 
             while (s.hasNext())
             {

@@ -23,9 +23,9 @@ public class PlayerMap
 
     public static final PlayerMap instance = new PlayerMap();
 
-    protected final HashMap<UUID, TanksOnlinePlayer> players = new HashMap<UUID, TanksOnlinePlayer>();
+    protected final HashMap<UUID, TanksOnlinePlayer> players = new HashMap<>();
 
-    protected final ArrayList<UploadedLevel> levels = new ArrayList<UploadedLevel>();
+    protected final ArrayList<UploadedLevel> levels = new ArrayList<>();
 
     public void setupPlayer(UUID id, String name)
     {
@@ -179,8 +179,8 @@ public class PlayerMap
         {
             DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(levels_dir));
 
-            HashMap<Long, UploadedLevel> map = new HashMap<Long, UploadedLevel>();
-            ArrayList<Long> times = new ArrayList<Long>();
+            HashMap<Long, UploadedLevel> map = new HashMap<>();
+            ArrayList<Long> times = new ArrayList<>();
 
             for (Path p : ds)
             {

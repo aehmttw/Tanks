@@ -7,28 +7,17 @@ import tanks.gui.input.InputBindingGroup;
 
 public class ScreenResetControls extends Screen
 {
-    public Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Reset controls", new Runnable()
+    public Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Reset controls", () ->
     {
-        @Override
-        public void run()
+        for (InputBindingGroup i: Game.game.inputBindings)
         {
-            for (InputBindingGroup i: Game.game.inputBindings)
-            {
-                i.reset();
-                Game.screen = ScreenOverlayControls.lastControlsScreen;
-            }
+            i.reset();
+            Game.screen = ScreenOverlayControls.lastControlsScreen;
         }
     }
     );
 
-    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = ScreenOverlayControls.lastControlsScreen;
-        }
-    }
+    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No", () -> Game.screen = ScreenOverlayControls.lastControlsScreen
     );
 
     public ScreenResetControls()

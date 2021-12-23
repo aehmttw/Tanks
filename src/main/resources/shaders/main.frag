@@ -28,10 +28,16 @@ void main(void)
 {
     vec4 color = texture2D(tex, gl_TexCoord[0].st);
 
+    float glow2 = float((int(vertexColor.a)) / 2) / 255.0;
+    float glow3 = max(glow, glow2);
+
+    vec4 vertexColor2 = vec4(vertexColor);
+    vertexColor2.a -= glow2 * 255.0 * 2.0;
+
     if (texture)
-        gl_FragColor = color * vertexColor;
+        gl_FragColor = color * vertexColor2;
     else
-        gl_FragColor = vertexColor;
+        gl_FragColor = vertexColor2;
 
     if (vbo)
         gl_FragColor *= originalColor;
@@ -45,18 +51,18 @@ void main(void)
 
         if (lit)
         {
-            float col = light * (1.0 - glow) + glowLight * glow;
+            float col = light * (1.0 - glow3) + glowLight * glow3;
             gl_FragColor *= vec4(col, col, col, 1.0);
         }
         else
         {
-            float col = shade * (1.0 - glow) + glowShade * glow;
+            float col = shade * (1.0 - glow3) + glowShade * glow3;
             gl_FragColor *= vec4(col, col, col, 1.0);
         }
     }
     else if (depthtest)
     {
-        float col = light * (1.0 - glow) + glowLight * glow;
+        float col = light * (1.0 - glow3) + glowLight * glow3;
         gl_FragColor *= vec4(col, col, col, 1.0);
     }
 }

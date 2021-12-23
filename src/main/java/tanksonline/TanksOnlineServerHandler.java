@@ -19,7 +19,7 @@ import java.util.UUID;
 public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
 {
     public TanksOnlineMessageReader reader = new TanksOnlineMessageReader();
-    public SynchronizedList<INetworkEvent> events = new SynchronizedList<INetworkEvent>();
+    public SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
 
     public ChannelHandlerContext ctx;
 

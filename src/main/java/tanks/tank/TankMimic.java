@@ -29,7 +29,6 @@ public class TankMimic extends TankAIControlled
     {
         super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.reflect);
 
-        this.enableMineLaying = false;
         this.enableMovement = true;
         this.enablePathfinding = true;
         this.seekChance = 1;
@@ -42,7 +41,7 @@ public class TankMimic extends TankAIControlled
         this.turretModel = turret_model;
         this.turretBaseModel = turret_base_model;
 
-        this.coinValue = 4;
+        this.coinValue = 10;
 
         this.description = "A tank which mimics the---closest tank it sees";
     }
@@ -87,6 +86,7 @@ public class TankMimic extends TankAIControlled
             t.possessor = this;
             t.skipNextUpdate = true;
             t.attributes = this.attributes;
+            t.coinValue = this.coinValue;
 
             t.baseModel = this.baseModel;
             t.turretModel = this.turretModel;
@@ -160,7 +160,7 @@ public class TankMimic extends TankAIControlled
         {
             Movable m = Game.movables.get(i);
 
-            if (m instanceof Tank && !(m instanceof TankMimic) && ((Tank) m).possessor == null && Movable.distanceBetween(m, this) < this.range && ((Tank) m).size == this.size && !m.destroy)
+            if (m instanceof Tank && !(m instanceof TankMimic) && ((Tank) m).possessor == null && ((Tank) m).targetable && Movable.distanceBetween(m, this) < this.range && ((Tank) m).size == this.size && !m.destroy)
             {
                 Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
                 r.moveOut(5);
@@ -233,7 +233,7 @@ public class TankMimic extends TankAIControlled
         else
             this.timeToRevert = this.reversionCooldown;
 
-        if (this.timeToRevert <= 0)
+        if (this.timeToRevert <= 0 && this.targetable)
         {
             Game.removeMovables.add(this.possessingTank);
             Tank.idMap.put(this.networkID, this);

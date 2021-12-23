@@ -365,7 +365,7 @@ public class Button implements IDrawable, ITrigger
 
 	public static void drawGlow(double posX, double posY, double sizeX, double sizeY, double size, double r, double g, double b, double a, boolean glow)
 	{
-		Game.game.window.setBatchMode(true, true, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(true, true, false, glow);
 
 		Drawing drawing = Drawing.drawing;
 		drawing.setColor(0, 0, 0, 0);
@@ -382,8 +382,8 @@ public class Button implements IDrawable, ITrigger
 		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
 		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
 
-		Game.game.window.setBatchMode(false, true, false, glow);
-		Game.game.window.setBatchMode(true, false, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(false, true, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(true, false, false, glow);
 
 		for (int i = 0; i < 30; i++)
 		{
@@ -401,7 +401,7 @@ public class Button implements IDrawable, ITrigger
 		}
 
 
-		Game.game.window.setBatchMode(false, false, false, glow);
+		Game.game.window.shapeRenderer.setBatchMode(false, false, false, glow);
 
 	}
 

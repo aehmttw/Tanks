@@ -6,14 +6,10 @@ import tanksonline.TanksOnlineServerHandler;
 
 public class ScreenInvalidAccessCode extends ScreenLayout
 {
-    Button back = new Button(sizeX / 2, sizeY / 2 + 60, 350, 40, "Ok", new Runnable()
+    Button back = new Button(sizeX / 2, sizeY / 2 + 60, 350, 40, "Ok", () ->
     {
-        @Override
-        public void run()
-        {
-            ScreenInsertAccessCode s = new ScreenInsertAccessCode(player);
-            s.setScreen();
-        }
+        ScreenInsertAccessCode s = new ScreenInsertAccessCode(player);
+        s.setScreen();
     }
     );
 

@@ -4,10 +4,10 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.Player;
 import tanks.bullet.*;
-import tanks.hotbar.item.property.ItemPropertyBoolean;
-import tanks.hotbar.item.property.ItemPropertyDouble;
-import tanks.hotbar.item.property.ItemPropertyInt;
-import tanks.hotbar.item.property.ItemPropertySelector;
+import tanks.gui.property.UIPropertyBoolean;
+import tanks.gui.property.UIPropertyDouble;
+import tanks.gui.property.UIPropertyInt;
+import tanks.gui.property.UIPropertySelector;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
@@ -53,20 +53,20 @@ public class ItemBullet extends Item
 		this.rightClick = false;
 		this.isConsumable = true;
 
-		new ItemPropertySelector(this.properties, "type", Game.registryBullet.getEntryNames(), Game.registryBullet.getImageNames(), 0);
-		new ItemPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice", "ember"},
+		new UIPropertySelector(this.properties, "type", Game.registryBullet.getEntryNames(), Game.registryBullet.getImageNames(), 0);
+		new UIPropertySelector(this.properties, "effect", new String[]{"none", "trail", "fire", "fire_and_smoke", "dark_fire", "ice", "ember"},
 				new String[]{"bullet_large.png", "bullet_normal.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_freeze.png", "bullet_boost.png"}, 0);
-		new ItemPropertyDouble(this.properties, "speed", 3.125);
-		new ItemPropertyInt(this.properties, "bounces", 1);
-		new ItemPropertyDouble(this.properties, "damage", 1.0);
-		new ItemPropertyInt(this.properties, "max_live_bullets", 5);
-		new ItemPropertyDouble(this.properties, "cooldown", 20.0);
-		new ItemPropertyDouble(this.properties, "size", 10.0);
-		new ItemPropertyDouble(this.properties, "recoil", 1.0);
-		new ItemPropertyBoolean(this.properties, "heavy", false);
-		new ItemPropertyDouble(this.properties, "accuracy_spread_angle", 0.0);
-		new ItemPropertyInt(this.properties, "shot_count", 1);
-		new ItemPropertyDouble(this.properties, "multishot_spread_angle", 30.0);
+		new UIPropertyDouble(this.properties, "speed", 3.125);
+		new UIPropertyInt(this.properties, "bounces", 1);
+		new UIPropertyDouble(this.properties, "damage", 1.0);
+		new UIPropertyInt(this.properties, "max_live_bullets", 5);
+		new UIPropertyDouble(this.properties, "cooldown", 20.0);
+		new UIPropertyDouble(this.properties, "size", 10.0);
+		new UIPropertyDouble(this.properties, "recoil", 1.0);
+		new UIPropertyBoolean(this.properties, "heavy", false);
+		new UIPropertyDouble(this.properties, "accuracy_spread_angle", 0.0);
+		new UIPropertyInt(this.properties, "shot_count", 1);
+		new UIPropertyDouble(this.properties, "multishot_spread_angle", 30.0);
 
 		this.supportsHits = true;
 	}

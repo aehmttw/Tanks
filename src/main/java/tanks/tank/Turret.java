@@ -42,6 +42,7 @@ public class Turret extends Movable
 
 		this.posX = tank.posX;
 		this.posY = tank.posY;
+		this.posZ = tank.posZ;
 
 		double s = (this.tank.size * (Game.tile_size - this.tank.destroyTimer) / Game.tile_size) * Math.min(this.tank.drawAge / Game.tile_size, 1);
 
@@ -60,7 +61,7 @@ public class Turret extends Movable
 		else if (!in3d)
 			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, rotation);
 		else
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, (s * 1.3) / 2, l, l * size / 8, l * size / 8, rotation, vAngle, 0);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, this.posZ + (s * 1.3) / 2, l, l * size / 8, l * size / 8, rotation, vAngle, 0);
 
 		if (transparent)
 			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127, glow);
@@ -72,7 +73,7 @@ public class Turret extends Movable
 		else if (!in3d)
 			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, rotation);
 		else
-			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, s / 2, l, l, l, rotation);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, this.posZ + s / 2, l, l, l, rotation);
 	}
 	
 	@Override

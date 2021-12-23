@@ -44,6 +44,8 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         this.screen = sc;
         this.selector = s;
 
+        this.allowClose = sc.allowClose;
+
         ArrayList<Button> buttons = new ArrayList<>();
 
         for (int i = 0; i < selector.options.length; i++)
@@ -55,18 +57,14 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
 
             int j = i;
 
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, n, new Runnable()
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, n, () ->
             {
-                @Override
-                public void run()
-                {
-                    selector.selectedOption = j;
+                selector.selectedOption = j;
 
-                    if (selector.quick)
-                    {
-                        Game.screen = screen;
-                        selector.function.run();
-                    }
+                if (selector.quick)
+                {
+                    Game.screen = screen;
+                    selector.function.run();
                 }
             }
             );
@@ -186,5 +184,11 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             return ((IConditionalOverlayScreen) screen).isOverlayEnabled();
 
         return screen instanceof ScreenGame || screen instanceof ILevelPreviewScreen || screen instanceof IOverlayScreen;
+    }
+
+    @Override
+    public void onAttemptClose()
+    {
+        this.screen.onAttemptClose();
     }
 }

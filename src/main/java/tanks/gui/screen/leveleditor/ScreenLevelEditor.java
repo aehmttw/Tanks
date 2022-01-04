@@ -18,6 +18,7 @@ import tanks.tank.TankSpawnMarker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
@@ -79,6 +80,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public double offsetY;
 	public double zoom = 1;
 	public int validZoomFingers = 0;
+
+	public HashSet<String> prevTankMusics = new HashSet<>();
+	public HashSet<String> tankMusics = new HashSet<>();
 
 	public ArrayList<Object> clipboard = new ArrayList<>();
 
@@ -261,7 +265,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.selfBatch = false;
 		this.drawDarkness = false;
 
-		this.music = "editor.ogg";
+		this.music = "battle_editor.ogg";
 		this.musicID = "editor";
 
 		this.allowClose = false;
@@ -376,6 +380,33 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.fontBrightness = 0;
 
 		clickCooldown = Math.max(0, clickCooldown - Panel.frameFrequency);
+
+		this.prevTankMusics.clear();
+		this.prevTankMusics.addAll(this.tankMusics);
+		this.tankMusics.clear();
+
+		for (Movable m : Game.movables)
+		{
+			if (m instanceof Tank && !m.destroy)
+			{
+				ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
+
+				if (s != null)
+					this.tankMusics.addAll(s);
+			}
+		}
+
+		for (String m : this.prevTankMusics)
+		{
+			if (!this.tankMusics.contains(m))
+				Drawing.drawing.removeSyncedMusic(m, 500);
+		}
+
+		for (String m : this.tankMusics)
+		{
+			if (!this.prevTankMusics.contains(m))
+				Drawing.drawing.addSyncedMusic(m, Game.musicVolume * 0.5f, true, 500);
+		}
 
 		if (showControls)
 		{
@@ -499,8 +530,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			selectAddToggle.posX = selectSquareToggle.posX - hStep;
 			selectAddToggle.posY = selectSquareToggle.posY - vStep;
 
-			copy.posX = playControl.posX - hStep;
-			copy.posY = playControl.posY + vStep;
+			if (Game.game.window.touchscreen)
+			{
+				copy.posX = pause.posX - vStep;
+				copy.posY = pause.posY + hStep;
+			}
+			else
+			{
+				copy.posX = playControl.posX - hStep;
+				copy.posY = playControl.posY + vStep;
+			}
 
 			cut.posX = copy.posX - hStep;
 			cut.posY = copy.posY + vStep;
@@ -1403,7 +1442,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 							o.stackHeight = mouseObstacleHeight;
 							o.startHeight = mouseObstacleStartHeight;
 
-							if (this.stagger)
+							if (this.stagger && !paste)
 							{
 								if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 1 && !this.oddStagger)
 										|| (((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0 && this.oddStagger))
@@ -1436,6 +1475,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void paste()
 	{
+		Drawing.drawing.playVibration("click");
+
 		ArrayList<Action> actions = this.actions;
 		this.actions = new ArrayList<>();
 
@@ -2271,7 +2312,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (Obstacle o : Game.obstacles)
 		{
-			if (this.selectedTiles[(int) ((o.posX - 25) / 50)][((int) ((o.posY - 25) / 50))])
+			int x = (int) ((o.posX - 25) / 50);
+			int y = (int) ((o.posY - 25) / 50);
+
+			if (x >= 0 && y >= 0 && x < this.selectedTiles.length && x < this.selectedTiles[0].length && this.selectedTiles[x][y])
 			{
 				try
 				{
@@ -2307,7 +2351,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!(t instanceof Tank))
 				continue;
 
-			if (this.selectedTiles[(int) ((t.posX - 25) / 50)][((int) ((t.posY - 25) / 50))])
+			int x = (int) ((t.posX - 25) / 50);
+			int y = (int) ((t.posY - 25) / 50);
+
+			if (x >= 0 && y >= 0 && x < this.selectedTiles.length && x < this.selectedTiles[0].length && this.selectedTiles[x][y])
 			{
 				try
 				{

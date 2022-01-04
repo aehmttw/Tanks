@@ -307,4 +307,16 @@ public class ButtonList
 
         return s;
     }
+
+    public void filter(String s)
+    {
+        for (int i = 0; i < this.buttons.size(); i++)
+        {
+            if (!buttons.get(i).text.toLowerCase().contains(s.toLowerCase()))
+            {
+                buttons.remove(i);
+                i--;
+            }
+        }
+    }
 }

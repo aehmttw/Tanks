@@ -124,13 +124,19 @@ public class CrusadePlayer
 
     public void saveCrusade()
     {
-        saveCrusade(false);
-    }
-
-    public void saveCrusade(boolean win)
-    {
         try
         {
+            if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).savedRemainingTanks)
+            {
+                Crusade.currentCrusade.livingTankIDs.clear();
+
+                for (Movable m : Game.movables)
+                {
+                    if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+                        Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+                }
+            }
+
             BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + Crusade.currentCrusade.name);
 
             if (Crusade.currentCrusade.internal)
@@ -151,14 +157,14 @@ public class CrusadePlayer
             f.println(Crusade.currentCrusade.internal + "");
             f.println(Crusade.currentCrusade.saveLevel + "");
 
-            if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy)
+            /*if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy)
             {
                 Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win);
                 this.coins = player.hotbar.coins;
 
                 if (!(Game.screen instanceof ScreenCrashed || Game.screen instanceof ScreenOutOfMemory))
                     player.remainingLives--;
-            }
+            }*/
 
             f.println(player.remainingLives + "");
             f.println(this.coins + "");
@@ -176,6 +182,8 @@ public class CrusadePlayer
             f.println(Crusade.currentCrusade.performances.toString());
             f.println(this.itemUses.toString());
             f.println(this.itemHits.toString());
+            f.println(Crusade.currentCrusade.livingTankIDs.toString());
+
             f.stopWriting();
 
             if ((player.remainingLives <= 0 || Crusade.currentCrusade.win) && f.exists())

@@ -2,11 +2,9 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBox;
-import tanks.gui.TextBox;
 
 public class ScreenPlaySavedLevels extends Screen
 {
@@ -30,7 +28,7 @@ public class ScreenPlaySavedLevels extends Screen
 		public void run()
 		{
 			newLevelsList();
-			levels.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			levels.filter(search.inputText);
 			levels.sortButtons();
 		}
 	}, "");
@@ -43,7 +41,7 @@ public class ScreenPlaySavedLevels extends Screen
 			allLevels.sortedByTime = !allLevels.sortedByTime;
 			allLevels.sort(allLevels.sortedByTime);
 			newLevelsList();
-			levels.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			levels.filter(search.inputText);
 			levels.sortButtons();
 
 			if (allLevels.sortedByTime)
@@ -152,7 +150,7 @@ public class ScreenPlaySavedLevels extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, this.title);
 	}
-	
+
 	@Override
 	public void setupLayoutParameters()
 	{

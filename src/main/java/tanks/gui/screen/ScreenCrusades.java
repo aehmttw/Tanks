@@ -7,7 +7,6 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBox;
-import tanks.gui.TextBox;
 import tanks.translation.Translation;
 
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class ScreenCrusades extends Screen
 		public void run()
 		{
 			createNewCrusadesList();
-			crusadesList.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			crusadesList.filter(search.inputText);
 			crusadesList.sortButtons();
 		}
 	}, "");
@@ -40,7 +39,7 @@ public class ScreenCrusades extends Screen
 			fullCrusadesList.sortedByTime = !fullCrusadesList.sortedByTime;
 			fullCrusadesList.sort(fullCrusadesList.sortedByTime);
 			createNewCrusadesList();
-			crusadesList.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			crusadesList.filter(search.inputText);
 			crusadesList.sortButtons();
 
 			if (fullCrusadesList.sortedByTime)

@@ -23,6 +23,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         if (checkCrusadeEnd())
         {
+            Crusade.currentCrusade.retry = true;
             Crusade.currentCrusade.loadLevel();
             Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
         }
@@ -47,6 +48,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         if (checkCrusadeEnd())
         {
+            Crusade.currentCrusade.retry = false;
             Crusade.currentCrusade.currentLevel++;
             Crusade.currentCrusade.replay = false;
             Crusade.currentCrusade.loadLevel();
@@ -72,6 +74,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         if (checkCrusadeEnd())
         {
+            Crusade.currentCrusade.retry = false;
             Game.resetTiles();
             Crusade.crusadeMode = false;
             Game.screen = ScreenPartyHost.activeScreen;
@@ -82,6 +85,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
     Button quitLose = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to party", () ->
     {
+        Crusade.currentCrusade.retry = true;
         Game.resetTiles();
         Crusade.crusadeMode = false;
         Game.screen = ScreenPartyHost.activeScreen;
@@ -124,7 +128,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     }
     );
 
-    public ScreenPartyCrusadeInterlevel(boolean win)
+    public ScreenPartyCrusadeInterlevel(boolean win, boolean lose)
     {
         Game.player.hotbar.percentHidden = 100;
 
@@ -137,12 +141,23 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         }*/
 
         if (Panel.win)
+        {
             this.music = "win_music.ogg";
+
+            if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks)
+            {
+                this.nextLevel.posY += this.objYSpace / 2;
+                this.quit.posY -= this.objYSpace / 2;
+            }
+        }
         else
             this.music = "lose_music.ogg";
 
         if (win)
             this.music = "win_crusade.ogg";
+
+        //if (lose)
+         //   this.music = "lose_crusade.ogg";
 
         if (Panel.win && Game.effectsEnabled)
         {
@@ -182,7 +197,10 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
                 if (Panel.levelPassed || Crusade.currentCrusade.replay)
                 {
                     nextLevel.update();
-                    replayCrusadeWin.update();
+
+                    if (Crusade.currentCrusade.respawnTanks)
+                        replayCrusadeWin.update();
+
                     quit.update();
                 }
                 else
@@ -249,7 +267,10 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
                 if (Panel.levelPassed || Crusade.currentCrusade.replay)
                 {
                     quit.draw();
-                    replayCrusadeWin.draw();
+
+                    if (Crusade.currentCrusade.respawnTanks)
+                        replayCrusadeWin.draw();
+
                     nextLevel.draw();
                 }
                 else

@@ -1,10 +1,9 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ChatMessage;
+import tanks.hotbar.item.Item;
 
 public class ScreenPartyResumeCrusade extends Screen
 {
@@ -17,10 +16,21 @@ public class ScreenPartyResumeCrusade extends Screen
 		this.music = "menu_4.ogg";
 		this.musicID = "menu";
 
-		for (int i = 0; i < Game.players.size(); i++)
+		for (Player player : Game.players)
 		{
-			if (Game.players.get(i).remainingLives >= 1)
+			if (player.remainingLives >= 1)
 				players++;
+			else
+			{
+				for (CrusadePlayer cp : Crusade.currentCrusade.disconnectedPlayers)
+				{
+					if (cp.player.clientID.equals(player.clientID) && cp.player.remainingLives >= 1)
+					{
+						players++;
+						break;
+					}
+				}
+			}
 		}
 	}
 	

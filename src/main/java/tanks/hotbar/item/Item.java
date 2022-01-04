@@ -191,7 +191,7 @@ public abstract class Item implements IGameObject
 		{
 			for (Movable m: Game.movables)
 			{
-				if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == this.player)
+				if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(this.player.clientID))
 				{
 					return (Tank) m;
 				}

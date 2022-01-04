@@ -12,6 +12,7 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
+import tanks.Game;
 
 import java.io.*;
 import java.net.URL;
@@ -206,7 +207,7 @@ public class LWJGLWindow extends BaseWindow
 
 		glfwSetFramebufferSizeCallback(window, (window, width, height) ->
 		{
-			glViewport(0, 0, width, height);
+			//glViewport(0, 0, width, height);
 			tick(true);
 		});
 
@@ -378,8 +379,7 @@ public class LWJGLWindow extends BaseWindow
 
 		glfwGetWindowSize(window, w, h);
 
-		if (absoluteWidth != w[0] || absoluteHeight != h[0])
-			this.hasResized = true;
+		this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
 
 		absoluteWidth = w[0];
 		absoluteHeight = h[0];
@@ -387,6 +387,25 @@ public class LWJGLWindow extends BaseWindow
 		glfwGetCursorPos(window, mx, my);
 		absoluteMouseX = mx[0];
 		absoluteMouseY = my[0];
+
+		if (constrainMouse)
+		{
+			if (absoluteMouseX < 0)
+				setCursorPos(0, absoluteMouseY);
+
+			if (absoluteMouseY < 0)
+				setCursorPos(absoluteMouseX, 0);
+
+			if (absoluteMouseX > absoluteWidth)
+				setCursorPos(absoluteWidth, absoluteMouseY);
+
+			if (absoluteMouseY > absoluteHeight)
+				setCursorPos(absoluteMouseX, absoluteHeight);
+
+			glfwSetWindowSizeLimits(window, (int) absoluteWidth, (int) absoluteHeight, (int) absoluteWidth, (int) absoluteHeight);
+		}
+		else
+			glfwSetWindowSizeLimits(window, 0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
 		glfwGetFramebufferSize(window, w, h);
 
@@ -923,6 +942,12 @@ public class LWJGLWindow extends BaseWindow
 		}
 
 		Runtime.getRuntime().exec(cmd);
+	}
+
+	@Override
+	public void setResolution(int x, int y)
+	{
+		glfwSetWindowSize(window, x, y);
 	}
 
 	@Override

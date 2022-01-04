@@ -9,6 +9,7 @@ import tanks.extension.Extension;
 import tanks.gui.IFixedMenu;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
@@ -100,6 +101,10 @@ public class Panel
 
 	public void setUp()
 	{
+		Drawing.drawing.terrainRenderer = Game.game.window.createShapeBatchRenderer();
+		Drawing.drawing.terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
+		Drawing.drawing.terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
+
 		ModAPI.setUp();
 
 		if (Game.game.fullscreen)
@@ -180,13 +185,16 @@ public class Panel
 			}
 
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
+
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle_night");
+
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
 
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
+			//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
+			//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
 		}
 
 		if (Game.game.window.soundsEnabled)
@@ -224,12 +232,6 @@ public class Panel
 
 		for (Extension e: Game.extensionRegistry.extensions)
 			e.loadResources();
-
-		Drawing.drawing.terrainRenderer = Game.game.window.createShapeBatchRenderer();
-		Drawing.drawing.terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
-		Drawing.drawing.terrainRendererGlow = Game.game.window.createShapeBatchRenderer();
-		Drawing.drawing.terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
-
 	}
 
 	public void update()
@@ -257,6 +259,8 @@ public class Panel
 
 			lastFrameNano = System.nanoTime();
 		}
+
+		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused) || Game.screen instanceof ScreenLevelEditor);
 
 		if (!Game.shadowsEnabled)
 			Game.game.window.setShadowQuality(0);
@@ -347,8 +351,11 @@ public class Panel
 
 							if (Crusade.currentCrusade != null)
 							{
-								Crusade.currentCrusade.crusadePlayers.get(p).coins = p.hotbar.coins;
-								Crusade.currentCrusade.disconnectedPlayers.add(Crusade.currentCrusade.crusadePlayers.remove(p));
+								if (Crusade.currentCrusade.crusadePlayers.containsKey(p))
+								{
+									Crusade.currentCrusade.crusadePlayers.get(p).coins = p.hotbar.coins;
+									Crusade.currentCrusade.disconnectedPlayers.add(Crusade.currentCrusade.crusadePlayers.remove(p));
+								}
 							}
 						}
 					}
@@ -647,6 +654,9 @@ public class Panel
 
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
+
+		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
 
 		Game.screen.drawPostMouse();
 

@@ -63,7 +63,6 @@ public class Drawing
 
 	public BaseShapeBatchRenderer terrainRenderer;
 	public BaseShapeBatchRenderer terrainRendererTransparent;
-	public BaseShapeBatchRenderer terrainRendererGlow;
 	public BaseShapeBatchRenderer terrainRendererShrubbery;
 
 	public boolean terrainRendering = false;
@@ -124,8 +123,6 @@ public class Drawing
 		else
 			this.terrainRenderer.setColor(r, g, b, 255, 0);
 
-		this.terrainRendererGlow.setColor(r, g, b, 255, 0);
-
 		this.currentTerrainRenderer = terrainRenderer;
 
 		this.currentColorR = r;
@@ -155,8 +152,6 @@ public class Drawing
 			}
 		}
 
-		this.terrainRendererGlow.setColor(r, g, b, a, 0);
-
 		this.currentColorR = r;
 		this.currentColorG = g;
 		this.currentColorB = b;
@@ -184,8 +179,6 @@ public class Drawing
 			}
 		}
 
-		this.terrainRendererGlow.setColor(r, g, b, a, glow);
-
 		this.currentColorR = r;
 		this.currentColorG = g;
 		this.currentColorB = b;
@@ -195,6 +188,9 @@ public class Drawing
 
 	public void setShrubberyMode()
 	{
+		if (!Game.game.window.shapeRenderer.supportsBatching)
+			return;
+
 		this.shrubberyMode = true;
 		this.currentTerrainRenderer = terrainRendererShrubbery;
 		this.currentTerrainRenderer.setColor(this.currentColorR, this.currentColorG, this.currentColorB, this.currentColorA, this.currentGlow);
@@ -1325,6 +1321,9 @@ public class Drawing
 
 	public void forceRedrawTerrain()
 	{
+		if (!Game.game.window.shapeRenderer.supportsBatching)
+			return;
+
 		this.terrainRenderer.forceRedraw();
 		this.terrainRendererShrubbery.forceRedraw();
 		this.terrainRendererTransparent.forceRedraw();
@@ -1332,6 +1331,9 @@ public class Drawing
 
 	public void beginTerrainRenderers()
 	{
+		if (!Game.game.window.shapeRenderer.supportsBatching)
+			return;
+
 		this.terrainRendering = true;
 
 		this.terrainRenderer.begin(true);
@@ -1341,13 +1343,16 @@ public class Drawing
 
 	public void drawTerrainRenderers()
 	{
+		if (!Game.game.window.shapeRenderer.supportsBatching)
+			return;
+
 		this.terrainRendering = false;
 
 		this.terrainRenderer.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
 		this.terrainRenderer.setScale(scale, scale, scale);
 		this.terrainRenderer.end();
 
-		double shrubScale = 0.5;
+		double shrubScale = 0.25;
 		if (Game.screen instanceof ScreenGame)
 			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 

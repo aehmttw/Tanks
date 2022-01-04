@@ -354,6 +354,27 @@ public class ScreenChangelog extends Screen
                                     "Holes are now bigger\n" +
                                     "New sounds for winning and losing battles\n" +
                                     "More animations on the crusade stats screen\n" +
+                                    "Added all-new Castle Crusade\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.3.c", new String[]
+                    {
+                            "*What's new in Tanks v1.3.c:\n\n" +
+                                    "Rendering improvements (fixed a bug hurting performance)\n" +
+                                    "Improved game title appearance\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.3.d", new String[]
+                    {
+                            "*What's new in Tanks v1.3.d:\n\n" +
+                                    "Added crusade option to disable respawning tanks\n" +
+                                    "New editor music with tracks for each tank included\n" +
+                                    "Rendering improvements (fixed another bug hurting performance)\n" +
+                                    "Changed game title appearance again\n" +
+                                    "Added window options menu for resolution and fullscreen\n" +
+                                    "Added option to prevent mouse leaving the window bounds\n" +
                                     "Bug fixes and other minor improvements"
                     });
         }

@@ -96,6 +96,7 @@ public class TankMimic extends TankAIControlled
             Tank.freeIDs.add(t.networkID);
 
             t.networkID = this.networkID;
+            t.crusadeID = this.crusadeID;
             Tank.idMap.put(this.networkID, t);
 
             Game.movables.add(t);

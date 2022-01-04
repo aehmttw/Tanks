@@ -48,6 +48,8 @@ public class ObstacleHole extends Obstacle
 	{
 		if (Game.fancyTerrain)
 		{
+			double s = this.size * Obstacle.draw_size / Game.tile_size;
+
 			double mul = 0.4 + 0.6 * (1 - draw_size / Game.tile_size);
 			Drawing.drawing.setColor(r * mul, g * mul, b * mul);
 
@@ -57,17 +59,17 @@ public class ObstacleHole extends Obstacle
 
 			Drawing.drawing.fillBox(this, this.posX, this.posY, -draw_size / 2 + d, Game.tile_size, Game.tile_size, draw_size / 2, (byte) 3);
 			
-			Drawing.drawing.fillBox(this, this.posX - Game.tile_size * (0.5 - (1 - this.size) / 4), this.posY, -Game.tile_size / 2 + d, Game.tile_size / 2 * (1 - this.size), Game.tile_size, Game.tile_size / 2, (byte) 17);
-			Drawing.drawing.fillBox(this, this.posX + Game.tile_size * (0.5 - (1 - this.size) / 4), this.posY, -Game.tile_size / 2 + d, Game.tile_size / 2 * (1 - this.size), Game.tile_size, Game.tile_size / 2, (byte) 33);
+			Drawing.drawing.fillBox(this, this.posX - Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 17);
+			Drawing.drawing.fillBox(this, this.posX + Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 33);
 
-			Drawing.drawing.fillBox(this, this.posX, this.posY - Game.tile_size * (0.5 - (1 - this.size) / 4), -Game.tile_size / 2 + d, Game.tile_size, Game.tile_size / 2 * (1 - this.size), Game.tile_size / 2, (byte) 9);
-			Drawing.drawing.fillBox(this, this.posX, this.posY + Game.tile_size * (0.5 - (1 - this.size) / 4), -Game.tile_size / 2 + d, Game.tile_size, Game.tile_size / 2 * (1 - this.size), Game.tile_size / 2, (byte) 5);
+			Drawing.drawing.fillBox(this, this.posX, this.posY - Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 9);
+			Drawing.drawing.fillBox(this, this.posX, this.posY + Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 5);
 
-			Drawing.drawing.fillBox(this, this.posX - Game.tile_size * (0.5 - (1 - this.size) / 4), this.posY, -Game.tile_size / 2 + d + 0.2, Game.tile_size / 2 * (1 - this.size), Game.tile_size, Game.tile_size / 2, (byte) 61);
-			Drawing.drawing.fillBox(this, this.posX + Game.tile_size * (0.5 - (1 - this.size) / 4), this.posY, -Game.tile_size / 2 + d + 0.2, Game.tile_size / 2 * (1 - this.size), Game.tile_size, Game.tile_size / 2, (byte) 61);
+			Drawing.drawing.fillBox(this, this.posX - Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d + 0.2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 61);
+			Drawing.drawing.fillBox(this, this.posX + Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d + 0.2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 61);
 
-			Drawing.drawing.fillBox(this, this.posX, this.posY - Game.tile_size * (0.5 - (1 - this.size) / 4), -Game.tile_size / 2 + d + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - this.size), Game.tile_size / 2, (byte) 61);
-			Drawing.drawing.fillBox(this, this.posX, this.posY + Game.tile_size * (0.5 - (1 - this.size) / 4), -Game.tile_size / 2 + d + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - this.size), Game.tile_size / 2, (byte) 61);
+			Drawing.drawing.fillBox(this, this.posX, this.posY - Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 61);
+			Drawing.drawing.fillBox(this, this.posX, this.posY + Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 61);
 		}
 		else
 		{

@@ -8,13 +8,14 @@ import tanks.gui.Button;
 public class ScreenOptionsInputDesktop extends Screen
 {
     public static final String mouseTargetText = "Mouse target: ";
+    public static final String constrainMouseText = "Constrain mouse: ";
 
     public static ScreenOverlayControls overlay = new ScreenOverlayControls();
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
 
-    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
+    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -31,7 +32,23 @@ public class ScreenOptionsInputDesktop extends Screen
     },
             "When enabled, your mouse pointer---will be replaced by a target");
 
-    Button controls = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Controls", () -> Game.screen = ScreenOverlayControls.lastControlsScreen
+    Button constrainMouse = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.constrainMouse = !Game.constrainMouse;
+
+            if (Game.constrainMouse)
+                constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
+            else
+                constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
+        }
+    },
+            "Disallows your mouse pointer from---leaving the window while playing");
+
+
+    Button controls = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Controls", () -> Game.screen = ScreenOverlayControls.lastControlsScreen
     );
 
     public ScreenOptionsInputDesktop()
@@ -43,6 +60,11 @@ public class ScreenOptionsInputDesktop extends Screen
             mouseTarget.setText(mouseTargetText, ScreenOptions.onText);
         else
             mouseTarget.setText(mouseTargetText, ScreenOptions.offText);
+
+        if (Game.constrainMouse)
+            constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
+        else
+            constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
     }
 
     @Override
@@ -51,12 +73,14 @@ public class ScreenOptionsInputDesktop extends Screen
         mouseTarget.update();
         back.update();
         controls.update();
+        constrainMouse.update();
     }
 
     @Override
     public void draw()
     {
         this.drawDefaultBackground();
+        constrainMouse.draw();
         mouseTarget.draw();
         back.draw();
         controls.draw();

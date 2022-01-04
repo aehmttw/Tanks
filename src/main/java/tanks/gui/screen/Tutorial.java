@@ -165,12 +165,12 @@ public class Tutorial
             if (touchscreen)
             {
                 if (TankPlayer.shootStickEnabled)
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Swipe on the orange joystick in the direction you want to shoot!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Swipe on the \u00A7255127000255orange joystick\u00A7255255255255 in the direction you want to shoot!");
                 else
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Tap somewhere to shoot in that direction!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "\u00A7255127000255Tap\u00A7255255255255 somewhere to shoot in that direction!");
             }
             else
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Press " + Game.game.input.shoot.getInputs() + " to shoot toward your mouse!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Press \u00A7255127000255" + Game.game.input.shoot.getInputs() + "\u00A7255255255255 to shoot toward your mouse!");
 
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "Destroy all enemy tanks to win!");
 
@@ -211,19 +211,19 @@ public class Tutorial
             {
                 if (TankPlayer.shootStickEnabled)
                 {
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Drag around the orange joystick to aim.");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Drag around the \u00A7255127000255orange joystick\u00A7255255255255 to aim.");
                     Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Drag your finger out of the joystick to shoot!");
                 }
                 else
                 {
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Tap the player and drag around the orange circle to aim.");
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Pull your finger out of the orange circle to shoot!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "\u00A7000150255255Tap the player\u00A7255255255255 and drag around the \u00A7255127000255orange circle\u00A7255255255255 to aim.");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Pull your finger out of the \u00A7255127000255orange circle\u00A7255255255255 to shoot!");
                 }
             }
             else
             {
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Press and hold " + Game.game.input.aim.getInputs() + " to aim.");
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press " + Game.game.input.shoot.getInputs() + " to shoot!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Press and hold \u00A7000150255255" + Game.game.input.aim.getInputs() + "\u00A7255255255255 to aim.");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press \u00A7255127000255" + Game.game.input.shoot.getInputs() + "\u00A7255255255255 to shoot!");
             }
 
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "You can have up to 5 bullets on screen at one time.");
@@ -243,12 +243,12 @@ public class Tutorial
             if (touchscreen)
             {
                 if (TankPlayer.shootStickEnabled)
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press the yellow button to lay a mine!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press the \u00A7255255000255yellow button\u00A7255255255255 to lay a mine!");
                 else
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Double-tap the blue tank to lay a mine!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Double-tap the \u00A7000150255255blue tank\u00A7255255255255 to lay a mine!");
             }
             else
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press " + Game.game.input.mine.getInputs() + " to lay a mine!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press \u00A7255127000255" + Game.game.input.mine.getInputs() + "\u00A7255255255255 to lay a mine!");
 
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Mines can destroy nearby tanks and brown blocks.");
         }
@@ -306,7 +306,7 @@ public class Tutorial
 
             if (touchscreen)
             {
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing the bottom arrow!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing the \u00A7255127000255bottom arrow\u00A7255255255255!");
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Press the arrow below!");
                 Drawing.drawing.setColor(255, 127, 0, 64);
@@ -314,7 +314,7 @@ public class Tutorial
                 Drawing.drawing.setColor(255, 255, 255);
             }
             else
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing " + Game.game.input.hotbarToggle.getInputs() + "!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing \u00A7255127000255" + Game.game.input.hotbarToggle.getInputs() + "\u00A7255255255255!");
 
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "You can see your health, available bullets and mines,");
 

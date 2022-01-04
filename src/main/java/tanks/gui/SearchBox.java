@@ -2,11 +2,10 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.*;
-import tanks.gui.screen.ScreenInfo;
-import tanks.translation.Translation;
-
-import java.util.ArrayList;
+import tanks.Drawing;
+import tanks.Effect;
+import tanks.Game;
+import tanks.Panel;
 
 public class SearchBox extends TextBox
 {
@@ -72,12 +71,6 @@ public class SearchBox extends TextBox
 
 		Drawing.drawing.setColor(0, 0, 0);
 		this.drawInput();
-
-		if (selected && Game.game.window.touchscreen)
-		{
-			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
-			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
-		}
 
 		if (inputText.length() > 0)
 		{

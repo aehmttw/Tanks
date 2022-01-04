@@ -69,7 +69,7 @@ public class AreaEffectFreeze extends AreaEffect
 		double size = Math.min(this.size + Game.tile_size / 2, this.age * 8);
 		for (int i = (int) Math.max(0, size - ((int) (50 * Math.min(100, this.maxAge - this.age) / 100.0))); i < size; i += 2)
 		{
-			Drawing.drawing.setColor(200, 255, 255, 10);
+			Drawing.drawing.setColor(200, 255, 255, 10, 0.5);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillOval(this.posX, this.posY, (size - i) + Game.tile_size / 4, i, i, true, false);

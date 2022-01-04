@@ -20,7 +20,7 @@ public class ScreenShareCrusade extends Screen
 		public void run()
 		{
 			createNewCrusadesList();
-			crusades.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			crusades.filter(search.inputText);
 			crusades.sortButtons();
 		}
 	}, "");
@@ -33,7 +33,7 @@ public class ScreenShareCrusade extends Screen
 			allCrusades.sortedByTime = !allCrusades.sortedByTime;
 			allCrusades.sort(allCrusades.sortedByTime);
 			createNewCrusadesList();
-			crusades.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			crusades.filter(search.inputText);
 			crusades.sortButtons();
 
 			if (allCrusades.sortedByTime)

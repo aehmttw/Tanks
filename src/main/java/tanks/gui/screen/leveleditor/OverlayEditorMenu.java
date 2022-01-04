@@ -47,8 +47,8 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
             quit.posY -= 60;
         }
 
-        this.music = "editor_paused.ogg";
-        this.musicID = "editor";
+        //this.music = "editor_paused.ogg";
+        //this.musicID = "editor";
     }
 
     public void update()

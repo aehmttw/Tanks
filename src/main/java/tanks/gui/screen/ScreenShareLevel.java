@@ -20,7 +20,7 @@ public class ScreenShareLevel extends Screen
 		public void run()
 		{
 			createNewLevelsList();
-			levels.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			levels.filter(search.inputText);
 			levels.sortButtons();
 		}
 	}, "");
@@ -33,7 +33,7 @@ public class ScreenShareLevel extends Screen
 			allLevels.sortedByTime = !allLevels.sortedByTime;
 			allLevels.sort(allLevels.sortedByTime);
 			createNewLevelsList();
-			levels.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			levels.filter(search.inputText);
 			levels.sortButtons();
 
 			if (allLevels.sortedByTime)

@@ -57,7 +57,7 @@ public class Game
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
 	public static Player player;
 
-	public static ArrayList<Obstacle> prevObstacles = new ArrayList<>();
+	public static HashSet<Obstacle> prevObstacles = new HashSet<>();
 
 	public static ArrayList<Movable> removeMovables = new ArrayList<>();
 	public static ArrayList<Obstacle> removeObstacles = new ArrayList<>();
@@ -92,8 +92,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.3.b";
-	public static final int network_protocol = 37;
+	public static final String version = "Tanks v1.3.d";
+	public static final int network_protocol = 38;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -164,7 +164,9 @@ public class Game
 	public static boolean autostart = true;
 	public static boolean autoReady = false;
 	public static double startTime = 400;
-	public static boolean fullStats = false;
+	public static boolean fullStats = true;
+
+	public static boolean constrainMouse = false;
 
 	public static double partyStartTime = 400;
 	public static boolean disablePartyFriendlyFire = false;
@@ -282,6 +284,7 @@ public class Game
 		NetworkEventMap.register(EventCreateTank.class);
 		NetworkEventMap.register(EventCreateCustomTank.class);
 		NetworkEventMap.register(EventTankUpdateHealth.class);
+		NetworkEventMap.register(EventRemoveTank.class);
 		NetworkEventMap.register(EventShootBullet.class);
 		NetworkEventMap.register(EventBulletBounce.class);
 		NetworkEventMap.register(EventBulletDestroyed.class);
@@ -994,6 +997,9 @@ public class Game
 		for (String s: music)
 		{
 			String[] sections = s.split("=");
+
+			if (sections.length < 2)
+				continue;
 
 			String tank = sections[0];
 			String[] musics = sections[1].split(",");

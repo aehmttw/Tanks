@@ -16,8 +16,6 @@ public class ScreenOptionsGraphics extends Screen
     public static final String perspectiveText = "View: ";
     public static final String antialiasingText = "Antialiasing: ";
 
-    public static final String fullscreenText = "Fullscreen: ";
-
     public static final String fancyText = "\u00A7000100200255fancy";
     public static final String fastText = "\u00A7200100000255fast";
 
@@ -220,6 +218,8 @@ public class ScreenOptionsGraphics extends Screen
                 graphics3d.setText(graphics3dText, ScreenOptions.offText);
 
             update3dGroundButton();
+
+            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "3D graphics may impact performance");
@@ -235,6 +235,8 @@ public class ScreenOptionsGraphics extends Screen
                 ground3d.setText(ground3dText, ScreenOptions.onText);
             else
                 ground3d.setText(ground3dText, ScreenOptions.offText);
+
+            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "Enabling 3D ground may impact---performance in large levels");
@@ -318,8 +320,7 @@ public class ScreenOptionsGraphics extends Screen
     },
             "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
-    Button fullscreen = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs()
-    );
+    Button window = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
@@ -346,12 +347,9 @@ public class ScreenOptionsGraphics extends Screen
         antialiasing.update();
 
         if (Game.framework == Game.Framework.libgdx)
-        {
-            fullscreen.enabled = false;
-            fullscreen.setHoverText("This option is unavailable on mobile---because all apps are fullscreen!");
-        }
+            window.enabled = false;
 
-        fullscreen.update();
+        window.update();
 
         back.update();
 
@@ -374,13 +372,7 @@ public class ScreenOptionsGraphics extends Screen
 
         back.draw();
 
-        // Need to update fullscreen text in case user changes it via F11
-        fullscreen.setText(fullscreenText, (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText));
-
-        if (Game.framework == Game.Framework.libgdx)
-            fullscreen.setText(fullscreenText, ScreenOptions.onText);
-
-        fullscreen.draw();
+        window.draw();
 
         antialiasing.draw();
         shadows.draw();

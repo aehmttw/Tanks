@@ -12,6 +12,7 @@ public class EventReturnToCrusade extends PersonalEvent
 	public String msg1;
 	public String msg2;
 	public boolean win;
+	public boolean lose;
 
 	public EventReturnToCrusade()
 	{
@@ -26,7 +27,10 @@ public class EventReturnToCrusade extends PersonalEvent
 			win = true;
 		}
 		else if (c.lose)
+		{
 			msg1 = "Game over!";
+			lose = true;
+		}
 		else
 		{
 			if (Panel.levelPassed)
@@ -47,7 +51,7 @@ public class EventReturnToCrusade extends PersonalEvent
 		if (this.clientID == null)
 		{
 			Game.silentCleanUp();
-			ScreenPartyCrusadeInterlevel s = new ScreenPartyCrusadeInterlevel(this.win);
+			ScreenPartyCrusadeInterlevel s = new ScreenPartyCrusadeInterlevel(this.win, this.lose);
 			s.msg1 = this.msg1;
 			s.msg2 = this.msg2;
 			Game.screen = s;
@@ -62,6 +66,7 @@ public class EventReturnToCrusade extends PersonalEvent
 		NetworkUtils.writeString(b, msg1);
 		NetworkUtils.writeString(b, msg2);
 		b.writeBoolean(win);
+		b.writeBoolean(lose);
 	}
 
 	@Override
@@ -70,5 +75,6 @@ public class EventReturnToCrusade extends PersonalEvent
 		msg1 = NetworkUtils.readString(b);
 		msg2 = NetworkUtils.readString(b);
 		win = b.readBoolean();
+		lose = b.readBoolean();
 	}
 }

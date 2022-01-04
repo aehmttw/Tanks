@@ -7,7 +7,6 @@ import tanks.ModLevel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SearchBox;
-import tanks.gui.TextBox;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class ScreenModdedLevels extends Screen
 		public void run()
 		{
 			createNewLevelsList();
-			moddedLevelsList.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			moddedLevelsList.filter(search.inputText);
 			moddedLevelsList.sortButtons();
 		}
 	}, "");

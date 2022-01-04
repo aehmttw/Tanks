@@ -31,6 +31,8 @@ public abstract class BaseWindow
     public double absoluteMouseX;
     public double absoluteMouseY;
 
+    public boolean constrainMouse;
+
     public double colorR;
     public double colorG;
     public double colorB;
@@ -229,6 +231,8 @@ public abstract class BaseWindow
     public abstract void addVertex(double x, double y);
 
     public abstract void openLink(URL url) throws Exception;
+
+    public abstract void setResolution(int x, int y);
 
     public abstract void setShadowQuality(double quality);
 

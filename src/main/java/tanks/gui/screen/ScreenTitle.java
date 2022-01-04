@@ -5,6 +5,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankPlayer;
+import tanks.tank.Turret;
 
 public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
@@ -77,7 +78,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	}
 		);
 
-	Button languages = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
+	Button languages = new Button(-1000, -1000, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
 	{
 		Game.silentCleanUp();
 		Game.screen = new ScreenLanguage();
@@ -174,9 +175,20 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		about.draw();
 
+
+		Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
+		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
+		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
+
 		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+
+		Drawing.drawing.setColor(0, 150, 255);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
+
+		Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 

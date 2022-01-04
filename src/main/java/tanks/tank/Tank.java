@@ -54,6 +54,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public int coinValue = 0;
 
 	public int networkID;
+	public int crusadeID = -1;
 
 	public String name;
 
@@ -254,7 +255,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (!o.tankCollision)
 					continue;
 
-				if (!o.hasLeftNeighbor() && dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
+				if (!o.hasLeftNeighbor() && dx <= 0 && dx >= -bound && horizontalDist >= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -263,7 +264,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vX = 0;
 					this.posX += horizontalDist - bound;
 				}
-				else if (!o.hasUpperNeighbor() && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
+				else if (!o.hasUpperNeighbor() && dy <= 0 && dy >= -bound && horizontalDist <= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -272,7 +273,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vY = 0;
 					this.posY += verticalDist - bound;
 				}
-				else if (!o.hasRightNeighbor() && dx >= 0 && dx < bound && horizontalDist > verticalDist)
+				else if (!o.hasRightNeighbor() && dx >= 0 && dx <= bound && horizontalDist >= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -281,7 +282,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vX = 0;
 					this.posX -= horizontalDist - bound;
 				}
-				else if (!o.hasLowerNeighbor() && dy >= 0 && dy < bound && horizontalDist < verticalDist)
+				else if (!o.hasLowerNeighbor() && dy >= 0 && dy <= bound && horizontalDist <= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -771,7 +772,16 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.health -= amount * this.getDamageMultiplier(source);
 
 		if (this.health <= 1)
-			this.attributes.removeIf(a -> a.type.equals("healray"));
+		{
+			for (int i = 0; i < this.attributes.size(); i++)
+			{
+				if (this.attributes.get(i).type.equals("healray"))
+				{
+					this.attributes.remove(i);
+					i--;
+				}
+			}
+		}
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 

@@ -26,6 +26,8 @@ public class ScreenOverlayChat
         if (ScreenPartyLobby.isClient && (Game.connectedToOnline || ScreenPartyLobby.chatbox == null))
             return;
 
+        Game.game.window.shapeRenderer.setBatchMode(false, false, false);
+
         ChatBox chatbox = null;
         ArrayList<ChatMessage> chat = null;
 
@@ -155,7 +157,6 @@ public class ScreenOverlayChat
                                 Drawing.drawing.setColor(0, 0, 0);
 
                             Drawing.drawing.drawInterfaceText(mx, my, c.lines.get(j), false);
-
                             i++;
                         }
                     }

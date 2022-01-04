@@ -7,7 +7,7 @@ import tanks.gui.Button;
 public class ScreenOptionsGame extends Screen
 {
     public static final String autostartText = "Autostart: ";
-    public static final String fullStatsText = "Advanced stats: ";
+    public static final String fullStatsText = "Stats animations: ";
 
     Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -37,12 +37,11 @@ public class ScreenOptionsGame extends Screen
                 fullStats.setText(fullStatsText, ScreenOptions.offText);
         }
     },
-            "Shows more detailed statistics---after a crusade ends.");
+            "When off, skips directly to the summary tab---of the crusade end stats screen");
 
     Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
-    );
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
     public ScreenOptionsGame()
     {

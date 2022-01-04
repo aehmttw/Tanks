@@ -1,8 +1,6 @@
 package tanks;
 
-import tanks.event.EventCreatePlayer;
-import tanks.event.EventEnterLevel;
-import tanks.event.EventLoadLevel;
+import tanks.event.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -140,7 +138,6 @@ public class Level
 						else if (parsing == 3)
 							this.startingCoins = Integer.parseInt(s);
 					}
-
 					break;
 			}
 		}
@@ -166,6 +163,8 @@ public class Level
 
 	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
 	{
+		int currentCrusadeID = 0;
+
 		if (Game.deterministicMode)
 			random = new Random(Game.seed);
 		else
@@ -382,6 +381,8 @@ public class Level
 			}
 		}
 
+		ArrayList<Tank> tanksToRemove = new ArrayList<>();
+
 		if (!preset[2].equals(""))
 		{
 			for (int i = 0; i < tanks.length; i++)
@@ -433,6 +434,11 @@ public class Level
 				else
 				{
 					t = Game.registryTank.getEntry(type).getTank(x, y, angle);
+					t.crusadeID = currentCrusadeID;
+					currentCrusadeID++;
+
+					if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
+						tanksToRemove.add(t);
 				}
 
 				t.team = team;
@@ -619,6 +625,16 @@ public class Level
 
 		for (EventCreatePlayer e: playerEvents)
 			e.execute();
+
+		if (Crusade.crusadeMode && Crusade.currentCrusade.retry)
+		{
+			for (Tank t: tanksToRemove)
+			{
+				INetworkEvent e = new EventRemoveTank(t);
+				Game.removeMovables.add(t);
+				Game.eventsOut.add(e);
+			}
+		}
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());

@@ -11,6 +11,7 @@ import tanks.tank.Turret;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class Player
@@ -95,6 +96,12 @@ public class Player
                 parseStringIntHashMap(cp.itemHits, f.nextLine());
             }
 
+            if (f.hasNextLine())
+            {
+                parseIntHashSet(c.livingTankIDs, f.nextLine());
+                c.retry = c.livingTankIDs.size() > 0;
+            }
+
             f.stopReading();
 
             ArrayList<Item> shop = c.getShop();
@@ -151,6 +158,19 @@ public class Player
 
             String[] sec = s.split("=");
             map.put(sec[0], Integer.parseInt(sec[1]));
+        }
+    }
+
+    public static void parseIntHashSet(HashSet<Integer> set, String str)
+    {
+        String[] parts = str.replace("[", "").replace("]", "").split(", ");
+
+        for (String s: parts)
+        {
+            if (s.length() <= 0)
+                continue;
+
+            set.add(Integer.parseInt(s));
         }
     }
 

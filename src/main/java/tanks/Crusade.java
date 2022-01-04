@@ -5,19 +5,18 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
+import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class Crusade 
 {
 	public static Crusade currentCrusade = null;
 	public static boolean crusadeMode = false;
 
+	public boolean retry = false;
 	public boolean replay = false;
 
 	public boolean win = false;
@@ -32,6 +31,7 @@ public class Crusade
 
 	public ArrayList<String> levels = new ArrayList<>();
 	public ArrayList<String> levelNames = new ArrayList<>();
+	public HashSet<Integer> livingTankIDs = new HashSet<>();
 
 	public int bonusLifeFrequency = 3;
 	public int startingLives = 3;
@@ -55,6 +55,8 @@ public class Crusade
 	public Exception error = null;
 
 	public ArrayList<LevelPerformance> performances = new ArrayList<>();
+
+	public boolean respawnTanks = true;
 
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
@@ -150,6 +152,9 @@ public class Crusade
 
 						if (z.length > 2)
 							this.showNames = Boolean.parseBoolean(z[2]);
+
+						if (z.length > 3)
+							this.respawnTanks = Boolean.parseBoolean(z[3]);
 					}
 					break;
 			}
@@ -158,9 +163,6 @@ public class Crusade
 		}
 		
 		this.name = name;
-
-		//if (this.levels.size() <= 0)
-		//	Game.exitToCrash(new RuntimeException("The crusade " + name + " has no levels!"));
 
 		for (int j = 0; j < Game.players.size(); j++)
 		{
@@ -179,6 +181,9 @@ public class Crusade
 
 		currentLevel = 0;
 		saveLevel = 0;
+
+		disconnectedPlayers.clear();
+		livingTankIDs.clear();
 
 		Game.eventsOut.add(new EventBeginCrusade());
 
@@ -210,7 +215,14 @@ public class Crusade
 					{
 						player.remainingLives = cp.player.remainingLives;
 						cp.player = player;
+						cp.itemBar.player = player;
 						crusadePlayers.put(player, cp);
+
+						for (Item i: cp.itemBar.slots)
+						{
+							i.player = player;
+						}
+
 						found = true;
 						break;
 					}
@@ -304,7 +316,20 @@ public class Crusade
 		try
 		{
 			if (!ScreenPartyHost.isServer)
-				this.crusadePlayers.get(Game.player).saveCrusade(win);
+				this.crusadePlayers.get(Game.player).saveCrusade();
+			else
+			{
+				if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).savedRemainingTanks)
+				{
+					Crusade.currentCrusade.livingTankIDs.clear();
+
+					for (Movable m : Game.movables)
+					{
+						if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+							Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+					}
+				}
+			}
 		}
 		catch (Exception e)
 		{
@@ -424,5 +449,34 @@ public class Crusade
 			performances.add(new LevelPerformance(currentLevel));
 
 		performances.get(currentLevel).recordAttempt(time, win);
+	}
+
+	public void quit()
+	{
+		boolean win = ScreenGame.finishedQuick && Panel.win;
+
+		if (!win)
+		{
+			for (int i = 0; i < Game.movables.size(); i++)
+			{
+				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
+					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
+				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
+					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+			}
+		}
+
+		this.saveHotbars();
+		this.levelFinished(win);
+
+		if (saveLevel > currentLevel)
+			this.retry = false;
+
+		this.currentLevel = saveLevel;
+
+		Crusade.crusadeMode = false;
+
+		if (!ScreenPartyHost.isServer)
+			Crusade.currentCrusade = null;
 	}
 }

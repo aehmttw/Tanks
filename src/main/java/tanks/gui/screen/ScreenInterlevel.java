@@ -33,6 +33,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", () ->
 	{
+		Crusade.currentCrusade.retry = true;
 		Crusade.currentCrusade.loadLevel();
 		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 	}
@@ -74,9 +75,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 	}
 			, "You will not gain extra lives---"
-			+ "from replaying a level you've already beaten.---"
+			+ "from replaying a level you've already cleared.---"
 			+ "However, you can still earn coins!---"
-			+ "You will still lose a life if you die.");
+			+ "You will still lose a life if you're destroyed.");
 
 	Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
 	{
@@ -105,6 +106,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	{
 		Crusade.currentCrusade.currentLevel++;
 		Crusade.currentCrusade.replay = false;
+		Crusade.currentCrusade.retry = false;
 		Crusade.currentCrusade.loadLevel();
 		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
 	}
@@ -225,7 +227,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				if (Panel.win || Crusade.currentCrusade.replay)
 				{
 					nextLevel.update();
-					replayCrusadeWin.update();
+
+					if (Crusade.currentCrusade.respawnTanks)
+						replayCrusadeWin.update();
 				}
 				else
 					replayCrusade.update();
@@ -264,13 +268,23 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 			if (Crusade.crusadeMode && Crusade.currentCrusade.win)
 				this.music = "win_crusade.ogg";
+
+			if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks)
+			{
+				this.nextLevel.posY += this.objYSpace / 2;
+				this.quitCrusade.posY -= this.objYSpace / 2;
+			}
 		}
 		else
 		{
 			//Drawing.drawing.playSound("lose.ogg");
 			this.music = "lose_music.ogg";
 
-			quitCrusade.posY -= this.objYSpace / 2;
+			if (!(Crusade.crusadeMode && Crusade.currentCrusade.replay))
+				quitCrusade.posY -= this.objYSpace / 2;
+
+			//if (Crusade.crusadeMode && Crusade.currentCrusade.lose)
+			//	this.music = "lose_crusade.ogg";
 		}
 
 		if (Panel.win && Game.effectsEnabled)
@@ -382,7 +396,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				if (Panel.win || Crusade.currentCrusade.replay)
 				{
 					nextLevel.draw();
-					replayCrusadeWin.draw();
+
+					if (Crusade.currentCrusade.respawnTanks)
+						replayCrusadeWin.draw();
 				}
 				else
 					replayCrusade.draw();

@@ -2,12 +2,12 @@ package tanks.gui;
 
 import basewindow.BaseFile;
 import tanks.BiConsumer;
-import tanks.Drawing;
 import tanks.Function;
 import tanks.Game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -82,7 +82,8 @@ public class SavedFilesList extends ButtonList
             this.fileButtons.add(b);
         }
 
-        this.buttons.sort(Comparator.comparing(o -> o.text) /*(int) Math.signum(times.get(o2) - times.get(o1))*/);
+        //this.buttons.sort(Comparator.comparing(o -> o.text) /*(int) Math.signum(times.get(o2) - times.get(o1))*/);
+        Collections.sort(buttons, (o1, o2) -> o1.text.compareTo(o1.text));
 
         this.sortButtons();
     }
@@ -109,10 +110,11 @@ public class SavedFilesList extends ButtonList
     {
         this.buttons.removeAll(this.fileButtons);
 
+        // IMPORTANT: there's a nicer way to do this but libgdx doesnt support it
         if (byTime)
-            this.fileButtons.sort((o1, o2) -> (int) Math.signum(times.get(o2) - times.get(o1)));
+            Collections.sort(this.fileButtons, (o1, o2) -> (int) Math.signum(times.get(o2) - times.get(o1)));
         else
-            this.fileButtons.sort(Comparator.comparing(o -> o.text));
+            Collections.sort(this.fileButtons, (o1, o2) -> o1.text.compareTo(o2.text));
 
         this.buttons.addAll(this.fileButtons);
     }

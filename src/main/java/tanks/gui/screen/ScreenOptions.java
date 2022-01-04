@@ -138,6 +138,7 @@ public class ScreenOptions extends Screen
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
 			f.println("mouse_target=" + Panel.showMouseTarget);
+			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
 			f.println("mobile_joystick=" + TankPlayer.controlStickMobile);
@@ -245,6 +246,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "mouse_target":
 						Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "constrain_mouse":
+						Game.constrainMouse = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "enable_vibrations":
 						Game.enableVibrations = Boolean.parseBoolean(optionLine[1]);

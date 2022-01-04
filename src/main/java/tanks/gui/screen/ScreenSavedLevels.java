@@ -1,14 +1,17 @@
 package tanks.gui.screen;
 
 import tanks.Drawing;
+import tanks.Function;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBox;
-import tanks.gui.TextBox;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -26,7 +29,7 @@ public class ScreenSavedLevels extends Screen
 		public void run()
 		{
 			createNewLevelsList();
-			savedLevelsList.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			savedLevelsList.filter(search.inputText);
 			savedLevelsList.sortButtons();
 
 			if (search.inputText.length() <= 0)
@@ -42,7 +45,7 @@ public class ScreenSavedLevels extends Screen
 			fullSavedLevelsList.sortedByTime = !fullSavedLevelsList.sortedByTime;
 			fullSavedLevelsList.sort(fullSavedLevelsList.sortedByTime);
 			createNewLevelsList();
-			savedLevelsList.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+			savedLevelsList.filter(search.inputText);
 			savedLevelsList.sortButtons();
 
 			if (fullSavedLevelsList.sortedByTime)
@@ -106,7 +109,7 @@ public class ScreenSavedLevels extends Screen
 
 	@Override
 	public void update()
-	{		
+	{
 		savedLevelsList.update();
 
 		if (search.inputText.length() <= 0)

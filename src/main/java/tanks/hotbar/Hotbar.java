@@ -6,6 +6,7 @@ import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
+import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
@@ -271,10 +272,10 @@ public class Hotbar
 				s = st + minutes + ":0" + seconds60;
 
 			Drawing.drawing.setInterfaceFontSize(32 * sizeMul);
-			Drawing.drawing.setColor(red, 0, 0, alpha + red / 2);
+			Drawing.drawing.setColor(red, 0, 0, (alpha + red / 2) * Obstacle.draw_size / Game.tile_size);
 
 			if (Level.isDark())
-				Drawing.drawing.setColor(255, 255 - red, 255 - red, alpha + red / 2);
+				Drawing.drawing.setColor(255, 255 - red, 255 - red, (alpha + red / 2) * Obstacle.draw_size / Game.tile_size);
 
 			double posX = Drawing.drawing.interfaceSizeX / 2;
 			double posY = 50;
@@ -282,7 +283,7 @@ public class Hotbar
 			if (ScreenGame.finishedQuick)
 			{
 				Drawing.drawing.setInterfaceFontSize(32);
-				Drawing.drawing.setColor(0, 0, 0, 127);
+				Drawing.drawing.setColor(0, 0, 0, 127 * Obstacle.draw_size / Game.tile_size);
 
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 127);
@@ -290,7 +291,7 @@ public class Hotbar
 
 			if (((ScreenGame) Game.screen).timeRemaining <= 0)
 			{
-				Drawing.drawing.setColor(255, 0, 0);
+				Drawing.drawing.setColor(255, 0, 0, 255 * Obstacle.draw_size / Game.tile_size);
 
 				Drawing.drawing.setInterfaceFontSize(100);
 				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Out of time!");

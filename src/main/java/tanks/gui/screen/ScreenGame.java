@@ -30,6 +30,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 {
 	public boolean playing = false;
 	public boolean paused = false;
+	public boolean savedRemainingTanks = false;
 
 	public boolean shopScreen = false;
 	public boolean npcShopScreen = false;
@@ -384,27 +385,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit to title", () ->
 	{
-		Crusade.crusadeMode = false;
-		Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
-		Crusade.currentCrusade = null;
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
-				((TankPlayer) Game.movables.get(i)).player.remainingLives--;
-			else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
-				((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
-		}
-
+		Crusade.currentCrusade.quit();
 		Game.exitToTitle();
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------Your crusade progress will be saved.");
 
 	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit to title", () ->
 	{
-		Crusade.crusadeMode = false;
-		Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
-		Crusade.currentCrusade = null;
+		Crusade.currentCrusade.quit();
 		Game.exitToTitle();
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
@@ -414,6 +402,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		playing = false;
 		paused = false;
 
+		if (!finishedQuick)
+		{
+			for (int i = 0; i < Game.movables.size(); i++)
+			{
+				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
+					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
+				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
+					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+			}
+		}
+
 		if (ScreenPartyHost.isServer)
 		{
 			ready = false;
@@ -422,6 +421,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			ScreenPartyHost.readyPlayers.clear();
 			ScreenPartyHost.includedPlayers.clear();
 		}
+
+		Crusade.currentCrusade.retry = true;
+		Crusade.currentCrusade.livingTankIDs.clear();
+		for (Movable m : Game.movables)
+		{
+			if (!savedRemainingTanks && m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+				Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+		}
+		savedRemainingTanks = false;
 
 		Crusade.currentCrusade.saveHotbars();
 		Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
@@ -439,19 +447,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	Button quitCrusadeParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Back to party", () ->
 	{
-		Crusade.crusadeMode = false;
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
-				((TankPlayer) Game.movables.get(i)).player.remainingLives--;
-			else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
-				((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
-		}
-
+		Crusade.currentCrusade.retry = true;
+		Crusade.currentCrusade.quit();
 		Panel.panel.zoomTimer = 0;
 		Game.cleanUp();
-		System.gc();
+
 		Game.screen = ScreenPartyHost.activeScreen;
 		ScreenPartyHost.readyPlayers.clear();
 		ScreenPartyHost.includedPlayers.clear();
@@ -462,12 +462,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	Button restartCrusadeParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart the level", () ->
 	{
-		for (int i = 0; i < Game.movables.size(); i++)
+		if (!finishedQuick)
 		{
-			if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
-				((TankPlayer) Game.movables.get(i)).player.remainingLives--;
-			else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
-				((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+			for (int i = 0; i < Game.movables.size(); i++)
+			{
+				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
+					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
+				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
+					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+			}
 		}
 
 		playing = false;
@@ -476,6 +479,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		ready = false;
 		readyButton.enabled = true;
 		cancelCountdown = true;
+
+		Crusade.currentCrusade.retry = true;
+		Crusade.currentCrusade.livingTankIDs.clear();
+		for (Movable m : Game.movables)
+		{
+			if (!savedRemainingTanks && m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+				Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+		}
+		savedRemainingTanks = false;
 
 		Panel.panel.zoomTimer = 0;
 		Game.silentCleanUp();
@@ -493,6 +505,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	Button quitCrusadePartyFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Back to party", () ->
 	{
+		Crusade.currentCrusade.retry = true;
 		Crusade.crusadeMode = false;
 		Crusade.currentCrusade = null;
 
@@ -771,6 +784,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				this.musicID = "battle";
 
+				if (Level.isDark())
+					this.musicID = "battle_night";
+
+
 				if (!this.musicStarted)
 					this.musicStarted = true;
 				else
@@ -915,7 +932,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							if (Crusade.currentCrusade.finalLife())
 							{
 								restartCrusadePartyFinalLife.update();
-								quitCrusadePartyFinalLife.update();
+
+								if (finishedQuick && Panel.win)
+									quitCrusadeParty.update();
+								else
+									quitCrusadePartyFinalLife.update();
 							}
 							else
 							{
@@ -1363,7 +1384,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (fullyAliveTeams.size() <= 1)
+			if (Game.screen == this && fullyAliveTeams.size() <= 1)
 			{
 				if (!ScreenGame.finishedQuick)
 				{
@@ -1371,13 +1392,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (Game.playerTank != null && (fullyAliveTeams.contains(Game.playerTank.team) || (fullyAliveTeams.size() > 0 && fullyAliveTeams.get(0).name.equals(Game.clientID.toString()))))
 					{
+						if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks)
+						{
+							restartCrusade.enabled = false;
+							restartCrusadeParty.enabled = false;
+						}
+
 						Panel.win = true;
-						Drawing.drawing.playSound("win.ogg");
+						Drawing.drawing.playSound("win.ogg", 1.0f, true);
 					}
 					else
 					{
 						Panel.win = false;
-						Drawing.drawing.playSound("lose.ogg");
+						Drawing.drawing.playSound("lose.ogg", 1.0f, true);
 					}
 				}
 
@@ -1419,8 +1446,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							Drawing.drawing.playSound("level_end.ogg");
 
 						Obstacle.draw_size = Math.max(0, Obstacle.draw_size - Panel.frameFrequency);
-						for (int i = 0; i < Game.movables.size(); i++)
-							Game.movables.get(i).destroy = true;
+
+						if (!savedRemainingTanks && Crusade.crusadeMode)
+							Crusade.currentCrusade.livingTankIDs.clear();
+
+						for (Movable m : Game.movables)
+						{
+							if (!savedRemainingTanks && m instanceof Tank && !m.destroy && Crusade.crusadeMode && ((Tank) m).crusadeID >= 0)
+								Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+
+							m.destroy = true;
+						}
+
+						savedRemainingTanks = true;
 
 						if (Obstacle.draw_size <= 0)
 						{
@@ -1551,12 +1589,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (playing && !paused && !finishedQuick)
 		{
-			this.shrubberyScale = Math.min(this.shrubberyScale + Panel.frameFrequency / 250, 1);
+			this.shrubberyScale = Math.min(this.shrubberyScale + Panel.frameFrequency / 200, 1);
 		}
 
 		if (finishedQuick)
 		{
-			this.shrubberyScale = Math.max(this.shrubberyScale - Panel.frameFrequency / 250, 0.5);
+			this.shrubberyScale = Math.max(this.shrubberyScale - Panel.frameFrequency / 200, 0.25);
 		}
 
 		this.updateMusic(prevMusic);
@@ -2221,6 +2259,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (paused && !screenshotMode)
 		{
+			if (ScreenGame.finishedQuick)
+			{
+				quitCrusade.enableHover = false;
+				quitCrusadeParty.enableHover = false;
+
+				quitCrusadeFinalLife.enableHover = false;
+				quitCrusadePartyFinalLife.enableHover = false;
+
+				restartCrusade.enableHover = false;
+				restartCrusadeParty.enableHover = false;
+
+				restartCrusadeFinalLife.enableHover = false;
+				restartCrusadePartyFinalLife.enableHover = false;
+			}
+
 			Drawing.drawing.setColor(127, 178, 228, 64);
 			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
@@ -2243,7 +2296,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (Crusade.currentCrusade.finalLife())
 					{
-						quitCrusadePartyFinalLife.draw();
+						if (Panel.win && finishedQuick)
+							quitCrusadeParty.draw();
+						else
+							quitCrusadePartyFinalLife.draw();
+
 						restartCrusadePartyFinalLife.draw();
 					}
 					else

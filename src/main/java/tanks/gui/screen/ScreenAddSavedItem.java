@@ -1,12 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
-import tanks.gui.ButtonList;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBox;
 import tanks.hotbar.item.Item;
@@ -37,7 +35,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
         public void run()
         {
             createNewItemsList();
-            items.buttons.removeIf(b -> !b.text.toLowerCase().contains(search.inputText.toLowerCase()));
+            items.filter(search.inputText);
             items.sortButtons();
         }
     }, "");

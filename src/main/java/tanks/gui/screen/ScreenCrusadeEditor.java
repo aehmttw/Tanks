@@ -38,7 +38,22 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
             else
                 toggleNames.setText(toggleNamesText, ScreenOptions.offText);
         }
-    });
+    }, "Show level names before---the battle begins");
+
+    public String toggleRespawnsText = "Bots respawn: ";
+    public Button toggleRespawns = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            crusade.respawnTanks = !crusade.respawnTanks;
+
+            if (crusade.respawnTanks)
+                toggleRespawns.setText(toggleRespawnsText, ScreenOptions.onText);
+            else
+                toggleRespawns.setText(toggleRespawnsText, ScreenOptions.offText);
+        }
+    }, "Toggles whether tanks you---destroyed should come back when---retrying the level.------When off, you will not be able to---replay battles you've cleared.");
 
     public Selector itemSelector;
 
@@ -182,6 +197,11 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
             toggleNames.setText(toggleNamesText, ScreenOptions.onText);
         else
             toggleNames.setText(toggleNamesText, ScreenOptions.offText);
+
+        if (crusade.respawnTanks)
+            toggleRespawns.setText(toggleRespawnsText, ScreenOptions.onText);
+        else
+            toggleRespawns.setText(toggleRespawnsText, ScreenOptions.offText);
 
         crusadeName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Crusade name", () ->
         {
@@ -355,6 +375,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
             startingLives.update();
             bonusLifeFrequency.update();
             toggleNames.update();
+            toggleRespawns.update();
             quit.update();
         }
         else if (mode == Mode.items)
@@ -399,6 +420,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
             bonusLifeFrequency.draw();
             startingLives.draw();
             crusadeName.draw();
+            toggleRespawns.draw();
             toggleNames.draw();
 
             quit.draw();
@@ -452,7 +474,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         {
             f.startWriting();
             f.println("properties");
-            f.println(this.crusade.startingLives + "," + this.crusade.bonusLifeFrequency + "," + this.crusade.showNames);
+            f.println(this.crusade.startingLives + "," + this.crusade.bonusLifeFrequency + "," + this.crusade.showNames + "," + this.crusade.respawnTanks);
             f.println("items");
 
             for (Item i: this.crusade.crusadeItems)

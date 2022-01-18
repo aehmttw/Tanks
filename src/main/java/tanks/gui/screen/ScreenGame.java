@@ -83,7 +83,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public double prevCursorX;
 	public double prevCursorY;
 
-	public double shrubberyScale = 0.5;
+	public double shrubberyScale = 0.25;
 
 	public ScreenInfo overlay = null;
 	public Minimap minimap = new Minimap();

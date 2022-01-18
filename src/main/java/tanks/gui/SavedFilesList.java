@@ -114,7 +114,7 @@ public class SavedFilesList extends ButtonList
         if (byTime)
             Collections.sort(this.fileButtons, (o1, o2) -> (int) Math.signum(times.get(o2) - times.get(o1)));
         else
-            Collections.sort(this.fileButtons, (o1, o2) -> o1.text.compareTo(o2.text));
+            Collections.sort(this.fileButtons, (o1, o2) -> o1.text.toLowerCase().compareTo(o2.text.toLowerCase()));
 
         this.buttons.addAll(this.fileButtons);
     }

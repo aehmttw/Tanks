@@ -134,10 +134,20 @@ public class ObstacleBreakable extends Obstacle
 
                 double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
 
+                byte o;
+
                 if (stackHeight % 1 == 0)
-                    drawing.fillBox(this, this.posX, this.posY, offset + i * Game.tile_size, draw_size, draw_size, draw_size, (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size + offset)));
+                {
+                    o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size + offset));
+                    drawing.fillBox(this, this.posX, this.posY, offset + i * Game.tile_size, draw_size, draw_size, draw_size, o);
+                }
                 else
-                    drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size + offset)));
+                {
+                    o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size + offset));
+                    drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, o);
+                }
+
+                options[i] = o;
             }
         }
         else

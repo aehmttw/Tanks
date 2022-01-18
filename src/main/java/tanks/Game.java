@@ -96,7 +96,7 @@ public class Game
 	public static final int network_protocol = 38;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
-	public static final boolean cinematic = true;
+	public static final boolean cinematic = false;
 
 	public static String lastVersion = "Tanks v0";
 

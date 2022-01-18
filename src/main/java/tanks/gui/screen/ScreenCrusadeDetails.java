@@ -6,6 +6,10 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.translation.Translation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ScreenCrusadeDetails extends Screen
 {
     public Crusade crusade;
@@ -39,7 +43,17 @@ public class ScreenCrusadeDetails extends Screen
         @Override
         public void run()
         {
-            Crusade.currentCrusade = crusade;
+            Crusade c;
+
+            if (crusade.internal)
+            {
+                String[] l = crusade.contents.split("\n");
+                c = new Crusade(new ArrayList<>(Arrays.asList(l)), crusade.name, crusade.fileName);
+            }
+            else
+                c = new Crusade(Game.game.fileManager.getFile(crusade.fileName), crusade.name);
+
+            Crusade.currentCrusade = c;
             Crusade.crusadeMode = true;
             Crusade.currentCrusade.begin();
             Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());

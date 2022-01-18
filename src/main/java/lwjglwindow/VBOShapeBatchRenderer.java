@@ -511,7 +511,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
             objBufferPos.put(o, i);
 
             PointQueue.PointQueueNode node = p.start;
-            while (true)
+            while (node != null)
             {
                 i++;
 

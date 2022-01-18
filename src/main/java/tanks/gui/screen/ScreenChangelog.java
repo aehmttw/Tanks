@@ -377,6 +377,43 @@ public class ScreenChangelog extends Screen
                                     "Added option to prevent mouse leaving the window bounds\n" +
                                     "Bug fixes and other minor improvements"
                     });
+
+            new Changelog("v1.3.e", new String[]
+                    {
+                            "*What's new in Tanks v1.3.e:\n\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.3.0", new String[]
+                    {
+                            "*What's new in Tanks v1.3.0:\n\n" +
+                                    "*New features:\n\n" +
+                                    "Added all-new castle crusade\n" +
+                                    "Added cut, copy, and paste to level editor\n" +
+                                    "Added multishot and shot spread options to bullets\n" +
+                                    "Added crusade option to disable respawning tanks\n\n" +
+
+                                    "*Sounds and music:\n\n" +
+                                    "Added individual battle music tracks for each tanks\n" +
+                                    "New editor music which changes based on tanks present\n" +
+                                    "New sounds for winning and losing battles",
+
+                                    "*User interfaces:\n\n" +
+                                    "Improved lists with search, sort, and jump buttons\n" +
+                                    "New window options menu for resolution and fullscreen\n" +
+                                    "New option to warn before closing unsaved work\n" +
+                                    "New option to prevent mouse leaving the window bounds\n\n" +
+
+                                    "*Improvements:\n\n" +
+                                    "Cyan tanks are now immune to freeze bullets and ice\n" +
+                                    "Improved game title appearance\n" +
+                                    "Huge rendering improvements\n" +
+                                    "Added translation support\n" +
+                                    "Holes are now bigger\n" +
+                                    "More animations on the crusade stats screen\n" +
+                                    "Added native support for ARM64 (M1) architecture on Mac\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

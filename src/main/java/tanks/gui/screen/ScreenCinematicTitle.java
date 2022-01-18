@@ -9,6 +9,7 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.TankDummyLoadingScreen;
+import tanks.tank.Turret;
 
 public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundScreen
 {
@@ -55,10 +56,18 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         if (mine.destroy)
         {
             t2 = Math.min(t2 + Panel.frameFrequency * 2, 50);
-            Drawing.drawing.setColor(0, 0, 0);
 
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
+            Drawing.drawing.setInterfaceFontSize(160 * t2 / 50);
+            Drawing.drawing.drawInterfaceText(mine.posX + 8, mine.posY - t2 * 0.5 + 8, "Tanks");
+            Drawing.drawing.setInterfaceFontSize(64 * t2 / 50);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.drawInterfaceText(mine.posX + 4, mine.posY + t2 * 1.5 + 4, "The Crusades");
+
+            Drawing.drawing.setColor(0, 150, 255);
             Drawing.drawing.setInterfaceFontSize(160 * t2 / 50);
             Drawing.drawing.drawInterfaceText(mine.posX, mine.posY - t2 * 0.5, "Tanks");
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
             Drawing.drawing.setInterfaceFontSize(64 * t2 / 50);
             Drawing.drawing.drawInterfaceText(mine.posX, mine.posY + t2 * 1.5, "The Crusades");
         }
@@ -70,9 +79,9 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
             Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 170, 600, 140);
             Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 340, 1200, 140);
             Drawing.drawing.setColor(0, 0, 0, a);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.2");
-
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 340, "Now coming to Steam!");
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.3");
+            Drawing.drawing.setInterfaceFontSize(64 * t2 / 75);
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 340, "With the all-new castle crusade!");
 
         }
 

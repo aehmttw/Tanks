@@ -205,12 +205,6 @@ public class LWJGLWindow extends BaseWindow
 			}
 		});
 
-		glfwSetFramebufferSizeCallback(window, (window, width, height) ->
-		{
-			//glViewport(0, 0, width, height);
-			tick(true);
-		});
-
 		try (MemoryStack stack = stackPush())
 		{
 			IntBuffer pWidth = stack.mallocInt(1);
@@ -405,7 +399,7 @@ public class LWJGLWindow extends BaseWindow
 			glfwSetWindowSizeLimits(window, (int) absoluteWidth, (int) absoluteHeight, (int) absoluteWidth, (int) absoluteHeight);
 		}
 		else
-			glfwSetWindowSizeLimits(window, 0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwGetFramebufferSize(window, w, h);
 

@@ -2315,7 +2315,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			int x = (int) ((o.posX - 25) / 50);
 			int y = (int) ((o.posY - 25) / 50);
 
-			if (x >= 0 && y >= 0 && x < this.selectedTiles.length && x < this.selectedTiles[0].length && this.selectedTiles[x][y])
+			if (x >= 0 && y >= 0 && x < this.selectedTiles.length && y < this.selectedTiles[0].length && this.selectedTiles[x][y])
 			{
 				try
 				{
@@ -2354,7 +2354,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			int x = (int) ((t.posX - 25) / 50);
 			int y = (int) ((t.posY - 25) / 50);
 
-			if (x >= 0 && y >= 0 && x < this.selectedTiles.length && x < this.selectedTiles[0].length && this.selectedTiles[x][y])
+			if (x >= 0 && y >= 0 && x < this.selectedTiles.length && y < this.selectedTiles[0].length && this.selectedTiles[x][y])
 			{
 				try
 				{

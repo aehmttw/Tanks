@@ -422,6 +422,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			ScreenPartyHost.includedPlayers.clear();
 		}
 
+		Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, false);
+
 		Crusade.currentCrusade.retry = true;
 		Crusade.currentCrusade.livingTankIDs.clear();
 		for (Movable m : Game.movables)
@@ -479,6 +481,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		ready = false;
 		readyButton.enabled = true;
 		cancelCountdown = true;
+
+		Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, false);
 
 		Crusade.currentCrusade.retry = true;
 		Crusade.currentCrusade.livingTankIDs.clear();

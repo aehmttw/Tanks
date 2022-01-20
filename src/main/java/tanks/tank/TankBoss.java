@@ -10,6 +10,9 @@ import tanks.registry.RegistryTank;
 
 import java.util.ArrayList;
 
+/**
+ * A big boss tank which spawns other tanks and takes 5 regular bullets to destroy
+ */
 public class TankBoss extends TankAIControlled
 {
 	public ArrayList<Tank> spawned = new ArrayList<>();

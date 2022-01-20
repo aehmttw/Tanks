@@ -24,10 +24,14 @@ public class Tanks
         // Goes through arguments and applies specified settings.
         for (String arg : args)
         {
-            if (arg.equals("online_server"))                    Game.isOnlineServer = true;
-            if (arg.matches("port=\\d+"))                 port = Integer.parseInt(arg.split("=")[1]);
-            if (arg.equals("debug"))                            Game.debug = true;
-            if (arg.equals("mac") || arg.equals("no_relaunch")) relaunch = false;
+            if (arg.equals("online_server"))
+                Game.isOnlineServer = true;
+            if (arg.matches("port=\\d+"))
+                port = Integer.parseInt(arg.split("=")[1]);
+            if (arg.equals("debug"))
+                Game.debug = true;
+            if (arg.equals("mac") || arg.equals("no_relaunch"))
+                relaunch = false;
         }
 
         if (!Game.isOnlineServer)

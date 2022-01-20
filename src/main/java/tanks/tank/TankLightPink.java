@@ -5,6 +5,9 @@ import tanks.bullet.Bullet;
 import tanks.event.EventTankLightPinkAngry;
 import tanks.event.EventTankUpdateColor;
 
+/**
+ * A tank which gets angry on line of sight
+ */
 public class TankLightPink extends TankAIControlled
 {
     public double angerTimer = 0;
@@ -30,6 +33,7 @@ public class TankLightPink extends TankAIControlled
         this.description = "A tank which gets angry---on line of sight";
     }
 
+    @Override
     public void postUpdate()
     {
         double prevTimer = this.angerTimer;
@@ -87,6 +91,7 @@ public class TankLightPink extends TankAIControlled
         }
     }
 
+    @Override
     public void shoot()
     {
         if (this.angerTimer <= 0)

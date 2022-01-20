@@ -8,6 +8,9 @@ import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.event.EventTankUpdateColor;
 
+/**
+ * A tank which speeds up its allies and becomes explosive as a last stand
+ */
 public class TankGold extends TankAIControlled
 {
 	boolean suicidal = false;

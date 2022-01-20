@@ -72,15 +72,13 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 			double vY2 = this.vY;
 			double vZ2 = this.vZ;
 
-			ArrayList<Integer> removeIndexes = new ArrayList<>();
-			for (int i = 0; i < this.attributes.size(); i++)
+			ArrayList<AttributeModifier> toRemove = new ArrayList<>();
+			for (AttributeModifier a : attributes)
 			{
-				AttributeModifier a = this.attributes.get(i);
-
 				if (a.expired)
 				{
-					// Adds index to list to later get removed.
-					removeIndexes.add(i);
+					// Adds attribute to list to later get removed.
+					toRemove.add(a);
 				}
 
 				a.update();
@@ -93,12 +91,9 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 				}
 			}
 
-			// Remove all attributes with indexes.
-			int offSet = 0;
-			for (Integer removeIndex : removeIndexes)
+			for (AttributeModifier a : toRemove)
 			{
-				this.attributes.remove(removeIndex + offSet);
-				offSet--;
+				attributes.remove(a);
 			}
 
 			this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;

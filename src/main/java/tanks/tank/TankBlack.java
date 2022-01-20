@@ -3,6 +3,9 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 
+/**
+ * A smart, very fast tank which fires rockets
+ */
 public class TankBlack extends TankAIControlled
 {
 	public double strafeDirection = Math.PI / 2;

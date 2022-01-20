@@ -8,6 +8,9 @@ import tanks.event.EventTankMimicTransform;
 import tanks.gui.screen.ScreenGame;
 import tanks.registry.RegistryTank;
 
+/**
+ * A tank which mimics the closest tank it sees
+ */
 public class TankMimic extends TankAIControlled
 {
     public Tank possessingTank = null;
@@ -186,6 +189,7 @@ public class TankMimic extends TankAIControlled
             super.updateTarget();
     }
 
+    @Override
     public boolean isInterestingPathTarget(Movable m)
     {
         return m instanceof Tank && !(m instanceof TankMimic) && ((Tank) m).size == this.size;

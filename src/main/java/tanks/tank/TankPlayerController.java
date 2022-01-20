@@ -165,13 +165,9 @@ public class TankPlayerController extends Tank implements IPlayerTank
                 this.setPolarMotion(this.getPolarDirection(), maxVelocity);
         }
 
-        boolean shoot = false;
-        if (!Game.game.window.touchscreen && Game.game.input.shoot.isPressed())
-            shoot = true;
+        boolean shoot = !Game.game.window.touchscreen && Game.game.input.shoot.isPressed();
 
-        boolean mine = false;
-        if (!Game.game.window.touchscreen && Game.game.input.mine.isPressed())
-            mine = true;
+        boolean mine = !Game.game.window.touchscreen && Game.game.input.mine.isPressed();
 
         boolean showRange = false;
         Hotbar h = Game.player.hotbar;

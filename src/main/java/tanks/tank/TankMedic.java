@@ -9,6 +9,9 @@ import tanks.bullet.BulletHealing;
 import tanks.event.EventLayMine;
 import tanks.event.EventTankUpdateColor;
 
+/**
+ * A tank which adds extra health to its allies and becomes explosive as a last stand
+ */
 public class TankMedic extends TankAIControlled
 {
 	boolean suicidal = false;
@@ -153,6 +156,7 @@ public class TankMedic extends TankAIControlled
 		this.targetEnemy = nearest;
 	}
 
+	@Override
 	public void reactToTargetEnemySight()
 	{
 		if (this.suicidal && this.targetEnemy != null)
@@ -162,6 +166,7 @@ public class TankMedic extends TankAIControlled
 		}
 	}
 
+	@Override
 	public boolean isInterestingPathTarget(Movable m)
 	{
 		return m instanceof Tank && Team.isAllied(m, this) && m != this && ((Tank) m).health - ((Tank) m).baseHealth < 1 && !(m instanceof TankMedic);

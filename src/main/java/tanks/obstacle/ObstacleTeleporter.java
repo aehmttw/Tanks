@@ -7,6 +7,9 @@ import tanks.tank.TeleporterOrb;
 
 import java.util.ArrayList;
 
+/**
+ * A teleporter which randomly transports the player to another teleporter in the level
+ */
 public class ObstacleTeleporter extends Obstacle
 {
 	public double cooldown;

@@ -7,6 +7,9 @@ import tanks.Panel;
 import tanks.bullet.BulletFlame;
 import tanks.event.EventShootBullet;
 
+/**
+ * A short-range tank which shoots fire
+ */
 public class TankOrange extends TankAIControlled
 {
 	public TankOrange(String name, double x, double y, double angle)
@@ -34,11 +37,14 @@ public class TankOrange extends TankAIControlled
 	{
 		if (this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0 && !this.disabled && !this.destroy)
 		{
+			// Casts a ray and tries to get the game object it hits.
 			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
 			Movable m = a.getTarget();
 
+			// Checks if it hit a game object.
 			if (!(m == null))
 			{
+				// Checks if the game object is an enemy.
 				if (m.equals(this.targetEnemy))
 				{
 					Drawing.drawing.playGlobalSound("flame.ogg");

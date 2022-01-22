@@ -92,6 +92,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public HashSet<String> tankMusics = new HashSet<>();
 	protected boolean musicStarted = false;
 
+	public boolean zoomPressed = false;
+	public boolean zoomScrolled = false;
+
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
@@ -878,8 +881,94 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (Game.game.input.zoom.isValid())
 		{
-			Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+			zoomScrolled = false;
+			zoomPressed = true;
 			Game.game.input.zoom.invalidate();
+		}
+
+		if (Game.game.input.zoomIn.isPressed())
+		{
+			zoomScrolled = true;
+			Drawing.drawing.movingCamera = true;
+
+			if (Panel.zoomTarget == -1)
+				Panel.zoomTarget = Panel.panel.zoomTimer;
+
+			Game.game.window.validScrollUp = false;
+			Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.01 * Panel.frameFrequency);
+		}
+
+		if (Game.game.input.zoomOut.isPressed())
+		{
+			zoomScrolled = true;
+			Drawing.drawing.movingCamera = true;
+
+			if (Panel.zoomTarget == -1)
+				Panel.zoomTarget = Panel.panel.zoomTimer;
+
+			Game.game.window.validScrollDown = false;
+			Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.01 * Panel.frameFrequency);
+		}
+
+		if (Game.game.input.zoom.isPressed())
+		{
+			if (Game.game.window.validScrollUp)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.05);
+			}
+
+			if (Game.game.window.validScrollDown)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.05);
+			}
+
+			if (Game.game.window.validScrollUp)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.0625);
+			}
+
+			if (Game.game.window.validScrollDown)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.0625);
+			}
+		}
+		else if (zoomPressed)
+		{
+			if (!zoomScrolled)
+			{
+				Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+				Panel.zoomTarget = -1;
+			}
+
+			zoomPressed = false;
 		}
 
 		if (!finished)

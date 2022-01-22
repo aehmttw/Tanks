@@ -24,6 +24,7 @@ public class Panel
 	public static boolean onlinePaused;
 
 	public double zoomTimer = 0;
+	public static double zoomTarget = -1;
 
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
@@ -83,6 +84,8 @@ public class Panel
 
 	public double age = 0;
 	public long ageFrames = 0;
+
+	public int maxFramerate = 0;
 
 	public boolean started = false;
 
@@ -187,7 +190,7 @@ public class Panel
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
 
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle_night");
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle_night");
 
 			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
@@ -250,15 +253,20 @@ public class Panel
 		if (!started)
 			this.startTime = System.currentTimeMillis();
 
+		int maxFps = Game.maxFPS;
 		if (Game.deterministicMode)
+			maxFps = 60;
+
+		if (maxFps > 0)
 		{
-			while (System.nanoTime() - lastFrameNano < 1000000000 / 60)
+			int frameTime = 1000000000 / maxFps;
+			while (System.nanoTime() - lastFrameNano < frameTime)
 			{
 
 			}
-
-			lastFrameNano = System.nanoTime();
 		}
+
+		lastFrameNano = System.nanoTime();
 
 		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused) || Game.screen instanceof ScreenLevelEditor);
 
@@ -378,7 +386,8 @@ public class Panel
 
 		if (!(Game.screen instanceof ScreenInfo))
 		{
-			this.zoomTimer -= 0.02 * Panel.frameFrequency;
+			if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 || Game.playerTank == null || Game.playerTank.destroy || !((ScreenGame) Game.screen).playing)
+				this.zoomTimer -= 0.02 * Panel.frameFrequency;
 		}
 
 		if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) && !ScreenGame.finished
@@ -428,7 +437,8 @@ public class Panel
 
 			if (Drawing.drawing.movingCamera)
 			{
-				this.zoomTimer += 0.04 * Panel.frameFrequency;
+				if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 || Game.playerTank == null || Game.playerTank.destroy || !((ScreenGame) Game.screen).playing)
+					this.zoomTimer += 0.04 * Panel.frameFrequency;
 
 				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
 					this.zoomTimer = Math.min(this.zoomTimer, 1 - Game.startTime / Game.currentLevel.startTime);
@@ -440,6 +450,14 @@ public class Panel
 		}
 
 		this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
+
+		if (Game.screen instanceof ScreenGame && Panel.zoomTarget >= 0 && (Game.playerTank != null && !Game.playerTank.destroy) && ((ScreenGame) Game.screen).playing)
+		{
+			if (this.zoomTimer < Panel.zoomTarget)
+				this.zoomTimer = Math.min(this.zoomTimer + 0.04 * Panel.frameFrequency, Panel.zoomTarget);
+			else if (this.zoomTimer > Panel.zoomTarget)
+				this.zoomTimer = Math.max(this.zoomTimer - 0.04 * Panel.frameFrequency, Panel.zoomTarget);
+		}
 
 		Drawing.drawing.scale = Game.screen.getScale();
 

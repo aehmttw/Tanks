@@ -109,8 +109,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		public void run()
 		{
 			zoom = 1;
-			offsetX = 1;
-			offsetY = 1;
+			offsetX = 0;
+			offsetY = 0;
 		}
 	}
 	);
@@ -876,9 +876,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				offsetY += panCurrentY - panY;
 			}
 
-			panX = panCurrentX;
-			panY = panCurrentY;
+			panX = Drawing.drawing.getMouseX();
+			panY = Drawing.drawing.getMouseY();
 		}
+
 
 		if (zoomDown)
 		{
@@ -1047,8 +1048,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	{
 		boolean[] handled = new boolean[]{false, false};
 
-		double posX = Math.round((mx - offsetX) / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2;
-		double posY = Math.round((my - offsetY) / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2;
+		double posX = Math.round((mx) / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2;
+		double posY = Math.round((my) / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2;
 		mouseTank.posX = posX;
 		mouseTank.posY = posY;
 		mouseObstacle.posX = posX;

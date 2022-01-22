@@ -9,7 +9,6 @@ public class ScreenOptionsGraphics extends Screen
     public static final String terrainText = "Terrain: ";
     public static final String trailsText = "Bullet trails: ";
     public static final String glowText = "Glow effects: ";
-    public static final String vsyncText = "V-Sync: ";
 
     public static final String graphics3dText = "3D graphics: ";
     public static final String ground3dText = "3D ground: ";
@@ -50,9 +49,11 @@ public class ScreenOptionsGraphics extends Screen
             glow.setText(glowText, ScreenOptions.offText);
 
         if (Game.vsync)
-            vsync.setText(vsyncText, ScreenOptions.onText);
+            maxFPS.setText("Max FPS: \u00A7200100000255V-Sync");
+        else if (Game.maxFPS > 0)
+            maxFPS.setText("Max FPS: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
         else
-            vsync.setText(vsyncText, ScreenOptions.offText);
+            maxFPS.setText("Max FPS: \u00A7000100200255unlimited");
 
         if (Game.enable3d)
             graphics3d.setText(graphics3dText, ScreenOptions.onText);
@@ -100,7 +101,7 @@ public class ScreenOptionsGraphics extends Screen
 
         if (Game.framework == Game.Framework.libgdx)
         {
-            vsync.enabled = false;
+            maxFPS.enabled = false;
             altPerspective.enabled = false;
             shadows.enabled = false;
         }
@@ -284,21 +285,15 @@ public class ScreenOptionsGraphics extends Screen
             "Changes the angle at which---you view the game field");
 
 
-    Button vsync = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button maxFPS = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.vsync = !Game.vsync;
-            Game.game.window.setVsync(Game.vsync);
-
-            if (Game.vsync)
-                vsync.setText(vsyncText, ScreenOptions.onText);
-            else
-                vsync.setText(vsyncText, ScreenOptions.offText);
+            Game.screen = new ScreenOptionsFramerate();
         }
     },
-            "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
+            "Limiting your framerate may---decrease battery consumption");
 
     Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -338,7 +333,7 @@ public class ScreenOptionsGraphics extends Screen
         bulletTrails.update();
         glow.update();
         effects.update();
-        vsync.update();
+        maxFPS.update();
 
         graphics3d.update();
         ground3d.update();
@@ -380,7 +375,7 @@ public class ScreenOptionsGraphics extends Screen
         ground3d.draw();
         graphics3d.draw();
 
-        vsync.draw();
+        maxFPS.draw();
         effects.draw();
         glow.draw();
         bulletTrails.draw();

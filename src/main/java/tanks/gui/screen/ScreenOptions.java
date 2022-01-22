@@ -35,8 +35,6 @@ public class ScreenOptions extends Screen
 	);
 
 
-
-
 	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer()
 	);
 
@@ -135,6 +133,7 @@ public class ScreenOptions extends Screen
 			f.println("shadows_enabled=" + Game.shadowsEnabled);
 			f.println("shadow_quality=" + Game.shadowQuality);
 			f.println("vsync=" + Game.vsync);
+			f.println("max_fps=" + Game.maxFPS);
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
 			f.println("mouse_target=" + Panel.showMouseTarget);
@@ -240,6 +239,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "vsync":
 						Game.vsync = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "max_fps":
+						Game.maxFPS = Integer.parseInt(optionLine[1]);
 						break;
 					case "antialiasing":
 						Game.antialiasing = Boolean.parseBoolean(optionLine[1]);

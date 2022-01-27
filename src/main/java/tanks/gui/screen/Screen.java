@@ -159,7 +159,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 					byte o = 61;
 
-					if (Game.enable3dBg && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && Game.game.window.shapeRenderer.supportsBatching))
+					if (Game.enable3dBg && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && !Game.game.window.shapeRenderer.supportsBatching))
 					{
 						z1 = Game.tilesDepth[i][j];
 						o = 1;

@@ -319,71 +319,6 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements"
                     });
 
-            new Changelog("v1.2.3a", new String[]
-                    {
-                            "*What's new in Tanks v1.2.3a:\n\n" +
-                                    "Added translation support\n" +
-                                    "Added multishot and shot spread options to bullets\n" +
-                                    "Cyan tanks are now immune to freeze bullets and ice\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.2.3b", new String[]
-                    {
-                            "*What's new in Tanks v1.2.3b:\n\n" +
-                                    "New option to warn before closing unsaved work\n" +
-                                    "Added cut, copy, and paste to level editor\n" +
-                                    "Added individual battle music tracks for each tanks\n" +
-                                    "Improved lists with search, sort, and jump buttons\n" +
-                                    "Added native support for ARM64 (M1) architecture on Mac\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.3.a", new String[]
-                    {
-                            "*What's new in Tanks v1.3.a:\n\n" +
-                                    "Added more battle music tracks for tanks\n" +
-                                    "Rendering improvements (things are still buggy)\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.3.b", new String[]
-                    {
-                            "*What's new in Tanks v1.3.b:\n\n" +
-                                    "Rendering improvements (things should be mostly stable now)\n" +
-                                    "Holes are now bigger\n" +
-                                    "New sounds for winning and losing battles\n" +
-                                    "More animations on the crusade stats screen\n" +
-                                    "Added all-new Castle Crusade\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.3.c", new String[]
-                    {
-                            "*What's new in Tanks v1.3.c:\n\n" +
-                                    "Rendering improvements (fixed a bug hurting performance)\n" +
-                                    "Improved game title appearance\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.3.d", new String[]
-                    {
-                            "*What's new in Tanks v1.3.d:\n\n" +
-                                    "Added crusade option to disable respawning tanks\n" +
-                                    "New editor music with tracks for each tank included\n" +
-                                    "Rendering improvements (fixed another bug hurting performance)\n" +
-                                    "Changed game title appearance again\n" +
-                                    "Added window options menu for resolution and fullscreen\n" +
-                                    "Added option to prevent mouse leaving the window bounds\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.3.e", new String[]
-                    {
-                            "*What's new in Tanks v1.3.e:\n\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
             new Changelog("v1.3.0", new String[]
                     {
                             "*What's new in Tanks v1.3.0:\n\n" +
@@ -412,7 +347,16 @@ public class ScreenChangelog extends Screen
                                     "Holes are now bigger\n" +
                                     "More animations on the crusade stats screen\n" +
                                     "Added native support for ARM64 (M1) architecture on Mac\n" +
-                                    "Bug fixes and other minor improvements\n"
+                                    "Bug fixes and other minor improvements"
+                    });
+
+            new Changelog("v1.3.1a", new String[]
+                    {
+                            "*What's new in Tanks v1.3.1a:\n\n" +
+                                    "Added maximum framerate option\n" +
+                                    "Scroll while holding the zoom key for manual zoom\n" +
+                                    "Added keybinds to manually zoom in and out\n" +
+                                    "Bug fixes and other minor improvements"
                     });
         }
     }

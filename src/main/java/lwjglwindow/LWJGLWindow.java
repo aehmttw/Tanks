@@ -373,10 +373,14 @@ public class LWJGLWindow extends BaseWindow
 
 		glfwGetWindowSize(window, w, h);
 
-		this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
+		if (w[0] > 0 || h[0] > 0)
+			this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
 
-		absoluteWidth = w[0];
-		absoluteHeight = h[0];
+		if (w[0] > 0)
+			absoluteWidth = w[0];
+
+		if (h[0] > 0)
+			absoluteHeight = h[0];
 
 		glfwGetCursorPos(window, mx, my);
 		absoluteMouseX = mx[0];

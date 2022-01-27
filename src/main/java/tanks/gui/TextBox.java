@@ -160,10 +160,12 @@ public class TextBox implements IDrawable, ITrigger
 			else
 				drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB);
 		}
-		else if (hover && !Game.game.window.touchscreen)
+		else if (hover && !Game.game.window.touchscreen && this.enabled)
 			drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);
-		else
+		else if (this.enabled)
 			drawing.setColor(this.colorR, this.colorG, this.colorB);
+		else
+			drawing.setColor((this.colorR + this.bgColorR) / 2, (this.colorG + this.bgColorG) / 2, (this.colorB + this.bgColorB) / 2);
 
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);

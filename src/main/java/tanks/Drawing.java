@@ -1095,7 +1095,9 @@ public class Drawing
 
 	public double toGameCoordsX(double x)
 	{
-		double x1 = x;
+		return absoluteToGameX(interfaceToAbsoluteX(x));
+
+		/*double x1 = x;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
 			x1 += (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
@@ -1104,12 +1106,14 @@ public class Drawing
 
 		rawX -= (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 
-		return (rawX) / scale - getPlayerMouseOffsetX();
+		return (rawX) / scale - getPlayerMouseOffsetX();*/
 	}
 
 	public double toGameCoordsY(double y)
 	{
-		double y1 = y;
+		return absoluteToGameY(interfaceToAbsoluteY(y));
+
+		/*double y1 = y;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraY)
 			y1 += (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
@@ -1118,7 +1122,7 @@ public class Drawing
 
 		rawY -= (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 
-		return (rawY) / scale - getPlayerMouseOffsetY();
+		return (rawY) / scale - getPlayerMouseOffsetY();*/
 	}
 
 	public double toInterfaceCoordsX(double x)
@@ -1295,18 +1299,18 @@ public class Drawing
 
 	public double getPlayerMouseOffsetX()
 	{
-		if (!enableMovingCamera || !movingCamera || !enableMovingCameraX)
+		if (!enableMovingCamera || !enableMovingCameraX)
 			return 0;
 
-		return Game.screen.getOffsetX() + (Game.currentSizeX * Drawing.drawing.interfaceScaleZoom / 28.0 - 1) * interfaceSizeX / 2;
+		return Game.screen.getOffsetX() + (Game.currentSizeX * Drawing.drawing.interfaceScaleZoom / 28.0 - 1) * interfaceSizeX / 2 * scale;
 	}
 
 	public double getPlayerMouseOffsetY()
 	{
-		if (!enableMovingCamera || !movingCamera || !enableMovingCameraY)
+		if (!enableMovingCamera || !enableMovingCameraY)
 			return 0;
 
-		return Game.screen.getOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2;
+		return Game.screen.getOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2 * scale;
 	}
 
 	public double getHorizontalMargin()
@@ -1379,6 +1383,32 @@ public class Drawing
 			return (scale * (y + Game.screen.getOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
 		else
 			return scale * (y + Game.screen.getOffsetY() - sizeY / 2);
+	}
+
+	public double absoluteToGameX(double x)
+	{
+		if (Game.screen.enableMargins)
+			return (x - Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2) / scale - Game.screen.getOffsetX();
+		else
+			return x / scale - Game.screen.getOffsetX();
+	}
+
+	public double absoluteToGameY(double y)
+	{
+		if (Game.screen.enableMargins)
+			return (y - Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2) / scale - Game.screen.getOffsetY();
+		else
+			return y / scale - Game.screen.getOffsetY();
+	}
+
+	public double interfaceToAbsoluteX(double x)
+	{
+		return (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+	}
+
+	public double interfaceToAbsoluteY(double y)
+	{
+		return (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
 	}
 
 	public boolean isOutOfBounds(double drawX, double drawY)

@@ -27,6 +27,8 @@ public class InputBindings
     public InputBindingGroup pause = new InputBindingGroup("game.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup play = new InputBindingGroup("game.play", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ENTER));
     public InputBindingGroup zoom = new InputBindingGroup("game.zoom", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_I));
+    public InputBindingGroup zoomIn = new InputBindingGroup("game.zoomIn", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_EQUAL));
+    public InputBindingGroup zoomOut = new InputBindingGroup("game.zoomOut", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_MINUS));
     public InputBindingGroup chat = new InputBindingGroup("game.chat", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_T));
     public InputBindingGroup hidePause = new InputBindingGroup("game.hidePauseMenu", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F1));
     public InputBindingGroup fullscreen = new InputBindingGroup("game.fullscreen", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F11), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F10));

@@ -60,7 +60,7 @@ public class TankGold extends TankAIControlled
 				this.suicidal = true;
 		}
 
-		if (this.suicidal)
+		if (this.suicidal && !this.disabled)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
 			this.maxSpeed = 4.5 - 3 * Math.min(this.timeUntilDeath, 500) / 500;

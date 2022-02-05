@@ -95,7 +95,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
 
-	public static double sensitivity = 10;
+	public static double turret_sensitivity = 10;
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
@@ -1294,10 +1294,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (Game.followingCam)
 			{
-				if (sensitivity == 0)
-					sensitivity = 1;
+				if (turret_sensitivity == 0)
+					turret_sensitivity = 1;
 
-				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 1000 * sensitivity;
+				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 1000 * turret_sensitivity;
 				Game.game.window.setCursorLocked(true);
 				this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
 				this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
@@ -1314,7 +1314,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				c.update();
 
 			for (int i = 0; i < Level.currentCloudCount - Game.clouds.size(); i++)
-				Game.clouds.add(new Cloud(Math.random() * (Game.currentSizeX * 50), Math.random() * (Game.currentSizeY * 50)));
+				if (Game.enableClouds)
+					Game.clouds.add(new Cloud(Math.random() * (Game.currentSizeX * 50), Math.random() * (Game.currentSizeY * 50)));
 
 			Game.horizontalFaces.clear();
 			Game.verticalFaces.clear();

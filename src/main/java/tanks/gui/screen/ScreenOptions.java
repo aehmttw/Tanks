@@ -173,6 +173,8 @@ public class ScreenOptions extends Screen
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
+			f.println("turret_sensitivity=" + ScreenGame.turret_sensitivity);
+			f.println("enable_clouds=" + Game.enableClouds);
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -388,6 +390,10 @@ public class ScreenOptions extends Screen
 					case "auto_load_extensions":
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "turret_sensitivity":
+						ScreenGame.turret_sensitivity = Double.parseDouble(optionLine[1]);
+					case "enable_clouds":
+						Game.enableClouds = Boolean.parseBoolean(optionLine[1]);
 
 				}
 			}

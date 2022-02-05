@@ -248,7 +248,7 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            viewNo = (viewNo + 1) % 2;
+            viewNo = (viewNo + 1) % 4;
             switch (viewNo)
             {
                 case 0:

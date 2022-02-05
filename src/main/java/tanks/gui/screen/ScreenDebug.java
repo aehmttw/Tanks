@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.gui.TextBoxSlider;
 import tanks.tank.Tank;
 import tanks.tank.TankMimic;
 
@@ -33,7 +34,7 @@ public class ScreenDebug extends Screen
             followingCam.setText(followingCamText, ScreenOptions.offText);
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
     );
 
     Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard()
@@ -87,6 +88,15 @@ public class ScreenDebug extends Screen
         }
     });
 
+    TextBoxSlider sensitivity = new TextBoxSlider(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Sensitivity", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            ScreenGame.sensitivity = Double.parseDouble(sensitivity.inputText);
+        }
+    }, ScreenGame.sensitivity, 0, 100, 10);
+
     @Override
     public void update()
     {
@@ -97,6 +107,7 @@ public class ScreenDebug extends Screen
         followingCam.update();
         firstPerson.update();
         back.update();
+        sensitivity.update();
     }
 
     @Override
@@ -114,5 +125,6 @@ public class ScreenDebug extends Screen
         textboxTest.draw();
         traceAllRays.draw();
         back.draw();
+        sensitivity.draw();
     }
 }

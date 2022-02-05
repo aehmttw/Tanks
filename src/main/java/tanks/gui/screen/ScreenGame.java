@@ -95,6 +95,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
 
+	public static double sensitivity = 10;
+
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
@@ -1292,7 +1294,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (Game.followingCam)
 			{
-				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 100;
+				if (sensitivity == 0)
+					sensitivity = 1;
+
+				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 1000 * sensitivity;
 				Game.game.window.setCursorLocked(true);
 				this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
 				this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
@@ -1946,7 +1951,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		for (Cloud c: Game.clouds)
 		{
-			drawables[c.drawLevel].add(c);
+			//drawables[c.drawLevel].add(c);
 		}
 
 		if (Game.enable3d && (Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size))

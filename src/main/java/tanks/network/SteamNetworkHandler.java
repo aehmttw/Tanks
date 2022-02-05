@@ -290,7 +290,7 @@ public class SteamNetworkHandler
 
 	public boolean load()
 	{
-		if (Game.framework == Game.Framework.libgdx)
+		if (true)//Game.framework == Game.Framework.libgdx)
 			return false;
 
 		try

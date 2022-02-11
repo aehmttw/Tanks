@@ -144,8 +144,11 @@ public class TankPlayerController extends Tank implements IPlayerTank
                     a = TankPlayer.controlStick.inputAngle;
             }
 
-            if (a >= 0 && intensity >= 0.2)
+            if (a >= 0 && intensity >= 0.2) {
+                if (Game.followingCam)
+                    a += this.angle + Math.PI / 2;
                 this.addPolarMotion(a, acceleration * Panel.frameFrequency);
+            }
 
             if (a == -1)
             {

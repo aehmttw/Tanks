@@ -156,6 +156,7 @@ public class Game
 	public static boolean bulletTrails = true;
 	public static boolean fancyBulletTrails = true;
 	public static boolean glowEnabled = true;
+	public static boolean enableClouds = false;
 
 	public static double effectMultiplier = 1;
 

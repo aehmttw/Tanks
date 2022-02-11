@@ -3,7 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.tank.Tank;
+import tanks.gui.TextBoxSlider;
 import tanks.tank.TankMimic;
 
 public class ScreenDebug extends Screen
@@ -11,6 +11,7 @@ public class ScreenDebug extends Screen
     public String traceText = "Trace rays: ";
     public String firstPersonText = "First person: ";
     public String followingCamText = "Immersive camera: ";
+    public String cloudText = "Clouds: ";
 
     public ScreenDebug()
     {
@@ -31,9 +32,14 @@ public class ScreenDebug extends Screen
             followingCam.setText(followingCamText, ScreenOptions.onText);
         else
             followingCam.setText(followingCamText, ScreenOptions.offText);
+
+        if (Game.enableClouds)
+            enableClouds.setText(cloudText, ScreenOptions.onText);
+        else
+            enableClouds.setText(cloudText, ScreenOptions.offText);
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 360, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
     );
 
     Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard()
@@ -87,6 +93,29 @@ public class ScreenDebug extends Screen
         }
     });
 
+    TextBoxSlider sensitivity = new TextBoxSlider(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Sensitivity", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            ScreenGame.turret_sensitivity = Double.parseDouble(sensitivity.inputText);
+        }
+    }, ScreenGame.turret_sensitivity, 0, 100, 10);
+
+    Button enableClouds = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.enableClouds = !Game.enableClouds;
+
+            if (Game.enableClouds)
+                enableClouds.setText(cloudText, ScreenOptions.onText);
+            else
+                enableClouds.setText(cloudText, ScreenOptions.offText);
+        }
+    });
+
     @Override
     public void update()
     {
@@ -97,6 +126,8 @@ public class ScreenDebug extends Screen
         followingCam.update();
         firstPerson.update();
         back.update();
+        sensitivity.update();
+        enableClouds.update();
     }
 
     @Override
@@ -114,5 +145,7 @@ public class ScreenDebug extends Screen
         textboxTest.draw();
         traceAllRays.draw();
         back.draw();
+        sensitivity.draw();
+        enableClouds.draw();
     }
 }

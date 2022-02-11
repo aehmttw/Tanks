@@ -18,6 +18,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	public double rCenterX;
 	public double rCenterY;
 
+	public static boolean splash = true;
+
 	Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", () ->
 	{
 		if (Game.framework == Game.Framework.libgdx)

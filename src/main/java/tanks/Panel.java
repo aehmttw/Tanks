@@ -91,9 +91,9 @@ public class Panel
 
 	public static void initialize()
 	{
-		if (!initialized)
+		if (!initialized) {
 			panel = new Panel();
-
+		}
 		initialized = true;
 	}
 
@@ -147,7 +147,7 @@ public class Panel
 			if (Game.cinematic)
 				Game.screen = new ScreenCinematicTitle();
 			else
-				Game.screen = new ScreenTitle();
+				Game.screen = new ScreenSplash();
 		}
 
 		BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
@@ -244,6 +244,7 @@ public class Panel
 
 		if (firstFrame)
 			this.setUp();
+
 
 		firstFrame = false;
 

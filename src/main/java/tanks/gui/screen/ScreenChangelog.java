@@ -358,6 +358,14 @@ public class ScreenChangelog extends Screen
                                     "Added keybinds to manually zoom in and out\n" +
                                     "Bug fixes and other minor improvements"
                     });
+
+            new Changelog("v1.3.1b", new String[]
+                    {
+                            "*What's new in Tanks v1.3.1b:\n\n" +
+                                    "Added automatic zoom mode (can toggle with 'O')\n" +
+                                    "Improved keybindings screen\n" +
+                                    "Bug fixes and other minor improvements"
+                    });
         }
     }
 }

@@ -92,7 +92,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.3.1a";
+	public static final String version = "Tanks v1.3.1b";
 	public static final int network_protocol = 38;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -1013,12 +1013,17 @@ public class Game
 					loadedMusics.add(track);
 				}
 
-				if (!Game.registryTank.tankMusics.containsKey(tank))
-					Game.registryTank.tankMusics.put(tank, new ArrayList<>());
-
-				Game.registryTank.tankMusics.get(tank).add(track);
+				registerTankMusic(tank, track);
 			}
 		}
+	}
+
+	public static void registerTankMusic(String tank, String track)
+	{
+		if (!Game.registryTank.tankMusics.containsKey(tank))
+			Game.registryTank.tankMusics.put(tank, new ArrayList<>());
+
+		Game.registryTank.tankMusics.get(tank).add(track);
 	}
 
 	public static double[] getRainbowColor(double fraction)

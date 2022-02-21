@@ -6,6 +6,7 @@ import basewindow.transformation.Translation;
 import tanks.event.EventBeginLevelCountdown;
 import tanks.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
+import tanks.gui.Firework;
 import tanks.gui.IFixedMenu;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
@@ -25,9 +26,14 @@ public class Panel
 
 	public double zoomTimer = 0;
 	public static double zoomTarget = -1;
+	public static boolean autoZoom = true;
+	public static double lastAutoZoomSpeed = 0;
 
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
+
+	public final long splash_duration = 0;
+	public boolean playedTutorialIntroMusic = false;
 
 	public static boolean showMouseTarget = true;
 
@@ -73,6 +79,7 @@ public class Panel
 	public boolean firstFrame = true;
 	public boolean firstDraw = true;
 	public boolean introFinished = false;
+	public boolean splashFinished = false;
 
 	public boolean startMusicPlayed = false;
 
@@ -84,8 +91,6 @@ public class Panel
 
 	public double age = 0;
 	public long ageFrames = 0;
-
-	public int maxFramerate = 0;
 
 	public boolean started = false;
 
@@ -112,8 +117,6 @@ public class Panel
 
 		if (Game.game.fullscreen)
 			Game.game.window.setFullscreen(Game.game.fullscreen);
-
-		boolean tutorial = false;
 
 		Game.createModels();
 		Game.game.window.setIcon("/images/icon.png");
@@ -148,17 +151,6 @@ public class Panel
 				Game.screen = new ScreenCinematicTitle();
 			else
 				Game.screen = new ScreenTitle();
-		}
-
-		BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
-		if (!tutorialFile.exists())
-		{
-			tutorial = true;
-			Game.silentCleanUp();
-			Game.lastVersion = Game.version;
-			ScreenOptions.saveOptions(Game.homedir);
-			new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
-			((ScreenGame) Game.screen).introBattleMusicEnd = 0;
 		}
 
 		Game.loadTankMusic();
@@ -213,21 +205,6 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
 		}
 
-		introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
-
-		introMusicEnd -= 40;
-
-		if (Game.framework == Game.Framework.libgdx)
-			introMusicEnd -= 100;
-
-		if (!tutorial)
-			Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
-		else
-		{
-			Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
-			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
-		}
-
 		zoomTranslation.window = Game.game.window;
 		zoomTranslation.applyAsShadow = true;
 
@@ -247,8 +224,12 @@ public class Panel
 
 		firstFrame = false;
 
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic)
+		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
+		{
 			started = true;
+			this.startTime = System.currentTimeMillis() + splash_duration;
+			//Drawing.drawing.playSound("splash_jingle.ogg");
+		}
 
 		if (!started)
 			this.startTime = System.currentTimeMillis();
@@ -267,6 +248,39 @@ public class Panel
 		}
 
 		lastFrameNano = System.nanoTime();
+
+		if (System.currentTimeMillis() - this.startTime < 0)
+		{
+			return;
+		}
+
+		if (!splashFinished)
+		{
+			splashFinished = true;
+
+			boolean tutorial = false;
+
+			BaseFile tutorialFile = Game.game.fileManager.getFile(Game.homedir + Game.tutorialPath);
+			if (!tutorialFile.exists())
+			{
+				tutorial = true;
+				Game.silentCleanUp();
+				Game.lastVersion = Game.version;
+				ScreenOptions.saveOptions(Game.homedir);
+				new Tutorial().loadTutorial(true, Game.game.window.touchscreen);
+				((ScreenGame) Game.screen).introBattleMusicEnd = 0;
+			}
+
+			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
+
+			introMusicEnd -= 40;
+
+			if (Game.framework == Game.Framework.libgdx)
+				introMusicEnd -= 100;
+
+			if (!tutorial)
+				Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
+		}
 
 		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused) || Game.screen instanceof ScreenLevelEditor);
 
@@ -307,6 +321,13 @@ public class Panel
 
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{
+			if (ScreenInterlevel.tutorialInitial && System.currentTimeMillis() - startTime > introTime + introAnimationTime - 1500 && !playedTutorialIntroMusic)
+			{
+				playedTutorialIntroMusic = true;
+				Drawing.drawing.playSound("battle_intro.ogg", Game.musicVolume, true);
+				introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
+			}
+
 			dummySpin.posX = Drawing.drawing.sizeX / 2;
 			dummySpin.posY = Drawing.drawing.sizeY / 2;
 			dummySpin.angle = Math.PI * 2 * (System.currentTimeMillis() - startTime) / (introTime + introAnimationTime);
@@ -440,8 +461,12 @@ public class Panel
 				if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 || Game.playerTank == null || Game.playerTank.destroy || !((ScreenGame) Game.screen).playing)
 					this.zoomTimer += 0.04 * Panel.frameFrequency;
 
+				double mul = Panel.zoomTarget;
+				if (mul < 0)
+					mul = 1;
+
 				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-					this.zoomTimer = Math.min(this.zoomTimer, 1 - Game.startTime / Game.currentLevel.startTime);
+					this.zoomTimer = Math.min(this.zoomTimer, mul * (1 - Game.startTime / Game.currentLevel.startTime));
 			}
 		}
 		else
@@ -451,12 +476,40 @@ public class Panel
 
 		this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
 
-		if (Game.screen instanceof ScreenGame && Panel.zoomTarget >= 0 && (Game.playerTank != null && !Game.playerTank.destroy) && ((ScreenGame) Game.screen).playing)
+		if (Game.screen instanceof ScreenGame && Panel.zoomTarget >= 0 && (((ScreenGame) Game.screen).spectatingTank != null || (Game.playerTank != null && !Game.playerTank.destroy)) && ((ScreenGame) Game.screen).playing)
 		{
-			if (this.zoomTimer < Panel.zoomTarget)
-				this.zoomTimer = Math.min(this.zoomTimer + 0.04 * Panel.frameFrequency, Panel.zoomTarget);
-			else if (this.zoomTimer > Panel.zoomTarget)
-				this.zoomTimer = Math.max(this.zoomTimer - 0.04 * Panel.frameFrequency, Panel.zoomTarget);
+			double speed = 0.3 * Drawing.drawing.unzoomedScale;
+			double accel = 0.0003 * Drawing.drawing.unzoomedScale;
+			double distDampen = 2;
+
+			if (this.zoomTimer > Panel.zoomTarget)
+				speed = -0.02;
+
+			if (Panel.autoZoom)
+			{
+				speed /= 4;
+
+				if (speed - Panel.lastAutoZoomSpeed > accel * Panel.frameFrequency)
+					speed = Panel.lastAutoZoomSpeed + accel * Panel.frameFrequency;
+
+				if (-speed + Panel.lastAutoZoomSpeed > accel * Panel.frameFrequency)
+					speed = Panel.lastAutoZoomSpeed - accel * Panel.frameFrequency;
+
+				double dist = Math.abs(this.zoomTimer - Panel.zoomTarget) / Drawing.drawing.unzoomedScale;
+				if (dist < distDampen)
+					speed *= Math.pow(dist / distDampen, Panel.frameFrequency / 20);
+
+				Panel.lastAutoZoomSpeed = speed;
+
+				this.zoomTimer = this.zoomTimer + speed * Panel.frameFrequency;
+			}
+			else
+			{
+				if (speed > 0)
+					this.zoomTimer = Math.min(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
+				else if (speed < 0)
+					this.zoomTimer = Math.max(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
+			}
 		}
 
 		Drawing.drawing.scale = Game.screen.getScale();
@@ -556,6 +609,19 @@ public class Panel
 
 		if (Game.cinematic)
 			introAnimationTime = 4000;
+
+		if (System.currentTimeMillis() - startTime < 0)
+		{
+			double frac = (startTime - System.currentTimeMillis() * 1.0) / splash_duration;
+
+			double frac2 = Math.min(frac * 4, 1) * Math.min((1 - frac) * 4, 1);
+
+			double[] col = Game.getRainbowColor((System.currentTimeMillis() % (1000)) / 1000.0);
+			Drawing.drawing.setColor(1 * frac2 * col[0], 1 * frac2 * col[1], 1 * frac2 * col[2]);
+			Drawing.drawing.setInterfaceFontSize(100 * (1 + (- frac + 0.5) * 0.8));
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Opal Games");
+			return;
+		}
 
 		if (this.frameStartTime - startTime < introTime + introAnimationTime)
 		{

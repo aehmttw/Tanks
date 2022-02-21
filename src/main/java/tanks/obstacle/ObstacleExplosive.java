@@ -111,8 +111,8 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         Game.eventsOut.add(new EventLayMine(mi));
         Game.movables.add(mi);
 
-        if (this.trigger != null)
-            this.trigger.liveMines--;
+        //if (this.trigger != null)
+        //    this.trigger.liveMines--;
 
         Game.removeObstacles.add(this);
         Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY));

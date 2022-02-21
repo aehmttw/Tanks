@@ -110,6 +110,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public Tank possessor;
 	public boolean overridePossessedKills = true;
 
+	public long lastFarthestInSightUpdate = 0;
+	public Tank lastFarthestInSight = null;
+
 	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
 	{
 		super(x, y);
@@ -890,5 +893,56 @@ public abstract class Tank extends Movable implements ISolidObject
 	public void drawGlowPossessing()
 	{
 
+	}
+
+	public double getAutoZoomRaw()
+	{
+		double nearest = Double.MAX_VALUE;
+
+		double farthestInSight = -1;
+
+		for (Movable m: Game.movables)
+		{
+			if (m instanceof Tank && !Team.isAllied(m, this) && m != this && !((Tank) m).hidden && !m.destroy)
+			{
+				double boundedX = Math.min(Math.max(this.posX, Drawing.drawing.interfaceSizeX * 0.4),
+						Game.currentSizeX * Game.tile_size - Drawing.drawing.interfaceSizeX * 0.4);
+				double boundedY = Math.min(Math.max(this.posY, Drawing.drawing.interfaceSizeY * 0.4),
+						Game.currentSizeY * Game.tile_size - Drawing.drawing.interfaceSizeY * 0.4);
+
+				double xDist = Math.abs(m.posX - boundedX);
+				double yDist = Math.abs(m.posY - boundedY);
+				double dist = Math.max(xDist / (Drawing.drawing.interfaceSizeX),
+						yDist / (Drawing.drawing.interfaceSizeY)) * 3;
+
+				if (dist < nearest)
+				{
+					nearest = dist;
+				}
+
+				if (dist <= 3 && dist > farthestInSight)
+				{
+					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
+					r.vX = m.posX - this.posX;
+					r.vY = m.posY - this.posY;
+
+					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000)
+							|| r.getTarget() == m)
+					{
+						farthestInSight = dist;
+						this.lastFarthestInSight = (Tank) m;
+						this.lastFarthestInSightUpdate = System.currentTimeMillis();
+					}
+				}
+			}
+		}
+
+		return Math.max(nearest, farthestInSight);
+	}
+
+	public double getAutoZoom()
+	{
+		double dist = Math.min(2.5, Math.max(1, getAutoZoomRaw()));
+		return 1 / dist;
 	}
 }

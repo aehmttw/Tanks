@@ -886,32 +886,53 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Game.game.input.zoom.invalidate();
 		}
 
-		if (Game.game.input.zoomIn.isPressed())
+		if (playing)
 		{
-			zoomScrolled = true;
-			Drawing.drawing.movingCamera = true;
+			if (Game.game.input.zoomIn.isPressed())
+			{
+				if (Panel.autoZoom)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
 
-			if (Panel.zoomTarget == -1)
-				Panel.zoomTarget = Panel.panel.zoomTimer;
+				Panel.autoZoom = false;
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
 
-			Game.game.window.validScrollUp = false;
-			Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.01 * Panel.frameFrequency);
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.game.input.zoomOut.isPressed())
+			{
+				if (Panel.autoZoom)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Panel.autoZoom = false;
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.playerTank != null && !Game.playerTank.destroy && Panel.autoZoom)
+			{
+				Panel.zoomTarget = Game.playerTank.getAutoZoom();
+			}
 		}
 
-		if (Game.game.input.zoomOut.isPressed())
+		if (Game.game.input.zoom.isPressed() && playing)
 		{
-			zoomScrolled = true;
-			Drawing.drawing.movingCamera = true;
-
-			if (Panel.zoomTarget == -1)
+			if (Panel.autoZoom)
 				Panel.zoomTarget = Panel.panel.zoomTimer;
 
-			Game.game.window.validScrollDown = false;
-			Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.01 * Panel.frameFrequency);
-		}
+			Panel.autoZoom = false;
 
-		if (Game.game.input.zoom.isPressed())
-		{
 			if (Game.game.window.validScrollUp)
 			{
 				zoomScrolled = true;
@@ -921,7 +942,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Panel.zoomTarget = Panel.panel.zoomTimer;
 
 				Game.game.window.validScrollUp = false;
-				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.05);
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.1 * Drawing.drawing.unzoomedScale);
 			}
 
 			if (Game.game.window.validScrollDown)
@@ -933,31 +954,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Panel.zoomTarget = Panel.panel.zoomTimer;
 
 				Game.game.window.validScrollDown = false;
-				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.05);
-			}
-
-			if (Game.game.window.validScrollUp)
-			{
-				zoomScrolled = true;
-				Drawing.drawing.movingCamera = true;
-
-				if (Panel.zoomTarget == -1)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Game.game.window.validScrollUp = false;
-				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.0625);
-			}
-
-			if (Game.game.window.validScrollDown)
-			{
-				zoomScrolled = true;
-				Drawing.drawing.movingCamera = true;
-
-				if (Panel.zoomTarget == -1)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Game.game.window.validScrollDown = false;
-				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.0625);
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.1 * Drawing.drawing.unzoomedScale);
 			}
 		}
 		else if (zoomPressed)
@@ -969,6 +966,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			zoomPressed = false;
+		}
+
+		if (Game.game.input.zoomAuto.isValid() && playing)
+		{
+			if (Panel.autoZoom)
+				Panel.zoomTarget = Panel.panel.zoomTimer;
+
+			Game.game.input.zoomAuto.invalidate();
+			Panel.autoZoom = !Panel.autoZoom;
 		}
 
 		if (!finished)
@@ -2326,12 +2332,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 		}
 
-		Game.player.hotbar.draw();
+		if (!(paused && screenshotMode))
+		{
+			Game.player.hotbar.draw();
 
-		if (Game.showSpeedrunTimer)
-			SpeedrunTimer.draw();
+			if (Game.showSpeedrunTimer && !(paused && screenshotMode))
+				SpeedrunTimer.draw();
 
-		minimap.draw();
+			minimap.draw();
+		}
 
 		if (Game.deterministicMode && !ScreenPartyLobby.isClient)
 		{

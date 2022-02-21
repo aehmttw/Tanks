@@ -1,6 +1,5 @@
 package tanks.extension;
 
-import basewindow.BaseFile;
 import tanks.Game;
 import tanks.ModAPI;
 import tanks.ModLevel;

@@ -2,7 +2,9 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
+import tanks.gui.InputSelector;
 import tanks.gui.input.InputBinding;
 
 public class ScreenBindInput extends Screen
@@ -10,6 +12,8 @@ public class ScreenBindInput extends Screen
     public InputBinding input;
     public String name;
     public Screen previous;
+    public InputSelector selector;
+    public boolean number;
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -44,7 +48,7 @@ public class ScreenBindInput extends Screen
     }
     );
 
-    public ScreenBindInput(Screen prev, InputBinding input, String name)
+    public ScreenBindInput(Screen prev, InputBinding input, String name, InputSelector selector, boolean number)
     {
         this.music = prev.music;
         this.musicID = prev.musicID;
@@ -53,6 +57,8 @@ public class ScreenBindInput extends Screen
         this.previous = prev;
         Game.game.window.validPressedButtons.clear();
         Game.game.window.validPressedKeys.clear();
+        this.selector = selector;
+        this.number = number;
     }
 
     @Override
@@ -70,6 +76,9 @@ public class ScreenBindInput extends Screen
                 input.inputType = InputBinding.InputType.keyboard;
                 Game.screen = previous;
                 Drawing.drawing.playSound("destroy.ogg", 2f);
+                this.selector.glowEffects.clear();
+                this.selector.lastFrame = Panel.panel.ageFrames;
+                this.selector.submitEffect(this.number);
             }
             else if (!Game.game.window.validPressedButtons.isEmpty())
             {
@@ -77,6 +86,9 @@ public class ScreenBindInput extends Screen
                 input.inputType = InputBinding.InputType.mouse;
                 Game.screen = previous;
                 Drawing.drawing.playSound("destroy.ogg", 2f);
+                this.selector.glowEffects.clear();
+                this.selector.lastFrame = Panel.panel.ageFrames;
+                this.selector.submitEffect(this.number);
             }
 
             Game.game.window.validPressedButtons.clear();
@@ -87,7 +99,12 @@ public class ScreenBindInput extends Screen
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        //this.drawDefaultBackground();
+
+        previous.draw();
+
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 800, 400);

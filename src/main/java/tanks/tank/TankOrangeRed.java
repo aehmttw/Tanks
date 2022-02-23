@@ -9,6 +9,9 @@ import tanks.bullet.BulletExplosive;
 import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 
+/**
+ * A tank which shoots explosive bullets
+ */
 public class TankOrangeRed extends TankAIControlled
 {
     public TankOrangeRed(String name, double x, double y, double angle)
@@ -40,7 +43,9 @@ public class TankOrangeRed extends TankAIControlled
         this.description = "A tank which shoots explosive bullets";
     }
 
-    /** Actually fire a bullet*/
+    /**
+     * Actually fire a bullet
+     */
     @Override
     public void launchBullet(double offset)
     {
@@ -76,6 +81,7 @@ public class TankOrangeRed extends TankAIControlled
 
             Ray a2 = new Ray(this.posX, this.posY, an, this.bulletBounces, this);
             a2.size = this.bulletSize;
+            // TODO figure out why this is necessary or if there's no point in getting the target of the ray
             a2.getTarget();
             a2.ignoreDestructible = this.ignoreDestructible;
 
@@ -95,11 +101,12 @@ public class TankOrangeRed extends TankAIControlled
 
             Movable m = a.getTarget();
 
+            // Checks if the target is an enemy.
             if (!Team.isAllied(this, m))
             {
-                for (Movable mm: Game.movables)
+                for (Movable m2: Game.movables)
                 {
-                    if (Team.isAllied(mm, this) && mm instanceof Tank && !((Tank) mm).resistExplosions && this.team.friendlyFire && Math.pow(mm.posX - a.posX, 2) + Math.pow(mm.posY - a.posY, 2) <= Math.pow(Game.tile_size * 2.5, 2))
+                    if (Team.isAllied(m2, this) && m2 instanceof Tank && !((Tank) m2).resistExplosions && this.team.friendlyFire && Math.pow(m2.posX - a.posX, 2) + Math.pow(m2.posY - a.posY, 2) <= Math.pow(Game.tile_size * 2.5, 2))
                         return;
                 }
 

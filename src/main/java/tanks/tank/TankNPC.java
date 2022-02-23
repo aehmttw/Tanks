@@ -23,6 +23,9 @@ import java.util.Arrays;
 
 import static tanks.gui.screen.ScreenGame.shopOffset;
 
+/**
+ * @see TankDummy
+ */
 public class TankNPC extends TankDummy
 {
     public static final InputBindingGroup select = new InputBindingGroup("viewNPC", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_E));

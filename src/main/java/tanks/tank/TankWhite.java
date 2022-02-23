@@ -5,6 +5,9 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.event.EventTankUpdateVisibility;
 
+/**
+ * An invisible smart tank.
+ */
 public class TankWhite extends TankAIControlled
 {
 	boolean vanish = false;

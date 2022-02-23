@@ -8,6 +8,9 @@ import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 
+/**
+ * A tank which spawns mini tanks and shoots 2-bounce rockets
+ */
 public class TankPink extends TankAIControlled
 {
 	public int spawnedMinis = 0;

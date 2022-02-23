@@ -8,6 +8,9 @@ import tanks.event.EventShootBullet;
 
 import java.util.Arrays;
 
+/**
+ * A support tank which shoots freezing bullets that deal low damage
+ */
 public class TankCyan extends TankAIControlled
 {
 	public TankCyan(String name, double x, double y, double angle)

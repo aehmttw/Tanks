@@ -9,6 +9,7 @@ import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class Tanks
 {
@@ -17,20 +18,19 @@ public class Tanks
         Game.framework = Game.Framework.lwjgl;
         int port = 8080;
 
+        // Relaunches the .jar if Mac OS X is detected.
         boolean relaunch = System.getProperties().toString().contains("Mac OS X");
 
-        for (int i = 0; i < args.length; i++)
+        // Goes through arguments and applies specified settings.
+        for (String arg : args)
         {
-            if (args[i].equals("online_server"))
+            if (arg.equals("online_server"))
                 Game.isOnlineServer = true;
-
-            if (args[i].startsWith("port="))
-                port = Integer.parseInt(args[i].split("=")[1]);
-
-            if (args[i].equals("debug"))
+            if (arg.matches("port=\\d+"))
+                port = Integer.parseInt(arg.split("=")[1]);
+            if (arg.equals("debug"))
                 Game.debug = true;
-
-            if (args[i].equals("mac") || args[i].equals("no_relaunch"))
+            if (arg.equals("mac") || arg.equals("no_relaunch"))
                 relaunch = false;
         }
 
@@ -38,6 +38,7 @@ public class Tanks
         {
             if (relaunch && Game.framework == Game.Framework.lwjgl)
             {
+                // Attempts to relaunch from the .jar file.
                 try
                 {
                     String path = new File(Tanks.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
@@ -63,7 +64,14 @@ public class Tanks
 
             if (Game.framework == Game.Framework.lwjgl)
             {
-                Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
+                // Creates and configures the LWJGL window.
+                Game.game.window = new LWJGLWindow(
+                    "Tanks",
+                    1400, 900 + Drawing.drawing.statsHeight,
+                    Game.absoluteDepthBase,
+                    new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
+                    Game.vsync, !Panel.showMouseTarget
+                );
                 Game.game.window.antialiasingEnabled = Game.antialiasing;
             }
 
@@ -81,21 +89,21 @@ public class Tanks
         }
     }
 
-    /*
-        Call this method to launch Tanks with extensions directly instead of loading them from a jar file!
-        This is useful if you want to test an extension without exporting it as a jar file.
-        The integer array passed determines the order in which these extensions will be added to the full list
-        (which includes extensions loaded from separate jar files traditionally)
+    /**
+     * Call this method to launch Tanks with extensions directly instead of loading them from a jar file!
+     * This is useful if you want to test an extension without exporting it as a jar file.
+     * The integer array passed determines the order in which these extensions will be added to the full list
+     * (which includes extensions loaded from separate jar files traditionally)
      */
     public static void launchWithExtensions(String[] args, Extension[] extensions, int[] order)
     {
         Game.extraExtensions = extensions;
         Game.extraExtensionOrder = order;
+        
+        // Append "no_relaunch" to the arguments.
+        String[] newArgs = Arrays.copyOf(args, args.length + 1);
+        newArgs[args.length] = "no_relaunch";
 
-        String[] args2 = new String[args.length + 1];
-        System.arraycopy(args, 0, args2, 0, args.length);
-        args2[args.length] = "no_relaunch";
-
-        main(args2);
+        main(newArgs);
     }
 }

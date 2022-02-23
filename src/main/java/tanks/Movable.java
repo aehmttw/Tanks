@@ -311,14 +311,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		if (this.attributeImmunities.contains(m.name))
 			return;
 
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			if (this.attributes.get(i).name.equals(m.name))
-			{
-				this.attributes.remove(i);
-				i--;
-			}
-		}
+		attributes.removeIf(am -> am.name.equals(m.name));
 
 		this.attributes.add(m);
 	}

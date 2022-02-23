@@ -1,8 +1,8 @@
-# Tanks
+# Tanks: The Crusades
 
-Tanks is a game written in Java inspired by a game of the same name on the Wii.<br>
+Tanks: The Crusades is a game written in Java inspired by Wii Play's Tanks.<br>
 There are over 20 unique enemies you can fight, but you can add more of your own too.<br>
-The game works in Windows, Mac or Linux.<br>
+The game supports Windows, Mac and Linux.<br>
 Tanks can be found on [Steam](https://store.steampowered.com/app/1660910/Tanks_The_Crusades/), [itch.io](https://aehmttw.itch.io/tanks), and the [iOS App Store](https://apps.apple.com/us/app/tanks-the-crusades/id1508772262)
 
 ## How to play
@@ -42,7 +42,7 @@ To run the jar file you can double-click on it.
 
 To develop the game we suggest using Eclipse or IntelliJ. Eclipse can be installed from 
 [eclipse.org](http://www.eclipse.org/downloads/). IntelliJ can be installed from 
-[jetbrains.com](https://www.jetbrains.com/idea/download/)<br>
+[jetbrains.com](https://www.jetbrains.com/idea/download/). <br>
 
 To access the source code you also need to install Git.<br>
 
@@ -57,7 +57,12 @@ GLFW<br>
 Assimp<br>
 STB<br>
 Commons IO<br>
-Steamworks4j
+Steamworks4j<br>
+
+You can all download these libraries in zip format from [here](https://1drv.ms/u/s!AnwBrt306BrJgdAzVSHeYse_cvCr-A?e=TnQrdM).
+
+Please note - Tanks uses a custom version of Steamworks4j compiled with Mac OS arm64 natives. 
+We recommend you use the libraries linked above, because they contain that modified Steamworks4j library. 
 
 ## Credits:
 

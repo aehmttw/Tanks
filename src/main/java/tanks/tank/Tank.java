@@ -501,13 +501,17 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void drawForInterface(double x, double y)
 	{
-		double x1 = this.posX;
-		double y1 = this.posY;
-		this.posX = x;
-		this.posY = y;
-		this.drawTank(true);
-		this.posX = x1;
-		this.posY = y1;	
+		// Saves the old position…
+		double oldX = posX;
+		double oldY = posY;
+		// …sets position to something else temporarily…
+		posX = x;
+		posY = y;
+		// …draws the tank at the temporary position…
+		drawTank(true);
+		// …sets it back to the original position.
+		posX = oldX;
+		posY = oldY;
 	}
 
 	public void drawTank(boolean forInterface)
@@ -547,11 +551,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (!forInterface)
 		{
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				AttributeModifier a = this.attributes.get(i);
-				if (a.name.equals("healray"))
-				{
+			for (AttributeModifier am : attributes) {
+				if (am.name.equals("healray")) {
 					double mod = 1 + 0.4 * Math.min(1, this.health - this.baseHealth);
 
 					if (this.health > this.baseHealth)
@@ -776,14 +777,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.health <= 1)
 		{
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				if (this.attributes.get(i).type.equals("healray"))
-				{
-					this.attributes.remove(i);
-					i--;
-				}
-			}
+			attributes.removeIf(a -> a.type.equals("healray"));
 		}
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));

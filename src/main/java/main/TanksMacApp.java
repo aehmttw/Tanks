@@ -20,10 +20,8 @@ public class TanksMacApp
         {
             if (args[i].equals("online_server"))
                 Game.isOnlineServer = true;
-
-            if (args[i].startsWith("port="))
+            if (args[i].matches("port=\\d+"))
                 port = Integer.parseInt(args[i].split("=")[1]);
-
             if (args[i].equals("debug"))
                 Game.debug = true;
         }
@@ -38,7 +36,7 @@ public class TanksMacApp
             if (Game.framework == Game.Framework.lwjgl)
             {
                 Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
-                ((LWJGLWindow)Game.game.window).antialiasingEnabled = Game.antialiasing;
+                Game.game.window.antialiasingEnabled = Game.antialiasing;
             }
 
             Game.game.window.run();

@@ -5,6 +5,9 @@ import tanks.bullet.BulletLaser;
 import tanks.event.EventShootBullet;
 import tanks.event.EventTankRedUpdateCharge;
 
+/**
+ * A stationary tank which shoots {@link BulletLaser}s.
+ */
 public class TankRed extends TankAIControlled
 {
 	public boolean lineOfSight = false;

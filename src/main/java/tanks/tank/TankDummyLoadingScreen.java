@@ -2,6 +2,9 @@ package tanks.tank;
 
 import tanks.Game;
 
+/**
+ * A spinning tank shown on the loading screen
+ */
 public class TankDummyLoadingScreen extends Tank
 {
 	public static final double size_multiplier = 1.5;

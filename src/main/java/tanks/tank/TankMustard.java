@@ -4,6 +4,10 @@ import tanks.*;
 import tanks.bullet.BulletArc;
 import tanks.event.EventShootBullet;
 
+/**
+ * A stationary tank which lobs bullets over walls
+ * @see TankBrown
+ */
 public class TankMustard extends TankAIControlled
 {
     public double radius = 1000;

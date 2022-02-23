@@ -17,6 +17,9 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
 
+/**
+ * A tank that is controlled by the player.
+ */
 public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 {
 	public static Item default_bullet;
@@ -197,13 +200,9 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		if (this.cooldown > 0)
 			this.cooldown -= Panel.frameFrequency;
 
-		boolean shoot = false;
-		if (!Game.game.window.touchscreen && Game.game.input.shoot.isPressed())
-			shoot = true;
+		boolean shoot = !Game.game.window.touchscreen && Game.game.input.shoot.isPressed();
 
-		boolean mine = false;
-		if (!Game.game.window.touchscreen && Game.game.input.mine.isPressed())
-			mine = true;
+		boolean mine = !Game.game.window.touchscreen && Game.game.input.mine.isPressed();
 
 		boolean showRange = false;
 		Hotbar h = Game.player.hotbar;

@@ -132,10 +132,7 @@ public abstract class ModelPart implements IModel
         this.shapes = new Shape[shapes.size()];
         this.material = material;
 
-        for (int i = 0; i < shapes.size(); i++)
-        {
-            this.shapes[i] = shapes.get(i);
-        }
+        this.shapes = shapes.toArray(this.shapes);
     }
 
     public void setWindow(BaseWindow w)

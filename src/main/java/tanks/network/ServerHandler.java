@@ -126,10 +126,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (this.events)
 		{
-			for (int i = 0; i < this.events.size(); i++)
+			for (INetworkEvent event : this.events)
 			{
-				INetworkEvent e = this.events.get(i);
-				this.sendEvent(e);
+				sendEvent(event);
 			}
 
 			this.events.clear();

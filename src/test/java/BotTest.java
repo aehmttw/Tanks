@@ -29,7 +29,7 @@ public class BotTest {
         Bot.r.delay(500);
 
         // Gets the color of where the tank should be.
-        assert checkColor(50, 53, 10, new Color(107, 74, 39), 10, 10, 10);
+        assert checkColor(50, 53, 10, new Color(107, 74, 39), 15, 15, 10);
 
         // Shoot the first tank
         Bot.shootDirection(50, 60);
@@ -37,7 +37,7 @@ public class BotTest {
         Bot.r.delay(1000);
 
         // Gets the color of where the tank shouldn't be anymore.
-        assert checkColor(50, 53, 10, new Color(163, 163, 140), 17, 17, 10);
+        assert checkColor(50, 53, 10, new Color(163, 163, 140), 20, 20, 10);
     }
 
     @After

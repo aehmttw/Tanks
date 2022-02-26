@@ -16,6 +16,7 @@ import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import static util.CollectionUtil.removeIf;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -113,7 +114,13 @@ public abstract class Tank extends Movable implements ISolidObject
 	public long lastFarthestInSightUpdate = 0;
 	public Tank lastFarthestInSight = null;
 
-	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
+	/**
+	 * @param x The initial X position of the tank.
+	 * @param y The initial Y position of the tank.
+	 * @param size The size of the tank.
+	 * @param countID Whether to count this tank's ID.
+	 */
+	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID)
 	{
 		super(x, y);
 		this.size = size;
@@ -777,7 +784,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.health <= 1)
 		{
-			attributes.removeIf(a -> a.type.equals("healray"));
+			removeIf(attributes, a -> a.type.equals("healray"));
 		}
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));

@@ -2,7 +2,7 @@ import org.junit.Test;
 import tanks.tank.Tank;
 import tanks.tank.TankBlack;
 
-public class TestTanks {
+public class MovementTest {
     @Test public void movement() {
         int starting = 75;
         int movement = 100;

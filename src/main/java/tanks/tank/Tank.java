@@ -16,6 +16,7 @@ import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import static util.CollectionUtil.removeIf;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -113,7 +114,13 @@ public abstract class Tank extends Movable implements ISolidObject
 	public long lastFarthestInSightUpdate = 0;
 	public Tank lastFarthestInSight = null;
 
-	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
+	/**
+	 * @param x The initial X position of the tank.
+	 * @param y The initial Y position of the tank.
+	 * @param size The size of the tank.
+	 * @param countID Whether to count this tank's ID.
+	 */
+	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID)
 	{
 		super(x, y);
 		this.size = size;
@@ -501,13 +508,17 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void drawForInterface(double x, double y)
 	{
-		double x1 = this.posX;
-		double y1 = this.posY;
-		this.posX = x;
-		this.posY = y;
-		this.drawTank(true);
-		this.posX = x1;
-		this.posY = y1;	
+		// Saves the old position…
+		double oldX = posX;
+		double oldY = posY;
+		// …sets position to something else temporarily…
+		posX = x;
+		posY = y;
+		// …draws the tank at the temporary position…
+		drawTank(true);
+		// …sets it back to the original position.
+		posX = oldX;
+		posY = oldY;
 	}
 
 	public void drawTank(boolean forInterface)
@@ -547,11 +558,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (!forInterface)
 		{
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				AttributeModifier a = this.attributes.get(i);
-				if (a.name.equals("healray"))
-				{
+			for (AttributeModifier am : attributes) {
+				if (am.name.equals("healray")) {
 					double mod = 1 + 0.4 * Math.min(1, this.health - this.baseHealth);
 
 					if (this.health > this.baseHealth)
@@ -776,14 +784,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.health <= 1)
 		{
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				if (this.attributes.get(i).type.equals("healray"))
-				{
-					this.attributes.remove(i);
-					i--;
-				}
-			}
+			removeIf(attributes, a -> a.type.equals("healray"));
 		}
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));

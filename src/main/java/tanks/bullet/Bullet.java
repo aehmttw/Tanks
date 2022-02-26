@@ -179,16 +179,17 @@ public class Bullet extends Movable implements IDrawable
 		{
 			if (m instanceof Scoreboard)
 			{
-				if (((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired) ||
-						(((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired_no_multiple_fire)
+				Scoreboard s = (Scoreboard)m;
+				if (s.objectiveType.equals(Scoreboard.objectiveTypes.shots_fired) ||
+						(s.objectiveType.equals(Scoreboard.objectiveTypes.shots_fired_no_multiple_fire)
 								&& !(this instanceof BulletHealing || this instanceof BulletFlame)))
 				{
-					if (((Scoreboard) m).players.isEmpty())
-						((Scoreboard) m).addTeamScore(this.team, 1);
+					if (s.players.isEmpty())
+						s.addTeamScore(this.team, 1);
 					else if (this.tank instanceof TankPlayer)
-						((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
+						s.addPlayerScore(((TankPlayer) this.tank).player, 1);
 					else if (this.tank instanceof TankPlayerRemote)
-						((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+						s.addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
 				}
 			}
 		}

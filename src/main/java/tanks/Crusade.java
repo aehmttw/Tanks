@@ -164,19 +164,19 @@ public class Crusade
 		
 		this.name = name;
 
-		for (int j = 0; j < Game.players.size(); j++)
+		for (Player player : Game.players)
 		{
-			Game.players.get(j).remainingLives = this.startingLives;
+			player.remainingLives = this.startingLives;
 		}
 	}
 
 	public void begin()
 	{
-		for (int i = 0; i < Game.players.size(); i++)
+		for (Player player : Game.players)
 		{
-			Game.players.get(i).hotbar.itemBar = new ItemBar(Game.players.get(i));
-			Game.players.get(i).hotbar.coins = 0;
-			Game.players.get(i).remainingLives = startingLives;
+			player.hotbar.itemBar = new ItemBar(player);
+			player.hotbar.coins = 0;
+			player.remainingLives = startingLives;
 		}
 
 		currentLevel = 0;
@@ -368,11 +368,10 @@ public class Crusade
 	public ArrayList<Item> getShop() 
 	{
 		ArrayList<Item> shop = new ArrayList<>();
-		
-		for (int i = 0; i < this.crusadeItems.size(); i++)
+
+		for (Item item : crusadeItems)
 		{
-			Item item = this.crusadeItems.get(i);
-			if (item.levelUnlock <= this.currentLevel)
+			if (item.levelUnlock <= currentLevel)
 				shop.add(item);
 		}
 
@@ -398,18 +397,20 @@ public class Crusade
 
 	public CrusadePlayer getCrusadePlayer(Player p)
 	{
-		CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
+		CrusadePlayer player = Crusade.currentCrusade.crusadePlayers.get(p);
 
-		if (cp == null)
+		// Player is null if they disconnected
+		if (player == null)
 		{
-			for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
+			// Take player from the list of disconnected players, so a non-null player object can be returned
+			for (CrusadePlayer disconnectedPlayer: Crusade.currentCrusade.disconnectedPlayers)
 			{
-				if (dp.player == p)
-					cp = dp;
+				if (disconnectedPlayer.player == p)
+					player = disconnectedPlayer;
 			}
 		}
 
-		return cp;
+		return player;
 	}
 
 	public static class LevelPerformance
@@ -457,12 +458,15 @@ public class Crusade
 
 		if (!win)
 		{
-			for (int i = 0; i < Game.movables.size(); i++)
-			{
-				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
-					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
-				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
-					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+			for (Movable m : Game.movables) {
+				if (!m.destroy) {
+					if (m instanceof TankPlayer) {
+						((TankPlayer) m).player.remainingLives--;
+					}
+					else if (m instanceof TankPlayerRemote) {
+						((TankPlayerRemote) m).player.remainingLives--;
+					}
+				}
 			}
 		}
 

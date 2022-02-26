@@ -234,17 +234,11 @@ public class InputSelector implements IDrawable, ITrigger
 
 			this.lastFrame = Panel.panel.ageFrames;
 
-			for (int i = 0; i < this.glowEffects.size(); i++)
-			{
-				Effect e = this.glowEffects.get(i);
-				e.update();
+			glowEffects.removeIf(effect -> {
+				effect.update();
+				return effect.age > effect.maxAge;
+			});
 
-				if (e.age > e.maxAge)
-				{
-					this.glowEffects.remove(i);
-					i--;
-				}
-			}
 
 			if (this.selected && !Game.game.window.touchscreen)
 			{

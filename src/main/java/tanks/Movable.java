@@ -5,6 +5,7 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.NameTag;
 
 import java.util.ArrayList;
+import static util.CollectionUtil.removeIf;
 
 public abstract class Movable implements IDrawableForInterface, IGameObject
 {
@@ -311,14 +312,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		if (this.attributeImmunities.contains(m.name))
 			return;
 
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			if (this.attributes.get(i).name.equals(m.name))
-			{
-				this.attributes.remove(i);
-				i--;
-			}
-		}
+		removeIf(attributes, am -> am.name.equals(m.name));
 
 		this.attributes.add(m);
 	}

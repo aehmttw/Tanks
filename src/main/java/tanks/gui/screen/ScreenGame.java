@@ -168,8 +168,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	}
 	);
 
-	Button zoom = new Button(0, -1000, 70, 70, "", () -> Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera
-	);
+	Button zoom = new Button(0, -1000, 70, 70, "", () ->
+	{
+		Panel.autoZoom = false;
+		Panel.zoomTarget = -1;
+		Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+	});
+
+	Button zoomAuto = new Button(0, -1000, 70, 70, "", () ->
+	{
+		Panel.autoZoom = !Panel.autoZoom;
+		if (!Panel.autoZoom)
+			Panel.zoomTarget = -1;
+	});
 
 	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Continue playing", () ->
 	{
@@ -803,14 +814,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					this.prevTankMusics.addAll(this.tankMusics);
 					this.tankMusics.clear();
 
-					for (Movable m : Game.movables)
+					if (!this.paused)
 					{
-						if (m instanceof Tank && !m.destroy)
+						for (Movable m : Game.movables)
 						{
-							ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
+							if (m instanceof Tank && !m.destroy)
+							{
+								ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
 
-							if (s != null)
-								this.tankMusics.addAll(s);
+								if (s != null)
+									this.tankMusics.addAll(s);
+							}
 						}
 					}
 
@@ -921,9 +935,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			if (Game.playerTank != null && !Game.playerTank.destroy && Panel.autoZoom)
-			{
 				Panel.zoomTarget = Game.playerTank.getAutoZoom();
-			}
+
+			if (spectatingTank != null && !spectatingTank.destroy && Panel.autoZoom)
+				Panel.zoomTarget = spectatingTank.getAutoZoom();
 		}
 
 		if (Game.game.input.zoom.isPressed() && playing)
@@ -1146,8 +1161,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			zoom.posX = pause.posX - hStep;
 			zoom.posY = pause.posY + vStep;
 
+			zoomAuto.posX = zoom.posX - hStep;
+			zoomAuto.posY = zoom.posY + vStep;
+
 			if (Drawing.drawing.enableMovingCamera)
+			{
 				zoom.update();
+
+				if (!Panel.autoZoom)
+					zoomAuto.update();
+			}
 
 			if (playing)
 			{
@@ -1505,6 +1528,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Panel.win = false;
 						Drawing.drawing.playSound("lose.ogg", 1.0f, true);
 					}
+
+					String s = "**";
+
+					if (fullyAliveTeams.size() > 0)
+						s = fullyAliveTeams.get(0).name;
+
+					if (ScreenPartyHost.isServer)
+						Game.eventsOut.add(new EventLevelEndQuick(s));
 				}
 
 				ScreenGame.finishedQuick = true;
@@ -2325,10 +2356,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			{
 				zoom.draw();
 
+				if (!Panel.autoZoom)
+					zoomAuto.draw();
+
 				if (Drawing.drawing.movingCamera)
 					Drawing.drawing.drawInterfaceImage("zoom_out.png", zoom.posX, zoom.posY, 40, 40);
 				else
 					Drawing.drawing.drawInterfaceImage("zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+
+				if (!Panel.autoZoom)
+					Drawing.drawing.drawInterfaceImage("zoom_auto.png", zoomAuto.posX, zoomAuto.posY, 40, 40);
 			}
 		}
 

@@ -126,6 +126,7 @@ public class TankBoss extends TankAIControlled
 
 		Tank t = e.getTank(this.posX + x, this.posY + y, this.angle);
 		t.team = this.team;
+		t.crusadeID = this.crusadeID;
 
 		Game.eventsOut.add(new EventCreateTank(t));
 		this.spawned.add(t);

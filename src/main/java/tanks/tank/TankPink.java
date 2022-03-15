@@ -109,6 +109,7 @@ public class TankPink extends TankAIControlled
 		}
 
 		TankMini t = new TankMini("mini", this.posX + x, this.posY + y, this.angle, this);
+		t.crusadeID = this.crusadeID;
 		Game.eventsOut.add(new EventCreateCustomTank(t));
 		Game.movables.add(t);
 	}

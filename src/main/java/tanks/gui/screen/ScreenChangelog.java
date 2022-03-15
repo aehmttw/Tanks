@@ -167,7 +167,7 @@ public class ScreenChangelog extends Screen
                                     "Max level size increased\n" +
                                     "More variation in level generator\n\n" +
 
-                            "*Items:\n\n" +
+                                    "*Items:\n\n" +
                                     "New mine item\n" +
                                     "Add items and shops in individual levels\n" +
                                     "New item templates\n" +
@@ -195,7 +195,7 @@ public class ScreenChangelog extends Screen
                                     "Updated health indicators\n" +
                                     "Flashier 3D fireworks\n\n" +
 
-                            "*Audio:\n\n" +
+                                    "*Audio:\n\n" +
                                     "New volume controls\n" +
                                     "New songs for battle, crusade, and battle victory/defeat\n" +
                                     "New sound effects\n" +
@@ -219,7 +219,7 @@ public class ScreenChangelog extends Screen
                                     "New time limit option for levels\n" +
                                     "Added lighting options to levels",
 
-                                    "*Options:\n\n" +
+                            "*Options:\n\n" +
                                     "Added shadows and shadow quality option\n" +
                                     "Added option to show time elapsed\n" +
                                     "Added keybind to instantly start a level\n\n" +
@@ -272,7 +272,7 @@ public class ScreenChangelog extends Screen
                                     "Large timed levels have longer timers\n" +
                                     "Orangered tank is now immune to explosion damage\n\n",
 
-                                    "*More:\n\n" +
+                            "*More:\n\n" +
                                     "Improved the crusade editor level edit menu\n" +
                                     "Changed light block appearance\n" +
                                     "Fireworks are more varied and prettier!\n" +
@@ -308,7 +308,7 @@ public class ScreenChangelog extends Screen
                                     "Added indicator for where arc bullets will land\n" +
                                     "Added mini tank to level editor\n",
 
-                                    "*Improvements:\n\n" +
+                            "*Improvements:\n\n" +
                                     "Hovering over the item bar slots shows keybinds\n" +
                                     "Leaving and rejoining a party crusade before a new level is\n" +
                                     "    loaded recovers progress\n" +
@@ -333,7 +333,7 @@ public class ScreenChangelog extends Screen
                                     "New editor music which changes based on tanks present\n" +
                                     "New sounds for winning and losing battles",
 
-                                    "*User interfaces:\n\n" +
+                            "*User interfaces:\n\n" +
                                     "Improved lists with search, sort, and jump buttons\n" +
                                     "New window options menu for resolution and fullscreen\n" +
                                     "New option to warn before closing unsaved work\n" +
@@ -350,21 +350,15 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements"
                     });
 
-            new Changelog("v1.3.1a", new String[]
+            new Changelog("v1.3.1", new String[]
                     {
-                            "*What's new in Tanks v1.3.1a:\n\n" +
+                            "*What's new in Tanks v1.3.1:\n\n" +
                                     "Added maximum framerate option\n" +
                                     "Scroll while holding the zoom key for manual zoom\n" +
                                     "Added keybinds to manually zoom in and out\n" +
-                                    "Bug fixes and other minor improvements"
-                    });
-
-            new Changelog("v1.3.1b", new String[]
-                    {
-                            "*What's new in Tanks v1.3.1b:\n\n" +
-                                    "Added automatic zoom mode (can toggle with 'O')\n" +
+                                    "Added automatic zoom mode with keybind\n" +
                                     "Improved keybindings screen\n" +
-                                    "Bug fixes and other minor improvements"
+                                    "Bug fixes and other minor improvements\n"
                     });
         }
     }

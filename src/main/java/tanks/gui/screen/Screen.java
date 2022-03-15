@@ -102,7 +102,7 @@ public abstract class Screen implements IBatchRenderableObject
 					mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
 			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
-			Drawing.drawing.fillRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
+			Drawing.drawing.fillBackgroundRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
 		}
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
@@ -141,7 +141,12 @@ public abstract class Screen implements IBatchRenderableObject
 
 				double frac2 = 0;
 				if (i1 >= 0 && i1 < Game.currentSizeX && j1 >= 0 && j1 < Game.currentSizeY)
-					Drawing.drawing.setColor(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j]);
+				{
+					if (Game.fancyTerrain)
+						Drawing.drawing.setColor(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j]);
+					else
+						Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
+				}
 				else
 				{
 					inBounds = false;
@@ -159,7 +164,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 					byte o = 61;
 
-					if (Game.enable3dBg && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && !Game.game.window.shapeRenderer.supportsBatching))
+					if (Game.enable3dBg && Game.fancyTerrain && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && !Game.game.window.shapeRenderer.supportsBatching))
 					{
 						z1 = Game.tilesDepth[i][j];
 						o = 1;

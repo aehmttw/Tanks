@@ -664,10 +664,20 @@ public class Level
 		{
 			for (int j = 0; j < Game.currentSizeY; j++)
 			{
-				Game.tilesR[i][j] = (colorR + Math.random() * colorVarR);
-				Game.tilesG[i][j] = (colorG + Math.random() * colorVarG);
-				Game.tilesB[i][j] = (colorB + Math.random() * colorVarB);
-				Game.tilesDepth[i][j] = Math.random() * 10;
+				if (Game.fancyTerrain)
+				{
+					Game.tilesR[i][j] = (colorR + Math.random() * colorVarR);
+					Game.tilesG[i][j] = (colorG + Math.random() * colorVarG);
+					Game.tilesB[i][j] = (colorB + Math.random() * colorVarB);
+					Game.tilesDepth[i][j] = Math.random() * 10;
+				}
+				else
+				{
+					Game.tilesR[i][j] = colorR;
+					Game.tilesG[i][j] = colorG;
+					Game.tilesB[i][j] = colorB;
+					Game.tilesDepth[i][j] = 0;
+				}
 			}
 		}
 

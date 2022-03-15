@@ -305,7 +305,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 
-		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy && !ScreenGame.finished)
+		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy)
 		{
 			this.drawTread = true;
 
@@ -420,11 +420,13 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
 		{
+			double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
+
 			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
 			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-				this.orientation -= Movable.angleBetween(this.orientation, dir) / 10 * Panel.frameFrequency;
+				this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
 			else
-				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 10 * Panel.frameFrequency;
+				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
 		}
 
 		if (!this.isRemote && this.standardUpdateEvent && ScreenPartyHost.isServer)
@@ -920,7 +922,7 @@ public abstract class Tank extends Movable implements ISolidObject
 					nearest = dist;
 				}
 
-				if (dist <= 3 && dist > farthestInSight)
+				if (dist <= 3.5 && dist > farthestInSight)
 				{
 					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
@@ -942,7 +944,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double getAutoZoom()
 	{
-		double dist = Math.min(2.5, Math.max(1, getAutoZoomRaw()));
+		double dist = Math.min(3, Math.max(1, getAutoZoomRaw()));
 		return 1 / dist;
 	}
 }

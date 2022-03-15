@@ -368,6 +368,14 @@ public class Drawing
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
+	public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
+	{
+		if (this.terrainRendering)
+			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
+		else
+			this.fillBackgroundRect(x, y, sizeX, sizeY);
+	}
+
 	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
 		if (this.terrainRendering)
@@ -1096,57 +1104,39 @@ public class Drawing
 	public double toGameCoordsX(double x)
 	{
 		return absoluteToGameX(interfaceToAbsoluteX(x));
-
-		/*double x1 = x;
-
-		if (enableMovingCamera && movingCamera && enableMovingCameraX)
-			x1 += (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
-
-		double rawX = interfaceScale * (x1);
-
-		rawX -= (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
-
-		return (rawX) / scale - getPlayerMouseOffsetX();*/
 	}
 
 	public double toGameCoordsY(double y)
 	{
 		return absoluteToGameY(interfaceToAbsoluteY(y));
-
-		/*double y1 = y;
-
-		if (enableMovingCamera && movingCamera && enableMovingCameraY)
-			y1 += (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
-
-		double rawY = interfaceScale * (y1);
-
-		rawY -= (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
-
-		return (rawY) / scale - getPlayerMouseOffsetY();*/
 	}
 
 	public double toInterfaceCoordsX(double x)
 	{
-		double rawX = (x + getPlayerMouseOffsetX()) * scale;
+		return absoluteToInterfaceX(gameToAbsoluteX(x, 0));
+
+		/*double rawX = (x + getPlayerMouseOffsetX()) * scale;
 		rawX += (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 		double x1 = rawX / interfaceScale;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
 			x1 -= (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
 
-		return x1;
+		return x1;*/
 	}
 
 	public double toInterfaceCoordsY(double y)
 	{
-		double rawY = (y + getPlayerMouseOffsetY()) * scale;
+		return absoluteToInterfaceY(gameToAbsoluteY(y, 0));
+
+		/*double rawY = (y + getPlayerMouseOffsetY()) * scale;
 		rawY += (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 		double y1 = rawY / interfaceScale;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraY)
 			y1 -= (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
 
-		return y1;
+		return y1;*/
 	}
 
 	public double getMouseX()
@@ -1409,6 +1399,16 @@ public class Drawing
 	public double interfaceToAbsoluteY(double y)
 	{
 		return (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+	}
+
+	public double absoluteToInterfaceX(double x)
+	{
+		return (x - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale;
+	}
+
+	public double absoluteToInterfaceY(double y)
+	{
+		return (y - Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2 ) / interfaceScale;
 	}
 
 	public boolean isOutOfBounds(double drawX, double drawY)

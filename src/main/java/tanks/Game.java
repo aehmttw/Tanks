@@ -92,8 +92,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.3.1b";
-	public static final int network_protocol = 38;
+	public static final String version = "Tanks v1.3.1";
+	public static final int network_protocol = 39;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -257,6 +257,7 @@ public class Game
 		NetworkEventMap.register(EventPlayerChat.class);
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
+		NetworkEventMap.register(EventLevelEndQuick.class);
 		NetworkEventMap.register(EventLevelEnd.class);
 		NetworkEventMap.register(EventReturnToLobby.class);
 		NetworkEventMap.register(EventBeginCrusade.class);
@@ -765,22 +766,6 @@ public class Game
 			return Character.toUpperCase(s.charAt(0)) + s.substring(1).replace("-", " ").replace("_", " ").toLowerCase();
 	}
 
-	/*public static void reset()
-	{
-		resetNetworkIDs();
-
-		obstacles.clear();
-		tracks.clear();
-		movables.clear();
-		effects.clear();
-		recycleEffects.clear();
-		removeEffects.clear();
-		removeTracks.clear();
-
-		System.gc();
-		start();
-	}*/
-
 	public static void exitToInterlevel()
 	{
 		silentCleanUp();
@@ -789,16 +774,6 @@ public class Game
 
 	public static void exitToEditor(String name)
 	{
-		/*obstacles.clear();
-		tracks.clear();
-		movables.clear();
-		effects.clear();
-		recycleEffects.clear();
-		removeEffects.clear();
-		removeTracks.clear();
-
-		System.gc();*/
-
 		silentCleanUp();
 
 		ScreenLevelEditor s = new ScreenLevelEditor(name, Game.currentLevel);
@@ -909,14 +884,19 @@ public class Game
 		Game.game.groundHeightGrid = new double[28][18];
 		Game.tileDrawables = new Obstacle[28][18];
 
+		double var = 0;
+
+		if (Game.fancyTerrain)
+			var = 20;
+
 		for (int i = 0; i < 28; i++)
 		{
 			for (int j = 0; j < 18; j++)
 			{
-				Game.tilesR[i][j] = (255 - Math.random() * 20);
-				Game.tilesG[i][j] = (227 - Math.random() * 20);
-				Game.tilesB[i][j] = (186 - Math.random() * 20);
-				Game.tilesDepth[i][j] = Math.random() * 10;
+				Game.tilesR[i][j] = (235 + Math.random() * var);
+				Game.tilesG[i][j] = (207 + Math.random() * var);
+				Game.tilesB[i][j] = (166 + Math.random() * var);
+				Game.tilesDepth[i][j] = Math.random() * var / 2;
 			}
 		}
 

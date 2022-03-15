@@ -212,6 +212,8 @@ public class Panel
 
 		for (Extension e: Game.extensionRegistry.extensions)
 			e.loadResources();
+
+		Game.resetTiles();
 	}
 
 	public void update()
@@ -407,7 +409,8 @@ public class Panel
 
 		if (!(Game.screen instanceof ScreenInfo))
 		{
-			if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 || Game.playerTank == null || Game.playerTank.destroy || !((ScreenGame) Game.screen).playing)
+			if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 ||
+					((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) || !((ScreenGame) Game.screen).playing)
 				this.zoomTimer -= 0.02 * Panel.frameFrequency;
 		}
 
@@ -458,14 +461,16 @@ public class Panel
 
 			if (Drawing.drawing.movingCamera)
 			{
-				if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 || Game.playerTank == null || Game.playerTank.destroy || !((ScreenGame) Game.screen).playing)
+				if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 ||
+						((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) ||
+						!((ScreenGame) Game.screen).playing)
 					this.zoomTimer += 0.04 * Panel.frameFrequency;
 
 				double mul = Panel.zoomTarget;
 				if (mul < 0)
 					mul = 1;
 
-				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+				if (Game.startTime > 0 && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
 					this.zoomTimer = Math.min(this.zoomTimer, mul * (1 - Game.startTime / Game.currentLevel.startTime));
 			}
 		}
@@ -476,14 +481,11 @@ public class Panel
 
 		this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
 
-		if (Game.screen instanceof ScreenGame && Panel.zoomTarget >= 0 && (((ScreenGame) Game.screen).spectatingTank != null || (Game.playerTank != null && !Game.playerTank.destroy)) && ((ScreenGame) Game.screen).playing)
+		if (Game.screen instanceof ScreenGame && Drawing.drawing.enableMovingCamera && Panel.zoomTarget >= 0 && (((ScreenGame) Game.screen).spectatingTank != null || (Game.playerTank != null && !Game.playerTank.destroy)) && ((ScreenGame) Game.screen).playing)
 		{
 			double speed = 0.3 * Drawing.drawing.unzoomedScale;
 			double accel = 0.0003 * Drawing.drawing.unzoomedScale;
 			double distDampen = 2;
-
-			if (this.zoomTimer > Panel.zoomTarget)
-				speed = -0.02;
 
 			if (Panel.autoZoom)
 			{
@@ -501,14 +503,18 @@ public class Panel
 
 				Panel.lastAutoZoomSpeed = speed;
 
+				speed *= Math.signum(Panel.zoomTarget - this.zoomTimer);
+
 				this.zoomTimer = this.zoomTimer + speed * Panel.frameFrequency;
 			}
 			else
 			{
-				if (speed > 0)
-					this.zoomTimer = Math.min(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
-				else if (speed < 0)
-					this.zoomTimer = Math.max(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
+				if (this.zoomTimer > Panel.zoomTarget)
+					speed = -0.02;
+				else
+					speed = 0.02;
+
+				this.zoomTimer = Math.max(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
 			}
 		}
 

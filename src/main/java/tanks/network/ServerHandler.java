@@ -129,8 +129,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			for (int i = 0; i < this.events.size(); i++)
 			{
 				INetworkEvent e = this.events.get(i);
-				this.sendEvent(e);
+				this.sendEvent(e, false);
 			}
+
+			if (steamID == null)
+				this.ctx.flush();
 
 			this.events.clear();
 		}
@@ -138,9 +141,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public synchronized void sendEvent(INetworkEvent e)
 	{
+		this.sendEvent(e, true);
+	}
+
+	public synchronized void sendEvent(INetworkEvent e, boolean flush)
+	{
 		if (steamID != null)
 		{
-			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+			SteamNetworking.P2PSend sendType = SteamNetworking.P2PSend.ReliableWithBuffering;
+
+			if (flush)
+				sendType = SteamNetworking.P2PSend.Reliable;
+
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, sendType);
 			return;
 		}
 
@@ -156,7 +169,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		ByteBuf b2 = ctx.channel().alloc().buffer();
 		b2.writeInt(b.readableBytes());
 		b2.writeBytes(b);
-		ctx.channel().writeAndFlush(b2);
+
+		if (flush)
+			ctx.channel().writeAndFlush(b2);
+		else
+			ctx.channel().write(b2);
 
 		ReferenceCountUtil.release(b);
 	}

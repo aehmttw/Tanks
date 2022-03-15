@@ -261,6 +261,15 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		return false;
 	}
 
+	/**
+	 * Draws the tile under the obstacle if it needs to be drawn differently than when not covered by an obstacle
+	 *
+	 * @param r Red
+	 * @param g Green
+	 * @param b Blue
+	 * @param d Tile height
+	 * @param extra The deepest tile next to the current tile, used to render sides underground
+	 */
 	public void drawTile(double r, double g, double b, double d, double extra)
 	{
 		if (Obstacle.draw_size < Game.tile_size || extra != 0)

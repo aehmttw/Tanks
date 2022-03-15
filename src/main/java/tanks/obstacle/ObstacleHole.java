@@ -14,7 +14,7 @@ public class ObstacleHole extends Obstacle
 		this.drawLevel = 1;
 		this.destructible = false;
 		this.bulletCollision = false;
-		this.replaceTiles = true;
+		this.replaceTiles = Game.fancyTerrain;
 
 		this.enableStacking = false;
 
@@ -29,7 +29,7 @@ public class ObstacleHole extends Obstacle
 	@Override
 	public void draw()
 	{	
-		if (!Game.enable3d)
+		if (!Game.enable3d || !Game.fancyTerrain)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 			Drawing.drawing.fillRect(this, this.posX, this.posY, draw_size * size, draw_size * size);

@@ -1,0 +1,17 @@
+Basic bullet,bullet_normal.png,1,0,10,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false
+Basic mine,mine.png,1,0,4,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true
+Fire bullet,bullet_fire.png,5,0,3,100,bullet,normal,fire,6.25,0,1.0,3,75.0,10.0,1.0,false
+Laser,bullet_laser.png,20,0,1,20,bullet,laser,none,3.125,0,1.0,0,100.0,10.0,1.5,false
+Bouncy fire bullet,bullet_fire_trail.png,10,0,1,20,bullet,normal,fire_and_smoke,6.25,2,1.0,3,50.0,10.0,1.0,false
+Mega mine,mine.png,25,0,5,50,mine,2000.0,50.0,250.0,4.0,1,100.0,60.0,true
+Zap,bullet_electric.png,15,0,5,50,bullet,electric,none,3.125,5,0.125,0,50.0,10.0,1.0,false
+Shield,shield.png,50,0,1,10,shield,1.0,5.0,50.0
+Freezing bullet,bullet_freeze.png,10,0,1,25,bullet,freezing,ice,3.125,0,0.25,1,50.0,10.0,1.0,false
+Flamethrower,bullet_flame.png,4,0,100,1000,bullet,flamethrower,none,3.125,0,1.0,0,0.0,10.0,0.0,false
+Mega bullet,bullet_large.png,15,0,2,20,bullet,normal,trail,3.125,3,1.0,5,100.0,25.0,4.0,true
+Artillery shell,bullet_arc.png,5,0,2,40,bullet,arc,none,3.125,1,1.0,4,60.0,25.0,0.0,false
+Healing ray,bullet_healing.png,25,0,100,5000,bullet,healing,none,3.125,1,0.01,0,0.0,10.0,0.0,false
+Explosive bullet,bullet_explosive.png,10,0,2,25,bullet,explosive,trail,3.125,0,1.0,2,75.0,20.0,1.0,false
+Booster,bullet_boost.png,10,0,10,100,bullet,boost,ember,6.25,0,1.0,5,20.0,10.0,1.0,false
+Mini bullet,bullet_mini.png,5,0,20,500,bullet,normal,trail,6.25,0,0.125,8,5.0,5.0,1.0,false
+Dark fire bullet,bullet_dark_fire.png,10,0,5,250,bullet,normal,dark_fire,6.25,0,1.0,5,30.0,10.0,1.0,false

@@ -3,11 +3,13 @@ package tanks.bullet;
 import tanks.*;
 import tanks.event.*;
 import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.item.ItemBullet;
+import tanks.modapi.ModAPI;
+import tanks.modapi.ModLevel;
+import tanks.modapi.menus.FixedMenu;
+import tanks.modapi.menus.Scoreboard;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
@@ -83,6 +85,7 @@ public class Bullet extends Movable implements IDrawable
 	public Tank tankInside = null;
 
 	public String itemSound = "shoot.ogg";
+	public float itemSoundVolume = 1;
 
 	public ArrayList<Trail>[] trails;
 
@@ -95,7 +98,7 @@ public class Bullet extends Movable implements IDrawable
 	@Deprecated
 	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
 	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
+		this(x, y, bounces, t, true, ib);
 	}
 
 	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet item)
@@ -175,7 +178,7 @@ public class Bullet extends Movable implements IDrawable
 
 		this.drawLevel = 8;
 
-		for (IFixedMenu m : ModAPI.menuGroup)
+		for (FixedMenu m : ModAPI.menuGroup)
 		{
 			if (m instanceof Scoreboard)
 			{
@@ -229,16 +232,26 @@ public class Bullet extends Movable implements IDrawable
 				if (!this.heavy)
 					this.destroy = true;
 
-				if (Game.currentLevel instanceof ModLevel)
+				if (ScreenPartyHost.isServer)
 				{
-					if (((ModLevel) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
+					String message = null;
+
+					if (Game.currentGame != null && Game.currentGame.enableKillMessages)
+						message = Game.currentGame.generateKillMessage(t, this.tank, true);
+
+					else if (Game.currentLevel instanceof ModLevel l && l.enableKillMessages)
+						message = l.generateKillMessage(t, this.tank, true);
+
+					else if (Game.currentLevel.enableKillMessages)
+						message = Level.genKillMessage(t, this.tank, true);
+
+					if (message != null)
 					{
-						String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, true);
 						ScreenPartyHost.chat.add(0, new ChatMessage(message));
 						Game.eventsOut.add(new EventChat(message));
 					}
 
-					for (IFixedMenu m : ModAPI.menuGroup)
+					for (FixedMenu m : ModAPI.menuGroup)
 					{
 						if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.kills))
 						{
@@ -256,8 +269,14 @@ public class Bullet extends Movable implements IDrawable
 
 				if (this.tank.equals(Game.playerTank))
 				{
-					if (Game.currentLevel instanceof ModLevel && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
-						Game.player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+					if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
+					{
+						if (Game.currentGame != null)
+							Game.player.hotbar.coins += Game.currentGame.playerKillCoins;
+						else
+							Game.player.hotbar.coins += Game.currentLevel.playerKillCoins;
+					}
+
 					else
 						Game.player.hotbar.coins += t.coinValue;
 				}
@@ -289,11 +308,11 @@ public class Bullet extends Movable implements IDrawable
 					}
 				}
 			}
-			else if (this.playPopSound)
-				Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+			else if (shouldPlayPopSound())
+				Drawing.drawing.playSound("damage.ogg", (float) (bullet_size / size));
 		}
-		else if (this.playPopSound && !this.heavy)
-			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+		else if (!this.heavy && shouldPlayPopSound())
+			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 		this.tankInside = t;
 	}
@@ -305,8 +324,8 @@ public class Bullet extends Movable implements IDrawable
 
 		if (!heavy)
 		{
-			if (this.playPopSound)
-				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			if (shouldPlayPopSound())
+				Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 			this.destroy = true;
 			this.vX = 0;
@@ -315,8 +334,8 @@ public class Bullet extends Movable implements IDrawable
 
 		if (heavy && o instanceof Bullet && ((Bullet)o).heavy)
 		{
-			if (this.playPopSound)
-				Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			if (shouldPlayPopSound())
+				Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 			o.destroy = true;
 			this.destroy = true;
@@ -334,7 +353,7 @@ public class Bullet extends Movable implements IDrawable
 			if (o instanceof Bullet)
 			{
 				if (((Bullet) o).playPopSound)
-					Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / ((Bullet) o).size));
+					Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / ((Bullet) o).size));
 			}
 		}
 	}
@@ -541,11 +560,11 @@ public class Bullet extends Movable implements IDrawable
 			{
 				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 
-				double s = 0;
+				double s;
 
 				if (o instanceof Mine)
 					s = ((Mine) o).size;
-				else if (o instanceof Bullet)
+				else
 					s = ((Bullet) o).size;
 
 				double bound = this.size / 2 + s / 2;
@@ -575,14 +594,14 @@ public class Bullet extends Movable implements IDrawable
 			if (this.bounces < 0 || this.bouncyBounces < 0 || !allowBounce)
 			{
 				if (this.playPopSound)
-					Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+					Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 				this.destroy = true;
 				this.vX = 0;
 				this.vY = 0;
 			}
-			else if (this.playBounceSound)
-				Drawing.drawing.playGlobalSound("bounce.ogg", (float) (bullet_size / size));
+			else if (shouldPlayBounceSound())
+				Drawing.drawing.playSound("bounce.ogg", (float) (bullet_size / size));
 
 			if (!destroy)
 			{
@@ -829,13 +848,10 @@ public class Bullet extends Movable implements IDrawable
 	public void draw()
 	{
 		double glow = 0.5;
-		for (int i = 0; i < this.attributes.size(); i++)
+		for (AttributeModifier a : this.attributes)
 		{
-			AttributeModifier a = this.attributes.get(i);
 			if (a.type.equals("glow"))
-			{
 				glow = a.getValue(glow);
-			}
 		}
 
 		if (Game.glowEnabled)
@@ -868,9 +884,9 @@ public class Bullet extends Movable implements IDrawable
 			}
 		}
 
-		for (int i = 0; i < this.trails.length; i++)
+		for (ArrayList<Trail> trail : this.trails)
 		{
-			for (Trail t: this.trails[i])
+			for (Trail t : trail)
 				t.draw();
 		}
 
@@ -915,7 +931,7 @@ public class Bullet extends Movable implements IDrawable
 	{
 		super.addAttribute(m);
 
-		if (!this.isRemote)
+		if (!this.isRemote && System.currentTimeMillis() % 1000f / Game.eventsPerSecond <= Panel.frameFrequency)
 			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, false));
 	}
 
@@ -924,7 +940,7 @@ public class Bullet extends Movable implements IDrawable
 	{
 		super.addUnduplicateAttribute(m);
 
-		if (!this.isRemote)
+		if (!this.isRemote && System.currentTimeMillis() % 1000f / Game.eventsPerSecond <= Panel.frameFrequency)
 			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, true));
 	}
 
@@ -954,5 +970,15 @@ public class Bullet extends Movable implements IDrawable
 
 			Game.effects.add(e);
 		}
+	}
+
+	public boolean shouldPlayPopSound()
+	{
+		return this.playPopSound && Movable.distanceBetween(this, Game.playerTank) < Game.tile_size * 40 || Game.playerTank.destroy;
+	}
+
+	public boolean shouldPlayBounceSound()
+	{
+		return this.playBounceSound && Movable.distanceBetween(this, Game.playerTank) < Game.tile_size * 40 || Game.playerTank.destroy;
 	}
 }

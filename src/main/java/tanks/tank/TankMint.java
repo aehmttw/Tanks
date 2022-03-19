@@ -3,9 +3,6 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 
-/**
- * A tank which shoots fast rocket bullets
- */
 public class TankMint extends TankAIControlled
 {
 	public TankMint(String name, double x, double y, double angle)

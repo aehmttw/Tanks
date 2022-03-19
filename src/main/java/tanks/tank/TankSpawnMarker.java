@@ -8,7 +8,7 @@ public class TankSpawnMarker extends Tank
     public String defaultTexture = "player_spawn.png";
     public TankSpawnMarker(String name, double x, double y, double angle)
     {
-        super(name, x, y, Game.tile_size, 0, 150, 255);
+        super(name, x, y, Game.tile_size, 0, 150, 255, false);
         this.angle = angle;
         this.orientation = angle;
         this.texture = this.defaultTexture;

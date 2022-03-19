@@ -1,3 +1,6 @@
 package tanks;
 
-public interface IGameObject {}
+public interface IGameObject
+{
+
+}

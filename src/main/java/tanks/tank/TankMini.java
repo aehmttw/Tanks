@@ -3,9 +3,6 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 
-/**
- * A small, primitive tank which shoots tiny, low damage bullets
- */
 public class TankMini extends TankAIControlled
 {
 	public TankPink tank;

@@ -2,10 +2,6 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A primitive mobile tank
- * @see TankBrown
- */
 public class TankGray extends TankAIControlled
 {
 	public TankGray(String name, double x, double y, double angle)

@@ -1,15 +1,14 @@
 package tanks.tank;
 
-import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
 import tanks.gui.screen.ScreenGame;
+import tanks.modapi.TankNPC;
 import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Ray
 {
@@ -177,13 +176,13 @@ public class Ray
 				if (this.posX + this.size / 2 >= t.posX - t.size / 2 &&
 						this.posX - this.size / 2 <= t.posX + t.size / 2 &&
 						this.posY + this.size / 2 >= t.posY - t.size / 2 &&
-						this.posY - this.size / 2 <= t.posY + t.size / 2)
+						this.posY - this.size / 2 <= t.posY + t.size / 2 &&
+						!(m instanceof TankNPC))
 					return t;
 			}
 		}
 
-		boolean firstBounce = this.targetTank == null;
-
+		boolean firstBounce = true;
 		while (this.bounces >= 0 && this.bouncyBounces >= 0)
 		{
 			double t = Double.MAX_VALUE;
@@ -198,6 +197,10 @@ public class Ray
 					double size = this.size;
 
 					Face f = Game.verticalFaces.get(i);
+
+					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
+						continue;
+
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
@@ -221,6 +224,9 @@ public class Ray
 				for (int i = Game.verticalFaces.size() - 1; i >= 0; i--)
 				{
 					Face f = Game.verticalFaces.get(i);
+
+					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
+						continue;
 
 					double size = this.size;
 
@@ -246,9 +252,10 @@ public class Ray
 			boolean corner = false;
 			if (vY > 0)
 			{
-				for (int i = 0; i < Game.horizontalFaces.size(); i++)
+				for (Face f : Game.horizontalFaces)
 				{
-					Face f = Game.horizontalFaces.get(i);
+					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
+						continue;
 
 					double size = this.size;
 
@@ -283,6 +290,9 @@ public class Ray
 				for (int i = Game.horizontalFaces.size() - 1; i >= 0; i--)
 				{
 					Face f = Game.horizontalFaces.get(i);
+
+					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
+						continue;
 
 					double size = this.size;
 
@@ -348,7 +358,7 @@ public class Ray
 				this.posX = collisionX;
 				this.posY = collisionY;
 
-				if (collisionFace.owner instanceof Movable)
+				if (collisionFace.owner instanceof Movable && !(collisionFace.owner instanceof TankNPC))
 				{
 					this.targetX = collisionX;
 					this.targetY = collisionY;

@@ -1,84 +1,75 @@
-# Tanks: The Crusades
+# Tanks Multiplayer Modding API
 
-Tanks: The Crusades is a game written in Java inspired by Wii Play's Tanks.<br>
-There are over 20 unique enemies you can fight, but you can add more of your own too.<br>
-The game supports Windows, Mac and Linux.<br>
-Tanks can be found on [Steam](https://store.steampowered.com/app/1660910/Tanks_The_Crusades/), [itch.io](https://aehmttw.itch.io/tanks), and the [iOS App Store](https://apps.apple.com/us/app/tanks-the-crusades/id1508772262)
+This is a multiplayer modding API for Tanks. I'll be calling this project Mod API for short.
 
-## How to play
+I've often wanted to use more than the default obstacles and tanks to make my level ideas come true.
+I wanted to make modding easier, while also having support in the base game.
+Thus, I created this modding API to allow others to create their own custom levels and games more easily.
 
-### Controls: <br>
-Use the arrow keys or WASD to move <br>
-Left click or click space to shoot<br>
-Right click or press enter to lay a mine<br>
-Press escape to pause the game<br>
+The Mod API will eventually be added into the base game, too, so people can play custom levels without needing to download the Mod API client!
 
-### Level Editor controls:<br>
-Left click to place<br>
-Right click on an object to destroy it<br>
-Right click on nothing to rotate the object you are placing<br>
-Press up and down arrow keys or scroll to cycle enemy tanks<br>
-Press left and right arrow keys to cycle enemy tank, obstacle, player tank<br>
-Press space to access the object menu<br>
-Press escape to change level settings<br>
-Press enter to play your level<br>
+How to use
+---
 
-The following are three screenshots of the game in action. The user controls the azure blue tank using the mouse or keyboard.
+Many custom modding objects will be added per each version. However, these are only for use when modding, and will not be accessible otherwise.
+Once a custom game has been made, if it only uses features from the Mod API, it will be fully functional, even if a server hosts and plays the game with the clients.
+This is done by sending the objects through the network.
 
+To play with others as a client, only the JAR file is needed.
+To create a custom game or level, the source code is needed.
+
+Installation
+---
+
+You can download the JAR file [here](https://onedrive.live.com/download?cid=1E1C6A69D73A57B9&resid=1E1C6A69D73A57B9%21123&authkey=ANYqlUYkDfJA3tA).
+
+To create a project with the source code, just set it up like a normal Tanks modding project or extension-making project.
+
+New Features:
+---
+
+**As of Mod API v1.0.1:**
+- Added light mode to minimap (toggle theme with the L key)
+- Added panning to minimap. Default controls are the numpad 8, 4, 6, and 2.
+- Added a Tanks mode to the minimap, toggle with the P key, which does not show tiles such as mud and ice.
+- Added a clouds and sky for the game.
+- NPC tanks now support a customizable shop, name tags, and animated text.
+- Improved the paste function in the level editor
+- Fixed actionbar text
+- Added a lot more scoreboard objective types
+- Changed the max height of obstacles to 8
+- Fixed a bug where Medic Tanks do not heal you after you put on shields
+
+**As of Mod API v1.0.0:**
+- Extensions now support custom levels!
+- A minimap with changeable zoom (use the - or = key or their equivalent keys on the numpad)
+- Text boxes to search up the names of levels and crusades
+- Changed the max height of obstacles to 6.0
+- Changed the custom level a bit
+- Published first person mode and immersive camera (go to Options - Graphics Options - view)
+- or use F5 key to toggle perspective
+
+**As of Mod API v0.2.0:**
+- A scoreboard
+- Title, subtitle, and actionbar text
+- A new custom level instead of the tutorial
+- Copy, cut, and paste in the level editor
+- A confirm prompt of saving when you try to exit the game while in a level editor
+- Other minor bug fixes and tweaks
+
+**As of Mod API v0.1.0:**
+- An NPC Tank (drive close to it and press e to talk with it)
+- The ability to add a text obstacle
+- Sand and Water obstacles because they seem to be popular modding ideas
+- A guide to this Modding API that may instead be changed to be online
+- A few minor tweaks to the code to allow them to support custom levels
+
+---
+Screenshots
+---
+
+The custom level included in the code
 ![Gameplay](screenshot1.PNG)
+
+Copy, cut, and paste functions in the level editor
 ![Gameplay](screenshot2.PNG)
-![Gameplay](screenshot3.PNG)
-
-## Installation
-
-To use the game you need to install Java. For this purpose you may need
-administrator privileges to install software on your machine. You can install Java 
-from [java.com](https://java.com/download). The minimum Java version is Java 8.<br>
-
-You can download the [jar file](https://1drv.ms/u/s!AnwBrt306BrJ-ltbmsJuG2pZdfVk?e=fg7P0k) for Tanks.
-To run the jar file you can double-click on it. 
-
-## Development
-
-To develop the game we suggest using Eclipse or IntelliJ. Eclipse can be installed from 
-[eclipse.org](http://www.eclipse.org/downloads/). IntelliJ can be installed from 
-[jetbrains.com](https://www.jetbrains.com/idea/download/). <br>
-
-To access the source code you also need to install Git.<br>
-
-You will need to add the following libraries to the build path of the project: <br>
-PNGDecoder by Matthias Mann in TWL<br>
-Netty<br>
-All the jars and natives of the following LWJGL libraries:<br>
-LWJGL (core)<br>
-OpenGL<br>
-OpenAL<br>
-GLFW<br>
-Assimp<br>
-STB<br>
-Commons IO<br>
-Steamworks4j<br>
-
-You can all download these libraries in zip format from [here](https://1drv.ms/u/s!AnwBrt306BrJgdAzVSHeYse_cvCr-A?e=TnQrdM).
-
-Please note - Tanks uses a custom version of Steamworks4j compiled with Mac OS arm64 natives. 
-We recommend you use the libraries linked above, because they contain that modified Steamworks4j library. 
-
-## Credits:
-
-### Main Developer:
-Matei Budiu (Aehmttw)<br>
-
-### Code Contributors:
-Karan Gurazada<br>
-Hallowizer<br>
-Grify<br>
-Mihai Budiu<br>
-Panadero1<br>
-Arkar Tan<br>
-Pythonmcpi<br>
-Cool TM<br>
-QazCetelic<br>
-
-### Special Thanks:
-Everyone from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!

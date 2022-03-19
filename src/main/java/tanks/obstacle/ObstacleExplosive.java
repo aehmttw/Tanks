@@ -4,9 +4,9 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletFlame;
 import tanks.event.EventLayMine;
 import tanks.event.EventObstacleDestroy;
-import tanks.gui.Button;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
 import tanks.tank.IAvoidObject;
@@ -26,6 +26,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
 
         this.draggable = false;
         this.destructible = true;
+        this.allowBounce = false;
         this.colorR = 255;
         this.colorG = Math.random() * 40 + 80;
         this.colorB = 0;
@@ -55,7 +56,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         if (this.trigger != Game.dummyTank)
             return;
 
-        if (m instanceof Bullet || m instanceof Tank)
+        if ((m instanceof Bullet && !(m instanceof BulletFlame)) || m instanceof Tank)
         {
             if (m instanceof Bullet)
             {
@@ -110,9 +111,6 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         mi.radius *= (this.stackHeight - 1) / 2 + 1;
         Game.eventsOut.add(new EventLayMine(mi));
         Game.movables.add(mi);
-
-        //if (this.trigger != null)
-        //    this.trigger.liveMines--;
 
         Game.removeObstacles.add(this);
         Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY));

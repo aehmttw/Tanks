@@ -2,13 +2,13 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.ModAPI;
-import tanks.ModLevel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SearchBox;
+import tanks.modapi.ModAPI;
+import tanks.modapi.ModGame;
+import tanks.modapi.ModLevel;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class ScreenModdedLevels extends Screen
@@ -36,7 +36,7 @@ public class ScreenModdedLevels extends Screen
 		moddedLevelsList.sortButtons();
 	}
 
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", ScreenPartyHost.isServer ? () -> Game.screen = ScreenPartyHost.activeScreen : () -> Game.screen = new ScreenPlaySingleplayer());
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = (ScreenPartyHost.isServer ? ScreenPartyHost.activeScreen : new ScreenPlaySingleplayer()));
 
 	public ScreenModdedLevels()
 	{
@@ -47,19 +47,51 @@ public class ScreenModdedLevels extends Screen
 
 		ArrayList<Button> buttons = new ArrayList<>();
 
-		for (Class<? extends ModLevel> m : ModAPI.registeredCustomLevels)
+		try
 		{
-			buttons.add(new Button(0, 0, 0, 0, m.getSimpleName().replace('_', ' '), () ->
+			for (Class<? extends ModLevel> m : ModAPI.registeredCustomLevels)
 			{
-				try
-				{
-					m.getConstructor().newInstance().loadLevel();
-				}
-				catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
-				{
-					Game.exitToCrash(e.getCause());
-				}
-			}));
+				String description = m.getConstructor().newInstance().description;
+				Button b = new Button(0, 0, 0, 0, m.getSimpleName().replace('_', ' '), () -> {
+					try
+					{
+						m.getConstructor().newInstance().loadLevel();
+					}
+					catch (Exception e)
+					{
+						Game.exitToCrash(e);
+					}
+				}, description);
+
+				b.enableHover = description != null && description.length() > 0;
+
+				buttons.add(b);
+			}
+
+			for (Class<? extends ModGame> m : ModAPI.registeredCustomGames)
+			{
+				String description = m.getConstructor().newInstance().description;
+				Button b = new Button(0, 0, 0, 0, m.getSimpleName().replace('_', ' '), () -> {
+					try
+					{
+						ModGame g = m.getConstructor().newInstance();
+						Game.currentGame = g;
+						g.start();
+					}
+					catch (Exception e)
+					{
+						Game.exitToCrash(e);
+					}
+				},
+						description);
+
+				b.enableHover = description != null && description.length() > 0;
+
+				buttons.add(b);
+			}
+		}
+		catch (Exception e) {
+			Game.exitToCrash(e);
 		}
 
 		fullModdedLevelsList = new ButtonList(buttons, page, 0, -30);

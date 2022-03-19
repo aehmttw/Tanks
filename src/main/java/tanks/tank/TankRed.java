@@ -2,16 +2,11 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.BulletLaser;
-import tanks.event.EventShootBullet;
 import tanks.event.EventTankRedUpdateCharge;
 
-/**
- * A stationary tank which shoots {@link BulletLaser}s.
- */
 public class TankRed extends TankAIControlled
 {
 	public boolean lineOfSight = false;
-	public double maxCooldown = 100;
 	public double idleTime = 0;
 
 	public TankRed(String name, double x, double y, double angle)
@@ -22,9 +17,16 @@ public class TankRed extends TankAIControlled
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.liveBulletMax = 1;
+		this.bulletBounces = 0;
 		this.aimTurretSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
+		this.setFrameDamageMultiplier = false;
 		this.cooldown = 250;
+		this.cooldownBase = 100;
+		this.cooldownRandom = 0;
+		this.bulletClass = BulletLaser.class;
+		this.bulletSound = "laser.ogg";
+		this.bulletSoundVolume = 0.3f;
 
 		this.coinValue = 6;
 
@@ -37,25 +39,25 @@ public class TankRed extends TankAIControlled
 		this.idleTime += Panel.frameFrequency;
 
 		if (this.idleTime >= 300)
-			this.maxCooldown = 100;
+			this.cooldownBase = 100;
 
 		this.lineOfSight = false;
 
-		if (this.cooldown < this.maxCooldown)
+		if (this.cooldown < this.cooldownBase)
 		{
 			if (!this.destroy)
-				Game.eventsOut.add(new EventTankRedUpdateCharge(this.networkID, (maxCooldown - this.cooldown) / maxCooldown));
+				Game.eventsOut.add(new EventTankRedUpdateCharge(this.networkID, (cooldownBase - this.cooldown) / cooldownBase));
 
-			this.colorR = Math.min((200 + (maxCooldown - this.cooldown) / maxCooldown * 55), 255);
-			this.colorG = (maxCooldown - this.cooldown) / maxCooldown * 100;
-			this.colorB = (maxCooldown - this.cooldown) / maxCooldown * 100;
+			this.colorR = Math.min((200 + (cooldownBase - this.cooldown) / cooldownBase * 55), 255);
+			this.colorG = (cooldownBase - this.cooldown) / cooldownBase * 100;
+			this.colorB = (cooldownBase - this.cooldown) / cooldownBase * 100;
 		}
 
 		super.update();
 
 		if (!lineOfSight)
 		{
-			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
+			this.cooldown = Math.max(this.cooldown, this.cooldownBase);
 			this.colorR = 200;
 			this.colorG = 0;
 			this.colorB = 0;
@@ -76,14 +78,13 @@ public class TankRed extends TankAIControlled
 		if (this.cooldown > 0)
 		{
 			this.idleTime = 0;
-			if (Math.random() * maxCooldown * Game.effectMultiplier > cooldown && Game.effectsEnabled)
+			if (Math.random() * cooldownBase * Game.effectMultiplier > cooldown && Game.effectsEnabled)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.charge);
 
-				double var = 50;
-				e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-				e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-				e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+				e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * 50 - 25));
+				e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * 50 - 25));
+				e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * 50 - 25));
 
 				Game.effects.add(e);
 			}
@@ -97,22 +98,15 @@ public class TankRed extends TankAIControlled
 
 		if (!Team.isAllied(m, this))
 		{
-			this.maxCooldown = this.maxCooldown * 0.75 + 1;
-			BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
-			b.team = this.team;
-			b.setPolarMotion(this.angle, 25.0/8);
-			b.moveOut(16);
-			Game.movables.add(b);
-			Drawing.drawing.playGlobalSound("laser.ogg");
+			this.cooldownBase = this.cooldownBase * 0.75 + 1;
+			super.launchBullet(0);
 
 			if (this.targetEnemy == null || this.targetEnemy.destroy)
-				this.maxCooldown = 100;
+				this.cooldownBase = 100;
 
-			this.cooldown = Math.max(this.cooldown, this.maxCooldown);
+			this.cooldown = Math.max(this.cooldown, this.cooldownBase);
 		}
 		else
-		{
 			this.cooldown = (Math.max(this.cooldown, 0));
-		}
 	}
 }

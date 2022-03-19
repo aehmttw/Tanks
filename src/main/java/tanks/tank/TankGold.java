@@ -1,16 +1,14 @@
 package tanks.tank;
 
-import tanks.*;
+import tanks.Game;
+import tanks.Movable;
+import tanks.Panel;
+import tanks.Team;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletBoost;
-import tanks.bullet.BulletHealing;
 import tanks.event.EventLayMine;
-import tanks.event.EventShootBullet;
 import tanks.event.EventTankUpdateColor;
 
-/**
- * A tank which speeds up its allies and becomes explosive as a last stand
- */
 public class TankGold extends TankAIControlled
 {
 	boolean suicidal = false;
@@ -23,17 +21,19 @@ public class TankGold extends TankAIControlled
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = true;
 		this.enableDefensiveFiring = true;
-		this.cooldownBase = 40;
-		this.cooldownRandom = 80;
+		this.cooldownBase = 50;
+		this.cooldownRandom = 0;
 		this.liveBulletMax = 5;
-		this.aimTurretSpeed = 0.04;
+		this.aimTurretSpeed = 0.03;
 		this.bulletBounces = 0;
 		this.bulletEffect = Bullet.BulletEffect.ember;
+		this.bulletClass = BulletBoost.class;
 		this.bulletDamage = 0;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
 		this.bulletSpeed = 25 / 4.0;
 		this.dealsDamage = false;
+		this.aimAccuracyOffset = 0;
 
 		this.coinValue = 4;
 
@@ -45,22 +45,20 @@ public class TankGold extends TankAIControlled
 	{
 		if (!this.suicidal)
 		{
-			boolean die = true;
-			for (int i = 0; i < Game.movables.size(); i++)
+			boolean shouldSuicide = true;
+			for (Tank t : Tank.idMap.values())
 			{
-				Movable m = Game.movables.get(i);
-				if (m != this && m.team == this.team && m.dealsDamage && !m.destroy)
+				if (!(t instanceof TankMedic || t instanceof TankGold) && Team.isAllied(this, t))
 				{
-					die = false;
+					shouldSuicide = false;
 					break;
 				}
 			}
 
-			if (die)
-				this.suicidal = true;
+			this.suicidal = shouldSuicide;
 		}
 
-		if (this.suicidal && !this.disabled)
+		if (this.suicidal)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
 			this.maxSpeed = 4.5 - 3 * Math.min(this.timeUntilDeath, 500) / 500;
@@ -79,10 +77,11 @@ public class TankGold extends TankAIControlled
 				this.colorB = 0;
 			}
 
-			Game.eventsOut.add(new EventTankUpdateColor(this));
+			if (shouldSendEvent)
+				Game.eventsOut.add(new EventTankUpdateColor(this));
 		}
 
-		if (this.timeUntilDeath <= 0)
+		if (this.timeUntilDeath <= 0 && !this.disabled)
 		{
 			Mine m = new Mine(this.posX, this.posY, 0, this);
 			m.radius *= 1.5;
@@ -105,17 +104,7 @@ public class TankGold extends TankAIControlled
 		if (this.avoidTimer <= 0 && (!this.hasTarget || r.getTarget() != this.targetEnemy))
 			return;
 
-		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bulletSize));
-		BulletBoost b = new BulletBoost(this.posX, this.posY, this.bulletBounces, this);
-		b.effect = this.bulletEffect;
-		b.team = this.team;
-		b.setPolarMotion(this.angle, this.bulletSpeed);
-		b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
-
-		Game.movables.add(b);
-		Game.eventsOut.add(new EventShootBullet(b));
-
-		this.cooldown = this.cooldownBase;
+		super.shoot();
 	}
 
 	@Override

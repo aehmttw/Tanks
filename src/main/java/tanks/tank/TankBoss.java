@@ -10,9 +10,6 @@ import tanks.registry.RegistryTank;
 
 import java.util.ArrayList;
 
-/**
- * A big boss tank which spawns other tanks and takes 5 regular bullets to destroy
- */
 public class TankBoss extends TankAIControlled
 {
 	public ArrayList<Tank> spawned = new ArrayList<>();
@@ -126,7 +123,6 @@ public class TankBoss extends TankAIControlled
 
 		Tank t = e.getTank(this.posX + x, this.posY + y, this.angle);
 		t.team = this.team;
-		t.crusadeID = this.crusadeID;
 
 		Game.eventsOut.add(new EventCreateTank(t));
 		this.spawned.add(t);

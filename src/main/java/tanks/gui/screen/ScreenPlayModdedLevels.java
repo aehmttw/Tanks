@@ -2,8 +2,8 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.ModAPI;
-import tanks.ModLevel;
+import tanks.modapi.ModAPI;
+import tanks.modapi.ModLevel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 

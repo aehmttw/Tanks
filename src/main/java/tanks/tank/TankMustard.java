@@ -4,10 +4,6 @@ import tanks.*;
 import tanks.bullet.BulletArc;
 import tanks.event.EventShootBullet;
 
-/**
- * A stationary tank which lobs bullets over walls
- * @see TankBrown
- */
 public class TankMustard extends TankAIControlled
 {
     public double radius = 1000;
@@ -24,7 +20,7 @@ public class TankMustard extends TankAIControlled
         this.aimTurretSpeed = 0.02;
         this.enableLookingAtTargetEnemy = false;
         this.cooldownBase = 200;
-        this.cooldownRandom = 100;
+        this.cooldownRandom = 0;
 
         this.coinValue = 4;
         this.turret.size *= 1.75;

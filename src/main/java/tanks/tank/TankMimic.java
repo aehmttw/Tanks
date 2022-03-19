@@ -8,9 +8,6 @@ import tanks.event.EventTankMimicTransform;
 import tanks.gui.screen.ScreenGame;
 import tanks.registry.RegistryTank;
 
-/**
- * A tank which mimics the closest tank it sees
- */
 public class TankMimic extends TankAIControlled
 {
     public Tank possessingTank = null;
@@ -107,15 +104,16 @@ public class TankMimic extends TankAIControlled
 
             Drawing.drawing.playGlobalSound("transform.ogg");
 
+            Tank enemy = (Tank) this.targetEnemy;
             if (player)
             {
-                this.possessingTank.colorR = 0;
-                this.possessingTank.colorG = 150;
-                this.possessingTank.colorB = 255;
+                this.possessingTank.colorR = enemy.colorR;
+                this.possessingTank.colorG = enemy.colorG;
+                this.possessingTank.colorB = enemy.colorB;
 
-                this.possessingTank.turret.colorR = Turret.calculateSecondaryColor(this.possessingTank.colorR);
-                this.possessingTank.turret.colorG = Turret.calculateSecondaryColor(this.possessingTank.colorG);
-                this.possessingTank.turret.colorB = Turret.calculateSecondaryColor(this.possessingTank.colorB);
+                this.possessingTank.turret.colorR = enemy.turret.colorR;
+                this.possessingTank.turret.colorG = enemy.turret.colorG;
+                this.possessingTank.turret.colorB = enemy.turret.colorB;
             }
 
             for (RegistryTank.TankEntry e: Game.registryTank.tankEntries)
@@ -123,10 +121,11 @@ public class TankMimic extends TankAIControlled
                 if (e.tank.equals(c))
                 {
                     t.name = e.name;
+                    break;
                 }
             }
 
-            Game.eventsOut.add(new EventTankMimicTransform(this.possessingTank, player));
+            Game.eventsOut.add(new EventTankMimicTransform(this.possessingTank, (Tank) this.targetEnemy, player));
 
             if (Game.effectsEnabled)
             {
@@ -189,7 +188,6 @@ public class TankMimic extends TankAIControlled
             super.updateTarget();
     }
 
-    @Override
     public boolean isInterestingPathTarget(Movable m)
     {
         return m instanceof Tank && !(m instanceof TankMimic) && ((Tank) m).size == this.size;
@@ -251,7 +249,7 @@ public class TankMimic extends TankAIControlled
             Game.movables.add(this);
             Game.removeMovables.add(this.possessingTank);
             this.skipNextUpdate = true;
-            Game.eventsOut.add(new EventTankMimicTransform(this, false));
+            Game.eventsOut.add(new EventTankMimicTransform(this, this, false));
 
             this.tryPossess();
         }

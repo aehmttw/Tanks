@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
 import tanks.tank.TankSpawnMarker;
@@ -14,8 +15,6 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 
     public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
-        this.allowClose = false;
-
         this.previous = previous;
         this.screenLevelEditor = screenLevelEditor;
 
@@ -53,7 +52,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
             this.escape();
         }
 
-        if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
+        if (Panel.selectedTextBox == null && Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
         {
             Game.game.input.editorObjectMenu.invalidate();
             Game.screen = screenLevelEditor;
@@ -89,11 +88,5 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     public double getScale()
     {
         return screenLevelEditor.getScale();
-    }
-
-    @Override
-    public void onAttemptClose()
-    {
-        Game.screen = new OverlayConfirmSave(Game.screen, this.screenLevelEditor);
     }
 }

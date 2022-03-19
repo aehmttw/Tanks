@@ -2,7 +2,6 @@ package tanks.tank;
 
 import basewindow.InputPoint;
 import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.BulletElectric;
@@ -134,7 +133,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
             else if (x == 1 && y == -1)
                 a = 7 * Math.PI / 4;
 
-            double intensity = 1;
+            double intensity;
 
             if (a < 0 && Game.game.window.touchscreen)
             {
@@ -144,7 +143,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
                     a = TankPlayer.controlStick.inputAngle;
             }
 
-            if (a >= 0 && intensity >= 0.2)
+            if (a >= 0)
             {
                 if (Game.followingCam)
                     a += this.angle + Math.PI / 2;
@@ -327,15 +326,16 @@ public class TankPlayerController extends Tank implements IPlayerTank
                 r.getTarget();
         }
 
-        super.update();
-
         this.interpolatedPosX = this.posX;
         this.interpolatedPosY = this.posY;
 
         this.posX = this.posX + this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.posY = this.posY + this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
 
-        Game.eventsOut.add(new EventTankControllerUpdateC(this));
+        if (shouldSendEvent)
+            Game.eventsOut.add(new EventTankControllerUpdateC(this));
+
+        super.update();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import tanks.Colors;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -9,6 +10,7 @@ public class ScreenOptionsGraphics extends Screen
     public static final String terrainText = "Terrain: ";
     public static final String trailsText = "Bullet trails: ";
     public static final String glowText = "Glow effects: ";
+    public static final String vsyncText = "V-Sync: ";
 
     public static final String graphics3dText = "3D graphics: ";
     public static final String ground3dText = "3D ground: ";
@@ -16,10 +18,10 @@ public class ScreenOptionsGraphics extends Screen
     public static final String antialiasingText = "Antialiasing: ";
 
     public static final String fancyText = "\u00A7000100200255fancy";
-    public static final String fastText = "\u00A7200100000255fast";
+    public static final String fastText = "" + Colors.orange + "fast";
 
     public static final String birdsEyeText = "\u00A7000100200255bird's-eye";
-    public static final String angledText = "\u00A7200100000255angled";
+    public static final String angledText = "" + Colors.orange + "angled";
 
     public static int viewNo = 0;
 
@@ -49,11 +51,9 @@ public class ScreenOptionsGraphics extends Screen
             glow.setText(glowText, ScreenOptions.offText);
 
         if (Game.vsync)
-            maxFPS.setText("Max FPS: \u00A7200100000255V-Sync");
-        else if (Game.maxFPS > 0)
-            maxFPS.setText("Max FPS: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
+            vsync.setText(vsyncText, ScreenOptions.onText);
         else
-            maxFPS.setText("Max FPS: \u00A7000100200255unlimited");
+            vsync.setText(vsyncText, ScreenOptions.offText);
 
         if (Game.enable3d)
             graphics3d.setText(graphics3dText, ScreenOptions.onText);
@@ -101,7 +101,7 @@ public class ScreenOptionsGraphics extends Screen
 
         if (Game.framework == Game.Framework.libgdx)
         {
-            maxFPS.enabled = false;
+            vsync.enabled = false;
             altPerspective.enabled = false;
             shadows.enabled = false;
         }
@@ -118,12 +118,12 @@ public class ScreenOptionsGraphics extends Screen
         if (!Game.shadowsEnabled)
             shadows.setText("Fancy lighting: ", ScreenOptions.offText);
         else
-            shadows.setText("Fancy lighting: %s", (Object)("\u00A7000200000255" + Game.shadowQuality));
+            shadows.setText("Fancy lighting: %s", (Object)("" + Colors.green + "" + Game.shadowQuality));
 
         if (!Game.effectsEnabled)
             effects.setText("Particle effects: ", ScreenOptions.offText);
         else if (Game.effectMultiplier < 1)
-            effects.setText("Particle effects: %s", (Object)("\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
+            effects.setText("Particle effects: %s", (Object)("" + Colors.orange + "" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
         else
             effects.setText("Particle effects: ", ScreenOptions.onText);
     }
@@ -160,9 +160,6 @@ public class ScreenOptionsGraphics extends Screen
                 terrain.setText(terrainText, fastText);
 
             update3dGroundButton();
-
-            Game.resetTiles();
-            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
@@ -223,7 +220,6 @@ public class ScreenOptionsGraphics extends Screen
 
             update3dGroundButton();
 
-            Game.resetTiles();
             Drawing.drawing.forceRedrawTerrain();
         }
     },
@@ -241,7 +237,6 @@ public class ScreenOptionsGraphics extends Screen
             else
                 ground3d.setText(ground3dText, ScreenOptions.offText);
 
-            Game.resetTiles();
             Drawing.drawing.forceRedrawTerrain();
         }
     },
@@ -253,7 +248,7 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            viewNo = (viewNo + 1) % 2;
+            viewNo = (viewNo + 1) % (Game.followingCamEnabled ? 4 : 2);
             switch (viewNo)
             {
                 case 0:
@@ -290,15 +285,21 @@ public class ScreenOptionsGraphics extends Screen
             "Changes the angle at which---you view the game field");
 
 
-    Button maxFPS = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button vsync = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.screen = new ScreenOptionsFramerate();
+            Game.vsync = !Game.vsync;
+            Game.game.window.setVsync(Game.vsync);
+
+            if (Game.vsync)
+                vsync.setText(vsyncText, ScreenOptions.onText);
+            else
+                vsync.setText(vsyncText, ScreenOptions.offText);
         }
     },
-            "Limiting your framerate may---decrease battery consumption");
+            "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
 
     Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -338,7 +339,7 @@ public class ScreenOptionsGraphics extends Screen
         bulletTrails.update();
         glow.update();
         effects.update();
-        maxFPS.update();
+        vsync.update();
 
         graphics3d.update();
         ground3d.update();
@@ -380,7 +381,7 @@ public class ScreenOptionsGraphics extends Screen
         ground3d.draw();
         graphics3d.draw();
 
-        maxFPS.draw();
+        vsync.draw();
         effects.draw();
         glow.draw();
         bulletTrails.draw();
@@ -389,5 +390,35 @@ public class ScreenOptionsGraphics extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Graphics options");
+    }
+
+    public static void changePerspective()
+    {
+        viewNo = (viewNo + 1) % (Game.followingCamEnabled ? 4 : 2);
+        switch (viewNo)
+        {
+            case 0:
+                Game.angledView = false;
+                Game.followingCam = false;
+                Game.firstPerson = false;
+                break;
+            case 1:
+                Game.angledView = true;
+                Game.followingCam = false;
+                Game.firstPerson = false;
+                break;
+            case 2:
+                Game.angledView = false;
+                Game.followingCam = true;
+                Game.firstPerson = false;
+                break;
+            case 3:
+                Game.angledView = false;
+                Game.followingCam = true;
+                Game.firstPerson = true;
+                break;
+        }
+
+        Drawing.drawing.forceRedrawTerrain();
     }
 }

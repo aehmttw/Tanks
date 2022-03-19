@@ -33,7 +33,7 @@ public class ScreenTestKeyboard extends Screen
 
         Drawing.drawing.setInterfaceFontSize(40);
         if (!Game.game.window.validPressedKeys.isEmpty())
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "" + Game.game.window.validPressedKeys.get(0));
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "" + Game.game.window.validPressedKeys.iterator().next());
 
         back.draw();
     }

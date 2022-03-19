@@ -1,7 +1,6 @@
 package lwjglwindow;
 
 import basewindow.BaseShapeRenderer;
-import basewindow.IBatchRenderableObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -580,6 +579,17 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glVertex2d(x + sX, y);
         glVertex2d(x + sX, y + sY);
         glEnd();
+    }
+
+    public void drawRect(double x, double y, double sX, double sY, double lineWidth)
+    {
+        if (lineWidth == 1)
+            drawRect(x, y, sX, sY);
+
+        fillRect(x, y, sX, lineWidth);
+        fillRect(x + lineWidth, y, lineWidth, sY);
+        fillRect(x + sX, y, lineWidth, sY);
+        fillRect(x + lineWidth, y + sY, sX, lineWidth);
     }
 
     public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)

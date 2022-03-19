@@ -2,18 +2,21 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletFlame;
 import tanks.event.EventChat;
 import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
 import tanks.event.EventUpdateCoins;
 import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemMine;
+import tanks.modapi.ModAPI;
+import tanks.modapi.ModLevel;
+import tanks.modapi.menus.FixedMenu;
+import tanks.modapi.menus.Scoreboard;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
@@ -59,9 +62,12 @@ public class Mine extends Movable implements IAvoidObject
         if (t != null)
             this.posZ = t.posZ;
 
+        if (this.posZ == 0)
+            this.posZ = Game.sampleGroundHeight(this.posX, this.posY);
+
         this.timer = timer;
         this.drawLevel = 2;
-        tank = t;
+        this.tank = t;
 
         this.item = item;
 
@@ -92,7 +98,7 @@ public class Mine extends Movable implements IAvoidObject
             idMap.put(this.networkID, this);
         }
 
-        for (IFixedMenu m : ModAPI.menuGroup)
+        for (FixedMenu m : ModAPI.menuGroup)
         {
             if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.mines_placed))
             {
@@ -241,53 +247,57 @@ public class Mine extends Movable implements IAvoidObject
                         if (!(Team.isAllied(this, m) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
                         {
                             Tank t = (Tank) m;
+
                             boolean kill = t.damage(this.damage, this);
 
                             if (kill)
                             {
-                                if (Game.currentLevel instanceof ModLevel)
+                                for (FixedMenu menu : ModAPI.menuGroup)
                                 {
-                                    for (IFixedMenu menu : ModAPI.menuGroup)
+                                    if (menu instanceof Scoreboard s && s.objectiveType.equals(Scoreboard.objectiveTypes.kills))
                                     {
-                                        if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-                                        {
-                                            if (!((Scoreboard) menu).teams.isEmpty())
-                                                ((Scoreboard) menu).addTeamScore(this.tank.team, 1);
+                                        if (!s.teams.isEmpty())
+                                            s.addTeamScore(this.tank.team, 1);
 
-                                            else if (this.tank instanceof TankPlayer && !((Scoreboard) menu).players.isEmpty())
-                                                ((Scoreboard) menu).addPlayerScore(((TankPlayer) this.tank).player, 1);
+                                        else if (this.tank instanceof TankPlayer && !s.players.isEmpty())
+                                            s.addPlayerScore(((TankPlayer) this.tank).player, 1);
 
-                                            else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) menu).players.isEmpty())
-                                                ((Scoreboard) menu).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-                                        }
+                                        else if (this.tank instanceof TankPlayerRemote && !s.players.isEmpty())
+                                            s.addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
                                     }
+                                }
 
-                                    if (((ModLevel) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
-                                    {
-                                        String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, false);
-                                        ScreenPartyHost.chat.add(0, new ChatMessage(message));
-                                        Game.eventsOut.add(new EventChat(message));
-                                    }
+                                if (Game.currentLevel instanceof ModLevel l && l.enableKillMessages && ScreenPartyHost.isServer)
+                                {
+                                    String message = l.generateKillMessage(t, this.tank, false);
+                                    ScreenPartyHost.chat.add(0, new ChatMessage(message));
+                                    Game.eventsOut.add(new EventChat(message));
                                 }
 
 
                                 if (this.tank.equals(Game.playerTank))
                                 {
-                                    if (Game.currentLevel instanceof ModLevel && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
-                                        Game.player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+                                    if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
+                                    {
+                                        if (Game.currentGame != null)
+                                            Game.player.hotbar.coins += Game.currentGame.playerKillCoins;
+                                        else
+                                            Game.player.hotbar.coins += Game.currentLevel.playerKillCoins;
+                                    }
+
                                     else
                                         Game.player.hotbar.coins += t.coinValue;
                                 }
-                                else if (this.tank instanceof TankPlayerRemote && (Crusade.crusadeMode || Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0))
+                                else if (this.tank instanceof TankPlayerRemote tank && (Crusade.crusadeMode || Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0))
                                 {
                                     if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
                                     {
-                                        if (Game.currentLevel instanceof ModLevel && ((ModLevel) Game.currentLevel).playerKillCoins > 0)
-                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+                                        if (Game.currentGame != null)
+                                            tank.player.hotbar.coins += Game.currentGame.playerKillCoins;
                                         else
-                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
+                                            tank.player.hotbar.coins += Game.currentLevel.playerKillCoins;
                                     }
-                                    Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+                                    Game.eventsOut.add(new EventUpdateCoins(tank.player));
                                 }
                             }
                             else
@@ -302,7 +312,7 @@ public class Mine extends Movable implements IAvoidObject
                             Game.eventsOut.add(new EventMineChangeTimer((Mine) m));
                         }
                     }
-                    else if (m instanceof Bullet && !m.destroy)
+                    else if (m instanceof Bullet && !(m instanceof BulletFlame) && !m.destroy)
                     {
                         m.destroy = true;
                     }

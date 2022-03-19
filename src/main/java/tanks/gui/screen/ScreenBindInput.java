@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
-import tanks.gui.InputSelector;
 import tanks.gui.input.InputBinding;
 
 public class ScreenBindInput extends Screen
@@ -12,8 +10,6 @@ public class ScreenBindInput extends Screen
     public InputBinding input;
     public String name;
     public Screen previous;
-    public InputSelector selector;
-    public boolean number;
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -48,7 +44,7 @@ public class ScreenBindInput extends Screen
     }
     );
 
-    public ScreenBindInput(Screen prev, InputBinding input, String name, InputSelector selector, boolean number)
+    public ScreenBindInput(Screen prev, InputBinding input, String name)
     {
         this.music = prev.music;
         this.musicID = prev.musicID;
@@ -57,8 +53,6 @@ public class ScreenBindInput extends Screen
         this.previous = prev;
         Game.game.window.validPressedButtons.clear();
         Game.game.window.validPressedKeys.clear();
-        this.selector = selector;
-        this.number = number;
     }
 
     @Override
@@ -72,23 +66,17 @@ public class ScreenBindInput extends Screen
         {
             if (!Game.game.window.validPressedKeys.isEmpty())
             {
-                input.input = Game.game.window.validPressedKeys.get(0);
+                input.input = Game.game.window.validPressedKeys.iterator().next();
                 input.inputType = InputBinding.InputType.keyboard;
                 Game.screen = previous;
                 Drawing.drawing.playSound("destroy.ogg", 2f);
-                this.selector.glowEffects.clear();
-                this.selector.lastFrame = Panel.panel.ageFrames;
-                this.selector.submitEffect(this.number);
             }
             else if (!Game.game.window.validPressedButtons.isEmpty())
             {
-                input.input = Game.game.window.validPressedButtons.get(0);
+                input.input = Game.game.window.validPressedButtons.iterator().next();
                 input.inputType = InputBinding.InputType.mouse;
                 Game.screen = previous;
                 Drawing.drawing.playSound("destroy.ogg", 2f);
-                this.selector.glowEffects.clear();
-                this.selector.lastFrame = Panel.panel.ageFrames;
-                this.selector.submitEffect(this.number);
             }
 
             Game.game.window.validPressedButtons.clear();
@@ -99,12 +87,7 @@ public class ScreenBindInput extends Screen
     @Override
     public void draw()
     {
-        //this.drawDefaultBackground();
-
-        previous.draw();
-
-        Drawing.drawing.setColor(0, 0, 0, 127);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 800, 400);

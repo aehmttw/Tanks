@@ -18,6 +18,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.*;
+import tanks.modapi.ModGame;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SteamNetworkHandler;
@@ -28,6 +29,9 @@ import tanks.tank.*;
 import tanks.translation.Translation;
 
 import java.io.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Game
@@ -89,10 +93,13 @@ public class Game
 
 	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
 
+	/** In 3d terrain mode, the ground is slightly uneven for shadows and visual effects.
+	 * This list stores the depth of each tile. */
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	public static final String version = "Tanks v1.3.1";
+	public static final String ModAPIVersion = "Mod API v1.1.0";
 	public static final int network_protocol = 39;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -112,12 +119,12 @@ public class Game
 	public static boolean bulletLocked = false;
 
 	public static boolean vsync = true;
-	public static int maxFPS = 0;
 
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 
+	public static boolean followingCamEnabled = true;
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
 
@@ -135,14 +142,13 @@ public class Game
 	public static int seed = 0;
 
 	public static boolean warnBeforeClosing = true;
+	public static boolean pauseOnDefocus = true;
 
 	public static String crashMessage = "Why would this game ever even crash anyway?";
 	public static String crashLine = "What, did you think I was a bad programmer? smh";
+	// -aehmttw
 
 	public static long crashTime = 0;
-
-	//public static boolean autoMinimapEnabled = true;
-	//public static float defaultZoom = 1.5f;
 
     public static double[] color = new double[3];
 
@@ -193,6 +199,7 @@ public class Game
 
 	public static Level currentLevel = null;
 	public static String currentLevelString = "";
+	public static ModGame currentGame = null;
 
 	public static LevelGenerator lastGenerator = null;
 
@@ -233,6 +240,15 @@ public class Game
 	public static String homedir;
 	public static Game game = new Game();
 
+	public static boolean forceTeamColors = false;
+	public static int[][] colors = {{255, 0, 0}, {0, 0, 255}, {0, 255, 0}, {255, 255, 0}, {255, 127, 0}, {0, 255, 255}, {127, 0, 255}, {255, 0, 255}};
+
+	public static int eventsPerSecond = 128;
+
+	public static boolean transparentTallTiles = false;
+
+	public static boolean autoZoom = true;
+
 	// Note: this is not used by the game to determine fullscreen status
 	// It is simply a value defined before
 	// Refer to Game.game.window.fullscreen for true fullscreen status
@@ -255,9 +271,10 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
+		NetworkEventMap.register(EventPlayerReady.class);
+		NetworkEventMap.register(EventPlayerSpectate.class);
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
-		NetworkEventMap.register(EventLevelEndQuick.class);
 		NetworkEventMap.register(EventLevelEnd.class);
 		NetworkEventMap.register(EventReturnToLobby.class);
 		NetworkEventMap.register(EventBeginCrusade.class);
@@ -272,7 +289,7 @@ public class Game
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
-		NetworkEventMap.register(EventPlayerReady.class);
+		NetworkEventMap.register(EventPlayerSpectate.class);
 		NetworkEventMap.register(EventPlayerAutoReady.class);
 		NetworkEventMap.register(EventPlayerAutoReadyConfirm.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
@@ -313,6 +330,8 @@ public class Game
 		NetworkEventMap.register(EventSendTankColors.class);
 		NetworkEventMap.register(EventShareLevel.class);
 		NetworkEventMap.register(EventShareCrusade.class);
+		NetworkEventMap.register(EventChangeUsername.class);
+		NetworkEventMap.register(EventChangeTankColor.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);
@@ -410,9 +429,10 @@ public class Game
 		registerObstacle(ObstacleShrubbery.class, "shrub");
 		registerObstacle(ObstacleMud.class, "mud");
 		registerObstacle(ObstacleIce.class, "ice");
+		registerObstacle(ObstaclePath.class, "path");
 		registerObstacle(ObstacleSnow.class, "snow");
-		//registerObstacle(ObstacleSand.class, "sand");
-		//registerObstacle(ObstacleWater.class, "water");
+		registerObstacle(ObstacleSand.class, "sand");
+		registerObstacle(ObstacleWater.class, "water");
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 
@@ -555,7 +575,7 @@ public class Game
 		catch (FileNotFoundException e)
 		{
 			Game.logger = System.err;
-			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
+			Game.logger.println(new Date() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 
 		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
@@ -717,9 +737,7 @@ public class Game
 		for (int i = 0; i < username.length(); i++)
 		{
 			if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i+1)))
-			{
 				return true;
-			}
 		}
 
 		return false;
@@ -766,6 +784,22 @@ public class Game
 			return Character.toUpperCase(s.charAt(0)) + s.substring(1).replace("-", " ").replace("_", " ").toLowerCase();
 	}
 
+	/*public static void reset()
+	{
+		resetNetworkIDs();
+
+		obstacles.clear();
+		tracks.clear();
+		movables.clear();
+		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeTracks.clear();
+
+		System.gc();
+		start();
+	}*/
+
 	public static void exitToInterlevel()
 	{
 		silentCleanUp();
@@ -774,6 +808,16 @@ public class Game
 
 	public static void exitToEditor(String name)
 	{
+		/*obstacles.clear();
+		tracks.clear();
+		movables.clear();
+		effects.clear();
+		recycleEffects.clear();
+		removeEffects.clear();
+		removeTracks.clear();
+
+		System.gc();*/
+
 		silentCleanUp();
 
 		ScreenLevelEditor s = new ScreenLevelEditor(name, Game.currentLevel);
@@ -818,7 +862,7 @@ public class Game
 		}
 
 		Game.crashTime = System.currentTimeMillis();
-		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
+		Game.logger.println(new Date() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
 
 		if (!(Game.screen instanceof ScreenCrashed) && !(Game.screen instanceof ScreenOutOfMemory))
@@ -833,7 +877,7 @@ public class Game
 				f.create();
 
 				f.startWriting();
-				f.println("Tanks crash report: " + Game.version + " - " + new Date().toString() + "\n");
+				f.println("Tanks crash report: " + Game.version + " - " + new Date() + "\n");
 
 				f.println(e.toString());
 				for (StackTraceElement el: e.getStackTrace())
@@ -859,9 +903,7 @@ public class Game
 		try
 		{
 			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
-			{
 				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
-			}
 		}
 		catch (Exception e1)
 		{
@@ -884,19 +926,14 @@ public class Game
 		Game.game.groundHeightGrid = new double[28][18];
 		Game.tileDrawables = new Obstacle[28][18];
 
-		double var = 0;
-
-		if (Game.fancyTerrain)
-			var = 20;
-
 		for (int i = 0; i < 28; i++)
 		{
 			for (int j = 0; j < 18; j++)
 			{
-				Game.tilesR[i][j] = (235 + Math.random() * var);
-				Game.tilesG[i][j] = (207 + Math.random() * var);
-				Game.tilesB[i][j] = (166 + Math.random() * var);
-				Game.tilesDepth[i][j] = Math.random() * var / 2;
+				Game.tilesR[i][j] = (255 - Math.random() * 20);
+				Game.tilesG[i][j] = (227 - Math.random() * 20);
+				Game.tilesB[i][j] = (186 - Math.random() * 20);
+				Game.tilesDepth[i][j] = Math.random() * 10;
 			}
 		}
 
@@ -916,7 +953,7 @@ public class Game
 		if (!Game.enable3dBg || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
 			return 0;
 		else
-			return Game.tilesDepth[x][y] + 0;
+			return Game.tilesDepth[x][y];
 	}
 
 	public static double sampleTerrainGroundHeight(double px, double py)
@@ -993,17 +1030,21 @@ public class Game
 					loadedMusics.add(track);
 				}
 
-				registerTankMusic(tank, track);
+				if (!Game.registryTank.tankMusics.containsKey(tank))
+					Game.registryTank.tankMusics.put(tank, new ArrayList<>());
+
+				Game.registryTank.tankMusics.get(tank).add(track);
 			}
 		}
 	}
 
-	public static void registerTankMusic(String tank, String track)
+	public static String formatTime(long millis, String format)
 	{
-		if (!Game.registryTank.tankMusics.containsKey(tank))
-			Game.registryTank.tankMusics.put(tank, new ArrayList<>());
-
-		Game.registryTank.tankMusics.get(tank).add(track);
+		return LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(millis),
+					TimeZone.getDefault().toZoneId()
+				)
+				.format(DateTimeFormatter.ofPattern(format));
 	}
 
 	public static double[] getRainbowColor(double fraction)
@@ -1060,6 +1101,7 @@ public class Game
 	{
 		cleanUp();
 		Panel.panel.zoomTimer = 0;
+		Game.currentGame = null;
 		screen = new ScreenTitle();
 		System.gc();
 	}
@@ -1204,11 +1246,14 @@ public class Game
 
 		//System.out.println(LevelGenerator.generateLevelString());
 		//Game.currentLevel = "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();
-		Level level = new Level(LevelGeneratorRandom.generateLevelString(seed));
 		//Level level = new Level("{28,18|3...6-3...4,3...4-5...6,10...19-13...14,18...19-4...12|22-14-player,14-10-brown}");
 		//Level level = new Level("{28,18|0...27-9,0...27-7|2-8-player,26-8-purple2-2}");
+
+		Level level = new Level(LevelGeneratorRandom.generateLevelString(seed));
 		level.loadLevel();
 	}
 
-
+	public static boolean lessThan(double a, double b, double c) {
+		return a < b && b < c;
+	}
 }

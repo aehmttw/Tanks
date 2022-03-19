@@ -2,12 +2,11 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
+import tanks.Colors;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.input.InputBinding;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenInfo;
 
 public class ChatBox extends TextBox
@@ -217,7 +216,7 @@ public class ChatBox extends TextBox
 			drawing.setInterfaceFontSize(this.sizeY * 0.6);
 
 			String name = this.defaultTextColor + Game.player.username;
-			String s = name + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_";
+			String s = name + ": " + Colors.black + this.inputText + "\u00a7127127127255_";
 
 			double limit = Drawing.drawing.interfaceSizeX - 80;
 			if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > limit)

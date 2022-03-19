@@ -18,6 +18,8 @@ public class ScreenSavedLevels extends Screen
 	public static int page = 0;
 	public static boolean sortByTime = false;
 
+	public static String defaultLevelString = "{28,18||0-0-player}";
+
 	public SavedFilesList fullSavedLevelsList;
 	public SavedFilesList savedLevelsList;
 
@@ -59,7 +61,7 @@ public class ScreenSavedLevels extends Screen
 	{
 		String name = System.currentTimeMillis() + ".tanks";
 
-		Level l = new Level("{28,18||0-0-player}");
+		Level l = new Level(defaultLevelString);
 		Game.screen = new ScreenLevelEditor(name, l);
 		l.loadLevel((ILevelPreviewScreen) Game.screen);
 	}
@@ -84,7 +86,7 @@ public class ScreenSavedLevels extends Screen
 						Game.screen = new OverlayEditorMenu(s, s);
 					}
 				},
-				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+				(file) -> "Last opened on " + Game.formatTime(file.lastModified(), "M/d/u---hh:mm a (") + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago)");
 
 		fullSavedLevelsList.sortedByTime = sortByTime;
 		fullSavedLevelsList.sort(sortByTime);

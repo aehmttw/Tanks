@@ -292,9 +292,9 @@ public class InputSelector implements IDrawable, ITrigger
 			else
 			{
 				if (mx < this.posX)
-					Game.screen = new ScreenBindInput(Game.screen, input.input1, this.text, this, false);
+					Game.screen = new ScreenBindInput(Game.screen, input.input1, this.text);
 				else
-					Game.screen = new ScreenBindInput(Game.screen, input.input2, this.text, this, true);
+					Game.screen = new ScreenBindInput(Game.screen, input.input2, this.text);
 
 				handled = true;
 				this.justPressed = true;
@@ -342,16 +342,5 @@ public class InputSelector implements IDrawable, ITrigger
 	{
 		this.text = String.format(this.rawText, objects);
 		this.translatedText = Translation.translate(this.rawText, objects);
-	}
-
-	public void submitEffect(boolean right)
-	{
-		double extra = this.sizeX / 4;
-
-		if (!right)
-			extra = -extra;
-
-		for (int i = 0; i < 0.2 * (this.sizeX / 2 + this.sizeY) * Game.effectMultiplier; i++)
-			Button.addEffect(this.posX + extra, this.posY, this.sizeX / 2 - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8, 0.25);
 	}
 }

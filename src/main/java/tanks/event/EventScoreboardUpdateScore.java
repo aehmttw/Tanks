@@ -1,9 +1,9 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.ModAPI;
-import tanks.gui.IFixedMenu;
-import tanks.gui.RemoteScoreboard;
+import tanks.modapi.ModAPI;
+import tanks.modapi.menus.FixedMenu;
+import tanks.modapi.menus.RemoteScoreboard;
 import tanks.network.NetworkUtils;
 
 public class EventScoreboardUpdateScore extends PersonalEvent
@@ -44,7 +44,7 @@ public class EventScoreboardUpdateScore extends PersonalEvent
     @Override
     public void execute()
     {
-        for (IFixedMenu m : ModAPI.menuGroup)
+        for (FixedMenu m : ModAPI.menuGroup)
         {
             if (m instanceof RemoteScoreboard && ((RemoteScoreboard) m).id == this.id)
             {

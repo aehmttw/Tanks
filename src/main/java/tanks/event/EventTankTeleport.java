@@ -56,7 +56,6 @@ public class EventTankTeleport extends PersonalEvent
 		b.writeDouble(this.age);
 		b.writeDouble(this.maxAge);
 		b.writeDouble(this.endAge);
-
 	}
 
 	@Override
@@ -91,14 +90,10 @@ public class EventTankTeleport extends PersonalEvent
 		t.endAge = this.endAge;
 		Game.movables.add(t);
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		for (Obstacle o : Game.obstacles)
 		{
-			Obstacle o = Game.obstacles.get(i);
-
 			if (o instanceof ObstacleTeleporter && ((o.posX == this.iX && o.posY == this.iY) || (o.posX == this.dX && o.posY == this.dY)))
-			{
-				((ObstacleTeleporter)o).cooldown = 500;
-			}
+				((ObstacleTeleporter) o).cooldown = 500;
 		}
 	}
 

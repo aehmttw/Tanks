@@ -368,20 +368,20 @@ public class Drawing
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
-	public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
-	{
-		if (this.terrainRendering)
-			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
-		else
-			this.fillBackgroundRect(x, y, sizeX, sizeY);
-	}
-
 	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
 		if (this.terrainRendering)
 			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
 		else
 			this.fillRect(x, y, sizeX, sizeY);
+	}
+
+	public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
+	{
+		if (this.terrainRendering)
+			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
+		else
+			this.fillBackgroundRect(x, y, sizeX, sizeY);
 	}
 
 	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
@@ -592,17 +592,15 @@ public class Drawing
 	}
 
 	/**
-	 * Options byte:
-	 * <p>
-	 * 0: default
-	 * <p>
-	 * +1 hide behind face
-	 * +2 hide front face
-	 * +4 hide bottom face
-	 * +8 hide top face
-	 * +16 hide left face
-	 * +32 hide right face
-	 * <p>
+	 * Options byte:<br><br>
+	 *
+	 * 0: default<br>
+	 * +1 hide behind face<br>
+	 * +2 hide front face<br>
+	 * +4 hide bottom face<br>
+	 * +8 hide top face<br>
+	 * +16 hide left face<br>
+	 * +32 hide right face<br>
 	 * +64 draw on top
 	 */
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
@@ -824,12 +822,17 @@ public class Drawing
 
 	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = Math.round(interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-		double drawY = Math.round(interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		drawInterfaceRect(x,y, sizeX, sizeY, 1);
+	}
+
+	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY, double thickness)
+	{
+		double drawX = Math.round(interfaceScale * (x - sizeX / 2 - thickness) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = Math.round(interfaceScale * (y - sizeY / 2 - thickness) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
 		double drawSizeX = Math.round(sizeX * interfaceScale);
 		double drawSizeY = Math.round(sizeY * interfaceScale);
 
-		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, thickness);
 	}
 
 	public void drawText(double x, double y, String text)
@@ -1104,39 +1107,57 @@ public class Drawing
 	public double toGameCoordsX(double x)
 	{
 		return absoluteToGameX(interfaceToAbsoluteX(x));
+
+		/*double x1 = x;
+
+		if (enableMovingCamera && movingCamera && enableMovingCameraX)
+			x1 += (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
+
+		double rawX = interfaceScale * (x1);
+
+		rawX -= (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
+
+		return (rawX) / scale - getPlayerMouseOffsetX();*/
 	}
 
 	public double toGameCoordsY(double y)
 	{
 		return absoluteToGameY(interfaceToAbsoluteY(y));
+
+		/*double y1 = y;
+
+		if (enableMovingCamera && movingCamera && enableMovingCameraY)
+			y1 += (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
+
+		double rawY = interfaceScale * (y1);
+
+		rawY -= (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
+
+		return (rawY) / scale - getPlayerMouseOffsetY();*/
 	}
 
 	public double toInterfaceCoordsX(double x)
 	{
-		return absoluteToInterfaceX(gameToAbsoluteX(x, 0));
-
-		/*double rawX = (x + getPlayerMouseOffsetX()) * scale;
+		double rawX = (x + getPlayerMouseOffsetX()) * scale;
 		rawX += (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
 		double x1 = rawX / interfaceScale;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraX)
 			x1 -= (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
 
-		return x1;*/
+		return x1;
 	}
 
 	public double toInterfaceCoordsY(double y)
 	{
-		return absoluteToInterfaceY(gameToAbsoluteY(y, 0));
-
-		/*double rawY = (y + getPlayerMouseOffsetY()) * scale;
+		double rawY = (y + getPlayerMouseOffsetY()) * scale;
 		rawY += (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
 		double y1 = rawY / interfaceScale;
 
 		if (enableMovingCamera && movingCamera && enableMovingCameraY)
 			y1 -= (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
 
-		return y1;*/
+		return y1;
 	}
 
 	public double getMouseX()
@@ -1399,16 +1420,6 @@ public class Drawing
 	public double interfaceToAbsoluteY(double y)
 	{
 		return (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-	}
-
-	public double absoluteToInterfaceX(double x)
-	{
-		return (x - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale;
-	}
-
-	public double absoluteToInterfaceY(double y)
-	{
-		return (y - Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2 ) / interfaceScale;
 	}
 
 	public boolean isOutOfBounds(double drawX, double drawY)

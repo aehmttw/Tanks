@@ -137,12 +137,7 @@ public class SteamNetworkHandler
 					readBuf.writeBytes(bytes);
 
 					if (ScreenPartyHost.isServer)
-					{
-						ServerHandler h = serverHandlersBySteamID.get(steamIDSender.getAccountID());
-
-						if (h != null)
-							h.channelRead(null, readBuf);
-					}
+						serverHandlersBySteamID.get(steamIDSender.getAccountID()).channelRead(null, readBuf);
 					else if (ScreenPartyLobby.isClient)
 						Client.handler.channelRead(null, readBuf);
 				}

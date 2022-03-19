@@ -4,7 +4,7 @@ import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class UUIDTextBox extends TextBox
 {
@@ -64,7 +64,7 @@ public class UUIDTextBox extends TextBox
             }
         }
 
-        ArrayList<Integer> texts = Game.game.window.getRawTextKeys();
+        HashSet<Integer> texts = Game.game.window.getRawTextKeys();
 
         for (int key : texts)
         {

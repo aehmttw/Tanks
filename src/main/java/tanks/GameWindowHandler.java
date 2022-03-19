@@ -13,9 +13,7 @@ public class GameWindowHandler implements IWindowHandler
 			return true;
 
 		if (!Game.screen.allowClose)
-		{
 			Game.screen.onAttemptClose();
-		}
 
 		return Game.screen.allowClose;
 	}
@@ -29,9 +27,7 @@ public class GameWindowHandler implements IWindowHandler
 		ScreenOptions.saveOptions(Game.homedir);
 
 		if (ScreenPartyHost.isServer)
-		{
 			ScreenPartyHost.server.close("The party host has closed their game");
-		}
 
 		try
 		{
@@ -44,6 +40,8 @@ public class GameWindowHandler implements IWindowHandler
 		{
 			Game.exitToCrash(e);
 		}
+
+		Game.game.window.setCursorLocked(false);
 	}
 
 }

@@ -102,8 +102,7 @@ public class ScreenCrusades extends Screen
 					else
 						Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
 				},
-				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
-
+				(file) -> "Last modified on " + Game.formatTime(file.lastModified(), "M/d/u---hh:mm a (") + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago)");
 
 		fullCrusadesList.buttons.add(0, new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate("Adventure crusade"), () ->
 		{

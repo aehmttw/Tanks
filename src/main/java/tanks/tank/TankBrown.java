@@ -2,12 +2,8 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A primitive stationary tank
- */
 public class TankBrown extends TankAIControlled
 {
-
 	public TankBrown(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tile_size, 150, 80, 0, angle, ShootAI.wander);

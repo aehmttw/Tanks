@@ -13,6 +13,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleWater;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean resistExplosions = false;
 	public boolean resistBullets = false;
 
+	/** Set to true when the tank is completely in a teleporter */
 	public boolean disabled = false;
 	public boolean inControlOfMotion = true;
 	public boolean positionLock = false;
@@ -109,11 +111,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean isBoss = false;
 	public Tank possessor;
 	public boolean overridePossessedKills = true;
+    public double waterEnterTime = 0;
 
-	public long lastFarthestInSightUpdate = 0;
-	public Tank lastFarthestInSight = null;
+	/** This is set to true if the difference between the current time and previous event time is greater than a threshold.<br>
+	 * Allows for control of the rate of events sent.<br>
+	 * Only lasts for one frame at a time. */
+	public boolean shouldSendEvent = false;
+	public long lastEventTime = 0;
 
-	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
+	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID)
 	{
 		super(x, y);
 		this.size = size;
@@ -126,7 +132,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.drawLevel = 4;
 
-		if (countID && ScreenPartyHost.isServer)
+		if (countID && !ScreenPartyLobby.isClient)
 			this.registerNetworkID();
 		else
 			this.networkID = -1;
@@ -234,9 +240,8 @@ public abstract class Tank extends Movable implements ISolidObject
 			hasCollided = true;
 		}
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		for (Obstacle o : Game.obstacles)
 		{
-			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
 
 			if (!o.tankCollision && !o.checkForObjects || o.startHeight > 1)
@@ -303,9 +308,14 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void update()
 	{
+		this.shouldSendEvent = (ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && System.currentTimeMillis() - lastEventTime > 1000.0 / Game.eventsPerSecond * Tank.idMap.size();
+
+		if (this.shouldSendEvent)
+			lastEventTime = System.currentTimeMillis();
+
 		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 
-		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy)
+		if (this.treadAnimation > this.size * 2 / 5 && !this.destroy && !ScreenGame.finished)
 		{
 			this.drawTread = true;
 
@@ -319,7 +329,8 @@ public abstract class Tank extends Movable implements ISolidObject
 		{
 			if (this.destroyTimer <= 0 && this.health <= 0)
 			{
-				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
+				if (shouldPlaySound())
+					Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
 
 				if (!freeIDs.contains(this.networkID))
 				{
@@ -370,6 +381,8 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.maxSpeedModifier = 1;
 
 		double boost = 0;
+		boolean inWater = false;
+
 		for (int i = 0; i < this.attributes.size(); i++)
 		{
 			AttributeModifier a = this.attributes.get(i);
@@ -390,6 +403,19 @@ public abstract class Tank extends Movable implements ISolidObject
 				this.maxSpeedModifier = a.getValue(this.maxSpeedModifier);
 			else if (a.name.equals("boost_effect"))
 				boost = a.getValue(boost);
+			else if (a.name.equals("water"))
+				inWater = true;
+		}
+
+		if (!inWater)
+		{
+			if (this.waterEnterTime > 0)
+				this.waterEnterTime -= Panel.frameFrequency * 10;
+
+			if (this.waterEnterTime > ObstacleWater.drownTime)
+				this.waterEnterTime = ObstacleWater.drownTime;
+
+			this.posZ = 0;
 		}
 
 		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled)
@@ -420,16 +446,14 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
 		{
-			double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
-
 			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
 			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-				this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+				this.orientation -= Movable.angleBetween(this.orientation, dir) / 10 * Panel.frameFrequency;
 			else
-				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 10 * Panel.frameFrequency;
 		}
 
-		if (!this.isRemote && this.standardUpdateEvent && ScreenPartyHost.isServer)
+		if (!this.isRemote && this.standardUpdateEvent && shouldSendEvent)
 			Game.eventsOut.add(new EventTankUpdate(this));
 
 		this.canHide = true;
@@ -469,6 +493,8 @@ public abstract class Tank extends Movable implements ISolidObject
 		Effect e2 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
 		e1.setPolarMotion(a - Math.PI / 2, this.size * 0.25);
 		e2.setPolarMotion(a + Math.PI / 2, this.size * 0.25);
+		e1.posZ = Game.sampleGroundHeight(this.posX, this.posY);
+		e2.posZ = Game.sampleGroundHeight(this.posX, this.posY);
 		e1.size = this.size / 5;
 		e2.size = this.size / 5;
 		e1.posX += e1.vX;
@@ -525,13 +551,10 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing drawing = Drawing.drawing;
 		double[] teamColor = Team.getObjectColor(this.turret.colorR, this.turret.colorG, this.turret.colorB, this);
 
-		for (int i = 0; i < this.attributes.size(); i++)
+		for (AttributeModifier a : this.attributes)
 		{
-			AttributeModifier a = this.attributes.get(i);
 			if (a.type.equals("glow"))
-			{
 				glow = a.getValue(glow);
-			}
 		}
 
 		Drawing.drawing.setColor(teamColor[0] * glow * 2, teamColor[1] * glow * 2, teamColor[2] * glow * 2, 255, 1);
@@ -549,9 +572,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (!forInterface)
 		{
-			for (int i = 0; i < this.attributes.size(); i++)
+			for (AttributeModifier a : this.attributes)
 			{
-				AttributeModifier a = this.attributes.get(i);
 				if (a.name.equals("healray"))
 				{
 					double mod = 1 + 0.4 * Math.min(1, this.health - this.baseHealth);
@@ -638,10 +660,6 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		/*Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setFontSize(24);
-		Drawing.drawing.drawText(posX, posY, 50, networkID + "");
-		*/
 		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 
@@ -714,7 +732,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		super.addAttribute(m);
 
-		if (!this.isRemote)
+		if (!this.isRemote && System.currentTimeMillis() % 1000f / Game.eventsPerSecond <= Panel.frameFrequency)
 			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, false));
 	}
 
@@ -723,7 +741,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		super.addUnduplicateAttribute(m);
 
-		if (!this.isRemote)
+		if (!this.isRemote && System.currentTimeMillis() % 1000f / Game.eventsPerSecond <= Panel.frameFrequency)
 			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
 	}
 
@@ -897,54 +915,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	}
 
-	public double getAutoZoomRaw()
+	public boolean shouldPlaySound()
 	{
-		double nearest = Double.MAX_VALUE;
-
-		double farthestInSight = -1;
-
-		for (Movable m: Game.movables)
-		{
-			if (m instanceof Tank && !Team.isAllied(m, this) && m != this && !((Tank) m).hidden && !m.destroy)
-			{
-				double boundedX = Math.min(Math.max(this.posX, Drawing.drawing.interfaceSizeX * 0.4),
-						Game.currentSizeX * Game.tile_size - Drawing.drawing.interfaceSizeX * 0.4);
-				double boundedY = Math.min(Math.max(this.posY, Drawing.drawing.interfaceSizeY * 0.4),
-						Game.currentSizeY * Game.tile_size - Drawing.drawing.interfaceSizeY * 0.4);
-
-				double xDist = Math.abs(m.posX - boundedX);
-				double yDist = Math.abs(m.posY - boundedY);
-				double dist = Math.max(xDist / (Drawing.drawing.interfaceSizeX),
-						yDist / (Drawing.drawing.interfaceSizeY)) * 3;
-
-				if (dist < nearest)
-				{
-					nearest = dist;
-				}
-
-				if (dist <= 3.5 && dist > farthestInSight)
-				{
-					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
-					r.vX = m.posX - this.posX;
-					r.vY = m.posY - this.posY;
-
-					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000)
-							|| r.getTarget() == m)
-					{
-						farthestInSight = dist;
-						this.lastFarthestInSight = (Tank) m;
-						this.lastFarthestInSightUpdate = System.currentTimeMillis();
-					}
-				}
-			}
-		}
-
-		return Math.max(nearest, farthestInSight);
-	}
-
-	public double getAutoZoom()
-	{
-		double dist = Math.min(3, Math.max(1, getAutoZoomRaw()));
-		return 1 / dist;
+		return Movable.distanceBetween(this, Game.playerTank) < Game.tile_size * 40 || Game.playerTank.destroy;
 	}
 }

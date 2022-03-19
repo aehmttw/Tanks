@@ -7,9 +7,6 @@ import tanks.tank.TeleporterOrb;
 
 import java.util.ArrayList;
 
-/**
- * A teleporter which randomly transports the player to another teleporter in the level
- */
 public class ObstacleTeleporter extends Obstacle
 {
 	public double cooldown;
@@ -123,10 +120,8 @@ public class ObstacleTeleporter extends Obstacle
 
 		if (!ScreenGame.finished)
 		{
-			for (int i = 0; i < Game.movables.size(); i++)
+			for (Movable m : Game.movables)
 			{
-				Movable m = Game.movables.get(i);
-
 				if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank) m).size)
 				{
 					t = (Tank) m;
@@ -139,13 +134,10 @@ public class ObstacleTeleporter extends Obstacle
 
 					if (!m.isRemote)
 					{
-						for (int j = 0; j < Game.obstacles.size(); j++)
+						for (Obstacle o : Game.obstacles)
 						{
-							Obstacle o = Game.obstacles.get(j);
 							if (o instanceof ObstacleTeleporter && o != this && o.groupID == this.groupID && ((ObstacleTeleporter) o).cooldown <= 0)
-							{
 								teleporters.add((ObstacleTeleporter) o);
-							}
 						}
 					}
 				}

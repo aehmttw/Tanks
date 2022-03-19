@@ -66,21 +66,21 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void draw()
 	{
+		this.checkForTransparency();
+
 		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (!Game.game.window.shapeRenderer.supportsBatching)
 		{
 			if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
-			{
 				this.height = 127;
-			}
 		}
 
 		if (Game.enable3d)
 		{
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 			Drawing.drawing.setShrubberyMode();
-			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, draw_size, draw_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+			Drawing.drawing.fillBox(this, this.posX, this.posY, this.startHeight * Game.tile_size, draw_size, draw_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
 		}
 		else
 		{
@@ -107,6 +107,9 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntry(Movable m)
 	{
+		if (this.startHeight > 0)
+			return;
+
 		if (m instanceof Tank)
 		{
 			for (int x = -1; x <= 1; x++)

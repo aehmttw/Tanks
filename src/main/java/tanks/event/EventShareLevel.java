@@ -1,12 +1,8 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
@@ -33,24 +29,20 @@ public class EventShareLevel extends PersonalEvent
 	{		
 		if (this.clientID != null)
 		{
-			Player p = null;
-
-			for (Player pl: Game.players)
+			for (Player p: Game.players)
 			{
-				if (pl.clientID.equals(this.clientID))
+				if (p.clientID.equals(this.clientID))
 				{
-					p = pl;
+					this.username = p.username;
 					break;
 				}
 			}
-
-			this.username = p.username;
 
 			ScreenPartyHost.activeScreen.sharedLevels.add(new ScreenPartyHost.SharedLevel(this.level, this.name, this.username));
 
 			Game.eventsOut.add(this);
 
-			String s = "\u00A7200000200255" + p.username + " has shared the level " + this.name.replace("_", " ") + "\u00A7000000000255";
+			String s = "\u00A7200000200255" + this.username + " has shared the level " + this.name.replace("_", " ") + Colors.black;
 
 			Drawing.drawing.playGlobalSound("join.ogg", 1.5f);
 			ScreenPartyHost.chat.add(0, new ChatMessage(s));

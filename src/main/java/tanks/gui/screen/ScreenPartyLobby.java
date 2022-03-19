@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import tanks.Colors;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.event.EventChat;
@@ -62,6 +63,9 @@ public class ScreenPartyLobby extends Screen
 	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades)
 	);
 
+	Button options = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Options", () -> Game.screen = new ScreenOptions()
+	);
+
 	@Override
 	public void update()
 	{
@@ -75,6 +79,8 @@ public class ScreenPartyLobby extends Screen
 
 		share.update();
 		shared.update();
+
+		options.update();
 	}
 
 	@Override
@@ -102,31 +108,30 @@ public class ScreenPartyLobby extends Screen
 			if ((this.usernamePage + 1) * entries_per_page < connections.size())
 				this.nextUsernamePage.draw();
 
-
 			exit.draw();
 			shared.draw();
 			share.draw();
 
-			if (connections != null)
-			{
-				for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), connections.size()); i++)
-				{
-					if (connections.get(i).username != null)
-					{
-						String n = connections.get(i).username;
-						if (connections.get(i).clientId.equals(Game.clientID))
-							n = "\u00A7000127255255" + n;
-						else if (i == 0)
-							n = "\u00A7000200000255" + n;
+			options.draw();
 
-						Drawing.drawing.setColor(0, 0, 0);
-						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset,
-								Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
-								n);
-					}
+			for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), connections.size()); i++)
+			{
+				if (connections.get(i).username != null)
+				{
+					String n = connections.get(i).username;
+					if (connections.get(i).clientID.equals(Game.clientID))
+						n = Colors.blue + n;
+					else if (i == 0)
+						n = Colors.green + n;
+
+					Drawing.drawing.setColor(0, 0, 0);
+					Drawing.drawing.drawInterfaceText(
+							Drawing.drawing.interfaceSizeX / 2 + username_x_offset,
+							Drawing.drawing.interfaceSizeY / 2 + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
+							n
+					);
 				}
 			}
 		}
 	}
-
 }

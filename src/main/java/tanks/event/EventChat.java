@@ -2,7 +2,6 @@ package tanks.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.Player;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -26,7 +25,6 @@ public class EventChat extends PersonalEvent
 	@Override
 	public void execute() 
 	{
-
 		if (this.clientID == null)
 			ScreenPartyLobby.chat.add(0, new ChatMessage(this.message));
 		else
@@ -37,10 +35,8 @@ public class EventChat extends PersonalEvent
 					return;
 			}
 
-			for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
+			for (ServerHandler s : ScreenPartyHost.server.connections)
 			{
-				ServerHandler s = ScreenPartyHost.server.connections.get(i);
-
 				if (s.clientID != null && s.clientID.equals(this.clientID))
 				{
 					ScreenPartyHost.chat.add(0, new ChatMessage(s.player, this.message));

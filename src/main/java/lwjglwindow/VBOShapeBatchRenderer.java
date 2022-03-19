@@ -10,11 +10,9 @@ import org.lwjgl.opengl.GL15;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glDepthMask;
 
 public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 {
@@ -255,15 +253,10 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         public void pushNode(PointQueueNode n)
         {
             if (start == null)
-            {
                 start = n;
-                end = n;
-            }
             else
-            {
                 end.next = n;
-                end = n;
-            }
+            end = n;
         }
 
         public PointQueueNode popNode()

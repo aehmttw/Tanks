@@ -8,18 +8,16 @@ import tanks.bullet.BulletElectric;
 import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.gui.Button;
-import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
+import tanks.modapi.ModAPI;
+import tanks.modapi.menus.FixedMenu;
+import tanks.modapi.menus.Scoreboard;
 
-/**
- * A tank that is controlled by the player.
- */
 public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 {
 	public static Item default_bullet;
@@ -102,10 +100,10 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 
 		if (destroy && this.enableDestroyCheat)
 		{
-			for (int i = 0; i < Game.movables.size(); i++)
+			for (Movable m : Game.movables)
 			{
-				if (!Team.isAllied(this, Game.movables.get(i)))
-					Game.movables.get(i).destroy = true;
+				if (!Team.isAllied(this, m))
+					m.destroy = true;
 			}
 		}
 
@@ -161,7 +159,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			else if (x == 1 && y == -1)
 				a = 7 * Math.PI / 4;
 
-			double intensity = 1;
+			double intensity;
 
 			if (a < 0 && Game.game.window.touchscreen)
 			{
@@ -171,7 +169,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 					a = controlStick.inputAngle;
 			}
 
-			if (a >= 0 && intensity >= 0.2)
+			if (a >= 0)
 			{
 				if (Game.followingCam)
 					a += this.angle + Math.PI / 2;
@@ -201,7 +199,6 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			this.cooldown -= Panel.frameFrequency;
 
 		boolean shoot = !Game.game.window.touchscreen && Game.game.input.shoot.isPressed();
-
 		boolean mine = !Game.game.window.touchscreen && Game.game.input.mine.isPressed();
 
 		boolean showRange = false;
@@ -365,6 +362,9 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 
 	public void shoot()
 	{
+		if (Game.currentGame != null && !Game.currentGame.enableShooting)
+			return;
+
 		if (Game.bulletLocked || this.destroy)
 			return;
 
@@ -411,7 +411,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			speed = Double.MIN_NORMAL;
 
 		if (b.itemSound != null)
-			Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
+			Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size), Game.soundVolume * b.itemSoundVolume);
 
 		b.setPolarMotion(this.angle + offset, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
@@ -436,6 +436,9 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 	public void layMine()
 	{
 		if (Game.bulletLocked || this.destroy)
+			return;
+
+		if (Game.currentGame != null && !Game.currentGame.enableLayingMines)
 			return;
 
 		if (Game.player.hotbar.enabledItemBar)
@@ -489,7 +492,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		if (Crusade.crusadeMode)
 			this.player.remainingLives--;
 
-		for (IFixedMenu m : ModAPI.menuGroup)
+		for (FixedMenu m : ModAPI.menuGroup)
 		{
 			if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
 			{

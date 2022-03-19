@@ -93,18 +93,12 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
     public ScreenPartyInterlevel()
     {
+        if (Game.followingCam)
+            Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);
+
         Game.player.hotbar.percentHidden = 100;
 
-        if (Panel.win)
-        {
-            //Drawing.drawing.playSound("win.ogg");
-            this.music = "win_music.ogg";
-        }
-        else
-        {
-            //Drawing.drawing.playSound("lose.ogg");
-            this.music = "lose_music.ogg";
-        }
+        this.music = (Panel.win ? "win" : "lose") + "_music.ogg";
 
         if (Panel.win && Game.effectsEnabled)
         {

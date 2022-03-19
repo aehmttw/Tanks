@@ -8,13 +8,17 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 import tanks.Game;
+import tanks.Panel;
+import tanks.gui.screen.ScreenGame;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -22,6 +26,7 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -373,14 +378,10 @@ public class LWJGLWindow extends BaseWindow
 
 		glfwGetWindowSize(window, w, h);
 
-		if (w[0] > 0 || h[0] > 0)
-			this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
+		this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
 
-		if (w[0] > 0)
-			absoluteWidth = w[0];
-
-		if (h[0] > 0)
-			absoluteHeight = h[0];
+		absoluteWidth = w[0];
+		absoluteHeight = h[0];
 
 		glfwGetCursorPos(window, mx, my);
 		absoluteMouseX = mx[0];
@@ -424,10 +425,13 @@ public class LWJGLWindow extends BaseWindow
 			shouldClose = windowHandler.attemptCloseWindow();
 
 			if (!shouldClose)
-			{
 				glfwSetWindowShouldClose(window, false);
-			}
 		}
+
+		Panel.focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
+
+		if (!Panel.focused && Game.pauseOnDefocus && Game.screen instanceof ScreenGame)
+			((ScreenGame) Game.screen).paused = true;
 
 		this.stopTiming();
 
@@ -743,7 +747,7 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public ArrayList<Integer> getRawTextKeys()
+	public HashSet<Integer> getRawTextKeys()
 	{
 		return this.textValidPressedKeys;
 	}

@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.tank.Tank;
@@ -45,7 +42,7 @@ public class ScreenOverlayChat
         if (chatbox != null)
         {
             if (isDark())
-                chatbox.defaultTextColor = "\u00A7255255255255";
+                chatbox.defaultTextColor = Colors.white;
 
             chatbox.draw(persistent);
             long time = System.currentTimeMillis();

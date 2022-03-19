@@ -26,7 +26,7 @@ public class EventUpdateReadyPlayers extends PersonalEvent
 		if (players.size() == 0)
 			readyPlayers = "";
 		else
-			readyPlayers = s.toString().substring(0, s.length() - 1);
+			readyPlayers = s.substring(0, s.length() - 1);
 	}
 
 	@Override

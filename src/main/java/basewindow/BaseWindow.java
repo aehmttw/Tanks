@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public abstract class BaseWindow
 {
@@ -43,14 +44,14 @@ public abstract class BaseWindow
 
     public HashMap<Integer, InputPoint> touchPoints = new HashMap<>();
 
-    public ArrayList<Integer> pressedKeys = new ArrayList<>();
-    public ArrayList<Integer> validPressedKeys = new ArrayList<>();
+    public HashSet<Integer> pressedKeys = new HashSet<>();
+    public HashSet<Integer> validPressedKeys = new HashSet<>();
 
-    public ArrayList<Integer> textPressedKeys = new ArrayList<>();
-    public ArrayList<Integer> textValidPressedKeys = new ArrayList<>();
+    public HashSet<Integer> textPressedKeys = new HashSet<>();
+    public HashSet<Integer> textValidPressedKeys = new HashSet<>();
 
-    public ArrayList<Integer> pressedButtons = new ArrayList<>();
-    public ArrayList<Integer> validPressedButtons = new ArrayList<>();
+    public HashSet<Integer> pressedButtons = new HashSet<>();
+    public HashSet<Integer> validPressedButtons = new HashSet<>();
 
     public boolean validScrollUp;
     public boolean validScrollDown;
@@ -202,7 +203,7 @@ public abstract class BaseWindow
 
     public abstract void setVsync(boolean enable);
 
-    public abstract ArrayList<Integer> getRawTextKeys();
+    public abstract HashSet<Integer> getRawTextKeys();
 
     public abstract String getKeyText(int key);
 

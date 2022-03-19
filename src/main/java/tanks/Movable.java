@@ -72,17 +72,16 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 			double vY2 = this.vY;
 			double vZ2 = this.vZ;
 
-			ArrayList<AttributeModifier> toRemove = new ArrayList<>();
-			for (AttributeModifier a : attributes)
+			ArrayList<AttributeModifier> removeAttributes = new ArrayList<>();
+			for (int i = 0; i < this.attributes.size(); i++)
 			{
+				AttributeModifier a = this.attributes.get(i);
+				
 				if (a.expired)
-				{
-					// Adds attribute to list to later get removed.
-					toRemove.add(a);
-				}
-
+					removeAttributes.add(a);
+				
 				a.update();
-
+				
 				if (!a.expired && a.type.equals("velocity"))
 				{
 					vX2 = a.getValue(vX2);
@@ -91,10 +90,12 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 				}
 			}
 
-			for (AttributeModifier a : toRemove)
+			for (int i = 0; i < removeAttributes.size(); i++)
 			{
-				attributes.remove(a);
+				this.attributes.remove(removeAttributes.get(i));
 			}
+
+			removeAttributes.clear();
 
 			this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 			this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
@@ -233,7 +234,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		double velX = velocity * Math.cos(angle);
 		double velY = velocity * Math.sin(angle);
 		this.vX = velX;
-		this.vY = velY;
+		this.vY = velY;			
 	}
 
 	public void set3dPolarMotion(double angle1, double angle2, double velocity)
@@ -252,7 +253,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		double velX = velocity * Math.cos(angle);
 		double velY = velocity * Math.sin(angle);
 		this.vX += velX;
-		this.vY += velY;
+		this.vY += velY;			
 	}
 
 	public void add3dPolarMotion(double angle1, double angle2, double velocity)
@@ -319,7 +320,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 				i--;
 			}
 		}
-
+		
 		this.attributes.add(m);
 	}
 
@@ -348,11 +349,17 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 
 	public static double distanceBetween(final Movable a, final Movable b)
 	{
+		if (a == null || b == null)
+			return -1;
+
 		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
 	}
 	
 	public static double distanceBetween(final Obstacle a, final Movable b)
 	{
+		if (a == null || b == null)
+			return -1;
+
 		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
 	}
 

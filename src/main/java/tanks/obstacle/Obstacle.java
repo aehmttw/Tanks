@@ -18,6 +18,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public boolean enableStacking = true;
 	public double stackHeight = 1;
+	public double startHeight = 0;
 
 	public boolean enableGroupID = false;
 	public int groupID = 0;
@@ -26,6 +27,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public boolean checkForObjects = false;
 	public boolean update = false;
+    public boolean updateEventTime = false;
 	public boolean draggable = true;
 	public boolean bouncy = false;
 	public boolean allowBounce = true;
@@ -34,7 +36,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public double posX;
 	public double posY;
-	public double startHeight = 0;
 	public double colorR;
 	public double colorG;
 	public double colorB;
@@ -59,12 +60,18 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
 
-	protected boolean[] validFaces = new boolean[2];
+	public double attributeModifierDuration = -1;
+	/** This is set to true if the difference between the current time and previous event time is greater than a threshold.<br>
+	 * Allows for control of the rate of events sent.<br>
+	 * Only lasts for one frame at a time. */
+    public boolean shouldSendEvent = true;
 
-	protected byte[] options = new byte[default_max_height];
-	protected byte[] lastOptions = new byte[default_max_height];
+    protected boolean[] validFaces = new boolean[2];
 
-	public Obstacle(String name, double posX, double posY)
+    protected byte[] options = new byte[default_max_height];
+    protected byte[] lastOptions = new byte[default_max_height];
+
+    public Obstacle(String name, double posX, double posY)
 	{
 		this.name = name;
 		this.posX = (int) ((posX + 0.5) * Game.tile_size);
@@ -96,6 +103,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	{
 		if (this.stackHeight <= 0)
 			return;
+
+		this.checkForTransparency();
 
 		Drawing drawing = Drawing.drawing;
 
@@ -145,6 +154,27 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 			drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
 	}
 
+	public void checkForTransparency()
+	{
+		if (!Game.transparentTallTiles)
+			return;
+
+        if (this.startHeight > 2 && !Game.followingCam)
+        {
+            if (this.colorA > 150 && this.batchDraw)
+                this.setRedrawn(false);
+
+            this.colorA = 150;
+        }
+        else
+        {
+            if (this.colorA < 255 && this.batchDraw)
+                this.setRedrawn(false);
+
+            this.colorA = 255;
+        }
+	}
+
 	@Override
 	public void drawGlow()
 	{
@@ -190,7 +220,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public void onObjectEntry(Movable m)
 	{
-
+		this.onObjectEntryLocal(m);
 	}
 
 	/** Only for visual effects which are to be handled by each client separately*/
@@ -215,9 +245,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		int y = (int) (this.posY / Game.tile_size);
 
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
 			return Game.game.solidGrid[x][y];
-		}
 
 		return false;
 	}
@@ -228,9 +256,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		int y = (int) (this.posY / Game.tile_size);
 
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
 			return Game.game.solidGrid[x][y];
-		}
 
 		return false;
 	}
@@ -241,9 +267,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		int y = (int) (this.posY / Game.tile_size) - 1;
 
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
 			return Game.game.solidGrid[x][y];
-		}
 
 		return false;
 	}
@@ -254,9 +278,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		int y = (int) (this.posY / Game.tile_size) + 1;
 
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
 			return Game.game.solidGrid[x][y];
-		}
 
 		return false;
 	}
@@ -264,18 +286,18 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	/**
 	 * Draws the tile under the obstacle if it needs to be drawn differently than when not covered by an obstacle
 	 *
-	 * @param r Red
-	 * @param g Green
-	 * @param b Blue
-	 * @param d Tile height
+	 * @param r Tile Red
+	 * @param g Tile Green
+	 * @param b Tile Blue
+	 * @param depth Tile height
 	 * @param extra The deepest tile next to the current tile, used to render sides underground
 	 */
-	public void drawTile(double r, double g, double b, double d, double extra)
+	public void drawTile(double r, double g, double b, double depth, double extra)
 	{
-		if (Obstacle.draw_size < Game.tile_size || extra != 0)
+		if (Obstacle.draw_size < Game.tile_size || extra != 0 || this.startHeight > 0)
 		{
 			Drawing.drawing.setColor(r, g, b);
-			Drawing.drawing.fillBox(this, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d * (1 - Obstacle.draw_size / Game.tile_size));
+			Drawing.drawing.fillBox(this, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + depth * (this.startHeight > 0 ? 1 : 1 - Obstacle.draw_size / Game.tile_size));
 		}
 	}
 
@@ -377,11 +399,15 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		return -1000;
 	}
 
+	/** <code>h</code> is the tile height of the current obstacle. */
 	public byte getOptionsByte(double h)
 	{
+		if (this.startHeight > 0 && Game.transparentTallTiles)
+			return 60;
+
 		byte o = 0;
 
-		if (Obstacle.draw_size < Game.tile_size)
+		if (Obstacle.draw_size < Game.tile_size || this.startHeight > 0)
 			return 0;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
@@ -513,6 +539,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		return this.redrawn;
 	}
 
+	/** If you want to redraw the obstacle, set <code>b</code> to <code>false</code>. **/
 	public void setRedrawn(boolean b)
 	{
 		this.redrawn = b;

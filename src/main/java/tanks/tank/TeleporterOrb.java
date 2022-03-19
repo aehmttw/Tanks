@@ -3,11 +3,6 @@ package tanks.tank;
 import tanks.*;
 import tanks.event.EventTankTeleport;
 
-/**
- * The orb that transfers the player's tank which is fired from the teleporter.
- * @see TankPlayer
- * @see tanks.obstacle.ObstacleTeleporter
- */
 public class TeleporterOrb extends Movable
 {
 	public Tank tank;

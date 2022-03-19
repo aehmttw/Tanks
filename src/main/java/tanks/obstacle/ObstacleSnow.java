@@ -58,25 +58,27 @@ public class ObstacleSnow extends Obstacle
     {
         if (!ScreenPartyLobby.isClient && (m instanceof Tank || m instanceof Bullet))
         {
-            AttributeModifier a = new AttributeModifier("snow_velocity", "velocity", AttributeModifier.Operation.multiply, -0.25);
-            a.duration = 30;
-            a.deteriorationAge = 20;
-            m.addUnduplicateAttribute(a);
-
-            if (!(m instanceof TankAIControlled))
-            {
-                AttributeModifier b = new AttributeModifier("snow_friction", "friction", AttributeModifier.Operation.multiply, 4);
-                b.duration = 10;
-                b.deteriorationAge = 5;
-                m.addUnduplicateAttribute(b);
-            }
-
             this.depth -= Panel.frameFrequency * 0.005;
 
             if (this.depth <= 0)
                 Game.removeObstacles.add(this);
 
-            Game.eventsOut.add(new EventObstacleSnowMelt(this.posX, this.posY, this.depth));
+            if (shouldSendEvent)
+            {
+                AttributeModifier a = new AttributeModifier("snow_velocity", "velocity", AttributeModifier.Operation.multiply, -0.25);
+                a.duration = 30;
+                a.deteriorationAge = 20;
+                m.addUnduplicateAttribute(a);
+
+                if (!(m instanceof TankAIControlled)) {
+                    AttributeModifier b = new AttributeModifier("snow_friction", "friction", AttributeModifier.Operation.multiply, 4);
+                    b.duration = 10;
+                    b.deteriorationAge = 5;
+                    m.addUnduplicateAttribute(b);
+                }
+
+                Game.eventsOut.add(new EventObstacleSnowMelt(this.posX, this.posY, this.depth));
+            }
         }
 
         this.onObjectEntryLocal(m);
@@ -116,20 +118,18 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw()
     {
+        this.checkForTransparency();
+
         if (!Game.game.window.shapeRenderer.supportsBatching)
         {
             if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
                 this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);
 
             if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
-            {
                 this.visualDepth = 0.5;
-            }
 
             if (ScreenGame.finishedQuick && Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
-            {
                 this.visualDepth = Math.max(0.5, this.visualDepth - Panel.frameFrequency / 127);
-            }
         }
 
         this.colorR = this.baseColorR * (this.depth + 4) / 5;

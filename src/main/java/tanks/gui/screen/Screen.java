@@ -40,7 +40,8 @@ public abstract class Screen implements IBatchRenderableObject
 
 	public Screen(double objWidth, double objHeight, double objXSpace, double objYSpace)
 	{
-		//Game.game.window.setCursorLocked(false);
+		if (Game.game.window != null)
+			Game.game.window.setCursorLocked(false);
 
 		this.objWidth = objWidth;
 		this.objHeight = objHeight;
@@ -141,12 +142,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 				double frac2 = 0;
 				if (i1 >= 0 && i1 < Game.currentSizeX && j1 >= 0 && j1 < Game.currentSizeY)
-				{
-					if (Game.fancyTerrain)
-						Drawing.drawing.setColor(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j]);
-					else
-						Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
-				}
+					Drawing.drawing.setColor(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j]);
 				else
 				{
 					inBounds = false;
@@ -160,13 +156,13 @@ public abstract class Screen implements IBatchRenderableObject
 
 				if (Game.enable3d)
 				{
-					double z1 = 0;
+					double depth = 0;
 
 					byte o = 61;
 
-					if (Game.enable3dBg && Game.fancyTerrain && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && !Game.game.window.shapeRenderer.supportsBatching))
+					if (Game.enable3dBg && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && Game.game.window.shapeRenderer.supportsBatching))
 					{
-						z1 = Game.tilesDepth[i][j];
+						depth = Game.tilesDepth[i][j];
 						o = 1;
 					}
 
@@ -187,7 +183,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 					if (Game.tileDrawables[i][j] != null && inBounds)
 					{
-						Game.tileDrawables[i][j].drawTile(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j], z1, extra);
+						Game.tileDrawables[i][j].drawTile(Game.tilesR[i][j], Game.tilesG[i][j], Game.tilesB[i][j], depth, extra);
 
 						if (!Game.game.window.drawingShadow)
 							Game.tileDrawables[i][j] = null;
@@ -201,7 +197,7 @@ public abstract class Screen implements IBatchRenderableObject
 							Drawing.drawing.fillBox(this,
 									(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
 									(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-									Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Game.tile_size + z1,
+									Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Game.tile_size + depth,
 									Game.tile_size / Game.bgResMultiplier,
 									Game.tile_size / Game.bgResMultiplier,
 									Game.tile_size);
@@ -213,7 +209,7 @@ public abstract class Screen implements IBatchRenderableObject
 									-extra,
 									Game.tile_size / Game.bgResMultiplier,
 									Game.tile_size / Game.bgResMultiplier,
-									extra + z1 * (1 - frac2), o);
+									extra + depth * (1 - frac2), o);
 						}
 					}
 				}

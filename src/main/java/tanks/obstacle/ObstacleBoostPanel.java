@@ -24,10 +24,13 @@ public class ObstacleBoostPanel extends Obstacle
 
         this.isSurfaceTile = true;
         this.update = true;
+        this.updateEventTime = true;
 
         this.colorR = 255;
         this.colorG = 180;
         this.colorB = 0;
+
+        this.attributeModifierDuration = 50;
 
         glow = Effect.createNewEffect(this.posX, this.posY, 0, Effect.EffectType.boostLight);
 
@@ -42,8 +45,10 @@ public class ObstacleBoostPanel extends Obstacle
         boolean effect = true;
         for (AttributeModifier am : m.attributes)
         {
-            if (am.name.equals("boost_glow") && am.age < am.deteriorationAge)
+            if (am.name.equals("boost_glow") && am.age < am.deteriorationAge) {
                 effect = false;
+                break;
+            }
         }
 
         if (Game.playerTank != null && !Game.playerTank.destroy && effect && !(m instanceof Bullet && !((Bullet) m).playPopSound))
@@ -52,9 +57,7 @@ public class ObstacleBoostPanel extends Obstacle
 
             double radius = 250000;
             if (distsq <= radius)
-            {
                 Drawing.drawing.playSound("boost.ogg", 1, (float) ((radius - distsq) / radius));
-            }
         }
 
         if (Game.effectsEnabled && !ScreenGame.finished && !(m instanceof Bullet && !((Bullet) m).playPopSound))
@@ -62,9 +65,7 @@ public class ObstacleBoostPanel extends Obstacle
             if (effect)
             {
                 for (int i = 0; i < 25 * Game.effectMultiplier; i++)
-                {
                     this.addEffect(m.posX, m.posY, 0.5);
-                }
             }
             else if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.25)
                 this.addEffect(m.posX, m.posY, 0);
@@ -76,30 +77,30 @@ public class ObstacleBoostPanel extends Obstacle
     {
         this.onObjectEntryLocal(m);
 
-        double d = 1;
+        if (shouldSendEvent)
+        {
+            AttributeModifier c = new AttributeModifier("boost_speed", "velocity", AttributeModifier.Operation.multiply, m instanceof Tank ? 3 : 1);
+            c.duration = this.attributeModifierDuration;
+            c.deteriorationAge = this.attributeModifierDuration / 5;
+            m.addUnduplicateAttribute(c);
 
-        if (m instanceof Tank)
-            d = 3;
+            AttributeModifier a = new AttributeModifier("boost_glow", "glow", AttributeModifier.Operation.multiply, 1);
+            a.duration = this.attributeModifierDuration;
+            a.deteriorationAge = this.attributeModifierDuration / 5;
+            m.addUnduplicateAttribute(a);
 
-        AttributeModifier c = new AttributeModifier("boost_speed", "velocity", AttributeModifier.Operation.multiply, d);
-        c.duration = 50;
-        c.deteriorationAge = 10;
-        m.addUnduplicateAttribute(c);
-
-        AttributeModifier a = new AttributeModifier("boost_glow", "glow", AttributeModifier.Operation.multiply, 1);
-        a.duration = 50;
-        a.deteriorationAge = 10;
-        m.addUnduplicateAttribute(a);
-
-        AttributeModifier b = new AttributeModifier("boost_slip", "friction", AttributeModifier.Operation.multiply, -0.75);
-        b.duration = 50;
-        b.deteriorationAge = 10;
-        m.addUnduplicateAttribute(b);
+            AttributeModifier b = new AttributeModifier("boost_slip", "friction", AttributeModifier.Operation.multiply, -0.75);
+            b.duration = this.attributeModifierDuration;
+            b.deteriorationAge = this.attributeModifierDuration / 5;
+            m.addUnduplicateAttribute(b);
+        }
     }
 
     @Override
     public void draw()
     {
+        this.checkForTransparency();
+
         double offset = 0;
 
         if (Game.fancyTerrain)

@@ -69,7 +69,8 @@ public class FontRenderer extends BaseFontRenderer
 		{
 			if (c[i] == '\u00C2')
 				continue;
-			else if (c[i] == '\u00A7')
+
+			if (c[i] == '\u00A7')
 			{
 				int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
@@ -95,7 +96,8 @@ public class FontRenderer extends BaseFontRenderer
 		{
 			if (c[i] == '\u00C2')
 				continue;
-			else if (c[i] == '\u00A7')
+
+			if (c[i] == '\u00A7')
 			{
 				int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
@@ -119,7 +121,8 @@ public class FontRenderer extends BaseFontRenderer
 		{
 			if (c[i] == '\u00C2')
 				continue;
-			else if (c[i] == '\u00A7')
+
+			if (c[i] == '\u00A7')
 				i += 12;
 			else if (this.chars.indexOf(c[i]) == -1)
 				c[i] = '?';

@@ -1,10 +1,11 @@
 package tanks.challenges;
 
-import tanks.ModAPI;
-import tanks.ModLevel;
-import tanks.gui.Scoreboard;
+import tanks.modapi.ModAPI;
+import tanks.modapi.ModLevel;
+import tanks.modapi.menus.FixedText;
+import tanks.modapi.menus.Scoreboard;
 import tanks.obstacle.ObstacleIndestructible;
-import tanks.tank.TankNPC;
+import tanks.modapi.TankNPC;
 
 public class TeamDeathmatch extends ModLevel
 {
@@ -39,10 +40,10 @@ public class TeamDeathmatch extends ModLevel
         o.startHeight = 2;
         ModAPI.addObject(o);
 
-        ModAPI.displayText("title", "Team Deathmatch", false, 5000, 255, 0, 0);
-        ModAPI.displayText("subtitle", "Kill all your enemies", false, 5000, 255, 255, 255);
+        ModAPI.displayText(FixedText.types.title, "Team Deathmatch", false, 5000, 255, 0, 0);
+        ModAPI.displayText(FixedText.types.subtitle, "Kill all your enemies", false, 5000, 255, 255, 255);
 
-        // ModAPI.displayTextGroup("title", new String[] {"3", "2", "1", "Fight!"}, true, new Integer[] {1000, 1000, 1000, 1000});
-        // ModAPI.displayText("actionbar", "Use the teleporters!", true, 3000, 255, 255, 255);
+        // ModAPI.displayTextGroup(FixedText.types.title, new String[] {"3", "2", "1", "Fight!"}, true, new Integer[] {1000, 1000, 1000, 1000});
+        // ModAPI.displayText(FixedText.types.actionbar, "Use the teleporters!", true, 3000, 255, 255, 255);
     }
 }

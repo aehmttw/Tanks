@@ -3,7 +3,7 @@ package tanks.event;
 import tanks.Crusade;
 import tanks.Game;
 
-public class EventPlayerAutoReady extends EventPlayerReady
+public class EventPlayerAutoReady extends EventPlayerSpectate
 {
     @Override
     public void execute()

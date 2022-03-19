@@ -9,9 +9,6 @@ import tanks.bullet.BulletHealing;
 import tanks.event.EventLayMine;
 import tanks.event.EventTankUpdateColor;
 
-/**
- * A tank which adds extra health to its allies and becomes explosive as a last stand
- */
 public class TankMedic extends TankAIControlled
 {
 	boolean suicidal = false;
@@ -29,14 +26,16 @@ public class TankMedic extends TankAIControlled
 		this.liveBulletMax = 1;
 		this.cooldownRandom = 0;
 		this.cooldownBase = 0;
-		this.aimTurretSpeed = 0.02;
+		this.aimTurretSpeed = 0.03;
 		this.bulletBounces = 0;
+		this.bulletClass = BulletHealing.class;
 		this.bulletEffect = Bullet.BulletEffect.none;
-		this.bulletDamage = 0;
+		this.bulletDamage = 0.01;
 		this.motionChangeChance = 0.001;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
 		this.dealsDamage = false;
+		this.bulletSound = null;
 
 		this.coinValue = 4;
 
@@ -48,21 +47,20 @@ public class TankMedic extends TankAIControlled
 	{
 		if (!this.suicidal)
 		{
-			boolean die = true;
-			for (Movable m: Game.movables)
+			boolean shouldSuicide = true;
+			for (Tank t : Tank.idMap.values())
 			{
-				if (m != this && m.team == this.team && m.dealsDamage && !m.destroy)
+				if (!(t instanceof TankMedic || t instanceof TankGold) && Team.isAllied(this, t))
 				{
-					die = false;
+					shouldSuicide = false;
 					break;
 				}
 			}
 
-			if (die)
-				this.suicidal = true;
+			this.suicidal = shouldSuicide;
 		}
 
-		if (this.suicidal && !this.disabled)
+		if (this.suicidal)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
 			this.maxSpeed = 3 - 2 * Math.min(this.timeUntilDeath, 500) / 500;
@@ -82,10 +80,11 @@ public class TankMedic extends TankAIControlled
 				this.colorB = 0;
 			}
 
-			Game.eventsOut.add(new EventTankUpdateColor(this));
+			if (shouldSendEvent)
+				Game.eventsOut.add(new EventTankUpdateColor(this));
 		}
 
-		if (this.timeUntilDeath <= 0)
+		if (this.timeUntilDeath <= 0 && !this.disabled)
 		{
 			Mine m = new Mine(this.posX, this.posY, 0, this);
 			Game.eventsOut.add(new EventLayMine(m));
@@ -106,16 +105,7 @@ public class TankMedic extends TankAIControlled
 		if (!this.hasTarget || r.getTarget() != this.targetEnemy)
 			return;
 
-		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bulletBounces, this);
-		b.frameDamageMultipler = Panel.frameFrequency;
-		b.team = this.team;
-		b.setPolarMotion(this.angle, 25.0/8);
-		b.moveOut(16);
-		Game.movables.add(b);
-
-		//Drawing.drawing.playGlobalSound("heal.ogg", 0.75f);
-
-		this.cooldown = this.cooldownBase;
+		super.launchBullet(0);
 	}
 
 	@Override
@@ -156,7 +146,6 @@ public class TankMedic extends TankAIControlled
 		this.targetEnemy = nearest;
 	}
 
-	@Override
 	public void reactToTargetEnemySight()
 	{
 		if (this.suicidal && this.targetEnemy != null)
@@ -166,7 +155,6 @@ public class TankMedic extends TankAIControlled
 		}
 	}
 
-	@Override
 	public boolean isInterestingPathTarget(Movable m)
 	{
 		return m instanceof Tank && Team.isAllied(m, this) && m != this && ((Tank) m).health - ((Tank) m).baseHealth < 1 && !(m instanceof TankMedic);

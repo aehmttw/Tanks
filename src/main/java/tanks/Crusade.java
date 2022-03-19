@@ -306,9 +306,7 @@ public class Crusade
 					this.lifeGained = true;
 
 					for (Player player : Game.players)
-					{
 						player.remainingLives++;
-					}
 				}
 			}
 		}
@@ -343,6 +341,7 @@ public class Crusade
 		{
 			if (p.remainingLives > 1)
 				return false;
+
 			else if (p.remainingLives == 1)
 			{
 				boolean found = false;

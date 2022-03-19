@@ -5,19 +5,18 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.event.EventCreatePlayer;
 import tanks.event.INetworkEvent;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
-import tanks.registry.RegistryObstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
@@ -2757,23 +2756,23 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			@Override
 			public void redo()
 			{
-				for (int i = 0; i < Game.obstacles.size(); i++)
+				for (Obstacle o : Game.obstacles)
 				{
-					for (Obstacle o : this.obstacles)
+					for (Obstacle o1 : this.obstacles)
 					{
-						if (Game.obstacles.get(i).equals(o))
-							Game.obstacles.remove(i);
+						if (o.equals(o1))
+							Game.obstacles.remove(o);
 					}
 				}
 
-				for (int i = 0; i < Game.movables.size(); i++)
+				for (Movable m : Game.movables)
 				{
-					if (Game.movables.get(i) instanceof Tank)
+					if (m instanceof Tank)
 					{
 						for (Tank o : this.tanks)
 						{
-							if (Game.movables.get(i).equals(o))
-								Game.movables.remove(i);
+							if (m.equals(o))
+								Game.movables.remove(m);
 						}
 					}
 				}

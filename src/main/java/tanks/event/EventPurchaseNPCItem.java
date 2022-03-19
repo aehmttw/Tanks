@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.Player;
 import tanks.gui.screen.ScreenGame;
-import tanks.tank.TankNPC;
+import tanks.modapi.TankNPC;
 import tanks.tank.TankPlayerRemote;
 
 public class EventPurchaseNPCItem extends EventPurchaseItem

@@ -140,17 +140,16 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
                 Drawing.drawing.playSound("lose.ogg");
         }*/
 
-        if (Panel.levelPassed)
+        if (Panel.win)
         {
+            this.music = "win_music.ogg";
+
             if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks)
             {
                 this.nextLevel.posY += this.objYSpace / 2;
                 this.quit.posY -= this.objYSpace / 2;
             }
         }
-
-        if (Panel.win)
-            this.music = "win_music.ogg";
         else
             this.music = "lose_music.ogg";
 

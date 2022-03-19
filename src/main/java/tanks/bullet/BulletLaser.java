@@ -6,10 +6,6 @@ import tanks.Movable;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
-/**
- * A laser which can be fired by a Tank.
- * @see tanks.tank.TankRed
- */
 public class BulletLaser extends BulletInstant
 {
 	public static String bullet_name = "laser";

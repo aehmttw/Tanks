@@ -2,9 +2,7 @@ package tanks.gui;
 
 public interface ITrigger
 {
-    void update();
-
     void draw();
-
+    void update();
     void setPosition(double x, double y);
 }

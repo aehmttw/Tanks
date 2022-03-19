@@ -3,12 +3,13 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.*;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
+import tanks.modapi.ModAPI;
+import tanks.modapi.menus.FixedMenu;
+import tanks.modapi.menus.Scoreboard;
 
 import java.util.ArrayList;
 
@@ -82,11 +83,14 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (this.cooldown > 0)
             this.cooldown -= Panel.frameFrequency;
 
-        Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion, this.recoil));
-        this.forceMotion = false;
-        this.recoil = false;
-        this.dXSinceFrame = 0;
-        this.dYSinceFrame = 0;
+        if (shouldSendEvent)
+        {
+            Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion, this.recoil));
+            this.forceMotion = false;
+            this.recoil = false;
+            this.dXSinceFrame = 0;
+            this.dYSinceFrame = 0;
+        }
 
         if (this.hasCollided)
         {
@@ -191,7 +195,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
                 if (speedSq > Math.pow(this.maxSpeed * this.maxSpeedModifier, 2) * 1.00001)
                 {
-                    forceMotion = true;
                     double speed = Math.sqrt(speedSq);
                     double maxSpeed = this.maxSpeed * this.maxSpeedModifier;
 
@@ -221,9 +224,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
                 double distSq2 = dX2 * dX2 + dY2 * dY2;
                 if (distSq2 > maxDist * maxDist)
-                {
                     forceMotion = true;
-                }
 
                 x = ourPosX;
                 y = ourPosY;
@@ -323,6 +324,9 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
     public void layMine()
     {
+        if (Game.currentGame != null && !Game.currentGame.enableLayingMines)
+            return;
+
         if (Game.bulletLocked || this.destroy)
             return;
 
@@ -368,6 +372,9 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
     public void shoot()
     {
+        if (Game.currentGame != null && !Game.currentGame.enableShooting)
+            return;
+
         if (Game.bulletLocked || this.destroy)
             return;
 
@@ -418,7 +425,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             speed = Double.MIN_NORMAL;
 
         if (b.itemSound != null)
-            Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
+            Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size), Game.soundVolume * b.itemSoundVolume);
 
         b.addPolarMotion(this.angle + offset, speed);
         this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
@@ -463,7 +470,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (Crusade.crusadeMode)
             this.player.remainingLives--;
 
-        for (IFixedMenu m : ModAPI.menuGroup)
+        for (FixedMenu m : ModAPI.menuGroup)
         {
             if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
             {

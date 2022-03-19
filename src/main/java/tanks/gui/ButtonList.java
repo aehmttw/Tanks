@@ -40,45 +40,13 @@ public class ButtonList
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page++;
-        }
-    }
-    );
+    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", () -> page++);
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page--;
-        }
-    }
-    );
+    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", () -> page--);
 
-    Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page = 0;
-        }
-    }
-    );
+    Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", () -> page = 0);
 
-    Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page = (buttons.size() - 1) / rows / columns;
-        }
-    }
-    );
+    Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", () -> page = (buttons.size() - 1) / rows / columns);
 
     public ButtonList(ArrayList<Button> buttons, int page, double xOffset, double yOffset)
     {
@@ -310,13 +278,7 @@ public class ButtonList
 
     public void filter(String s)
     {
-        for (int i = 0; i < this.buttons.size(); i++)
-        {
-            if (!buttons.get(i).text.toLowerCase().contains(s.toLowerCase()))
-            {
-                buttons.remove(i);
-                i--;
-            }
-        }
+        if (s != null && !s.equals(""))
+            buttons.removeIf(b -> !b.text.toLowerCase().contains(s.toLowerCase()));
     }
 }

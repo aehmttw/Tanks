@@ -1,9 +1,10 @@
 package tanks.hotbar.item;
 
 import tanks.*;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
+import tanks.modapi.ModAPI;
 import tanks.gui.property.*;
+import tanks.modapi.menus.FixedMenu;
+import tanks.modapi.menus.Scoreboard;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 
@@ -110,7 +111,7 @@ public abstract class Item implements IGameObject
 		{
 			use();
 
-			for (IFixedMenu m : ModAPI.menuGroup)
+			for (FixedMenu m : ModAPI.menuGroup)
 			{
 				if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.items_used)) {
 					if (((Scoreboard) m).players.isEmpty())

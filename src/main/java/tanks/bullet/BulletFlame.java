@@ -1,9 +1,6 @@
 package tanks.bullet;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableWithGlow;
-import tanks.Panel;
+import tanks.*;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
@@ -36,6 +33,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		this.name = bullet_name;
 		this.bulletCollision = false;
 		this.itemSound = "flame.ogg";
+		this.itemSoundVolume = 0.7f;
 	}
 	
 	@Override
@@ -95,4 +93,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 	{
 		return true;
 	}
+
+	@Override
+	public void collidedWithObject(Movable m) {}
 }

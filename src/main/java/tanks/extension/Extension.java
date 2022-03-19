@@ -1,8 +1,8 @@
 package tanks.extension;
 
 import tanks.Game;
-import tanks.ModAPI;
-import tanks.ModLevel;
+import tanks.modapi.ModAPI;
+import tanks.modapi.ModLevel;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

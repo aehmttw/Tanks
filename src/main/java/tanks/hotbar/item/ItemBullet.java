@@ -98,7 +98,7 @@ public class ItemBullet extends Item
 				if (q > 1)
 					baseOff = Math.toRadians(this.shotSpread) * ((i * 1.0 / (q - 1)) - 0.5);
 
-				Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, (Tank) m, this);
+				Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, m, this);
 
 				b.damage = this.damage;
 				b.effect = this.effect;

@@ -1,15 +1,21 @@
 package tanks;
 
 import tanks.event.*;
-import tanks.gui.screen.*;
+import tanks.gui.screen.ILevelPreviewScreen;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
+import tanks.modapi.ModAPI;
+import tanks.modapi.menus.FixedText;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 public class Level 
@@ -76,6 +82,9 @@ public class Level
 
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
+	public boolean evenSplit = true;
+	public boolean enableKillMessages = false;
+	public double playerKillCoins = 0;
 
 	/**
 	 * A level string is structured like this:
@@ -109,6 +118,9 @@ public class Level
 				case "coins":
 					parsing = 3;
 					break;
+				case "properties":
+					parsing = 4;
+					break;
 				default:
 					if (parsing == 0)
 					{
@@ -137,7 +149,11 @@ public class Level
 							this.shop.add(Item.parseItem(null, s));
 						else if (parsing == 3)
 							this.startingCoins = Integer.parseInt(s);
+						else if (parsing == 4)
+							if (s.strip().endsWith("evenSplit"))
+								this.evenSplit = !s.startsWith("!");
 					}
+
 					break;
 			}
 		}
@@ -185,9 +201,8 @@ public class Level
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
 
-		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<>();
-
 		Tank.currentID = 0;
+		Tank.idMap.clear();
 		Tank.freeIDs.clear();
 
 		Game.currentLevel = this;
@@ -299,13 +314,12 @@ public class Level
 
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{
-			for (int i = 0; i < obstaclesPos.length; i++)
-			{
-				String[] obs = obstaclesPos[i].split("-");
+			for (String obstaclesPo : obstaclesPos) {
+				String[] obs = obstaclesPo.split("-");
 
 				String[] xPos = obs[0].split("\\.\\.\\.");
 
-				double startX; 
+				double startX;
 				double endX;
 
 				startX = Double.parseDouble(xPos[0]);
@@ -316,7 +330,7 @@ public class Level
 
 				String[] yPos = obs[1].split("\\.\\.\\.");
 
-				double startY; 
+				double startY;
 				double endY;
 
 				startY = Double.parseDouble(yPos[0]);
@@ -335,10 +349,8 @@ public class Level
 				if (obs.length >= 4)
 					meta = obs[3];
 
-				for (double x = startX; x <= endX; x++)
-				{
-					for (double y = startY; y <= endY; y++)
-					{
+				for (double x = startX; x <= endX; x++) {
+					for (double y = startY; y <= endY; y++) {
 						Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
 
 						if (meta != null)
@@ -385,9 +397,8 @@ public class Level
 
 		if (!preset[2].equals(""))
 		{
-			for (int i = 0; i < tanks.length; i++)
-			{
-				String[] tank = tanks[i].split("-");
+			for (String s : tanks) {
+				String[] tank = s.split("-");
 				double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]));
 				double y = Game.tile_size * (0.5 + Double.parseDouble(tank[1]));
 				String type = tank[2].toLowerCase();
@@ -401,8 +412,7 @@ public class Level
 				if (this.disableFriendlyFire)
 					team = Game.enemyTeamNoFF;
 
-				if (enableTeams)
-				{
+				if (enableTeams) {
 					if (tank.length >= 5)
 						team = teamsMap.get(tank[4]);
 					else
@@ -410,8 +420,7 @@ public class Level
 				}
 
 				Tank t;
-				if (type.equals("player"))
-				{
+				if (type.equals("player")) {
 					if (team == Game.enemyTeam)
 						team = Game.playerTeam;
 
@@ -430,9 +439,7 @@ public class Level
 						tankGrid[x1][y1] = true;
 
 					continue;
-				}
-				else
-				{
+				} else {
 					t = Game.registryTank.getEntry(type).getTank(x, y, angle);
 					t.crusadeID = currentCrusadeID;
 					currentCrusadeID++;
@@ -443,12 +450,10 @@ public class Level
 
 				t.team = team;
 
-				if (remote)
-				{
+				if (remote) {
 					t.registerNetworkID();
 					Game.movables.add(new TankRemote(t));
-				}
-				else
+				} else
 					Game.movables.add(t);
 			}
 		}
@@ -462,9 +467,7 @@ public class Level
 		if (this.includedPlayers.size() > 0)
 			playerCount = this.includedPlayers.size();
 		else
-		{
 			this.includedPlayers.addAll(Game.players);
-		}
 
 		int extraSpawns = 0;
 		if (playerCount > playerSpawnsX.size() && playerSpawnsX.size() > 0)
@@ -575,37 +578,83 @@ public class Level
 
 		if (sc == null && !preview)
 		{
+			ArrayList<EventCreatePlayer> playerCreationEvents = new ArrayList<>();
+			ArrayList<Team> usedTeams = new ArrayList<>();
+
+			int uniqueTeams = new HashSet<>(this.playerSpawnsTeam).size();
+
 			for (int i = 0; i < playerCount; i++)
 			{
 				if (this.availablePlayerSpawns.size() == 0)
 				{
 					for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
-					{
 						this.availablePlayerSpawns.add(j);
+				}
+
+				if (evenSplit && this.availablePlayerSpawns.size() > 1)
+				{
+					if (usedTeams.size() >= uniqueTeams)
+						usedTeams.clear();
+
+					for (int attempt = 0; attempt < 50; attempt++)
+					{
+						int spawn = (int) (Math.random() * this.availablePlayerSpawns.size());
+						Team team = this.playerSpawnsTeam.get(spawn);
+
+						if (!usedTeams.contains(team))
+						{
+							this.availablePlayerSpawns.remove(spawn);
+							usedTeams.add(this.playerSpawnsTeam.get(spawn));
+
+							double x = this.playerSpawnsX.get(spawn);
+							double y = this.playerSpawnsY.get(spawn);
+							double angle = this.playerSpawnsAngle.get(spawn);
+
+							if (ScreenPartyHost.isServer)
+							{
+								EventCreatePlayer e = new EventCreatePlayer(this.includedPlayers.get(i), x, y, angle, team);
+								playerCreationEvents.add(e);
+								Game.eventsOut.add(e);
+							}
+							else if (!remote)
+							{
+								TankPlayer tank = new TankPlayer(x, y, angle);
+								Game.playerTank = tank;
+								tank.team = team;
+								Game.movables.add(tank);
+							}
+
+							break;
+						}
 					}
 				}
-
-				int spawn = this.availablePlayerSpawns.remove((int) (Math.random() * this.availablePlayerSpawns.size()));
-
-				double x = this.playerSpawnsX.get(spawn);
-				double y = this.playerSpawnsY.get(spawn);
-				double angle = this.playerSpawnsAngle.get(spawn);
-				Team team = this.playerSpawnsTeam.get(spawn);
-
-				if (ScreenPartyHost.isServer)
+				else
 				{
-					EventCreatePlayer e = new EventCreatePlayer(this.includedPlayers.get(i), x, y, angle, team);
-					playerEvents.add(e);
-					Game.eventsOut.add(e);
-				}
-				else if (!remote)
-				{
-					TankPlayer tank = new TankPlayer(x, y, angle);
-					Game.playerTank = tank;
-					tank.team = team;
-					Game.movables.add(tank);
+					int spawn = this.availablePlayerSpawns.remove((int) (Math.random() * this.availablePlayerSpawns.size()));
+
+					double x = this.playerSpawnsX.get(spawn);
+					double y = this.playerSpawnsY.get(spawn);
+					double angle = this.playerSpawnsAngle.get(spawn);
+					Team team = this.playerSpawnsTeam.get(spawn);
+
+					if (ScreenPartyHost.isServer)
+					{
+						EventCreatePlayer e = new EventCreatePlayer(this.includedPlayers.get(i), x, y, angle, team);
+						playerCreationEvents.add(e);
+						Game.eventsOut.add(e);
+					}
+					else if (!remote)
+					{
+						TankPlayer tank = new TankPlayer(x, y, angle);
+						Game.playerTank = tank;
+						tank.team = team;
+						Game.movables.add(tank);
+					}
 				}
 			}
+
+			for (EventCreatePlayer e : playerCreationEvents)
+				e.execute();
 		}
 		else
 		{
@@ -623,21 +672,19 @@ public class Level
 				((ScreenLevelEditor) sc).movePlayer = (sc.getSpawns().size() <= 1);
 		}
 
-		for (EventCreatePlayer e: playerEvents)
-			e.execute();
-
 		if (Crusade.crusadeMode && Crusade.currentCrusade.retry)
 		{
 			for (Tank t: tanksToRemove)
 			{
-				INetworkEvent e = new EventRemoveTank(t);
 				Game.removeMovables.add(t);
-				Game.eventsOut.add(e);
+				Game.eventsOut.add(new EventRemoveTank(t));
 			}
 		}
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());
+
+		ModAPI.displayText(FixedText.types.actionbar, "", false, 1, 0, 0, 0);
 	}
 
 	public void reloadTiles()
@@ -664,20 +711,10 @@ public class Level
 		{
 			for (int j = 0; j < Game.currentSizeY; j++)
 			{
-				if (Game.fancyTerrain)
-				{
-					Game.tilesR[i][j] = (colorR + Math.random() * colorVarR);
-					Game.tilesG[i][j] = (colorG + Math.random() * colorVarG);
-					Game.tilesB[i][j] = (colorB + Math.random() * colorVarB);
-					Game.tilesDepth[i][j] = Math.random() * 10;
-				}
-				else
-				{
-					Game.tilesR[i][j] = colorR;
-					Game.tilesG[i][j] = colorG;
-					Game.tilesB[i][j] = colorB;
-					Game.tilesDepth[i][j] = 0;
-				}
+				Game.tilesR[i][j] = (colorR + Math.random() * colorVarR);
+				Game.tilesG[i][j] = (colorG + Math.random() * colorVarG);
+				Game.tilesB[i][j] = (colorB + Math.random() * colorVarB);
+				Game.tilesDepth[i][j] = Math.random() * 10;
 			}
 		}
 
@@ -739,5 +776,155 @@ public class Level
 	public static boolean isDark()
 	{
 		return Level.currentColorR + Level.currentColorG + Level.currentColorB <= 127 * 3 || (Game.framework != Game.Framework.libgdx && currentLightIntensity <= 0.5);
+	}
+
+	public static String genKillMessage(Tank killed, Tank killer, boolean isBullet)
+	{
+		String textColor = Level.isDark() ? Colors.white : Colors.black;
+
+		StringBuilder message = new StringBuilder();
+
+		String killedR;
+		String killedG;
+		String killedB;
+
+		String killR;
+		String killG;
+		String killB;
+
+		if (killed.team != null && killed.team.enableColor)
+		{
+			killedR = str(killed.team.teamColorR);
+			killedG = str(killed.team.teamColorG);
+			killedB = str(killed.team.teamColorB);
+		}
+		else
+		{
+			killedR = str(killed.colorR);
+			killedG = str(killed.colorG);
+			killedB = str(killed.colorB);
+		}
+
+		if (killer.team != null && killer.team.enableColor)
+		{
+			killR = str(killer.team.teamColorR);
+			killB = str(killer.team.teamColorB);
+			killG = str(killer.team.teamColorG);
+		}
+		else
+		{
+			killR = str(killer.colorR);
+			killG = str(killer.colorG);
+			killB = str(killer.colorB);
+		}
+
+		message.append("\u00a7").append(killedR).append(killedG).append(killedB).append("255");
+
+		if (killed instanceof TankPlayer)
+			message.append(((TankPlayer) killed).player.username);
+		else if (killed instanceof TankPlayerRemote)
+			message.append(((TankPlayerRemote) killed).player.username);
+		else
+		{
+			String name = killed.getClass().getSimpleName();
+			StringBuilder outputName = new StringBuilder();
+			int prevBeginIndex = 0;
+
+			for (int i = 1; i < name.length(); i++) {
+				if (65 <= name.charAt(i) && name.charAt(i) <= 90) {
+					if (prevBeginIndex > 0)
+						outputName.append(name, prevBeginIndex, i).append(" ");
+					prevBeginIndex = i;
+				}
+			}
+			outputName.append(name.substring(prevBeginIndex)).append(" Tank");
+			message.append(outputName);
+		}
+		message.append(textColor).append(" was ").append(isBullet ? "shot" : "blown up").append(" by ").append("\u00a7").append(killR).append(killG).append(killB).append("255");
+
+		if (killer instanceof TankPlayer)
+			message.append(((TankPlayer) killer).player.username);
+
+		else if (killer instanceof TankPlayerRemote)
+			message.append(((TankPlayerRemote) killer).player.username);
+
+		else
+		{
+			String name = killer.getClass().getSimpleName();
+			StringBuilder outputName = new StringBuilder();
+			int prevBeginIndex = 0;
+
+			for (int i = 1; i < name.length(); i++)
+			{
+				if (65 <= name.charAt(i) && name.charAt(i) <= 90)
+				{
+					if (prevBeginIndex > 0)
+						outputName.append(name, prevBeginIndex, i).append(" ");
+					prevBeginIndex = i;
+				}
+			}
+			outputName.append(name.substring(prevBeginIndex)).append(" Tank");
+			message.append(outputName);
+		}
+
+		return message.toString();
+	}
+
+	public static String genDrownMessage(Tank killed)
+	{
+		String textColor = Level.isDark() ? Colors.white : Colors.black;
+
+		StringBuilder message = new StringBuilder();
+
+		String killedR;
+		String killedG;
+		String killedB;
+
+		if (killed.team != null && killed.team.enableColor)
+		{
+			killedR = str(killed.team.teamColorR);
+			killedG = str(killed.team.teamColorG);
+			killedB = str(killed.team.teamColorB);
+		}
+		else
+		{
+			killedR = str(killed.colorR);
+			killedG = str(killed.colorG);
+			killedB = str(killed.colorB);
+		}
+
+		message.append("\u00a7").append(killedR).append(killedG).append(killedB).append("255");
+
+		if (killed instanceof TankPlayer)
+			message.append(((TankPlayer) killed).player.username);
+
+		else if (killed instanceof TankPlayerRemote)
+			message.append(((TankPlayerRemote) killed).player.username);
+
+		else
+		{
+			String name = killed.getClass().getSimpleName();
+			StringBuilder outputName = new StringBuilder();
+			int prevBeginIndex = 0;
+
+			for (int i = 1; i < name.length(); i++) {
+				if (65 <= name.charAt(i) && name.charAt(i) <= 90) {
+					if (prevBeginIndex > 0)
+						outputName.append(name, prevBeginIndex, i).append(" ");
+					prevBeginIndex = i;
+				}
+			}
+			outputName.append(name.substring(prevBeginIndex)).append(" Tank");
+			message.append(outputName);
+		}
+
+		message.append(textColor).append(" drowned");
+		return message.toString();
+	}
+
+	/** Just easier to type */
+	private static String str(double s)
+	{
+		return ModAPI.convertToString(s, 3);
 	}
 }

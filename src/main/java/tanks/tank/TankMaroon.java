@@ -3,9 +3,6 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 
-/**
- * A tank which shoots huge bullets which bounce 3 times and can't be stopped
- */
 public class TankMaroon extends TankAIControlled
 {
 	public TankMaroon(String name, double x, double y, double angle)
@@ -34,7 +31,6 @@ public class TankMaroon extends TankAIControlled
 		this.description = "A tank which shoots huge bullets which---bounce 3 times and can't be stopped";
 	}
 
-	@Override
 	public void reactToTargetEnemySight()
 	{
 		this.currentlySeeking = false;

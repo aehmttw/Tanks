@@ -2,11 +2,13 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletInstant;
 import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
+import tanks.modapi.TankNPC;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,15 +18,18 @@ import java.util.Random;
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
 public class TankAIControlled extends Tank
 {
-	/** Determines which type of AI the tank will use when shooting.
-	 *  Straight means that the tank will shoot directly at the target enemy if the target enemy is in line of sight.
-	 *  Reflect means that the tank will use a Ray with reflections to find possible ways to hit the target enemy.
-	 *  Alternate means that the tank will switch between shooting straight at the target enemy and using the reflect AI with every shot.
-	 *  Wander means that the tank will randomly rotate and shoot only if it detects the target enemy*/
+	/** Determines which type of AI the tank will use when shooting.<br>
+	 * <ul>
+		 *  <li>Straight means that the tank will shoot directly at the target enemy if the target enemy is in line of sight.</li>
+		 *  <li>Reflect means that the tank will use a Ray with reflections to find possible ways to hit the target enemy.</li>
+		 *  <li>Alternate means that the tank will switch between shooting straight at the target enemy and using the reflect AI with every shot.</li>
+		 *  <li>Wander means that the tank will randomly rotate its turret and shoot only if it detects the target enemy.</li>
+	 * </ul>
+	 *  */
 	public enum ShootAI {wander, straight, alternate, reflect}
 
-	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
-	protected enum RotationPhase {clockwise, counterClockwise, aiming}
+	/** The type which shows what direction the tank is moving. Clockwise and Counterclockwise are for idle, while Aiming is for when the tank aims.*/
+	protected enum RotationPhase {clockwise, counterclockwise, aiming}
 
 	// The following are properties which are used externally to determine the behavior settings of the tank.
 	// Simple modifications of tanks can just change these values to produce a desired behavior.
@@ -55,6 +60,10 @@ public class TankAIControlled extends Tank
 	public double bulletSpeed = 25.0 / 8;
 	public boolean bulletHeavy = false;
 	public Bullet.BulletEffect bulletEffect = Bullet.BulletEffect.trail;
+	public Class<? extends Bullet> bulletClass = Bullet.class;
+	public String bulletSound = "shoot.ogg";
+	public float bulletSoundVolume = 1;
+	public boolean setFrameDamageMultiplier = true;
 
 	public double mineFuseLength = 1000;
 
@@ -223,7 +232,7 @@ public class TankAIControlled extends Tank
 		this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
 
 		if (this.random.nextDouble() < 0.5)
-			this.idlePhase = RotationPhase.counterClockwise;
+			this.idlePhase = RotationPhase.counterclockwise;
 
 		this.angle = angle;
 		this.orientation = angle;
@@ -314,33 +323,49 @@ public class TankAIControlled extends Tank
 
 			Movable m = a.getTarget();
 
-			if (!Team.isAllied(this, m))
-			{
+			if (!Team.isAllied(this, m) && this.dealsDamage)
 				this.launchBullet(offset);
-			}
+
+			else if (Team.isAllied(this, m) && !this.dealsDamage)
+				this.launchBullet(offset);
 		}
 	}
 
 	/** Actually fire a bullet*/
 	public void launchBullet(double offset)
 	{
-		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bulletSize));
+		try
+		{
+			if (this.bulletClass == null)
+				return;
 
-		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
-		b.setPolarMotion(angle + offset, this.bulletSpeed);
-		b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
-		b.effect = this.bulletEffect;
-		b.size = this.bulletSize;
-		b.damage = this.bulletDamage;
-		b.heavy = this.bulletHeavy;
+			if (this.bulletSound != null && !this.bulletSound.equals(""))
+				Drawing.drawing.playGlobalSound(this.bulletSound, (float) (Bullet.bullet_size / this.bulletSize), this.bulletSoundVolume * Game.soundVolume);
 
-		Game.movables.add(b);
-		Game.eventsOut.add(new EventShootBullet(b));
+			Bullet b = this.bulletClass.getConstructor(double.class, double.class, int.class, Tank.class).newInstance(this.posX, this.posY, this.bulletBounces, this);
+			b.setPolarMotion(angle + offset, this.bulletSpeed);
+			b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
+			b.effect = this.bulletEffect;
+			b.size = this.bulletSize;
+			b.damage = this.bulletDamage;
+			b.heavy = this.bulletHeavy;
 
-		this.cooldown = this.random.nextDouble() * this.cooldownRandom + this.cooldownBase;
+			if (b instanceof BulletInstant) {
+				if (this.setFrameDamageMultiplier)
+					b.frameDamageMultipler = Panel.frameFrequency;
+			} else
+				Game.eventsOut.add(new EventShootBullet(b));
 
-		if (this.shootAIType.equals(ShootAI.alternate))
-			this.straightShoot = !this.straightShoot;
+			Game.movables.add(b);
+
+			this.cooldown = this.random.nextDouble() * this.cooldownRandom + this.cooldownBase;
+
+			if (this.shootAIType.equals(ShootAI.alternate))
+				this.straightShoot = !this.straightShoot;
+		}
+		catch (Exception e) {
+			Game.exitToCrash(e);
+		}
 	}
 
 	public void updateTarget()
@@ -372,6 +397,18 @@ public class TankAIControlled extends Tank
 	{
 		if (this.enableBulletAvoidance)
 			this.checkForBulletThreats();
+
+		if (this.enableMineAvoidance)
+		{
+			for (Obstacle o : Game.obstacles)
+			{
+				if (o instanceof IAvoidObject && Movable.distanceBetween(o, this) < Game.tile_size * 2)
+				{
+					this.setAccelerationAwayFromDirection(o.posX, o.posY, this.acceleration);
+					this.overrideDirection = true;
+				}
+			}
+		}
 
 		if (this.avoidTimer > 0)
 		{
@@ -475,9 +512,7 @@ public class TankAIControlled extends Tank
 			for (int i = 0; i < tiles.length; i++)
 			{
 				for (int j = 0; j < tiles[i].length; j++)
-				{
 					tiles[i][j] = new Tile(this.random, i, j);
-				}
 			}
 
 			for (Obstacle o: Game.obstacles)
@@ -605,16 +640,8 @@ public class TankAIControlled extends Tank
 	public void addIdleMotionOffset()
 	{
 		double offsetMotion = Math.sin(this.age * 0.02);
-		if (offsetMotion < 0)
-		{
-			double dist = this.distances[(int) (this.direction * 2 + 6) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
-		}
-		else
-		{
-			double dist = this.distances[(int) (this.direction * 2 + 2) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
-		}
+		double dist = this.distances[(int) ((this.direction * 2 + (offsetMotion < 0 ? 6 : 2)) % 8)];
+		offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 
 		this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
 	}
@@ -631,20 +658,17 @@ public class TankAIControlled extends Tank
 			if (Game.movables.get(i) instanceof Bullet && !Game.movables.get(i).destroy)
 			{
 				Bullet b = (Bullet) Game.movables.get(i);
-				if (!(b.tank == this && b.age < 20) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10 && b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0)
+				if ((this.team.friendlyFire || !Team.isAllied(this, b)) && !(b.tank == this && b.age < 20) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10 && b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0)
 				{
 					Ray r = b.getRay();
 					r.tankHitSizeMul = 4;
 
 					Movable m = r.getTarget(3, this);
-					if (m != null)
+					if (m != null && m.equals(this))
 					{
-						if (m.equals(this))
-						{
-							avoid = true;
-							toAvoid.add(b);
-							toAvoidTargets.add(r);
-						}
+						avoid = true;
+						toAvoid.add(b);
+						toAvoidTargets.add(r);
 					}
 				}
 			}
@@ -727,7 +751,7 @@ public class TankAIControlled extends Tank
 		{
 			this.idleTimer = this.random.nextDouble() * turretIdleTimerRandom + turretIdleTimerBase;
 			if (this.idlePhase == RotationPhase.clockwise)
-				this.idlePhase = RotationPhase.counterClockwise;
+				this.idlePhase = RotationPhase.counterclockwise;
 			else
 				this.idlePhase = RotationPhase.clockwise;
 		}
@@ -753,9 +777,7 @@ public class TankAIControlled extends Tank
 		else
 		{
 			if (this.hasTarget && this.targetEnemy != null)
-			{
 				this.setAimAngleStraight();
-			}
 		}
 
 		this.checkAndShoot();
@@ -877,17 +899,11 @@ public class TankAIControlled extends Tank
 	public void search()
 	{
 		if (this.straightShoot)
-		{
 			this.searchAngle = this.aimAngle;
-		}
 		else if (this.searchPhase == RotationPhase.clockwise)
-		{
 			searchAngle += this.random.nextDouble() * 0.1 * Panel.frameFrequency;
-		}
-		else if (this.searchPhase == RotationPhase.counterClockwise)
-		{
+		else if (this.searchPhase == RotationPhase.counterclockwise)
 			searchAngle -= this.random.nextDouble() * 0.1 * Panel.frameFrequency;
-		}
 		else
 		{
 			searchAngle = this.lockedAngle + this.random.nextDouble() * this.searchRange - this.searchRange / 2;
@@ -898,7 +914,7 @@ public class TankAIControlled extends Tank
 				if (this.random.nextDouble() < 0.5)
 					this.searchPhase = RotationPhase.clockwise;
 				else
-					this.searchPhase = RotationPhase.counterClockwise;
+					this.searchPhase = RotationPhase.counterclockwise;
 			}
 		}
 
@@ -945,9 +961,7 @@ public class TankAIControlled extends Tank
 		Movable target = rayToTarget.getTarget();
 
 		if (target != null)
-		{
 			this.seesTargetEnemy = target.equals(this.targetEnemy);
-		}
 		else
 			this.seesTargetEnemy = false;
 
@@ -956,18 +970,12 @@ public class TankAIControlled extends Tank
 			if (target != null)
 			{
 				if (target.equals(this.targetEnemy))
-				{
 					this.aimAngle = a;
-				}
 				else
-				{
 					this.straightShoot = false;
-				}
 			}
 			else
-			{
 				this.straightShoot = false;
-			}
 		}
 	}
 
@@ -1020,7 +1028,7 @@ public class TankAIControlled extends Tank
 		if (this.idleTimer <= 0)
 		{
 			if (this.idlePhase == RotationPhase.clockwise)
-				this.idlePhase = RotationPhase.counterClockwise;
+				this.idlePhase = RotationPhase.counterclockwise;
 			else
 				this.idlePhase = RotationPhase.clockwise;
 
@@ -1039,7 +1047,7 @@ public class TankAIControlled extends Tank
 		if (Movable.absoluteAngleBetween(dir, this.angle) > Math.PI / 8)
 		{
 			if (Movable.angleBetween(dir, this.angle) < 0)
-				this.idlePhase = RotationPhase.counterClockwise;
+				this.idlePhase = RotationPhase.counterclockwise;
 			else
 				this.idlePhase = RotationPhase.clockwise;
 		}
@@ -1067,9 +1075,9 @@ public class TankAIControlled extends Tank
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m instanceof Mine)
+				if (m instanceof Mine && (this.team.friendlyFire || !Team.isAllied(this, m)))
 				{
-					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius * this.avoidSensitivity, 2))
+					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine) m).radius * this.avoidSensitivity, 2))
 					{
 						if (nearestX + nearestY > this.posX - m.posX + this.posY - m.posY)
 						{
@@ -1077,9 +1085,9 @@ public class TankAIControlled extends Tank
 							nearestY = this.posY - m.posY;
 						}
 
-						if (nearestTimer > ((Mine)m).timer)
+						if (nearestTimer > ((Mine) m).timer)
 						{
-							nearestTimer = ((Mine)m).timer;
+							nearestTimer = ((Mine) m).timer;
 							nearest = m;
 						}
 					}
@@ -1101,7 +1109,6 @@ public class TankAIControlled extends Tank
 		}
 		else
 		{
-
 			if (this.mineTimer <= 0 && this.enableMineLaying && !this.disabled)
 			{
 				boolean layMine = true;
@@ -1123,9 +1130,7 @@ public class TankAIControlled extends Tank
 				}
 
 				if (layMine)
-				{
 					this.layMine();
-				}
 			}
 
 			if (!this.currentlySeeking)

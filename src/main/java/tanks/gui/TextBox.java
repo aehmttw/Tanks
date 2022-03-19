@@ -7,6 +7,7 @@ import tanks.gui.screen.ScreenInfo;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TextBox implements IDrawable, ITrigger
 {
@@ -160,12 +161,10 @@ public class TextBox implements IDrawable, ITrigger
 			else
 				drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB);
 		}
-		else if (hover && !Game.game.window.touchscreen && this.enabled)
+		else if (hover && !Game.game.window.touchscreen)
 			drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);
-		else if (this.enabled)
-			drawing.setColor(this.colorR, this.colorG, this.colorB);
 		else
-			drawing.setColor((this.colorR + this.bgColorR) / 2, (this.colorG + this.bgColorG) / 2, (this.colorB + this.bgColorB) / 2);
+			drawing.setColor(this.colorR, this.colorG, this.colorB);
 
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);
@@ -271,7 +270,7 @@ public class TextBox implements IDrawable, ITrigger
 			boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1), Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1), null);
 
 			if (handled)
-				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
+				Game.game.window.validPressedButtons.remove(InputCodes.MOUSE_BUTTON_1);
 
 			checkDeselect(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
 		}
@@ -443,9 +442,7 @@ public class TextBox implements IDrawable, ITrigger
 		boolean hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
 
 		if (((!hover && valid)) && selected)
-		{
 			this.submit();
-		}
 
 		if (Game.game.window.touchscreen)
 		{
@@ -456,8 +453,8 @@ public class TextBox implements IDrawable, ITrigger
 
 	public void submit()
 	{
-		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
-		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+		Game.game.window.validPressedKeys.remove(InputCodes.KEY_ENTER);
+		Game.game.window.validPressedKeys.remove(InputCodes.KEY_ESCAPE);
 
 		this.performValueCheck();
 		function.run();
@@ -469,9 +466,7 @@ public class TextBox implements IDrawable, ITrigger
 		Panel.selectedTextBox = null;
 
 		if (Game.glowEnabled)
-		{
 			this.submitEffect();
-		}
 	}
 
 	public void submitEffect()
@@ -490,7 +485,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE) && selected)
 		{
-			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove(InputCodes.KEY_ESCAPE);
 			selected = false;
 			Panel.selectedTextBox = null;
 			this.inputText = this.previousInputText;
@@ -525,7 +520,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		boolean caps = (this.enableCaps && (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)));
 
-		ArrayList<Integer> texts = Game.game.window.getRawTextKeys();
+		HashSet<Integer> texts = Game.game.window.getRawTextKeys();
 
 		for (int key : texts)
 		{
@@ -568,7 +563,7 @@ public class TextBox implements IDrawable, ITrigger
 		if (key == InputCodes.KEY_BACKSPACE || key == '\b')
 			inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
 
-		else if (text != null && inputText.length() + text.length() <= maxChars)
+		else if (inputText.length() + text.length() <= maxChars)
 		{
 			if (text.equals(" "))
 			{

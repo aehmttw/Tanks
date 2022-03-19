@@ -10,4 +10,9 @@ public class Colors
     
     public static String black = "\u00a7000000000255";
     public static String white = "\u00a7255255255255";
+
+    public static String getTextColor()
+    {
+        return (Game.currentLevel != null && Level.isDark()) ? white : black;
+    }
 }

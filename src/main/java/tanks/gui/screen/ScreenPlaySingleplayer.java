@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -13,7 +12,8 @@ public class ScreenPlaySingleplayer extends Screen
         this.music = "menu_3.ogg";
         this.musicID = "menu";
 
-        if (ModAPI.registeredCustomGames.size() > 0) {
+        if (ModAPI.registeredCustomGames.size() > 0 || ModAPI.registeredCustomLevels.size() > 0)
+        {
             tutorial.posY += this.objYSpace;
             back.posY += this.objYSpace;
         }
@@ -48,7 +48,7 @@ public class ScreenPlaySingleplayer extends Screen
         tutorial.update();
         back.update();
 
-        if (ModAPI.registeredCustomGames.size() > 0)
+        if (ModAPI.registeredCustomGames.size() > 0 || ModAPI.registeredCustomLevels.size() > 0)
             modLevels.update();
     }
 
@@ -60,7 +60,7 @@ public class ScreenPlaySingleplayer extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select a singleplayer game mode");
 
-        if (ModAPI.registeredCustomGames.size() > 0)
+        if (ModAPI.registeredCustomGames.size() > 0 || ModAPI.registeredCustomLevels.size() > 0)
             modLevels.draw();
 
         back.draw();

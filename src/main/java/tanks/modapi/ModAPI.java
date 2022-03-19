@@ -15,6 +15,7 @@ import tanks.modapi.menus.CustomShape;
 import tanks.modapi.menus.FixedMenu;
 import tanks.modapi.menus.FixedText;
 import tanks.modapi.menus.TransitionEffect;
+import tanks.modapi.modlevels.Battle_Tanks_3.Battle_Tanks_3;
 import tanks.modapi.modlevels.Team_Deathmatch;
 import tanks.network.NetworkEventMap;
 import tanks.obstacle.Obstacle;
@@ -50,6 +51,7 @@ public class ModAPI
     public static void registerMods()
     {
         registerMod(Team_Deathmatch.class);
+        registerGame(Battle_Tanks_3.class);
     }
 
     public static void setUp()
@@ -270,11 +272,10 @@ public class ModAPI
     {
         ArrayList<Tank> output = new ArrayList<>();
 
-        for (Movable m : Game.movables)
+        for (Tank t : Tank.idMap.values())
         {
-            if (m instanceof Tank)
-                if (Math.pow(m.posX - (x * 50 + 25), 2) + Math.pow(m.posY - (y * 50 + 25), 2) <= (size * 50) * (size * 50))
-                    output.add((Tank) m);
+            if (Math.pow(t.posX - (x * 50 + 25), 2) + Math.pow(t.posY - (y * 50 + 25), 2) <= (size * 50) * (size * 50))
+                output.add(t);
         }
 
         return output;

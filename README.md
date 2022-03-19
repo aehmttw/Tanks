@@ -28,6 +28,27 @@ To create a project with the source code, just set it up like a normal Tanks mod
 New Features:
 ---
 
+**As of Mod API v1.1.0:**
+- Now using Tanks v1.3.1!
+- Added the `ModGame` class.
+  - Not limited to one level.
+  - Can change the condition in which the level ends.
+  - Can disable shooting and laying mines.
+- Added the `CustomMovable` class, which sends draw instructions through the network.
+- The NPC tank can now forcibly display its message via a function call, and change its messages.
+- Added kill messages in `ModGame`s and `ModLevel`s, only visible in multiplayer.
+- Added the `CustomShape` class, which draws shapes on the screen
+- Added the `TransitionEffect` class, which makes fading effects on the screen
+- Added the `Transparent Tall Tiles` option to make obstacles that are above ground semi-transparent
+- Added the `Colors` class, which contains commonly used colors in Tanks.
+- Teams are now split evenly (can be disabled in a level's Team option)
+- Options are now accessible within parties, including name and tank color changing
+- Added custom zoom and auto zoom, along with messages that display when you change it.
+- Added the _Events per Second_ setting to Party Host Options
+- Added the ability to pause the game if the window loses focus
+- Improved Tank AI
+- Improved water
+
 **As of Mod API v1.0.1:**
 - Added light mode to minimap (toggle theme with the L key)
 - Added panning to minimap. Default controls are the numpad 8, 4, 6, and 2.

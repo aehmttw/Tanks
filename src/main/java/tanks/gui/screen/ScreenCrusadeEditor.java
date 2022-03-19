@@ -40,7 +40,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         }
     }, "Show level names before---the battle begins");
 
-    public String toggleRespawnsText = "Bots respawn: ";
+    public String toggleRespawnsText = "Tank respawn: ";
     public Button toggleRespawns = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override

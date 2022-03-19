@@ -22,8 +22,8 @@ public class Journal extends CustomMovable
                                  "    Drawing.drawing.setColor(255, 255, 255);" +
                                  "    Drawing.drawing.fillBox(_r3, _r2, 28, 30, 50, 9);" +
                                  "    Drawing.drawing.setFontSize(5);" +
-                                 "    Drawing.drawing.drawText(_r1, 915, 40, \"Development of\");" +
-                                 "    Drawing.drawing.drawText(_r1, 925, 40, \"Formula IV\");",
+                                 "    Drawing.drawing.drawText(_r1, 915, 43, \"Development of\");" +
+                                 "    Drawing.drawing.drawText(_r1, 925, 43, \"Formula IV\");",
 
                 this.posX, this.posY, this.posX + 5
         );

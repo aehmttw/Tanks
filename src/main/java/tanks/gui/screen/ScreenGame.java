@@ -465,13 +465,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (!finishedQuick)
 		{
-			for (int i = 0; i < Game.movables.size(); i++)
+			for (Tank t : Tank.idMap.values())
 			{
-				if (Game.movables.get(i) instanceof TankPlayer t && !t.destroy)
-					t.player.remainingLives--;
+				if (t instanceof TankPlayer && !t.destroy)
+					((TankPlayer) t).player.remainingLives--;
 
-				else if (Game.movables.get(i) instanceof TankPlayerRemote t && t.destroy)
-					t.player.remainingLives--;
+				else if (t instanceof TankPlayerRemote && t.destroy)
+					((TankPlayerRemote) t).player.remainingLives--;
 			}
 		}
 
@@ -528,12 +528,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		if (!finishedQuick)
 		{
-			for (int i = 0; i < Game.movables.size(); i++)
+			for (Tank t : Tank.idMap.values())
 			{
-				if (Game.movables.get(i) instanceof TankPlayer t && !t.destroy)
-					t.player.remainingLives--;
-				else if (Game.movables.get(i) instanceof TankPlayerRemote t && !t.destroy)
-					t.player.remainingLives--;
+				if (t instanceof TankPlayer && !t.destroy)
+					((TankPlayer) t).player.remainingLives--;
+				else if (t instanceof TankPlayerRemote && !t.destroy)
+					((TankPlayerRemote) t).player.remainingLives--;
 			}
 		}
 

@@ -42,13 +42,24 @@ public class EventChangeScoreboardAttribute extends PersonalEvent {
         {
             if (s instanceof RemoteScoreboard && ((RemoteScoreboard) s).id == this.id)
             {
-                switch (this.attributeName)
-                {
-                    case "titleColR" -> ((RemoteScoreboard) s).titleColR = this.value;
-                    case "titleColG" -> ((RemoteScoreboard) s).titleColG = this.value;
-                    case "titleColB" -> ((RemoteScoreboard) s).titleColB = this.value;
-                    case "titleFontSize" -> ((RemoteScoreboard) s).titleFontSize = this.value;
-                    case "namesFontSize" -> ((RemoteScoreboard) s).namesFontSize = this.value;
+                RemoteScoreboard r = (RemoteScoreboard) s;
+
+                switch (this.attributeName) {
+                    case "titleColR":
+                        r.titleColR = this.value;
+                        break;
+                    case "titleColG":
+                        r.titleColG = this.value;
+                        break;
+                    case "titleColB":
+                        r.titleColB = this.value;
+                        break;
+                    case "titleFontSize":
+                        r.titleFontSize = this.value;
+                        break;
+                    case "namesFontSize":
+                        r.namesFontSize = this.value;
+                        break;
                 }
 
                 break;

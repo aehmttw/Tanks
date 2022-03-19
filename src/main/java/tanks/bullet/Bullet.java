@@ -239,8 +239,8 @@ public class Bullet extends Movable implements IDrawable
 					if (Game.currentGame != null && Game.currentGame.enableKillMessages)
 						message = Game.currentGame.generateKillMessage(t, this.tank, true);
 
-					else if (Game.currentLevel instanceof ModLevel l && l.enableKillMessages)
-						message = l.generateKillMessage(t, this.tank, true);
+					else if (Game.currentLevel instanceof ModLevel && Game.currentLevel.enableKillMessages)
+						message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, true);
 
 					else if (Game.currentLevel.enableKillMessages)
 						message = Level.genKillMessage(t, this.tank, true);

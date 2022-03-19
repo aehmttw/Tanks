@@ -254,8 +254,10 @@ public class Mine extends Movable implements IAvoidObject
                             {
                                 for (FixedMenu menu : ModAPI.menuGroup)
                                 {
-                                    if (menu instanceof Scoreboard s && s.objectiveType.equals(Scoreboard.objectiveTypes.kills))
+                                    if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
                                     {
+                                        Scoreboard s = (Scoreboard) menu;
+
                                         if (!s.teams.isEmpty())
                                             s.addTeamScore(this.tank.team, 1);
 
@@ -267,9 +269,9 @@ public class Mine extends Movable implements IAvoidObject
                                     }
                                 }
 
-                                if (Game.currentLevel instanceof ModLevel l && l.enableKillMessages && ScreenPartyHost.isServer)
+                                if (Game.currentLevel instanceof ModLevel && Game.currentLevel.enableKillMessages && ScreenPartyHost.isServer)
                                 {
-                                    String message = l.generateKillMessage(t, this.tank, false);
+                                    String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, false);
                                     ScreenPartyHost.chat.add(0, new ChatMessage(message));
                                     Game.eventsOut.add(new EventChat(message));
                                 }
@@ -288,16 +290,30 @@ public class Mine extends Movable implements IAvoidObject
                                     else
                                         Game.player.hotbar.coins += t.coinValue;
                                 }
-                                else if (this.tank instanceof TankPlayerRemote tank && (Crusade.crusadeMode || Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0))
+                                else if (this.tank instanceof TankPlayerRemote && (Crusade.crusadeMode || Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0))
                                 {
-                                    if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
+                                    if (t instanceof TankPlayer)
                                     {
+                                        TankPlayer tank = (TankPlayer) t;
+
                                         if (Game.currentGame != null)
                                             tank.player.hotbar.coins += Game.currentGame.playerKillCoins;
                                         else
                                             tank.player.hotbar.coins += Game.currentLevel.playerKillCoins;
+
+                                        Game.eventsOut.add(new EventUpdateCoins(tank.player));
                                     }
-                                    Game.eventsOut.add(new EventUpdateCoins(tank.player));
+                                    else if (t instanceof TankPlayerRemote)
+                                    {
+                                        TankPlayerRemote tank = (TankPlayerRemote) t;
+
+                                        if (Game.currentGame != null)
+                                            tank.player.hotbar.coins += Game.currentGame.playerKillCoins;
+                                        else
+                                            tank.player.hotbar.coins += Game.currentLevel.playerKillCoins;
+
+                                        Game.eventsOut.add(new EventUpdateCoins(tank.player));
+                                    }
                                 }
                             }
                             else

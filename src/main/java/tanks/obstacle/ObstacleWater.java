@@ -84,8 +84,8 @@ public class ObstacleWater extends Obstacle
                     if (Game.currentGame != null && Game.currentGame.enableKillMessages)
                         message = Game.currentGame.generateDrownMessage(t);
 
-                    else if (Game.currentLevel instanceof ModLevel l && l.enableKillMessages)
-                        message = l.generateDrownMessage(t);
+                    else if (Game.currentLevel instanceof ModLevel && Game.currentLevel.enableKillMessages)
+                        message = ((ModLevel) Game.currentLevel).generateDrownMessage(t);
 
                     else if (Game.currentLevel.enableKillMessages)
                         message = Level.genDrownMessage(t);

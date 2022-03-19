@@ -30,7 +30,8 @@ public class FixedTextGroup extends FixedMenu
     private int textNo = 0;
     private int actionBarLocation = 100;
 
-    public FixedTextGroup(double x, double y, String[] texts, boolean afterGameStarted, Integer[] durationsInMs, double fontSize, double r, double g, double b) {
+    public FixedTextGroup(double x, double y, String[] texts, boolean afterGameStarted, Integer[] durationsInMs, double fontSize, double r, double g, double b)
+    {
         this.posX = x;
         this.posY = y;
         this.texts = texts;
@@ -49,7 +50,8 @@ public class FixedTextGroup extends FixedMenu
             actionBarLocation = 200;
     }
 
-    public FixedTextGroup(String location, String[] texts, boolean afterGameStarted, Integer[] durationsInMs, double fontSize, double r, double g, double b) {
+    public FixedTextGroup(String location, String[] texts, boolean afterGameStarted, Integer[] durationsInMs, double fontSize, double r, double g, double b)
+    {
         this.location = location;
         this.texts = texts;
         this.afterGameStarted = afterGameStarted;
@@ -80,7 +82,8 @@ public class FixedTextGroup extends FixedMenu
     }
 
     @Override
-    public void draw() {
+    public void draw()
+    {
         Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 
         ModAPI.fixedText.drawString(this.posX - ModAPI.fixedText.getStringSizeX(this.fontSize / 40, this.texts[textNo]) / 2,
@@ -90,45 +93,52 @@ public class FixedTextGroup extends FixedMenu
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
         Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 
-        if (afterGameStarted) {
+        if (afterGameStarted)
+        {
             if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing)
                 return;
             else if (defineTime == 0)
                 defineTime = System.currentTimeMillis();
         }
 
-        if (this.location != null) {
-            switch (this.location) {
-                case "title" -> {
+        if (this.location != null)
+        {
+            switch (this.location)
+            {
+                case "title":
                     this.posX = Panel.windowWidth / 2;
                     this.posY = Panel.windowHeight / 2 - 50;
                     this.fontSize = 60;
-                }
-                case "subtitle" -> {
+                    break;
+                case "subtitle":
                     this.posX = Panel.windowWidth / 2;
                     this.posY = Panel.windowHeight / 2 + 10;
                     this.fontSize = 40;
-                }
-                case "actionbar" -> {
+                    break;
+                case "actionbar":
                     this.posX = Panel.windowWidth / 2;
                     this.posY = Panel.windowHeight - actionBarLocation + Game.player.hotbar.percentHidden;
                     this.fontSize = 20;
-                }
+                    break;
             }
         }
 
-        if (System.currentTimeMillis() - defineTime > this.durations[textNo]) {
-            if (textNo + 1 >= this.texts.length) {
+        if (System.currentTimeMillis() - defineTime > this.durations[textNo])
+        {
+            if (textNo + 1 >= this.texts.length)
+            {
                 this.colorA -= Panel.frameFrequency * 1.25;
 
                 if (this.colorA <= 0)
                     ModAPI.removeMenus.add(this);
             }
 
-            else {
+            else
+            {
                 textNo++;
                 defineTime = System.currentTimeMillis();
             }

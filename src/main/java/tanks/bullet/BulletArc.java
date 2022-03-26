@@ -28,9 +28,9 @@ public class BulletArc extends Bullet
 
     public ArrayList<Double> pastTime = new ArrayList<>();
 
-    public BulletArc(double x, double y, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
+    public BulletArc(double x, double y, Tank t, int bounces, boolean affectsMaxLiveBullets, ItemBullet ib)
     {
-        super(x, y, 0, t, affectsMaxLiveBullets, ib);
+        super(x, y, bounces, t, affectsMaxLiveBullets, ib);
         this.playPopSound = false;
         this.name = bullet_name;
         //this.effect = BulletEffect.trail;
@@ -51,7 +51,7 @@ public class BulletArc extends Bullet
 
     public BulletArc(double x, double y, int bounces, Tank t)
     {
-        this(x, y, t, true, null);
+        this(x, y, t, bounces, true, null);
     }
 
     /**
@@ -60,7 +60,7 @@ public class BulletArc extends Bullet
     @Deprecated
     public BulletArc(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
     {
-        this(x, y, t, true, ib);
+        this(x, y, t, bounces, true, ib);
     }
 
     @Override

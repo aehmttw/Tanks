@@ -9,10 +9,7 @@ import tanks.event.EventObstacleDestroy;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
-import tanks.tank.IAvoidObject;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 
 public class ObstacleExplosive extends Obstacle implements IAvoidObject
 {
@@ -81,12 +78,12 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         if (!ScreenPartyLobby.isClient)
             this.update = true;
 
-        if (m instanceof Mine)
+        if (m instanceof Explosion)
         {
-            this.trigger = ((Mine) m).tank;
-            this.itemTrigger = ((Mine) m).item;
+            this.trigger = ((Explosion) m).tank;
+            this.itemTrigger = ((Explosion) m).item;
 
-            if (((Mine) m).item == null)
+            if (((Explosion) m).item == null)
                 this.itemTrigger = TankPlayer.default_mine;
         }
     }
@@ -105,14 +102,8 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         if (ScreenPartyLobby.isClient)
             return;
 
-        Mine mi = new Mine(this.posX, this.posY, 0, this.trigger);
-        mi.item = this.itemTrigger;
-        mi.radius *= (this.stackHeight - 1) / 2 + 1;
-        Game.eventsOut.add(new EventLayMine(mi));
-        Game.movables.add(mi);
-
-        //if (this.trigger != null)
-        //    this.trigger.liveMines--;
+        Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius * ((this.stackHeight - 1) / 2 + 1), 2, true, this.trigger, this.itemTrigger);
+        e.explode();
 
         Game.removeObstacles.add(this);
         Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY));

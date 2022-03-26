@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Game;
 import tanks.tank.Mine;
 
 public class EventMineExplode extends PersonalEvent
@@ -28,7 +29,7 @@ public class EventMineExplode extends PersonalEvent
         if (m == null)
             return;
 
-        m.explode();
+        Game.removeMovables.add(m);
 
         if (!Mine.freeIDs.contains(m.networkID))
         {

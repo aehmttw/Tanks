@@ -3,6 +3,7 @@ package tanks.bullet;
 import tanks.Game;
 import tanks.event.EventLayMine;
 import tanks.hotbar.item.ItemBullet;
+import tanks.tank.Explosion;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 
@@ -36,10 +37,8 @@ public class BulletExplosive extends Bullet
     @Override
     public void onDestroy()
     {
-        Mine m = new Mine(this.posX, this.posY, 0, this.tank);
-        m.item = this.item;
-        Game.eventsOut.add(new EventLayMine(m));
-        Game.movables.add(m);
+        Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, this.damage, true, this.tank, this.item);
+        e.explode();
     }
 
     @Override

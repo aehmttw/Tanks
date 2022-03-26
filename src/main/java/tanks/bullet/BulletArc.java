@@ -83,19 +83,35 @@ public class BulletArc extends Bullet
 
         if (this.posZ <= Game.tile_size / 2 && !this.destroy)
         {
-            double dif = (this.posZ - Game.tile_size / 2) / this.vZ;
-            this.posX -= dif * this.vX;
-            this.posY -= dif * this.vY;
+            if (this.bounces > 0)
+            {
+                this.bounces--;
+                this.posZ += 2 * ((Game.tile_size / 2) - this.posZ);
+                this.vZ = Math.abs(this.vZ) * 0.75;
 
-            this.vX = 0;
-            this.vY = 0;
-            this.vZ = 0;
+                if (!this.tank.isRemote)
+                    this.checkCollision();
 
-            if (!this.tank.isRemote)
-                this.checkCollision();
+                this.checkCollisionLocal();
+            }
+            else
+            {
+                double dif = (this.posZ - Game.tile_size / 2) / this.vZ;
+                this.posX -= dif * this.vX;
+                this.posY -= dif * this.vY;
 
-            this.checkCollisionLocal();
-            this.destroy = true;
+                this.vX = 0;
+                this.vY = 0;
+                this.vZ = 0;
+
+                if (!this.tank.isRemote)
+                    this.checkCollision();
+
+                this.checkCollisionLocal();
+
+                this.destroy = true;
+            }
+
             Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
         }
 

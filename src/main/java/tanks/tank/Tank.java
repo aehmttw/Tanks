@@ -344,7 +344,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
 
 						if (Game.enable3d)
-							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.atan(Math.random()), Math.random() * this.size / 50.0);
 						else
 							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
 
@@ -794,8 +794,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (source instanceof Bullet)
 			owner = ((Bullet) source).tank;
-		else if (source instanceof Mine)
-			owner = ((Mine) source).tank;
+		else if (source instanceof Explosion)
+			owner = ((Explosion) source).tank;
 		else if (source instanceof Tank)
 			owner = (Tank) source;
 
@@ -831,7 +831,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						cp.addKill(this);
 				}
 
-				if (cp != null && (source instanceof Bullet || source instanceof Mine))
+				if (cp != null && (source instanceof Bullet || source instanceof Explosion))
 					cp.addItemHit(source);
 			}
 
@@ -852,7 +852,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double getDamageMultiplier(IGameObject source)
 	{
-		if (this.invulnerable || (source instanceof Bullet && this.resistBullets) || (source instanceof Mine && this.resistExplosions))
+		if (this.invulnerable || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
 			return 0;
 
 		return 1;

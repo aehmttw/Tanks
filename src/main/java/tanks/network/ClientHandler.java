@@ -216,7 +216,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 			for (int i = 0; i < Game.eventsOut.size(); i++)
 			{
 				INetworkEvent e = Game.eventsOut.get(i);
-				this.sendEvent(e, false);
+				this.sendEvent(e, i >= Game.eventsOut.size() - 1);
 			}
 
 			if (steamID == null)

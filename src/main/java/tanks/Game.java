@@ -92,7 +92,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.3.1";
+	public static final String version = "Tanks v1.3.2";
 	public static final int network_protocol = 39;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -296,6 +296,7 @@ public class Game
 		NetworkEventMap.register(EventLayMine.class);
 		NetworkEventMap.register(EventMineExplode.class);
 		NetworkEventMap.register(EventMineChangeTimer.class);
+		NetworkEventMap.register(EventExplosion.class);
 		NetworkEventMap.register(EventTankTeleport.class);
 		NetworkEventMap.register(EventTankUpdateVisibility.class);
 		NetworkEventMap.register(EventTankUpdateColor.class);
@@ -440,6 +441,7 @@ public class Game
 		registerTank(TankPink.class, "pink", 1.0 / 12);
 		registerTank(TankMini.class, "mini", 0);
 		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
+		//registerTank(TankTest.class, "test", 1.0 / 1);
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");

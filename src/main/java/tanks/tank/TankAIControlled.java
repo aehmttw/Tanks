@@ -110,6 +110,7 @@ public class TankAIControlled extends Tank
 	/** Type of shooting AI to use*/
 	public ShootAI shootAIType;
 
+	public String shotSound = null;
 
 	// The following are values which are internally used for carrying out behavior.
 	// These values change constantly during the course of the game.
@@ -325,6 +326,9 @@ public class TankAIControlled extends Tank
 	public void launchBullet(double offset)
 	{
 		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bulletSize));
+
+		if (this.shotSound != null)
+			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bulletSize));
 
 		Bullet b = new Bullet(this.posX, this.posY, this.bulletBounces, this);
 		b.setPolarMotion(angle + offset, this.bulletSpeed);
@@ -631,7 +635,7 @@ public class TankAIControlled extends Tank
 			if (Game.movables.get(i) instanceof Bullet && !Game.movables.get(i).destroy)
 			{
 				Bullet b = (Bullet) Game.movables.get(i);
-				if (!(b.tank == this && b.age < 20) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10 && b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0)
+				if (!(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * 10 && Math.abs(b.posY - this.posY) < Game.tile_size * 10 && b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0)
 				{
 					Ray r = b.getRay();
 					r.tankHitSizeMul = 4;
@@ -1067,7 +1071,7 @@ public class TankAIControlled extends Tank
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
-				if (m instanceof Mine)
+				if (m instanceof Mine && !(this.team != null && Team.isAllied(this, m) && !this.team.friendlyFire))
 				{
 					if (Math.pow(m.posX - this.posX, 2) + Math.pow(m.posY - this.posY, 2) <= Math.pow(((Mine)m).radius * this.avoidSensitivity, 2))
 					{

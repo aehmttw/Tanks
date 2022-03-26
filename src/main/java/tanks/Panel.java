@@ -514,7 +514,10 @@ public class Panel
 				else
 					speed = 0.02;
 
-				this.zoomTimer = Math.max(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
+				if (this.zoomTimer > Panel.zoomTarget)
+					this.zoomTimer = Math.max(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
+				else
+					this.zoomTimer = Math.min(this.zoomTimer + speed * Panel.frameFrequency, Panel.zoomTarget);
 			}
 		}
 

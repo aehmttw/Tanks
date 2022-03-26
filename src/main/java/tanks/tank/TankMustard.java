@@ -25,6 +25,7 @@ public class TankMustard extends TankAIControlled
         this.enableLookingAtTargetEnemy = false;
         this.cooldownBase = 200;
         this.cooldownRandom = 100;
+        this.bulletBounces = 0;
 
         this.coinValue = 4;
         this.turret.size *= 1.75;
@@ -104,11 +105,12 @@ public class TankMustard extends TankAIControlled
 
         Drawing.drawing.playGlobalSound("arc.ogg", 1 / 2.5f);
 
-        BulletArc b = new BulletArc(this.posX, this.posY, 5, this);
+        BulletArc b = new BulletArc(this.posX, this.posY, 0, this);
         b.team = this.team;
         b.addPolarMotion(this.aimAngle, this.bulletSpeed);
         b.vZ = this.distance / this.bulletSpeed * 0.5 * BulletArc.gravity;
         b.size = 25;
+        b.bounces = this.bulletBounces;
         Game.eventsOut.add(new EventShootBullet(b));
 
         Game.movables.add(b);

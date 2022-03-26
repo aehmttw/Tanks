@@ -360,6 +360,14 @@ public class ScreenChangelog extends Screen
                                     "Improved keybindings screen\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.3.2", new String[]
+                    {
+                            "*What's new in Tanks v1.3.2:\n\n" +
+                                    "Changed appearance of electric bullets\n" +
+                                    "Arc bullets can now be set to bounce\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

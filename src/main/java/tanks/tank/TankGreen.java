@@ -24,7 +24,7 @@ public class TankGreen extends TankAIControlled
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
 		this.enableDefensiveFiring = true;
-		
+
 		this.coinValue = 10;
 
 		this.description = "A deadly stationary tank which---shoots rockets that bounce twice";

@@ -6,7 +6,7 @@ import tanks.obstacle.Obstacle;
 
 public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, mineExplosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight, exclamation}
+    public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight, exclamation}
 
     public enum State {live, removed, recycle}
 
@@ -94,7 +94,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.maxAge = 50;
         else if (type == EffectType.ray)
             this.maxAge = 20;
-        else if (type == EffectType.mineExplosion)
+        else if (type == EffectType.explosion)
         {
             this.maxAge = 20;
             this.force = true;
@@ -113,7 +113,7 @@ public class Effect extends Movable implements IDrawableWithGlow
         else if (type.equals(EffectType.charge))
         {
             if (Game.enable3d)
-                this.add3dPolarMotion(Math.random() * Math.PI * 2,-Math.random() * Math.PI / 2, Math.random() * 3 + 3);
+                this.add3dPolarMotion(Math.random() * Math.PI * 2, -Math.atan(Math.random()), Math.random() * 3 + 3);
             else
                 this.addPolarMotion(Math.random() * Math.PI * 2, Math.random() * 3 + 3);
 
@@ -271,7 +271,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
         }
-        else if (this.type == EffectType.mineExplosion)
+        else if (this.type == EffectType.explosion)
         {
             double size = (radius * 2);
             double opacity = (100 - this.age * 5);

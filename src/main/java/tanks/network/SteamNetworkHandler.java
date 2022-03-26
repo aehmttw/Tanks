@@ -324,10 +324,9 @@ public class SteamNetworkHandler
 		}
 		catch (Throwable e)
 		{
-			Game.exitToCrash(e);
+			e.printStackTrace();
+			return false;
 		}
-
-		return false;
 	}
 
 	public void exit()

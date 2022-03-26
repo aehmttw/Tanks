@@ -87,9 +87,8 @@ public class TankMedic extends TankAIControlled
 
 		if (this.timeUntilDeath <= 0)
 		{
-			Mine m = new Mine(this.posX, this.posY, 0, this);
-			Game.eventsOut.add(new EventLayMine(m));
-			Game.movables.add(m);
+			Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, 2, true, this);
+			e.explode();
 			this.destroy = true;
 			this.health = 0;
 		}

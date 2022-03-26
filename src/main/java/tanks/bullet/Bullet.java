@@ -654,7 +654,8 @@ public class Bullet extends Movable implements IDrawable
 						this.item.liveBullets--;
 				}
 
-				this.onDestroy();
+				if (!this.isRemote)
+					this.onDestroy();
 			}
 
 			if (this.destroyTimer <= 0 && Game.effectsEnabled && !(this instanceof BulletFlame))

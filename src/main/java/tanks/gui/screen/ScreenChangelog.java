@@ -368,6 +368,17 @@ public class ScreenChangelog extends Screen
                                     "Arc bullets can now be set to bounce\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.3.3", new String[]
+                    {
+                            "*What's new in Tanks v1.3.3:\n\n" +
+                                    "Minor updates to shaders\n" +
+                                    "Minor improvements to the renderer\n" +
+                                    "Sound engine updated\n" +
+                                    "\n" +
+                                    "PS. One of the devs might have had a bit too much to drink.\n" +
+                                    "Hopefully it doesn't affect the game experience :)\n"
+                    });
         }
     }
 }

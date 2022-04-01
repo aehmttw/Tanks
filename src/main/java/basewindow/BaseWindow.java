@@ -40,6 +40,7 @@ public abstract class BaseWindow
     public double glow;
 
     public boolean fullscreen;
+    public boolean drunk = true;
 
     public HashMap<Integer, InputPoint> touchPoints = new HashMap<>();
 

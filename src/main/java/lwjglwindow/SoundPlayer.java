@@ -450,10 +450,19 @@ public class SoundPlayer extends BaseSoundPlayer
             }
         }
 
+        ///////
+        if (this.window.drunk)
+            AL10.alSourcef(this.currentMusic, AL_PITCH, (float) (1 + 0.25 * Math.sin(System.currentTimeMillis() / 250.0)));
+
         for (String s: this.syncedTracks.keySet())
         {
             int i = this.syncedTracks.get(s);
             float vol = this.syncedTrackCurrentVolumes.get(s);
+
+            ///////
+            if (this.window.drunk)
+                AL10.alSourcef(this.syncedTracks.get(s), AL_PITCH, (float) (1 + 0.25 * Math.sin(System.currentTimeMillis() / 250.0)));
+
 
             if (this.stoppingSyncedTracks.containsKey(s))
             {

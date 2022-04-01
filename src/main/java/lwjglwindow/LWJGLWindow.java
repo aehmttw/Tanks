@@ -82,6 +82,8 @@ public class LWJGLWindow extends BaseWindow
 	protected int shadowMapBonesEnabledFlag;
 	protected int shadowMapBoneMatricesFlag;
 
+	protected int drunkFlag;
+
 	public ShaderHandler shaderHandler;
 
 	double bbx1 = 1;

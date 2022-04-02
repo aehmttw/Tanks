@@ -18,8 +18,6 @@ public class ScreenOptions extends Screen
 	public static final String onText = "\u00A7000200000255on";
 	public static final String offText = "\u00A7200000000255off";
 
-	public static final String drunkText = "Drunk mode: ";
-
 	public ScreenOptions()
 	{
 		this.music = "menu_options.ogg";
@@ -61,21 +59,6 @@ public class ScreenOptions extends Screen
 	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsInterface()
 	);
 
-	Button drunk = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Game.game.window.drunk = !Game.game.window.drunk;
-
-			if (Game.game.window.drunk)
-				drunk.setText(drunkText, ScreenOptions.onText);
-			else
-				drunk.setText(drunkText, ScreenOptions.offText);
-		}
-	},
-			"Glow effects may significantly---impact performance");
-
 	@Override
 	public void update()
 	{
@@ -86,12 +69,6 @@ public class ScreenOptions extends Screen
 		graphicsOptions.update();
 		inputOptions.update();
 		multiplayerOptions.update();
-
-		drunk.update();
-		if (Game.game.window.drunk)
-			drunk.setText(drunkText, ScreenOptions.onText);
-		else
-			drunk.setText(drunkText, ScreenOptions.offText);
 
 		back.update();
 	}
@@ -107,7 +84,6 @@ public class ScreenOptions extends Screen
 		interfaceOptions.draw();
 		gameOptions.draw();
 		soundOptions.draw();
-		drunk.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);

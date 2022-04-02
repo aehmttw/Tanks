@@ -28,16 +28,11 @@ public class TankMaroon extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		this.turret.size *= 1.5;
 		this.enablePathfinding = true;
+		this.stopSeekingOnSight = true;
 		
 		this.coinValue = 4;
 
 		this.description = "A tank which shoots huge bullets which---bounce 3 times and can't be stopped";
-	}
-
-	@Override
-	public void reactToTargetEnemySight()
-	{
-		this.currentlySeeking = false;
 	}
 
 }

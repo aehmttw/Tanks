@@ -23,8 +23,6 @@ uniform bool shadow;
 uniform bool vbo;
 uniform vec4 originalColor;
 
-uniform bool drunk;
-
 //uniform bool bonesEnabled;
 //uniform mat4 boneMatrices[128];
 //attribute vec4 bones;
@@ -55,13 +53,6 @@ void main(void)
 
     gl_Position = gl_ModelViewProjectionMatrix * pos;
     lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1.0);
-
-    if (drunk)
-    {
-        float p = gl_Position.x + gl_Position.y + gl_Position.z;
-        gl_Position.x += 60.0 * sin(p / 200.0);
-        gl_Position.y += 60.0 * cos(p / 200.0);
-    }
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
     gl_TexCoord[1] = gl_MultiTexCoord1;

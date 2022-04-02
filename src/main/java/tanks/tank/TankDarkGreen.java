@@ -21,15 +21,10 @@ public class TankDarkGreen extends TankAIControlled
 		this.bulletDamage /= 8;
 		this.bulletSize /= 2;
 		this.bulletEffect = Bullet.BulletEffect.trail;
+		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
 		
 		this.coinValue = 10;
 
 		this.description = "A fast tank which rapidly fires---many small, low-damage bullets";
-	}
-	
-	@Override
-	public void reactToTargetEnemySight()
-	{
-		this.setAccelerationAwayFromDirection(Game.playerTank.posX, Game.playerTank.posY, acceleration);
 	}
 }

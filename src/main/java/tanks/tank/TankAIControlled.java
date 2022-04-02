@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
+import tanks.event.EventTankUpdateVisibility;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
@@ -43,8 +44,18 @@ public class TankAIControlled extends Tank
 	public boolean enablePredictiveFiring = true;
 	/** When set to true, will shoot at bullets aiming towards the tank*/
 	public boolean enableDefensiveFiring = false;
+
+	/** Type of behavior tank should have if its target enemy is in line of sight
+	 * 	Approach = go towards the target enemy
+	 * 	Flee = go away from the target enemy
+	 * 	Strafe = move perpendicular to target enemy*/
+	public enum TargetEnemySightBehavior {approach, flee, strafe}
 	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
 	public boolean enableLookingAtTargetEnemy = true;
+	/** Type of behavior tank should have if its target enemy is in line of sight*/
+	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
+	/** If set to strafe upon seeing the target enemy, chance to change orbit direction*/
+	public double strafeDirectionChangeChance = 0.01;
 
 	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
 	public boolean ignoreDestructible = false;
@@ -89,8 +100,14 @@ public class TankAIControlled extends Tank
 	/** Chance per frame to change direction*/
 	public double motionChangeChance = 0.01;
 
+	/** When set to true, the tank will vanish when the level begins*/
+	public boolean invisible = false;
+
 	/** Chance per frame to seek the target enemy*/
 	public double seekChance = 0.001;
+
+	/** If set to true, when enters line of sight of target enemy, will stop pathfinding to it*/
+	public boolean stopSeekingOnSight = false;
 
 	/** Time which the tank will avoid a bullet after the bullet is no longer aiming at the tank*/
 	public double avoidTimerBase = 30;
@@ -176,7 +193,7 @@ public class TankAIControlled extends Tank
 	protected Bullet nearestBullet;
 
 	/** Disable offset to shoot a bullet*/
-	public boolean disableOffset = false;
+	protected boolean disableOffset = false;
 
 	/** Direction added to the bullet's direction to flee a bullet, possibly mirrored*/
 	protected double fleeDirection = Math.PI / 4;
@@ -190,11 +207,20 @@ public class TankAIControlled extends Tank
 	/** Time until the tank will continue motion*/
 	protected double motionPauseTimer = 0;
 
+	/** Changes when the tank's visibility state changes, indicating whether the tank is visible on screen*/
+	public boolean currentlyVisible = true;
+
+	/** Time this tank has been invisible for*/
+	public double timeInvisible = 0;
+
 	/** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight.*/
 	protected Movable targetEnemy;
 
 	/** True if can find an enemy*/
 	protected boolean hasTarget = true;
+
+	/** Direction to strafe around target enemy, if set to strafe mode on sight*/
+	protected double strafeDirection = Math.PI / 2;
 
 	/** True while the tank is actively seeking out an enemy*/
 	protected boolean currentlySeeking = false;
@@ -232,6 +258,42 @@ public class TankAIControlled extends Tank
 		this.liveBulletMax = 5;
 
 		this.shootAIType = ai;
+	}
+
+	public void updateVisibility()
+	{
+		if (this.invisible)
+		{
+			if (this.currentlyVisible)
+			{
+				this.currentlyVisible = false;
+				Drawing.drawing.playGlobalSound("transform.ogg", 1.2f);
+				Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
+
+				if (Game.effectsEnabled)
+				{
+					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
+					{
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
+						double var = 50;
+						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+
+						Game.effects.add(e);
+					}
+				}
+			}
+
+			this.timeInvisible += Panel.frameFrequency;
+		}
+		else
+			this.timeInvisible = 0;
 	}
 
 	@Override
@@ -278,6 +340,7 @@ public class TankAIControlled extends Tank
 		if (currentSpeed > maxSpeed * maxSpeedModifier)
 			this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 
+		this.updateVisibility();
 		super.update();
 	}
 
@@ -414,7 +477,21 @@ public class TankAIControlled extends Tank
 			return;
 
 		this.overrideDirection = true;
-		this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
+
+		if (this.stopSeekingOnSight)
+			this.currentlySeeking = false;
+
+		if (this.targetEnemySightBehavior == TargetEnemySightBehavior.approach)
+			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
+		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.flee)
+			this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
+		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.strafe)
+		{
+			if (this.random.nextDouble() < this.strafeDirectionChangeChance * Panel.frameFrequency)
+				strafeDirection = -strafeDirection;
+
+			this.setAccelerationInDirectionWithOffset(this.targetEnemy.posX, this.targetEnemy.posY, this.acceleration * 2, strafeDirection);
+		}
 	}
 
 	public void updateIdleMotion()
@@ -1357,6 +1434,25 @@ public class TankAIControlled extends Tank
 		double accY = accel * Math.sin(angle);
 		this.aX = accX;
 		this.aY = accY;
+	}
+
+	@Override
+	public void draw()
+	{
+		if (this.currentlyVisible || this.destroy)
+			super.draw();
+		else
+		{
+			if (this.size * 4 > this.timeInvisible * 2)
+			{
+				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+
+				if (Game.enable3d)
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2, true, false);
+				else
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2);
+			}
+		}
 	}
 
 }

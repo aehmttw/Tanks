@@ -170,8 +170,6 @@ public class ShaderHandler
         this.window.bonesEnabledFlag = GL20.glGetUniformLocation(normalProgram, "bonesEnabled");
         this.window.boneMatricesFlag = GL20.glGetUniformLocation(normalProgram, "boneMatrices");
 
-        this.window.drunkFlag = GL20.glGetUniformLocation(normalProgram, "drunk");
-
         glUseProgram(0);
     }
 
@@ -209,7 +207,6 @@ public class ShaderHandler
 
         glUseProgram(normalProgram);
         glUniform1i(this.resolutionFlag, this.size);
-        glUniform1i(this.window.drunkFlag, this.window.drunk ? 1 : 0);
 
         if (this.window.shadowsEnabled)
             glUniform1i(this.window.shadowFlag, 1);

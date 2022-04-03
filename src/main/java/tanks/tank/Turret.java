@@ -4,12 +4,19 @@ import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 
+import static tanks.tank.TankPropertyAnnotation.Category.*;
+
 public class Turret extends Movable
 {
+	@TankPropertyAnnotation(category = appearanceModel, name = "Turret thickness")
 	public double size = 8;
+	@TankPropertyAnnotation(category = appearanceModel, name = "Turret length")
 	public double length = Game.tile_size;
+	@TankPropertyAnnotation(category = appearanceColor, name = "Secondary red")
 	public double colorR;
+	@TankPropertyAnnotation(category = appearanceColor, name = "Secondary green")
 	public double colorG;
+	@TankPropertyAnnotation(category = appearanceColor, name = "Secondary blue")
 	public double colorB;
 
 	Tank tank;

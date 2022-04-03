@@ -20,10 +20,11 @@ public class TankMaroon extends TankAIControlled
 		this.cooldownRandom = 120;
 		this.cooldownBase = 480;
 		this.aimTurretSpeed = 0.02;
-		this.bulletBounces = 3;
-		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletSize = 25;
-		this.bulletHeavy = true;
+		this.bullet.bounces = 3;
+		this.bullet.effect = Bullet.BulletEffect.trail;
+		this.bullet.size = 25;
+		this.bullet.heavy = true;
+		this.bullet.name = "Mega bullet";
 		this.enableLookingAtTargetEnemy = true;
 		this.motionChangeChance = 0.001;
 		this.turret.size *= 1.5;

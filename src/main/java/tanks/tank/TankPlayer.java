@@ -15,6 +15,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
 import tanks.hotbar.item.ItemRemote;
 
 /**
@@ -22,8 +23,8 @@ import tanks.hotbar.item.ItemRemote;
  */
 public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 {
-	public static Item default_bullet;
-	public static Item default_mine;
+	public static ItemBullet default_bullet;
+	public static ItemMine default_mine;
 
 	public static Joystick controlStick;
 	public static Joystick shootStick;

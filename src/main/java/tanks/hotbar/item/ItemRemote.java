@@ -1,5 +1,7 @@
 package tanks.hotbar.item;
 
+import tanks.tank.Tank;
+
 public class ItemRemote extends Item
 {
     public int bounces;
@@ -12,7 +14,7 @@ public class ItemRemote extends Item
     }
 
     @Override
-    public void use()
+    public void use(Tank t)
     {
 
     }

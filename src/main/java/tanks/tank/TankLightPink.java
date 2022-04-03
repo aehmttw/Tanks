@@ -14,6 +14,7 @@ public class TankLightPink extends TankAIControlled
 
     public double shootCycleTime = 60;
     public double shootTimer = 0;
+    public int shotCount = 5;
     public int shots = 0;
     public boolean shooting = false;
     public double spread = Math.PI / 20;
@@ -52,9 +53,9 @@ public class TankLightPink extends TankAIControlled
 
             this.cooldownBase = 120;
             this.cooldownRandom = 60;
-            this.bulletSpeed = 25.0 / 8;
-            this.bulletBounces = 1;
-            this.bulletEffect = Bullet.BulletEffect.trail;
+            this.bullet.speed = 25.0 / 8;
+            this.bullet.bounces = 1;
+            this.bullet.effect = Bullet.BulletEffect.trail;
             this.shootAIType = ShootAI.reflect;
 
             if (prevTimer > 0)
@@ -72,9 +73,9 @@ public class TankLightPink extends TankAIControlled
 
             this.cooldownBase = 150;
             this.cooldownRandom = 0;
-            this.bulletSpeed = 25.0 / 4;
-            this.bulletBounces = 0;
-            this.bulletEffect = Bullet.BulletEffect.fire;
+            this.bullet.speed = 25.0 / 4;
+            this.bullet.bounces = 0;
+            this.bullet.effect = Bullet.BulletEffect.fire;
             this.shootAIType = ShootAI.straight;
 
             if (prevTimer <= 0)
@@ -111,8 +112,8 @@ public class TankLightPink extends TankAIControlled
             boolean cancel = false;
             for (double offset = -spread * 2; offset <= spread * 2; offset += spread)
             {
-                Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this, 2.5);
-                a.size = this.bulletSize;
+                Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bullet.bounces, this, 2.5);
+                a.size = this.bullet.size;
                 a.moveOut(this.size / 2.5);
 
                 Movable m = a.getTarget();
@@ -139,10 +140,7 @@ public class TankLightPink extends TankAIControlled
     public void updateTurretAI()
     {
         if (!this.shooting)
-        {
             super.updateTurretAI();
-            return;
-        }
         else if (this.shootTimer <= -this.shootCycleTime / 2 && this.targetEnemy != null)
         {
             this.aimAngle = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
@@ -172,24 +170,24 @@ public class TankLightPink extends TankAIControlled
                 this.angle = this.aimAngle;
                 this.shootTimer += Panel.frameFrequency;
             }
-
-            return;
         }
-
-        this.angle = this.aimAngle + this.fanDirection * this.spread * 4 * (Math.abs(this.shootTimer / this.shootCycleTime) - 0.5);
-
-        int s = (int) Math.round(this.shootTimer / this.shootCycleTime * 5);
-        if (this.shots < s)
+        else
         {
-            this.launchBullet(0);
-            this.shots = s;
-        }
+            this.angle = this.aimAngle + this.fanDirection * this.spread * (this.shotCount - 1) * (Math.abs(this.shootTimer / this.shootCycleTime) - 0.5);
 
-        if (this.shootTimer > this.shootCycleTime)
-        {
-            this.shooting = false;
-        }
+            int s = (int) Math.round(this.shootTimer * this.shotCount / this.shootCycleTime);
+            if (this.shots < s)
+            {
+                this.bullet.use(this);
+                this.shots = s;
+            }
 
-        this.shootTimer += Panel.frameFrequency;
+            if (this.shootTimer > this.shootCycleTime)
+            {
+                this.shooting = false;
+            }
+
+            this.shootTimer += Panel.frameFrequency;
+        }
     }
 }

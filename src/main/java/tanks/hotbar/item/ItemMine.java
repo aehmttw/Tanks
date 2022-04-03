@@ -49,10 +49,8 @@ public class ItemMine extends Item
     }
 
     @Override
-    public void use()
+    public void use(Tank t)
     {
-        Tank t = this.getUser();
-
         Mine m = new Mine(t.posX, t.posY, this.timer, t, this);
 
         t.cooldown = this.cooldown;
@@ -64,12 +62,10 @@ public class ItemMine extends Item
         m.size = this.size;
         m.destroysObstacles = this.destroysObstacles;
 
-        if (t instanceof TankPlayerRemote)
-            ((TankPlayerRemote) t).layMine(m);
-        else if (t instanceof TankPlayer)
-            ((TankPlayer) t).layMine(m);
+        t.layMine(m);
 
-        this.stackSize--;
+        if (!this.unlimitedStack)
+            this.stackSize--;
 
         if (this.stackSize <= 0)
             this.destroy = true;

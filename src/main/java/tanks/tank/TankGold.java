@@ -27,12 +27,14 @@ public class TankGold extends TankAIControlled
 		this.cooldownRandom = 80;
 		this.liveBulletMax = 5;
 		this.aimTurretSpeed = 0.04;
-		this.bulletBounces = 0;
-		this.bulletEffect = Bullet.BulletEffect.ember;
-		this.bulletDamage = 0;
+		this.bullet.bounces = 0;
+		this.bullet.effect = Bullet.BulletEffect.ember;
+		this.bullet.damage = 0;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
-		this.bulletSpeed = 25 / 4.0;
+		this.bullet.speed = 25 / 4.0;
+		this.bullet.bulletClass = BulletBoost.class;
+		this.bullet.name = "Booster bullet";
 		this.dealsDamage = false;
 
 		this.coinValue = 4;
@@ -97,18 +99,18 @@ public class TankGold extends TankAIControlled
 		if (this.cooldown > 0 || this.suicidal || this.disabled || this.destroy || this.liveBullets >= this.liveBulletMax)
 			return;
 
-		Ray r = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
+		Ray r = new Ray(this.posX, this.posY, this.angle, this.bullet.bounces, this);
 		r.moveOut(5);
 
 		if (this.avoidTimer <= 0 && (!this.hasTarget || r.getTarget() != this.targetEnemy))
 			return;
 
-		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bulletSize));
-		BulletBoost b = new BulletBoost(this.posX, this.posY, this.bulletBounces, this);
-		b.effect = this.bulletEffect;
+		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bullet.size));
+		BulletBoost b = new BulletBoost(this.posX, this.posY, this.bullet.bounces, this);
+		b.effect = this.bullet.effect;
 		b.team = this.team;
-		b.setPolarMotion(this.angle, this.bulletSpeed);
-		b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
+		b.setPolarMotion(this.angle, this.bullet.speed);
+		b.moveOut(50 / this.bullet.speed * this.size / Game.tile_size);
 
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));

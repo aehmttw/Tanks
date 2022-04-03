@@ -30,9 +30,9 @@ public class TankMedic extends TankAIControlled
 		this.cooldownRandom = 0;
 		this.cooldownBase = 0;
 		this.aimTurretSpeed = 0.02;
-		this.bulletBounces = 0;
-		this.bulletEffect = Bullet.BulletEffect.none;
-		this.bulletDamage = 0;
+		this.bullet.bounces = 0;
+		this.bullet.effect = Bullet.BulletEffect.none;
+		this.bullet.damage = 0;
 		this.motionChangeChance = 0.001;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
@@ -100,12 +100,12 @@ public class TankMedic extends TankAIControlled
 		if (this.cooldown > 0 || this.suicidal || this.disabled || this.destroy)
 			return;
 
-		Ray r = new Ray(this.posX, this.posY, this.angle, this.bulletBounces, this);
+		Ray r = new Ray(this.posX, this.posY, this.angle, this.bullet.bounces, this);
 		r.moveOut(5);
 		if (!this.hasTarget || r.getTarget() != this.targetEnemy)
 			return;
 
-		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bulletBounces, this);
+		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bullet.bounces, this);
 		b.frameDamageMultipler = Panel.frameFrequency;
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/8);

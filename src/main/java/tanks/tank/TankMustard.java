@@ -25,7 +25,7 @@ public class TankMustard extends TankAIControlled
         this.enableLookingAtTargetEnemy = false;
         this.cooldownBase = 200;
         this.cooldownRandom = 100;
-        this.bulletBounces = 0;
+        this.bullet.bounces = 0;
 
         this.coinValue = 4;
         this.turret.size *= 1.75;
@@ -37,7 +37,7 @@ public class TankMustard extends TankAIControlled
     public void update()
     {
         super.update();
-        double pitch = Math.atan(this.distance / this.bulletSpeed * 0.5 * BulletArc.gravity / this.bulletSpeed);
+        double pitch = Math.atan(this.distance / this.bullet.speed * 0.5 * BulletArc.gravity / this.bullet.speed);
         this.pitch -= Movable.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
     }
 
@@ -62,19 +62,19 @@ public class TankMustard extends TankAIControlled
             double speed = this.targetEnemy.getLastMotionInDirection(a + Math.PI / 2);
 
             double distBtwn = Movable.distanceBetween(this, this.targetEnemy);
-            double time = distBtwn / Math.sqrt(this.bulletSpeed * this.bulletSpeed - speed * speed);
+            double time = distBtwn / Math.sqrt(this.bullet.speed * this.bullet.speed - speed * speed);
 
             double distSq = Math.pow(targetEnemy.lastFinalVX * time, 2) + Math.pow(targetEnemy.lastFinalVY * time, 2);
 
             double d = r.getDist();
 
-            if (d * d > distSq && speed < this.bulletSpeed)
+            if (d * d > distSq && speed < this.bullet.speed)
             {
-                this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY) - Math.asin(speed / this.bulletSpeed);
+                this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY) - Math.asin(speed / this.bullet.speed);
 
                 double c = Math.cos(Movable.absoluteAngleBetween(targetEnemy.getLastPolarDirection(), this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY)));
 
-                double a1 = Math.pow(this.bulletSpeed, 2) - Math.pow(targetEnemy.getLastSpeed(), 2);
+                double a1 = Math.pow(this.bullet.speed, 2) - Math.pow(targetEnemy.getLastSpeed(), 2);
                 double b1 = -2 * targetEnemy.getLastSpeed() * Movable.distanceBetween(this, this.targetEnemy) * c;
                 double c1 = -Math.pow(Movable.distanceBetween(this, targetEnemy), 2);
                 double t = (-b1 + Math.sqrt(b1 * b1 - 4 * a1 * c1)) / (2 * a1);
@@ -107,10 +107,10 @@ public class TankMustard extends TankAIControlled
 
         BulletArc b = new BulletArc(this.posX, this.posY, 0, this);
         b.team = this.team;
-        b.addPolarMotion(this.aimAngle, this.bulletSpeed);
-        b.vZ = this.distance / this.bulletSpeed * 0.5 * BulletArc.gravity;
+        b.addPolarMotion(this.aimAngle, this.bullet.speed);
+        b.vZ = this.distance / this.bullet.speed * 0.5 * BulletArc.gravity;
         b.size = 25;
-        b.bounces = this.bulletBounces;
+        b.bounces = this.bullet.bounces;
         Game.eventsOut.add(new EventShootBullet(b));
 
         Game.movables.add(b);

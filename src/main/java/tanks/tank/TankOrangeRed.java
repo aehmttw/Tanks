@@ -6,7 +6,6 @@ import tanks.Movable;
 import tanks.Team;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletExplosive;
-import tanks.event.EventLayMine;
 import tanks.event.EventShootBullet;
 
 /**
@@ -26,10 +25,12 @@ public class TankOrangeRed extends TankAIControlled
         this.cooldownRandom = 120;
         this.cooldownBase = 120;
         this.aimTurretSpeed = 0.02;
-        this.bulletBounces = 0;
-        this.bulletEffect = Bullet.BulletEffect.trail;
-        this.bulletSize = 20;
-        this.bulletHeavy = true;
+        this.bullet.bulletClass = BulletExplosive.class;
+        this.bullet.bounces = 0;
+        this.bullet.effect = Bullet.BulletEffect.trail;
+        this.bullet.size = 20;
+        this.bullet.heavy = true;
+        this.bullet.name = "Explosive bullet";
         this.enableLookingAtTargetEnemy = true;
         this.motionChangeChance = 0.001;
         this.enablePathfinding = true;
@@ -41,30 +42,6 @@ public class TankOrangeRed extends TankAIControlled
         this.coinValue = 4;
 
         this.description = "A tank which shoots explosive bullets";
-    }
-
-    /**
-     * Actually fire a bullet
-     */
-    @Override
-    public void launchBullet(double offset)
-    {
-        Drawing.drawing.playGlobalSound("shoot.ogg");
-
-        Bullet b = new BulletExplosive(this.posX, this.posY, this.bulletBounces, this);
-        b.setPolarMotion(angle + offset, this.bulletSpeed);
-        b.moveOut(50 / this.bulletSpeed * this.size / Game.tile_size);
-        b.effect = this.bulletEffect;
-        b.size = this.bulletSize;
-        b.damage = this.bulletDamage;
-
-        Game.movables.add(b);
-        Game.eventsOut.add(new EventShootBullet(b));
-
-        this.cooldown = this.random.nextDouble() * this.cooldownRandom + this.cooldownBase;
-
-        if (this.shootAIType.equals(ShootAI.alternate))
-            this.straightShoot = !this.straightShoot;
     }
 
     public void shoot()
@@ -79,8 +56,8 @@ public class TankOrangeRed extends TankAIControlled
             if (this.targetEnemy != null && this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
                 an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
-            Ray a2 = new Ray(this.posX, this.posY, an, this.bulletBounces, this);
-            a2.size = this.bulletSize;
+            Ray a2 = new Ray(this.posX, this.posY, an, this.bullet.bounces, this);
+            a2.size = this.bullet.size;
             a2.getTarget();
             a2.ignoreDestructible = this.ignoreDestructible;
 
@@ -94,8 +71,8 @@ public class TankOrangeRed extends TankAIControlled
                 this.disableOffset = false;
             }
 
-            Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bulletBounces, this, 2.5);
-            a.size = this.bulletSize;
+            Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bullet.bounces, this, 2.5);
+            a.size = this.bullet.size;
             a.moveOut(this.size / 2.5);
 
             Movable m = a.getTarget();
@@ -109,7 +86,7 @@ public class TankOrangeRed extends TankAIControlled
                         return;
                 }
 
-                this.launchBullet(offset);
+                this.bullet.use(this);
             }
         }
     }

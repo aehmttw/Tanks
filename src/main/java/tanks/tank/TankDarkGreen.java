@@ -14,13 +14,14 @@ public class TankDarkGreen extends TankAIControlled
 		this.cooldownBase = 5;
 		this.cooldownRandom = 0;
 		this.maxSpeed = 1.5;
-		this.bulletSpeed = 25.0 / 4;
+		this.bullet.speed = 25.0 / 4;
 		this.aimAccuracyOffset = 0.1;
 		this.liveBulletMax = 8;
-		this.bulletBounces = 0;
-		this.bulletDamage /= 8;
-		this.bulletSize /= 2;
-		this.bulletEffect = Bullet.BulletEffect.trail;
+		this.bullet.bounces = 0;
+		this.bullet.damage /= 8;
+		this.bullet.size /= 2;
+		this.bullet.effect = Bullet.BulletEffect.trail;
+		this.bullet.name = "Mini bullet";
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
 		
 		this.coinValue = 10;

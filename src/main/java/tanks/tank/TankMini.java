@@ -23,10 +23,11 @@ public class TankMini extends TankAIControlled
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
 		this.aimTurretSpeed = 0.02;
-		this.bulletBounces = 0;
-		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletDamage = 0.25;
-		this.bulletSize /= 2;
+		this.bullet.bounces = 0;
+		this.bullet.effect = Bullet.BulletEffect.trail;
+		this.bullet.damage = 0.25;
+		this.bullet.size /= 2;
+		this.bullet.name = "Mini bullet";
 		this.enableLookingAtTargetEnemy = true;
 		this.motionChangeChance = 0.001;
 		this.enableBulletAvoidance = false;

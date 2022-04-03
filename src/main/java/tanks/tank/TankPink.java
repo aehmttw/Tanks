@@ -24,9 +24,10 @@ public class TankPink extends TankAIControlled
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
 		this.aimTurretSpeed = 0.02;
-		this.bulletBounces = 2;
-		this.bulletSpeed = 25.0 / 4;
-		this.bulletEffect = Bullet.BulletEffect.fireTrail;
+		this.bullet.bounces = 2;
+		this.bullet.speed = 25.0 / 4;
+		this.bullet.effect = Bullet.BulletEffect.fireTrail;
+		this.bullet.name = "Bouncy fire bullet";
 		this.turretIdleTimerBase = 25;
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;

@@ -29,7 +29,7 @@ public class ItemBullet extends Item
 	public boolean heavy = false;
 	public double accuracy = 0;
 	public int shotCount = 1;
-	public double shotSpread = Math.PI / 6;
+	public double shotSpread = 30;
 
 	public double fractionUsed = 0;
 
@@ -77,14 +77,15 @@ public class ItemBullet extends Item
 	}
 
 	@Override
-	public void use()
+	public void use(Tank m)
 	{
 		try
 		{
-			Tank m = this.getUser();
-
 			double remainingQty = this.stackSize - this.fractionUsed;
 			double useAmt = 1;
+
+			if (this.unlimitedStack)
+				remainingQty = Double.MAX_VALUE;
 
 			if (this.cooldown <= 0)
 				useAmt = Panel.frameFrequency;
@@ -117,12 +118,9 @@ public class ItemBullet extends Item
 				m.cooldown = this.cooldown;
 
 				double off = baseOff + (Math.random() - 0.5) * Math.toRadians(this.accuracy);
-				if (m instanceof TankPlayerRemote)
-					((TankPlayerRemote) m).fireBullet(b, speed, off);
-				else if (m instanceof TankPlayer)
-					((TankPlayer) m).fireBullet(b, speed, off);
+				m.fireBullet(b, speed, off);
 
-				while (this.fractionUsed >= 1)
+				while (this.fractionUsed >= 1 && !this.unlimitedStack)
 				{
 					this.stackSize--;
 					this.fractionUsed--;

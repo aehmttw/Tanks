@@ -27,11 +27,12 @@ public class TankBoss extends TankAIControlled
 		this.cooldownRandom = 200;
 		this.cooldownBase = 100;
 		this.aimAccuracyOffset = 0;
-		this.bulletBounces = 3;
-		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletSpeed = 25.0 / 8;
-		this.bulletSize = 25;
-		this.bulletHeavy = true;
+		this.bullet.bounces = 3;
+		this.bullet.effect = Bullet.BulletEffect.trail;
+		this.bullet.speed = 25.0 / 8;
+		this.bullet.size = 25;
+		this.bullet.heavy = true;
+		this.bullet.name = "Mega bullet";
 		this.health = 5;
 		this.baseHealth = 5;
 		this.turret.length *= 3;

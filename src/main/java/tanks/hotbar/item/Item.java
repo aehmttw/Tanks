@@ -26,6 +26,7 @@ public abstract class Item implements IGameObject
 	public int price;
 	public int maxStackSize = 100;
 	public int stackSize = 1;
+	public boolean unlimitedStack = false;
 	public boolean inUse = false;
 	public String name = System.currentTimeMillis() + "";
 	public String icon;
@@ -38,8 +39,13 @@ public abstract class Item implements IGameObject
 	public Player player;
 
 	public abstract boolean usable();
-	
-	public abstract void use();
+
+	public void use()
+	{
+		this.use(this.getUser());
+	}
+
+	public abstract void use(Tank user);
 
 	public Item(Player p)
 	{
@@ -199,6 +205,11 @@ public abstract class Item implements IGameObject
 		}
 
 		return null;
+	}
+
+	public Item clone()
+	{
+		return Item.parseItem(this.player, this.toString());
 	}
 
 	public abstract String getTypeName();

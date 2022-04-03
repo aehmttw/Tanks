@@ -13,6 +13,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
+import static tanks.tank.TankPropertyAnnotation.Category.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +29,13 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static ModelPart health_model;
 
+	@TankPropertyAnnotation(category = appearanceModel, name = "Tank body model")
 	public Model baseModel = base_model;
+	@TankPropertyAnnotation(category = appearanceModel, name = "Tank treads model")
 	public Model colorModel = color_model;
+	@TankPropertyAnnotation(category = appearanceModel, name = "Turret base model")
 	public Model turretBaseModel = Turret.base_model;
+	@TankPropertyAnnotation(category = appearanceModel, name = "Turret barrel model")
 	public Model turretModel = Turret.turret_model;
 
 	public double angle = 0;
@@ -41,9 +46,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean invulnerable = false;
 	public boolean targetable = true;
 
-	public boolean resistExplosions = false;
-	public boolean resistBullets = false;
-
 	public boolean disabled = false;
 	public boolean inControlOfMotion = true;
 	public boolean positionLock = false;
@@ -51,12 +53,19 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean tookRecoil = false;
 	public double recoilSpeed = 0;
 
+	@TankPropertyAnnotation(category = misc, name = "Tank name")
+	public String name;
+
+	@TankPropertyAnnotation(category = misc, name = "Tank body model")
 	public int coinValue = 0;
+
+	@TankPropertyAnnotation(category = misc, name = "Bullet immunity")
+	public boolean resistBullets = false;
+	@TankPropertyAnnotation(category = misc, name = "Explosion immunity")
+	public boolean resistExplosions = false;
 
 	public int networkID;
 	public int crusadeID = -1;
-
-	public String name;
 
 	public String description = "";
 
@@ -65,15 +74,23 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
+
+	@TankPropertyAnnotation(category = movementGeneral, name = "Tank speed")
 	public double maxSpeed = 1.5;
 	public int liveBullets = 0;
 	public int liveMines = 0;
 	public double size;
+
+	@TankPropertyAnnotation(category = appearanceColor, name = "Red")
 	public double colorR;
+	@TankPropertyAnnotation(category = appearanceColor, name = "Green")
 	public double colorG;
+	@TankPropertyAnnotation(category = appearanceColor, name = "Blue")
 	public double colorB;
+
 	public int liveBulletMax;
 	public int liveMinesMax;
+
 	public double drawAge = 0;
 	public double destroyTimer = 0;
 	public boolean hasCollided = false;
@@ -85,10 +102,12 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double hitboxSize = 0.95;
 
+	@TankPropertyAnnotation(category = misc, name = "Hitpoints")
 	public double baseHealth = 1;
 	public double health = 1;
 
 	/** Whether this tank needs to be destroyed before the level ends. */
+	@TankPropertyAnnotation(category = misc, name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
 	public boolean needsToKill = true;
 
 	public boolean[][] hiddenPoints = new boolean[3][3];
@@ -149,6 +168,17 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this(name, x, y, size, r, g, b, true);
 	}
+
+	public void fireBullet(Bullet b, double speed, double offset)
+	{
+
+	}
+
+	public void layMine(Mine m)
+	{
+
+	}
+
 
 	public void checkCollision()
 	{

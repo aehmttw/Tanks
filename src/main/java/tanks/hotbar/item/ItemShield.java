@@ -30,10 +30,8 @@ public class ItemShield extends Item
     }
 
     @Override
-    public void use()
+    public void use(Tank t)
     {
-        Tank t = this.getUser();
-
         t.health += amount;
 
         if (t.health > max)

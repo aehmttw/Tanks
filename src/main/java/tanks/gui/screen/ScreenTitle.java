@@ -62,7 +62,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	}
 	);
 
-	Button takeControl = new Button(logo.posX, logo.posY, Game.tile_size, Game.tile_size, "", new Runnable()
+	Button takeControl = new Button(0, 0, Game.tile_size, Game.tile_size, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -88,13 +88,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	public ScreenTitle()
 	{
 		Game.movables.clear();
-		this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-		this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-		this.logo.invulnerable = true;
-		this.logo.drawAge = 50;
-		this.logo.depthTest = false;
-
-		Game.movables.add(logo);
 		ScreenGame.finished = false;
 
 		takeControl.silent = true;
@@ -165,6 +158,20 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 	public void drawWithoutBackground()
 	{
+		if (this.logo == null)
+		{
+			this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
+			takeControl.posX = logo.posX;
+			takeControl.posY = logo.posY;
+			this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
+			this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
+			this.logo.invulnerable = true;
+			this.logo.drawAge = 50;
+			this.logo.depthTest = false;
+
+			Game.movables.add(logo);
+		}
+
 		play.draw();
 		exit.draw();
 		options.draw();
@@ -238,8 +245,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		this.rCenterX = Drawing.drawing.interfaceSizeX / 2;
 		this.rCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
-
-		this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
 
 		if (Drawing.drawing.interfaceScaleZoom > 1)
 		{

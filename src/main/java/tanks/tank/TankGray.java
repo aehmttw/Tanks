@@ -15,7 +15,7 @@ public class TankGray extends TankAIControlled
 		this.enableMovement = true;
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
 		this.idleTurretSpeed = 0.01;

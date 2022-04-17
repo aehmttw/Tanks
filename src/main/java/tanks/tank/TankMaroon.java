@@ -16,7 +16,7 @@ public class TankMaroon extends TankAIControlled
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 120;
 		this.cooldownBase = 480;
 		this.aimTurretSpeed = 0.02;

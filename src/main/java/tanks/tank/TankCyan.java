@@ -21,7 +21,7 @@ public class TankCyan extends TankAIControlled
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 240;
 		this.aimTurretSpeed = 0.01;

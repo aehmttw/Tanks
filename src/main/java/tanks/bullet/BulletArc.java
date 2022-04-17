@@ -49,16 +49,7 @@ public class BulletArc extends Bullet
         this.autoZ = false;
     }
 
-    public BulletArc(double x, double y, int bounces, Tank t)
-    {
-        this(x, y, t, bounces, true, null);
-    }
-
-    /**
-     * Do not use, instead use the constructor with primitive data types.
-     */
-    @Deprecated
-    public BulletArc(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
+    public BulletArc(double x, double y, int bounces, Tank t, ItemBullet ib)
     {
         this(x, y, t, bounces, true, ib);
     }
@@ -81,7 +72,7 @@ public class BulletArc extends Bullet
 
         this.vZ -= gravity * Panel.frameFrequency * gravMod;
 
-        if (this.posZ <= Game.tile_size / 2 && !this.destroy)
+        if (this.posZ < Game.tile_size / 2 && !this.destroy)
         {
             if (this.bounces > 0)
             {

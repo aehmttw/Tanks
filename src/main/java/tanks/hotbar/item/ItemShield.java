@@ -11,7 +11,7 @@ public class ItemShield extends Item
 
     public double amount;
     public double max;
-    public double cooldown;
+    public double cooldownBase;
 
     public ItemShield(Player p)
     {
@@ -49,7 +49,7 @@ public class ItemShield extends Item
         if (this.stackSize <= 0)
             this.destroy = true;
 
-        t.cooldown = this.cooldown;
+        this.cooldown = this.cooldownBase;
 
         if (t.health > 6 && (int) (t.health - amount) != (int) (t.health))
         {
@@ -61,16 +61,15 @@ public class ItemShield extends Item
     }
 
     @Override
-    public boolean usable()
+    public boolean usable(Tank t)
     {
-        Tank t = this.getUser();
-        return (this.max <= 0 || t.health < this.max) && this.stackSize > 0 && t.cooldown <= 0;
+        return (this.max <= 0 || t.health < this.max) && this.stackSize > 0 && this.cooldown <= 0;
     }
 
     @Override
     public String toString()
     {
-        return super.toString() + "," + item_name + "," + amount + "," + max + "," + cooldown;
+        return super.toString() + "," + item_name + "," + amount + "," + max + "," + cooldownBase;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class ItemShield extends Item
 
         this.amount = Double.parseDouble(p[0]);
         this.max = Double.parseDouble(p[1]);
-        this.cooldown = Double.parseDouble(p[2]);
+        this.cooldownBase = Double.parseDouble(p[2]);
     }
 
     @Override
@@ -90,7 +89,7 @@ public class ItemShield extends Item
 
         this.setProperty("health_boost", this.amount);
         this.setProperty("max_extra_health", this.max);
-        this.setProperty("cooldown", this.cooldown);
+        this.setProperty("cooldown", this.cooldownBase);
     }
 
     @Override
@@ -106,6 +105,6 @@ public class ItemShield extends Item
 
         this.amount = (double) this.getProperty("health_boost");
         this.max = (double) this.getProperty("max_extra_health");
-        this.cooldown = (double) this.getProperty("cooldown");
+        this.cooldownBase = (double) this.getProperty("cooldown");
     }
 }

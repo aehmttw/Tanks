@@ -32,7 +32,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         Game.movables.add(logo);
         ScreenGame.finished = false;
 
-        mine = new Mine(this.centerX + 200, this.centerY, this.logo);
+        mine = new Mine(this.centerX + 200, this.centerY, this.logo, this.logo.mine);
         mine.size *= 2;
         mine.radius *= 2;
         mine.timer = 100000;
@@ -120,7 +120,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
             {
                 Drawing.drawing.playGlobalSound("shoot.ogg");
 
-                Bullet b = new Bullet(this.logo.posX, this.logo.posY, 0, this.logo);
+                Bullet b = new Bullet(this.logo.posX, this.logo.posY, 0, this.logo, this.logo.bullet);
                 b.size *= 2;
                 b.setPolarMotion(this.logo.angle, 3.125);
                 this.logo.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);

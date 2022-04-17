@@ -15,18 +15,11 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 	double age = 0;
 	public double sizeMul = 1;
 
-	public BulletFlame(double x, double y, int bounces, Tank t) 
+	public BulletFlame(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
-		this(x, y, bounces, t, false, null);
+		this(x, y, bounces, t, false, ib);
 	}
-	
-	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-	@Deprecated
-	public BulletFlame(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
-	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false, ib);
-	}
-	
+
 	public BulletFlame(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsLiveBulletCount, ib);
@@ -94,5 +87,11 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 	public boolean isGlowEnabled()
 	{
 		return true;
+	}
+
+	@Override
+	public void addDestroyEffect()
+	{
+
 	}
 }

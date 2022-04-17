@@ -30,7 +30,7 @@ public class Mine extends Movable implements IAvoidObject
 
     public double radius = mine_radius;
     public Tank tank;
-    public Item item;
+    public ItemMine item;
     public boolean exploded = false;
     public double cooldown = 0;
     public int lastBeep = Integer.MAX_VALUE;
@@ -40,11 +40,6 @@ public class Mine extends Movable implements IAvoidObject
     public static int currentID = 0;
     public static ArrayList<Integer> freeIDs = new ArrayList<>();
     public static HashMap<Integer, Mine> idMap = new HashMap<>();
-
-    public Mine(double x, double y, double timer, Tank t)
-    {
-        this(x, y, timer, t, null);
-    }
 
     public Mine(double x, double y, double timer, Tank t, ItemMine item)
     {
@@ -61,10 +56,7 @@ public class Mine extends Movable implements IAvoidObject
 
         if (!ScreenPartyLobby.isClient)
         {
-            if (this.item == null)
-                t.liveMines++;
-            else
-                ((ItemMine) this.item).liveMines++;
+            this.item.liveMines++;
         }
 
         this.team = t.team;
@@ -102,9 +94,9 @@ public class Mine extends Movable implements IAvoidObject
         }
     }
 
-    public Mine(double x, double y, Tank t)
+    public Mine(double x, double y, Tank t, ItemMine im)
     {
-        this(x, y, 1000, t);
+        this(x, y, 1000, t, im);
     }
 
     @Override
@@ -209,10 +201,7 @@ public class Mine extends Movable implements IAvoidObject
             Explosion e = new Explosion(this);
             e.explode();
 
-            if (!(this.item instanceof ItemMine))
-                this.tank.liveMines--;
-            else
-                ((ItemMine) this.item).liveMines--;
+            this.item.liveMines--;
         }
     }
 

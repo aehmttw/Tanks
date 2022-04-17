@@ -78,24 +78,21 @@ public class Bullet extends Movable implements IDrawable
 	public boolean bulletCollision = true;
 	public boolean enableCollision = true;
 
+	public boolean externalBulletCollision = true;
+
 	public boolean affectsMaxLiveBullets;
 
 	public Tank tankInside = null;
 
 	public String itemSound = "shoot.ogg";
 
-	public ArrayList<Trail>[] trails;
+	protected ArrayList<Trail>[] trails;
+	protected boolean addedTrail = false;
+	protected double lastTrailAngle = -1;
 
-	public Bullet(double x, double y, int bounces, Tank t)
+	public Bullet(double x, double y, int bounces, Tank t, ItemBullet item)
 	{
-		this(x, y, bounces, t, true, null);
-	}
-
-	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-	@Deprecated
-	public Bullet(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
-	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
+		this(x, y, bounces, t, true, item);
 	}
 
 	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet item)
@@ -130,12 +127,7 @@ public class Bullet extends Movable implements IDrawable
 		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
 
 		if (!this.tank.isRemote && this.affectsMaxLiveBullets)
-		{
-			if (this.item == null)
-				t.liveBullets++;
-			else
-				this.item.liveBullets++;
-		}
+			this.item.liveBullets++;
 
 		for (AttributeModifier a: this.tank.attributes)
 		{
@@ -537,7 +529,7 @@ public class Bullet extends Movable implements IDrawable
 					collidedWithTank = true;
 				}
 			}
-			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && (((Bullet) o).bulletCollision && this.bulletCollision)) || o instanceof Mine) && o != this && !o.destroy)
+			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && (((Bullet) o).bulletCollision && ((Bullet) o).externalBulletCollision && this.bulletCollision)) || o instanceof Mine) && o != this && !o.destroy)
 			{
 				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 
@@ -545,7 +537,7 @@ public class Bullet extends Movable implements IDrawable
 
 				if (o instanceof Mine)
 					s = ((Mine) o).size;
-				else if (o instanceof Bullet)
+				else
 					s = ((Bullet) o).size;
 
 				double bound = this.size / 2 + s / 2;
@@ -648,17 +640,14 @@ public class Bullet extends Movable implements IDrawable
 
 				if (this.affectsMaxLiveBullets)
 				{
-					if (this.item == null)
-						this.tank.liveBullets--;
-					else
-						this.item.liveBullets--;
+					this.item.liveBullets--;
 				}
 
 				if (!this.isRemote)
 					this.onDestroy();
 			}
 
-			if (this.destroyTimer <= 0 && Game.effectsEnabled && !(this instanceof BulletFlame))
+			if (this.destroyTimer <= 0 && Game.effectsEnabled)
 			{
 				this.addDestroyEffect();
 			}
@@ -774,6 +763,13 @@ public class Bullet extends Movable implements IDrawable
 			Game.removeMovables.add(this);
 		}
 
+		if (this.effect != BulletEffect.none && !this.addedTrail && !this.destroy && Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001)
+		{
+			this.addTrail(true);
+		}
+
+		this.addedTrail = false;
+
 		if (this.enableCollision)
 		{
 			if (!this.tank.isRemote)
@@ -787,10 +783,26 @@ public class Bullet extends Movable implements IDrawable
 
 	public void addTrail()
 	{
-		if (!Game.bulletTrails)
+		this.addTrail(false);
+	}
+
+	public void addTrail(boolean redirect)
+	{
+		this.addedTrail = true;
+
+		if (!Game.bulletTrails || this.effect == BulletEffect.none)
 			return;
 
-		double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+		double speed = this.item.speed;
+
+		double x = this.collisionX;
+		double y = this.collisionY;
+
+		if (redirect)
+		{
+			x = this.posX;
+			y = this.posY;
+		}
 
 		for (ArrayList<Trail> trail : this.trails)
 		{
@@ -798,31 +810,51 @@ public class Bullet extends Movable implements IDrawable
 			{
 				Trail t = trail.get(0);
 				t.spawning = false;
-				t.frontX = this.collisionX;
-				t.frontY = this.collisionY;
+				t.frontX = x;
+				t.frontY = y;
 			}
 		}
 
+		this.lastTrailAngle = this.getPolarDirection();
+
 		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
-			this.trails[0].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2, this.size / 2, 15 * this.size * speed / 3.125, this.getPolarDirection(), 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5));
+			this.addTrailObj(0, new Trail(this, this.item.speed, x, y, this.size / 2, this.size / 2, 15 * this.size * speed / 3.125, this.lastTrailAngle, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5), redirect);
 
 		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
-			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.getPolarDirection(), 255, 255, 0, 255, 255, 0, 0, 0, false, 1));
+			this.addTrailObj(2, new Trail(this, this.item.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 255, 255, 0, 255, 255, 0, 0, 0, false, 1), redirect);
 
 		if (this.effect == BulletEffect.darkFire)
-			this.trails[2].add(0, new Trail(this, this.collisionX, this.collisionY, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.getPolarDirection(), 64, 0, 128, 255, 0, 0, 0, 0, false, 0.5));
+			this.addTrailObj(2, new Trail(this, this.item.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 64, 0, 128, 255, 0, 0, 0, 0, false, 0.5), redirect);
 
 		if (this.effect == BulletEffect.fireTrail)
 		{
-			Trail t = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 100 * this.size * speed / 6.25, this.getPolarDirection(), 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5);
+			Trail t = new Trail(this, this.item.speed, x, y, this.size, this.size, 100 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5);
 			t.delay = 14 * this.size * speed / 6.25;
 			t.frontCircle = false;
-			this.trails[0].add(0, t);
+			this.addTrailObj(0, t, redirect);
 
-			Trail t2 = new Trail(this, this.collisionX, this.collisionY, this.size, this.size, 8 * this.size * speed / 6.25, this.getPolarDirection(), 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5);
+			Trail t2 = new Trail(this, this.item.speed, x, y, this.size, this.size, 8 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5);
 			t2.delay = 6 * this.size * speed / 6.25;
 			t2.backCircle = false;
-			this.trails[1].add(0, t2);
+			this.addTrailObj(1, t2, redirect);
+		}
+	}
+
+	protected void addTrailObj(int group, Trail t, boolean redirect)
+	{
+		Trail old = null;
+
+		if (this.trails[group].size() > 0)
+			old = this.trails[group].get(0);
+
+		this.trails[group].add(0, t);
+
+		if (redirect && old != null)
+		{
+			double angle = this.getPolarDirection();
+			double offset = Movable.angleBetween(angle, old.angle) / 2;
+			old.setFrontAngleOffset(offset);
+			t.setBackAngleOffset(-offset);
 		}
 	}
 

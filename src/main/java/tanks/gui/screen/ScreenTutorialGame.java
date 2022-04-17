@@ -14,7 +14,7 @@ public class ScreenTutorialGame extends ScreenGame
 	public ScreenTutorialGame()
 	{
 		Game.startTime = 0;
-		Game.playerTank.cooldown = 50;
+		Game.playerTank.setBufferCooldown(50);
 	}
 	
 	public Button skip = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 25, 350, 40, "Skip Tutorial", () ->

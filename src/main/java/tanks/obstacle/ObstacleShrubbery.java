@@ -1,6 +1,7 @@
 package tanks.obstacle;
 
 import tanks.*;
+import tanks.bullet.BulletAir;
 import tanks.bullet.BulletFlame;
 import tanks.bullet.BulletInstant;
 import tanks.event.EventObstacleShrubberyBurn;
@@ -152,19 +153,37 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntryLocal(Movable m)
 	{
-		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
-		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
-
-		if (Game.playerTank == null || Game.playerTank.destroy)
-			return;
-
-		double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
-
-		double radius = 62500;
-		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+		if (m instanceof BulletAir)
 		{
-			int sound = (int) (Math.random() * 4 + 1);
-			Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+			if (Math.random() < Panel.frameFrequency / Math.pow(((BulletAir) m).size, 2) * 20 * Game.effectMultiplier)
+			{
+				Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size, this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
+				e.vX = m.vX * (Math.random() * 0.5 + 0.5);
+				e.vY = m.vY * (Math.random() * 0.5 + 0.5);
+				e.vZ = Math.random() * m.getSpeed() / 8;
+				e.colR = this.colorR;
+				e.colG = this.colorG;
+				e.colB = this.colorB;
+				e.enableGlow = false;
+				Game.effects.add(e);
+			}
+		}
+		else
+		{
+			double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
+			this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
+
+			if (Game.playerTank == null || Game.playerTank.destroy)
+				return;
+
+			double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+
+			double radius = 62500;
+			if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+			{
+				int sound = (int) (Math.random() * 4 + 1);
+				Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+			}
 		}
 	}
 

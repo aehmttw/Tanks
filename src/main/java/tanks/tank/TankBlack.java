@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletHoming;
 
 /**
  * A smart, very fast tank which fires rockets

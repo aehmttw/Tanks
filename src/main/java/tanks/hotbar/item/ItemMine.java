@@ -7,8 +7,6 @@ import tanks.gui.property.UIPropertyDouble;
 import tanks.gui.property.UIPropertyInt;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
 
 public class ItemMine extends Item
 {
@@ -18,8 +16,8 @@ public class ItemMine extends Item
     public double triggeredTimer;
     public double radius;
     public double damage;
-    public int maxAmount;
-    public double cooldown;
+    public int maxLiveMines;
+    public double cooldownBase;
     public double size;
     public boolean destroysObstacles;
 
@@ -53,12 +51,12 @@ public class ItemMine extends Item
     {
         Mine m = new Mine(t.posX, t.posY, this.timer, t, this);
 
-        t.cooldown = this.cooldown;
+        this.cooldown = this.cooldownBase;
         m.timer = this.timer;
         m.triggeredTimer = this.triggeredTimer;
         m.radius = this.radius;
         m.damage = this.damage;
-        m.cooldown = this.cooldown;
+        m.cooldown = this.cooldownBase;
         m.size = this.size;
         m.destroysObstacles = this.destroysObstacles;
 
@@ -72,16 +70,15 @@ public class ItemMine extends Item
     }
 
     @Override
-    public boolean usable()
+    public boolean usable(Tank t)
     {
-        Tank t = this.getUser();
-        return t != null && (this.maxAmount <= 0 || this.liveMines < this.maxAmount) && !(t.cooldown > 0) && this.stackSize > 0;
+        return t != null && (this.maxLiveMines <= 0 || this.liveMines < this.maxLiveMines) && !(this.cooldown > 0) && this.stackSize > 0;
     }
 
     @Override
     public String toString()
     {
-        return super.toString() + "," + item_name + "," + timer + "," + triggeredTimer + "," + radius + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + destroysObstacles;
+        return super.toString() + "," + item_name + "," + timer + "," + triggeredTimer + "," + radius + "," + damage + "," + maxLiveMines + "," + cooldownBase + "," + size + "," + destroysObstacles;
     }
 
     @Override
@@ -93,8 +90,8 @@ public class ItemMine extends Item
         this.triggeredTimer = Double.parseDouble(p[1]);
         this.radius = Double.parseDouble(p[2]);
         this.damage = Double.parseDouble(p[3]);
-        this.maxAmount = Integer.parseInt(p[4]);
-        this.cooldown = Double.parseDouble(p[5]);
+        this.maxLiveMines = Integer.parseInt(p[4]);
+        this.cooldownBase = Double.parseDouble(p[5]);
         this.size = Double.parseDouble(p[6]);
         this.destroysObstacles = Boolean.parseBoolean(p[7]);
     }
@@ -108,8 +105,8 @@ public class ItemMine extends Item
         this.setProperty("triggered_fuse", this.triggeredTimer);
         this.setProperty("explosion_radius", this.radius);
         this.setProperty("damage", this.damage);
-        this.setProperty("max_live_mines", this.maxAmount);
-        this.setProperty("cooldown", this.cooldown);
+        this.setProperty("max_live_mines", this.maxLiveMines);
+        this.setProperty("cooldown", this.cooldownBase);
         this.setProperty("size", this.size);
         this.setProperty("destroys_blocks", this.destroysObstacles);
     }
@@ -129,8 +126,8 @@ public class ItemMine extends Item
         this.triggeredTimer = (double) this.getProperty("triggered_fuse");
         this.radius = (double) this.getProperty("explosion_radius");
         this.damage = (double) this.getProperty("damage");
-        this.maxAmount = (int) this.getProperty("max_live_mines");
-        this.cooldown = (double) this.getProperty("cooldown");
+        this.maxLiveMines = (int) this.getProperty("max_live_mines");
+        this.cooldownBase = (double) this.getProperty("cooldown");
         this.size = (double) this.getProperty("size");
         this.destroysObstacles = (boolean) this.getProperty("destroys_blocks");
     }

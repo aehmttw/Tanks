@@ -2,7 +2,6 @@ package tanks.hotbar;
 
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
@@ -134,30 +133,40 @@ public class Hotbar
 				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
 
 			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
-			Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
 
 			int live = 1;
 			int max = 1;
+			double cooldownFrac = 0;
 
+			ItemBullet ib = null;
 			if (Game.playerTank != null && !Game.playerTank.destroy)
-			{
-				live = Game.playerTank.liveBullets;
-				max = Game.playerTank.liveBulletMax;
-			}
+				ib = Game.playerTank.bullet;
 
 			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet)
+				ib = (ItemBullet) this.itemBar.slots[this.itemBar.selected];
+
+			if (ib != null)
 			{
-				ItemBullet ib = (ItemBullet) this.itemBar.slots[this.itemBar.selected];
 				live = ib.liveBullets;
-				max = ib.maxAmount;
+				max = ib.maxLiveBullets;
+				cooldownFrac = ib.cooldown / ib.cooldownBase;
 			}
 
 			double ammo = live * 1.0 / max;
+			double ammo2 = (live - cooldownFrac) / max;
+
 
 			if (max <= 0)
 				ammo = 0;
 
+			Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, Math.min(1, 1 - ammo2));
+
+			Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, 1 - ammo);
+
+			Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
+			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, Math.min(1, Math.max(0, -ammo2 * max)));
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
@@ -169,12 +178,12 @@ public class Hotbar
 
 			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
-				int mines = Game.playerTank.liveMinesMax - Game.playerTank.liveMines;
+				int mines = Game.playerTank.mine.maxLiveMines - Game.playerTank.mine.liveMines;
 
 				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine)
 				{
 					ItemMine im = (ItemMine) this.itemBar.slots[this.itemBar.selected];
-					mines = im.maxAmount - im.liveMines;
+					mines = im.maxLiveMines - im.liveMines;
 				}
 
 				if (mines > 0)

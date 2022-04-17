@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 public abstract class Item implements IGameObject
 {
 	public static ArrayList<String> icons = new ArrayList<>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
-			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png",
+			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png", "bullet_air.png", "bullet_homing.png",
 			"mine.png",
 			"shield.png", "shield_gold.png"));
 
@@ -33,12 +33,18 @@ public abstract class Item implements IGameObject
 	public LinkedHashMap<String, UIProperty> properties = new LinkedHashMap<>();
 
 	public boolean destroy = false;
+	public double cooldown = 0;
 	
 	public boolean rightClick;
 
 	public Player player;
 
-	public abstract boolean usable();
+	public boolean usable()
+	{
+		return this.usable(this.getUser());
+	}
+
+	public abstract boolean usable(Tank t);
 
 	public void use()
 	{
@@ -112,11 +118,16 @@ public abstract class Item implements IGameObject
 
 	public void attemptUse()
 	{
-		if (this.usable())
-		{
-			use();
+		this.attemptUse(this.getUser());
+	}
 
-			for (IFixedMenu m : ModAPI.menuGroup)
+	public void attemptUse(Tank t)
+	{
+		if (this.usable(t))
+		{
+			use(t);
+
+			/*for (IFixedMenu m : ModAPI.menuGroup)
 			{
 				if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.items_used)) {
 					if (((Scoreboard) m).players.isEmpty())
@@ -124,7 +135,7 @@ public abstract class Item implements IGameObject
 					else
 						((Scoreboard) m).addPlayerScore(this.player, 1);
 				}
-			}
+			} TODO*/
 		}
 	}
 
@@ -205,6 +216,11 @@ public abstract class Item implements IGameObject
 		}
 
 		return null;
+	}
+
+	public void updateCooldown()
+	{
+		this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency);
 	}
 
 	public Item clone()

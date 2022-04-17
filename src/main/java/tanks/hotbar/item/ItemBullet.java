@@ -9,8 +9,6 @@ import tanks.gui.property.UIPropertyDouble;
 import tanks.gui.property.UIPropertyInt;
 import tanks.gui.property.UIPropertySelector;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
 
 import java.util.HashMap;
 
@@ -22,8 +20,8 @@ public class ItemBullet extends Item
 	public double speed = 25.0 / 8;
 	public int bounces = 1;
 	public double damage = 1;
-	public int maxAmount = 5;
-	public double cooldown = 20;
+	public int maxLiveBullets = 5;
+	public double cooldownBase = 20;
 	public double size = Bullet.bullet_size;
 	public double recoil = 1.0;
 	public boolean heavy = false;
@@ -32,11 +30,8 @@ public class ItemBullet extends Item
 	public double shotSpread = 30;
 
 	public double fractionUsed = 0;
-
 	public int liveBullets;
-
 	public String name;
-	
 	public String className;
 
 	public Class<? extends Bullet> bulletClass = Bullet.class;
@@ -87,7 +82,7 @@ public class ItemBullet extends Item
 			if (this.unlimitedStack)
 				remainingQty = Double.MAX_VALUE;
 
-			if (this.cooldown <= 0)
+			if (this.cooldownBase <= 0)
 				useAmt = Panel.frameFrequency;
 
 			int q = (int) Math.min(this.shotCount, Math.ceil(remainingQty / useAmt));
@@ -99,7 +94,7 @@ public class ItemBullet extends Item
 				if (q > 1)
 					baseOff = Math.toRadians(this.shotSpread) * ((i * 1.0 / (q - 1)) - 0.5);
 
-				Bullet b = bulletClass.getConstructor(Double.class, Double.class, Integer.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, (Tank) m, this);
+				Bullet b = bulletClass.getConstructor(double.class, double.class, int.class, Tank.class, ItemBullet.class).newInstance(m.posX, m.posY, bounces, (Tank) m, this);
 
 				b.damage = this.damage;
 				b.effect = this.effect;
@@ -107,7 +102,7 @@ public class ItemBullet extends Item
 				b.heavy = heavy;
 				b.recoil = recoil;
 
-				if (this.cooldown <= 0)
+				if (this.cooldownBase <= 0)
 				{
 					b.frameDamageMultipler = Panel.frameFrequency;
 					this.fractionUsed += Panel.frameFrequency;
@@ -115,7 +110,7 @@ public class ItemBullet extends Item
 				else
 					this.fractionUsed++;
 
-				m.cooldown = this.cooldown;
+				this.cooldown = this.cooldownBase;
 
 				double off = baseOff + (Math.random() - 0.5) * Math.toRadians(this.accuracy);
 				m.fireBullet(b, speed, off);
@@ -137,17 +132,16 @@ public class ItemBullet extends Item
 	}
 
 	@Override
-	public boolean usable()
+	public boolean usable(Tank t)
 	{
-		Tank t = this.getUser();
-		return t != null && (this.maxAmount <= 0 || this.liveBullets <= this.maxAmount - this.shotCount) && !(t.cooldown > 0) && this.stackSize > 0;
+		return t != null && (this.maxLiveBullets <= 0 || this.liveBullets <= this.maxLiveBullets - this.shotCount) && !(this.cooldown > 0) && this.stackSize > 0;
 	}
 
 	@Override
 	public String toString()
 	{
 		return super.toString() + "," + item_name + ","
-				+ className + "," + effectsMap2.get(effect) + "," + speed + "," + bounces + "," + damage + "," + maxAmount + "," + cooldown + "," + size + "," + recoil + "," + heavy +
+				+ className + "," + effectsMap2.get(effect) + "," + speed + "," + bounces + "," + damage + "," + maxLiveBullets + "," + cooldownBase + "," + size + "," + recoil + "," + heavy +
 				"," + this.accuracy + "," + this.shotCount + "," + this.shotSpread;
 	}
 
@@ -163,8 +157,8 @@ public class ItemBullet extends Item
 		this.speed = Double.parseDouble(p[2]);
 		this.bounces = Integer.parseInt(p[3]);
 		this.damage = Double.parseDouble(p[4]);
-		this.maxAmount = Integer.parseInt(p[5]);
-		this.cooldown = Double.parseDouble(p[6]);
+		this.maxLiveBullets = Integer.parseInt(p[5]);
+		this.cooldownBase = Double.parseDouble(p[6]);
 		this.size = Double.parseDouble(p[7]);
 		this.recoil = Double.parseDouble(p[8]);
 		this.heavy = Boolean.parseBoolean(p[9]);
@@ -187,8 +181,8 @@ public class ItemBullet extends Item
 		this.setProperty("speed", this.speed);
 		this.setProperty("bounces", this.bounces);
 		this.setProperty("damage", this.damage);
-		this.setProperty("max_live_bullets", this.maxAmount);
-		this.setProperty("cooldown", this.cooldown);
+		this.setProperty("max_live_bullets", this.maxLiveBullets);
+		this.setProperty("cooldown", this.cooldownBase);
 		this.setProperty("size", this.size);
 		this.setProperty("recoil", this.recoil);
 		this.setProperty("heavy", this.heavy);
@@ -214,8 +208,8 @@ public class ItemBullet extends Item
 		this.speed = (double) this.getProperty("speed");
 		this.bounces = (int) this.getProperty("bounces");
 		this.damage = (double) this.getProperty("damage");
-		this.maxAmount = (int) this.getProperty("max_live_bullets");
-		this.cooldown = (double) this.getProperty("cooldown");
+		this.maxLiveBullets = (int) this.getProperty("max_live_bullets");
+		this.cooldownBase = (double) this.getProperty("cooldown");
 		this.size = (double) this.getProperty("size");
 		this.recoil = (double) this.getProperty("recoil");
 		this.heavy = (boolean) this.getProperty("heavy");
@@ -228,6 +222,10 @@ public class ItemBullet extends Item
 	{
 		if (BulletArc.class.isAssignableFrom(this.bulletClass))
 			return this.speed / 3.125 * 1000.0;
+		else if (BulletFlame.class.isAssignableFrom(this.bulletClass))
+			return 400;
+		else if (BulletAir.class.isAssignableFrom(this.bulletClass))
+			return 800;
 		else
 			return -1;
 	}

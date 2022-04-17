@@ -23,18 +23,11 @@ public class BulletElectric extends BulletInstant
 	public double invulnerability = 0;
 	public Movable target = null;
 
-	public BulletElectric(double x, double y, int bounces, Tank t) 
-	{
-		this(x, y, bounces, t, new ArrayList<>(), false, null);
-	}
-	
-	/** Do not use, instead use the constructor with primitive data types. */
-	@Deprecated
-	public BulletElectric(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
+	public BulletElectric(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
 		this(x, y, bounces, t, new ArrayList<>(), false, ib);
 	}
-	
+
 	public BulletElectric(double x, double y, int bounces, Tank t, ArrayList<Movable> targets, boolean affectsLiveBullets, ItemBullet ib)
 	{
 		super(x, y, 0, t, affectsLiveBullets, ib);

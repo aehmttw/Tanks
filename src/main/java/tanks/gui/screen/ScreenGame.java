@@ -101,7 +101,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	Button play = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Play", () ->
 	{
 		playing = true;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
@@ -164,7 +164,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	Button pause = new Button(0, -1000, 70, 70, "", () ->
 	{
 		paused = true;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
@@ -185,35 +185,35 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Continue playing", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Continue playing", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Close menu", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Close menu", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button closeMenuClient = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace / 2, this.objWidth, this.objHeight, "Close menu", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
@@ -439,13 +439,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, false);
 
 		Crusade.currentCrusade.retry = true;
-		Crusade.currentCrusade.livingTankIDs.clear();
-		for (Movable m : Game.movables)
-		{
-			if (!savedRemainingTanks && m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
-				Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-		}
-		savedRemainingTanks = false;
+
+		this.saveRemainingTanks();
 
 		Crusade.currentCrusade.saveHotbars();
 		Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
@@ -499,13 +494,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, false);
 
 		Crusade.currentCrusade.retry = true;
-		Crusade.currentCrusade.livingTankIDs.clear();
-		for (Movable m : Game.movables)
-		{
-			if (!savedRemainingTanks && m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
-				Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-		}
-		savedRemainingTanks = false;
+
+		this.saveRemainingTanks();
 
 		Panel.panel.zoomTimer = 0;
 		Game.silentCleanUp();
@@ -1494,6 +1484,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (this.timeRemaining <= 0)
 				{
+					this.saveRemainingTanks();
+
 					for (int i = 0; i < Game.movables.size(); i++)
 					{
 						Movable m = Game.movables.get(i);
@@ -1577,18 +1569,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 						Obstacle.draw_size = Math.max(0, Obstacle.draw_size - Panel.frameFrequency);
 
-						if (!savedRemainingTanks && Crusade.crusadeMode)
-							Crusade.currentCrusade.livingTankIDs.clear();
+						this.saveRemainingTanks();
 
-						for (Movable m : Game.movables)
-						{
-							if (!savedRemainingTanks && m instanceof Tank && !m.destroy && Crusade.crusadeMode && ((Tank) m).crusadeID >= 0)
-								Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-
+						for (Movable m: Game.movables)
 							m.destroy = true;
-						}
-
-						savedRemainingTanks = true;
 
 						if (Obstacle.draw_size <= 0)
 						{
@@ -2519,6 +2503,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			this.overlay.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
+	}
+
+	public void saveRemainingTanks()
+	{
+		if (!savedRemainingTanks && Crusade.crusadeMode && Crusade.currentCrusade != null)
+		{
+			Crusade.currentCrusade.livingTankIDs.clear();
+			for (Movable m : Game.movables)
+			{
+				if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+					Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+			}
+		}
+		savedRemainingTanks = true;
 	}
 
 	@Override

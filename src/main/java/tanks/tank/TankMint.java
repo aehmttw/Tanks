@@ -17,7 +17,7 @@ public class TankMint extends TankAIControlled
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.enableDefensiveFiring = true;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 240;
 		this.aimTurretSpeed = 0.02;

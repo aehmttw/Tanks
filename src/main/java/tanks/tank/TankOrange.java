@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
+import tanks.bullet.Bullet;
 import tanks.bullet.BulletFlame;
 import tanks.event.EventShootBullet;
 
@@ -27,37 +28,17 @@ public class TankOrange extends TankAIControlled
 		this.motionChangeChance = 0.001;
 		this.avoidSensitivity = 1;
 
+		this.bullet.maxLiveBullets = 0;
+		this.bullet.bulletClass = BulletFlame.class;
+		this.bullet.cooldownBase = 0;
+		this.cooldownBase = 0;
+		this.cooldownRandom = 0;
+		this.bullet.effect = Bullet.BulletEffect.none;
+		this.bullet.bounces = 0;
+		this.bullet.name = "Flamethrower";
+
 		this.coinValue = 4;
 
 		this.description = "A short-range tank which shoots fire";
-	}
-
-	@Override
-	public void shoot()
-	{
-		if (this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0 && !this.disabled && !this.destroy)
-		{
-			// Casts a ray and tries to get the game object it hits.
-			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
-			Movable m = a.getTarget();
-
-			// Checks if it hit a game object.
-			if (!(m == null))
-			{
-				// Checks if the game object is an enemy.
-				if (m.equals(this.targetEnemy))
-				{
-					Drawing.drawing.playGlobalSound("flame.ogg");
-
-					BulletFlame b = new BulletFlame(this.posX, this.posY, 0, this);
-					b.frameDamageMultipler = Panel.frameFrequency;
-					b.setPolarMotion(this.angle, 25.0/8);
-					b.moveOut(16);
-					Game.movables.add(b);
-					Game.eventsOut.add(new EventShootBullet(b));
-					this.cooldown = 0;
-				}
-			}
-		}
 	}
 }

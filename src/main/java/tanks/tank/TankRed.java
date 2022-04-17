@@ -21,7 +21,7 @@ public class TankRed extends TankAIControlled
 		this.enableMovement = false;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.aimTurretSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
 		this.cooldown = 250;
@@ -98,7 +98,7 @@ public class TankRed extends TankAIControlled
 		if (!Team.isAllied(m, this))
 		{
 			this.maxCooldown = this.maxCooldown * 0.75 + 1;
-			BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this);
+			BulletLaser b = new BulletLaser(this.posX, this.posY, 0, this, this.bullet);
 			b.team = this.team;
 			b.setPolarMotion(this.angle, 25.0/8);
 			b.moveOut(16);

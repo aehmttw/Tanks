@@ -16,7 +16,7 @@ public class TankDarkGreen extends TankAIControlled
 		this.maxSpeed = 1.5;
 		this.bullet.speed = 25.0 / 4;
 		this.aimAccuracyOffset = 0.1;
-		this.liveBulletMax = 8;
+		this.bullet.maxLiveBullets = 8;
 		this.bullet.bounces = 0;
 		this.bullet.damage /= 8;
 		this.bullet.size /= 2;

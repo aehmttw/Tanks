@@ -25,7 +25,7 @@ public class TankGold extends TankAIControlled
 		this.enableDefensiveFiring = true;
 		this.cooldownBase = 40;
 		this.cooldownRandom = 80;
-		this.liveBulletMax = 5;
+		this.bullet.maxLiveBullets = 5;
 		this.aimTurretSpeed = 0.04;
 		this.bullet.bounces = 0;
 		this.bullet.effect = Bullet.BulletEffect.ember;
@@ -96,7 +96,7 @@ public class TankGold extends TankAIControlled
 	@Override
 	public void shoot()
 	{
-		if (this.cooldown > 0 || this.suicidal || this.disabled || this.destroy || this.liveBullets >= this.liveBulletMax)
+		if (this.cooldown > 0 || this.suicidal || this.disabled || this.destroy || this.bullet.liveBullets >= this.bullet.maxLiveBullets)
 			return;
 
 		Ray r = new Ray(this.posX, this.posY, this.angle, this.bullet.bounces, this);
@@ -106,7 +106,7 @@ public class TankGold extends TankAIControlled
 			return;
 
 		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bullet.size));
-		BulletBoost b = new BulletBoost(this.posX, this.posY, this.bullet.bounces, this);
+		BulletBoost b = new BulletBoost(this.posX, this.posY, this.bullet.bounces, this, this.bullet);
 		b.effect = this.bullet.effect;
 		b.team = this.team;
 		b.setPolarMotion(this.angle, this.bullet.speed);

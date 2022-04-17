@@ -11,9 +11,9 @@ public class BulletExplosive extends Bullet
 {
     public static String bullet_name = "explosive";
 
-    public BulletExplosive(double x, double y, int bounces, Tank t)
+    public BulletExplosive(double x, double y, int bounces, Tank t, ItemBullet ib)
     {
-        this(x, y, bounces, t, true, null);
+        this(x, y, bounces, t, true, ib);
     }
 
     public BulletExplosive(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
@@ -25,13 +25,6 @@ public class BulletExplosive extends Bullet
         this.name = bullet_name;
 
         this.playPopSound = false;
-    }
-
-    /** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-    @Deprecated
-    public BulletExplosive(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
-    {
-        this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
     }
 
     @Override

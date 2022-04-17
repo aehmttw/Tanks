@@ -13,7 +13,7 @@ public class TankGreen extends TankAIControlled
 		super(name, x, y, Game.tile_size, 100, 200, 0, angle, ShootAI.reflect);
 		this.enableMovement = false;
 		this.enableMineLaying = false;
-		this.liveBulletMax = 4;
+		this.bullet.maxLiveBullets = 4;
 		this.cooldownRandom = 20;
 		this.cooldownBase = 80;
 		this.aimTurretSpeed = 0.03;

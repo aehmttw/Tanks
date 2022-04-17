@@ -10,6 +10,8 @@ import tanks.event.EventTankUpdateHealth;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -56,7 +58,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankPropertyAnnotation(category = misc, name = "Tank name")
 	public String name;
 
-	@TankPropertyAnnotation(category = misc, name = "Tank body model")
+	@TankPropertyAnnotation(category = misc, name = "Coin value")
 	public int coinValue = 0;
 
 	@TankPropertyAnnotation(category = misc, name = "Bullet immunity")
@@ -69,7 +71,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public String description = "";
 
-	public double cooldown = 0;
 	public double acceleration = 0.05;
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
@@ -77,8 +78,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	@TankPropertyAnnotation(category = movementGeneral, name = "Tank speed")
 	public double maxSpeed = 1.5;
-	public int liveBullets = 0;
-	public int liveMines = 0;
+	//public int liveBullets = 0;
+	//public int liveMines = 0;
 	public double size;
 
 	@TankPropertyAnnotation(category = appearanceColor, name = "Red")
@@ -88,8 +89,14 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankPropertyAnnotation(category = appearanceColor, name = "Blue")
 	public double colorB;
 
-	public int liveBulletMax;
-	public int liveMinesMax;
+	//public int liveBulletMax;
+	//public int liveMinesMax;
+
+	@TankPropertyAnnotation(category = firingGeneral, name = "Bullet")
+	public ItemBullet bullet = (ItemBullet) TankPlayer.default_bullet.clone();
+
+	@TankPropertyAnnotation(category = mines, name = "Mine")
+	public ItemMine mine = (ItemMine) TankPlayer.default_mine.clone();
 
 	public double drawAge = 0;
 	public double destroyTimer = 0;
@@ -149,6 +156,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.registerNetworkID();
 		else
 			this.networkID = -1;
+
+		this.bullet.unlimitedStack = true;
+		this.mine.unlimitedStack = true;
 	}
 
 	public void registerNetworkID()
@@ -902,16 +912,6 @@ public abstract class Tank extends Movable implements ISolidObject
 			e.posZ = 1;
 	}
 
-	public void processRecoil()
-	{
-		if (this.vX * this.vX + this.vY * this.vY > Math.pow(this.maxSpeed * this.maxSpeedModifier, 2) * 1.0001 && !this.positionLock)
-		{
-			this.tookRecoil = true;
-			this.inControlOfMotion = false;
-			this.recoilSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-		}
-	}
-
 	public void updatePossessing()
 	{
 
@@ -976,5 +976,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		double dist = Math.min(3, Math.max(1, getAutoZoomRaw()));
 		return 1 / dist;
+	}
+
+	public void setBufferCooldown(double value)
+	{
+		this.bullet.cooldown = Math.max(this.bullet.cooldown, value);
+		this.mine.cooldown = Math.max(this.mine.cooldown, value);
 	}
 }

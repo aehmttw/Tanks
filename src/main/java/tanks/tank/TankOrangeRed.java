@@ -21,7 +21,7 @@ public class TankOrangeRed extends TankAIControlled
         this.maxSpeed = 0.75;
         this.enableMineLaying = false;
         this.enablePredictiveFiring = false;
-        this.liveBulletMax = 2;
+        this.bullet.maxLiveBullets = 2;
         this.cooldownRandom = 120;
         this.cooldownBase = 120;
         this.aimTurretSpeed = 0.02;
@@ -49,7 +49,7 @@ public class TankOrangeRed extends TankAIControlled
         this.aimTimer = 10;
         this.aim = false;
 
-        if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled && !this.destroy)
+        if (this.cooldown <= 0 && this.bullet.liveBullets < this.bullet.maxLiveBullets && !this.disabled && !this.destroy)
         {
             double an = this.angle;
 
@@ -86,7 +86,7 @@ public class TankOrangeRed extends TankAIControlled
                         return;
                 }
 
-                this.bullet.use(this);
+                this.bullet.attemptUse(this);
             }
         }
     }

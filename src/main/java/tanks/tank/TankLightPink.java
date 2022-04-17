@@ -107,7 +107,7 @@ public class TankLightPink extends TankAIControlled
         this.aimTimer = 10;
         this.aim = false;
 
-        if (this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled && !this.destroy)
+        if (this.cooldown <= 0 && this.bullet.liveBullets < this.bullet.maxLiveBullets && !this.disabled && !this.destroy)
         {
             boolean cancel = false;
             for (double offset = -spread * 2; offset <= spread * 2; offset += spread)
@@ -178,7 +178,7 @@ public class TankLightPink extends TankAIControlled
             int s = (int) Math.round(this.shootTimer * this.shotCount / this.shootCycleTime);
             if (this.shots < s)
             {
-                this.bullet.use(this);
+                this.bullet.attemptUse(this);
                 this.shots = s;
             }
 

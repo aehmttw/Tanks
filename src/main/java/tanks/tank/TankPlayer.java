@@ -13,10 +13,7 @@ import tanks.gui.Joystick;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
-import tanks.hotbar.item.ItemRemote;
+import tanks.hotbar.item.*;
 
 /**
  * A tank that is controlled by the player.
@@ -57,8 +54,6 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 	public TankPlayer(double x, double y, double angle)
 	{
 		super("player", x, y, Game.tile_size, 0, 150, 255);
-		this.liveBulletMax = 5;
-		this.liveMinesMax = 2;
 		this.angle = angle;
 		this.orientation = angle;
 		this.player.tank = this;
@@ -198,18 +193,30 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
 		}
 
-		if (this.cooldown > 0)
-			this.cooldown -= Panel.frameFrequency;
+		this.bullet.updateCooldown();
+		this.mine.updateCooldown();
+
+		Hotbar h = Game.player.hotbar;
+		if (h.enabledItemBar)
+		{
+			for (Item i: h.itemBar.slots)
+			{
+				if (i != null && !(i instanceof ItemEmpty))
+				{
+					i.updateCooldown();
+				}
+			}
+		}
 
 		boolean shoot = !Game.game.window.touchscreen && Game.game.input.shoot.isPressed();
 
 		boolean mine = !Game.game.window.touchscreen && Game.game.input.mine.isPressed();
 
 		boolean showRange = false;
-		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar && h.itemBar.selected >= 0)
 		{
 			Item i = h.itemBar.slots[h.itemBar.selected];
+
 			if (i instanceof ItemBullet)
 				showRange = ((ItemBullet) i).getRange() >= 0;
 			else if (i instanceof ItemRemote)
@@ -317,10 +324,10 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
 		}
 
-		if (shoot && this.cooldown <= 0 && !this.disabled)
+		if (shoot && this.bullet.cooldown <= 0 && !this.disabled)
 			this.shoot();
 
-		if (mine && this.cooldown <= 0 && !this.disabled)
+		if (mine && this.mine.cooldown <= 0 && !this.disabled)
 			this.layMine();
 
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
@@ -375,35 +382,21 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 				return;
 		}
 
-		if (this.liveBullets >= this.liveBulletMax)
-			return;
-
-		this.cooldown = 20;
-
-		fireBullet(25 / 8.0, 1, Bullet.BulletEffect.trail);
+		this.bullet.attemptUse(this);
 	}
 
-	public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
+	public void layMine()
 	{
-		Drawing.drawing.playGlobalSound("shoot.ogg");
+		if (Game.bulletLocked || this.destroy)
+			return;
 
-		Bullet b = new Bullet(posX, posY, bounces, this);
-		b.setPolarMotion(this.angle, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
-
-		b.moveOut(50 / speed * this.size / Game.tile_size);
-		b.effect = effect;
-
-		Game.eventsOut.add(new EventShootBullet(b));
-		Game.movables.add(b);
-
-		this.processRecoil();
-
-		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+		if (Game.player.hotbar.enabledItemBar)
 		{
-			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-			cp.addItemUse(default_bullet);
+			if (Game.player.hotbar.itemBar.useItem(true))
+				return;
 		}
+
+		this.mine.attemptUse(this);
 	}
 
 	public void fireBullet(Bullet b, double speed, double offset)
@@ -425,42 +418,10 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
 
-		this.processRecoil();
-
 		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
 		{
 			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
 			cp.addItemUse(b.item);
-		}
-	}
-
-	public void layMine()
-	{
-		if (Game.bulletLocked || this.destroy)
-			return;
-
-		if (Game.player.hotbar.enabledItemBar)
-		{
-			if (Game.player.hotbar.itemBar.useItem(true))
-				return;
-		}
-
-		if (this.liveMines >= this.liveMinesMax)
-			return;
-
-		Drawing.drawing.playGlobalSound("lay_mine.ogg");
-
-		this.cooldown = 50;
-		Mine m = new Mine(posX, posY, this);
-
-		Game.eventsOut.add(new EventLayMine(m));
-
-		Game.movables.add(m);
-
-		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
-		{
-			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-			cp.addItemUse(default_mine);
 		}
 	}
 
@@ -470,8 +431,6 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			return;
 
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
-
-		this.cooldown = m.cooldown;
 
 		Game.eventsOut.add(new EventLayMine(m));
 		Game.movables.add(m);
@@ -549,5 +508,23 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 	public Player getPlayer()
 	{
 		return this.player;
+	}
+
+	@Override
+	public void setBufferCooldown(double value)
+	{
+		super.setBufferCooldown(value);
+
+		Hotbar h = Game.player.hotbar;
+		if (h.enabledItemBar)
+		{
+			for (Item i: h.itemBar.slots)
+			{
+				if (i != null && !(i instanceof ItemEmpty))
+				{
+					i.cooldown = Math.max(i.cooldown, value);
+				}
+			}
+		}
 	}
 }

@@ -26,7 +26,7 @@ public class TankMedic extends TankAIControlled
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 0;
 		this.cooldownBase = 0;
 		this.aimTurretSpeed = 0.02;
@@ -105,7 +105,7 @@ public class TankMedic extends TankAIControlled
 		if (!this.hasTarget || r.getTarget() != this.targetEnemy)
 			return;
 
-		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bullet.bounces, this);
+		BulletHealing b = new BulletHealing(this.posX, this.posY, this.bullet.bounces, this, this.bullet);
 		b.frameDamageMultipler = Panel.frameFrequency;
 		b.team = this.team;
 		b.setPolarMotion(this.angle, 25.0/8);

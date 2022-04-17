@@ -77,7 +77,7 @@ public class Game
 	public static Team enemyTeamNoFF = new Team("enemy", false);
 
 	/** Use this if you want to spawn a mine not allied with any tank, or such*/
-	public static Tank dummyTank = new TankDummy("dummy",0, 0, 0);
+	public static Tank dummyTank;
 
 	public static int currentSizeX = 28;
 	public static int currentSizeY = 18;
@@ -92,8 +92,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.3.2";
-	public static final int network_protocol = 39;
+	public static final String version = "Tanks v1.4.a";
+	public static final int network_protocol = 40;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -243,7 +243,6 @@ public class Game
 	{
 		Game.game = this;
 		input = new InputBindings();
-		dummyTank.networkID = -1;
 	}
 
 	public static void registerEvents()
@@ -282,6 +281,7 @@ public class Game
 		NetworkEventMap.register(EventTankControllerUpdateS.class);
 		NetworkEventMap.register(EventTankControllerUpdateC.class);
 		NetworkEventMap.register(EventTankControllerUpdateAmmunition.class);
+		NetworkEventMap.register(EventTankControllerAddVelocity.class);
 		NetworkEventMap.register(EventCreatePlayer.class);
 		NetworkEventMap.register(EventCreateTank.class);
 		NetworkEventMap.register(EventCreateCustomTank.class);
@@ -289,6 +289,7 @@ public class Game
 		NetworkEventMap.register(EventRemoveTank.class);
 		NetworkEventMap.register(EventShootBullet.class);
 		NetworkEventMap.register(EventBulletBounce.class);
+		NetworkEventMap.register(EventBulletUpdate.class);
 		NetworkEventMap.register(EventBulletDestroyed.class);
 		NetworkEventMap.register(EventBulletInstantWaypoint.class);
 		NetworkEventMap.register(EventBulletAddAttributeModifier.class);
@@ -384,8 +385,6 @@ public class Game
 		player = new Player(clientID, "");
 		Game.players.add(player);
 
-		dummyTank.team = null;
-
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
@@ -438,10 +437,11 @@ public class Game
 		registerTank(TankDarkGreen.class, "darkgreen", 1.0 / 10);
 		registerTank(TankBlack.class, "black", 1.0 / 10);
 		registerTank(TankMimic.class, "mimic", 1.0 / 4);
+		registerTank(TankLightBlue.class, "lightblue", 1.0 / 8);
 		registerTank(TankPink.class, "pink", 1.0 / 12);
 		registerTank(TankMini.class, "mini", 0);
+		registerTank(TankSalmon.class, "salmon", 1.0 / 10);
 		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
-		//registerTank(TankTest.class, "test", 1.0 / 1);
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
@@ -453,6 +453,8 @@ public class Game
 		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
 		registerBullet(BulletExplosive.class, BulletExplosive.bullet_name, "bullet_explosive.png");
 		registerBullet(BulletBoost.class, BulletBoost.bullet_name, "bullet_boost.png");
+		registerBullet(BulletAir.class, BulletAir.bullet_name, "bullet_air.png");
+		registerBullet(BulletHoming.class, BulletHoming.bullet_name, "bullet_homing.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
 		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
@@ -460,6 +462,9 @@ public class Game
 
 		TankPlayer.default_bullet = (ItemBullet) Item.parseItem(null, Translation.translate("Basic bullet") + ",bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
 		TankPlayer.default_mine = (ItemMine) Item.parseItem(null, Translation.translate("Basic mine") + ",mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");
+		dummyTank = new TankDummy("dummy",0, 0, 0);
+		dummyTank.team = null;
+		dummyTank.networkID = -1;
 
 		homedir = System.getProperty("user.home");
 

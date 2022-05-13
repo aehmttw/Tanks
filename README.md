@@ -80,5 +80,8 @@ Pythonmcpi<br>
 Cool TM<br>
 QazCetelic<br>
 
+### Supporters:
+SapphireDrew<br>
+
 ### Special Thanks:
 Everyone from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!

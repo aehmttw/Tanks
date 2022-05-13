@@ -45,9 +45,7 @@ public class ObstacleTeleporter extends Obstacle
 	@Override
 	public void draw()
 	{
-		Drawing.drawing.setColor(127, 127, 127, 255, 0.25);
-
-		double height = Game.sampleGroundHeight(this.posX, this.posY);
+		double height = this.baseGroundHeight;
 
 		if (Game.enable3d)
 		{

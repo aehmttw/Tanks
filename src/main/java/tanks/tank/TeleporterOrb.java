@@ -112,7 +112,6 @@ public class TeleporterOrb extends Movable
 		this.posZ = Math.sin((this.maxAge - Math.max(0, Math.min(this.maxAge, this.age))) / this.maxAge * Math.PI) *
 				Math.sqrt(Math.pow(this.dX - this.iX, 2) + Math.pow(this.dY - this.iY, 2)) / 2;
 
-
 		if (this.age <= 0)
 		{
 			if (this.tank == Game.playerTank)

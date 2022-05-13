@@ -5,6 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.Selector;
 import tanks.gui.SpeedrunTimer;
 import tanks.hotbar.item.Item;
+import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
@@ -90,6 +91,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
         this.player = p;
         this.crusade = crusade;
+        this.forceInBounds = true;
+        this.crusade.background.age = 0;
+        Obstacle.draw_size = Game.tile_size;
 
         this.addTanks();
         this.addLevels();
@@ -405,6 +409,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                     t = new TankPlayer(t.posX, t.posY, t.angle);
 
                 t.posX += 5 * this.tankTimer;
+                t.fullBrightness = true;
 
                 this.rollingTanks.add(t);
 
@@ -501,7 +506,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        //this.drawDefaultBackground();
+        this.crusade.background.draw();
+
+        if (!Game.game.window.drawingShadow)
+            Game.game.window.clearDepth();
+
+        Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
+        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 
         this.drawTopBar(Math.min(120, this.age * 10));
         this.drawBottomBar(Math.min(120, this.age * 10));
@@ -706,9 +718,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         {
             this.drawPageEntries(this.miscEntriesShown, this.misc.size(), this.miscPage, this.misc);
 
-            for (Tank t : this.rollingTanks)
+            if (!Game.game.window.drawingShadow)
             {
-                t.draw();
+                for (Tank t : this.rollingTanks)
+                {
+                    t.draw();
+                }
             }
         }
 

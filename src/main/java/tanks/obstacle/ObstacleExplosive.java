@@ -102,7 +102,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         if (ScreenPartyLobby.isClient)
             return;
 
-        Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius * ((this.stackHeight - 1) / 2 + 1), 2, true, this.trigger, this.itemTrigger);
+        Explosion e = new Explosion(this.posX, this.posY, this.getRadius(), 2, true, this.trigger, this.itemTrigger);
         e.explode();
 
         Game.removeObstacles.add(this);
@@ -112,6 +112,12 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
     @Override
     public double getRadius()
     {
-        return Game.tile_size * 1.25 * this.stackHeight;
+        return Mine.mine_radius * ((this.stackHeight - 1) / 2 + 1);
+    }
+
+    @Override
+    public double getSeverity(double posX, double posY)
+    {
+        return Math.sqrt(Math.pow(posX - this.posX, 2) + Math.pow(posY - this.posY, 2));
     }
 }

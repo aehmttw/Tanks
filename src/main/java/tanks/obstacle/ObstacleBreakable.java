@@ -86,12 +86,6 @@ public class ObstacleBreakable extends Obstacle
 
         if (this.stackHeight <= 0)
             Game.removeObstacles.add(this);
-
-        for (Obstacle o: Game.obstacles)
-        {
-            if (Math.abs(o.posX - this.posX) <= Game.tile_size && Math.abs(o.posY - this.posY) <= Game.tile_size)
-                o.requiresRedraw = true;
-        }
     }
 
     @Override

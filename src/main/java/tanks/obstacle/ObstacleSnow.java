@@ -148,7 +148,7 @@ public class ObstacleSnow extends Obstacle
             if (Game.game.window.shapeRenderer.supportsBatching && Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size)
                 mul = 2;
 
-            double base = Game.sampleGroundHeight(this.posX, this.posY);
+            double base = this.baseGroundHeight;
             double z = Math.max(this.depth * 0.8 * (Obstacle.draw_size - base * (mul - 1)), 0);
 
             this.finalHeight = 0;
@@ -173,7 +173,7 @@ public class ObstacleSnow extends Obstacle
                 double frac = z / (this.depth * 0.8 * (Game.tile_size - base));
                 Drawing.drawing.setColor(this.colorR * frac + r * (1 - frac), this.colorG * frac + g * (1 - frac), this.colorB * frac + b * (1 - frac));
                 Drawing.drawing.setShrubberyMode();
-                Drawing.drawing.fillBox(this, this.posX, this.posY, Game.sampleGroundHeight(this.posX, this.posY) * mul, Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+                Drawing.drawing.fillBox(this, this.posX, this.posY, this.baseGroundHeight * mul, Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
             }
         }
     }
@@ -189,7 +189,7 @@ public class ObstacleSnow extends Obstacle
         if (Game.screen instanceof ScreenGame)
             shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 
-        return shrubScale * (this.finalHeight + Game.sampleGroundHeight(this.posX, this.posY));
+        return shrubScale * (this.finalHeight + this.baseGroundHeight);
     }
 
     public boolean positionChanged()

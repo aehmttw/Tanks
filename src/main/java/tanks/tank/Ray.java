@@ -403,6 +403,27 @@ public class Ray
 		return dist;
 	}
 
+	public double getAngleInDirection(double x, double y)
+	{
+		x -= this.posX;
+		y -= this.posY;
+
+		double angle = 0;
+		if (x > 0)
+			angle = Math.atan(y/x);
+		else if (x < 0)
+			angle = Math.atan(y/x) + Math.PI;
+		else
+		{
+			if (y > 0)
+				angle = Math.PI / 2;
+			else if (y < 0)
+				angle = Math.PI * 3 / 2;
+		}
+
+		return angle;
+	}
+
 	public static boolean isInsideObstacle(double x, double y)
 	{
 		int ox = (int) (x / Game.tile_size);

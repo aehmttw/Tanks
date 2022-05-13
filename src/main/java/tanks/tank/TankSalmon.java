@@ -11,7 +11,7 @@ public class TankSalmon extends TankAIControlled
 {
 	public TankSalmon(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tile_size, 255, 180, 140, angle, ShootAI.straight);
+		super(name, x, y, Game.tile_size, 255, 180, 140, angle, ShootAI.homing);
 		this.cooldownBase = 150;
 		this.cooldownRandom = 50;
 		this.maxSpeed = 1.25;

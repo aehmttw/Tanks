@@ -109,9 +109,10 @@ public class Panel
 
 	public void setUp()
 	{
-		Drawing.drawing.terrainRenderer = Game.game.window.createShapeBatchRenderer();
-		Drawing.drawing.terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
-		Drawing.drawing.terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
+		Drawing.drawing.defaultRenderer = new Drawing.LevelRenderer();
+		Drawing.drawing.terrainRenderer = Drawing.drawing.defaultRenderer.terrainRenderer;
+		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
+		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
 
 		ModAPI.setUp();
 
@@ -504,6 +505,9 @@ public class Panel
 				Panel.lastAutoZoomSpeed = speed;
 
 				speed *= Math.signum(Panel.zoomTarget - this.zoomTimer);
+
+				if (Math.abs(Panel.zoomTarget - this.zoomTimer) < 0.01)
+					speed = 0;
 
 				this.zoomTimer = this.zoomTimer + speed * Panel.frameFrequency;
 			}

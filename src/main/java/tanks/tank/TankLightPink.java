@@ -17,7 +17,7 @@ public class TankLightPink extends TankAIControlled
     public int shotCount = 5;
     public int shots = 0;
     public boolean shooting = false;
-    public double spread = Math.PI / 20;
+    public double spread = Math.PI / 5;
     public int fanDirection;
     public double startAngle;
 
@@ -30,6 +30,8 @@ public class TankLightPink extends TankAIControlled
         this.motionChangeChance = 0.001;
         this.coinValue = 10;
         this.enablePredictiveFiring = true;
+        this.bullet.cooldownBase = 1;
+        this.bullet.maxLiveBullets = 0;
 
         this.description = "A tank which gets angry---on line of sight";
     }
@@ -107,11 +109,13 @@ public class TankLightPink extends TankAIControlled
         this.aimTimer = 10;
         this.aim = false;
 
-        if (this.cooldown <= 0 && this.bullet.liveBullets < this.bullet.maxLiveBullets && !this.disabled && !this.destroy)
+        if (this.cooldown <= 0 && (this.bullet.liveBullets < this.bullet.maxLiveBullets || this.bullet.maxLiveBullets <= 0) && !this.disabled && !this.destroy)
         {
             boolean cancel = false;
-            for (double offset = -spread * 2; offset <= spread * 2; offset += spread)
+            for (int i = 0; i < this.shotCount; i++)
             {
+                double offset = (i - ((this.shotCount - 1) / 2.0)) / this.shotCount * this.spread;
+
                 Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bullet.bounces, this, 2.5);
                 a.size = this.bullet.size;
                 a.moveOut(this.size / 2.5);
@@ -173,7 +177,7 @@ public class TankLightPink extends TankAIControlled
         }
         else
         {
-            this.angle = this.aimAngle + this.fanDirection * this.spread * (this.shotCount - 1) * (Math.abs(this.shootTimer / this.shootCycleTime) - 0.5);
+            this.angle = this.aimAngle + this.fanDirection * this.spread * (Math.abs(this.shootTimer / this.shootCycleTime) - 0.5);
 
             int s = (int) Math.round(this.shootTimer * this.shotCount / this.shootCycleTime);
             if (this.shots < s)

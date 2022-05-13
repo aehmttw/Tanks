@@ -1798,6 +1798,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		else
 			this.fontBrightness = 0;
 
+		for (Obstacle o: Game.obstacles)
+		{
+			o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
+		}
+
 		if (Game.enable3d)
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{

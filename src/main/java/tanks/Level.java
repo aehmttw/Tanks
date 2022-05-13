@@ -29,6 +29,10 @@ public class Level
 	public static double currentColorG = 207;
 	public static double currentColorB = 166;
 
+	public static double currentColorVarR = 235;
+	public static double currentColorVarG = 207;
+	public static double currentColorVarB = 166;
+
 	public static double currentLightIntensity = 1;
 	public static double currentShadowIntensity = 0.5;
 
@@ -144,6 +148,23 @@ public class Level
 
 		if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
 			this.disableFriendlyFire = true;
+
+		sizeX = Integer.parseInt(screen[0]);
+		sizeY = Integer.parseInt(screen[1]);
+
+		if (screen.length >= 5)
+		{
+			colorR = Integer.parseInt(screen[2]);
+			colorG = Integer.parseInt(screen[3]);
+			colorB = Integer.parseInt(screen[4]);
+
+			if (screen.length >= 8)
+			{
+				colorVarR = Math.min(255 - colorR, Integer.parseInt(screen[5]));
+				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
+				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
+			}
+		}
 	}
 
 	public void loadLevel()
@@ -235,24 +256,7 @@ public class Level
 			}
 		}
 
-		sizeX = Integer.parseInt(screen[0]);
-		sizeY = Integer.parseInt(screen[1]);
-
 		currentCloudCount = (int)(Math.random() * (double)this.sizeX / 10.0D + Math.random() * (double)this.sizeY / 10.0D);
-
-		if (screen.length >= 5)
-		{
-			colorR = Integer.parseInt(screen[2]);
-			colorG = Integer.parseInt(screen[3]);
-			colorB = Integer.parseInt(screen[4]);
-
-			if (screen.length >= 8)
-			{
-				colorVarR = Math.min(255 - colorR, Integer.parseInt(screen[5]));
-				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
-				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
-			}
-		}
 
 		if (screen.length >= 9)
 		{
@@ -573,6 +577,8 @@ public class Level
 			}
 		}
 
+		playerCount = Math.min(playerCount, this.includedPlayers.size());
+
 		if (sc == null && !preview)
 		{
 			for (int i = 0; i < playerCount; i++)
@@ -650,6 +656,10 @@ public class Level
 		currentColorR = colorR;
 		currentColorG = colorG;
 		currentColorB = colorB;
+
+		currentColorVarR = colorVarR;
+		currentColorVarG = colorVarG;
+		currentColorVarB = colorVarB;
 
 		currentLightIntensity = light;
 		currentShadowIntensity = shadow;

@@ -67,6 +67,7 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
         this.sizeX.update();
         this.sizeY.update();
         this.back3.update();
+        Drawing.drawing.forceRedrawTerrain();
 
         super.update();
     }

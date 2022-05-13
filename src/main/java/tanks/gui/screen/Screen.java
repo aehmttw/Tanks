@@ -4,6 +4,8 @@ import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 
+import java.util.Arrays;
+
 public abstract class Screen implements IBatchRenderableObject
 {
 	public String music = null;
@@ -28,6 +30,9 @@ public abstract class Screen implements IBatchRenderableObject
 	public double centerY = Drawing.drawing.interfaceSizeY / 2;
 
 	public boolean selfBatch = true;
+	public boolean forceInBounds = false;
+	public int minBgWidth = 0;
+	public int minBgHeight = 0;
 
 	protected boolean redrawn = false;
 
@@ -86,11 +91,14 @@ public abstract class Screen implements IBatchRenderableObject
 
 		double frac = 0;
 
-		if (Game.screen instanceof ScreenGame || Game.screen instanceof ILevelPreviewScreen || (Game.screen instanceof IOverlayScreen
-				&& !(Game.screen instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) Game.screen).isOverlayEnabled())))
+		if (this instanceof ScreenGame || this instanceof ILevelPreviewScreen || (this instanceof IOverlayScreen
+				&& !(this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled())))
 			frac = Obstacle.draw_size / Game.tile_size;
 
-		if (!(Game.screen instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d)))
+		if (this.forceInBounds)
+			frac = 0;
+
+		if (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d)))
 		{
 			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG, 16 * frac + (1 - frac) * Level.currentColorB);
 
@@ -121,7 +129,23 @@ public abstract class Screen implements IBatchRenderableObject
 		int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
 		int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
 
-		for (int i1 = (Game.currentSizeX - width) / 2 - 1; i1 < width + 1; i1++)
+		int iStart = (Game.currentSizeX - width) / 2 - 1;
+		int iEnd = width + 1;
+
+		if (this.forceInBounds)
+		{
+			iStart = 0;
+			iEnd = Game.currentSizeX;
+		}
+
+		if (this.minBgWidth > (iEnd - iStart))
+		{
+			int m = (this.minBgWidth - (iEnd - iStart)) / 2;
+			iStart -= m;
+			iEnd += m;
+		}
+
+		for (int i1 = iStart; i1 < iEnd; i1++)
 		{
 			int i = i1;
 			while (i < 0)
@@ -129,7 +153,22 @@ public abstract class Screen implements IBatchRenderableObject
 
 			i = i % Game.currentSizeX;
 
-			for (int j1 = (Game.currentSizeY - height) / 2 - 1; j1 < height + 1; j1++)
+			int jStart = (Game.currentSizeY - height) / 2 - 1;
+			int jEnd = height + 1;
+
+			if (this.forceInBounds)
+			{
+				jStart = 0;
+				jEnd = Game.currentSizeY;
+			}
+
+			if (this.minBgHeight > (jEnd - jStart))
+			{
+				jStart -= (this.minBgHeight - (jEnd - jStart)) / 2;
+				jEnd += (this.minBgHeight - (jEnd - jStart)) / 2;
+			}
+
+			for (int j1 = jStart; j1 < jEnd; j1++)
 			{
 				boolean inBounds = true;
 

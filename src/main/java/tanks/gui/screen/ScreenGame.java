@@ -722,6 +722,106 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)
 			this.readyButton.function.run();
 
+
+		if (Game.game.input.zoom.isValid())
+		{
+			zoomScrolled = false;
+			zoomPressed = true;
+			Game.game.input.zoom.invalidate();
+		}
+
+		if (playing)
+		{
+			if (Game.game.input.zoomIn.isPressed())
+			{
+				if (Panel.autoZoom)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Panel.autoZoom = false;
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.game.input.zoomOut.isPressed())
+			{
+				if (Panel.autoZoom)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Panel.autoZoom = false;
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.playerTank != null && !Game.playerTank.destroy && Panel.autoZoom)
+				Panel.zoomTarget = Game.playerTank.getAutoZoom();
+
+			if (spectatingTank != null && !spectatingTank.destroy && Panel.autoZoom)
+				Panel.zoomTarget = spectatingTank.getAutoZoom();
+		}
+
+		if (Game.game.input.zoom.isPressed() && playing)
+		{
+			if (Panel.autoZoom)
+				Panel.zoomTarget = Panel.panel.zoomTimer;
+
+			Panel.autoZoom = false;
+
+			if (Game.game.window.validScrollUp)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.1 * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.game.window.validScrollDown)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.1 * Drawing.drawing.unzoomedScale);
+			}
+		}
+		else if (zoomPressed)
+		{
+			if (!zoomScrolled)
+			{
+				Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+				Panel.zoomTarget = -1;
+			}
+
+			zoomPressed = false;
+		}
+
+		if (Game.game.input.zoomAuto.isValid() && playing)
+		{
+			if (Panel.autoZoom)
+				Panel.zoomTarget = Panel.panel.zoomTimer;
+
+			Game.game.input.zoomAuto.invalidate();
+			Panel.autoZoom = !Panel.autoZoom;
+		}
+
 		Game.player.hotbar.update();
 		minimap.update();
 
@@ -881,105 +981,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			this.screenshotMode = !this.screenshotMode;
 			Game.game.input.hidePause.invalidate();
-		}
-
-		if (Game.game.input.zoom.isValid())
-		{
-			zoomScrolled = false;
-			zoomPressed = true;
-			Game.game.input.zoom.invalidate();
-		}
-
-		if (playing)
-		{
-			if (Game.game.input.zoomIn.isPressed())
-			{
-				if (Panel.autoZoom)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Panel.autoZoom = false;
-				zoomScrolled = true;
-				Drawing.drawing.movingCamera = true;
-
-				if (Panel.zoomTarget == -1)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Game.game.window.validScrollUp = false;
-				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
-			}
-
-			if (Game.game.input.zoomOut.isPressed())
-			{
-				if (Panel.autoZoom)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Panel.autoZoom = false;
-				zoomScrolled = true;
-				Drawing.drawing.movingCamera = true;
-
-				if (Panel.zoomTarget == -1)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Game.game.window.validScrollDown = false;
-				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
-			}
-
-			if (Game.playerTank != null && !Game.playerTank.destroy && Panel.autoZoom)
-				Panel.zoomTarget = Game.playerTank.getAutoZoom();
-
-			if (spectatingTank != null && !spectatingTank.destroy && Panel.autoZoom)
-				Panel.zoomTarget = spectatingTank.getAutoZoom();
-		}
-
-		if (Game.game.input.zoom.isPressed() && playing)
-		{
-			if (Panel.autoZoom)
-				Panel.zoomTarget = Panel.panel.zoomTimer;
-
-			Panel.autoZoom = false;
-
-			if (Game.game.window.validScrollUp)
-			{
-				zoomScrolled = true;
-				Drawing.drawing.movingCamera = true;
-
-				if (Panel.zoomTarget == -1)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Game.game.window.validScrollUp = false;
-				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.1 * Drawing.drawing.unzoomedScale);
-			}
-
-			if (Game.game.window.validScrollDown)
-			{
-				zoomScrolled = true;
-				Drawing.drawing.movingCamera = true;
-
-				if (Panel.zoomTarget == -1)
-					Panel.zoomTarget = Panel.panel.zoomTimer;
-
-				Game.game.window.validScrollDown = false;
-				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.1 * Drawing.drawing.unzoomedScale);
-			}
-		}
-		else if (zoomPressed)
-		{
-			if (!zoomScrolled)
-			{
-				Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-				Panel.zoomTarget = -1;
-			}
-
-			zoomPressed = false;
-		}
-
-		if (Game.game.input.zoomAuto.isValid() && playing)
-		{
-			if (Panel.autoZoom)
-				Panel.zoomTarget = Panel.panel.zoomTimer;
-
-			Game.game.input.zoomAuto.invalidate();
-			Panel.autoZoom = !Panel.autoZoom;
 		}
 
 		if (!finished)
@@ -1188,7 +1189,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 				else
 				{
-					this.music = "ready_music_1.ogg";
+					this.music = "ready_music_3.ogg";
 					this.musicID = "ready";
 				}
 			}

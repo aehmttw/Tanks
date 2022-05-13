@@ -30,6 +30,10 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public boolean bouncy = false;
 	public boolean allowBounce = true;
 	public boolean replaceTiles = true;
+
+	/**
+	 * If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles.
+	 */
 	public boolean batchDraw = true;
 
 	public double posX;
@@ -64,6 +68,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	protected byte[] options = new byte[default_max_height];
 	protected byte[] lastOptions = new byte[default_max_height];
 
+	public double baseGroundHeight;
+
 	public Obstacle(String name, double posX, double posY)
 	{
 		this.name = name;
@@ -87,6 +93,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 			this.stackColorG[i] = col2[1];
 			this.stackColorB[i] = col2[2];
 		}
+
+		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
 
 		this.description = "A solid block which can---be destroyed by mines";
 	}

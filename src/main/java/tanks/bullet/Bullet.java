@@ -7,6 +7,7 @@ import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
@@ -85,10 +86,13 @@ public class Bullet extends Movable implements IDrawable
 	public Tank tankInside = null;
 
 	public String itemSound = "shoot.ogg";
+	public double pitchVariation = 0;
 
 	protected ArrayList<Trail>[] trails;
 	protected boolean addedTrail = false;
 	protected double lastTrailAngle = -1;
+
+	public double speed = 0;
 
 	public Bullet(double x, double y, int bounces, Tank t, ItemBullet item)
 	{
@@ -594,6 +598,9 @@ public class Bullet extends Movable implements IDrawable
 	@Override
 	public void update()
 	{
+		if (!this.isRemote && (this.vX != this.lastVX || this.lastVY != this.lastVY))
+			Game.eventsOut.add(new EventBulletUpdate(this));
+
 		super.update();
 
 		if (this.age == 0)
@@ -793,7 +800,7 @@ public class Bullet extends Movable implements IDrawable
 		if (!Game.bulletTrails || this.effect == BulletEffect.none)
 			return;
 
-		double speed = this.item.speed;
+		double speed = this.speed;
 
 		double x = this.collisionX;
 		double y = this.collisionY;
@@ -818,22 +825,22 @@ public class Bullet extends Movable implements IDrawable
 		this.lastTrailAngle = this.getPolarDirection();
 
 		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
-			this.addTrailObj(0, new Trail(this, this.item.speed, x, y, this.size / 2, this.size / 2, 15 * this.size * speed / 3.125, this.lastTrailAngle, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5), redirect);
+			this.addTrailObj(0, new Trail(this, this.speed, x, y, this.size / 2, this.size / 2, 15 * this.size * speed / 3.125, this.lastTrailAngle, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5), redirect);
 
 		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
-			this.addTrailObj(2, new Trail(this, this.item.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 255, 255, 0, 255, 255, 0, 0, 0, false, 1), redirect);
+			this.addTrailObj(2, new Trail(this, this.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 255, 255, 0, 255, 255, 0, 0, 0, false, 1), redirect);
 
 		if (this.effect == BulletEffect.darkFire)
-			this.addTrailObj(2, new Trail(this, this.item.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 64, 0, 128, 255, 0, 0, 0, 0, false, 0.5), redirect);
+			this.addTrailObj(2, new Trail(this, this.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 64, 0, 128, 255, 0, 0, 0, 0, false, 0.5), redirect);
 
 		if (this.effect == BulletEffect.fireTrail)
 		{
-			Trail t = new Trail(this, this.item.speed, x, y, this.size, this.size, 100 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5);
+			Trail t = new Trail(this, this.speed, x, y, this.size, this.size, 100 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5);
 			t.delay = 14 * this.size * speed / 6.25;
 			t.frontCircle = false;
 			this.addTrailObj(0, t, redirect);
 
-			Trail t2 = new Trail(this, this.item.speed, x, y, this.size, this.size, 8 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5);
+			Trail t2 = new Trail(this, this.speed, x, y, this.size, this.size, 8 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5);
 			t2.delay = 6 * this.size * speed / 6.25;
 			t2.backCircle = false;
 			this.addTrailObj(1, t2, redirect);
@@ -901,10 +908,12 @@ public class Bullet extends Movable implements IDrawable
 			}
 		}
 
-		for (int i = 0; i < this.trails.length; i++)
+		for (ArrayList<Trail> trail : this.trails)
 		{
-			for (Trail t: this.trails[i])
+			for (Trail t : trail)
+			{
 				t.draw();
+			}
 		}
 
 		if (this.destroyTimer < 60.0)

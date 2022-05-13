@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL15;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -90,8 +89,13 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public void end()
     {
-        this.reinitializeBuffers();
+        this.stage();
 
+        this.draw();
+    }
+
+    public void draw()
+    {
         glDepthMask(this.depthMask);
 
         if (this.depth)
@@ -307,7 +311,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         else
             p = getRecycledPoint();
 
-        p.initialize(x, y, z, r, g, b, a);
+        p.initialize(x + offX, y + offY, z + offZ, r, g, b, a);
         return p;
     }
 
@@ -612,7 +616,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         this.forceRedraw = false;
     }
 
-    public void reinitializeBuffers()
+    public void stage()
     {
         if (this.window.shadowsEnabled && !this.window.drawingShadow)
             return;

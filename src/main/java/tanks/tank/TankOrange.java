@@ -24,6 +24,7 @@ public class TankOrange extends TankAIControlled
 		this.enablePredictiveFiring = false;
 		this.aimTurretSpeed = 0.01;
 		this.enablePathfinding = true;
+		this.aimAccuracyOffset = 0;
 
 		this.motionChangeChance = 0.001;
 		this.avoidSensitivity = 1;

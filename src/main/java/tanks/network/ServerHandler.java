@@ -129,7 +129,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			for (int i = 0; i < this.events.size(); i++)
 			{
 				INetworkEvent e = this.events.get(i);
-				this.sendEvent(e, i >= Game.eventsOut.size() - 1);
+				this.sendEvent(e, i >= this.events.size() - 1);
 			}
 
 			if (steamID == null)

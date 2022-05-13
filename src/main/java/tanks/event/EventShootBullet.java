@@ -104,11 +104,12 @@ public class EventShootBullet extends PersonalEvent
 				bullet.effect = Bullet.BulletEffect.ember;
 				break;
 		}
-		
+
 		bullet.bounces = this.bounces;
 		bullet.damage = this.damage;
 		bullet.size = this.size;
 		bullet.heavy = this.heavy;
+		bullet.speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 
 		bullet.networkID = this.id;
 		Bullet.idMap.put(this.id, bullet);

@@ -92,8 +92,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.a";
-	public static final int network_protocol = 40;
+	public static final String version = "Tanks v1.4.b";
+	public static final int network_protocol = 41;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -910,6 +910,10 @@ public class Game
 		Level.currentColorR = 235;
 		Level.currentColorG = 207;
 		Level.currentColorB = 166;
+
+		Level.currentColorVarR = 20;
+		Level.currentColorVarG = 20;
+		Level.currentColorVarB = 20;
 
 		Level.currentLightIntensity = 1.0;
 		Level.currentShadowIntensity = 0.75;

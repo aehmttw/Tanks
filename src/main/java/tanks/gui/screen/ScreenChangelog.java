@@ -368,6 +368,29 @@ public class ScreenChangelog extends Screen
                                     "Arc bullets can now be set to bounce\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.a", new String[]
+                    {
+                            "*What's new in Tanks v1.4.a:\n\n" +
+                                    "Added air bullet which pushes things\n" +
+                                    "Added homing bullet which moves towards targets\n" +
+                                    "Added light blue tank which uses air bullets\n" +
+                                    "Added salmon tank which uses homing bullets\n" +
+                                    "Cooldowns are now per item\n" +
+                                    "Added cooldown indicator to hotbar\n" +
+                                    "Updated item icons\n" +
+                                    "Many internal improvements\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
+
+            new Changelog("v1.4.b", new String[]
+                    {
+                            "*What's new in Tanks v1.4.b:\n\n" +
+                                    "Updated crusade info and stats screens\n" +
+                                    "New singleplayer shop music\n" +
+                                    "Tanks now avoid explosive blocks\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

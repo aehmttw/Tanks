@@ -1,10 +1,13 @@
 package tanks.tank;
 
 import basewindow.Model;
-import basewindow.ModelPart;
-import tanks.*;
+import tanks.AttributeModifier;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Movable;
 
-import static tanks.tank.TankPropertyAnnotation.Category.*;
+import static tanks.tank.TankPropertyAnnotation.Category.appearanceColor;
+import static tanks.tank.TankPropertyAnnotation.Category.appearanceModel;
 
 public class Turret extends Movable
 {
@@ -46,6 +49,9 @@ public class Turret extends Movable
 				glow = a.getValue(glow);
 			}
 		}
+
+		if (this.tank.fullBrightness)
+			glow = 1;
 
 		this.posX = tank.posX;
 		this.posY = tank.posY;

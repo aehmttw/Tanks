@@ -40,6 +40,7 @@ public class Drawing
 	public boolean movingCamera = true;
 
 	public static Drawing drawing;
+	public LevelRenderer defaultRenderer;
 
 	public double textSize = 24;
 	public double titleSize = 30;
@@ -70,6 +71,13 @@ public class Drawing
 
 	public static ModelPart rotatedRect;
 
+	public static class LevelRenderer
+	{
+		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer();
+		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
+		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
+	}
+
 	private Drawing()
 	{
 	}
@@ -80,6 +88,20 @@ public class Drawing
 			drawing = new Drawing();
 
 		initialized = true;
+	}
+
+	public void setRenderer(LevelRenderer r)
+	{
+		this.terrainRenderer = r.terrainRenderer;
+		this.terrainRendererTransparent = r.terrainRendererTransparent;
+		this.terrainRendererShrubbery = r.terrainRendererShrubbery;
+	}
+
+	public void stageRenderers()
+	{
+		this.terrainRenderer.stage();
+		this.terrainRendererTransparent.stage();
+		this.terrainRendererShrubbery.stage();
 	}
 
 	public void showStats(boolean stats)
@@ -1337,26 +1359,41 @@ public class Drawing
 
 	public void drawTerrainRenderers()
 	{
+		this.drawTerrainRenderers(true, 0, 0, 0, 1);
+	}
+
+	public void drawTerrainRenderers(boolean stage, double x, double y, double z, double s)
+	{
 		if (!Game.game.window.shapeRenderer.supportsBatching)
 			return;
 
 		this.terrainRendering = false;
 
-		this.terrainRenderer.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
-		this.terrainRenderer.setScale(scale, scale, scale);
-		this.terrainRenderer.end();
+		this.terrainRenderer.setPosition(gameToAbsoluteX(x, 0), gameToAbsoluteY(y, 0), z * scale);
+		this.terrainRenderer.setScale(scale * s, scale * s, scale * s);
 
 		double shrubScale = 0.25;
 		if (Game.screen instanceof ScreenGame)
 			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 
-		this.terrainRendererShrubbery.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
-		this.terrainRendererShrubbery.setScale(scale, scale, scale * shrubScale);
-		this.terrainRendererShrubbery.end();
+		this.terrainRendererShrubbery.setPosition(gameToAbsoluteX(x, 0), gameToAbsoluteY(y, 0), z * scale);
+		this.terrainRendererShrubbery.setScale(scale * s, scale * s, scale * s * shrubScale);
 
-		this.terrainRendererTransparent.setPosition(gameToAbsoluteX(0, 0), gameToAbsoluteY(0, 0), 0);
-		this.terrainRendererTransparent.setScale(scale, scale, scale);
-		this.terrainRendererTransparent.end();
+		this.terrainRendererTransparent.setPosition(gameToAbsoluteX(x, 0), gameToAbsoluteY(y, 0), z * scale);
+		this.terrainRendererTransparent.setScale(scale * s, scale * s, scale * s);
+
+		if (stage)
+		{
+			this.terrainRenderer.end();
+			this.terrainRendererShrubbery.end();
+			this.terrainRendererTransparent.end();
+		}
+		else
+		{
+			this.terrainRenderer.draw();
+			this.terrainRendererShrubbery.draw();
+			this.terrainRendererTransparent.draw();
+		}
 	}
 
 	public double gameToAbsoluteX(double x, double sizeX)
@@ -1413,6 +1450,9 @@ public class Drawing
 
 	public boolean isOutOfBounds(double drawX, double drawY)
 	{
+		if (Game.screen.forceInBounds)
+			return false;
+
 		int dist = 200;
 
 		if (Game.angledView)

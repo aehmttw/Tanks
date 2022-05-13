@@ -196,6 +196,8 @@ public abstract class BaseWindow
 
     public abstract void loadPerspective();
 
+    public abstract void clearDepth();
+
     public abstract String getClipboard();
 
     public abstract void setClipboard(String s);

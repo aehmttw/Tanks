@@ -16,6 +16,14 @@ public class EventTankMimicTransform extends PersonalEvent
 
     public boolean isPlayer;
 
+    public double red;
+    public double green;
+    public double blue;
+
+    public double red2;
+    public double green2;
+    public double blue2;
+
     public EventTankMimicTransform()
     {
 
@@ -26,6 +34,14 @@ public class EventTankMimicTransform extends PersonalEvent
         tank = t.networkID;
         type = t.name;
         this.isPlayer = isPlayer;
+
+        this.red = t.colorR;
+        this.green = t.colorG;
+        this.blue = t.colorB;
+
+        this.red2 = t.turret.colorR;
+        this.green2 = t.turret.colorG;
+        this.blue2 = t.turret.colorB;
     }
 
     @Override
@@ -43,18 +59,18 @@ public class EventTankMimicTransform extends PersonalEvent
 
             if (this.isPlayer)
             {
-                t.colorR = 0;
-                t.colorG = 150;
-                t.colorB = 255;
+                t.colorR = red;
+                t.colorG = green;
+                t.colorB = blue;
 
-                t.turret.colorR = Turret.calculateSecondaryColor(t.colorR);
-                t.turret.colorG = Turret.calculateSecondaryColor(t.colorG);
-                t.turret.colorB = Turret.calculateSecondaryColor(t.colorB);
+                t.turret.colorR = red2;
+                t.turret.colorG = green2;
+                t.turret.colorB = blue2;
 
                 t.colorModel = Tank.color_model;
             }
 
-            if (!(t1 instanceof TankMimic))
+            if (!(t1 instanceof TankMimic) || isPlayer)
             {
                 t.baseModel = TankMimic.base_model;
                 t.turretBaseModel = TankMimic.turret_base_model;
@@ -88,6 +104,14 @@ public class EventTankMimicTransform extends PersonalEvent
         b.writeInt(this.tank);
         NetworkUtils.writeString(b, this.type);
         b.writeBoolean(this.isPlayer);
+
+        b.writeDouble(this.red);
+        b.writeDouble(this.green);
+        b.writeDouble(this.blue);
+
+        b.writeDouble(this.red2);
+        b.writeDouble(this.green2);
+        b.writeDouble(this.blue2);
     }
 
     @Override
@@ -96,5 +120,13 @@ public class EventTankMimicTransform extends PersonalEvent
         this.tank = b.readInt();
         this.type = NetworkUtils.readString(b);
         this.isPlayer = b.readBoolean();
+
+        this.red = b.readDouble();
+        this.green = b.readDouble();
+        this.blue = b.readDouble();
+
+        this.red2 = b.readDouble();
+        this.green2 = b.readDouble();
+        this.blue2 = b.readDouble();
     }
 }

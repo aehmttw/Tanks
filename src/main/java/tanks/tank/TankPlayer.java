@@ -405,9 +405,12 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			speed = Double.MIN_NORMAL;
 
 		if (b.itemSound != null)
-			Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size));
+		{
+			Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / this.bullet.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
+		}
 
 		b.setPolarMotion(this.angle + offset, speed);
+		b.speed = speed;
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
 		if (b.moveOut)

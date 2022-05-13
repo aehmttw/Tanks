@@ -210,4 +210,10 @@ public class Mine extends Movable implements IAvoidObject
     {
         return this.radius;
     }
+
+    @Override
+    public double getSeverity(double posX, double posY)
+    {
+        return this.timer;
+    }
 }

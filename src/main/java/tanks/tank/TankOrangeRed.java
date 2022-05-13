@@ -29,7 +29,6 @@ public class TankOrangeRed extends TankAIControlled
         this.bullet.bounces = 0;
         this.bullet.effect = Bullet.BulletEffect.trail;
         this.bullet.size = 20;
-        this.bullet.heavy = true;
         this.bullet.name = "Explosive bullet";
         this.enableLookingAtTargetEnemy = true;
         this.motionChangeChance = 0.001;

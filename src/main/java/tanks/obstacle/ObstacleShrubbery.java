@@ -61,13 +61,13 @@ public class ObstacleShrubbery extends Obstacle
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
 
-		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 	}
 
 	@Override
 	public void draw()
 	{
-		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (!Game.game.window.shapeRenderer.supportsBatching)
 		{
@@ -132,7 +132,7 @@ public class ObstacleShrubbery extends Obstacle
 
 			Effect e;
 			if (Game.enable3d)
-				e = Effect.createNewEffect(this.posX, this.posY,Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
+				e = Effect.createNewEffect(this.posX, this.posY,this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
 			else
 				e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
 
@@ -147,7 +147,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.onObjectEntryLocal(m);
 
-		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 	}
 
 	@Override

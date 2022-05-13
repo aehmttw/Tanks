@@ -52,8 +52,13 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean inControlOfMotion = true;
 	public boolean positionLock = false;
 
+	public boolean fullBrightness = false;
+
 	public boolean tookRecoil = false;
 	public double recoilSpeed = 0;
+
+	/** If spawned by another tank, set to the tank that spawned this tank*/
+	protected Tank parent = null;
 
 	@TankPropertyAnnotation(category = misc, name = "Tank name")
 	public String name;
@@ -587,6 +592,9 @@ public abstract class Tank extends Movable implements ISolidObject
 				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size,true, false);
 		}
 
+		if (this.fullBrightness)
+			glow = 1;
+
 		if (!forInterface)
 		{
 			for (int i = 0; i < this.attributes.size(); i++)
@@ -678,10 +686,6 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		/*Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setFontSize(24);
-		Drawing.drawing.drawText(posX, posY, 50, networkID + "");
-		*/
 		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 

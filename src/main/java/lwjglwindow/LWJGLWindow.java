@@ -716,6 +716,11 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
+	public void clearDepth()
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
 	@Override
 	public String getClipboard()
 	{

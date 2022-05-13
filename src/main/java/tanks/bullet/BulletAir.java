@@ -34,8 +34,9 @@ public class BulletAir extends Bullet
         this.drawLevel = 0;
         this.externalBulletCollision = false;
         this.name = bullet_name;
-        this.itemSound = "flame.ogg";
+        this.itemSound = "wind.ogg";
         this.damage = 0;
+        this.pitchVariation = 1;
     }
 
     @Override
@@ -59,10 +60,15 @@ public class BulletAir extends Bullet
     @Override
     public void collidedWithObject(Movable o)
     {
-        double mul = 8.0;
+        if (!(o instanceof Tank || o instanceof Bullet))
+            return;
 
-        if (o instanceof Tank)
-            mul = 2;
+        double mul = 10.0;
+
+        if (o instanceof Bullet)
+            mul = 200 / Math.pow(((Bullet) o).size, 2);
+        else
+            mul *= Game.tile_size * Game.tile_size / Math.pow(((Tank) o).size, 2);
 
         double f = Math.pow(this.frameDamageMultipler, 2);
         double x = this.vX * f * mul / (size * size);
@@ -71,9 +77,7 @@ public class BulletAir extends Bullet
         o.vX += x;
         o.vY += y;
 
-        if (o instanceof Bullet)
-            Game.eventsOut.add(new EventBulletUpdate((Bullet) o));
-        else if (o instanceof TankPlayerRemote)
+        if (o instanceof TankPlayerRemote)
             Game.eventsOut.add(new EventTankControllerAddVelocity((Tank) o, x, y));
     }
 
@@ -91,7 +95,7 @@ public class BulletAir extends Bullet
 
         double col = (this.col - 60 * (this.age / life));
 
-        Drawing.drawing.setColor(col, (col * 4 + 255) / 5, (col * 2 + 255) / 3, opacity, 1);
+        Drawing.drawing.setColor(col, (col * 4 + 255) / 5, (col * 2 + 255) / 3, opacity, 0.5);
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);

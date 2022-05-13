@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Ray;
 import tanks.tank.Tank;
@@ -9,6 +10,7 @@ public class BulletHoming extends Bullet
 {
     public static String bullet_name = "homing";
     public Tank target = null;
+    public double targetTime = 0;
 
     public BulletHoming(double x, double y, int bounces, Tank t, ItemBullet item)
     {
@@ -39,6 +41,9 @@ public class BulletHoming extends Bullet
         {
             double a = this.getAngleInDirection(nearest.posX, nearest.posY);
             Ray r = new Ray(this.posX, this.posY, a, 0, this.tank);
+
+            Tank prevTarget = this.target;
+
             if (r.getTarget() == nearest)
             {
                 double s = this.getSpeed();
@@ -48,6 +53,24 @@ public class BulletHoming extends Bullet
                 this.vY *= s / s2;
 
                 this.target = nearest;
+
+                double nX = this.vX / s;
+                double nY = this.vY / s;
+
+                if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finishedQuick)
+                {
+                    double d = Movable.distanceBetween(this, Game.playerTank);
+
+                    if (d <= 500)
+                    {
+                        double dX = (this.posX - Game.playerTank.posX) / d;
+                        double dY = (this.posY - Game.playerTank.posY) / d;
+
+                        double v = 1 + ((nX * dX + nY * dY) * this.speed) / 15.0;
+
+                        Drawing.drawing.playSound("wind.ogg", (float) (0.8 / (float) v + Math.random() * 0.1f - 0.05f), (float) Math.min(1, 100 / d));
+                    }
+                }
 
                 if (Game.bulletTrails && Math.random() < Panel.frameFrequency)
                 {
@@ -70,9 +93,42 @@ public class BulletHoming extends Bullet
 
                     Game.effects.add(e);
                 }
+
+                this.targetTime += Panel.frameFrequency;
             }
+            else
+                this.target = null;
+
+            if (prevTarget != this.target)
+                this.targetTime = 0;
         }
 
         super.update();
+    }
+
+    public void draw()
+    {
+        super.draw();
+
+        double limit = 50;
+        if (!ScreenGame.finishedQuick && this.target != null)
+        {
+            double frac;
+
+            frac = Math.min(targetTime / limit, 1);
+
+            double s = (2 - frac) * this.size * 8;
+            double d = Math.min((1 - this.destroyTimer / this.maxDestroyTimer) * 2, 1);
+
+            Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+            Drawing.drawing.drawImage(frac * Math.PI / 2 + this.getAngleInDirection(this.target.posX, this.target.posY), "cursor.png", this.target.posX, this.target.posY, s, s);
+
+            if (Game.glowEnabled)
+            {
+                Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+                Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 16, this.size * 16);
+            }
+        }
+        Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, 255, 1);
     }
 }

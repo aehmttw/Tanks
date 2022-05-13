@@ -1,6 +1,7 @@
 package tanks;
 import basewindow.BaseFile;
 import tanks.event.*;
+import tanks.gui.screen.ScreenCrusadeLevels;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
@@ -57,6 +58,8 @@ public class Crusade
 	public ArrayList<LevelPerformance> performances = new ArrayList<>();
 
 	public boolean respawnTanks = true;
+
+	public ScreenCrusadeLevels background;
 
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
@@ -168,6 +171,8 @@ public class Crusade
 		{
 			Game.players.get(j).remainingLives = this.startingLives;
 		}
+
+		this.background = new ScreenCrusadeLevels(this);
 	}
 
 	public void begin()

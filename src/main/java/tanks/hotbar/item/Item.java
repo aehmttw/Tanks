@@ -200,7 +200,9 @@ public abstract class Item implements IGameObject
 
 	public Tank getUser()
 	{
-		if (this.player == Game.player)
+		if (this.player == null)
+			return null;
+		else if (this.player == Game.player)
 		{
 			return Game.playerTank;
 		}
@@ -226,6 +228,14 @@ public abstract class Item implements IGameObject
 	public Item clone()
 	{
 		return Item.parseItem(this.player, this.toString());
+	}
+
+	public void setOtherItemsCooldown()
+	{
+		Tank user = this.getUser();
+
+		if (user != null)
+			user.setBufferCooldown(20);
 	}
 
 	public abstract String getTypeName();

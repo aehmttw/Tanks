@@ -6,20 +6,20 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 
-import static tanks.tank.TankPropertyAnnotation.Category.appearanceColor;
-import static tanks.tank.TankPropertyAnnotation.Category.appearanceModel;
+import static tanks.tank.TankProperty.Category.appearanceColor;
+import static tanks.tank.TankProperty.Category.appearanceModel;
 
 public class Turret extends Movable
 {
-	@TankPropertyAnnotation(category = appearanceModel, name = "Turret thickness")
+	@TankProperty(category = appearanceModel, name = "Turret thickness")
 	public double size = 8;
-	@TankPropertyAnnotation(category = appearanceModel, name = "Turret length")
+	@TankProperty(category = appearanceModel, name = "Turret length")
 	public double length = Game.tile_size;
-	@TankPropertyAnnotation(category = appearanceColor, name = "Secondary red")
+	@TankProperty(category = appearanceColor, name = "Secondary red")
 	public double colorR;
-	@TankPropertyAnnotation(category = appearanceColor, name = "Secondary green")
+	@TankProperty(category = appearanceColor, name = "Secondary green")
 	public double colorG;
-	@TankPropertyAnnotation(category = appearanceColor, name = "Secondary blue")
+	@TankProperty(category = appearanceColor, name = "Secondary blue")
 	public double colorB;
 
 	Tank tank;

@@ -1090,6 +1090,11 @@ public class LWJGLWindow extends BaseWindow
 		return GL15.glGenBuffers();
 	}
 
+	public void freeVBO(int i)
+	{
+		GL15.glDeleteBuffers(i);
+	}
+
 	public void vertexBufferData(int id, FloatBuffer buffer)
 	{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);

@@ -136,6 +136,7 @@ public class ScreenOptions extends Screen
 			f.println("max_fps=" + Game.maxFPS);
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
+			f.println("preview_crusades=" + Game.previewCrusades);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
@@ -318,6 +319,9 @@ public class ScreenOptions extends Screen
 								Game.followingCam = true;
 								Game.firstPerson = true;
 						}
+						break;
+					case "preview_crusades":
+						Game.previewCrusades = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "fullscreen":
 						Game.game.fullscreen = Boolean.parseBoolean(optionLine[1]);

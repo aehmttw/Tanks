@@ -172,7 +172,8 @@ public class Crusade
 			Game.players.get(j).remainingLives = this.startingLives;
 		}
 
-		this.background = new ScreenCrusadeLevels(this);
+		if (Game.previewCrusades)
+			this.background = new ScreenCrusadeLevels(this);
 	}
 
 	public void begin()

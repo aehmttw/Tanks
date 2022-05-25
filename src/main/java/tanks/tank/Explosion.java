@@ -2,10 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.event.EventChat;
-import tanks.event.EventExplosion;
-import tanks.event.EventMineChangeTimer;
-import tanks.event.EventUpdateCoins;
+import tanks.event.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
@@ -53,7 +50,7 @@ public class Explosion extends Movable
 
         if (Game.effectsEnabled)
         {
-            for (int j = 0; j < 200 * this.radius / 125 * Game.effectMultiplier; j++)
+            for (int j = 0; j < Math.min(800, 200 * this.radius / 125) * Game.effectMultiplier; j++)
             {
                 double random = Math.random();
                 Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
@@ -154,7 +151,7 @@ public class Explosion extends Movable
             }
         }
 
-        if (this.destroysObstacles)
+        if (this.destroysObstacles && !ScreenPartyLobby.isClient)
         {
             for (Obstacle o: Game.obstacles)
             {
@@ -162,6 +159,7 @@ public class Explosion extends Movable
                 {
                     o.onDestroy(this);
                     o.playDestroyAnimation(this.posX, this.posY, this.radius);
+                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, this.posX, this.posY, this.radius));
                 }
             }
         }

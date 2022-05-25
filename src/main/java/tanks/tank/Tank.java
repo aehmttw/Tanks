@@ -15,7 +15,7 @@ import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
-import static tanks.tank.TankPropertyAnnotation.Category.*;
+import static tanks.tank.TankProperty.Category.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,13 +31,13 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static ModelPart health_model;
 
-	@TankPropertyAnnotation(category = appearanceModel, name = "Tank body model")
+	@TankProperty(category = appearanceModel, name = "Tank body model")
 	public Model baseModel = base_model;
-	@TankPropertyAnnotation(category = appearanceModel, name = "Tank treads model")
+	@TankProperty(category = appearanceModel, name = "Tank treads model")
 	public Model colorModel = color_model;
-	@TankPropertyAnnotation(category = appearanceModel, name = "Turret base model")
+	@TankProperty(category = appearanceModel, name = "Turret base model")
 	public Model turretBaseModel = Turret.base_model;
-	@TankPropertyAnnotation(category = appearanceModel, name = "Turret barrel model")
+	@TankProperty(category = appearanceModel, name = "Turret barrel model")
 	public Model turretModel = Turret.turret_model;
 
 	public double angle = 0;
@@ -60,15 +60,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** If spawned by another tank, set to the tank that spawned this tank*/
 	protected Tank parent = null;
 
-	@TankPropertyAnnotation(category = misc, name = "Tank name")
+	@TankProperty(category = misc, name = "Tank name")
 	public String name;
 
-	@TankPropertyAnnotation(category = misc, name = "Coin value")
+	@TankProperty(category = misc, name = "Coin value")
 	public int coinValue = 0;
 
-	@TankPropertyAnnotation(category = misc, name = "Bullet immunity")
+	@TankProperty(category = misc, name = "Bullet immunity")
 	public boolean resistBullets = false;
-	@TankPropertyAnnotation(category = misc, name = "Explosion immunity")
+	@TankProperty(category = misc, name = "Explosion immunity")
 	public boolean resistExplosions = false;
 
 	public int networkID;
@@ -81,26 +81,26 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
 
-	@TankPropertyAnnotation(category = movementGeneral, name = "Tank speed")
+	@TankProperty(category = movementGeneral, name = "Tank speed")
 	public double maxSpeed = 1.5;
 	//public int liveBullets = 0;
 	//public int liveMines = 0;
 	public double size;
 
-	@TankPropertyAnnotation(category = appearanceColor, name = "Red")
+	@TankProperty(category = appearanceColor, name = "Red")
 	public double colorR;
-	@TankPropertyAnnotation(category = appearanceColor, name = "Green")
+	@TankProperty(category = appearanceColor, name = "Green")
 	public double colorG;
-	@TankPropertyAnnotation(category = appearanceColor, name = "Blue")
+	@TankProperty(category = appearanceColor, name = "Blue")
 	public double colorB;
 
 	//public int liveBulletMax;
 	//public int liveMinesMax;
 
-	@TankPropertyAnnotation(category = firingGeneral, name = "Bullet")
+	@TankProperty(category = firingGeneral, name = "Bullet")
 	public ItemBullet bullet = (ItemBullet) TankPlayer.default_bullet.clone();
 
-	@TankPropertyAnnotation(category = mines, name = "Mine")
+	@TankProperty(category = mines, name = "Mine")
 	public ItemMine mine = (ItemMine) TankPlayer.default_mine.clone();
 
 	public double drawAge = 0;
@@ -114,12 +114,15 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double hitboxSize = 0.95;
 
-	@TankPropertyAnnotation(category = misc, name = "Hitpoints")
+	@TankProperty(category = misc, name = "Hitpoints")
 	public double baseHealth = 1;
 	public double health = 1;
 
+	@TankProperty(category = misc, name = "Explosive", desc="If set, the tank will explode when destroyed")
+	public boolean explodeOnDestroy = false;
+
 	/** Whether this tank needs to be destroyed before the level ends. */
-	@TankPropertyAnnotation(category = misc, name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
+	@TankProperty(category = misc, name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
 	public boolean needsToKill = true;
 
 	public boolean[][] hiddenPoints = new boolean[3][3];
@@ -139,6 +142,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean isBoss = false;
 	public Tank possessor;
+	public Tank possessingTank = null;
 	public boolean overridePossessedKills = true;
 
 	public long lastFarthestInSightUpdate = 0;
@@ -686,6 +690,12 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
+		/*
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setFontSize(30);
+		Drawing.drawing.drawText(this.posX, this.posY, 50, this.networkID + "");
+		*/
+
 		Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
 	}
 
@@ -773,7 +783,11 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void onDestroy()
 	{
-
+		if (this.explodeOnDestroy)
+		{
+			Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, 2, true, this);
+			e.explode();
+		}
 	}
 
 	@Override
@@ -845,6 +859,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.health > 0)
 			this.flashAnimation = 1;
+		else
+			this.destroy = true;
 
 		this.checkHit(owner, source);
 
@@ -986,5 +1002,32 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.bullet.cooldown = Math.max(this.bullet.cooldown, value);
 		this.mine.cooldown = Math.max(this.mine.cooldown, value);
+	}
+
+	public Tank getTopLevelPossessor()
+	{
+		if (this.possessor == null)
+			return null;
+		else
+		{
+			Tank p = this.possessor;
+			while (p.possessor != null)
+			{
+				p = p.possessor;
+			}
+
+			return p;
+		}
+	}
+
+	public Tank getBottomLevelPossessing()
+	{
+		Tank p = this;
+		while (p.possessingTank != null)
+		{
+			p = p.possessingTank;
+		}
+
+		return p;
 	}
 }

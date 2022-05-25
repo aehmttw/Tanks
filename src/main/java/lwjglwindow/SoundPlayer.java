@@ -192,7 +192,7 @@ public class SoundPlayer extends BaseSoundPlayer
     @Override
     public void addSyncedMusic(String path, float volume, boolean looped, long fadeTime)
     {
-        if (musicSources.size() >= 15)
+        if (musicSources.size() >= 25)
             alDeleteSources(musicSources.remove(0));
 
         if (this.musicBuffers.get(path) == null)
@@ -206,6 +206,12 @@ public class SoundPlayer extends BaseSoundPlayer
             loop = AL_TRUE;
 
         int sourcePointer = alGenSources();
+
+        Integer i = this.stoppingSyncedTracks.remove(path);
+        if (i != null)
+        {
+            alSourceStop(i);
+        }
 
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcef(sourcePointer, AL_LOOPING, loop);

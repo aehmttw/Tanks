@@ -13,9 +13,6 @@ import tanks.event.EventTankUpdateColor;
  */
 public class TankGold extends TankAIControlled
 {
-	boolean suicidal = false;
-	double timeUntilDeath = 500 + this.random.nextDouble() * 250;
-
 	public TankGold(String name, double x, double y, double angle)
 	{
 		super(name, x, y, Game.tile_size, 255, 180, 0, angle, ShootAI.straight);
@@ -24,7 +21,7 @@ public class TankGold extends TankAIControlled
 		this.enablePredictiveFiring = true;
 		this.enableDefensiveFiring = true;
 		this.cooldownBase = 40;
-		this.cooldownRandom = 80;
+		this.cooldownRandom = 0;
 		this.bullet.maxLiveBullets = 5;
 		this.aimTurretSpeed = 0.04;
 		this.bullet.bounces = 0;
@@ -36,150 +33,12 @@ public class TankGold extends TankAIControlled
 		this.bullet.bulletClass = BulletBoost.class;
 		this.bullet.name = "Booster bullet";
 		this.dealsDamage = false;
+		this.commitsSuicide = true;
+		this.targetEnemySightBehavior = TargetEnemySightBehavior.keepDistance;
+		this.mine.radius *= 1.5;
 
 		this.coinValue = 4;
 
 		this.description = "A tank which speeds up---its allies and becomes---explosive as a last stand";
 	}
-
-	@Override
-	public void postUpdate()
-	{
-		if (!this.suicidal)
-		{
-			boolean die = true;
-			for (int i = 0; i < Game.movables.size(); i++)
-			{
-				Movable m = Game.movables.get(i);
-				if (m != this && m.team == this.team && m.dealsDamage && !m.destroy)
-				{
-					die = false;
-					break;
-				}
-			}
-
-			if (die)
-				this.suicidal = true;
-		}
-
-		if (this.suicidal && !this.disabled)
-		{
-			this.timeUntilDeath -= Panel.frameFrequency;
-			this.maxSpeed = 4.5 - 3 * Math.min(this.timeUntilDeath, 500) / 500;
-			this.enableBulletAvoidance = false;
-			this.enableMineAvoidance = false;
-		}
-
-		if (this.timeUntilDeath < 500)
-		{
-			this.colorG = this.timeUntilDeath / 500 * 180;
-
-			if (this.timeUntilDeath < 150 && ((int) this.timeUntilDeath % 16) / 8 == 1)
-			{
-				this.colorR = 255;
-				this.colorG = 255;
-				this.colorB = 0;
-			}
-
-			Game.eventsOut.add(new EventTankUpdateColor(this));
-		}
-
-		if (this.timeUntilDeath <= 0)
-		{
-			Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius * 1.5, 2, true, this);
-			e.explode();
-			this.destroy = true;
-			this.health = 0;
-		}
-	}
-
-	@Override
-	public void shoot()
-	{
-		if (this.cooldown > 0 || this.suicidal || this.disabled || this.destroy || this.bullet.liveBullets >= this.bullet.maxLiveBullets)
-			return;
-
-		Ray r = new Ray(this.posX, this.posY, this.angle, this.bullet.bounces, this);
-		r.moveOut(5);
-
-		if (this.avoidTimer <= 0 && (!this.hasTarget || r.getTarget() != this.targetEnemy))
-			return;
-
-		Drawing.drawing.playGlobalSound("shoot.ogg", (float) (Bullet.bullet_size / this.bullet.size));
-		BulletBoost b = new BulletBoost(this.posX, this.posY, this.bullet.bounces, this, this.bullet);
-		b.effect = this.bullet.effect;
-		b.team = this.team;
-		b.setPolarMotion(this.angle, this.bullet.speed);
-		b.moveOut(50 / this.bullet.speed * this.size / Game.tile_size);
-
-		Game.movables.add(b);
-		Game.eventsOut.add(new EventShootBullet(b));
-
-		this.cooldown = this.cooldownBase;
-	}
-
-	@Override
-	public void updateTarget()
-	{
-		if (this.suicidal)
-		{
-			super.updateTarget();
-			return;
-		}
-
-		double nearestDist = Double.MAX_VALUE;
-		Movable nearest = null;
-		this.hasTarget = false;
-
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable m = Game.movables.get(i);
-
-			if (m instanceof Tank && m != this && Team.isAllied(this, m) && ((Tank) m).targetable && !((Tank) m).hidden && !((Tank) m).invulnerable && ((Tank) m).health - ((Tank) m).baseHealth < 1)
-			{
-				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
-				r.moveOut(5);
-				if (r.getTarget() != m)
-					continue;
-
-				double distance = Movable.distanceBetween(this, m);
-
-				if (distance < nearestDist)
-				{
-					this.hasTarget = true;
-					nearestDist = distance;
-					nearest = m;
-				}
-			}
-		}
-
-		this.targetEnemy = nearest;
-	}
-
-	public void reactToTargetEnemySight()
-	{
-		if (this.suicidal && this.targetEnemy != null)
-		{
-			this.overrideDirection = true;
-			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, acceleration);
-		}
-		else
-		{
-			if (this.targetEnemy == null)
-				return;
-
-			this.overrideDirection = true;
-			if (Movable.distanceBetween(this, this.targetEnemy) < Game.tile_size * 6)
-				this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
-			else
-				this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
-
-		}
-	}
-
-	public boolean isInterestingPathTarget(Movable m)
-	{
-		return m instanceof Tank && Team.isAllied(m, this) && m != this && ((Tank) m).health - ((Tank) m).baseHealth < 1 && !(m instanceof TankGold);
-	}
-
 }

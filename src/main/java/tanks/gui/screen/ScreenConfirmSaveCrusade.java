@@ -36,6 +36,8 @@ public class ScreenConfirmSaveCrusade extends Screen
 
         this.music = previous.music;
         this.musicID = previous.musicID;
+
+        Drawing.drawing.playSound("timer.ogg");
     }
 
     @Override

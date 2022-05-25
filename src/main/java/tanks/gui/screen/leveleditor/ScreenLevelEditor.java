@@ -2171,6 +2171,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
 		for (Obstacle o: Game.obstacles)
 		{
@@ -2180,6 +2181,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
 				Game.game.solidGrid[x][y] = true;
+
+				if (!o.shouldShootThrough)
+					Game.game.unbreakableGrid[x][y] = true;
 			}
 		}
 

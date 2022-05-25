@@ -1362,7 +1362,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			for (Obstacle o: Game.obstacles)
 			{
 				Face[] faces = o.getHorizontalFaces();
-				boolean[] valid = o.getValidHorizontalFaces();
+				boolean[] valid = o.getValidHorizontalFaces(true);
 				for (int i = 0; i < faces.length; i++)
 				{
 					if (valid[i])
@@ -1370,7 +1370,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 
 				faces = o.getVerticalFaces();
-				valid = o.getValidVerticalFaces();
+				valid = o.getValidVerticalFaces(true);
 				for (int i = 0; i < faces.length; i++)
 				{
 					if (valid[i])
@@ -1728,6 +1728,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && o.bulletCollision)
 			{
 				Game.game.solidGrid[x][y] = false;
+				Game.game.unbreakableGrid[x][y] = false;
 			}
 
 			Game.obstacles.remove(o);
@@ -1905,16 +1906,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-		this.setPerspective();
-
-		for (Obstacle o: Game.obstacles)
+		if (Game.game.lastHeightGrid == null || Game.game.heightGrid.length != Game.game.lastHeightGrid.length || Game.game.heightGrid[0].length != Game.game.lastHeightGrid[0].length)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
+			Game.game.lastHeightGrid = new double[Game.game.heightGrid.length][Game.game.heightGrid[0].length];
 		}
+
+		for (int i = 0; i < Game.game.heightGrid.length; i++)
+		{
+			for (int j = 0; j < Game.game.heightGrid[i].length; j++)
+			{
+				Game.game.lastHeightGrid[i][j] = Game.game.heightGrid[i][j];
+			}
+		}
+
+		this.setPerspective();
 
 		Drawing.drawing.setColor(174, 92, 16);
 
@@ -2077,7 +2082,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			drawables[i].clear();
 		}
 
-		Drawing.drawing.setColor(0, 0, 0, 127);
+		/*Drawing.drawing.setColor(255, 0, 0);
+		for (Face f: Game.horizontalFaces)
+		{
+			drawing.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
+		}
+
+		Drawing.drawing.setColor(0, 255, 0);
+		for (Face f: Game.verticalFaces)
+		{
+			drawing.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
+		}
+
+		Drawing.drawing.setColor(0, 0, 0, 127);*/
 
 		if (Panel.darkness > 0)
 		{

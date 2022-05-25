@@ -49,6 +49,7 @@ public class ItemShield extends Item
         if (this.stackSize <= 0)
             this.destroy = true;
 
+        this.setOtherItemsCooldown();
         this.cooldown = this.cooldownBase;
 
         if (t.health > 6 && (int) (t.health - amount) != (int) (t.health))

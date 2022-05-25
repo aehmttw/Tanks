@@ -91,8 +91,11 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
         this.player = p;
         this.crusade = crusade;
-        this.forceInBounds = true;
-        this.crusade.background.age = 0;
+        this.forceInBounds = Game.previewCrusades;
+
+        if (Game.previewCrusades)
+            this.crusade.background.age = 0;
+
         Obstacle.draw_size = Game.tile_size;
 
         this.addTanks();
@@ -506,14 +509,18 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     @Override
     public void draw()
     {
-        //this.drawDefaultBackground();
-        this.crusade.background.draw();
+        if (Game.previewCrusades)
+        {
+            this.crusade.background.draw();
 
-        if (!Game.game.window.drawingShadow)
-            Game.game.window.clearDepth();
+            if (!Game.game.window.drawingShadow)
+                Game.game.window.clearDepth();
 
-        Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+            Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
+            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        }
+        else
+            this.drawDefaultBackground();
 
         this.drawTopBar(Math.min(120, this.age * 10));
         this.drawBottomBar(Math.min(120, this.age * 10));

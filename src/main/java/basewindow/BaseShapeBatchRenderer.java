@@ -56,4 +56,6 @@ public abstract class BaseShapeBatchRenderer
     public abstract void draw();
 
     public abstract void setColor(double r, double g, double b, double a, double glow);
+
+    public abstract void free();
 }

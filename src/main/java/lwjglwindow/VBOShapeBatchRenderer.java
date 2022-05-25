@@ -329,6 +329,13 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         this.colorGlow = glow;
     }
 
+    @Override
+    public void free()
+    {
+        this.window.freeVBO(this.colVBO);
+        this.window.freeVBO(this.vertVBO);
+    }
+
     public void setWorkingColor(float r, float g, float b, float a, float glow)
     {
         this.currentR = r;

@@ -43,6 +43,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
 
         this.destroyEffectAmount = 0;
         this.checkForObjects = true;
+        this.shouldShootThrough = true;
         this.description = "A block which explodes upon contact";
     }
 

@@ -148,6 +148,20 @@ public class ItemBar
 		return true;
 	}
 
+	public Item getSelectedItem(boolean rightClick)
+	{
+		if (selected == -1)
+			return null;
+
+		if (slots[selected] instanceof ItemEmpty)
+			return null;
+
+		if (slots[selected].rightClick != rightClick)
+			return null;
+
+		return slots[selected];
+	}
+
 	public void update()
 	{
 		checkKey(Game.game.input.hotbarDeselect, -1);

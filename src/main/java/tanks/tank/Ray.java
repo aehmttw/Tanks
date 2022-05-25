@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
@@ -9,7 +8,6 @@ import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Ray
 {
@@ -25,6 +23,7 @@ public class Ray
 
 	public boolean enableBounciness = true;
 	public boolean ignoreDestructible = false;
+	public boolean ignoreShootThrough = false;
 
 	public boolean trace = Game.traceAllRays;
 	public boolean dotted = false;
@@ -201,8 +200,16 @@ public class Ray
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
@@ -227,8 +234,17 @@ public class Ray
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
@@ -255,8 +271,16 @@ public class Ray
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
@@ -289,8 +313,16 @@ public class Ray
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;

@@ -5,17 +5,17 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.tank.Tank;
 
-public class EventTankRedUpdateCharge extends PersonalEvent
+public class EventTankCharge extends PersonalEvent
 {
 	public int tank;
 	public double charge;
 
-	public EventTankRedUpdateCharge()
+	public EventTankCharge()
 	{
 
 	}
 
-	public EventTankRedUpdateCharge(int tank, double charge)
+	public EventTankCharge(int tank, double charge)
 	{
 		this.tank = tank;
 		this.charge = charge;
@@ -31,10 +31,6 @@ public class EventTankRedUpdateCharge extends PersonalEvent
 
 		if (t == null)
 			return;
-
-		t.colorR = Math.min((200 + charge * 55), 255);
-		t.colorG = charge * 100;
-		t.colorB = charge * 100;
 
         if (Math.random() * Game.effectMultiplier < charge && Game.effectsEnabled)
         {

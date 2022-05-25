@@ -51,12 +51,12 @@ public class ItemMine extends Item
     {
         Mine m = new Mine(t.posX, t.posY, this.timer, t, this);
 
+        this.setOtherItemsCooldown();
         this.cooldown = this.cooldownBase;
         m.timer = this.timer;
         m.triggeredTimer = this.triggeredTimer;
         m.radius = this.radius;
         m.damage = this.damage;
-        m.cooldown = this.cooldownBase;
         m.size = this.size;
         m.destroysObstacles = this.destroysObstacles;
 

@@ -324,10 +324,10 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
 		}
 
-		if (shoot && this.bullet.cooldown <= 0 && !this.disabled)
+		if (shoot && this.getItem(false).cooldown <= 0 && !this.disabled)
 			this.shoot();
 
-		if (mine && this.mine.cooldown <= 0 && !this.disabled)
+		if (mine && this.getItem(true).cooldown <= 0 && !this.disabled)
 			this.layMine();
 
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
@@ -369,6 +369,25 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		}
 
 		super.update();
+	}
+
+	public Item getItem(boolean rightClick)
+	{
+		Item i;
+
+		if (rightClick)
+			i = this.mine;
+		else
+			i = this.bullet;
+
+		if (Game.player.hotbar.enabledItemBar)
+		{
+			Item i2 = Game.player.hotbar.itemBar.getSelectedItem(rightClick);
+			if (i2 != null)
+				i = i2;
+		}
+
+		return i;
 	}
 
 	public void shoot()

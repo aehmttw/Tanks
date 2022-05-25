@@ -9,6 +9,7 @@ import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Drawing
 {
@@ -71,11 +72,20 @@ public class Drawing
 
 	public static ModelPart rotatedRect;
 
+	public HashMap<String, Model> modelsByDir = new HashMap<>();
+
 	public static class LevelRenderer
 	{
 		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer();
 		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
 		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
+
+		public void free()
+		{
+			this.terrainRenderer.free();
+			this.terrainRendererTransparent.free();
+			this.terrainRendererShrubbery.free();
+		}
 	}
 
 	private Drawing()
@@ -1538,6 +1548,12 @@ public class Drawing
 
 	public Model createModel(String dir)
 	{
-		return new Model(Game.game.window, Game.game.fileManager, dir);
+		if (modelsByDir.get(dir) != null)
+			return modelsByDir.get(dir);
+
+		Model m = new Model(Game.game.window, Game.game.fileManager, dir);
+		modelsByDir.put(dir, m);
+
+		return m;
 	}
 }

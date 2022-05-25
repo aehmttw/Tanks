@@ -40,6 +40,7 @@ public class ObstacleBreakable extends Obstacle
             this.stackColorB[i] = 135 * frac2;
         }
 
+        this.shouldShootThrough = true;
         this.description = "A block which breaks---when hit by a bullet";
     }
 

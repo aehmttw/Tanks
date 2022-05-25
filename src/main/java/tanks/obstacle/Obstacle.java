@@ -14,6 +14,11 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public boolean tankCollision = true;
 	public boolean bulletCollision = true;
 
+	/**
+	 * If set to true, AI tanks will treat this block as breakable and shoot at it if there are tanks behind it
+	 */
+	public boolean shouldShootThrough = false;
+
 	public boolean isSurfaceTile = false;
 
 	public boolean enableStacking = true;
@@ -217,56 +222,40 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	}
 
-	public boolean hasLeftNeighbor()
+	public boolean hasNeighbor(int ox, int oy, boolean unbreakable)
 	{
-		int x = (int) (this.posX / Game.tile_size) - 1;
-		int y = (int) (this.posY / Game.tile_size);
+		int x = (int) (this.posX / Game.tile_size) + ox;
+		int y = (int) (this.posY / Game.tile_size) + oy;
 
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 		{
-			return Game.game.solidGrid[x][y];
+			if (unbreakable)
+				return Game.game.unbreakableGrid[x][y];
+			else
+				return Game.game.solidGrid[x][y];
 		}
 
 		return false;
+	}
+
+	public boolean hasLeftNeighbor()
+	{
+		return hasNeighbor(-1, 0, false);
 	}
 
 	public boolean hasRightNeighbor()
 	{
-		int x = (int) (this.posX / Game.tile_size) + 1;
-		int y = (int) (this.posY / Game.tile_size);
-
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		return hasNeighbor(1, 0, false);
 	}
 
 	public boolean hasUpperNeighbor()
 	{
-		int x = (int) (this.posX / Game.tile_size);
-		int y = (int) (this.posY / Game.tile_size) - 1;
-
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		return hasNeighbor(0, -1, false);
 	}
 
 	public boolean hasLowerNeighbor()
 	{
-		int x = (int) (this.posX / Game.tile_size);
-		int y = (int) (this.posY / Game.tile_size) + 1;
-
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		return hasNeighbor(0, 1, false);
 	}
 
 	/**
@@ -337,10 +326,10 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		return this.horizontalFaces;
 	}
 
-	public boolean[] getValidHorizontalFaces()
+	public boolean[] getValidHorizontalFaces(boolean unbreakable)
 	{
-		this.validFaces[0] = !this.hasUpperNeighbor() || this.startHeight > 1;
-		this.validFaces[1] = !this.hasLowerNeighbor() || this.startHeight > 1;
+		this.validFaces[0] = !this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1;
+		this.validFaces[1] = !this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1;
 		return this.validFaces;
 	}
 
@@ -358,10 +347,10 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		return this.verticalFaces;
 	}
 
-	public boolean[] getValidVerticalFaces()
+	public boolean[] getValidVerticalFaces(boolean unbreakable)
 	{
-		this.validFaces[0] = !this.hasLeftNeighbor() || this.startHeight > 1;
-		this.validFaces[1] = !this.hasRightNeighbor() || this.startHeight > 1;
+		this.validFaces[0] = !this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1;
+		this.validFaces[1] = !this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1;
 		return this.validFaces;
 	}
 
@@ -455,8 +444,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 							double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 							double rad = radius - Game.tile_size / 2;
 							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
-							e.addPolarMotion(angle, v + Math.random() * 2);
-							e.vZ = v + Math.random() * 2;
+							e.addPolarMotion(angle, (v + Math.random() * 2) * 1.5);
+							e.vZ = 1.5 * (v + Math.random() * 2);
 
 							Game.effects.add(e);
 						}

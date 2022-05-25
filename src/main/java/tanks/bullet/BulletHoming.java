@@ -1,7 +1,9 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.event.EventBulletUpdateTarget;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Ray;
 import tanks.tank.Tank;
@@ -10,11 +12,13 @@ public class BulletHoming extends Bullet
 {
     public static String bullet_name = "homing";
     public Tank target = null;
+    public Tank prevTarget = null;
     public double targetTime = 0;
 
     public BulletHoming(double x, double y, int bounces, Tank t, ItemBullet item)
     {
         super(x, y, bounces, t, item);
+        this.name = bullet_name;
     }
 
     public void update()
@@ -37,71 +41,82 @@ public class BulletHoming extends Bullet
             }
         }
 
-        if (nearest != null && !this.destroy)
+        double s = this.getSpeed();
+
+        if (!this.isRemote)
         {
-            double a = this.getAngleInDirection(nearest.posX, nearest.posY);
-            Ray r = new Ray(this.posX, this.posY, a, 0, this.tank);
-
-            Tank prevTarget = this.target;
-
-            if (r.getTarget() == nearest)
+            this.target = null;
+            if (nearest != null && !this.destroy)
             {
-                double s = this.getSpeed();
-                this.addPolarMotion(a, Panel.frameFrequency / 5.5);
-                double s2 = this.getSpeed();
-                this.vX *= s / s2;
-                this.vY *= s / s2;
+                double a = this.getAngleInDirection(nearest.posX, nearest.posY);
+                Ray r = new Ray(this.posX, this.posY, a, 0, this.tank);
 
-                this.target = nearest;
-
-                double nX = this.vX / s;
-                double nY = this.vY / s;
-
-                if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finishedQuick)
+                if (r.getTarget() == nearest)
                 {
-                    double d = Movable.distanceBetween(this, Game.playerTank);
+                    this.addPolarMotion(a, Panel.frameFrequency / 5.5);
+                    double s2 = this.getSpeed();
+                    this.vX *= s / s2;
+                    this.vY *= s / s2;
 
-                    if (d <= 500)
-                    {
-                        double dX = (this.posX - Game.playerTank.posX) / d;
-                        double dY = (this.posY - Game.playerTank.posY) / d;
-
-                        double v = 1 + ((nX * dX + nY * dY) * this.speed) / 15.0;
-
-                        Drawing.drawing.playSound("wind.ogg", (float) (0.8 / (float) v + Math.random() * 0.1f - 0.05f), (float) Math.min(1, 100 / d));
-                    }
+                    this.target = nearest;
                 }
-
-                if (Game.bulletTrails && Math.random() < Panel.frameFrequency)
-                {
-                    Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-                    double var = 50;
-                    e.maxAge /= 2;
-
-                    double r1 = 255;
-                    double g1 = 120;
-                    double b1 = 0;
-
-                    e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
-                    e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
-                    e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
-
-                    if (Game.enable3d)
-                        e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-                    else
-                        e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-
-                    Game.effects.add(e);
-                }
-
-                this.targetTime += Panel.frameFrequency;
             }
-            else
-                this.target = null;
 
-            if (prevTarget != this.target)
-                this.targetTime = 0;
+            if (this.target != prevTarget)
+            {
+                Game.eventsOut.add(new EventBulletUpdateTarget(this));
+            }
         }
+
+        if (this.target != null)
+        {
+            double nX = this.vX / s;
+            double nY = this.vY / s;
+
+            if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finishedQuick)
+            {
+                double d = Movable.distanceBetween(this, Game.playerTank);
+
+                if (d <= 500)
+                {
+                    double dX = (this.posX - Game.playerTank.posX) / d;
+                    double dY = (this.posY - Game.playerTank.posY) / d;
+
+                    double v = 1 + ((nX * dX + nY * dY) * this.speed) / 15.0;
+
+                    Drawing.drawing.playSound("wind.ogg", (float) (0.8 / (float) v + Math.random() * 0.1f - 0.05f), (float) Math.min(1, 100 / d));
+                }
+            }
+
+            if (Game.bulletTrails && Math.random() < Panel.frameFrequency)
+            {
+                Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+                double var = 50;
+                e.maxAge /= 2;
+
+                double r1 = 255;
+                double g1 = 120;
+                double b1 = 0;
+
+                e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
+                e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
+                e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
+
+                if (Game.enable3d)
+                    e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+                else
+                    e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+
+                Game.effects.add(e);
+            }
+
+            this.targetTime += Panel.frameFrequency;
+        }
+
+        if (prevTarget != this.target)
+            this.targetTime = 0;
+
+        this.prevTarget = this.target;
 
         super.update();
     }

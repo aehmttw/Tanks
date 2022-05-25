@@ -37,63 +37,10 @@ public class TankOrangeRed extends TankAIControlled
         this.enableDefensiveFiring = true;
         this.resistExplosions = true;
         this.enableMineAvoidance = false;
+        this.explodeOnDestroy = true;
 
         this.coinValue = 4;
 
         this.description = "A tank which shoots explosive bullets";
-    }
-
-    public void shoot()
-    {
-        this.aimTimer = 10;
-        this.aim = false;
-
-        if (this.cooldown <= 0 && this.bullet.liveBullets < this.bullet.maxLiveBullets && !this.disabled && !this.destroy)
-        {
-            double an = this.angle;
-
-            if (this.targetEnemy != null && this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
-                an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
-
-            Ray a2 = new Ray(this.posX, this.posY, an, this.bullet.bounces, this);
-            a2.size = this.bullet.size;
-            a2.getTarget();
-            a2.ignoreDestructible = this.ignoreDestructible;
-
-            double dist = a2.age;
-            // Cancels if the bullet will hit another enemy
-            double offset = (this.random.nextDouble() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((dist / 100.0), 2);
-
-            if (this.disableOffset)
-            {
-                offset = 0;
-                this.disableOffset = false;
-            }
-
-            Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.bullet.bounces, this, 2.5);
-            a.size = this.bullet.size;
-            a.moveOut(this.size / 2.5);
-
-            Movable m = a.getTarget();
-
-            // Checks if the target is an enemy.
-            if (!Team.isAllied(this, m))
-            {
-                for (Movable m2: Game.movables)
-                {
-                    if (Team.isAllied(m2, this) && m2 instanceof Tank && !((Tank) m2).resistExplosions && this.team.friendlyFire && Math.pow(m2.posX - a.posX, 2) + Math.pow(m2.posY - a.posY, 2) <= Math.pow(Mine.mine_size, 2))
-                        return;
-                }
-
-                this.bullet.attemptUse(this);
-            }
-        }
-    }
-
-    @Override
-    public void onDestroy()
-    {
-        Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, 2, true, this);
-        e.explode();
     }
 }

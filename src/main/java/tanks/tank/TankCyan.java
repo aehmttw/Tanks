@@ -34,6 +34,7 @@ public class TankCyan extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
 
+		//TODO: attribute immunities
 		this.attributeImmunities.addAll(Arrays.asList("ice_slip", "ice_accel", "ice_max_speed", "freeze"));
 		
 		this.coinValue = 4;

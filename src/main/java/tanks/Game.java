@@ -46,8 +46,11 @@ public class Game
 	public static ArrayList<Face> verticalFaces = new ArrayList<>();
 
 	public boolean[][] solidGrid;
+	public boolean[][] unbreakableGrid;
 	public double[][] heightGrid;
 	public double[][] groundHeightGrid;
+
+	public double[][] lastHeightGrid;
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
@@ -92,8 +95,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.b";
-	public static final int network_protocol = 41;
+	public static final String version = "Tanks v1.4.c";
+	public static final int network_protocol = 42;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -130,6 +133,8 @@ public class Game
 
 	public static boolean enableChatFilter = true;
 	public static boolean showSpeedrunTimer = false;
+
+	public static boolean previewCrusades = true;
 
 	public static boolean deterministicMode = false;
 	public static int seed = 0;
@@ -294,6 +299,7 @@ public class Game
 		NetworkEventMap.register(EventBulletInstantWaypoint.class);
 		NetworkEventMap.register(EventBulletAddAttributeModifier.class);
 		NetworkEventMap.register(EventBulletElectricStunEffect.class);
+		NetworkEventMap.register(EventBulletUpdateTarget.class);
 		NetworkEventMap.register(EventLayMine.class);
 		NetworkEventMap.register(EventMineExplode.class);
 		NetworkEventMap.register(EventMineChangeTimer.class);
@@ -301,8 +307,8 @@ public class Game
 		NetworkEventMap.register(EventTankTeleport.class);
 		NetworkEventMap.register(EventTankUpdateVisibility.class);
 		NetworkEventMap.register(EventTankUpdateColor.class);
-		NetworkEventMap.register(EventTankRedUpdateCharge.class);
-		NetworkEventMap.register(EventTankLightPinkAngry.class);
+		NetworkEventMap.register(EventTankTransform.class);
+		NetworkEventMap.register(EventTankCharge.class);
 		NetworkEventMap.register(EventTankMimicTransform.class);
 		NetworkEventMap.register(EventTankMimicLaser.class);
 		NetworkEventMap.register(EventTankAddAttributeModifier.class);

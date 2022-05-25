@@ -391,6 +391,16 @@ public class ScreenChangelog extends Screen
                                     "Tanks now avoid explosive blocks\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.c", new String[]
+                    {
+                            "*What's new in Tanks v1.4.c:\n\n" +
+                                    "Tanks will now see through destructible blocks\n" +
+                                    "Updated 3D explosion particle effect\n" +
+                                    "Added option to disable crusade levels background\n" +
+                                    "Changed castle crusade level 'Castle artillery'\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

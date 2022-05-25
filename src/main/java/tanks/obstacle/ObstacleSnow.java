@@ -185,7 +185,7 @@ public class ObstacleSnow extends Obstacle
 
     public double getTileHeight()
     {
-        double shrubScale = 0.5;
+        double shrubScale = 0.25;
         if (Game.screen instanceof ScreenGame)
             shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 

@@ -66,7 +66,7 @@ public class BulletAir extends Bullet
         double mul = 10.0;
 
         if (o instanceof Bullet)
-            mul = 200 / Math.pow(((Bullet) o).size, 2);
+            mul = 400 / Math.pow(((Bullet) o).size, 2);
         else
             mul *= Game.tile_size * Game.tile_size / Math.pow(((Tank) o).size, 2);
 

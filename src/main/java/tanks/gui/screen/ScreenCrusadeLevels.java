@@ -39,8 +39,20 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
 
     protected int index = 0;
 
+    protected static ScreenCrusadeLevels currentScreen;
+
     public ScreenCrusadeLevels(Crusade c)
     {
+        if (currentScreen != null)
+        {
+            for (ScreenLevel l: currentScreen.levels)
+            {
+                l.renderer.free();
+            }
+        }
+
+        currentScreen = this;
+
         ArrayList<Movable> movables = Game.movables;
         ArrayList<Obstacle> obstacles = Game.obstacles;
 

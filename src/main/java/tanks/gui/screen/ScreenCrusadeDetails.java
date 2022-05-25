@@ -103,7 +103,9 @@ public class ScreenCrusadeDetails extends Screen
 
         this.music = "menu_5.ogg";
         this.musicID = "menu";
-        this.forceInBounds = true;
+
+        if (Game.previewCrusades)
+            this.forceInBounds = true;
 
         if (c.levels.size() <= 0)
         {
@@ -137,8 +139,10 @@ public class ScreenCrusadeDetails extends Screen
     @Override
     public void draw()
     {
-        this.crusade.background.draw();
-        //this.drawDefaultBackground();
+        if (Game.previewCrusades)
+            this.crusade.background.draw();
+        else
+            this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7, this.objYSpace * 9);

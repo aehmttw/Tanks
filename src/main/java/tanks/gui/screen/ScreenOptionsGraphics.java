@@ -9,6 +9,7 @@ public class ScreenOptionsGraphics extends Screen
     public static final String terrainText = "Terrain: ";
     public static final String trailsText = "Bullet trails: ";
     public static final String glowText = "Glow effects: ";
+    public static final String previewCrusadesText = "Crusade preview: ";
 
     public static final String graphics3dText = "3D graphics: ";
     public static final String ground3dText = "3D ground: ";
@@ -126,6 +127,11 @@ public class ScreenOptionsGraphics extends Screen
             effects.setText("Particle effects: %s", (Object)("\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
         else
             effects.setText("Particle effects: ", ScreenOptions.onText);
+
+        if (Game.previewCrusades)
+            previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
+        else
+            previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
     }
 
     protected void update3dGroundButton()
@@ -320,7 +326,22 @@ public class ScreenOptionsGraphics extends Screen
     },
             "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
-    Button window = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
+    Button previewCrusades = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.previewCrusades = !Game.previewCrusades;
+
+            if (Game.previewCrusades)
+                previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
+            else
+                previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
+        }
+    },
+            "When enabled, the crusade preview and---summary screens show all the levels---in that crusade scroll by.");
+
+    Button window = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
@@ -339,6 +360,7 @@ public class ScreenOptionsGraphics extends Screen
         glow.update();
         effects.update();
         maxFPS.update();
+        previewCrusades.update();
 
         graphics3d.update();
         ground3d.update();
@@ -380,6 +402,7 @@ public class ScreenOptionsGraphics extends Screen
         ground3d.draw();
         graphics3d.draw();
 
+        previewCrusades.draw();
         maxFPS.draw();
         effects.draw();
         glow.draw();

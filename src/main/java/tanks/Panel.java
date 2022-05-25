@@ -504,12 +504,15 @@ public class Panel
 
 				Panel.lastAutoZoomSpeed = speed;
 
-				speed *= Math.signum(Panel.zoomTarget - this.zoomTimer);
-
-				if (Math.abs(Panel.zoomTarget - this.zoomTimer) < 0.01)
-					speed = 0;
-
-				this.zoomTimer = this.zoomTimer + speed * Panel.frameFrequency;
+				if (Math.abs(Panel.zoomTarget - this.zoomTimer) < speed)
+				{
+					this.zoomTimer = Panel.zoomTarget;
+				}
+				else
+				{
+					speed *= Math.signum(Panel.zoomTarget - this.zoomTimer);
+					this.zoomTimer = this.zoomTimer + speed * Panel.frameFrequency;
+				}
 			}
 			else
 			{

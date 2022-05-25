@@ -192,7 +192,7 @@ public class ObstacleShrubbery extends Obstacle
 		if (Obstacle.draw_size < Game.tile_size)
 			return 0;
 
-		double shrubScale = 0.5;
+		double shrubScale = 0.25;
 		if (Game.screen instanceof ScreenGame)
 			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 

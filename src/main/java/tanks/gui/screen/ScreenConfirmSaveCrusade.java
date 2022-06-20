@@ -2,12 +2,14 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenConfirmSaveCrusade extends Screen
 {
     public ScreenCrusadeEditor screenCrusadeEditor;
     public Screen previous;
+    public double opacity = 100;
 
     Button saveExit = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Save and exit", () ->
     {
@@ -53,6 +55,10 @@ public class ScreenConfirmSaveCrusade extends Screen
     {
         this.drawDefaultBackground();
 
+        Drawing.drawing.setColor(255, 127, 0, this.opacity);
+        this.opacity = Math.max(0, this.opacity - Panel.frameFrequency * 2);
+        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Save before exiting?");
@@ -65,6 +71,7 @@ public class ScreenConfirmSaveCrusade extends Screen
     @Override
     public void onAttemptClose()
     {
-
+        Drawing.drawing.playSound("timer.ogg");
+        opacity = 100;
     }
 }

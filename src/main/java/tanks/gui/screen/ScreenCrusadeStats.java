@@ -561,12 +561,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        this.nextPage.image = "vertical_arrow.png";
+        this.nextPage.image = "icons/arrow_down.png";
         this.nextPage.imageSizeX = 15;
-        this.nextPage.imageSizeY = -15;
+        this.nextPage.imageSizeY = 15;
         this.nextPage.imageXOffset = -225;
 
-        this.previousPage.image = "vertical_arrow.png";
+        this.previousPage.image = "icons/arrow_up.png";
         this.previousPage.imageSizeX = 15;
         this.previousPage.imageSizeY = 15;
         this.previousPage.imageXOffset = -225;

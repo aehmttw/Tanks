@@ -111,7 +111,7 @@ public class Bullet extends Movable implements IDrawable
 		this.baseColorG = t.colorG;
 		this.baseColorB = t.colorB;
 
-		double[] oc = Team.getObjectColor(t.turret.colorR, t.turret.colorG, t.turret.colorB, t);
+		double[] oc = Team.getObjectColor(t.secondaryColorR, t.secondaryColorG, t.secondaryColorB, t);
 		this.outlineColorR = oc[0];
 		this.outlineColorG = oc[1];
 		this.outlineColorB = oc[2];
@@ -121,7 +121,7 @@ public class Bullet extends Movable implements IDrawable
 		this.team = t.team;
 		this.name = bullet_name;
 
-		this.iPosZ = this.tank.size / 2 + this.tank.turret.size / 2;
+		this.iPosZ = this.tank.size / 2 + this.tank.turretSize / 2;
 
 		this.isRemote = t.isRemote;
 

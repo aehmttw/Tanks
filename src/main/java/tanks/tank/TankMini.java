@@ -31,7 +31,6 @@ public class TankMini extends TankAIControlled
 		this.health = 0.25;
 		this.baseHealth = 0.25;
 		this.avoidSensitivity = 0.5;
-		this.turret.length /= 2;
 		this.stayNearParent = true;
 
 		this.description = "A small, primitive tank which---shoots tiny, low damage bullets";

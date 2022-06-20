@@ -28,9 +28,9 @@ public class EventTankUpdateColor extends PersonalEvent
         green = t.colorG;
         blue = t.colorB;
 
-        red2 = t.turret.colorR;
-        green2 = t.turret.colorG;
-        blue2 = t.turret.colorB;
+        red2 = t.secondaryColorR;
+        green2 = t.secondaryColorG;
+        blue2 = t.secondaryColorB;
     }
 
     @Override
@@ -45,9 +45,9 @@ public class EventTankUpdateColor extends PersonalEvent
         t.colorG = green;
         t.colorB = blue;
 
-        t.turret.colorR = red2;
-        t.turret.colorG = green2;
-        t.turret.colorB = blue2;
+        t.secondaryColorR = red2;
+        t.secondaryColorG = green2;
+        t.secondaryColorB = blue2;
     }
 
     @Override

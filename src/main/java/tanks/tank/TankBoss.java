@@ -33,7 +33,6 @@ public class TankBoss extends TankAIControlled
 		this.bullet.name = "Mega bullet";
 		this.health = 5;
 		this.baseHealth = 5;
-		this.turret.length *= 3;
 		this.coinValue = 25;
 		this.spawnsTanks = true;
 

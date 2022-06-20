@@ -6,8 +6,12 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenSelector;
 
+import java.util.Arrays;
+
 public class ImageSelector extends Selector
 {
+    public boolean drawImages = false;
+
     public ImageSelector(double x, double y, double sX, double sY, String text, String[] o, Runnable f)
     {
         super(x, y, sX, sY, text, o, f);
@@ -39,8 +43,6 @@ public class ImageSelector extends Selector
     @Override
     public void draw()
     {
-        //super.draw();
-
         Drawing drawing = Drawing.drawing;
 
         drawing.setInterfaceFontSize(this.sizeY * 0.6);
@@ -96,7 +98,7 @@ public class ImageSelector extends Selector
 
         drawing.setColor(0, 0, 0);
 
-        drawing.drawInterfaceText(posX, posY - sizeY * 3 / 8, translatedText);
+        drawing.drawInterfaceText(posX + sizeY * (3.0 / 4 + m) / 2, posY - sizeY * 3 / 8, translatedText);
 
         if (enableHover)
         {
@@ -129,14 +131,17 @@ public class ImageSelector extends Selector
             }
         }
 
-        if (images != null)
+        if (drawImages || images != null && options[selectedOption] != null)
         {
             Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.drawInterfaceImage(images[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, sizeY * (3.0 / 4 + m), sizeY * (3.0 / 4 + m));
+            Drawing.drawing.drawInterfaceImage(options[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, posY - sizeY * 3 / 8, sizeY * (3.0 / 4 + m), sizeY * (3.0 / 4 + m));
         }
 
-        Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceImage(options[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, posY - sizeY * 3 / 8, sizeY * (3.0 / 4 + m), sizeY * (3.0 / 4 + m));
+        if (models != null)
+        {
+            Drawing.drawing.setColor(127, 180, 255);
+            Drawing.drawing.drawInterfaceModel(models[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, this.posY - sizeY * 3 / 8, sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2, 0);
+        }
     }
 
     @Override
@@ -149,7 +154,14 @@ public class ImageSelector extends Selector
     public void setScreen()
     {
         ScreenSelector s = new ScreenSelector(this, Game.screen);
-        s.drawImages = true;
+        s.images = this.images;
+        s.models = this.models;
+
+        if (this.images != null || this.drawImages)
+            s.drawImages = true;
+
+        if (this.models != null)
+            s.drawModels = true;
 
         s.buttonList.objHeight *= 2;
         s.buttonList.objWidth = s.buttonList.objHeight;

@@ -27,7 +27,7 @@ public class TankMaroon extends TankAIControlled
 		this.bullet.name = "Mega bullet";
 		this.enableLookingAtTargetEnemy = true;
 		this.motionChangeChance = 0.001;
-		this.turret.size *= 1.5;
+		this.turretSize *= 1.5;
 		this.enablePathfinding = true;
 		this.stopSeekingOnSight = true;
 		

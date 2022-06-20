@@ -11,17 +11,6 @@ import static tanks.tank.TankProperty.Category.appearanceModel;
 
 public class Turret extends Movable
 {
-	@TankProperty(category = appearanceModel, name = "Turret thickness")
-	public double size = 8;
-	@TankProperty(category = appearanceModel, name = "Turret length")
-	public double length = Game.tile_size;
-	@TankProperty(category = appearanceColor, name = "Secondary red")
-	public double colorR;
-	@TankProperty(category = appearanceColor, name = "Secondary green")
-	public double colorG;
-	@TankProperty(category = appearanceColor, name = "Secondary blue")
-	public double colorB;
-
 	Tank tank;
 
 	public static Model base_model;
@@ -31,9 +20,9 @@ public class Turret extends Movable
 	{
 		super(t.posX, t.posY);
 		this.tank = t;
-		this.colorR = calculateSecondaryColor(this.tank.colorR);
-		this.colorG = calculateSecondaryColor(this.tank.colorG);
-	    this.colorB = calculateSecondaryColor(this.tank.colorB);
+		this.tank.secondaryColorR = calculateSecondaryColor(this.tank.colorR);
+		this.tank.secondaryColorG = calculateSecondaryColor(this.tank.colorG);
+		this.tank.secondaryColorB = calculateSecondaryColor(this.tank.colorB);
 	}
 
 	public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
@@ -57,36 +46,43 @@ public class Turret extends Movable
 		this.posY = tank.posY;
 		this.posZ = tank.posZ;
 
-		double s = (this.tank.size * (Game.tile_size - this.tank.destroyTimer) / Game.tile_size) * Math.min(this.tank.drawAge / Game.tile_size, 1);
-
-		double l = length * (Game.tile_size - this.tank.destroyTimer) / Game.tile_size - Math.max(Game.tile_size - tank.drawAge, 0) / Game.tile_size * length;
+		double frac = (Game.tile_size - this.tank.destroyTimer  - Math.max(Game.tile_size - tank.drawAge, 0)) / Game.tile_size;
+		double size = this.tank.size;
+		double rawLength = this.tank.turretLength;
 
 		if (forInterface)
-			l = Math.min(length, Game.tile_size * 1.5);
+		{
+			frac = 1;
+			size = Math.min(this.tank.size, Game.tile_size * 1.5);
+		}
+
+		double baseSize = size * frac;
+		double length = size / Game.tile_size * frac * rawLength;
+		double thickness = this.tank.turretSize * size * frac / 8;
 
 		if (transparent)
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127, glow);
+			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 127, glow);
 		else
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, glow);
+			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, glow);
 
 		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, rotation);
+			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, length, thickness, rotation);
 		else if (!in3d)
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, l, l * size / 8, rotation);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, length, thickness, rotation);
 		else
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, this.posZ + (s * 1.3) / 2, l, l * size / 8, l * size / 8, rotation, vAngle, 0);
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, this.posZ + (baseSize * 1.3) / 2, length, thickness, thickness, rotation, vAngle, 0);
 
 		if (transparent)
-			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 127, glow);
+			Drawing.drawing.setColor((this.tank.secondaryColorR + this.tank.colorR) / 2, (this.tank.secondaryColorG + this.tank.colorG) / 2, (this.tank.secondaryColorB + this.tank.colorB) / 2, 127, glow);
 		else
-			Drawing.drawing.setColor((this.colorR + this.tank.colorR) / 2, (this.colorG + this.tank.colorG) / 2, (this.colorB + this.tank.colorB) / 2, 255, glow);
+			Drawing.drawing.setColor((this.tank.secondaryColorR + this.tank.colorR) / 2, (this.tank.secondaryColorG + this.tank.colorG) / 2, (this.tank.secondaryColorB + this.tank.colorB) / 2, 255, glow);
 
 		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, rotation);
+			Drawing.drawing.drawInterfaceModel(this.tank.turretBaseModel, this.posX, this.posY, baseSize, baseSize, rotation);
 		else if (!in3d)
-			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, l, l, rotation);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, baseSize, baseSize, rotation);
 		else
-			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, this.posZ + s / 2, l, l, l, rotation);
+			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, this.posZ + baseSize / 2, baseSize, baseSize, baseSize, rotation);
 	}
 	
 	@Override

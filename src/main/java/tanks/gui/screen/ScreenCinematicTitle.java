@@ -24,7 +24,6 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
     {
         this.logo = new TankDummyLoadingScreen(-200, Drawing.drawing.sizeY / 2);
         this.logo.size *= 2;
-        this.logo.turret.length *= 2 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
         this.logo.invulnerable = true;
         this.logo.drawAge = 50;
         this.logo.depthTest = false;

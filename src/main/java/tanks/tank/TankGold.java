@@ -3,10 +3,6 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletBoost;
-import tanks.bullet.BulletHealing;
-import tanks.event.EventLayMine;
-import tanks.event.EventShootBullet;
-import tanks.event.EventTankUpdateColor;
 
 /**
  * A tank which speeds up its allies and becomes explosive as a last stand
@@ -34,7 +30,7 @@ public class TankGold extends TankAIControlled
 		this.bullet.name = "Booster bullet";
 		this.dealsDamage = false;
 		this.commitsSuicide = true;
-		this.targetEnemySightBehavior = TargetEnemySightBehavior.keepDistance;
+		this.targetEnemySightBehavior = TargetEnemySightBehavior.keep_distance;
 		this.mine.radius *= 1.5;
 
 		this.coinValue = 4;

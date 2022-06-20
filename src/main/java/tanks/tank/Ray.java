@@ -369,7 +369,7 @@ public class Ray
 						this.traceAge++;
 
 						double frac = 1 / (1 + this.traceAge / 100.0);
-						double z = this.tank.size / 2 + this.tank.turret.size / 2 * frac + (Game.tile_size / 4) * (1 - frac);
+						double z = this.tank.size / 2 + this.tank.turretSize / 2 * frac + (Game.tile_size / 4) * (1 - frac);
 						if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
 							Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
 					}

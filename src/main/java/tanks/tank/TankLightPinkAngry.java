@@ -9,9 +9,9 @@ public class TankLightPinkAngry extends TankAIControlled
     {
         super(name, x, y, Game.tile_size, 255, 150, 255, angle, ShootAI.straight);
 
-        this.turret.colorR = Turret.calculateSecondaryColor(255);
-        this.turret.colorG = Turret.calculateSecondaryColor(211);
-        this.turret.colorB = Turret.calculateSecondaryColor(255);
+        this.secondaryColorR = Turret.calculateSecondaryColor(255);
+        this.secondaryColorG = Turret.calculateSecondaryColor(211);
+        this.secondaryColorB = Turret.calculateSecondaryColor(255);
 
         this.aimTurretSpeed = 0.06;
         this.seekChance = 1;

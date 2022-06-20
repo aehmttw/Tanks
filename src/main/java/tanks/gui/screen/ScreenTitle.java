@@ -95,7 +95,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		this.music = "menu_1.ogg";
 		this.musicID = "menu";
 
-		languages.image = "language.png";
+		languages.image = "icons/language.png";
 
 		languages.imageSizeX = this.objHeight;
 		languages.imageSizeY = this.objHeight;
@@ -164,7 +164,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			takeControl.posX = logo.posX;
 			takeControl.posY = logo.posY;
 			this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-			this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
 			this.logo.invulnerable = true;
 			this.logo.drawAge = 50;
 			this.logo.depthTest = false;

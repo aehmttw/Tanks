@@ -15,8 +15,10 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
     {
         public ArrayList<Movable> movables = new ArrayList<>();
         public ArrayList<Obstacle> obstacles = new ArrayList<>();
+        public String levelString;
         public Level level;
         public Drawing.LevelRenderer renderer = new Drawing.LevelRenderer();
+        public boolean isTransition = false;
 
         public int startIndex;
         public int endIndex;
@@ -33,11 +35,20 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
     protected ArrayList<ScreenLevel> levels = new ArrayList<>();
     protected HashMap<Integer, ScreenLevel> levelsPos = new HashMap<>();
     protected ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
-    protected double age = 0;
+    protected double age = 360;
     protected boolean initialized = false;
     protected Crusade crusade;
 
+    protected boolean allLoaded = false;
     protected int index = 0;
+    protected int levelsLoaded = 0;
+
+    public double lastR = Level.currentColorR;
+    public double lastG = Level.currentColorG;
+    public double lastB = Level.currentColorB;
+    public double lastDR = Level.currentColorVarR;
+    public double lastDG = Level.currentColorVarG;
+    public double lastDB = Level.currentColorVarB;
 
     protected static ScreenCrusadeLevels currentScreen;
 
@@ -53,16 +64,11 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         currentScreen = this;
 
-        ArrayList<Movable> movables = Game.movables;
-        ArrayList<Obstacle> obstacles = Game.obstacles;
-
         for (int i = 0; i < drawables.length; i++)
         {
             drawables[i] = new ArrayList<>();
         }
 
-        Game.movables = movables;
-        Game.obstacles = obstacles;
         this.crusade = c;
         this.selfBatch = false;
         this.forceInBounds = true;
@@ -71,17 +77,26 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
 
     public void initialize(ScreenLevel l)
     {
+        ArrayList<Movable> movables = Game.movables;
+        ArrayList<Obstacle> obstacles = Game.obstacles;
+
+        Game.cleanUp();
+
+        l.level = new Level(l.levelString);
+
+        if (!l.isTransition)
+            addTransitionLevels(l);
+
+        Game.movables = l.movables;
+        Game.obstacles = l.obstacles;
+
         l.level.loadLevel(this);
+
         l.startIndex = index;
         index += l.level.sizeY;
         l.width = l.level.sizeX;
         l.endIndex = index;
-        this.levels.add(l);
         this.levelsPos.put(index - 1, l);
-
-        Drawing.drawing.setRenderer(l.renderer);
-        Game.movables = l.movables;
-        Game.obstacles = l.obstacles;
 
         Drawing.drawing.setRenderer(l.renderer);
 
@@ -111,7 +126,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         this.drawDefaultBackground();
 
-        if (Game.enable3d && (Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size) && Game.game.window.shapeRenderer.supportsBatching)
+        if (Game.enable3d && Game.game.window.shapeRenderer.supportsBatching)
         {
             for (int i = 0; i < drawables.length; i++)
             {
@@ -124,6 +139,11 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
         }
 
         Drawing.drawing.stageRenderers();
+
+        Game.movables = movables;
+        Game.obstacles = obstacles;
+
+        Game.cleanUp();
     }
 
     @Override
@@ -140,25 +160,39 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
         {
             ScreenLevel l2 = new ScreenLevel();
             double frac = i * 1.0 / fade;
-            int r = (int) (Level.currentColorR * (1 - frac) + l.level.colorR * frac);
-            int g = (int) (Level.currentColorG * (1 - frac) + l.level.colorG * frac);
-            int b = (int) (Level.currentColorB * (1 - frac) + l.level.colorB * frac);
-            int dr = (int) (Level.currentColorVarR * (1 - frac) + l.level.colorVarR * frac);
-            int dg = (int) (Level.currentColorVarG * (1 - frac) + l.level.colorVarG * frac);
-            int db = (int) (Level.currentColorVarB * (1 - frac) + l.level.colorVarB * frac);
-            l2.level = new Level("{28,1," + r + "," + g + "," + b + "," + dr + "," + dg + "," + db + "||10000-0-player}");
+            int r = (int) (this.lastR * (1 - frac) + l.level.colorR * frac);
+            int g = (int) (this.lastG * (1 - frac) + l.level.colorG * frac);
+            int b = (int) (this.lastB * (1 - frac) + l.level.colorB * frac);
+            int dr = (int) (this.lastDR * (1 - frac) + l.level.colorVarR * frac);
+            int dg = (int) (this.lastDG * (1 - frac) + l.level.colorVarG * frac);
+            int db = (int) (this.lastDB * (1 - frac) + l.level.colorVarB * frac);
+            l2.levelString = "{28,1," + r + "," + g + "," + b + "," + dr + "," + dg + "," + db + "||10000-0-player}";
             Game.movables = l2.movables;
             Game.obstacles = l2.obstacles;
-            this.initialize(l2);
+            l2.isTransition = true;
+            initialize(l2);
         }
+
+        this.lastR = l.level.colorR;
+        this.lastG = l.level.colorG;
+        this.lastB = l.level.colorB;
+        this.lastDR = l.level.colorVarR;
+        this.lastDG = l.level.colorVarG;
+        this.lastDB = l.level.colorVarB;
+    }
+
+    public double getLevelPos(double i)
+    {
+        if (allLoaded)
+            return (i + index * 10) % index;
+        else
+            return i;
     }
 
     public void draw()
     {
         Transformation prevShadow = Game.game.window.lightBaseTransformation[0];
         Game.game.window.lightBaseTransformation[0] = this.shadowScale;
-
-        //Game.game.window.transformations.add(this.translation);
 
         if (Game.enable3d)
         {
@@ -175,29 +209,23 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         if (!initialized)
         {
+            ScreenLevel l0 = new ScreenLevel();
+            this.levels.add(l0);
+            l0.levelString = "{28,18||10000-0-player}";
+
             for (String s: this.crusade.levels)
             {
                 ScreenLevel l = new ScreenLevel();
-                l.level = new Level(s);
-
-                this.addTransitionLevels(l);
-
-                Game.movables = l.movables;
-                Game.obstacles = l.obstacles;
-
-                this.initialize(l);
+                this.levels.add(l);
+                l.levelString = s;
             }
 
             ScreenLevel l = new ScreenLevel();
-            l.level = new Level("{28,36||10000-0-player}");
-
-            this.addTransitionLevels(l);
-            this.initialize(l);
-
-            Game.cleanUp();
+            this.levels.add(l);
+            l.levelString = "{28,18||10000-0-player}";
         }
 
-        double indexStart = (this.age / 10) % this.index;
+        double indexStart = getLevelPos(this.age / 10);
         int iindexStart = (int) indexStart;
         double rem = indexStart - iindexStart;
 
@@ -205,9 +233,9 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         for (int i = -28; i <= 28 * 2; i++)
         {
-            if (i == 28 * 2 || this.levelsPos.get((i + iindexStart + index * 10) % index) != null)
+            if (i == 28 * 2 || this.levelsPos.get((int) getLevelPos(i + iindexStart)) != null)
             {
-                int j = (i + iindexStart + index * 10) % index;
+                int j = (int) getLevelPos(i + iindexStart);
                 ScreenLevel l;
                 while (true)
                 {
@@ -220,7 +248,21 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
                     j++;
                     i++;
 
-                    j = (j + index * 10) % index;
+                    j = (int) getLevelPos(j);
+
+                    if (!allLoaded && j > this.index)
+                    {
+                        ScreenLevel n = this.levels.get(this.levelsLoaded);
+
+                        Game.movables = movables;
+                        Game.obstacles = obstacles;
+
+                        initialize(n);
+                        this.levelsLoaded++;
+
+                        if (levels.indexOf(n) == levels.size() - 1)
+                            allLoaded = true;
+                    }
                 }
 
                 if (l == null)

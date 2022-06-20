@@ -76,9 +76,9 @@ public class ItemMine extends Item
     }
 
     @Override
-    public String toString()
+    public String convertToString()
     {
-        return super.toString() + "," + item_name + "," + timer + "," + triggeredTimer + "," + radius + "," + damage + "," + maxLiveMines + "," + cooldownBase + "," + size + "," + destroysObstacles;
+        return super.convertToString() + "," + item_name + "," + timer + "," + triggeredTimer + "," + radius + "," + damage + "," + maxLiveMines + "," + cooldownBase + "," + size + "," + destroysObstacles;
     }
 
     @Override

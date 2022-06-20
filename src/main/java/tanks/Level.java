@@ -10,6 +10,7 @@ import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Random;
 
 public class Level 
@@ -77,6 +78,7 @@ public class Level
 	public int startingCoins;
 	public ArrayList<Item> shop = new ArrayList<>();
 	public ArrayList<Item> startingItems = new ArrayList<>();
+	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
 
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
@@ -113,6 +115,9 @@ public class Level
 				case "coins":
 					parsing = 3;
 					break;
+				case "tanks":
+					parsing = 4;
+					break;
 				default:
 					if (parsing == 0)
 					{
@@ -132,6 +137,11 @@ public class Level
 							editable = false;
 							screen[0] = screen[0].substring(1);
 						}
+					}
+					else if (parsing == 4)
+					{
+						TankAIControlled t = TankAIControlled.fromString(s);
+						this.customTanks.add(t);
 					}
 					else if (!ScreenPartyLobby.isClient)
 					{
@@ -205,6 +215,12 @@ public class Level
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
+
+		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap();
+		for (TankAIControlled t: this.customTanks)
+		{
+			customTanksMap.put(t.name, t);
+		}
 
 		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<>();
 
@@ -443,7 +459,11 @@ public class Level
 				}
 				else
 				{
-					t = Game.registryTank.getEntry(type).getTank(x, y, angle);
+					if (customTanksMap.get(type) != null)
+						t = customTanksMap.get(type).instantiate(type, x, y, angle);
+					else
+						t = Game.registryTank.getEntry(type).getTank(x, y, angle);
+
 					t.crusadeID = currentCrusadeID;
 					currentCrusadeID++;
 

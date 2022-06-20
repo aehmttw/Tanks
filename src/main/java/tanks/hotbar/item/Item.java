@@ -79,6 +79,9 @@ public abstract class Item implements IGameObject
 	 * <br>if (type == bullet):-class-effect-speed-bounces-damage-max_on_screen-cooldown-size*/
 	public static Item parseItem(Player pl, String s)
 	{
+		if (s.contains("[") && s.contains("]"))
+			s = s.substring(s.indexOf("[") + 1, s.indexOf("]"));
+
 		String[] p = s.split(",");
 
 		String name = p[0];
@@ -109,11 +112,16 @@ public abstract class Item implements IGameObject
 		
 		return i;
 	}
-	
+
+	public String convertToString()
+	{
+		return name + "," + icon + "," + price + "," + levelUnlock + "," + stackSize + "," + maxStackSize;
+	}
+
 	@Override
 	public String toString()
 	{
-		return name + "," + icon + "," + price + "," + levelUnlock + "," + stackSize + "," + maxStackSize;
+		return "[" + convertToString() + "]";
 	}
 
 	public void attemptUse()
@@ -227,7 +235,9 @@ public abstract class Item implements IGameObject
 
 	public Item clone()
 	{
-		return Item.parseItem(this.player, this.toString());
+		Item i = Item.parseItem(this.player, this.toString());
+		i.unlimitedStack = this.unlimitedStack;
+		return i;
 	}
 
 	public void setOtherItemsCooldown()

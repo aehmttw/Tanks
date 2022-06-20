@@ -68,9 +68,9 @@ public class ItemShield extends Item
     }
 
     @Override
-    public String toString()
+    public String convertToString()
     {
-        return super.toString() + "," + item_name + "," + amount + "," + max + "," + cooldownBase;
+        return super.convertToString() + "," + item_name + "," + amount + "," + max + "," + cooldownBase;
     }
 
     @Override

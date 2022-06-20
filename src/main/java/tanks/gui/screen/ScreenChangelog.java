@@ -21,13 +21,13 @@ public class ScreenChangelog extends Screen
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        this.next.image = "play.png";
+        this.next.image = "icons/forward.png";
         this.next.imageSizeX = 25;
         this.next.imageSizeY = 25;
         this.next.imageXOffset = 145;
 
-        this.previous.image = "play.png";
-        this.previous.imageSizeX = -25;
+        this.previous.image = "icons/back.png";
+        this.previous.imageSizeX = 25;
         this.previous.imageSizeY = 25;
         this.previous.imageXOffset = -145;
     }

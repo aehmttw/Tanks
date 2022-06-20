@@ -119,13 +119,13 @@ public class EventCreatePlayer extends PersonalEvent
 		t.colorG = this.colorG;
 		t.colorB = this.colorB;
 
-		t.turret.colorR = this.colorR2;
+		t.secondaryColorR = this.colorR2;
 		t.nameTag.colorR = this.colorR2;
 
-		t.turret.colorG = this.colorG2;
+		t.secondaryColorG = this.colorG2;
 		t.nameTag.colorG = this.colorG2;
 
-		t.turret.colorB = this.colorB2;
+		t.secondaryColorB = this.colorB2;
 		t.nameTag.colorB = this.colorB2;
 
 		Game.movables.add(t);

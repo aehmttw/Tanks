@@ -83,9 +83,9 @@ public class TankNPC extends TankDummy
         this.colorR = r;
         this.colorG = g;
         this.colorB = b;
-        this.turret.colorR = Turret.calculateSecondaryColor(this.colorR);
-        this.turret.colorG = Turret.calculateSecondaryColor(this.colorG);
-        this.turret.colorB = Turret.calculateSecondaryColor(this.colorB);
+        this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
+        this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
+        this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
 
         this.invulnerable = true;
         this.needsToKill = false;
@@ -93,9 +93,9 @@ public class TankNPC extends TankDummy
         icon.colorR = r;
         icon.colorG = g;
         icon.colorB = b;
-        icon.turret.colorR = Turret.calculateSecondaryColor(this.colorR);
-        icon.turret.colorG = Turret.calculateSecondaryColor(this.colorG);
-        icon.turret.colorB = Turret.calculateSecondaryColor(this.colorB);
+        icon.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
+        icon.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
+        icon.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
     }
 
     public void initShop(ArrayList<Item> shop)

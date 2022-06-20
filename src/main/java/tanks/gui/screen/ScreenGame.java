@@ -2352,7 +2352,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (!paused && Game.game.window.touchscreen && !shopScreen)
 		{
 			pause.draw();
-			Drawing.drawing.drawInterfaceImage("pause.png", pause.posX, pause.posY, 40, 40);
+			Drawing.drawing.drawInterfaceImage("icons/pause.png", pause.posX, pause.posY, 40, 40);
 
 			if (Drawing.drawing.enableMovingCamera)
 			{
@@ -2362,12 +2362,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					zoomAuto.draw();
 
 				if (Drawing.drawing.movingCamera)
-					Drawing.drawing.drawInterfaceImage("zoom_out.png", zoom.posX, zoom.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("icons/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
 				else
-					Drawing.drawing.drawInterfaceImage("zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("icons/zoom_in.png", zoom.posX, zoom.posY, 40, 40);
 
 				if (!Panel.autoZoom)
-					Drawing.drawing.drawInterfaceImage("zoom_auto.png", zoomAuto.posX, zoomAuto.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("icons/zoom_auto.png", zoomAuto.posX, zoomAuto.posY, 40, 40);
 			}
 		}
 

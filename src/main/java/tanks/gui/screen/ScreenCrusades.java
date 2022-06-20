@@ -200,9 +200,9 @@ public class ScreenCrusades extends Screen
 		this.sort.fullInfo = true;
 
 		if (this.fullCrusadesList.sortedByTime)
-			this.sort.image = "sort_chronological.png";
+			this.sort.image = "icons/sort_chronological.png";
 		else
-			this.sort.image = "sort_alphabetical.png";
+			this.sort.image = "icons/sort_alphabetical.png";
 
 		sort.update();
 

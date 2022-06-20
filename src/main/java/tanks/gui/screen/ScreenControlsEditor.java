@@ -62,13 +62,13 @@ public class ScreenControlsEditor extends Screen
         next.enabled = page < page_count - 1;
         previous.enabled = page > 0;
 
-        this.next.image = "play.png";
+        this.next.image = "icons/forward.png";
         this.next.imageSizeX = 25;
         this.next.imageSizeY = 25;
         this.next.imageXOffset = 145;
 
-        this.previous.image = "play.png";
-        this.previous.imageSizeX = -25;
+        this.previous.image = "icons/back.png";
+        this.previous.imageSizeX = 25;
         this.previous.imageSizeY = 25;
         this.previous.imageXOffset = -145;
     }

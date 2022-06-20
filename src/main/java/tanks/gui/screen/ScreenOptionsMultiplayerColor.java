@@ -149,7 +149,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorBlue2.integer = true;
 
         this.preview.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
-        this.preview.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom;
         this.preview.invulnerable = true;
         this.preview.drawAge = 50;
         this.preview.depthTest = false;
@@ -189,13 +188,22 @@ public class ScreenOptionsMultiplayerColor extends Screen
 
         enableSecondary.update();
 
-        preview.colorR = Game.player.colorR;
-        preview.colorG = Game.player.colorG;
-        preview.colorB = Game.player.colorB;
+        preview.colorR = colorRed.value;
+        preview.colorG = colorGreen.value;
+        preview.colorB = colorBlue.value;
 
-        preview.turret.colorR = Game.player.turretColorR;
-        preview.turret.colorG = Game.player.turretColorG;
-        preview.turret.colorB = Game.player.turretColorB;
+        if (!Game.player.enableSecondaryColor)
+        {
+            preview.secondaryColorR = Turret.calculateSecondaryColor(colorRed.value);
+            preview.secondaryColorG = Turret.calculateSecondaryColor(colorGreen.value);
+            preview.secondaryColorB = Turret.calculateSecondaryColor(colorBlue.value);
+        }
+        else
+        {
+            preview.secondaryColorR = colorRed2.value;
+            preview.secondaryColorG = colorGreen2.value;
+            preview.secondaryColorB = colorBlue2.value;
+        }
     }
 
     public void setupButtons(boolean initial)
@@ -226,10 +234,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
             colorRed2.inputText = Game.player.turretColorR + "";
             colorGreen2.inputText = Game.player.turretColorG + "";
             colorBlue2.inputText = Game.player.turretColorB + "";
-            colorRed2.value = Game.player.turretColorR;
-            colorGreen2.value = Game.player.turretColorG;
-            colorBlue2.value = Game.player.turretColorB;
-
             colorRed2.value = Game.player.turretColorR;
             colorGreen2.value = Game.player.turretColorG;
             colorBlue2.value = Game.player.turretColorB;

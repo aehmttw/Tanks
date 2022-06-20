@@ -2,11 +2,14 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 
 public class OverlayConfirmSave extends ScreenLevelEditorOverlay
 {
+    public double opacity = 100;
+
     Button saveExit = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Save and exit", () ->
     {
         screenLevelEditor.save();
@@ -44,6 +47,10 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     {
         super.draw();
 
+        Drawing.drawing.setColor(255, 127, 0, this.opacity);
+        this.opacity = Math.max(0, this.opacity - Panel.frameFrequency * 2);
+        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+
         Drawing.drawing.setColor(this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Save before exiting?");
@@ -56,6 +63,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     @Override
     public void onAttemptClose()
     {
-
+        Drawing.drawing.playSound("timer.ogg");
+        opacity = 100;
     }
 }

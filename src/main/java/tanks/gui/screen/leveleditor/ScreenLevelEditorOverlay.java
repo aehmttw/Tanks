@@ -11,6 +11,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 {
     public Screen previous;
     public ScreenLevelEditor screenLevelEditor;
+    public boolean musicInstruments = false;
 
     public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -23,6 +24,9 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
         this.musicID = previous.musicID;
 
         this.enableMargins = false;
+
+        if (previous instanceof ScreenLevelEditorOverlay)
+            this.musicInstruments = ((ScreenLevelEditorOverlay) previous).musicInstruments;
     }
 
     public void escape()
@@ -47,6 +51,8 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void update()
     {
+        this.screenLevelEditor.updateMusic(this.musicInstruments);
+
         if (Game.game.input.editorPause.isValid())
         {
             Game.game.input.editorPause.invalidate();

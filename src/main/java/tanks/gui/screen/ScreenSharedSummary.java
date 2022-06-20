@@ -89,12 +89,12 @@ public class ScreenSharedSummary extends Screen
         sharedLevels.sortButtons();
         sharedCrusades.sortButtons();
 
-        this.levels.image = "play.png";
+        this.levels.image = "icons/forward.png";
         this.levels.imageSizeX = 25;
         this.levels.imageSizeY = 25;
         this.levels.imageXOffset = 145;
 
-        this.crusades.image = "play.png";
+        this.crusades.image = "icons/forward.png";
         this.crusades.imageSizeX = 25;
         this.crusades.imageSizeY = 25;
         this.crusades.imageXOffset = 145;

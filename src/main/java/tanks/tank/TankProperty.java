@@ -1,5 +1,9 @@
 package tanks.tank;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
 public @interface TankProperty
 {
     enum Category
@@ -21,7 +25,18 @@ public @interface TankProperty
         transformation,
         lastStand}
 
+    enum MiscType
+    {
+        none,
+        base,
+        color,
+        turretBase,
+        turret,
+        emblem
+    }
+
     Category category();
     String name();
     String desc() default "";
+    MiscType miscType() default MiscType.none;
 }

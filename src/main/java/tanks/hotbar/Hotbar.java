@@ -74,9 +74,9 @@ public class Hotbar
 			Drawing.drawing.setColor(255, 255, 255, 64);
 
 			if (!this.persistent)
-				Drawing.drawing.drawInterfaceImage("widearrow.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 12, 64, 16);
+				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 12, 64, 16);
 			else
-				Drawing.drawing.drawInterfaceImage("widearrow.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 12, 64, -16);
+				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 12, 64, -16);
 		}
 
 		if (this.enabledItemBar)

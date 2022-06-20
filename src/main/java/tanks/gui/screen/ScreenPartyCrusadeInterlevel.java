@@ -173,7 +173,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
         save.posX = Drawing.drawing.interfaceSizeX - Drawing.drawing.interfaceScaleZoom * 40;
         save.posY = Drawing.drawing.interfaceSizeY - 50 - Drawing.drawing.interfaceScaleZoom * 40;
-        save.image = "save.png";
+        save.image = "icons/save.png";
 
         save.imageSizeX = this.objHeight;
         save.imageSizeY = this.objHeight;

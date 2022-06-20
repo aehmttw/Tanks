@@ -30,7 +30,7 @@ public class TeleporterOrb extends Movable
 		super(x, y);
 		this.tank = t;
 		this.size = t.size;
-		this.tSize = t.turret.size;
+		this.tSize = t.turretSize;
 		this.drawLevel = 9;
 		t.invulnerable = true;
 		t.targetable = false;
@@ -102,7 +102,7 @@ public class TeleporterOrb extends Movable
 			}
 
 			this.tank.size = this.size;
-			this.tank.turret.size = this.tSize;
+			this.tank.turretSize = this.tSize;
 			return;
 		}
 
@@ -149,8 +149,8 @@ public class TeleporterOrb extends Movable
 		double size = Math.max(-this.age / 100, Math.max((this.age - this.maxAge) / (this.endAge - this.maxAge), 0));
 		
 		this.tank.size = size * this.size;
-		this.tank.turret.size = size * this.tSize;
-		this.tank.turret.length = this.tank.size;
+		this.tank.turretSize = size * this.tSize;
+		this.tank.turretLength = this.tank.size;
 		
 		this.tank.disabled = this.tank.size <= 0;
 

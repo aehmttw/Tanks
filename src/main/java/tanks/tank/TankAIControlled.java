@@ -1,16 +1,21 @@
 package tanks.tank;
 
+import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 
 import static tanks.tank.TankProperty.Category.*;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -78,7 +83,7 @@ public class TankAIControlled extends Tank
 	 * 	Flee = go away from the target enemy
 	 * 	Strafe = move perpendicular to target enemy
 	 * 	Keep Distance = stay a particular distance away from the target enemy*/
-	public enum TargetEnemySightBehavior {approach, flee, strafe, keepDistance}
+	public enum TargetEnemySightBehavior {approach, flee, strafe, keep_distance}
 
 	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
 	@TankProperty(category = movementOnSight, name = "Test sight", desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
@@ -105,11 +110,11 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = transformation, name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form")
 	public double sightTransformRevertTime = 500;
 	/** TODO If set to true, will transform into another tank when health is at or below threshold */
-	@TankProperty(category = transformation, name = "On health amount", desc = "When enabled, the tank will transform into another tank when its health is at or below the health threshold")
-	public boolean transformOnHealth = false;
+	//@TankProperty(category = transformation, name = "On health amount", desc = "When enabled, the tank will transform into another tank when its health is at or below the health threshold")
+	//public boolean transformOnHealth = false;
 	/** Health threshold to transform */
-	@TankProperty(category = transformation, name = "Health threshold", desc = "Amount of health this tank must have equal to or less than to transform")
-	public double transformHealthThreshold = 0;
+	//@TankProperty(category = transformation, name = "Health threshold", desc = "Amount of health this tank must have equal to or less than to transform")
+	//public double transformHealthThreshold = 0;
 	/** If set, the tank will seek and transform into other tanks in line of sight */
 	@TankProperty(category = transformation, name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
 	public boolean mimic = false;
@@ -125,17 +130,17 @@ public class TankAIControlled extends Tank
 
 	//public double mineFuseLength = 1000;
 	/** Minimum time to lay a mine, added to mineTimerRandom * this.random.nextDouble()*/
-	@TankProperty(category = mines, name = "Base cooldown", desc = "Minimum time between laying mines")
+	@TankProperty(category = mines, name = "Base cooldown", desc = "Minimum time between laying mines \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
 	public double mineTimerBase = 2000;
 	/** Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase*/
-	@TankProperty(category = mines, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines")
+	@TankProperty(category = mines, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
 	public double mineTimerRandom = 4000;
 
 	/** Minimum time in between shooting bullets, added to cooldownRandom * this.random.nextDouble()*/
-	@TankProperty(category = firingGeneral, name = "Base cooldown", desc = "Minimum time between firing bullets")
+	@TankProperty(category = firingGeneral, name = "Base cooldown", desc = "Minimum time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
 	public double cooldownBase = 60;
 	/** Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase*/
-	@TankProperty(category = firingGeneral, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets")
+	@TankProperty(category = firingGeneral, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
 	public double cooldownRandom = 20;
 	/** After every successive shot, cooldown will go down by this fraction */
 	@TankProperty(category = firingGeneral, name = "Cooldown speedup", desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value.")
@@ -157,6 +162,17 @@ public class TankAIControlled extends Tank
 	 *  Wander means that the tank will randomly rotate and shoot only if it detects the target enemy*/
 	public enum ShootAI {none, sprinkler, wander, straight, homing, alternate, reflect}
 
+	/** Type of shooting AI to use*/
+	@TankProperty(category = firingBehavior, name = "Aiming behavior", desc = "Behavior for aiming and firing at targets \n \n " +
+			"None: do not shoot at all \n " +
+			"Sprinkler: rotate randomly and continuously shoot \n " +
+			"Wander: randomly rotate and shoot if target enemy falls in the trajectory \n " +
+			"Straight: shoot directly at the target, if in line of sight \n " +
+			"Reflect: use obstacles to calculate bounces \n " +
+			"Alternate: switch between straight and reflect with every shot \n" +
+			"Homing: like reflect, but recommended for homing bullets")
+	public ShootAI shootAIType;
+
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
 	@TankProperty(category = firingBehavior, name = "Inaccuracy", desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
 	public double aimAccuracyOffset = 0.2;
@@ -177,22 +193,11 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = firingBehavior, name = "Aim turret speed", desc = "Speed the turret turns at when actively aiming toward a target")
 	public double aimTurretSpeed = 0.03;
 
-	/** Type of shooting AI to use*/
-	@TankProperty(category = firingBehavior, name = "Aiming behavior", desc = "Behavior for aiming and firing at targets------" +
-			"None: do not shoot at all---" +
-			"Sprinkler: rotate randomly and continuously shoot---" +
-			"Wander: randomly rotate and shoot if target enemy falls in the trajectory---" +
-			"Straight: shoot directly at the target, if in line of sight---" +
-			"Reflect: use obstacles to calculate bounces---" +
-			"Alternate: switch between straight and reflect with every shot---" +
-			"Homing: like reflect, but recommended for homing bullets")
-	public ShootAI shootAIType;
-
 	/** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!*/
-	@TankProperty(category = firingBehavior, name = "Predictive", desc = "When enabled, will use the current velocity of the target to predict and fire towards its future position------Only works with straight aiming behavior!")
+	@TankProperty(category = firingBehavior, name = "Predictive", desc = "When enabled, will use the current velocity of the target to predict and fire towards its future position \n \n Only works with straight aiming behavior!")
 	public boolean enablePredictiveFiring = true;
 	/** When set to true, will shoot at bullets aiming towards the tank*/
-	@TankProperty(category = firingBehavior, name = "Deflect bullets", desc = "When enabled, will shoot at incoming bullet threats to deflect them------Does not work with wander or sprinkler aiming behavior!")
+	@TankProperty(category = firingBehavior, name = "Deflect bullets", desc = "When enabled, will shoot at incoming bullet threats to deflect them \n \n Does not work with wander or sprinkler aiming behavior!")
 	public boolean enableDefensiveFiring = false;
 	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
 	@TankProperty(category = firingBehavior, name = "Through walls", desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
@@ -860,7 +865,7 @@ public class TankAIControlled extends Tank
 
 			this.setAccelerationInDirectionWithOffset(this.targetEnemy.posX, this.targetEnemy.posY, this.acceleration * 2, strafeDirection);
 		}
-		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.keepDistance)
+		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.keep_distance)
 		{
 			if (Movable.distanceBetween(this, this.targetEnemy) < this.targetDistance)
 				this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
@@ -1670,7 +1675,6 @@ public class TankAIControlled extends Tank
 			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 				speed /= 2;
 
-			//System.out.println(Movable.absoluteAngleBetween(this.aimAngle, this.angle) + " " + this.angle + " " + this.aimAngle);
 			if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold)
 			{
 				if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
@@ -2236,9 +2240,9 @@ public class TankAIControlled extends Tank
 				this.possessingTank.colorG = ((Tank) this.targetEnemy).colorG;
 				this.possessingTank.colorB = ((Tank) this.targetEnemy).colorB;
 
-				this.possessingTank.turret.colorR = ((Tank) this.targetEnemy).turret.colorR;
-				this.possessingTank.turret.colorG = ((Tank) this.targetEnemy).turret.colorG;
-				this.possessingTank.turret.colorB = ((Tank) this.targetEnemy).turret.colorB;
+				this.possessingTank.secondaryColorR = ((Tank) this.targetEnemy).secondaryColorR;
+				this.possessingTank.secondaryColorG = ((Tank) this.targetEnemy).secondaryColorG;
+				this.possessingTank.secondaryColorB = ((Tank) this.targetEnemy).secondaryColorB;
 			}
 
 			for (RegistryTank.TankEntry e: Game.registryTank.tankEntries)
@@ -2490,5 +2494,143 @@ public class TankAIControlled extends Tank
 					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2);
 			}
 		}
+	}
+
+	@Override
+	public String toString()
+	{
+		try
+		{
+			StringBuilder s = new StringBuilder("[");
+
+			for (Field f : this.getClass().getFields())
+			{
+				TankProperty a = f.getAnnotation(TankProperty.class);
+				if (a != null)
+				{
+					s.append(a.category().ordinal()).append(a.name().toLowerCase().replace(" ", "_"));
+					s.append("=");
+
+					if (f.get(this) != null)
+						s.append(f.get(this));
+					else
+						s.append("*");
+
+					s.append(";");
+				}
+			}
+
+			return s.append("]").toString();
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		return null;
+	}
+
+	public static TankAIControlled fromString(String s)
+	{
+		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
+
+		try
+		{
+			s = s.substring(s.indexOf("["));
+			while (s.charAt(0) != ']')
+			{
+				int equals = s.indexOf("=");
+				String value = s.substring(equals + 1, s.indexOf(";"));
+				String propname = s.substring(0, equals);
+
+				for (Field f : TankAIControlled.class.getFields())
+				{
+					boolean found = true;
+
+					TankProperty a = f.getAnnotation(TankProperty.class);
+					if (a != null && (a.category().ordinal() + a.name().toLowerCase().replace(" ", "_")).equals(propname))
+					{
+						if (f.getType().equals(int.class))
+							f.set(t, Integer.parseInt(value));
+						else if (f.getType().equals(double.class))
+							f.set(t, Double.parseDouble(value));
+						else if (f.getType().equals(boolean.class))
+							f.set(t, Boolean.parseBoolean(value));
+						else if (f.getType().equals(String.class))
+						{
+							if (value.equals("*"))
+								f.set(t, null);
+							else
+								f.set(t, value);
+						}
+						else if (IModel.class.isAssignableFrom(f.getType()))
+						{
+							if (value.equals("*"))
+								f.set(t, null);
+							else
+								f.set(t, Drawing.drawing.createModel(value));
+						}
+						else if (f.getType().isEnum())
+							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
+						else if (Item.class.isAssignableFrom(f.getType()))
+						{
+							Item i = Item.parseItem(null, s);
+							i.unlimitedStack = true;
+							f.set(t, i);
+							s = s.substring(s.indexOf("]") + 1);
+						}
+					}
+					else
+						found = false;
+
+					if (found)
+						break;
+				}
+
+				s = s.substring(s.indexOf(";") + 1);
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		return t;
+	}
+
+	public TankAIControlled instantiate(String name, double x, double y, double angle)
+	{
+		TankAIControlled t = new TankAIControlled(name, x, y, this.size, this.colorR, this.colorG, this.colorB, angle, this.shootAIType);
+		this.cloneProperties(t);
+
+		return t;
+	}
+
+	public void cloneProperties(TankAIControlled t)
+	{
+		try
+		{
+			for (Field f : TankAIControlled.class.getFields())
+			{
+				if (f.getAnnotation(TankProperty.class) != null)
+				{
+					if (Item.class.isAssignableFrom(f.getType()))
+					{
+						Item i1 = (Item) f.get(this);
+						Item i2 = i1.clone();
+						f.set(t, i2);
+					}
+					else
+						f.set(t, f.get(this));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		t.health = t.baseHealth;
+		t.description = "";
 	}
 }

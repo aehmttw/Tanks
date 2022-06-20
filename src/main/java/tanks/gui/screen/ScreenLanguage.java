@@ -55,6 +55,12 @@ public class ScreenLanguage extends Screen
         }
         ));
 
+        languages.buttons.add(2, new Button(0, 0, 350, 40, "Español", () ->
+        {
+            changeLanguage(new Translation("es.lang"));
+        }
+        ));
+
         /*languages.buttons.add(2, new Button(0, 0, 350, 40, "Svenska", () ->
         {
             changeLanguage(new Translation("se.lang"));

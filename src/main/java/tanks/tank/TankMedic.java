@@ -19,7 +19,7 @@ public class TankMedic extends TankAIControlled
 	{
 		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.straight);
 
-		this.texture = "medic.png";
+		this.texture = "emblems/medic.png";
 		this.enableMovement = true;
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;

@@ -1013,10 +1013,10 @@ public class Drawing
 		double sizeY = 14;
 
 		if (x + sizeX + xPadding * 2 - 14 > Drawing.drawing.interfaceSizeX)
-			x -= sizeX + xPadding * 2 - 14;
+			x -= x + sizeX + xPadding * 2 - 14 - Drawing.drawing.interfaceSizeX;
 
 		if (y + sizeY + yPadding * 2 * text.length > Drawing.drawing.interfaceSizeY)
-			y -= sizeY + yPadding * 2 * text.length;
+			y -= y + sizeY + yPadding * 2 * text.length - Drawing.drawing.interfaceSizeY;
 
 		double drawX = x + sizeX / 2.0 + xPadding;
 		double drawY = y + sizeY / 2.0 + yPadding * text.length;
@@ -1495,10 +1495,11 @@ public class Drawing
 		boolean first = true;
 		for (String s : msg.split(" "))
 		{
-			if (s.equals("---"))
+			if (s.equals("\n"))
 			{
 				lines.add(l.toString());
 				l = new StringBuilder();
+				first = true;
 				continue;
 			}
 

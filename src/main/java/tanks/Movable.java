@@ -5,6 +5,7 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.NameTag;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public abstract class Movable implements IDrawableForInterface, IGameObject
 {
@@ -40,7 +41,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 	public boolean isRemote = false;
 
 	public ArrayList<AttributeModifier> attributes = new ArrayList<>();
-	public ArrayList<String> attributeImmunities = new ArrayList<>();
+	public HashSet<String> attributeImmunities = new HashSet<>();
 
 	public Team team;
 

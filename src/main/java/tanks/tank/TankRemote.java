@@ -34,8 +34,8 @@ public class TankRemote extends Tank
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = null;
-		this.turret.size = ts;
-		this.turret.length = tl;
+		this.turretSize = ts;
+		this.turretLength = tl;
 		this.invulnerable = true;
 		this.description = "A tank controlled by the server";
 	}
@@ -61,14 +61,14 @@ public class TankRemote extends Tank
 
 	public void copyTank(Tank t)
 	{
-		this.turret.length = t.turret.length;
-		this.turret.size = t.turret.size;
+		this.turretLength = t.turretLength;
+		this.turretSize = t.turretSize;
 		this.colorR = t.colorR;
 		this.colorG = t.colorG;
 		this.colorB = t.colorB;
-		this.turret.colorR = t.turret.colorR;
-		this.turret.colorG = t.turret.colorG;
-		this.turret.colorB = t.turret.colorB;
+		this.secondaryColorR = t.secondaryColorR;
+		this.secondaryColorG = t.secondaryColorG;
+		this.secondaryColorB = t.secondaryColorB;
 		this.texture = t.texture;
 		this.description = t.description;
 		this.baseModel = t.baseModel;

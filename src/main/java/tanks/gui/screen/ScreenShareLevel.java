@@ -97,9 +97,9 @@ public class ScreenShareLevel extends Screen
 		ScreenSavedLevels.sortByTime = allLevels.sortedByTime;
 
 		if (this.allLevels.sortedByTime)
-			this.sort.image = "sort_chronological.png";
+			this.sort.image = "icons/sort_chronological.png";
 		else
-			this.sort.image = "sort_alphabetical.png";
+			this.sort.image = "icons/sort_alphabetical.png";
 
 		this.sort.update();
 	}

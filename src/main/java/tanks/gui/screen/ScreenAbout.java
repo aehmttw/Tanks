@@ -99,27 +99,27 @@ public class ScreenAbout extends Screen
     {
         double imgsize = 25 * Drawing.drawing.interfaceScaleZoom;
 
-        this.link.image = "link.png";
+        this.link.image = "icons/link.png";
         this.link.imageSizeX = imgsize;
         this.link.imageSizeY = imgsize;
         this.link.imageXOffset = 145 * this.link.sizeX / 350;
 
-        this.libraries.image = "link.png";
+        this.libraries.image = "icons/link.png";
         this.libraries.imageSizeX = imgsize;
         this.libraries.imageSizeY = imgsize;
         this.libraries.imageXOffset = 145 * this.libraries.sizeX / 350;
 
-        this.chatroom.image = "link.png";
+        this.chatroom.image = "icons/link.png";
         this.chatroom.imageSizeX = imgsize;
         this.chatroom.imageSizeY = imgsize;
         this.chatroom.imageXOffset = 145 * this.chatroom.sizeX / 350;
 
-        this.license.image = "link.png";
+        this.license.image = "icons/link.png";
         this.license.imageSizeX = imgsize;
         this.license.imageSizeY = imgsize;
         this.license.imageXOffset = 145 * this.license.sizeX / 350;
 
-        this.privacy.image = "link.png";
+        this.privacy.image = "icons/link.png";
         this.privacy.imageSizeX = imgsize;
         this.privacy.imageSizeY = imgsize;
         this.privacy.imageXOffset = 145 * this.privacy.sizeX / 350;

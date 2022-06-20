@@ -31,7 +31,6 @@ public class ItemBullet extends Item
 
 	public double fractionUsed = 0;
 	public int liveBullets;
-	public String name;
 	public String className;
 
 	public Class<? extends Bullet> bulletClass = Bullet.class;
@@ -139,9 +138,9 @@ public class ItemBullet extends Item
 	}
 
 	@Override
-	public String toString()
+	public String convertToString()
 	{
-		return super.toString() + "," + item_name + ","
+		return super.convertToString() + "," + item_name + ","
 				+ className + "," + effectsMap2.get(effect) + "," + speed + "," + bounces + "," + damage + "," + maxLiveBullets + "," + cooldownBase + "," + size + "," + recoil + "," + heavy +
 				"," + this.accuracy + "," + this.shotCount + "," + this.shotSpread;
 	}

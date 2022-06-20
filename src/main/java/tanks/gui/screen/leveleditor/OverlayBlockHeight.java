@@ -62,17 +62,17 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 
         if (!screenLevelEditor.stagger)
         {
-            this.staggering.image = "nostagger.png";
+            this.staggering.image = "icons/nostagger.png";
             this.staggering.setHoverText("Blocks will all be placed---with the same height");
         }
         else if (screenLevelEditor.oddStagger)
         {
-            this.staggering.image = "oddstagger.png";
+            this.staggering.image = "icons/oddstagger.png";
             this.staggering.setHoverText("Every other block on the grid---will be half a block shorter");
         }
         else
         {
-            this.staggering.image = "evenstagger.png";
+            this.staggering.image = "icons/evenstagger.png";
             this.staggering.setHoverText("Every other block on the grid---will be half a block shorter");
         }
 

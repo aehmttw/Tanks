@@ -51,13 +51,13 @@ public class EventTankTransform extends PersonalEvent
         this.green = newTank.colorG;
         this.blue = newTank.colorB;
 
-        this.red2 = newTank.turret.colorR;
-        this.green2 = newTank.turret.colorG;
-        this.blue2 = newTank.turret.colorB;
+        this.red2 = newTank.secondaryColorR;
+        this.green2 = newTank.secondaryColorG;
+        this.blue2 = newTank.secondaryColorB;
 
         this.size = newTank.size;
-        this.turretSize = newTank.turret.size;
-        this.turretLength = newTank.turret.length;
+        this.turretSize = newTank.turretSize;
+        this.turretLength = newTank.turretLength;
 
         this.baseModel = newTank.baseModel.file;
         this.colorModel = newTank.colorModel.file;
@@ -76,8 +76,8 @@ public class EventTankTransform extends PersonalEvent
         if (this.clientID == null && t instanceof TankRemote)
         {
             t.size = size;
-            t.turret.size = turretSize;
-            t.turret.length = turretLength;
+            t.turretSize = turretSize;
+            t.turretLength = turretLength;
 
             t.baseModel = Drawing.drawing.createModel(baseModel);
             t.colorModel = Drawing.drawing.createModel(colorModel);
@@ -128,9 +128,9 @@ public class EventTankTransform extends PersonalEvent
             t.colorG = green;
             t.colorB = blue;
 
-            t.turret.colorR = red2;
-            t.turret.colorG = green2;
-            t.turret.colorB = blue2;
+            t.secondaryColorR = red2;
+            t.secondaryColorG = green2;
+            t.secondaryColorB = blue2;
         }
     }
 

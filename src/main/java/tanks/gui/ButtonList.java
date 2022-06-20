@@ -123,23 +123,23 @@ public class ButtonList
         this.first.posX = this.previous.posX - this.objXSpace / 2 - this.objHeight / 2;
         this.first.posY = this.previous.posY;
 
-        this.next.image = "play.png";
+        this.next.image = "icons/forward.png";
         this.next.imageSizeX = 25;
         this.next.imageSizeY = 25;
         this.next.imageXOffset = 145;
 
-        this.previous.image = "play.png";
-        this.previous.imageSizeX = -25;
+        this.previous.image = "icons/back.png";
+        this.previous.imageSizeX = 25;
         this.previous.imageSizeY = 25;
         this.previous.imageXOffset = -145;
 
-        this.last.image = "last.png";
+        this.last.image = "icons/last.png";
         this.last.imageSizeX = 20;
         this.last.imageSizeY = 20;
         this.last.imageXOffset = 0;
 
-        this.first.image = "last.png";
-        this.first.imageSizeX = -20;
+        this.first.image = "icons/first.png";
+        this.first.imageSizeX = 20;
         this.first.imageSizeY = 20;
         this.first.imageXOffset = 0;
 
@@ -181,16 +181,16 @@ public class ButtonList
 
             Button up = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2 - b.sizeY, b.posY, b.sizeY * 0.8, b.sizeY * 0.8, "", () -> reorderBehavior.accept(finalI - 1, finalI));
 
-            up.image = "vertical_arrow.png";
+            up.image = "icons/arrow_up.png";
             up.imageSizeX = 15;
             up.imageSizeY = 15;
             this.upButtons.add(up);
 
             Button down = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2, b.posY, b.sizeY * 0.8, b.sizeY * 0.8, "", () -> reorderBehavior.accept(finalI + 1, finalI));
 
-            down.image = "vertical_arrow.png";
+            down.image = "icons/arrow_down.png";
             down.imageSizeX = 15;
-            down.imageSizeY = -15;
+            down.imageSizeY = 15;
             this.downButtons.add(down);
         }
     }

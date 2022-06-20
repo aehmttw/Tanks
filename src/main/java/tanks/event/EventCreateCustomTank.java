@@ -45,8 +45,8 @@ public class EventCreateCustomTank extends PersonalEvent
 			this.team = t.team.name;
 		
 		this.size = t.size;
-		this.turretSize = t.turret.size;
-		this.turretLength = t.turret.length;
+		this.turretSize = t.turretSize;
+		this.turretLength = t.turretLength;
 		this.red = t.colorR;
 		this.green = t.colorG;
 		this.blue = t.colorB;

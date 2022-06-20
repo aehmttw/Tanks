@@ -30,7 +30,7 @@ public class SearchBox extends TextBox
 		drawing.fillInterfaceOval(posX + sizeX / 2 - sizeY / 2, posY, sizeY, sizeY);
 
 		drawing.setColor(0, 0, 0, 127);
-		drawing.drawInterfaceImage("search.png", this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
+		drawing.drawInterfaceImage("icons/search.png", this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 
 		double m = 0.8;
 

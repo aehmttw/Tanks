@@ -223,12 +223,12 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         index.inputText = (int) index.maxValue + "";
         index.maxChars = 9;
 
-        this.next.image = "vertical_arrow.png";
+        this.next.image = "icons/arrow_down.png";
         this.next.imageSizeX = 25;
-        this.next.imageSizeY = -25;
+        this.next.imageSizeY = 25;
         this.next.imageXOffset = 145;
 
-        this.prev.image = "vertical_arrow.png";
+        this.prev.image = "icons/arrow_up.png";
         this.prev.imageSizeX = 25;
         this.prev.imageSizeY = 25;
         this.prev.imageXOffset = 145;

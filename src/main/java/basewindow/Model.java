@@ -352,4 +352,10 @@ public class Model implements IModel
             this.offZ = this.posZ - b.posZ;
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return this.file;
+    }
 }

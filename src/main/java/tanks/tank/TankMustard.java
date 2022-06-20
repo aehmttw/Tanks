@@ -34,7 +34,7 @@ public class TankMustard extends TankAIControlled
         this.bullet.name = "Artillery shell";
 
         this.coinValue = 4;
-        this.turret.size *= 1.75;
+        this.turretSize *= 1.75;
 
         this.description = "A stationary tank which lobs---bullets over walls";
     }

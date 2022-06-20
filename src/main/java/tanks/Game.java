@@ -184,6 +184,7 @@ public class Game
 	public static RegistryObstacle registryObstacle = new RegistryObstacle();
 	public static RegistryItem registryItem = new RegistryItem();
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
+	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 
 	public static boolean enableExtensions = false;
 	public static boolean autoLoadExtensions = true;
@@ -386,6 +387,16 @@ public class Game
 		}
 	}
 
+	public static void registerTankModel(String dir)
+	{
+		Game.registryModelTank.registerFullModel(dir);
+	}
+
+	public static void registerTankEmblem(String dir)
+	{
+		Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + dir));
+	}
+
 	public static void initScript()
 	{
 		player = new Player(clientID, "");
@@ -405,6 +416,12 @@ public class Game
 
 		ItemBullet.initializeMaps();
 
+		registerTankModel("/models/tank");
+		registerTankModel("/models/tankmimic");
+
+		registerTankEmblem("medic.png");
+		registerTankEmblem("player_spawn.png");
+
 		registerObstacle(Obstacle.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
 		registerObstacle(ObstacleHole.class, "hole");
@@ -417,8 +434,6 @@ public class Game
 		registerObstacle(ObstacleMud.class, "mud");
 		registerObstacle(ObstacleIce.class, "ice");
 		registerObstacle(ObstacleSnow.class, "snow");
-		//registerObstacle(ObstacleSand.class, "sand");
-		//registerObstacle(ObstacleWater.class, "water");
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 

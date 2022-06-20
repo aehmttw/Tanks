@@ -126,7 +126,7 @@ public class Minimap implements IFixedMenu
                             else
                                 Drawing.drawing.setColor(255, 0, 0);
 
-                            Drawing.drawing.drawInterfaceImage(Game.playerTank.angle - Math.PI * 3 / 2, "/images/vertical_arrow_white.png", x, y, 12, 10);
+                            Drawing.drawing.drawInterfaceImage(Game.playerTank.angle - Math.PI * 3 / 2, "/images/icons/vertical_arrow_white.png", x, y, 12, 10);
                         }
 
                     }
@@ -154,7 +154,7 @@ public class Minimap implements IFixedMenu
 
         Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB);
         if (centered && !Game.playerTank.destroy)
-            Drawing.drawing.drawInterfaceImage(Game.playerTank.angle - Math.PI, "/images/vertical_arrow_white.png", posX, posY, 12, 10);
+            Drawing.drawing.drawInterfaceImage(Game.playerTank.angle - Math.PI, "/images/icons/vertical_arrow_white.png", posX, posY, 12, 10);
     }
 
     @Override

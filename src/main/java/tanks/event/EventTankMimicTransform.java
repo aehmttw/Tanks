@@ -39,9 +39,9 @@ public class EventTankMimicTransform extends PersonalEvent
         this.green = t.colorG;
         this.blue = t.colorB;
 
-        this.red2 = t.turret.colorR;
-        this.green2 = t.turret.colorG;
-        this.blue2 = t.turret.colorB;
+        this.red2 = t.secondaryColorR;
+        this.green2 = t.secondaryColorG;
+        this.blue2 = t.secondaryColorB;
     }
 
     @Override
@@ -63,9 +63,9 @@ public class EventTankMimicTransform extends PersonalEvent
                 t.colorG = green;
                 t.colorB = blue;
 
-                t.turret.colorR = red2;
-                t.turret.colorG = green2;
-                t.turret.colorB = blue2;
+                t.secondaryColorR = red2;
+                t.secondaryColorG = green2;
+                t.secondaryColorB = blue2;
 
                 t.colorModel = Tank.color_model;
             }

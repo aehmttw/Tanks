@@ -33,10 +33,8 @@ public class TankCyan extends TankAIControlled
 		this.bullet.name = "Freezing bullet";
 		this.enableLookingAtTargetEnemy = false;
 		this.motionChangeChance = 0.001;
+		this.resistFreeze = true;
 
-		//TODO: attribute immunities
-		this.attributeImmunities.addAll(Arrays.asList("ice_slip", "ice_accel", "ice_max_speed", "freeze"));
-		
 		this.coinValue = 4;
 
 		this.description = "A support tank which shoots freezing---bullets that deal low damage";

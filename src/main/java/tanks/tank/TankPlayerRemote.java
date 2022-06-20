@@ -457,7 +457,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
 
         Drawing.drawing.setFontSize(this.nameTag.size);
-        Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
+        Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
 
         if (Game.enable3d)
             Drawing.drawing.drawText(this.posX + this.nameTag.ox, this.posY + this.nameTag.oy, this.posZ + this.nameTag.oz, this.nameTag.name);

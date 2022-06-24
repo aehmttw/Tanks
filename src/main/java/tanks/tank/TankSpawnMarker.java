@@ -11,16 +11,16 @@ public class TankSpawnMarker extends Tank
         super(name, x, y, Game.tile_size, 0, 150, 255);
         this.angle = angle;
         this.orientation = angle;
-        this.texture = this.defaultTexture;
+        this.emblem = this.defaultTexture;
     }
 
     @Override
     public void draw()
     {
         if (Game.screen instanceof ILevelPreviewScreen && ((ILevelPreviewScreen) Game.screen).getSpawns().size() > 1)
-            this.texture = this.defaultTexture;
+            this.emblem = this.defaultTexture;
         else
-            this.texture = null;
+            this.emblem = null;
 
         super.draw();
     }

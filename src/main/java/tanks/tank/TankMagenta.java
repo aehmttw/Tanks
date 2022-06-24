@@ -16,7 +16,7 @@ public class TankMagenta extends TankAIControlled
 		this.bullet.maxLiveBullets = 3;
 		this.cooldownRandom = 20;
 		this.cooldownBase = 40;
-		this.avoidSensitivity = 1.25;
+		this.mineAvoidSensitivity = 1.25;
 		
 		this.coinValue = 3;
 

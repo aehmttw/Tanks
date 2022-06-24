@@ -704,7 +704,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (up && currentPlaceable == Placeable.enemyTank)
 			{
-				tankNum = ((tankNum - 1) + Game.registryTank.tankEntries.size()) % (Game.registryTank.tankEntries.size() + this.level.customTanks.size());
+				tankNum = ((tankNum - 1) + Game.registryTank.tankEntries.size() + this.level.customTanks.size()) % (Game.registryTank.tankEntries.size() + this.level.customTanks.size());
 				this.refreshMouseTank();
 			}
 			else if (up && currentPlaceable == Placeable.obstacle)
@@ -748,7 +748,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				else if (currentPlaceable == Placeable.playerTank)
 				{
 					currentPlaceable = Placeable.enemyTank;
-					mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+					this.refreshMouseTank();
 				}
 			}
 
@@ -761,7 +761,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				else if (currentPlaceable == Placeable.obstacle)
 				{
 					currentPlaceable = Placeable.enemyTank;
-					mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+					this.refreshMouseTank();
 				}
 				else if (currentPlaceable == Placeable.enemyTank)
 				{

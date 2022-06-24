@@ -95,7 +95,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.c";
+	public static final String version = "Tanks v1.4.d";
 	public static final int network_protocol = 42;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;

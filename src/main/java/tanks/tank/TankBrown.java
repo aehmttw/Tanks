@@ -17,7 +17,7 @@ public class TankBrown extends TankAIControlled
 		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
-		this.idleTurretSpeed = 0.01;
+		this.turretIdleSpeed = 0.01;
 		this.turretIdleTimerBase = 500;
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;

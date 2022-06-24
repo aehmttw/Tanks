@@ -219,7 +219,7 @@ public class Hotbar
 
 			for (Movable m : Game.movables)
 			{
-				if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy && ((Tank)m).needsToKill)
+				if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy && ((Tank)m).mandatoryKill)
 					count++;
 			}
 

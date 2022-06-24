@@ -11,7 +11,7 @@ public @interface TankProperty
         appearanceGeneral,
             appearanceModel,
             appearanceColor,
-        misc,
+        general,
         movementGeneral,
             movementIdle,
             movementAvoid,
@@ -22,8 +22,14 @@ public @interface TankProperty
             firingBehavior,
             firingPattern,
         spawning,
-        transformation,
-        lastStand}
+        transformationGeneral,
+        lastStand,
+
+        transformationOnSight,
+        transformationOnHealth,
+        transformationOnThreat,
+        transformationOnProximity,
+        transformationOnAlone,}
 
     enum MiscType
     {
@@ -36,6 +42,7 @@ public @interface TankProperty
     }
 
     Category category();
+    String id();
     String name();
     String desc() default "";
     MiscType miscType() default MiscType.none;

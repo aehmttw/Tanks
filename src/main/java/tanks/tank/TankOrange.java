@@ -1,12 +1,8 @@
 package tanks.tank;
 
-import tanks.Drawing;
 import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletFlame;
-import tanks.event.EventShootBullet;
 
 /**
  * A short-range tank which shoots fire
@@ -22,12 +18,12 @@ public class TankOrange extends TankAIControlled
 
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.aimTurretSpeed = 0.01;
+		this.turretAimSpeed = 0.01;
 		this.enablePathfinding = true;
 		this.aimAccuracyOffset = 0;
 
-		this.motionChangeChance = 0.001;
-		this.avoidSensitivity = 1;
+		this.turnChance = 0.001;
+		this.mineAvoidSensitivity = 1;
 
 		this.bullet.maxLiveBullets = 0;
 		this.bullet.bulletClass = BulletFlame.class;

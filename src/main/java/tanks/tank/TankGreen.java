@@ -16,7 +16,7 @@ public class TankGreen extends TankAIControlled
 		this.bullet.maxLiveBullets = 4;
 		this.cooldownRandom = 20;
 		this.cooldownBase = 80;
-		this.aimTurretSpeed = 0.03;
+		this.turretAimSpeed = 0.03;
 		this.bullet.bounces = 2;
 		this.bullet.speed = 25.0 / 4;
 		this.bullet.effect = Bullet.BulletEffect.fireTrail;

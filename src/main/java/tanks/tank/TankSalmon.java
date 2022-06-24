@@ -20,7 +20,7 @@ public class TankSalmon extends TankAIControlled
 		this.bullet.effect = Bullet.BulletEffect.fire;
 		this.bullet.bulletClass = BulletHoming.class;
 		this.bullet.name = "Homing bullet";
-		this.aimTurretSpeed = 0.06;
+		this.turretAimSpeed = 0.06;
 		this.enablePathfinding = true;
 		this.enablePredictiveFiring = false;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;

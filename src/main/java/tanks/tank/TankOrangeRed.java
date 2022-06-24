@@ -1,12 +1,8 @@
 package tanks.tank;
 
-import tanks.Drawing;
 import tanks.Game;
-import tanks.Movable;
-import tanks.Team;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletExplosive;
-import tanks.event.EventShootBullet;
 
 /**
  * A tank which shoots explosive bullets
@@ -24,16 +20,16 @@ public class TankOrangeRed extends TankAIControlled
         this.bullet.maxLiveBullets = 2;
         this.cooldownRandom = 120;
         this.cooldownBase = 120;
-        this.aimTurretSpeed = 0.02;
+        this.turretAimSpeed = 0.02;
         this.bullet.bulletClass = BulletExplosive.class;
         this.bullet.bounces = 0;
         this.bullet.effect = Bullet.BulletEffect.trail;
         this.bullet.size = 20;
         this.bullet.name = "Explosive bullet";
         this.enableLookingAtTargetEnemy = true;
-        this.motionChangeChance = 0.001;
+        this.turnChance = 0.001;
         this.enablePathfinding = true;
-        this.ignoreDestructible = true;
+        this.aimIgnoreDestructible = true;
         this.enableDefensiveFiring = true;
         this.resistExplosions = true;
         this.enableMineAvoidance = false;

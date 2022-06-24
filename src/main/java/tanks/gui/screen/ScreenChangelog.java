@@ -401,6 +401,23 @@ public class ScreenChangelog extends Screen
                                     "Changed castle crusade level 'Castle artillery'\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.d", new String[]
+                    {
+                            "*What's new in Tanks v1.4.d:\n\n" +
+                                    "Added tank editor and custom tanks (still WIP)\n" +
+                                    "Made UI icons more colorful\n" +
+                                    "New editor music\n" +
+                                    "Added Español translation\n" +
+                                    "Other UI improvements\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
+
+            new Changelog("v1.4.e", new String[]
+                    {
+                            "*What's new in Tanks v1.4.e:\n\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

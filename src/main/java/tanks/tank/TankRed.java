@@ -16,7 +16,7 @@ public class TankRed extends TankAIControlled
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.bullet.maxLiveBullets = 1;
-		this.aimTurretSpeed = 0.02;
+		this.turretAimSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
 		this.bullet.bulletClass = BulletLaser.class;
 		this.cooldownBase = 100;

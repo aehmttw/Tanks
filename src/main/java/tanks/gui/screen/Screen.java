@@ -191,7 +191,7 @@ public abstract class Screen implements IBatchRenderableObject
 					inBounds = false;
 					frac2 = frac;
 
-					if (frac == 1)
+					if (frac >= 1)
 						continue;
 
 					Drawing.drawing.setColor(174 * frac + (1 - frac) * Game.tilesR[i][j], 92 * frac + (1 - frac) * Game.tilesG[i][j], 16 * frac + (1 - frac) * Game.tilesB[i][j]);
@@ -236,7 +236,7 @@ public abstract class Screen implements IBatchRenderableObject
 						if (extra != 0)
 							o = 1;
 
-						if (size != 1)
+						if (size < 1)
 							Drawing.drawing.fillBox(this,
 									(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
 									(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,

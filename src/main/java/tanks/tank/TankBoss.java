@@ -1,14 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.Panel;
 import tanks.bullet.Bullet;
-import tanks.event.EventCreateTank;
-import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Obstacle;
-import tanks.registry.RegistryTank;
-
-import java.util.ArrayList;
 
 /**
  * A big boss tank which spawns other tanks and takes 5 regular bullets to destroy
@@ -34,7 +27,7 @@ public class TankBoss extends TankAIControlled
 		this.health = 5;
 		this.baseHealth = 5;
 		this.coinValue = 25;
-		this.spawnsTanks = true;
+		this.enableSpawning = true;
 
 		this.description = "A big boss tank which spawns---other tanks and takes 5 regular---bullets to destroy";
 	}

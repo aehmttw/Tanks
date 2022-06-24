@@ -75,13 +75,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 return 1;
         });
 
-        Tab general = new Tab(this, "General", TankProperty.Category.misc);
+        Tab general = new Tab(this, "General", TankProperty.Category.general);
         Tab appearance = new TabAppearance(this, "Appearance", TankProperty.Category.appearanceGeneral);
         Tab movement = new Tab(this, "Movement", TankProperty.Category.movementGeneral);
         Tab firing = new Tab(this, "Firing", TankProperty.Category.firingGeneral);
         Tab mines = new Tab(this, "Mines", TankProperty.Category.mines);
         Tab spawning = new Tab(this, "Spawning", TankProperty.Category.spawning);
-        Tab transformation = new Tab(this, "Transformation", TankProperty.Category.transformation);
+        Tab transformation = new Tab(this, "Transformation", TankProperty.Category.transformationGeneral);
         Tab lastStand = new Tab(this, "Last stand", TankProperty.Category.lastStand);
 
         Tab model = new TabModel(this, appearance, "Tank model", TankProperty.Category.appearanceModel);
@@ -114,7 +114,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             {
                 this.lastItem = i;
                 this.lastItemField = itemField;
-                ScreenEditItem editItem = new ScreenEditItem(i, this);
+                ScreenEditItem editItem = new ScreenEditItem(i, this, true, true);
                 editItem.delete.setText("Load from template");
                 Game.screen = editItem;
                 this.lastItemScreen = editItem;
@@ -394,13 +394,14 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.preview.size = this.screen.tank.size;
             this.preview.turretSize = this.screen.tank.turretSize;
             this.preview.turretLength = this.screen.tank.turretLength;
-            this.preview.texture = this.screen.tank.texture;
+            this.preview.emblem = this.screen.tank.emblem;
             this.preview.colorR = this.screen.tank.colorR;
             this.preview.colorG = this.screen.tank.colorG;
             this.preview.colorB = this.screen.tank.colorB;
             this.preview.secondaryColorR = this.screen.tank.secondaryColorR;
             this.preview.secondaryColorG = this.screen.tank.secondaryColorG;
             this.preview.secondaryColorB = this.screen.tank.secondaryColorB;
+            this.preview.bullet = this.screen.tank.bullet;
 
             if (this.preview.size > Game.tile_size * 3)
                 this.preview.size = Game.tile_size * 3;
@@ -805,7 +806,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, -extraHeight / 2, width, extraHeight);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, 105, width, 210);
 
-        Drawing.drawing.setFontSize(this.titleSize);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(this.centerX, 30, "Edit tank");
 

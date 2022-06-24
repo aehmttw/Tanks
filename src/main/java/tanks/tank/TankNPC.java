@@ -88,7 +88,7 @@ public class TankNPC extends TankDummy
         this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
 
         this.invulnerable = true;
-        this.needsToKill = false;
+        this.mandatoryKill = false;
 
         icon.colorR = r;
         icon.colorG = g;

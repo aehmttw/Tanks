@@ -65,7 +65,7 @@ public class EventTankTransform extends PersonalEvent
         this.turretModel = newTank.turretModel.file;
 
         this.effect = effect;
-        this.texture = newTank.texture;
+        this.texture = newTank.emblem;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class EventTankTransform extends PersonalEvent
             t.turretBaseModel = Drawing.drawing.createModel(turretBaseModel);
             t.turretModel = Drawing.drawing.createModel(turretModel);
 
-            t.texture = texture;
+            t.emblem = texture;
 
             if (effect == exclamation)
             {

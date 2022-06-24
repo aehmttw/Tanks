@@ -1,12 +1,8 @@
 package tanks.tank;
 
-import tanks.Drawing;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletFreeze;
-import tanks.event.EventShootBullet;
-
-import java.util.Arrays;
 
 /**
  * A support tank which shoots freezing bullets that deal low damage
@@ -24,7 +20,7 @@ public class TankCyan extends TankAIControlled
 		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 240;
-		this.aimTurretSpeed = 0.01;
+		this.turretAimSpeed = 0.01;
 		this.bullet.bounces = 0;
 		this.bullet.effect = Bullet.BulletEffect.ice;
 		this.bullet.speed = 25.0 / 8;
@@ -32,7 +28,7 @@ public class TankCyan extends TankAIControlled
 		this.bullet.bulletClass = BulletFreeze.class;
 		this.bullet.name = "Freezing bullet";
 		this.enableLookingAtTargetEnemy = false;
-		this.motionChangeChance = 0.001;
+		this.turnChance = 0.001;
 		this.resistFreeze = true;
 
 		this.coinValue = 4;

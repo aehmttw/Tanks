@@ -1,12 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.Panel;
 import tanks.bullet.Bullet;
-import tanks.event.EventCreateCustomTank;
-import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Obstacle;
-import tanks.registry.RegistryTank;
 
 /**
  * A tank which spawns mini tanks and shoots 2-bounce rockets
@@ -21,7 +16,7 @@ public class TankPink extends TankAIControlled
 		this.bullet.maxLiveBullets = 2;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
-		this.aimTurretSpeed = 0.02;
+		this.turretAimSpeed = 0.02;
 		this.bullet.bounces = 2;
 		this.bullet.speed = 25.0 / 4;
 		this.bullet.effect = Bullet.BulletEffect.fireTrail;
@@ -30,7 +25,7 @@ public class TankPink extends TankAIControlled
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
 
-		this.spawnsTanks = true;
+		this.enableSpawning = true;
 		this.spawnedTankEntry = Game.registryTank.getEntry("mini");
 
 		this.coinValue = 12;

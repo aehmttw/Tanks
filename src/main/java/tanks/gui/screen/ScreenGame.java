@@ -1189,7 +1189,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 				else
 				{
-					this.music = "ready_music_3.ogg";
+					this.music = "ready_music_1.ogg";
 					this.musicID = "ready";
 				}
 			}
@@ -1415,7 +1415,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				m.update();
 
-				if (m instanceof Tank && ((Tank)m).needsToKill)
+				if (m instanceof Tank && ((Tank)m).mandatoryKill)
 				{
 					Team t;
 

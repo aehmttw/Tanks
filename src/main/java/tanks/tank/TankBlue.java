@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import tanks.Drawing;
 import tanks.Game;
 import tanks.bullet.BulletElectric;
 
@@ -21,7 +20,7 @@ public class TankBlue extends TankAIControlled
 		this.bullet.bulletClass = BulletElectric.class;
 		this.bullet.damage = 0.125;
 		this.bullet.name = "Zap";
-		this.aimTurretSpeed = 0.02;
+		this.turretAimSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
 		this.cooldownBase = 200;
 		this.cooldownRandom = 0;

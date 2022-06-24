@@ -13,9 +13,9 @@ public class TankLightPinkAngry extends TankAIControlled
         this.secondaryColorG = Turret.calculateSecondaryColor(211);
         this.secondaryColorB = Turret.calculateSecondaryColor(255);
 
-        this.aimTurretSpeed = 0.06;
+        this.turretAimSpeed = 0.06;
         this.seekChance = 1;
-        this.motionChangeChance = 0.001;
+        this.turnChance = 0.001;
         this.coinValue = 10;
         this.enablePredictiveFiring = true;
         this.bullet.cooldownBase = 1;
@@ -32,7 +32,7 @@ public class TankLightPinkAngry extends TankAIControlled
         this.bullet.effect = Bullet.BulletEffect.fire;
 
         // TODO fix music in mimic
-        this.shotCount = 5;
+        this.shotRoundCount = 5;
 
         this.description = "A tank which gets angry---on line of sight";
     }

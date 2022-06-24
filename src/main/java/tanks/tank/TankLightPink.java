@@ -12,9 +12,9 @@ public class TankLightPink extends TankAIControlled
     {
         super(name, x, y, Game.tile_size, 255, 211, 255, angle, ShootAI.reflect);
 
-        this.aimTurretSpeed = 0.06;
+        this.turretAimSpeed = 0.06;
         this.seekChance = 1;
-        this.motionChangeChance = 0.001;
+        this.turnChance = 0.001;
         this.coinValue = 10;
         this.enablePredictiveFiring = true;
         this.bullet.cooldownBase = 1;

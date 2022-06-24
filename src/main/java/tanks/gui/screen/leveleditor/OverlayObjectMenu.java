@@ -71,7 +71,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public Button placeEnemy = new Button(this.centerX, this.centerY - 180, 350, 40, "Tank", () ->
     {
         screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.enemyTank;
-        screenLevelEditor.mouseTank = Game.registryTank.getEntry( screenLevelEditor.tankNum).getTank(0, 0, 0);
+        this.screenLevelEditor.refreshMouseTank();
     }
     );
     public Button placeObstacle = new Button(this.centerX + 380, this.centerY - 180, 350, 40, "Block", () -> screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.obstacle
@@ -415,6 +415,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public void addTank(TankAIControlled t)
     {
         this.screenLevelEditor.level.customTanks.add(t);
+        this.screenLevelEditor.tankNum = this.screenLevelEditor.level.customTanks.size() + Game.registryTank.tankEntries.size() - 1;
     }
 
     @Override

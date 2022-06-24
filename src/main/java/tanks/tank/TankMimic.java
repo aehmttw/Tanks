@@ -29,7 +29,7 @@ public class TankMimic extends TankAIControlled
         this.turretModel = turret_model;
         this.turretBaseModel = turret_base_model;
 
-        this.mimic = true;
+        this.transformMimic = true;
 
         this.coinValue = 10;
 

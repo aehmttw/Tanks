@@ -35,7 +35,19 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     @Override
     public void update()
     {
-        super.update();
+        if (Game.game.input.editorPause.isValid())
+        {
+            Game.game.input.editorPause.invalidate();
+            this.escape();
+        }
+
+        if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
+        {
+            Game.game.input.editorObjectMenu.invalidate();
+            Game.screen = screenLevelEditor;
+            screenLevelEditor.clickCooldown = 20;
+            screenLevelEditor.paused = false;
+        }
 
         saveExit.update();
         noSaveExit.update();
@@ -45,6 +57,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     @Override
     public void draw()
     {
+        Drawing.drawing.forceRedrawTerrain();
         super.draw();
 
         Drawing.drawing.setColor(255, 127, 0, this.opacity);

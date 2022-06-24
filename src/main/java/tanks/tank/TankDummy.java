@@ -14,7 +14,7 @@ public class TankDummy extends TankAIControlled
 		this.enableMovement = false;
 		this.enableMineLaying = false;
 		this.bullet.maxLiveBullets = 0;
-		this.idleTurretSpeed = 0;
+		this.turretIdleSpeed = 0;
 		this.enableLookingAtTargetEnemy = false;
 
 		this.coinValue = 0;

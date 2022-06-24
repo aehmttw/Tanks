@@ -18,11 +18,11 @@ public class TankLightBlue extends TankAIControlled
 
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.aimTurretSpeed = 0.01;
+		this.turretAimSpeed = 0.01;
 
-		this.motionChangeChance = 0.001;
+		this.turnChance = 0.001;
 
-		this.avoidSensitivity = 0;
+		this.mineAvoidSensitivity = 0;
 		this.enableBulletAvoidance = false;
 
 		this.bullet.maxLiveBullets = 0;

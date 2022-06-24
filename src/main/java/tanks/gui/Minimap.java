@@ -108,7 +108,7 @@ public class Minimap implements IFixedMenu
                 y = (posY + 110 - panOffsetY) + m.posY / 13 * scale;
             }
 
-            if (m instanceof Tank && !m.destroy && ((Tank) m).needsToKill)
+            if (m instanceof Tank && !m.destroy && ((Tank) m).mandatoryKill)
             {
                 if ((posX < x && x < posX + sizeX) && (posY + 30 < y && y < posY + (sizeY - 30)))
                 {

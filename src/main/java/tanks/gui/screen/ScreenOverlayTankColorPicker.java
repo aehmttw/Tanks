@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
@@ -160,7 +158,8 @@ public class ScreenOverlayTankColorPicker extends Screen
         this.preview.size = this.tank.size;
         this.preview.turretSize = this.tank.turretSize;
         this.preview.turretLength = this.tank.turretLength;
-        this.preview.texture = this.tank.texture;
+        this.preview.emblem = this.tank.emblem;
+        this.preview.bullet = this.tank.bullet;
 
         if (this.preview.size > Game.tile_size * 1.5)
             this.preview.size = Game.tile_size * 1.5;

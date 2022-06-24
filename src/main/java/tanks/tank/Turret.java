@@ -65,12 +65,15 @@ public class Turret extends Movable
 		else
 			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, glow);
 
-		if (forInterface)
-			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, length, thickness, rotation);
-		else if (!in3d)
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, length, thickness, rotation);
+
+		if (this.tank.bullet.shotCount > 1)
+		{
+			int q = this.tank.bullet.shotCount;
+			for (int i = 0; i < q; i++)
+				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(this.tank.bullet.shotSpread) * ((i * 1.0 / (q - 1)) - 0.5), vAngle);
+		}
 		else
-			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, this.posZ + (baseSize * 1.3) / 2, length, thickness, thickness, rotation, vAngle, 0);
+			this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation, vAngle);
 
 		if (transparent)
 			Drawing.drawing.setColor((this.tank.secondaryColorR + this.tank.colorR) / 2, (this.tank.secondaryColorG + this.tank.colorG) / 2, (this.tank.secondaryColorB + this.tank.colorB) / 2, 127, glow);
@@ -83,6 +86,16 @@ public class Turret extends Movable
 			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, baseSize, baseSize, rotation);
 		else
 			Drawing.drawing.drawModel(this.tank.turretBaseModel, this.posX, this.posY, this.posZ + baseSize / 2, baseSize, baseSize, baseSize, rotation);
+	}
+
+	public void drawBarrel(boolean forInterface, boolean in3d, double baseSize, double length, double thickness, double rotation, double vAngle)
+	{
+		if (forInterface)
+			Drawing.drawing.drawInterfaceModel(this.tank.turretModel, this.posX, this.posY, length, thickness, rotation);
+		else if (!in3d)
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, length, thickness, rotation);
+		else
+			Drawing.drawing.drawModel(this.tank.turretModel, this.posX, this.posY, this.posZ + (baseSize * 1.3) / 2, length, thickness, thickness, rotation, vAngle, 0);
 	}
 	
 	@Override

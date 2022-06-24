@@ -19,7 +19,7 @@ public class TankGold extends TankAIControlled
 		this.cooldownBase = 40;
 		this.cooldownRandom = 0;
 		this.bullet.maxLiveBullets = 5;
-		this.aimTurretSpeed = 0.04;
+		this.turretAimSpeed = 0.04;
 		this.bullet.bounces = 0;
 		this.bullet.effect = Bullet.BulletEffect.ember;
 		this.bullet.damage = 0;
@@ -28,8 +28,7 @@ public class TankGold extends TankAIControlled
 		this.bullet.speed = 25 / 4.0;
 		this.bullet.bulletClass = BulletBoost.class;
 		this.bullet.name = "Booster bullet";
-		this.dealsDamage = false;
-		this.commitsSuicide = true;
+		this.enableSuicide = true;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.keep_distance;
 		this.mine.radius *= 1.5;
 

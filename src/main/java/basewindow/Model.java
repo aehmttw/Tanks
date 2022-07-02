@@ -286,6 +286,12 @@ public class Model implements IModel
             m.draw(posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll, depthTest);
     }
 
+    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
+    {
+        for (ModelPart m: this.models)
+            m.draw2D(posX, posY, posZ, sX, sY, sZ);
+    }
+
     public static class Material
     {
         public String name;

@@ -170,7 +170,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
     {
         if (this.drawBehindScreen)
         {
-            this.enableMargins = ((Screen)this.tankScreen).enableMargins;
+            this.enableMargins = ((Screen) this.tankScreen).enableMargins;
             ((Screen) this.tankScreen).draw();
         }
         else

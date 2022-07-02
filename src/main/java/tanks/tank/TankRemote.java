@@ -69,7 +69,14 @@ public class TankRemote extends Tank
 		this.secondaryColorR = t.secondaryColorR;
 		this.secondaryColorG = t.secondaryColorG;
 		this.secondaryColorB = t.secondaryColorB;
+		this.enableTertiaryColor = t.enableTertiaryColor;
+		this.tertiaryColorR = t.tertiaryColorR;
+		this.tertiaryColorG = t.tertiaryColorG;
+		this.tertiaryColorB = t.tertiaryColorB;
 		this.emblem = t.emblem;
+		this.emblemR = t.emblemR;
+		this.emblemG = t.emblemG;
+		this.emblemB = t.emblemB;
 		this.description = t.description;
 		this.baseModel = t.baseModel;
 		this.colorModel = t.colorModel;

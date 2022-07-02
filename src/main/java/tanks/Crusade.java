@@ -7,6 +7,7 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 
@@ -30,14 +31,28 @@ public class Crusade
 
 	public double timePassed = 0;
 
-	public ArrayList<String> levels = new ArrayList<>();
-	public ArrayList<String> levelNames = new ArrayList<>();
+	public static class CrusadeLevel
+	{
+		public String levelName;
+		public String levelString;
+		public ArrayList<TankAIControlled> tanks;
+
+		public CrusadeLevel(String name, String lvl)
+		{
+			this.levelName = name;
+			this.levelString = lvl;
+			this.tanks = new ArrayList<>();
+		}
+	}
+
+	public ArrayList<CrusadeLevel> levels = new ArrayList<>();
 	public HashSet<Integer> livingTankIDs = new HashSet<>();
 
 	public int bonusLifeFrequency = 3;
 	public int startingLives = 3;
 	public boolean showNames = false;
 
+	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
 	public ArrayList<Item> crusadeItems = new ArrayList<>();
 
 	public String name = "";
@@ -58,8 +73,6 @@ public class Crusade
 	public ArrayList<LevelPerformance> performances = new ArrayList<>();
 
 	public boolean respawnTanks = true;
-
-	public ScreenCrusadeLevels background;
 
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
@@ -117,7 +130,9 @@ public class Crusade
 		int parsing = -1;
 		
 		int i = 0;
-		
+
+		HashMap<TankAIControlled, String> tankOccurrences = new HashMap<>();
+
 		while (i < levelArray.size())
 		{
 			String s = levelArray.get(i);
@@ -132,15 +147,21 @@ public class Crusade
 				case "properties":
 					parsing = 2;
 					break;
+				case "tanks":
+					parsing = 3;
+					break;
 				default:
 					if (parsing == 0)
 					{
-						this.levels.add(levelArray.get(i));
+						String lvl = levelArray.get(i);
+						String lvlName;
 
 						if (levelArray.get(i).contains("name="))
-							this.levelNames.add(levelArray.get(i).substring(levelArray.get(i).indexOf("name=") + 5));
+							lvlName = (levelArray.get(i).substring(levelArray.get(i).indexOf("name=") + 5));
 						else
-							this.levelNames.add("Battle " + (levelNames.size() + 1));
+							lvlName = ("Battle " + (levels.size() + 1));
+
+						this.levels.add(new CrusadeLevel(lvlName, lvl));
 					}
 					else if (parsing == 1)
 					{
@@ -159,6 +180,15 @@ public class Crusade
 						if (z.length > 3)
 							this.respawnTanks = Boolean.parseBoolean(z[3]);
 					}
+					else if (parsing == 3)
+					{
+						int divider = s.indexOf("]") + 1;
+						String first = s.substring(0, divider);
+						String second = s.substring(divider);
+						TankAIControlled t = TankAIControlled.fromString(second);
+						tankOccurrences.put(t, first);
+						this.customTanks.add(t);
+					}
 					break;
 			}
 
@@ -167,13 +197,20 @@ public class Crusade
 		
 		this.name = name;
 
+		for (TankAIControlled t: tankOccurrences.keySet())
+		{
+			String s = tankOccurrences.get(t);
+			String[] lvls = s.substring(1, s.length() - 1).split(", ");
+			for (String l: lvls)
+			{
+				this.levels.get(Integer.parseInt(l)).tanks.add(t);
+			}
+		}
+
 		for (int j = 0; j < Game.players.size(); j++)
 		{
 			Game.players.get(j).remainingLives = this.startingLives;
 		}
-
-		if (Game.previewCrusades)
-			this.background = new ScreenCrusadeLevels(this);
 	}
 
 	public void begin()
@@ -204,7 +241,8 @@ public class Crusade
 
 	public void loadLevel()
 	{
-		Level l = new Level(this.levels.get(this.currentLevel));
+		Level l = new Level(this.levels.get(this.currentLevel).levelString);
+		l.customTanks = this.customTanks;
 
 		Game.player.hotbar.enabledItemBar = true;
 		Game.player.hotbar.enabledCoins = true;
@@ -273,7 +311,7 @@ public class Crusade
 		String sub = "";
 
 		if (Crusade.currentCrusade.showNames)
-			sub = Crusade.currentCrusade.levelNames.get(Crusade.currentCrusade.currentLevel).replace("_", " ");
+			sub = Crusade.currentCrusade.levels.get(Crusade.currentCrusade.currentLevel).levelName.replace("_", " ");
 
 		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle %d", sub, (this.currentLevel + 1), true));
 	}

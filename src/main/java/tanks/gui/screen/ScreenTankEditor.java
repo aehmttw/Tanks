@@ -11,6 +11,7 @@ import tanks.registry.RegistryModelTank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankProperty;
+import tanks.tank.Turret;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -38,14 +39,15 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     {
         Game.screen = (Screen) this.tankScreen;
         this.tankScreen.removeTank(this.tank);
-        this.tankScreen.refreshTanks();
+        this.tankScreen.refreshTanks(this.tank);
     }
     );
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 6, this.objWidth, this.objHeight, "Done", () ->
     {
         Game.screen = (Screen) this.tankScreen;
-        this.tankScreen.refreshTanks();
+
+        this.tankScreen.refreshTanks(this.tank);
     }
     );
 
@@ -84,8 +86,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         Tab transformation = new Tab(this, "Transformation", TankProperty.Category.transformationGeneral);
         Tab lastStand = new Tab(this, "Last stand", TankProperty.Category.lastStand);
 
-        Tab model = new TabModel(this, appearance, "Tank model", TankProperty.Category.appearanceModel);
-        Tab color = new TabColor(this, appearance, "Tank color", TankProperty.Category.appearanceColor);
+        new TabPartPicker(this, appearance, "Emblem", TankProperty.Category.appearanceEmblem, 4);
+        new TabPartPicker(this, appearance, "Turret base", TankProperty.Category.appearanceTurretBase, 3);
+        new TabPartPicker(this, appearance, "Turret barrel", TankProperty.Category.appearanceTurretBarrel, 2);
+        new TabPartPicker(this, appearance, "Tank body", TankProperty.Category.appearanceBody, 1);
+        new TabPartPicker(this, appearance, "Tank treads", TankProperty.Category.appearanceTreads, 2);
+        new Tab(this, appearance, "Glow", TankProperty.Category.appearanceGlow);
+        new Tab(this, appearance, "Tracks", TankProperty.Category.appearanceTracks);
 
         Tab idle = new Tab(this, movement, "Idle movement", TankProperty.Category.movementIdle);
         Tab avoid = new Tab(this, movement, "Threat avoidance", TankProperty.Category.movementAvoid);
@@ -203,7 +210,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             for (Field f: this.screen.fields)
             {
                 TankProperty p = f.getAnnotation(TankProperty.class);
-                if (p != null && p.category() == this.category)
+                if (p != null && p.category() == this.category && p.miscType() != TankProperty.MiscType.color)
                 {
                     this.uiElements.add(screen.getUIElementForField(f, p, screen.tank));
                 }
@@ -322,39 +329,6 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         }
     }
 
-    public static class TabColor extends Tab
-    {
-        public ScreenOverlayTankColorPicker color;
-
-        public TabColor(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
-        {
-            super(screen, parent, name, category);
-        }
-
-        public TabColor(ScreenTankEditor screen, String name, TankProperty.Category category)
-        {
-            this(screen, null, name, category);
-        }
-
-        public void set()
-        {
-            this.color = new ScreenOverlayTankColorPicker(screen.tank, 120);
-            this.color.preview.posY += 190;
-        }
-
-        @Override
-        public void updateUIElements()
-        {
-            this.color.update();
-        }
-
-        @Override
-        public void drawUIElements()
-        {
-            this.color.draw();
-        }
-    }
-
     public static class TabWithPreview extends Tab
     {
         public TankPlayer preview;
@@ -381,7 +355,6 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         public void updateUIElements()
         {
             super.updateUIElements();
-            this.preview.draw();
         }
 
         @Override
@@ -401,24 +374,316 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.preview.secondaryColorR = this.screen.tank.secondaryColorR;
             this.preview.secondaryColorG = this.screen.tank.secondaryColorG;
             this.preview.secondaryColorB = this.screen.tank.secondaryColorB;
+            this.preview.tertiaryColorR = this.screen.tank.tertiaryColorR;
+            this.preview.tertiaryColorG = this.screen.tank.tertiaryColorG;
+            this.preview.tertiaryColorB = this.screen.tank.tertiaryColorB;
+            this.preview.emblemR = this.screen.tank.emblemR;
+            this.preview.emblemG = this.screen.tank.emblemG;
+            this.preview.emblemB = this.screen.tank.emblemB;
             this.preview.bullet = this.screen.tank.bullet;
 
-            if (this.preview.size > Game.tile_size * 3)
-                this.preview.size = Game.tile_size * 3;
+            if (this.preview.size > Game.tile_size * 2)
+                this.preview.size = Game.tile_size * 2;
+
+            this.preview.enableTertiaryColor = this.screen.tank.enableTertiaryColor;
 
             this.preview.size *= 2;
             this.preview.invulnerable = true;
             this.preview.drawAge = 50;
             this.preview.depthTest = false;
 
-            this.preview.draw();
+            this.preview.drawTank(true, true);
 
             super.drawUIElements();
         }
     }
 
+    public static class TabPartPicker extends TabWithPreview
+    {
+        public int colorIndex;
+
+        public TextBoxSlider colorRed;
+        public TextBoxSlider colorGreen;
+        public TextBoxSlider colorBlue;
+
+        String enableColorText = "Custom color: ";
+        Button enableColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                boolean enable = false;
+
+                if (colorIndex == 2)
+                {
+                    screen.tank.enableSecondaryColor = !screen.tank.enableSecondaryColor;
+                    enable = screen.tank.enableSecondaryColor;
+                    colorRed.inputText = (int) colorRed.value + "";
+                    colorGreen.inputText = (int) colorGreen.value + "";
+                    colorBlue.inputText = (int) colorBlue.value + "";
+                }
+                else if (colorIndex == 3)
+                {
+                    screen.tank.enableTertiaryColor = !screen.tank.enableTertiaryColor;
+                    enable = screen.tank.enableTertiaryColor;
+                    colorRed.inputText = (int) colorRed.value + "";
+                    colorGreen.inputText = (int) colorGreen.value + "";
+                    colorBlue.inputText = (int) colorBlue.value + "";
+                }
+
+                setColorText(enable);
+            }
+        },
+                "If off, an color will automatically---be picked for this part");
+
+        public void setColorText(boolean enable)
+        {
+            if (enable)
+                enableColor.setText(enableColorText, ScreenOptions.onText);
+            else
+                enableColor.setText(enableColorText, ScreenOptions.offText);
+        }
+
+        public TabPartPicker(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category, int colorIndex)
+        {
+            super(screen, parent, name, category);
+            this.colorIndex = colorIndex;
+
+            double r = this.screen.tank.colorR;
+            double g = this.screen.tank.colorG;
+            double b = this.screen.tank.colorB;
+
+            if (colorIndex == 2)
+            {
+                r = this.screen.tank.secondaryColorR;
+                g = this.screen.tank.secondaryColorG;
+                b = this.screen.tank.secondaryColorB;
+            }
+            else if (colorIndex == 3)
+            {
+                r = this.screen.tank.tertiaryColorR;
+                g = this.screen.tank.tertiaryColorG;
+                b = this.screen.tank.tertiaryColorB;
+            }
+            else if (colorIndex == 4)
+            {
+                r = this.screen.tank.emblemR;
+                g = this.screen.tank.emblemG;
+                b = this.screen.tank.emblemB;
+            }
+
+            if (colorIndex == 2)
+                this.setColorText(this.screen.tank.enableSecondaryColor);
+            else if (colorIndex == 3)
+                this.setColorText(this.screen.tank.enableTertiaryColor);
+
+            colorRed = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Red", () ->
+            {
+                if (colorRed.inputText.length() <= 0)
+                    colorRed.inputText = colorRed.previousInputText;
+
+                int red = Integer.parseInt(colorRed.inputText);
+
+                if (colorIndex == 1)
+                    this.screen.tank.colorR = red;
+                else if (colorIndex == 2)
+                    this.screen.tank.secondaryColorR = red;
+                else if (colorIndex == 3)
+                    this.screen.tank.tertiaryColorR = red;
+                else if (colorIndex == 4)
+                    this.screen.tank.emblemR = red;
+            }
+                    , r, 0, 255, 1);
+
+            colorRed.allowLetters = false;
+            colorRed.allowSpaces = false;
+            colorRed.maxChars = 3;
+            colorRed.maxValue = 255;
+            colorRed.checkMaxValue = true;
+            colorRed.integer = true;
+
+            colorGreen = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight,"Green", () ->
+            {
+                if (colorGreen.inputText.length() <= 0)
+                    colorGreen.inputText = colorGreen.previousInputText;
+
+                int green = Integer.parseInt(colorGreen.inputText);
+
+                if (colorIndex == 1)
+                    this.screen.tank.colorG = green;
+                else if (colorIndex == 2)
+                    this.screen.tank.secondaryColorG = green;
+                else if (colorIndex == 3)
+                    this.screen.tank.tertiaryColorG = green;
+                else if (colorIndex == 4)
+                    this.screen.tank.emblemG = green;
+            }
+                    , g, 0, 255, 1);
+
+            colorGreen.allowLetters = false;
+            colorGreen.allowSpaces = false;
+            colorGreen.maxChars = 3;
+            colorGreen.maxValue = 255;
+            colorGreen.checkMaxValue = true;
+            colorGreen.integer = true;
+
+            colorBlue = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Blue", () ->
+            {
+                if (colorBlue.inputText.length() <= 0)
+                    colorBlue.inputText = colorBlue.previousInputText;
+
+                int blue = Integer.parseInt(colorBlue.inputText);
+
+                if (colorIndex == 1)
+                    this.screen.tank.colorB = blue;
+                else if (colorIndex == 2)
+                    this.screen.tank.secondaryColorB = blue;
+                else if (colorIndex == 3)
+                    this.screen.tank.tertiaryColorB = blue;
+                else if (colorIndex == 4)
+                    this.screen.tank.emblemB = blue;
+            }
+                    , b, 0, 255, 1);
+
+            colorBlue.allowLetters = false;
+            colorBlue.allowSpaces = false;
+            colorBlue.maxChars = 3;
+            colorBlue.maxValue = 255;
+            colorBlue.checkMaxValue = true;
+            colorBlue.integer = true;
+        }
+
+        public TabPartPicker(ScreenTankEditor screen, String name, TankProperty.Category category, int colorIndex)
+        {
+            this(screen, null, name, category, colorIndex);
+        }
+
+        @Override
+        public void sortUIElements()
+        {
+            while (this.uiElements.size() < 8)
+                this.uiElements.add(new EmptySpace());
+
+            if (this.colorIndex == 2 || this.colorIndex == 3)
+                this.uiElements.add(enableColor);
+
+            this.uiElements.add(colorRed);
+            this.uiElements.add(colorGreen);
+            this.uiElements.add(colorBlue);
+
+            super.sortUIElements();
+
+            this.uiElements.remove(colorRed);
+            this.uiElements.remove(colorGreen);
+            this.uiElements.remove(colorBlue);
+        }
+
+        @Override
+        public void updateUIElements()
+        {
+            super.updateUIElements();
+
+            if (!this.screen.tank.enableSecondaryColor)
+            {
+                this.screen.tank.secondaryColorR = (int) Turret.calculateSecondaryColor(this.screen.tank.colorR);
+                this.screen.tank.secondaryColorG = (int) Turret.calculateSecondaryColor(this.screen.tank.colorG);
+                this.screen.tank.secondaryColorB = (int) Turret.calculateSecondaryColor(this.screen.tank.colorB);
+            }
+
+            if (!this.screen.tank.enableTertiaryColor)
+            {
+                this.screen.tank.tertiaryColorR = (int) ((this.screen.tank.colorR + this.screen.tank.secondaryColorR) / 2);
+                this.screen.tank.tertiaryColorG = (int) ((this.screen.tank.colorG + this.screen.tank.secondaryColorG) / 2);
+                this.screen.tank.tertiaryColorB = (int) ((this.screen.tank.colorB + this.screen.tank.secondaryColorB) / 2);
+            }
+
+            if (this.colorIndex == 1 || (this.colorIndex == 4 && this.screen.tank.emblem != null) || (this.colorIndex == 2 && this.screen.tank.enableSecondaryColor) ||  (this.colorIndex == 3 && this.screen.tank.enableTertiaryColor))
+            {
+                this.colorRed.update();
+                this.colorGreen.update();
+                this.colorBlue.update();
+            }
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            this.updateColors();
+
+            if (this.colorIndex == 1 || (this.colorIndex == 4 && this.screen.tank.emblem != null) || (this.colorIndex == 2 && this.screen.tank.enableSecondaryColor) ||  (this.colorIndex == 3 && this.screen.tank.enableTertiaryColor))
+            {
+                this.colorRed.draw();
+                this.colorGreen.draw();
+                this.colorBlue.draw();
+            }
+
+            if (this.colorIndex == 2)
+            {
+                Drawing.drawing.setInterfaceFontSize(24);
+                if (Level.isDark())
+                    Drawing.drawing.setColor(255, 255, 255);
+                else
+                    Drawing.drawing.setColor(0, 0, 0);
+
+                Drawing.drawing.displayInterfaceText(this.screen.centerX, this.screen.centerY + 200, "Note: Tank treads and turret barrel share colors.");
+                Drawing.drawing.displayInterfaceText(this.screen.centerX, this.screen.centerY + 230, "Tanks on a team with a color will use that color for their treads.");
+            }
+
+            super.drawUIElements();
+        }
+
+        public void updateColors()
+        {
+            colorRed.r1 = 0;
+            colorRed.r2 = 255;
+            colorRed.g1 = colorGreen.value;
+            colorRed.g2 = colorGreen.value;
+            colorRed.b1 = colorBlue.value;
+            colorRed.b2 = colorBlue.value;
+
+            colorGreen.r1 = colorRed.value;
+            colorGreen.r2 = colorRed.value;
+            colorGreen.g1 = 0;
+            colorGreen.g2 = 255;
+            colorGreen.b1 = colorBlue.value;
+            colorGreen.b2 = colorBlue.value;
+
+            colorBlue.r1 = colorRed.value;
+            colorBlue.r2 = colorRed.value;
+            colorBlue.g1 = colorGreen.value;
+            colorBlue.g2 = colorGreen.value;
+            colorBlue.b1 = 0;
+            colorBlue.b2 = 255;
+
+            if (!screen.tank.enableSecondaryColor && this.colorIndex == 2)
+            {
+                colorRed.value = screen.tank.secondaryColorR;
+                colorGreen.value = screen.tank.secondaryColorG;
+                colorBlue.value = screen.tank.secondaryColorB;
+            }
+            else if (!screen.tank.enableTertiaryColor && this.colorIndex == 3)
+            {
+                colorRed.value = screen.tank.tertiaryColorR;
+                colorGreen.value = screen.tank.tertiaryColorG;
+                colorBlue.value = screen.tank.tertiaryColorB;
+            }
+            else
+            {
+                colorRed.function.run();
+                colorGreen.function.run();
+                colorBlue.function.run();
+            }
+        }
+    }
+
     public static class TabAppearance extends TabWithPreview
     {
+        double margin = screen.centerX - screen.objXSpace / 2 - screen.objWidth / 2 + 30;
+        double margin2 = screen.centerX - screen.objXSpace / 2;
+        double margin3 = screen.centerX + screen.objXSpace / 2;
+
+        double space = 60;
+
         public TabAppearance(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
         {
             super(screen, parent, name, category);
@@ -432,40 +697,83 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         @Override
         public void sortUIElements()
         {
-            this.yoffset = 180;
-            super.sortUIElements();
-        }
-    }
+            int in = 0;
+            for (Tab t: this.subMenus)
+            {
+                this.uiElements.add(in, new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t)));
+                in++;
+            }
 
-    public static class TabModel extends TabWithPreview
-    {
-        public TabModel(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
-        {
-            super(screen, parent, name, category);
-        }
+            for (int i = 0; i < this.uiElements.size(); i++)
+            {
+                if (i < in)
+                    this.uiElements.get(i).setPosition(margin2, Drawing.drawing.interfaceSizeY / 2 + yoffset + i * 60);
+                else
+                    this.uiElements.get(i).setPosition(margin3, Drawing.drawing.interfaceSizeY / 2 + yoffset + (i - in + 3) * 90);
+            }
 
-        public TabModel(ScreenTankEditor screen, String name, TankProperty.Category category)
-        {
-            super(screen, name, category);
-        }
-
-        @Override
-        public void sortUIElements()
-        {
-            this.uiElements.add(4, new EmptySpace());
-            this.uiElements.add(5, new EmptySpace());
-            this.uiElements.add(6, new EmptySpace());
-            this.uiElements.add(7, new EmptySpace());
-
-            super.sortUIElements();
+            for (Tab t: this.subMenus)
+            {
+                t.sortUIElements();
+            }
         }
 
         @Override
         public void set()
         {
             super.set();
-            this.preview.posX = this.screen.centerX;
-            this.preview.posY = this.screen.centerY;
+            this.preview.posX = margin3;
+            this.preview.posY = Drawing.drawing.interfaceSizeY / 2 + yoffset + 90;
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            super.drawUIElements();
+
+            double turretBaseR = (screen.tank.secondaryColorR + screen.tank.colorR) / 2;
+            double turretBaseG = (screen.tank.secondaryColorG + screen.tank.colorG) / 2;
+            double turretBaseB = (screen.tank.secondaryColorB + screen.tank.colorB) / 2;
+            if (screen.tank.enableTertiaryColor)
+            {
+                turretBaseR = screen.tank.tertiaryColorR;
+                turretBaseG = screen.tank.tertiaryColorG;
+                turretBaseB = screen.tank.tertiaryColorB;
+            }
+
+            double s = Game.tile_size * 0.8;
+
+            if (screen.tank.emblem != null)
+            {
+                Drawing.drawing.setColor(screen.tank.emblemR, screen.tank.emblemG, screen.tank.emblemB);
+                Drawing.drawing.drawInterfaceImage(screen.tank.emblem, margin, screen.centerY + 60 - space * 3, s, s);
+            }
+
+            Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, 0.5);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.turretBaseModel, margin, screen.centerY + 60 - space * 2 + 4, 0, s, s, s);
+
+            Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 0.5);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.turretModel, margin, screen.centerY + 60 - space * 1, 0, s, s, s);
+
+            Drawing.drawing.setColor(screen.tank.colorR, screen.tank.colorG, screen.tank.colorB, 255, 0.5);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.colorModel, margin, screen.centerY + 60 - space * 0 + 7, 0, s, s, s);
+
+            Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 0.5);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.baseModel, margin, screen.centerY + 60 + space * 1 + 7, 0, s, s, s);
+
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
+            Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 1);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
+
+            Drawing.drawing.setColor(0, 0, 0, 64);
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    Drawing.drawing.fillInterfaceRect(margin + (i - 1) * s * 0.4, screen.centerY + 60 + space * 3 + (j - 0.5) * s * 0.6, s / 5, s / 5);
+                }
+            }
         }
     }
 
@@ -535,7 +843,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             else if (p.miscType().equals(TankProperty.MiscType.emblem))
             {
                 final String[] emblems = RegistryModelTank.toStringArray(Game.registryModelTank.tankEmblems);
-                ImageSelector t = new ImageSelector(0, 0, this.objWidth, this.objHeight, p.name(), emblems, () -> {}, "");
+                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, p.name(), emblems, () -> {}, "");
 
                 String selected = (String) f.get(tank);
                 int selIndex = 0;
@@ -567,7 +875,9 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
                 t.images = emblems;
-
+                t.imageR = 127;
+                t.imageG = 180;
+                t.imageB = 255;
                 return t;
             }
             else if (f.getType().equals(String.class))
@@ -680,13 +990,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 IModel[] models = null;
                 String[] modelDirs;
 
-                if (p.miscType().equals(TankProperty.MiscType.base))
+                if (p.miscType().equals(TankProperty.MiscType.baseModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.tankBaseModels);
-                else if (p.miscType().equals(TankProperty.MiscType.color))
+                else if (p.miscType().equals(TankProperty.MiscType.colorModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.tankColorModels);
-                else if (p.miscType().equals(TankProperty.MiscType.turretBase))
+                else if (p.miscType().equals(TankProperty.MiscType.turretBaseModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.turretBaseModels);
-                else if (p.miscType().equals(TankProperty.MiscType.turret))
+                else if (p.miscType().equals(TankProperty.MiscType.turretModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.turretModels);
 
                 String selected = f.get(tank).toString();
@@ -701,7 +1011,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                 final IModel[] finalModels = models;
 
-                ImageSelector t = new ImageSelector(0, 0, this.objWidth, this.objHeight, p.name(), modelDirs, () -> {}, "");
+                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, p.name(), modelDirs, () -> {}, "");
                 t.selectedOption = selIndex;
 
                 t.function = () ->
@@ -796,8 +1106,8 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     {
         this.drawDefaultBackground();
 
-        Drawing.drawing.setColor(127, 178, 228, 64);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+        //Drawing.drawing.setColor(127, 178, 228, 64);
+        //Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
         double extraHeight = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
         double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;

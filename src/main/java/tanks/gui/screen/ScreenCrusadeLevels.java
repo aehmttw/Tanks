@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import basewindow.transformation.*;
 import tanks.*;
 import tanks.obstacle.Obstacle;
+import tanks.tank.TankAIControlled;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
     {
         public ArrayList<Movable> movables = new ArrayList<>();
         public ArrayList<Obstacle> obstacles = new ArrayList<>();
+        public ArrayList<TankAIControlled> tanks = new ArrayList<>();
         public String levelString;
         public Level level;
         public Drawing.LevelRenderer renderer = new Drawing.LevelRenderer();
@@ -83,6 +85,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
         Game.cleanUp();
 
         l.level = new Level(l.levelString);
+        l.level.customTanks = l.tanks;
 
         if (!l.isTransition)
             addTransitionLevels(l);
@@ -213,11 +216,12 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
             this.levels.add(l0);
             l0.levelString = "{28,18||10000-0-player}";
 
-            for (String s: this.crusade.levels)
+            for (Crusade.CrusadeLevel level: this.crusade.levels)
             {
                 ScreenLevel l = new ScreenLevel();
                 this.levels.add(l);
-                l.levelString = s;
+                l.levelString = level.levelString;
+                l.tanks = level.tanks;
             }
 
             ScreenLevel l = new ScreenLevel();

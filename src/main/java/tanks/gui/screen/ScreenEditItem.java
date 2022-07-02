@@ -211,7 +211,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
             }
             else if (p instanceof UIPropertyImageSelector)
             {
-                ImageSelector t = new ImageSelector(0, 0, this.objWidth, this.objHeight, name, ((UIPropertyImageSelector) p).values, () -> {});
+                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, name, ((UIPropertyImageSelector) p).values, () -> {});
                 t.drawImages = true;
                 t.selectedOption = (int) p.value;
 

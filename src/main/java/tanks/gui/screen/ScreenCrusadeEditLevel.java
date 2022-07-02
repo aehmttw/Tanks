@@ -12,8 +12,7 @@ import java.util.ArrayList;
 
 public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScreen
 {
-    public String name;
-    public String level;
+    public Crusade.CrusadeLevel level;
     public Screen previous;
     public ScreenCrusadeEditor previous2;
     public TextBox index;
@@ -66,7 +65,6 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             previous2.crusade.levels.add(insertionIndex, level);
-            previous2.crusade.levelNames.add(insertionIndex, name);
             previous2.refreshLevelButtons();
 
             Game.cleanUp();
@@ -81,13 +79,14 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             previous2.crusade.levels.add(insertionIndex, level);
-            previous2.crusade.levelNames.add(insertionIndex, name);
             Game.cleanUp();
 
-            String level = previous2.crusade.levels.remove(insertionIndex + 1);
+            Crusade.CrusadeLevel level = previous2.crusade.levels.remove(insertionIndex + 1);
 
-            ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(previous2.crusade.levelNames.remove(insertionIndex + 1), level, insertionIndex + 2, previous2);
-            new Level(level).loadLevel(s);
+            ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, insertionIndex + 2, previous2);
+            Level l = new Level(level.levelString);
+            l.customTanks = level.tanks;
+            l.loadLevel(s);
             Game.screen = s;
         }
     });
@@ -98,13 +97,14 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             previous2.crusade.levels.add(insertionIndex, level);
-            previous2.crusade.levelNames.add(insertionIndex, name);
             Game.cleanUp();
 
-            String level = previous2.crusade.levels.remove(insertionIndex - 1);
+            Crusade.CrusadeLevel level = previous2.crusade.levels.remove(insertionIndex - 1);
 
-            ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(previous2.crusade.levelNames.remove(insertionIndex - 1), level, insertionIndex, previous2);
-            new Level(level).loadLevel(s);
+            ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, insertionIndex, previous2);
+            Level l = new Level(level.levelString);
+            l.customTanks = level.tanks;
+            l.loadLevel(s);
             Game.screen = s;
         }
     });
@@ -124,7 +124,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                     if (file.create())
                     {
                         file.startWriting();
-                        file.println(level);
+                        file.println(level.levelString);
                         file.stopWriting();
                         success = true;
                     }
@@ -151,9 +151,9 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     @SuppressWarnings("unchecked")
     protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
-    public ScreenCrusadeEditLevel(String name, String level, int in, ScreenCrusadeEditor s2)
+    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeEditor s2)
     {
-        this(name, level, s2, s2);
+        this(level, s2, s2);
         this.edit = true;
 
         add.setText("Ok");
@@ -170,14 +170,13 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         this.allowClose = false;
     }
 
-    public ScreenCrusadeEditLevel(String name, String level, Screen s, ScreenCrusadeEditor s2)
+    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, Screen s, ScreenCrusadeEditor s2)
     {
         super(350, 40, 380, 60);
 
         this.music = "menu_4.ogg";
         this.musicID = "menu";
 
-        this.name = name;
         this.level = level;
 
         for (int i = 0; i < drawables.length; i++)
@@ -207,7 +206,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 levelName.inputText = levelName.previousInputText;
             updateSaveButton();
         }
-                , name.replace("_", " "));
+                , level.levelName.replace("_", " "));
 
         levelName.enableCaps = true;
 
@@ -420,17 +419,17 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
-                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, (insertionIndex - i) + ". " + previous2.crusade.levelNames.get(insertionIndex - i - 1).replace("_", " "));
+                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, (insertionIndex - i) + ". " + previous2.crusade.levels.get(insertionIndex - i - 1).levelName.replace("_", " "));
             }
 
             for (int i = 0; i < 7; i++)
             {
-                if (insertionIndex + i >= previous2.crusade.levelNames.size())
+                if (insertionIndex + i >= previous2.crusade.levels.size())
                     break;
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
-                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, (insertionIndex + i + 2) + ". " + previous2.crusade.levelNames.get(insertionIndex + i).replace("_", " "));
+                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, (insertionIndex + i + 2) + ". " + previous2.crusade.levels.get(insertionIndex + i).levelName.replace("_", " "));
             }
 
             Drawing.drawing.setColor(0, 0, 0, 127);
@@ -438,7 +437,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, (insertionIndex + 1) + ". " + name.replace("_", " "));
+            Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, (insertionIndex + 1) + ". " + level.levelName.replace("_", " "));
 
             this.index.draw();
             this.add.draw();

@@ -13,6 +13,7 @@ import java.util.List;
 public class ScreenCrusadeDetails extends Screen
 {
     public Crusade crusade;
+    public ScreenCrusadeLevels background;
 
     public Button begin = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Play", new Runnable()
     {
@@ -113,6 +114,9 @@ public class ScreenCrusadeDetails extends Screen
             begin.enableHover = true;
             begin.setHoverText("This crusade has no levels.---Add some to play it!");
         }
+
+        if (Game.previewCrusades)
+            this.background = new ScreenCrusadeLevels(this.crusade);
     }
 
     @Override
@@ -140,7 +144,7 @@ public class ScreenCrusadeDetails extends Screen
     public void draw()
     {
         if (Game.previewCrusades)
-            this.crusade.background.draw();
+            this.background.draw();
         else
             this.drawDefaultBackground();
 

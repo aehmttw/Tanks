@@ -61,6 +61,9 @@ public class Button implements IDrawable, ITrigger
 	public double textOffsetX = 0;
 	public double textOffsetY = 0;
 
+	public double imageR = 255;
+	public double imageG = 255;
+	public double imageB = 255;
 	public boolean drawImageShadow = false;
 
 	public boolean silent = false;
@@ -208,14 +211,14 @@ public class Button implements IDrawable, ITrigger
 				drawing.drawInterfaceImage(image, this.posX + this.imageXOffset + 1.5, this.posY + this.imageYOffset + 1.5, this.imageSizeX, this.imageSizeY);
 			}
 
-			drawing.setColor(255, 255, 255);
+			drawing.setColor(this.imageR, this.imageG, this.imageB);
 			drawing.drawInterfaceImage(image, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
 		}
 
 		if (this.model != null)
 		{
 			Drawing.drawing.setColor(127, 180, 255);
-			drawing.drawInterfaceModel(model, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX * 0.75, this.imageSizeY * 0.75, 0);
+			drawing.drawInterfaceModel2D(model, this.posX + this.imageXOffset, this.posY + this.imageYOffset, 0,this.imageSizeX * 0.75, this.imageSizeY * 0.75, this.imageSizeY * 0.75);
 		}
 
 		if (enableHover)

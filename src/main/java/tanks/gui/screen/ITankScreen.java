@@ -8,5 +8,5 @@ public interface ITankScreen
 
     void removeTank(TankAIControlled t);
 
-    void refreshTanks();
+    void refreshTanks(TankAIControlled t);
 }

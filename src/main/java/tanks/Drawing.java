@@ -709,6 +709,37 @@ public class Drawing
 		m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
 	}
 
+	public void drawInterfaceModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw)
+	{
+		this.drawInterfaceModel(m, x, y, z, width, height, depth, yaw, 0, 0);
+	}
+
+	public void drawInterfaceModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
+	{
+		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawZ = z * interfaceScale;
+
+		double drawSizeX = (width * interfaceScale);
+		double drawSizeY = (height * interfaceScale);
+		double drawSizeZ = depth * interfaceScale;
+
+		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
+	}
+
+	public void drawInterfaceModel2D(IModel m, double x, double y, double z, double width, double height, double depth)
+	{
+		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawZ = z * interfaceScale;
+
+		double drawSizeX = (width * interfaceScale);
+		double drawSizeY = (height * interfaceScale);
+		double drawSizeZ = depth * interfaceScale;
+
+		m.draw2D(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ);
+	}
+
 	public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
 	{
 		double drawX = gameToAbsoluteX(x, 0);
@@ -852,6 +883,17 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 
 		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
+	}
+
+	public void drawInterfaceImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
+	{
+		double drawX = (interfaceScale * (x) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		double drawZ = z * interfaceScale;
+		double drawSizeX = (sizeX * interfaceScale);
+		double drawSizeY = (sizeY * interfaceScale);
+
+		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
 	}
 
 	public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)

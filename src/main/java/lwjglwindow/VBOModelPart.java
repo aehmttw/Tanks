@@ -48,6 +48,31 @@ public class VBOModelPart extends ModelPart
     }
 
     @Override
+    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
+    {
+        if (this.material.useDefaultDepthMask)
+            window.setDrawOptions(false, this.material.glow, this.window.colorA >= 1.0);
+        else
+            window.setDrawOptions(false, this.material.glow, this.material.depthMask);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
+        Scale.transform(window, 1, 1, 0);
+        Rotation.transform(window, 0, Math.PI * -3 / 4, 0);
+        Rotation.transform(window, 0, 0, Math.PI / 4);
+        Scale.transform(window, sX, sY, sZ);
+
+        if (this.material.texture != null)
+            window.setTexture(this.material.texture, false);
+
+        window.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.shapes.length * 3);
+        window.disableTexture();
+
+        glPopMatrix();
+    }
+
+    @Override
     public void draw(double posX, double posY, double sX, double sY, double angle)
     {
         if (this.material.useDefaultDepthMask)

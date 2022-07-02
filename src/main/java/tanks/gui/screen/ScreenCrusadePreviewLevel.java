@@ -35,7 +35,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         {
             Game.cleanUp();
 
-            String level = crusade.levels.get(index + 1);
+            String level = crusade.levels.get(index + 1).levelString;
 
             ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, index + 1, previous);
             new Level(level).loadLevel(s);
@@ -50,7 +50,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         {
             Game.cleanUp();
 
-            String level = crusade.levels.get(index - 1);
+            String level = crusade.levels.get(index - 1).levelString;
 
             ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, index - 1, previous);
             new Level(level).loadLevel(s);
@@ -193,17 +193,17 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
 
             Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.drawInterfaceText(posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, (index - i) + ". " + crusade.levelNames.get(index - i - 1).replace("_", " "));
+            Drawing.drawing.drawInterfaceText(posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, (index - i) + ". " + crusade.levels.get(index - i - 1).levelName.replace("_", " "));
         }
 
         for (int i = 0; i < 7; i++)
         {
-            if (index + i + 1 >= crusade.levelNames.size())
+            if (index + i + 1 >= crusade.levels.size())
                 break;
 
             Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.drawInterfaceText(posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, (index + i + 2) + ". " + crusade.levelNames.get(index + i + 1).replace("_", " "));
+            Drawing.drawing.drawInterfaceText(posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, (index + i + 2) + ". " + crusade.levels.get(index + i + 1).levelName.replace("_", " "));
         }
 
         Drawing.drawing.setColor(0, 0, 0, 127);
@@ -211,7 +211,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceText(posX, Drawing.drawing.interfaceSizeY / 2 - 60, (index + 1) + ". " + crusade.levelNames.get(index).replace("_", " "));
+        Drawing.drawing.drawInterfaceText(posX, Drawing.drawing.interfaceSizeY / 2 - 60, (index + 1) + ". " + crusade.levels.get(index).levelName.replace("_", " "));
 
         this.back.draw();
         this.next.draw();

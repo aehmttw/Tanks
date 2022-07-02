@@ -15,6 +15,7 @@ import static tanks.tank.TankProperty.Category.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /** This class is the 'skeleton' tank class.
@@ -268,6 +269,9 @@ public class TankAIControlled extends Tank
 	/** Stores distances to obstacles or tanks in 32 directions*/
 	protected double[] mineFleeDistances = new double[32];
 
+	/** Cooldown before the tank will turn again if it's running into a wall */
+	protected double gentleTurnCooldown = 0;
+
 	/** Time in which the tank will follow its initial flee path from a mine*/
 	protected double mineFleeTimer = 0;
 
@@ -402,13 +406,13 @@ public class TankAIControlled extends Tank
 	protected double startAngle;
 
 	/** Time until mimicking ends */
-	public double mimicRevertCounter = this.mimicRevertTime;
+	protected double mimicRevertCounter = this.mimicRevertTime;
 
 	/** Mimic laser effect*/
-	public Laser laser;
+	protected Laser laser;
 
 	/** True if able to mimic other tanks*/
-	public boolean canCurrentlyMimic = true;
+	protected boolean canCurrentlyMimic = true;
 
 	protected double baseColorR;
 	protected double baseColorG;
@@ -484,7 +488,7 @@ public class TankAIControlled extends Tank
 		if (this.age <= 0)
 		{
 			this.baseMaxSpeed = this.maxSpeed;
-			this.dealsDamage = this.isSupportTank();
+			this.dealsDamage = !this.isSupportTank();
 		}
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
@@ -931,13 +935,38 @@ public class TankAIControlled extends Tank
 
 	public void updateIdleMotion()
 	{
-		if (this.random.nextDouble() < this.turnChance * Panel.frameFrequency || this.hasCollided)
+		double space = 1000;
+
+		if (!this.overrideDirection && this.gentleTurnCooldown <= 0)
+		{
+			Ray d = new Ray(this.posX, this.posY, this.getPolarDirection(), 0, this, Game.tile_size);
+			d.size = Game.tile_size * this.hitboxSize - 1;
+
+			space = d.getDist();
+		}
+
+		if (this.gentleTurnCooldown > 0)
+			this.gentleTurnCooldown -= Panel.frameFrequency;
+
+		boolean turn = this.random.nextDouble() < this.turnChance * Panel.frameFrequency || this.hasCollided;
+
+		if (turn || space <= 50)
 		{
 			this.overrideDirection = false;
 
 			double prevDirection = this.direction;
 
 			ArrayList<Double> directions = new ArrayList<>();
+
+			boolean[] validDirs = new boolean[8];
+			validDirs[(int) (2 * ((this.direction + 0) % 4))] = true;
+			validDirs[(int) (2 * ((this.direction + 0.5) % 4))] = true;
+			validDirs[(int) (2 * ((this.direction + 3.5) % 4))] = true;
+			validDirs[(int) (2 * ((this.direction + 1) % 4))] = true;
+			validDirs[(int) (2 * ((this.direction + 3) % 4))] = true;
+
+			if (!turn)
+				this.gentleTurnCooldown = 50;
 
 			for (double dir = 0; dir < 4; dir += 0.5)
 			{
@@ -947,7 +976,7 @@ public class TankAIControlled extends Tank
 
 				distances[(int) (dir * 2)] = dist;
 
-				if (!(dir == (this.direction + 2) % 4 || dir == (this.direction + 1.5) % 4 || dir == (this.direction + 2.5) % 4))
+				if (validDirs[(int) (dir * 2)])
 				{
 					if (dist >= 4)
 						directions.add(dir);
@@ -962,10 +991,10 @@ public class TankAIControlled extends Tank
 				this.direction = directions.get(chosenDir);
 
 
-			if (this.direction != prevDirection)
+			if (this.direction != prevDirection && turn)
 				this.motionPauseTimer = this.turnPauseTime;
 
-			if (this.canHide)
+			if (this.canHide && turn)
 				this.motionPauseTimer += this.bushHideTime * (this.random.nextDouble() + 1);
 		}
 
@@ -2191,9 +2220,15 @@ public class TankAIControlled extends Tank
 			this.mimicRevertCounter = this.mimicRevertTime;
 
 			Class<? extends Movable> c = this.targetEnemy.getClass();
+			Tank ct;
+
+			ct = (Tank) this.targetEnemy;
 
 			if (((Tank) this.targetEnemy).possessor != null)
-				c = ((Tank) this.targetEnemy).getTopLevelPossessor().getClass();
+			{
+				ct = ((Tank) this.targetEnemy).getTopLevelPossessor();
+				c = ct.getClass();
+			}
 
 			boolean player = false;
 
@@ -2206,7 +2241,15 @@ public class TankAIControlled extends Tank
 				player = true;
 			}
 
-			Tank t = (Tank) c.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, this.posX, this.posY, this.angle);
+			Tank t;
+			if (c.equals(TankAIControlled.class))
+			{
+				t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.colorR, this.colorG, this.colorB, this.angle, ((TankAIControlled) ct).shootAIType);
+				((TankAIControlled) ct).cloneProperties((TankAIControlled) t);
+			}
+			else
+				t = (Tank) c.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, this.posX, this.posY, this.angle);
+
 			t.vX = this.vX;
 			t.vY = this.vY;
 			t.team = this.team;
@@ -2549,9 +2592,7 @@ public class TankAIControlled extends Tank
 					boolean found = true;
 
 					TankProperty a = f.getAnnotation(TankProperty.class);
-					if (a != null &&
-							(((a.category().ordinal() + a.name().toLowerCase().replace(" ", "_")).equals(propname))
-						  	|| a.id().equals(propname)))
+					if (a != null && a.id().equals(propname))
 					{
 						if (f.getType().equals(int.class))
 							f.set(t, Integer.parseInt(value));

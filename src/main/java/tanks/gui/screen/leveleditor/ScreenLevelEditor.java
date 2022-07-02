@@ -956,7 +956,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Game.game.input.editorCamera.invalidate();
 		}
 
-		if (Game.game.input.editorPaste.isValid() && !pasteMode)
+		if (Game.game.input.editorPaste.isValid() && !pasteMode && !this.clipboard.isEmpty())
 		{
 			this.changeCameraMode = false;
 			this.eraseMode = false;
@@ -1527,7 +1527,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				try
 				{
-					Tank n = (Tank) o.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((Tank) o).angle);
+					Tank n;
+
+					if (o.getClass().equals(TankAIControlled.class))
+					{
+						n = new TankAIControlled(((TankAIControlled) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((TankAIControlled) o).size, ((TankAIControlled) o).colorR, ((TankAIControlled) o).colorG, ((TankAIControlled) o).colorB, ((TankAIControlled) o).angle, ((TankAIControlled) o).shootAIType);
+						((TankAIControlled) o).cloneProperties((TankAIControlled) n);
+					}
+					else
+						n = (Tank) o.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((Tank) o).angle);
 
 					n.team = ((Tank) o).team;
 					n.destroy = ((Tank) o).destroy;
@@ -1947,7 +1955,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				if (currentPlaceable == Placeable.playerTank && !this.movePlayer)
 				{
-					Drawing.drawing.setColor(255, 255, 255, 127);
+					Drawing.drawing.setColor(0, 200, 255, 127);
 					Drawing.drawing.drawImage("emblems/player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size * 0.7, mouseTank.size * 0.7);
 				}
 			}
@@ -2387,7 +2395,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				try
 				{
-					Tank n = (Tank) t.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) t).name, t.posX, t.posY, ((Tank) t).angle);
+					Tank n;
+
+					if (t.getClass().equals(TankAIControlled.class))
+					{
+						n = new TankAIControlled(((TankAIControlled) t).name, t.posX, t.posY, ((TankAIControlled) t).size, ((TankAIControlled) t).colorR, ((TankAIControlled) t).colorG, ((TankAIControlled) t).colorB, ((TankAIControlled) t).angle, ((TankAIControlled) t).shootAIType);
+						((TankAIControlled) t).cloneProperties((TankAIControlled) n);
+					}
+					else
+						n = (Tank) t.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) t).name, t.posX, t.posY, ((Tank) t).angle);
+
 					n.team = t.team;
 					n.destroy = t.destroy;
 					this.clipboard.add(n);

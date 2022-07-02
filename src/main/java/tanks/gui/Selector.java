@@ -223,7 +223,7 @@ public class Selector implements IDrawable, ITrigger
         if (models != null)
         {
             Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.drawInterfaceModel(models[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY, 0);
+            Drawing.drawing.drawInterfaceModel2D(models[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, 0, this.sizeY, this.sizeY, this.sizeY);
         }
     }
 

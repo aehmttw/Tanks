@@ -82,6 +82,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public CrusadePlayer player;
 
+    public ScreenCrusadeLevels background;
+
     public ScreenCrusadeStats(Crusade crusade, CrusadePlayer p, boolean intro)
     {
         super(350, 40, 250, 60);
@@ -89,12 +91,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         if (Drawing.drawing.interfaceScaleZoom > 1)
             page_size = 9;
 
+        if (Game.previewCrusades)
+            this.background = new ScreenCrusadeLevels(crusade);
+
         this.player = p;
         this.crusade = crusade;
         this.forceInBounds = Game.previewCrusades;
-
-        if (Game.previewCrusades)
-            this.crusade.background.age = 0;
 
         Obstacle.draw_size = Game.tile_size;
 
@@ -211,7 +213,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             String name = "Battle " + (l.index + 1);
 
             if (crusade.showNames)
-                name = (l.index + 1 + ". " + crusade.levelNames.get(l.index).replace("_", " "));
+                name = (l.index + 1 + ". " + crusade.levels.get(l.index).levelName.replace("_", " "));
 
             this.levels.add(new LevelEntry(name, l));
 
@@ -511,7 +513,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     {
         if (Game.previewCrusades)
         {
-            this.crusade.background.draw();
+            this.background.draw();
 
             if (!Game.game.window.drawingShadow)
                 Game.game.window.clearDepth();

@@ -2158,7 +2158,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				if (Crusade.currentCrusade != null && Crusade.currentCrusade.showNames)
 				{
 					Drawing.drawing.setInterfaceFontSize(50);
-					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 75, Crusade.currentCrusade.levelNames.get(Crusade.currentCrusade.currentLevel).replace("_", " "));
+					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 75, Crusade.currentCrusade.levels.get(Crusade.currentCrusade.currentLevel).levelName.replace("_", " "));
 				}
 			}
 

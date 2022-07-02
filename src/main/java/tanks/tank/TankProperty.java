@@ -9,8 +9,13 @@ public @interface TankProperty
     enum Category
     {
         appearanceGeneral,
-            appearanceModel,
-            appearanceColor,
+            appearanceEmblem,
+            appearanceTurretBase,
+            appearanceTurretBarrel,
+            appearanceBody,
+            appearanceTreads,
+            appearanceGlow,
+            appearanceTracks,
         general,
         movementGeneral,
             movementIdle,
@@ -23,22 +28,23 @@ public @interface TankProperty
             firingPattern,
         spawning,
         transformationGeneral,
+            transformationOnSight,
+            transformationOnHealth,
+            transformationOnThreat,
+            transformationOnProximity,
+            transformationOnAlone,
         lastStand,
-
-        transformationOnSight,
-        transformationOnHealth,
-        transformationOnThreat,
-        transformationOnProximity,
-        transformationOnAlone,}
+    }
 
     enum MiscType
     {
         none,
-        base,
-        color,
-        turretBase,
-        turret,
-        emblem
+        baseModel,
+        colorModel,
+        turretBaseModel,
+        turretModel,
+        emblem,
+        color
     }
 
     Category category();

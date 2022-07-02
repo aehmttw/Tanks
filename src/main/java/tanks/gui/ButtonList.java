@@ -34,6 +34,10 @@ public class ButtonList
     public double objXSpace = 380;
     public double objYSpace = 60;
 
+    public double imageR = 255;
+    public double imageG = 255;
+    public double imageB = 255;
+
     public boolean translate = false;
 
     public boolean hideText = false;
@@ -157,6 +161,10 @@ public class ButtonList
             buttons.get(i).sizeX = this.objWidth;
             buttons.get(i).sizeY = this.objHeight;
             buttons.get(i).translated = this.translate;
+            buttons.get(i).imageR = this.imageR;
+            buttons.get(i).imageG = this.imageG;
+            buttons.get(i).imageB = this.imageB;
+
 
             if (hideText)
                 buttons.get(i).text = "";

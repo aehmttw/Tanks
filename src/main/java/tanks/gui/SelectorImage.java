@@ -6,34 +6,35 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenSelector;
 
-import java.util.Arrays;
-
-public class ImageSelector extends Selector
+public class SelectorImage extends Selector
 {
     public boolean drawImages = false;
+    public double imageR = 255;
+    public double imageG = 255;
+    public double imageB = 255;
 
-    public ImageSelector(double x, double y, double sX, double sY, String text, String[] o, Runnable f)
+    public SelectorImage(double x, double y, double sX, double sY, String text, String[] o, Runnable f)
     {
         super(x, y, sX, sY, text, o, f);
         this.format = false;
         this.translate = false;
     }
 
-    public ImageSelector(double x, double y, double sX, double sY, String text, String[] o, Runnable f, String hoverText)
+    public SelectorImage(double x, double y, double sX, double sY, String text, String[] o, Runnable f, String hoverText)
     {
         super(x, y, sX, sY, text, o, f, hoverText);
         this.format = false;
         this.translate = false;
     }
 
-    public ImageSelector(double x, double y, double sX, double sY, String text, String[] o)
+    public SelectorImage(double x, double y, double sX, double sY, String text, String[] o)
     {
         super(x, y, sX, sY, text, o);
         this.format = false;
         this.translate = false;
     }
 
-    public ImageSelector(double x, double y, double sX, double sY, String text, String[] o, String hoverText)
+    public SelectorImage(double x, double y, double sX, double sY, String text, String[] o, String hoverText)
     {
         super(x, y, sX, sY, text, o, hoverText);
         this.format = false;
@@ -133,14 +134,14 @@ public class ImageSelector extends Selector
 
         if (drawImages || images != null && options[selectedOption] != null)
         {
-            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setColor(imageR, imageG, imageB);
             Drawing.drawing.drawInterfaceImage(options[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, posY - sizeY * 3 / 8, sizeY * (3.0 / 4 + m), sizeY * (3.0 / 4 + m));
         }
 
         if (models != null)
         {
             Drawing.drawing.setColor(127, 180, 255);
-            Drawing.drawing.drawInterfaceModel(models[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, this.posY - sizeY * 3 / 8, sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2, 0);
+            Drawing.drawing.drawInterfaceModel2D(models[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, this.posY - sizeY * 3 / 8, 0, sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2);
         }
     }
 
@@ -156,6 +157,9 @@ public class ImageSelector extends Selector
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.images = this.images;
         s.models = this.models;
+        s.buttonList.imageR = this.imageR;
+        s.buttonList.imageG = this.imageG;
+        s.buttonList.imageB = this.imageB;
 
         if (this.images != null || this.drawImages)
             s.drawImages = true;

@@ -32,13 +32,13 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static ModelPart health_model;
 
-	@TankProperty(category = appearanceModel, id = "color_model", name = "Tank body model", miscType = TankProperty.MiscType.color)
+	@TankProperty(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = TankProperty.MiscType.colorModel)
 	public Model colorModel = color_model;
-	@TankProperty(category = appearanceModel, id = "base_model", name = "Tank treads model", miscType = TankProperty.MiscType.base)
+	@TankProperty(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = TankProperty.MiscType.baseModel)
 	public Model baseModel = base_model;
-	@TankProperty(category = appearanceModel, id = "turret_base_model", name = "Turret base model", miscType = TankProperty.MiscType.turretBase)
+	@TankProperty(category = appearanceTurretBase, id = "turret_base_model", name = "Turret base model", miscType = TankProperty.MiscType.turretBaseModel)
 	public Model turretBaseModel = Turret.base_model;
-	@TankProperty(category = appearanceModel, id = "turret_model", name = "Turret barrel model", miscType = TankProperty.MiscType.turret)
+	@TankProperty(category = appearanceTurretBarrel, id = "turret_model", name = "Turret barrel model", miscType = TankProperty.MiscType.turretModel)
 	public Model turretModel = Turret.turret_model;
 
 	public double angle = 0;
@@ -92,29 +92,41 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double maxSpeed = 1.5;
 	//public int liveBullets = 0;
 	//public int liveMines = 0;
-	@TankProperty(category = appearanceModel, id = "size", name = "Tank size")
+	@TankProperty(category = appearanceGeneral, id = "size", name = "Tank size")
 	public double size;
 
-	@TankProperty(category = appearanceColor, id = "color_r", name = "Red")
+	@TankProperty(category = appearanceBody, id = "color_r", name = "Red", miscType = TankProperty.MiscType.color)
 	public double colorR;
-	@TankProperty(category = appearanceColor, id = "color_g", name = "Green")
+	@TankProperty(category = appearanceBody, id = "color_g", name = "Green", miscType = TankProperty.MiscType.color)
 	public double colorG;
-	@TankProperty(category = appearanceColor, id = "color_b", name = "Blue")
+	@TankProperty(category = appearanceBody, id = "color_b", name = "Blue", miscType = TankProperty.MiscType.color)
 	public double colorB;
 
-	@TankProperty(category = appearanceColor, id = "color_r2", name = "Secondary red")
+	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
+	@TankProperty(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = TankProperty.MiscType.color)
+	public boolean enableSecondaryColor = false;
+	@TankProperty(category = appearanceTurretBarrel, id = "color_r2", name = "Red", miscType = TankProperty.MiscType.color)
 	public double secondaryColorR;
-	@TankProperty(category = appearanceColor, id = "color_g2", name = "Secondary green")
+	@TankProperty(category = appearanceTurretBarrel, id = "color_g2", name = "Green", miscType = TankProperty.MiscType.color)
 	public double secondaryColorG;
-	@TankProperty(category = appearanceColor, id = "color_b2", name = "Secondary blue")
+	@TankProperty(category = appearanceTurretBarrel, id = "color_b2", name = "Blue", miscType = TankProperty.MiscType.color)
 	public double secondaryColorB;
-
-	@TankProperty(category = appearanceModel, id = "turret_size", name = "Turret thickness")
+	@TankProperty(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness")
 	public double turretSize = 8;
-	@TankProperty(category = appearanceModel, id = "turret_length", name = "Turret length")
+	@TankProperty(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length")
 	public double turretLength = Game.tile_size;
 
-	@TankProperty(category = appearanceGeneral, id = "enable_tracks", name = "Lays tracks")
+	/** Important: tertiary color values will not be used unless this option is set to true! */
+	@TankProperty(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = TankProperty.MiscType.color)
+	public boolean enableTertiaryColor = false;
+	@TankProperty(category = appearanceTurretBase, id = "color_r3", name = "Red", miscType = TankProperty.MiscType.color)
+	public double tertiaryColorR;
+	@TankProperty(category = appearanceTurretBase, id = "color_g3", name = "Green", miscType = TankProperty.MiscType.color)
+	public double tertiaryColorG;
+	@TankProperty(category = appearanceTurretBase, id = "color_b3", name = "Blue", miscType = TankProperty.MiscType.color)
+	public double tertiaryColorB;
+
+	@TankProperty(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
 	public boolean enableTracks = true;
 
 	//public int liveBulletMax;
@@ -134,8 +146,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double treadAnimation = 0;
 	public boolean drawTread = false;
 
-	@TankProperty(category = appearanceModel, id = "emblem", name = "Tank emblem", miscType = TankProperty.MiscType.emblem)
+	@TankProperty(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = TankProperty.MiscType.emblem)
 	public String emblem = null;
+	@TankProperty(category = appearanceEmblem, id = "emblem_r", name = "Red", miscType = TankProperty.MiscType.color)
+	public double emblemR;
+	@TankProperty(category = appearanceEmblem, id = "emblem_g", name = "Green", miscType = TankProperty.MiscType.color)
+	public double emblemG;
+	@TankProperty(category = appearanceEmblem, id = "emblem_b", name = "Blue", miscType = TankProperty.MiscType.color)
+	public double emblemB;
+
 	public double orientation = 0;
 
 	public double hitboxSize = 0.95;
@@ -580,19 +599,19 @@ public abstract class Tank extends Movable implements ISolidObject
 		double y1 = this.posY;
 		this.posX = x;
 		this.posY = y;
-		this.drawTank(true);
+		this.drawTank(true, false);
 		this.posX = x1;
 		this.posY = y1;	
 	}
 
-	public void drawTank(boolean forInterface)
+	public void drawTank(boolean forInterface, boolean interface3d)
 	{
 		double glow = 0.5;
 
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
 
-		if (forInterface)
+		if (forInterface && !interface3d)
 			s = Math.min(this.size, Game.tile_size * 1.5);
 
 		Drawing drawing = Drawing.drawing;
@@ -652,7 +671,12 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], 255, glow);
 
 		if (forInterface)
-			drawing.drawInterfaceModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
+		{
+			if (interface3d)
+				drawing.drawInterfaceModel(this.baseModel, this.posX, this.posY, this.posZ, s, s, s, this.orientation, 0, 0);
+			else
+				drawing.drawInterfaceModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
+		}
 		else
 		{
 			if (Game.enable3d)
@@ -667,7 +691,12 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash), this.colorB * (1 - flash), 255, glow);
 
 		if (forInterface)
-			drawing.drawInterfaceModel(this.colorModel, this.posX, this.posY, s * sizeMod, s * sizeMod, this.orientation);
+		{
+			if (interface3d)
+				drawing.drawInterfaceModel(this.colorModel, this.posX, this.posY, this.posZ, s * sizeMod, s * sizeMod, s * sizeMod, this.orientation, 0, 0);
+			else
+				drawing.drawInterfaceModel(this.colorModel, this.posX, this.posY, s * sizeMod, s * sizeMod, this.orientation);
+		}
 		else
 		{
 			if (Game.enable3d)
@@ -696,15 +725,20 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		this.drawTurret(forInterface, Game.enable3d, false);
+		this.drawTurret(forInterface, interface3d || (!forInterface && Game.enable3d), false);
 
 		sizeMod = 0.5;
 
-		Drawing.drawing.setColor(255, 255, 255, 255, glow);
+		Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 255, glow);
 		if (this.emblem != null)
 		{
 			if (forInterface)
-				drawing.drawInterfaceImage(this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
+			{
+				if (interface3d)
+					drawing.drawInterfaceImage(0, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
+				else
+					drawing.drawInterfaceImage(this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
+			}
 			else
 			{
 				if (Game.enable3d)
@@ -734,7 +768,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (!Game.game.window.drawingShadow)
 			drawAge += Panel.frameFrequency;
 
-		this.drawTank(false);
+		this.drawTank(false, false);
 
 		if (this.possessor != null)
 		{
@@ -758,7 +792,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.emblem != null)
 		{
-			Drawing.drawing.setColor(255, 255, 255, 127);
+			Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 127);
 			drawing.drawImage(this.emblem, this.posX, this.posY, this.size / 2, this.size / 2);
 		}
 
@@ -771,7 +805,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		double y1 = this.posY;
 		this.posX = x;
 		this.posY = y;
-		this.drawTank(false);
+		this.drawTank(false, false);
 		this.posX = x1;
 		this.posY = y1;	
 	}

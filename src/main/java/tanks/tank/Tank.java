@@ -83,15 +83,19 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public String description = "";
 
+	@TankProperty(category = movementGeneral, id = "max_speed", name = "Top speed")
+	public double maxSpeed = 1.5;
+
+	@TankProperty(category = movementGeneral, id = "acceleration", name = "Acceleration")
 	public double acceleration = 0.05;
+
+	@TankProperty(category = movementGeneral, id = "friction", name = "Friction")
+	public double friction = 0.05;
+
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
 
-	@TankProperty(category = movementGeneral, id = "max_speed", name = "Tank speed")
-	public double maxSpeed = 1.5;
-	//public int liveBullets = 0;
-	//public int liveMines = 0;
 	@TankProperty(category = appearanceGeneral, id = "size", name = "Tank size")
 	public double size;
 
@@ -101,6 +105,17 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double colorG;
 	@TankProperty(category = appearanceBody, id = "color_b", name = "Blue", miscType = TankProperty.MiscType.color)
 	public double colorB;
+
+	@TankProperty(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity")
+	public double glowIntensity = 1;
+	@TankProperty(category = appearanceGlow, id = "glow_size", name = "Aura size")
+	public double glowSize = 4;
+	@TankProperty(category = appearanceGlow, id = "light_intensity", name = "Light intensity")
+	public double lightIntensity = 1;
+	@TankProperty(category = appearanceGlow, id = "light_size", name = "Light size")
+	public double lightSize = 0;
+	@TankProperty(category = appearanceGlow, id = "luminance", name = "Tank luminance", desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
+	public double luminance = 0.5;
 
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
 	@TankProperty(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = TankProperty.MiscType.color)
@@ -115,6 +130,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double turretSize = 8;
 	@TankProperty(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length")
 	public double turretLength = Game.tile_size;
+	@TankProperty(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet count")
+	public boolean multipleTurrets = true;
 
 	/** Important: tertiary color values will not be used unless this option is set to true! */
 	@TankProperty(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = TankProperty.MiscType.color)
@@ -128,6 +145,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	@TankProperty(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
 	public boolean enableTracks = true;
+	@TankProperty(category = appearanceTracks, id = "track_spacing", name = "Track spacing")
+	public double trackSpacing = 0.4;
 
 	//public int liveBulletMax;
 	//public int liveMinesMax;
@@ -395,12 +414,12 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 
-		if (this.enableTracks && this.treadAnimation > this.size * 2 / 5 && !this.destroy)
+		if (this.enableTracks && this.treadAnimation > this.size * this.trackSpacing && !this.destroy)
 		{
 			this.drawTread = true;
 
 			if (this.size > 0)
-				this.treadAnimation %= this.size * 2 / 5;
+				this.treadAnimation %= this.size * this.trackSpacing;
 		}
 
 		if (this.resistFreeze)
@@ -606,7 +625,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawTank(boolean forInterface, boolean interface3d)
 	{
-		double glow = 0.5;
+		double luminance = this.luminance;
+		double glow = 1;
 
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
@@ -622,15 +642,16 @@ public abstract class Tank extends Movable implements ISolidObject
 			AttributeModifier a = this.attributes.get(i);
 			if (a.type.equals("glow"))
 			{
+				luminance = a.getValue(luminance);
 				glow = a.getValue(glow);
 			}
 		}
 
-		Drawing.drawing.setColor(teamColor[0] * glow * 2, teamColor[1] * glow * 2, teamColor[2] * glow * 2, 255, 1);
+		Drawing.drawing.setColor(teamColor[0] * glow * this.glowIntensity, teamColor[1] * glow * this.glowIntensity, teamColor[2] * glow * this.glowIntensity, 255, 1);
 
 		if (Game.glowEnabled)
 		{
-			double size = 4 * s;
+			double size = this.glowSize * s;
 			if (forInterface)
 				Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size);
 			else if (!Game.enable3d)
@@ -639,8 +660,24 @@ public abstract class Tank extends Movable implements ISolidObject
 				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size,true, false);
 		}
 
+		if (this.lightIntensity > 0 && this.lightSize > 0)
+		{
+			double i = this.lightIntensity;
+
+			while (i > 0)
+			{
+				double size = this.lightSize * s * i / this.lightIntensity;
+				Drawing.drawing.setColor(255, 255, 255, i * 255);
+
+				if (!(forInterface && !interface3d))
+					Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
+
+				i--;
+			}
+		}
+
 		if (this.fullBrightness)
-			glow = 1;
+			luminance = 1;
 
 		if (!forInterface)
 		{
@@ -668,7 +705,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], 255, glow);
+		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], 255, luminance);
 
 		if (forInterface)
 		{
@@ -688,7 +725,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		double flash = Math.min(1, this.flashAnimation);
 
-		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash), this.colorB * (1 - flash), 255, glow);
+		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash), this.colorB * (1 - flash), 255, luminance);
 
 		if (forInterface)
 		{
@@ -729,7 +766,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		sizeMod = 0.5;
 
-		Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 255, glow);
+		Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 255, luminance);
 		if (this.emblem != null)
 		{
 			if (forInterface)

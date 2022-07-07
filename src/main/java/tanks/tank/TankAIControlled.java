@@ -15,7 +15,6 @@ import static tanks.tank.TankProperty.Category.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 /** This class is the 'skeleton' tank class.
@@ -99,29 +98,34 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = movementOnSight, id = "target_sight_distance", name = "Target distance", desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target")
 	public double targetSightDistance = Game.tile_size * 6;
 
-	/** Tank to transform into*/
-	@TankProperty(category = transformationGeneral, id = "transform_tank", name = "Transformation tank", desc = "Tank to transform into when conditions are met")
-	public TankAIControlled transformTank = null;
 	/** If set to true, will transform into another tank when entering line of sight with target enemy */
-	@TankProperty(category = transformationGeneral, id = "transform_on_sight", name = "On line of sight", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target")
+	@TankProperty(category = transformationOnSight, id = "transform_on_sight", name = "Enabled", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target")
 	public boolean transformOnSight = false;
+	/** Tank to transform into*/
+	@TankProperty(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "Tank to transform into upon line of sight")
+	public TankAIControlled sightTransformTank = null;
 	/** Time for tank to revert after losing line of sight */
-	@TankProperty(category = transformationGeneral, id = "sight_transformation_revert_time", name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form")
+	@TankProperty(category = transformationOnSight, id = "sight_transformation_revert_time", name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form")
 	public double sightTransformRevertTime = 500;
+
 	/** If set to true, will transform into another tank when health is at or below threshold */
-	@TankProperty(category = transformationGeneral, id = "transform_on_health", name = "On health amount", desc = "When enabled, the tank will transform into another tank when its health is at or below the health threshold")
+	@TankProperty(category = transformationOnHealth, id = "transform_on_health", name = "Enabled", desc = "When enabled, the tank will transform into another tank when its health is at or below the health threshold")
 	public boolean transformOnHealth = false;
+	/** Tank to transform into*/
+	@TankProperty(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "Tank to transform into upon reaching health threshold")
+	public TankAIControlled healthTransformTank = null;
 	/** Health threshold to transform */
-	@TankProperty(category = transformationGeneral, id = "transform_health_threshold", name = "Health threshold", desc = "Amount of health this tank must have equal to or less than to transform")
+	@TankProperty(category = transformationOnHealth, id = "transform_health_threshold", name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
 	public double transformHealthThreshold = 0;
 	/** If set, the tank will seek and transform into other tanks in line of sight */
-	@TankProperty(category = transformationGeneral, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
+	@TankProperty(category = transformationMimic, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
 	public boolean transformMimic = false;
+
 	/** Time for tank to revert after losing line of sight */
-	@TankProperty(category = transformationGeneral, id = "mimic_revert_time", name = "Mimic revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form")
+	@TankProperty(category = transformationMimic, id = "mimic_revert_time", name = "Mimic revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form")
 	public double mimicRevertTime = 200;
 	/** Range tanks must be in to be mimicked */
-	@TankProperty(category = transformationGeneral, id = "mimic_range", name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
+	@TankProperty(category = transformationMimic, id = "mimic_range", name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
 	public double mimicRange = Game.tile_size * 12;
 
 	@TankProperty(category = mines, id = "enable_mine_laying", name = "Can lay mines")
@@ -216,7 +220,7 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = spawning, id = "enable_spawning", name = "Spawn tanks", desc = "When enabled, will create other tanks to fight as support")
 	public boolean enableSpawning = false;
 	@TankProperty(category = spawning, id = "spawned_tank", name = "Spawned tank", desc = "Tank which will be spawned by this tank")
-	public RegistryTank.TankEntry spawnedTankEntry = null;
+	public TankAIControlled spawnedTank = null;
 	/** Tanks spawned on initial load*/
 	@TankProperty(category = spawning, id = "spawned_initial_count", name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
 	public int spawnedInitialCount = 4;
@@ -402,14 +406,17 @@ public class TankAIControlled extends Tank
 	/** Time passed since we last had a target ready to shoot at, used to reset cooldown stacks*/
 	protected double cooldownIdleTime = 0;
 
-	/** Starting angle of a fan round*/
-	protected double startAngle;
+	/** Fan round inaccuracy*/
+	protected double fanOffset;
 
 	/** Time until mimicking ends */
 	protected double mimicRevertCounter = this.mimicRevertTime;
 
 	/** Mimic laser effect*/
 	protected Laser laser;
+
+	/** Tank this tank is transformed into*/
+	protected TankAIControlled transformTank = null;
 
 	/** True if able to mimic other tanks*/
 	protected boolean canCurrentlyMimic = true;
@@ -498,8 +505,8 @@ public class TankAIControlled extends Tank
 
 		this.age += Panel.frameFrequency;
 
-		this.vX *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
-		this.vY *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+		this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+		this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
 
 		if (!this.destroy)
 		{
@@ -530,6 +537,9 @@ public class TankAIControlled extends Tank
 
 			if (this.transformMimic)
 				this.updateMimic();
+
+			if (this.transformOnHealth && this.healthTransformTank != null && this.health <= this.transformHealthThreshold)
+				this.handleHealthTransformation();
 
 			this.postUpdate();
 		}
@@ -570,7 +580,18 @@ public class TankAIControlled extends Tank
 				double range = this.bullet.getRange();
 
 				if (arc && this.distance <= range)
-					this.bullet.attemptUse(this);
+				{
+					if (this.shotRoundCount <= 1)
+						this.bullet.attemptUse(this);
+					else
+					{
+						this.shootingInFan = true;
+						this.shootTimer = -this.shootRoundTime / 2;
+						this.shots = 0;
+						this.fanDirection = this.random.nextDouble() < 0.5 ? 1 : -1;
+						this.fanOffset = (this.random.nextDouble() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((Movable.distanceBetween(this, this.targetEnemy) / 1000.0), 2);
+					}
+				}
 				else if (!arc)
 				{
 					boolean inRange = (range < 0) || (Movable.distanceBetween(this, this.targetEnemy) <= range);
@@ -693,7 +714,7 @@ public class TankAIControlled extends Tank
 			this.shootTimer = -this.shootRoundTime / 2;
 			this.shots = 0;
 			this.fanDirection = this.random.nextDouble() < 0.5 ? 1 : -1;
-			this.startAngle = this.angle + offset;
+			this.fanOffset = offset;
 		}
 	}
 
@@ -878,7 +899,7 @@ public class TankAIControlled extends Tank
 				this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 		}
 
-		if (this.transformOnSight && this.transformTank != null)
+		if (this.transformOnSight && this.sightTransformTank != null)
 			this.handleSightTransformation();
 	}
 
@@ -886,23 +907,29 @@ public class TankAIControlled extends Tank
 	{
 		this.transformRevertTimer = this.sightTransformRevertTime;
 		this.willRevertTransformation = true;
-		this.transform();
+		this.transform(this.sightTransformTank);
 		Drawing.drawing.playGlobalSound("timer.ogg", 1.25f);
 		Effect e1 = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.exclamation);
 		e1.size = this.size;
 		e1.colR = this.colorR;
 		e1.colG = this.colorG;
 		e1.colB = this.colorB;
-		e1.glowR = this.transformTank.colorR;
-		e1.glowG = this.transformTank.colorG;
-		e1.glowB = this.transformTank.colorB;
+		e1.glowR = this.sightTransformTank.colorR;
+		e1.glowG = this.sightTransformTank.colorG;
+		e1.glowB = this.sightTransformTank.colorB;
 		Game.effects.add(e1);
-		Game.eventsOut.add(new EventTankTransform(this, this.transformTank, EventTankTransform.exclamation));
+		Game.eventsOut.add(new EventTankTransform(this, this.sightTransformTank, EventTankTransform.exclamation));
 	}
 
-	public void transform()
+	public void handleHealthTransformation()
 	{
-		Tank t = this.transformTank;
+		this.willRevertTransformation = false;
+		this.transform(this.healthTransformTank);
+	}
+
+	public void transform(TankAIControlled t)
+	{
+		this.transformTank = t;
 		this.possessingTank = t;
 		t.posX = this.posX;
 		t.posY = this.posY;
@@ -1276,7 +1303,7 @@ public class TankAIControlled extends Tank
 	{
 		if (this.shootTimer <= -this.shootRoundTime / 2 && this.targetEnemy != null)
 		{
-			this.aimAngle = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
+			this.aimAngle = this.fanOffset + this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 			double speed = this.turretAimSpeed;
 
@@ -1980,7 +2007,7 @@ public class TankAIControlled extends Tank
 
 			Tank t;
 
-			if (this.spawnedTankEntry == null)
+			if (this.spawnedTank == null)
 			{
 				RegistryTank.TankEntry e = Game.registryTank.getEntry(this.name);
 
@@ -1992,7 +2019,11 @@ public class TankAIControlled extends Tank
 				t = e.getTank(this.posX + x, this.posY + y, this.angle);
 			}
 			else
-				t = this.spawnedTankEntry.getTank(this.posX + x, this.posY + y, this.angle);
+			{
+				TankAIControlled t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
+				this.spawnedTank.cloneProperties(t2);
+				t = t2;
+			}
 
 			t.team = this.team;
 			t.crusadeID = this.crusadeID;
@@ -2115,18 +2146,18 @@ public class TankAIControlled extends Tank
 
 		if (this.transformRevertTimer <= 0 && this.targetable)
 		{
-			Game.removeMovables.add(this.transformTank);
+			Game.removeMovables.add(this.sightTransformTank);
 			Tank.idMap.put(this.networkID, this);
-			this.health = this.transformTank.health;
-			this.orientation = this.transformTank.orientation;
-			this.drawAge = this.transformTank.drawAge;
-			this.attributes = this.transformTank.attributes;
+			this.health = this.sightTransformTank.health;
+			this.orientation = this.sightTransformTank.orientation;
+			this.drawAge = this.sightTransformTank.drawAge;
+			this.attributes = this.sightTransformTank.attributes;
 			this.possessingTank = null;
 			this.targetEnemy = null;
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
 			Game.eventsOut.add(new EventTankTransform(this, this, EventTankTransform.no_effect));
 			Game.movables.add(this);
-			Game.removeMovables.add(this.transformTank);
+			Game.removeMovables.add(this.sightTransformTank);
 			this.skipNextUpdate = true;
 			this.seesTargetEnemy = false;
 		}
@@ -2509,15 +2540,27 @@ public class TankAIControlled extends Tank
 		this.aY = accY;
 	}
 
-	public void setTransformTank(TankAIControlled t)
+	public void setSightTransformTank(TankAIControlled t)
 	{
-		this.transformTank = t;
+		this.sightTransformTank = t;
 
 		if (ScreenPartyHost.isServer)
 		{
-			Tank.freeIDs.add(this.transformTank.networkID);
-			Tank.idMap.remove(this.transformTank.networkID);
-			this.transformTank.networkID = this.networkID;
+			Tank.freeIDs.add(this.sightTransformTank.networkID);
+			Tank.idMap.remove(this.sightTransformTank.networkID);
+			this.sightTransformTank.networkID = this.networkID;
+		}
+	}
+
+	public void setHealthTransformTank(TankAIControlled t)
+	{
+		this.healthTransformTank = t;
+
+		if (ScreenPartyHost.isServer)
+		{
+			Tank.freeIDs.add(this.healthTransformTank.networkID);
+			Tank.idMap.remove(this.healthTransformTank.networkID);
+			this.healthTransformTank.networkID = this.networkID;
 		}
 	}
 
@@ -2576,6 +2619,11 @@ public class TankAIControlled extends Tank
 
 	public static TankAIControlled fromString(String s)
 	{
+		return fromString(s, null);
+	}
+
+	public static TankAIControlled fromString(String s, String[] remainder)
+	{
 		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
 
 		try
@@ -2623,6 +2671,26 @@ public class TankAIControlled extends Tank
 							f.set(t, i);
 							s = s.substring(s.indexOf("]") + 1);
 						}
+						else if (Tank.class.isAssignableFrom(f.getType()))
+						{
+							if (value.equals("*"))
+								f.set(t, null);
+							else
+							{
+								String[] r = new String[1];
+								TankAIControlled t2 = TankAIControlled.fromString(s, r);
+
+								if (ScreenPartyHost.isServer)
+								{
+									Tank.freeIDs.add(t2.networkID);
+									Tank.idMap.remove(t2.networkID);
+								}
+
+								s = r[0];
+								f.set(t, t2);
+								s = s.substring(s.indexOf("]") + 1);
+							}
+						}
 					}
 					else
 						found = false;
@@ -2638,6 +2706,9 @@ public class TankAIControlled extends Tank
 		{
 			Game.exitToCrash(e);
 		}
+
+		if (remainder != null)
+			remainder[0] = s;
 
 		return t;
 	}
@@ -2663,6 +2734,26 @@ public class TankAIControlled extends Tank
 						Item i1 = (Item) f.get(this);
 						Item i2 = i1.clone();
 						f.set(t, i2);
+					}
+					else if (Tank.class.isAssignableFrom(f.getType()))
+					{
+						Tank t1 = (Tank) f.get(this);
+						if (t1 != null)
+						{
+							TankAIControlled t2 = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
+
+							if (ScreenPartyHost.isServer)
+							{
+								Tank.freeIDs.add(t2.networkID);
+								Tank.idMap.remove(t2.networkID);
+							}
+
+							if (t1 instanceof TankAIControlled)
+								((TankAIControlled) t1).cloneProperties(t2);
+							f.set(t, t2);
+						}
+						else
+							f.set(t, null);
 					}
 					else
 						f.set(t, f.get(this));

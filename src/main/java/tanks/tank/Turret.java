@@ -27,7 +27,7 @@ public class Turret extends Movable
 
 	public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
 	{
-		double glow = 0.5;
+		double luminance = this.tank.luminance;
 
 		for (int i = 0; i < this.tank.attributes.size(); i++)
 		{
@@ -35,12 +35,12 @@ public class Turret extends Movable
 
 			if (a.type.equals("glow"))
 			{
-				glow = a.getValue(glow);
+				luminance = a.getValue(luminance);
 			}
 		}
 
 		if (this.tank.fullBrightness)
-			glow = 1;
+			luminance = 1;
 
 		this.posX = tank.posX;
 		this.posY = tank.posY;
@@ -61,16 +61,22 @@ public class Turret extends Movable
 		double thickness = this.tank.turretSize * size * frac / 8;
 
 		if (transparent)
-			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 127, glow);
+			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 127, luminance);
 		else
-			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, glow);
+			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, luminance);
 
 
-		if (this.tank.bullet.shotCount > 1)
+		if (this.tank.bullet.shotCount > 1 && this.tank.multipleTurrets)
 		{
 			int q = this.tank.bullet.shotCount;
+
+			int n = 0;
+
+			if (this.tank.bullet.shotSpread < 360)
+				n = 1;
+
 			for (int i = 0; i < q; i++)
-				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(this.tank.bullet.shotSpread) * ((i * 1.0 / (q - 1)) - 0.5), vAngle);
+				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(this.tank.bullet.shotSpread) * ((i * 1.0 / (q - n)) - n / 2.0), vAngle);
 		}
 		else
 			this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation, vAngle);
@@ -87,9 +93,9 @@ public class Turret extends Movable
 		}
 
 		if (transparent)
-			Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 127, glow);
+			Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 127, luminance);
 		else
-			Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, glow);
+			Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, luminance);
 
 		if (forInterface)
 		{

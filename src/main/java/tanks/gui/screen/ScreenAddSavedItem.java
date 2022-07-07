@@ -282,6 +282,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
 
                 delete.posX = b.posX + b.sizeX / 2 - b.sizeY / 2;
                 delete.posY = b.posY;
+                delete.update();
                 delete.draw();
             }
         }

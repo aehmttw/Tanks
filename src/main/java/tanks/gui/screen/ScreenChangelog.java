@@ -418,6 +418,15 @@ public class ScreenChangelog extends Screen
                             "*What's new in Tanks v1.4.e:\n\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.f", new String[]
+                    {
+                            "*What's new in Tanks v1.4.f:\n\n" +
+                                    "Improved custom tank appearance customization\n" +
+                                    "Added support for custom tanks in crusades\n" +
+                                    "Tanks now try to avoid walls\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

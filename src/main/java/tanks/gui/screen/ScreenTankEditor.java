@@ -1,18 +1,19 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import basewindow.IModel;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.*;
+import tanks.gui.screen.leveleditor.OverlayObjectMenu;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.registry.RegistryModelTank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankProperty;
-import tanks.tank.Turret;
+import tanks.tank.*;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,12 +31,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     public Field lastItemField;
     public ScreenEditItem lastItemScreen;
     public SelectorDrawable lastItemButton;
+    public String message = null;
 
     public boolean drawBehindScreen;
 
     public ITankScreen tankScreen;
 
-    public Button delete = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6, this.objWidth, this.objHeight, "Delete tank", () ->
+    public Button delete = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Delete tank", () ->
     {
         Game.screen = (Screen) this.tankScreen;
         this.tankScreen.removeTank(this.tank);
@@ -43,7 +45,38 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     }
     );
 
-    public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 6, this.objWidth, this.objHeight, "Done", () ->
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tankDir + "/" + tank.name.replace(" ", "_") + ".tanks");
+
+            if (!f.exists())
+            {
+                try
+                {
+                    f.create();
+                    f.startWriting();
+                    f.println(tank.toString());
+                    f.stopWriting();
+
+                    message = "Tank added to templates!";
+                }
+                catch (IOException e)
+                {
+                    Game.exitToCrash(e);
+                }
+            }
+            else
+                message = "A tank template with this name already exists!";
+        }
+    }
+    );
+
+    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
+
+    public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Done", () ->
     {
         Game.screen = (Screen) this.tankScreen;
 
@@ -91,8 +124,9 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         new TabPartPicker(this, appearance, "Turret barrel", TankProperty.Category.appearanceTurretBarrel, 2);
         new TabPartPicker(this, appearance, "Tank body", TankProperty.Category.appearanceBody, 1);
         new TabPartPicker(this, appearance, "Tank treads", TankProperty.Category.appearanceTreads, 2);
-        new Tab(this, appearance, "Glow", TankProperty.Category.appearanceGlow);
+        new TabGlow(this, appearance, "Glow", TankProperty.Category.appearanceGlow);
         new Tab(this, appearance, "Tracks", TankProperty.Category.appearanceTracks);
+
 
         Tab idle = new Tab(this, movement, "Idle movement", TankProperty.Category.movementIdle);
         Tab avoid = new Tab(this, movement, "Threat avoidance", TankProperty.Category.movementAvoid);
@@ -101,6 +135,10 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
         Tab fireBehavior = new Tab(this, firing, "Firing behavior", TankProperty.Category.firingBehavior);
         Tab firePattern = new Tab(this, firing, "Firing pattern", TankProperty.Category.firingPattern);
+
+        new Tab(this, transformation, "On line of sight", TankProperty.Category.transformationOnSight);
+        new Tab(this, transformation, "On low hitpoints", TankProperty.Category.transformationOnHealth);
+        new Tab(this, transformation, "Mimic", TankProperty.Category.transformationMimic);
 
         this.currentTab = general;
 
@@ -380,7 +418,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.preview.emblemR = this.screen.tank.emblemR;
             this.preview.emblemG = this.screen.tank.emblemG;
             this.preview.emblemB = this.screen.tank.emblemB;
+            this.preview.luminance = this.screen.tank.luminance;
+            this.preview.glowIntensity = this.screen.tank.glowIntensity;
+            this.preview.glowSize = this.screen.tank.glowSize;
+            this.preview.lightSize = this.screen.tank.lightSize;
+            this.preview.lightIntensity = this.screen.tank.lightIntensity;
             this.preview.bullet = this.screen.tank.bullet;
+            this.preview.multipleTurrets = this.screen.tank.multipleTurrets;
 
             if (this.preview.size > Game.tile_size * 2)
                 this.preview.size = Game.tile_size * 2;
@@ -395,6 +439,26 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.preview.drawTank(true, true);
 
             super.drawUIElements();
+        }
+    }
+
+    public static class TabGlow extends TabWithPreview
+    {
+        public TabGlow(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        {
+            super(screen, parent, name, category);
+        }
+
+        public TabGlow(ScreenTankEditor screen, String name, TankProperty.Category category)
+        {
+            super(screen, name, category);
+        }
+
+        public void set()
+        {
+            super.set();
+            preview.posX = screen.centerX + screen.objXSpace / 2;
+            preview.posY += 60;
         }
     }
 
@@ -761,17 +825,19 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 0.5);
             Drawing.drawing.drawInterfaceModel2D(screen.tank.baseModel, margin, screen.centerY + 60 + space * 1 + 7, 0, s, s, s);
 
-            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
-            Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 1);
-            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
+            Drawing.drawing.setColor(screen.tank.secondaryColorR * preview.glowIntensity, screen.tank.secondaryColorG * preview.glowIntensity, screen.tank.secondaryColorB * preview.glowIntensity, 255, 1);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.glowSize / 4, s * 1.5 * preview.glowSize / 4);
+            Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.lightSize / 4, s * 1.5 * preview.lightSize / 4, false, true);
 
             Drawing.drawing.setColor(0, 0, 0, 64);
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    Drawing.drawing.fillInterfaceRect(margin + (i - 1) * s * 0.4, screen.centerY + 60 + space * 3 + (j - 0.5) * s * 0.6, s / 5, s / 5);
+                    Drawing.drawing.fillInterfaceRect(margin + (i - 1) * s * this.screen.tank.trackSpacing, screen.centerY + 60 + space * 3 + (j - 0.5) * s * 0.6, s / 5, s / 5);
                 }
             }
         }
@@ -985,6 +1051,45 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                 return b;
             }
+            else if (Tank.class.isAssignableFrom(f.getType()))
+            {
+                SelectorDrawable b = new SelectorDrawable(0, 0, 350, 40, p.name(), () -> {});
+                b.tank = (Tank) f.get(tank);
+                b.function = () ->
+                {
+                    ArrayList<TankAIControlled> tanks = new ArrayList<>();
+
+                    if (this.tankScreen instanceof OverlayObjectMenu)
+                        tanks = ((OverlayObjectMenu) this.tankScreen).screenLevelEditor.level.customTanks;
+                    ScreenSelectorTank s = new ScreenSelectorTank("Select " + p.name().toLowerCase(), b.tank, this, tanks, (t) ->
+                    {
+                        try
+                        {
+                            f.set(tank, t);
+                            b.tank = t;
+
+                            if (b.tank != null)
+                                b.optionText = b.tank.name;
+                            else
+                                b.optionText = "\u00A7127000000255none";
+                        }
+                        catch (IllegalAccessException e)
+                        {
+                            Game.exitToCrash(e);
+                        }
+                    });
+
+                    s.drawBehindScreen = true;
+                    Game.screen = s;
+                };
+
+                if (b.tank != null)
+                    b.optionText = b.tank.name;
+                else
+                    b.optionText = "\u00A7127000000255none";
+
+                return b;
+            }
             else if (IModel.class.isAssignableFrom(f.getType()))
             {
                 IModel[] models = null;
@@ -1083,58 +1188,87 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     @Override
     public void update()
     {
-        if (Game.game.input.editorPause.isValid())
+        if (this.message != null)
+            this.dismissMessage.update();
+        else
         {
-            Game.game.input.editorPause.invalidate();
-            this.quit.function.run();
+            if (Game.game.input.editorPause.isValid())
+            {
+                Game.game.input.editorPause.invalidate();
+                this.quit.function.run();
+            }
+
+            for (Button b : this.topLevelButtons)
+            {
+                b.enabled = !currentTab.getRoot().name.equals(b.text);
+                b.update();
+            }
+
+            this.currentTab.update();
+
+            this.quit.update();
+            this.delete.update();
+            this.save.update();
         }
-
-        for (Button b: this.topLevelButtons)
-        {
-            b.enabled = !currentTab.getRoot().name.equals(b.text);
-            b.update();
-        }
-
-        this.currentTab.update();
-
-        this.quit.update();
-        this.delete.update();
     }
 
     @Override
     public void draw()
     {
+        Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
         this.drawDefaultBackground();
 
         //Drawing.drawing.setColor(127, 178, 228, 64);
         //Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
-        double extraHeight = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
-        double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;
+        if (Game.screen != this)
+            return;
 
-        Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, -extraHeight / 2, width, extraHeight);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, 105, width, 210);
-
-        Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.displayInterfaceText(this.centerX, 30, "Edit tank");
-
-        if (Level.isDark())
-            Drawing.drawing.setColor(255, 255, 255);
-        else
-            Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
-
-        for (Button b: this.topLevelButtons)
+        if (this.message != null)
         {
-            b.draw();
+            this.dismissMessage.draw();
+
+            if (Level.isDark())
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
+
+            Drawing.drawing.setInterfaceFontSize(Drawing.drawing.textSize);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.message);
         }
+        else
+        {
+            double extraHeight = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
+            double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;
 
-        this.currentTab.draw();
+            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, -extraHeight / 2, width, extraHeight);
+            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, 105, width, 210);
 
-        this.quit.draw();
-        this.delete.draw();
+            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY + extraHeight / 2, width, extraHeight);
+            Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 60, width, 120);
+
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.displayInterfaceText(this.centerX, 30, "Edit tank");
+
+            if (Level.isDark())
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
+
+            for (Button b : this.topLevelButtons)
+            {
+                b.draw();
+            }
+
+            this.currentTab.draw();
+
+            this.quit.draw();
+            this.delete.draw();
+            this.save.draw();
+        }
     }
 
     @Override

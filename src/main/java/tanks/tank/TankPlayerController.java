@@ -95,7 +95,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
             else
             {
                 this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-                this.recoilSpeed *= Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, Panel.frameFrequency);
+                this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
             }
         }
         else if (this.inControlOfMotion)
@@ -154,8 +154,8 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
             if (a == -1)
             {
-                this.vX *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
-                this.vY *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+                this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+                this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
 
                 if (Math.abs(this.vX) < 0.001)
                     this.vX = 0;

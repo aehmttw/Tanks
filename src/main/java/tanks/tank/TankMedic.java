@@ -32,6 +32,7 @@ public class TankMedic extends TankAIControlled
 		this.turnChance = 0.001;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
+		this.aimAccuracyOffset = 0;
 		this.enableSuicide = true;
 
 		this.coinValue = 4;

@@ -31,7 +31,6 @@ public class Mine extends Movable implements IAvoidObject
     public double radius = mine_radius;
     public Tank tank;
     public ItemMine item;
-    public boolean exploded = false;
     public double cooldown = 0;
     public int lastBeep = Integer.MAX_VALUE;
 

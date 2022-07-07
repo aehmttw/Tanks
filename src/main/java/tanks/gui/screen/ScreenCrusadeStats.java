@@ -8,9 +8,11 @@ import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenChatboxScreen
 {
@@ -84,6 +86,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public ScreenCrusadeLevels background;
 
+    public HashMap<String, TankAIControlled> customTanks = new HashMap<>();
+
     public ScreenCrusadeStats(Crusade crusade, CrusadePlayer p, boolean intro)
     {
         super(350, 40, 250, 60);
@@ -104,6 +108,11 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.addLevels();
         this.addItems();
         this.addMisc();
+
+        for (TankAIControlled t: this.crusade.customTanks)
+        {
+            this.customTanks.put(t.name, t);
+        }
 
         if (intro)
         {
@@ -172,6 +181,23 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     public void addTanks()
     {
         for (RegistryTank.TankEntry t: Game.registryTank.tankEntries)
+        {
+            Integer kills = this.player.tankKills.get(t.name);
+            Integer deaths = this.player.tankDeaths.get(t.name);
+
+            if (kills == null && deaths == null)
+                continue;
+
+            if (kills == null)
+                kills = 0;
+
+            if (deaths == null)
+                deaths = 0;
+
+            this.tanks.add(new TankEntry(this, t, kills, deaths));
+        }
+
+        for (TankAIControlled t: crusade.customTanks)
         {
             Integer kills = this.player.tankKills.get(t.name);
             Integer deaths = this.player.tankDeaths.get(t.name);
@@ -408,7 +434,17 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 if (this.tankCount < 0)
                     this.tankCount = ((TankEntry) this.tanks.get(this.tankType)).kills - 1;
 
-                Tank t = Game.registryTank.getEntry(((TankEntry) this.tanks.get(this.tankType)).tank.name).getTank(Drawing.drawing.sizeX * 1.4, Drawing.drawing.sizeY - 200, Math.PI);
+                Tank t;
+                TankAIControlled t1 = this.customTanks.get(((TankEntry) this.tanks.get(this.tankType)).tank.name);
+
+                if (t1 == null)
+                    t = Game.registryTank.getEntry(((TankEntry) this.tanks.get(this.tankType)).tank.name).getTank(Drawing.drawing.sizeX * 1.4, Drawing.drawing.sizeY - 200, Math.PI);
+                else
+                {
+                    TankAIControlled t2 = new TankAIControlled("", Drawing.drawing.sizeX * 1.4, Drawing.drawing.sizeY - 200, 0, 0, 0, 0, Math.PI, TankAIControlled.ShootAI.none);
+                    t1.cloneProperties(t2);
+                    t = t2;
+                }
 
                 if (((TankEntry) this.tanks.get(this.tankType)).tank.name.equals("player"))
                     t = new TankPlayer(t.posX, t.posY, t.angle);
@@ -889,6 +925,21 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             this.deaths = deaths;
 
             this.tank = tank.getTank(0, 0, 0);
+            this.coins = this.tank.coinValue;
+
+            screen.totalKills += this.kills;
+            screen.totalCoins += this.kills * this.coins;
+            screen.totalDeaths += this.deaths;
+        }
+
+        public TankEntry(ScreenCrusadeStats screen, TankAIControlled tank, int kills, int deaths)
+        {
+            this.kills = kills;
+            this.deaths = deaths;
+
+            TankAIControlled t = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
+            tank.cloneProperties(t);
+            this.tank = t;
             this.coins = this.tank.coinValue;
 
             screen.totalKills += this.kills;

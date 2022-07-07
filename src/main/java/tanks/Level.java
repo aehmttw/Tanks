@@ -476,7 +476,8 @@ public class Level
 				if (remote)
 				{
 					t.registerNetworkID();
-					Game.movables.add(new TankRemote(t));
+					TankRemote t1 = new TankRemote(t);
+					Game.movables.add(t1);
 				}
 				else
 					Game.movables.add(t);

@@ -51,6 +51,7 @@ public class TankRemote extends Tank
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = t;
+		this.mandatoryKill = t.mandatoryKill;
 
 		this.copyTank(t);
 
@@ -82,6 +83,14 @@ public class TankRemote extends Tank
 		this.colorModel = t.colorModel;
 		this.turretBaseModel = t.turretBaseModel;
 		this.turretModel = t.turretModel;
+		this.mandatoryKill = t.mandatoryKill;
+		this.luminance = t.luminance;
+		this.glowIntensity = t.glowIntensity;
+		this.glowSize = t.glowSize;
+		this.lightSize = t.lightSize;
+		this.lightIntensity = t.lightIntensity;
+		this.bullet = t.bullet;
+		this.mine = t.mine;
 	}
 
 	@Override

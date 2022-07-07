@@ -18,8 +18,8 @@ public class TankOrangeRed extends TankAIControlled
         this.enableMineLaying = false;
         this.enablePredictiveFiring = false;
         this.bullet.maxLiveBullets = 2;
-        this.cooldownRandom = 120;
-        this.cooldownBase = 120;
+        this.cooldownRandom = 40;
+        this.cooldownBase = 160;
         this.turretAimSpeed = 0.02;
         this.bullet.bulletClass = BulletExplosive.class;
         this.bullet.bounces = 0;

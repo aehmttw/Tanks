@@ -33,6 +33,7 @@ public @interface TankProperty
             transformationOnThreat,
             transformationOnProximity,
             transformationOnAlone,
+            transformationMimic,
         lastStand,
     }
 

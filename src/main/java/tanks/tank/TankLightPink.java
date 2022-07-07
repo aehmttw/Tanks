@@ -28,7 +28,7 @@ public class TankLightPink extends TankAIControlled
         this.bullet.effect = Bullet.BulletEffect.trail;
         this.shootAIType = ShootAI.reflect;
 
-        this.setTransformTank(new TankLightPinkAngry(this.name, x, y, angle));
+        this.setSightTransformTank(new TankLightPinkAngry(this.name, x, y, angle));
 
         this.transformOnSight = true;
 

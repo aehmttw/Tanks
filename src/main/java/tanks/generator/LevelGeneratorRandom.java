@@ -78,7 +78,7 @@ public class LevelGeneratorRandom extends LevelGenerator
 		boolean snow = random.nextDouble() < 0.2;
 		int snowCount = (int) (walls + random.nextDouble() * 4 - 2);
 
-		boolean teleporters = random.nextDouble() < 0.2;
+		boolean teleporters = random.nextDouble() < 0.1;
 		int numTeleporters = walls / 5 + 2;
 		int teleporterGroups = (int) ((numTeleporters - 1) * 0.5 * random.nextDouble()) + 1;
 

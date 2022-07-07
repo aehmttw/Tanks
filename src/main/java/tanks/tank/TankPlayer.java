@@ -45,7 +45,6 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 	protected long lastTrace = 0;
 	protected static boolean lockTrace = false;
 
-	public static final double base_deceleration = 0.05;
 	protected double drawRange = -1;
 
 	public double mouseX;
@@ -115,7 +114,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			else
 			{
 				this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-				this.recoilSpeed *= Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, Panel.frameFrequency);
+				this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
 			}
 		}
 		else if (this.inControlOfMotion)
@@ -172,13 +171,13 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 				if (Game.followingCam)
 					a += this.angle + Math.PI / 2;
 
-				this.addPolarMotion(a, acceleration * Panel.frameFrequency);
+				this.addPolarMotion(a, acceleration * this.maxSpeed * Panel.frameFrequency);
 			}
 
 			if (a == -1)
 			{
-				this.vX *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
-				this.vY *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+				this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
 
 				if (Math.abs(this.vX) < 0.001)
 					this.vX = 0;

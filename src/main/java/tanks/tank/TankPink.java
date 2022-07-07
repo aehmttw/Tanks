@@ -26,7 +26,7 @@ public class TankPink extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 
 		this.enableSpawning = true;
-		this.spawnedTankEntry = Game.registryTank.getEntry("mini");
+		this.spawnedTank = new TankMini("mini", 0, 0, 0);
 
 		this.coinValue = 12;
 

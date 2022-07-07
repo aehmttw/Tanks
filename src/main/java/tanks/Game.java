@@ -95,8 +95,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.f";
-	public static final int network_protocol = 43;
+	public static final String version = "Tanks v1.4.g";
+	public static final int network_protocol = 44;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static final boolean cinematic = false;
@@ -222,6 +222,7 @@ public class Game
 	public static final String crusadeDir = directoryPath + "/crusades";
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
+	public static final String tankDir = directoryPath + "/tanks";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
 
@@ -536,6 +537,12 @@ public class Game
 		if (!itemsFile.exists())
 		{
 			itemsFile.mkdirs();
+		}
+
+		BaseFile tanksFile = game.fileManager.getFile(homedir + tankDir);
+		if (!tanksFile.exists())
+		{
+			tanksFile.mkdirs();
 		}
 
 		BaseFile extensionsFile = game.fileManager.getFile(homedir + extensionDir);

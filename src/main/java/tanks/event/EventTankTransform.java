@@ -7,7 +7,10 @@ import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankMimic;
+import tanks.tank.TankProperty;
 import tanks.tank.TankRemote;
+
+import static tanks.tank.TankProperty.Category.appearanceGlow;
 
 public class EventTankTransform extends PersonalEvent
 {
@@ -21,6 +24,11 @@ public class EventTankTransform extends PersonalEvent
     public double green2;
     public double blue2;
 
+    public boolean enableCol3;
+    public double red3;
+    public double green3;
+    public double blue3;
+
     public double size;
     public double turretSize;
     public double turretLength;
@@ -30,13 +38,27 @@ public class EventTankTransform extends PersonalEvent
     public String turretBaseModel;
     public String turretModel;
 
-    public String texture;
+    public String emblem;
+    public double emblemRed;
+    public double emblemGreen;
+    public double emblemBlue;
+
+    public double glowIntensity;
+    public double glowSize;
+    public double lightIntensity;
+    public double lightSize;
+    public double luminance;
+
+    public boolean requiredKill = false;
 
     public static final int no_effect = 0;
     public static final int exclamation = 1;
     public static final int poof = 2;
 
     public int effect;
+
+    public int bulletCount;
+    public double bulletSpread;
 
     public EventTankTransform()
     {
@@ -55,6 +77,17 @@ public class EventTankTransform extends PersonalEvent
         this.green2 = newTank.secondaryColorG;
         this.blue2 = newTank.secondaryColorB;
 
+        this.enableCol3 = newTank.enableTertiaryColor;
+        this.red3 = newTank.tertiaryColorR;
+        this.green3 = newTank.tertiaryColorG;
+        this.blue3 = newTank.tertiaryColorB;
+
+        this.luminance = newTank.luminance;
+        this.glowIntensity = newTank.glowIntensity;
+        this.glowSize = newTank.glowSize;
+        this.lightIntensity = newTank.lightIntensity;
+        this.lightSize = newTank.lightSize;
+
         this.size = newTank.size;
         this.turretSize = newTank.turretSize;
         this.turretLength = newTank.turretLength;
@@ -65,7 +98,16 @@ public class EventTankTransform extends PersonalEvent
         this.turretModel = newTank.turretModel.file;
 
         this.effect = effect;
-        this.texture = newTank.emblem;
+
+        this.emblem = newTank.emblem;
+        this.emblemRed = newTank.emblemR;
+        this.emblemGreen = newTank.emblemG;
+        this.emblemBlue = newTank.emblemB;
+
+        this.bulletCount = newTank.bullet.shotCount;
+        this.bulletSpread = newTank.bullet.shotSpread;
+
+        this.requiredKill = newTank.mandatoryKill;
     }
 
     @Override
@@ -84,7 +126,21 @@ public class EventTankTransform extends PersonalEvent
             t.turretBaseModel = Drawing.drawing.createModel(turretBaseModel);
             t.turretModel = Drawing.drawing.createModel(turretModel);
 
-            t.emblem = texture;
+            t.emblem = emblem;
+            t.emblemR = emblemRed;
+            t.emblemG = emblemGreen;
+            t.emblemB = emblemBlue;
+
+            t.luminance = this.luminance;
+            t.glowIntensity = this.glowIntensity;
+            t.glowSize = this.glowSize;
+            t.lightIntensity = this.lightIntensity;
+            t.lightSize = this.lightSize;
+
+            t.bullet.shotCount = bulletCount;
+            t.bullet.shotSpread = bulletSpread;
+
+            t.mandatoryKill = requiredKill;
 
             if (effect == exclamation)
             {
@@ -131,6 +187,11 @@ public class EventTankTransform extends PersonalEvent
             t.secondaryColorR = red2;
             t.secondaryColorG = green2;
             t.secondaryColorB = blue2;
+
+            t.enableTertiaryColor = enableCol3;
+            t.tertiaryColorR = red3;
+            t.tertiaryColorG = green3;
+            t.tertiaryColorB = blue3;
         }
     }
 
@@ -147,6 +208,17 @@ public class EventTankTransform extends PersonalEvent
         b.writeDouble(this.green2);
         b.writeDouble(this.blue2);
 
+        b.writeBoolean(this.enableCol3);
+        b.writeDouble(this.red3);
+        b.writeDouble(this.green3);
+        b.writeDouble(this.blue3);
+
+        b.writeDouble(this.glowIntensity);
+        b.writeDouble(this.glowSize);
+        b.writeDouble(this.lightIntensity);
+        b.writeDouble(this.lightSize);
+        b.writeDouble(this.luminance);
+
         b.writeDouble(this.size);
         b.writeDouble(this.turretSize);
         b.writeDouble(this.turretLength);
@@ -156,7 +228,15 @@ public class EventTankTransform extends PersonalEvent
         NetworkUtils.writeString(b, this.turretBaseModel);
         NetworkUtils.writeString(b, this.turretModel);
 
-        NetworkUtils.writeString(b, this.texture);
+        NetworkUtils.writeString(b, this.emblem);
+        b.writeDouble(this.emblemRed);
+        b.writeDouble(this.emblemGreen);
+        b.writeDouble(this.emblemBlue);
+
+        b.writeInt(this.bulletCount);
+        b.writeDouble(this.bulletSpread);
+
+        b.writeBoolean(this.requiredKill);
 
         b.writeInt(this.effect);
     }
@@ -174,6 +254,17 @@ public class EventTankTransform extends PersonalEvent
         this.green2 = b.readDouble();
         this.blue2 = b.readDouble();
 
+        this.enableCol3 = b.readBoolean();
+        this.red3 = b.readDouble();
+        this.green3 = b.readDouble();
+        this.blue3 = b.readDouble();
+
+        this.glowIntensity = b.readDouble();
+        this.glowSize = b.readDouble();
+        this.lightIntensity = b.readDouble();
+        this.lightSize = b.readDouble();
+        this.luminance = b.readDouble();
+
         this.size = b.readDouble();
         this.turretSize = b.readDouble();
         this.turretLength = b.readDouble();
@@ -183,7 +274,16 @@ public class EventTankTransform extends PersonalEvent
         this.turretBaseModel = NetworkUtils.readString(b);
         this.turretModel = NetworkUtils.readString(b);
 
-        this.texture = NetworkUtils.readString(b);
+        this.emblem = NetworkUtils.readString(b);
+        this.emblemRed = b.readDouble();
+        this.emblemGreen = b.readDouble();
+        this.emblemBlue = b.readDouble();
+
+        this.bulletCount = b.readInt();
+        this.bulletSpread = b.readDouble();
+
+        this.requiredKill = b.readBoolean();
+
         this.effect = b.readInt();
     }
 }

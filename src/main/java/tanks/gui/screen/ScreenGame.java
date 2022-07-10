@@ -46,6 +46,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean cancelCountdown = false;
 	public String name = null;
 
+	public static boolean newItemsNotification = false;
+	public static String lastShop = "";
 	public ArrayList<Item> shop = new ArrayList<>();
 	public boolean screenshotMode = false;
 
@@ -154,11 +156,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			if (shopList != null)
 			{
+				newItemsNotification = false;
 				cancelCountdown = true;
 				shopScreen = true;
 			}
 		}
-	}
+	}, "New items available in shop!"
 	);
 
 	Button pause = new Button(0, -1000, 70, 70, "", () ->
@@ -710,6 +713,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void initializeShopList()
 	{
+		StringBuilder s = new StringBuilder();
+		for (Button b: this.shopItemButtons)
+			s.append(b.text);
+
+		if (!lastShop.equals(s.toString()))
+			newItemsNotification = true;
+
+		lastShop = s.toString();
+
 		this.shopList = new ButtonList(this.shopItemButtons, 0, 0, (int) shopOffset, -30);
 	}
 
@@ -2329,7 +2341,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 
 				if (!this.shopItemButtons.isEmpty() && this.readyButton.enabled)
+				{
+					enterShop.enableHover = newItemsNotification;
+					enterShop.fullInfo = true;
 					enterShop.draw();
+
+					if (newItemsNotification)
+					{
+						Button.drawGlow(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY + 2.5 + 1, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+						drawing.setInterfaceFontSize(this.textSize);
+						drawing.setColor(255, 127, 0);
+						drawing.fillInterfaceOval(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4);
+						drawing.setColor(255, 255, 255);
+						Drawing.drawing.drawInterfaceText(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2 + 1.5, enterShop.posY, "!");
+					}
+				}
 
 				if (ScreenPartyHost.isServer && this.cancelCountdown)
 					startNow.draw();

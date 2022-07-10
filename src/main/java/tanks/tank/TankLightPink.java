@@ -32,6 +32,6 @@ public class TankLightPink extends TankAIControlled
 
         this.transformOnSight = true;
 
-        this.description = "A tank which gets angry---on line of sight";
+        this.description = "A tank which gets angry on line of sight";
     }
 }

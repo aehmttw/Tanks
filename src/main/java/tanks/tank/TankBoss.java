@@ -29,6 +29,6 @@ public class TankBoss extends TankAIControlled
 		this.coinValue = 25;
 		this.enableSpawning = true;
 
-		this.description = "A big boss tank which spawns---other tanks and takes 5 regular---bullets to destroy";
+		this.description = "A big boss tank which spawns other tanks and takes 5 regular bullets to destroy";
 	}
 }

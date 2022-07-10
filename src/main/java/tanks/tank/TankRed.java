@@ -27,6 +27,6 @@ public class TankRed extends TankAIControlled
 		this.chargeUp = true;
 		this.coinValue = 6;
 
-		this.description = "A stationary tank which---shoots deadly lasers";
+		this.description = "A stationary tank which shoots deadly lasers";
 	}
 }

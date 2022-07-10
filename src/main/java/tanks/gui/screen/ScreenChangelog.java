@@ -427,6 +427,15 @@ public class ScreenChangelog extends Screen
                                     "Tanks now try to avoid walls\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.g", new String[]
+                    {
+                            "*What's new in Tanks v1.4.g:\n\n" +
+                                    "Added new custom tank options\n" +
+                                    "Made random level teleporters rarer\n" +
+                                    "Increased player tank acceleration\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

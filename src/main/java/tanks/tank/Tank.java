@@ -32,6 +32,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static ModelPart health_model;
 
+	public boolean fromRegistry = false;
+
 	@TankProperty(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = TankProperty.MiscType.colorModel)
 	public Model colorModel = color_model;
 	@TankProperty(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = TankProperty.MiscType.baseModel)
@@ -81,6 +83,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public int networkID;
 	public int crusadeID = -1;
 
+	@TankProperty(category = general, id = "description", name = "Tank description", miscType = TankProperty.MiscType.description)
 	public String description = "";
 
 	@TankProperty(category = movementGeneral, id = "max_speed", name = "Top speed")

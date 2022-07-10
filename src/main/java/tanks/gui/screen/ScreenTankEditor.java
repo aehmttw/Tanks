@@ -110,7 +110,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 return 1;
         });
 
-        Tab general = new Tab(this, "General", TankProperty.Category.general);
+        Tab general = new TabGeneral(this, "General", TankProperty.Category.general);
         Tab appearance = new TabAppearance(this, "Appearance", TankProperty.Category.appearanceGeneral);
         Tab movement = new Tab(this, "Movement", TankProperty.Category.movementGeneral);
         Tab firing = new Tab(this, "Firing", TankProperty.Category.firingGeneral);
@@ -250,7 +250,21 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 TankProperty p = f.getAnnotation(TankProperty.class);
                 if (p != null && p.category() == this.category && p.miscType() != TankProperty.MiscType.color)
                 {
-                    this.uiElements.add(screen.getUIElementForField(f, p, screen.tank));
+                    if (p.miscType() == TankProperty.MiscType.description)
+                    {
+                        TextBox t = (TextBox) screen.getUIElementForField(f, p, screen.tank);
+                        t.posX = this.screen.centerX;
+                        t.posY = this.screen.centerY + 270;
+                        t.enableCaps = true;
+                        t.allowSpaces = true;
+                        t.enableSpaces = true;
+                        t.enablePunctuation = true;
+                        t.maxChars = 100;
+                        t.sizeX *= 3;
+                        ((TabGeneral) this).description = t;
+                    }
+                    else
+                        this.uiElements.add(screen.getUIElementForField(f, p, screen.tank));
                 }
             }
         }
@@ -364,6 +378,35 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
                         "Page %d of %d", (page + 1), (uiElements.size() / (rows * 3) + Math.min(1, uiElements.size() % (rows * 3))));
             }
+        }
+    }
+
+    public static class TabGeneral extends Tab
+    {
+        public TextBox description;
+
+        public TabGeneral(ScreenTankEditor screen, String name, TankProperty.Category category)
+        {
+            super(screen, name, category);
+        }
+
+        public TabGeneral(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        {
+            super(screen, parent, name, category);
+        }
+
+        @Override
+        public void updateUIElements()
+        {
+            super.updateUIElements();
+            this.description.update();
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            super.drawUIElements();
+            this.description.draw();
         }
     }
 
@@ -953,7 +996,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 {
                     try
                     {
-                        if (t.inputText.length() == 0)
+                        if (t.inputText.length() == 0 && p.miscType() != TankProperty.MiscType.description)
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, t.inputText);

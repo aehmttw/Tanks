@@ -1064,8 +1064,10 @@ public class Drawing
 
 		double sizeY = 14;
 
-		if (x + sizeX + xPadding * 2 - 14 > Drawing.drawing.interfaceSizeX)
-			x -= x + sizeX + xPadding * 2 - 14 - Drawing.drawing.interfaceSizeX;
+		double endX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+				+ Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+		if (x + sizeX + xPadding * 2 - 14 > endX)
+			x -= x + sizeX + xPadding * 2 - 14 - endX;
 
 		if (y + sizeY + yPadding * 2 * text.length > Drawing.drawing.interfaceSizeY)
 			y -= y + sizeY + yPadding * 2 * text.length - Drawing.drawing.interfaceSizeY;

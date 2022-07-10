@@ -208,6 +208,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
                 , level.levelName.replace("_", " "));
 
+        levelName.maxChars = 18;
         levelName.enableCaps = true;
 
         this.updateSaveButton();

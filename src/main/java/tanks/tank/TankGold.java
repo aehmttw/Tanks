@@ -34,6 +34,6 @@ public class TankGold extends TankAIControlled
 
 		this.coinValue = 4;
 
-		this.description = "A tank which speeds up---its allies and becomes---explosive as a last stand";
+		this.description = "A tank which speeds up its allies and becomes explosive as a last stand";
 	}
 }

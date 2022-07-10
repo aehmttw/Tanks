@@ -33,6 +33,6 @@ public class TankMini extends TankAIControlled
 		this.mineAvoidSensitivity = 0.5;
 		this.stayNearParent = true;
 
-		this.description = "A small, primitive tank which---shoots tiny, low damage bullets";
+		this.description = "A small, primitive tank which shoots tiny, low damage bullets";
 	}
 }

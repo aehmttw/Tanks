@@ -45,7 +45,8 @@ public @interface TankProperty
         turretBaseModel,
         turretModel,
         emblem,
-        color
+        color,
+        description
     }
 
     Category category();

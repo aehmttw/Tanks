@@ -95,7 +95,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.g";
+	public static final String version = "Tanks v1.4.i";
 	public static final int network_protocol = 44;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -746,7 +746,7 @@ public class Game
 
 	public static boolean usernameInvalid(String username)
 	{
-		if (username.length() > 18)
+		if (username.length() > 20)
 			return true;
 
 		for (int i = 0; i < username.length(); i++)

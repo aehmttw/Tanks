@@ -155,6 +155,7 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
                 , crusade.name.replace("_", " "));
 
         crusadeName.enableCaps = true;
+        crusadeName.maxChars = 18;
 
         this.updateDownloadButton();
     }

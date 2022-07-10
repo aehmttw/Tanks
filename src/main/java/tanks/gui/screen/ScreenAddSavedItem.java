@@ -134,15 +134,6 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
                     }
                 });
 
-        for (int i = 0; i < this.allItems.buttons.size(); i++)
-        {
-            if (this.allItems.buttons.get(i).text == null)
-            {
-                this.allItems.buttons.remove(i);
-                i--;
-            }
-        }
-
         ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
 
         for (String s: items)

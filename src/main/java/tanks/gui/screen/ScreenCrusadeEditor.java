@@ -232,6 +232,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
                 , crusade.name.split("\\.")[0].replace("_", " "));
 
         crusadeName.enableCaps = true;
+        crusadeName.maxChars = 18;
 
         startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", () ->
         {

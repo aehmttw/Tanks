@@ -33,6 +33,6 @@ public class TankCyan extends TankAIControlled
 
 		this.coinValue = 4;
 
-		this.description = "A support tank which shoots freezing---bullets that deal low damage";
+		this.description = "A support tank which shoots freezing bullets that deal low damage";
 	}
 }

@@ -27,6 +27,6 @@ public class TankBlue extends TankAIControlled
 
 		this.coinValue = 4;
 
-		this.description = "A stationary tank---which shoots---stunning electricity---that arcs between---targets";
+		this.description = "A stationary tank which shoots stunning electricity that arcs between targets";
 	}
 }

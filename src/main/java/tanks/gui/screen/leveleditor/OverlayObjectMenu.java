@@ -20,14 +20,16 @@ import java.util.Iterator;
 
 public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITankScreen
 {
-    public int tankButtonPage = 0;
-    public int obstacleButtonPage = 0;
+    public static int tankButtonPage = 0;
+    public static int obstacleButtonPage = 0;
 
     public int objectButtonRows = 3;
     public int objectButtonCols = 10;
 
     public ArrayList<Button> tankButtons = new ArrayList<>();
     public ArrayList<Button> obstacleButtons = new ArrayList<>();
+
+    public Runnable drawEditTank = () -> this.editTank.draw();
 
     public Button nextTankPage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> tankButtonPage++);
 
@@ -352,10 +354,15 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             {
                 if (i / (objectButtonCols * objectButtonRows) == tankButtonPage)
                 {
-                    tankButtons.get(i).draw();
+                    if (screenLevelEditor.tankNum >= Game.registryTank.tankEntries.size() && !tankButtons.get(i).enabled && tankButtons.get(i) instanceof ButtonObject)
+                    {
+                        if (this.editTank.selected)
+                            ((ButtonObject) tankButtons.get(i)).tempDisableHover = true;
 
-                    if (screenLevelEditor.tankNum >= Game.registryTank.tankEntries.size() && !tankButtons.get(i).enabled)
-                        this.editTank.draw();
+                        ((ButtonObject) tankButtons.get(i)).drawBeforeTooltip = drawEditTank;
+                    }
+
+                    tankButtons.get(i).draw();
                 }
             }
 

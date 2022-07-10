@@ -82,8 +82,17 @@ public class SavedFilesList extends ButtonList
             this.fileButtons.add(b);
         }
 
+        for (int i = 0; i < this.buttons.size(); i++)
+        {
+            if (this.buttons.get(i).text == null)
+            {
+                this.buttons.remove(i);
+                i--;
+            }
+        }
+
         //this.buttons.sort(Comparator.comparing(o -> o.text) /*(int) Math.signum(times.get(o2) - times.get(o1))*/);
-        Collections.sort(buttons, (o1, o2) -> o1.text.compareTo(o1.text));
+        Collections.sort(buttons, (o1, o2) -> o1.text.compareTo(o2.text));
 
         this.sortButtons();
     }

@@ -61,6 +61,16 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
         int rows = objectButtonRows;
         int cols = objectButtonCols;
 
+        this.nextTankPage.image = "icons/forward.png";
+        this.nextTankPage.imageSizeX = 25;
+        this.nextTankPage.imageSizeY = 25;
+        this.nextTankPage.imageXOffset = 145;
+
+        this.previousTankPage.image = "icons/back.png";
+        this.previousTankPage.imageSizeX = 25;
+        this.previousTankPage.imageSizeY = 25;
+        this.previousTankPage.imageXOffset = -145;
+
         int count = Game.registryTank.tankEntries.size() + customTanks.size() + 1;
         for (int i = 0; i < count; i++)
         {
@@ -105,7 +115,12 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
                 desc = t.description;
 
             if (i >= Game.registryTank.tankEntries.size() + 1)
-                desc = "Custom tank from this level";
+            {
+                if (t != null && !t.description.equals(""))
+                    desc += " \n \n ";
+
+                desc += "\u00A7000255255255Custom tank from this level";
+            }
 
             Button b;
 
@@ -191,7 +206,11 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
                 TankAIControlled t = TankAIControlled.fromString(tankStr);
                 final TankAIControlled tt = t;
 
-                String desc = "From custom tank templates";
+                String desc = t.description;
+                if (!t.description.equals(""))
+                    desc += " \n \n ";
+
+                desc += "\u00A7000255000255Saved custom tank template";
 
                 ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
                 {

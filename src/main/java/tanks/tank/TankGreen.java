@@ -28,6 +28,6 @@ public class TankGreen extends TankAIControlled
 
 		this.coinValue = 10;
 
-		this.description = "A deadly stationary tank which---shoots rockets that bounce twice";
+		this.description = "A deadly stationary tank which shoots rockets that bounce twice";
 	}
 }

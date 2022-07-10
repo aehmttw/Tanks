@@ -49,7 +49,7 @@ public class TextBox implements IDrawable, ITrigger
 	public boolean lowerCase = false;
 	public boolean enableCaps = false;
 
-	public int maxChars = 18;
+	public int maxChars = 20;
 	public double maxValue = Integer.MAX_VALUE;
 	public double minValue = Integer.MIN_VALUE;
 
@@ -255,6 +255,10 @@ public class TextBox implements IDrawable, ITrigger
 
 	public void drawInput()
 	{
+		double size = this.sizeY * 0.6;
+		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
+			Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale));
+
 		if (selected)
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText + "\u00a7127127127255_");
 		else

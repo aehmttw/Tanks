@@ -17,6 +17,6 @@ public class TankPurple extends TankAIControlled
 
 		this.coinValue = 10;
 
-		this.description = "A smart, fast tank---which can lay mines";
+		this.description = "A smart, fast tank which can lay mines";
 	}
 }

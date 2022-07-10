@@ -33,6 +33,6 @@ public class TankMimic extends TankAIControlled
 
         this.coinValue = 10;
 
-        this.description = "A tank which mimics the---closest tank it sees";
+        this.description = "A tank which mimics the closest tank it sees";
     }
 }

@@ -27,6 +27,6 @@ public class TankDarkGreen extends TankAIControlled
 		
 		this.coinValue = 10;
 
-		this.description = "A fast tank which rapidly fires---many small, low-damage bullets";
+		this.description = "A fast tank which rapidly fires many small, low-damage bullets";
 	}
 }

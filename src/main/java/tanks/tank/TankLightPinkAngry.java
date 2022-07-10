@@ -34,6 +34,6 @@ public class TankLightPinkAngry extends TankAIControlled
         // TODO fix music in mimic
         this.shotRoundCount = 5;
 
-        this.description = "A tank which gets angry---on line of sight";
+        this.description = "A tank which gets angry on line of sight, shooting fans of bullets";
     }
 }

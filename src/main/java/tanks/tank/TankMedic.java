@@ -37,6 +37,6 @@ public class TankMedic extends TankAIControlled
 
 		this.coinValue = 4;
 
-		this.description = "A tank which adds extra health---to its allies and becomes---explosive as a last stand";
+		this.description = "A tank which adds extra health to its allies and becomes explosive as a last stand";
 	}
 }

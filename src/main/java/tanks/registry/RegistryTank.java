@@ -69,7 +69,9 @@ public class RegistryTank
 		{
 			try 
 			{
-				return tank.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, x, y, a);
+				Tank t = tank.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, x, y, a);
+				t.fromRegistry = true;
+				return t;
 			}
 			catch (Exception e)
 			{

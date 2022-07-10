@@ -89,7 +89,7 @@ public class TankAIControlled extends Tank
 	/** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
 	public boolean enableTargetEnemyReaction = true;
 	/** Type of behavior tank should have if its target enemy is in line of sight*/
-	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight - either flee from the target, approach it, or strafe around it")
+	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight - either flee from the target, approach it, or strafe around it \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
 	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
 	/** If set to strafe upon seeing the target enemy, chance to change orbit direction*/
 	@TankProperty(category = movementOnSight, id = "strafe_direction_change_chance", name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
@@ -99,7 +99,7 @@ public class TankAIControlled extends Tank
 	public double targetSightDistance = Game.tile_size * 6;
 
 	/** If set to true, will transform into another tank when entering line of sight with target enemy */
-	@TankProperty(category = transformationOnSight, id = "transform_on_sight", name = "Enabled", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target")
+	@TankProperty(category = transformationOnSight, id = "transform_on_sight", name = "Enabled", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target \n \n Requires 'Test sight'  in 'Movement on sight' to take effect")
 	public boolean transformOnSight = false;
 	/** Tank to transform into*/
 	@TankProperty(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "Tank to transform into upon line of sight")
@@ -898,9 +898,6 @@ public class TankAIControlled extends Tank
 			else
 				this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 		}
-
-		if (this.transformOnSight && this.sightTransformTank != null)
-			this.handleSightTransformation();
 	}
 
 	public void handleSightTransformation()
@@ -936,6 +933,7 @@ public class TankAIControlled extends Tank
 		t.vX = this.vX;
 		t.vY = this.vY;
 		t.angle = this.angle;
+		t.pitch = this.pitch;
 		t.team = this.team;
 		t.health = this.health;
 		t.orientation = this.orientation;
@@ -944,6 +942,7 @@ public class TankAIControlled extends Tank
 		t.skipNextUpdate = true;
 		t.attributes = this.attributes;
 		t.coinValue = this.coinValue;
+		t.cooldown = this.cooldown;
 
 		t.baseModel = this.baseModel;
 		t.turretModel = this.turretModel;
@@ -1289,6 +1288,9 @@ public class TankAIControlled extends Tank
 			this.updateTurretStraight();
 		else
 			this.updateTurretReflect();
+
+		if (!BulletArc.class.isAssignableFrom(this.bullet.bulletClass))
+			this.pitch -= Movable.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
 
 		if (!this.chargeUp)
 			this.cooldown -= Panel.frameFrequency;
@@ -1707,6 +1709,9 @@ public class TankAIControlled extends Tank
 				this.straightShoot = false;
 			}
 		}
+
+		if (this.transformOnSight && this.sightTransformTank != null && seesTargetEnemy)
+			this.handleSightTransformation();
 	}
 
 	public void updateAimingTurret()
@@ -1956,6 +1961,15 @@ public class TankAIControlled extends Tank
 
 		if (this.random.nextDouble() < this.spawnChance * Panel.frameFrequency && this.spawnedTanks.size() < this.spawnedMaxCount && !this.destroy && !ScreenGame.finishedQuick)
 			spawnTank();
+
+		for (int i = 0; i < this.spawnedTanks.size(); i++)
+		{
+			if (this.spawnedTanks.get(i).destroy)
+			{
+				this.spawnedTanks.remove(i);
+				i--;
+			}
+		}
 	}
 
 	public void spawnTank()
@@ -2150,6 +2164,7 @@ public class TankAIControlled extends Tank
 			Tank.idMap.put(this.networkID, this);
 			this.health = this.sightTransformTank.health;
 			this.orientation = this.sightTransformTank.orientation;
+			this.pitch = this.sightTransformTank.pitch;
 			this.drawAge = this.sightTransformTank.drawAge;
 			this.attributes = this.sightTransformTank.attributes;
 			this.possessingTank = null;
@@ -2586,6 +2601,9 @@ public class TankAIControlled extends Tank
 	@Override
 	public String toString()
 	{
+		if (fromRegistry)
+			return "<" + this.name + ">";
+
 		try
 		{
 			StringBuilder s = new StringBuilder("[");
@@ -2599,7 +2617,12 @@ public class TankAIControlled extends Tank
 					s.append("=");
 
 					if (f.get(this) != null)
-						s.append(f.get(this));
+					{
+						if (a.miscType() == TankProperty.MiscType.description)
+							s.append("\u00A7").append(f.get(this)).append("\u00A7");
+						else
+							s.append(f.get(this));
+					}
 					else
 						s.append("*");
 
@@ -2652,6 +2675,14 @@ public class TankAIControlled extends Tank
 						{
 							if (value.equals("*"))
 								f.set(t, null);
+							else if (value.startsWith("\u00A7"))
+							{
+								s = s.substring(equals + 2);
+								int end = s.indexOf("\u00A7");
+								value = s.substring(0, end);
+								s = s.substring(end + 1);
+								f.set(t, value);
+							}
 							else
 								f.set(t, value);
 						}
@@ -2675,6 +2706,12 @@ public class TankAIControlled extends Tank
 						{
 							if (value.equals("*"))
 								f.set(t, null);
+							else if (value.startsWith("<"))
+							{
+								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
+								s = s.substring(s.indexOf(">") + 1);
+								f.set(t, Game.registryTank.getEntry(tank).getTank(0, 0, 0));
+							}
 							else
 							{
 								String[] r = new String[1];
@@ -2766,6 +2803,5 @@ public class TankAIControlled extends Tank
 		}
 
 		t.health = t.baseHealth;
-		t.description = "";
 	}
 }

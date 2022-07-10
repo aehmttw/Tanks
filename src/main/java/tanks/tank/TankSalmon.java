@@ -27,6 +27,6 @@ public class TankSalmon extends TankAIControlled
 
 		this.coinValue = 10;
 
-		this.description = "A tank which shoots---homing rockets";
+		this.description = "A tank which shoots homing rockets";
 	}
 }

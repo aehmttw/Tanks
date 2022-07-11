@@ -25,11 +25,11 @@ public abstract class BaseFile
 
     public abstract void startReading() throws FileNotFoundException;
 
-    public abstract boolean hasNextLine();
+    public abstract boolean hasNextLine() throws IOException;
 
-    public abstract String nextLine();
+    public abstract String nextLine() throws IOException;
 
-    public abstract void stopReading();
+    public abstract void stopReading() throws IOException;
 
     public abstract void startWriting() throws FileNotFoundException;
 

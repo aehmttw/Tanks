@@ -2647,6 +2647,7 @@ public class TankAIControlled extends Tank
 
 	public static TankAIControlled fromString(String s, String[] remainder)
 	{
+		String original = s;
 		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
 
 		try
@@ -2741,6 +2742,8 @@ public class TankAIControlled extends Tank
 		}
 		catch (Exception e)
 		{
+			Game.logger.println("Failed to load tank: " + original);
+			System.err.println("Failed to load tank: " + original);
 			Game.exitToCrash(e);
 		}
 

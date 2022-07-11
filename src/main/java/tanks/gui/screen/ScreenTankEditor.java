@@ -556,27 +556,27 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             super(screen, parent, name, category);
             this.colorIndex = colorIndex;
 
-            double r = this.screen.tank.colorR;
-            double g = this.screen.tank.colorG;
-            double b = this.screen.tank.colorB;
+            int r = (int) this.screen.tank.colorR;
+            int g = (int) this.screen.tank.colorG;
+            int b = (int) this.screen.tank.colorB;
 
             if (colorIndex == 2)
             {
-                r = this.screen.tank.secondaryColorR;
-                g = this.screen.tank.secondaryColorG;
-                b = this.screen.tank.secondaryColorB;
+                r = (int) this.screen.tank.secondaryColorR;
+                g = (int) this.screen.tank.secondaryColorG;
+                b = (int) this.screen.tank.secondaryColorB;
             }
             else if (colorIndex == 3)
             {
-                r = this.screen.tank.tertiaryColorR;
-                g = this.screen.tank.tertiaryColorG;
-                b = this.screen.tank.tertiaryColorB;
+                r = (int) this.screen.tank.tertiaryColorR;
+                g = (int) this.screen.tank.tertiaryColorG;
+                b = (int) this.screen.tank.tertiaryColorB;
             }
             else if (colorIndex == 4)
             {
-                r = this.screen.tank.emblemR;
-                g = this.screen.tank.emblemG;
-                b = this.screen.tank.emblemB;
+                r = (int) this.screen.tank.emblemR;
+                g = (int) this.screen.tank.emblemG;
+                b = (int) this.screen.tank.emblemB;
             }
 
             if (colorIndex == 2)
@@ -776,9 +776,14 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             }
             else
             {
-                colorRed.function.run();
-                colorGreen.function.run();
-                colorBlue.function.run();
+                if (!colorRed.selected)
+                    colorRed.function.run();
+
+                if (!colorGreen.selected)
+                    colorGreen.function.run();
+
+                if (!colorBlue.selected)
+                    colorBlue.function.run();
             }
         }
     }

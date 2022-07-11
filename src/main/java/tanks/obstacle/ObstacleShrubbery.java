@@ -46,7 +46,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.update = true;
 
-		this.description = "A destructible bush in which you---can hide by standing still";
+		this.description = "A destructible bush in which you can hide by standing still";
 	}
 
 	@Override

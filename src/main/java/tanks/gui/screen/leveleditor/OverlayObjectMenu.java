@@ -20,9 +20,6 @@ import java.util.Iterator;
 
 public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITankScreen
 {
-    public static int tankButtonPage = 0;
-    public static int obstacleButtonPage = 0;
-
     public int objectButtonRows = 3;
     public int objectButtonCols = 10;
 
@@ -31,13 +28,13 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Runnable drawEditTank = () -> this.editTank.draw();
 
-    public Button nextTankPage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> tankButtonPage++);
+    public Button nextTankPage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> screenLevelEditor.tankPage++);
 
-    public Button previousTankPage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> tankButtonPage--);
+    public Button previousTankPage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> screenLevelEditor.tankPage--);
 
-    public Button nextObstaclePage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> obstacleButtonPage++);
+    public Button nextObstaclePage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> screenLevelEditor.obstaclePage++);
 
-    public Button previousObstaclePage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> obstacleButtonPage--);
+    public Button previousObstaclePage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> screenLevelEditor.obstaclePage--);
 
     public Button exitObjectMenu = new Button(this.centerX, this.centerY + 240, 350, 40, "Ok", () ->
     {
@@ -251,14 +248,14 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             {
                 this.tankButtons.get(i).enabled = screenLevelEditor.tankNum != i;
 
-                if (i / (this.objectButtonCols * this.objectButtonRows) == tankButtonPage)
+                if (i / (this.objectButtonCols * this.objectButtonRows) == screenLevelEditor.tankPage)
                     this.tankButtons.get(i).update();
             }
 
-            if ((this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > tankButtonPage)
+            if ((this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > screenLevelEditor.tankPage)
                 nextTankPage.update();
 
-            if (tankButtonPage > 0)
+            if (screenLevelEditor.tankPage > 0)
                 previousTankPage.update();
         }
         else if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
@@ -267,14 +264,14 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             {
                 this.obstacleButtons.get(i).enabled = screenLevelEditor.obstacleNum != i;
 
-                if (i / (this.objectButtonCols * this.objectButtonRows) == obstacleButtonPage)
+                if (i / (this.objectButtonCols * this.objectButtonRows) == screenLevelEditor.obstaclePage)
                     this.obstacleButtons.get(i).update();
             }
 
-            if ((this.obstacleButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > obstacleButtonPage)
+            if ((this.obstacleButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > screenLevelEditor.obstaclePage)
                 nextObstaclePage.update();
 
-            if (obstacleButtonPage > 0)
+            if (screenLevelEditor.obstaclePage > 0)
                 previousObstaclePage.update();
 
             if (screenLevelEditor.mouseObstacle.enableStacking)
@@ -344,15 +341,15 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         }
         else if (this.screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
         {
-            if ((tankButtons.size() - 1) / (objectButtonRows * objectButtonCols) > tankButtonPage)
+            if ((tankButtons.size() - 1) / (objectButtonRows * objectButtonCols) > screenLevelEditor.tankPage)
                 nextTankPage.draw();
 
-            if (tankButtonPage > 0)
+            if (screenLevelEditor.tankPage > 0)
                 previousTankPage.draw();
 
             for (int i = tankButtons.size() - 1; i >= 0; i--)
             {
-                if (i / (objectButtonCols * objectButtonRows) == tankButtonPage)
+                if (i / (objectButtonCols * objectButtonRows) == screenLevelEditor.tankPage)
                 {
                     if (screenLevelEditor.tankNum >= Game.registryTank.tankEntries.size() && !tankButtons.get(i).enabled && tankButtons.get(i) instanceof ButtonObject)
                     {
@@ -370,15 +367,15 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         }
         else if (this.screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
         {
-            if ((this.obstacleButtons.size() - 1) / (objectButtonRows * objectButtonCols) > obstacleButtonPage)
+            if ((this.obstacleButtons.size() - 1) / (objectButtonRows * objectButtonCols) > screenLevelEditor.obstaclePage)
                 nextObstaclePage.draw();
 
-            if (obstacleButtonPage > 0)
+            if (screenLevelEditor.obstaclePage > 0)
                 previousObstaclePage.draw();
 
             for (int i = this.obstacleButtons.size() - 1; i >= 0; i--)
             {
-                if (i / (this.objectButtonCols * this.objectButtonRows) == obstacleButtonPage)
+                if (i / (this.objectButtonCols * this.objectButtonRows) == screenLevelEditor.obstaclePage)
                     this.obstacleButtons.get(i).draw();
             }
 

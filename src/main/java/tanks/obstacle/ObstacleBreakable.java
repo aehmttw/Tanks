@@ -41,7 +41,7 @@ public class ObstacleBreakable extends Obstacle
         }
 
         this.shouldShootThrough = true;
-        this.description = "A block which breaks---when hit by a bullet";
+        this.description = "A block which breaks when hit by a bullet";
     }
 
     @Override

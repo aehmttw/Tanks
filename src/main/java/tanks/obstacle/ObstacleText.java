@@ -29,7 +29,7 @@ public class ObstacleText extends Obstacle
 		this.enableStacking = false;
 		this.batchDraw = false;
 
-		this.description = "A piece of text used---to instruct the player";
+		this.description = "A piece of text used to instruct the player";
 
 		if (Game.framework == Game.Framework.libgdx)
 			this.fontSize = 24;

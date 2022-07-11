@@ -436,6 +436,22 @@ public class ScreenChangelog extends Screen
                                     "Increased player tank acceleration\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.h", new String[]
+                    {
+                            "*What's new in Tanks v1.4.h:\n\n" +
+                                    "Added tank description option\n" +
+                                    "Added indicator when new shop items are available\n" +
+                                    "Use custom tanks in current level as templates\n" +
+                                    "Increased some textbox character limits\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
+
+            new Changelog("v1.4.i", new String[]
+                    {
+                            "*What's new in Tanks v1.4.i:\n\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

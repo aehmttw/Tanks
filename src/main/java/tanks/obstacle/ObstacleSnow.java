@@ -50,7 +50,7 @@ public class ObstacleSnow extends Obstacle
         this.baseColorG = this.colorG;
         this.baseColorB = this.colorB;
 
-        this.description = "A thick, melting pile of snow that---slows tanks and bullets down";
+        this.description = "A thick, melting pile of snow that slows tanks and bullets down";
     }
 
     @Override

@@ -101,7 +101,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
 
-		this.description = "A solid block which can---be destroyed by mines";
+		this.description = "A solid block which can be destroyed by mines";
 	}
 
 	@Override

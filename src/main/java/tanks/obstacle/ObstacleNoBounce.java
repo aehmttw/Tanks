@@ -21,6 +21,6 @@ public class ObstacleNoBounce extends Obstacle
 			this.stackColorB[i] = c;
 		}
 
-		this.description = "An indestructible block which---prevents bullets from bouncing";
+		this.description = "An indestructible block which prevents bullets from bouncing";
 	}
 }

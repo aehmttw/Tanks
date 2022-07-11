@@ -26,7 +26,7 @@ public class ObstacleMud extends Obstacle
 
         this.replaceTiles = true;
 
-        this.description = "A thick puddle of mud---that slows tanks down";
+        this.description = "A thick puddle of mud that slows tanks down";
     }
 
     @Override

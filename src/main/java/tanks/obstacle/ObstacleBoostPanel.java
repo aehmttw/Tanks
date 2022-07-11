@@ -31,7 +31,7 @@ public class ObstacleBoostPanel extends Obstacle
 
         glow = Effect.createNewEffect(this.posX, this.posY, 0, Effect.EffectType.boostLight);
 
-        this.description = "A panel which speeds---up tanks and bullets";
+        this.description = "A panel which speeds up tanks and bullets";
     }
 
     @Override

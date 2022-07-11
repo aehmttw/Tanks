@@ -99,7 +99,9 @@ public class Level
 
 		int parsing = 0;
 
-		for (String s: this.levelString.split("\n"))
+		String[] lines = this.levelString.split("\n");
+
+		for (String s: lines)
 		{
 			switch (s.toLowerCase())
 			{

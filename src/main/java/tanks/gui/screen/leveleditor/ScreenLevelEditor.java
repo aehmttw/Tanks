@@ -28,6 +28,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public int redoLength = -1;
 
 	public Placeable currentPlaceable = Placeable.enemyTank;
+
+	public int tankPage = 0;
+	public int obstaclePage = 0;
+
 	public int tankNum = 0;
 	public int obstacleNum = 0;
 	public int teamNum = 1;

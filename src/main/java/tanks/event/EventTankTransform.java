@@ -7,10 +7,8 @@ import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankMimic;
-import tanks.tank.TankProperty;
+import tanks.tank.TankModels;
 import tanks.tank.TankRemote;
-
-import static tanks.tank.TankProperty.Category.appearanceGlow;
 
 public class EventTankTransform extends PersonalEvent
 {
@@ -156,9 +154,9 @@ public class EventTankTransform extends PersonalEvent
             }
             else if (effect == poof)
             {
-                t.baseModel = TankMimic.base_model;
-                t.turretBaseModel = TankMimic.turret_base_model;
-                t.turretModel = TankMimic.turret_model;
+                t.baseModel = TankModels.mimic_base_model;
+                t.turretBaseModel = TankModels.mimic_turret_base_model;
+                t.turretModel = TankModels.mimic_turret_model;
 
                 if (Game.effectsEnabled)
                 {

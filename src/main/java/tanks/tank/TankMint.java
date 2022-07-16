@@ -28,7 +28,8 @@ public class TankMint extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;
-		
+		this.baseModel = TankModels.diagonalstripes_base_model;
+
 		this.coinValue = 2;
 
 		this.description = "A tank which shoots fast rocket bullets";

@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import basewindow.Model;
 import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Game;
@@ -10,10 +9,7 @@ public class Turret extends Movable
 {
 	Tank tank;
 
-	public static Model base_model;
-	public static Model turret_model;
-
-	public Turret(Tank t) 
+	public Turret(Tank t)
 	{
 		super(t.posX, t.posY);
 		this.tank = t;

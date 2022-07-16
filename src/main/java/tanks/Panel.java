@@ -93,6 +93,7 @@ public class Panel
 	public long ageFrames = 0;
 
 	public boolean started = false;
+	public boolean settingUp = true;
 
 	public static void initialize()
 	{
@@ -116,10 +117,11 @@ public class Panel
 
 		ModAPI.setUp();
 
+		Game.resetTiles();
+
 		if (Game.game.fullscreen)
 			Game.game.window.setFullscreen(Game.game.fullscreen);
 
-		Game.createModels();
 		Game.game.window.setIcon("/images/icon.png");
 
 		double scale = 1;
@@ -144,88 +146,97 @@ public class Panel
 		Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
 		Hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
 
-		if (Game.usernameInvalid(Game.player.username))
-			Game.screen = new ScreenUsernameInvalid();
-		else
-		{
-			if (Game.cinematic)
-				Game.screen = new ScreenCinematicTitle();
-			else
-				Game.screen = new ScreenTitle();
-		}
+		Game.createModels();
 
-		Game.loadTankMusic();
-
-		ScreenChangelog.Changelog.setupLogs();
-
-		ScreenChangelog s = new ScreenChangelog();
-		s.setup();
-
-		if (!s.pages.isEmpty())
-			Game.screen = s;
-
-		if (Game.game.window.soundsEnabled)
-		{
-			Game.game.window.soundPlayer.musicPlaying = true;
-
-			for (int i = 1; i <= 5; i++)
-			{
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_" + i + ".ogg", "menu");
-			}
-
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_options.ogg", "menu");
-
-			for (int i = 1; i <= 2; i++)
-			{
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
-			}
-
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
-
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle_night");
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle_night");
-
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
-			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
-
-			//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
-			//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
-		}
-
-		if (Game.game.window.soundsEnabled)
-		{
-			Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
-			Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
-			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
-			Game.game.window.soundPlayer.loadMusic("/music/battle_night.ogg");
-			Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
-			Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
-			Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
-
-			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
-		}
+		for (Extension e : Game.extensionRegistry.extensions)
+			e.loadResources();
 
 		zoomTranslation.window = Game.game.window;
 		zoomTranslation.applyAsShadow = true;
-
 		dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
 
-		for (Extension e: Game.extensionRegistry.extensions)
-			e.loadResources();
+		new Thread(() ->
+		{
+			if (Game.usernameInvalid(Game.player.username))
+				Game.screen = new ScreenUsernameInvalid();
+			else
+			{
+				if (Game.cinematic)
+					Game.screen = new ScreenCinematicTitle();
+				else
+					Game.screen = new ScreenTitle();
+			}
 
-		Game.resetTiles();
+			Game.loadTankMusic();
+
+			ScreenChangelog.Changelog.setupLogs();
+
+			ScreenChangelog s = new ScreenChangelog();
+			s.setup();
+
+			if (!s.pages.isEmpty())
+				Game.screen = s;
+
+			if (Game.game.window.soundsEnabled)
+			{
+				Game.game.window.soundPlayer.musicPlaying = true;
+
+				for (int i = 1; i <= 5; i++)
+				{
+					Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_" + i + ".ogg", "menu");
+				}
+
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_options.ogg", "menu");
+
+				for (int i = 1; i <= 2; i++)
+				{
+					Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
+				}
+
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
+
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle_night");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle_night");
+
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
+
+				//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
+				//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
+			}
+
+			if (Game.game.window.soundsEnabled)
+			{
+				Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle_night.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
+				Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
+
+				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			}
+
+			System.out.println("setup complete");
+			settingUp = false;
+		}).start();
 	}
 
 	public void update()
 	{
-		Game.prevScreen = Game.screen;
-		Obstacle.lastDrawSize = Obstacle.draw_size;
-
 		if (firstFrame)
 			this.setUp();
 
 		firstFrame = false;
+
+		if (settingUp)
+			return;
+
+		Game.prevScreen = Game.screen;
+		Obstacle.lastDrawSize = Obstacle.draw_size;
+
 
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{

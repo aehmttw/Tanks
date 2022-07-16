@@ -3,8 +3,8 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.tank.Tank;
 import tanks.tank.TankMimic;
+import tanks.tank.TankModels;
 
 public class ScreenDebug extends Screen
 {
@@ -42,7 +42,7 @@ public class ScreenDebug extends Screen
     Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Test text boxes", () -> Game.screen = new ScreenTestTextbox()
     );
 
-    Button modelTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(TankMimic.turret_base_model)
+    Button modelTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(Drawing.drawing.createModel("/models/tankcamoflauge/base/"))
     );
 
     Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()

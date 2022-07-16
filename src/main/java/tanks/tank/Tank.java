@@ -27,21 +27,18 @@ public abstract class Tank extends Movable implements ISolidObject
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
 	public static HashMap<Integer, Tank> idMap = new HashMap<>();
 
-	public static Model base_model;
-	public static Model color_model;
-
 	public static ModelPart health_model;
 
 	public boolean fromRegistry = false;
 
 	@TankProperty(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = TankProperty.MiscType.colorModel)
-	public Model colorModel = color_model;
+	public Model colorModel = TankModels.color_model;
 	@TankProperty(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = TankProperty.MiscType.baseModel)
-	public Model baseModel = base_model;
+	public Model baseModel = TankModels.base_model;
 	@TankProperty(category = appearanceTurretBase, id = "turret_base_model", name = "Turret base model", miscType = TankProperty.MiscType.turretBaseModel)
-	public Model turretBaseModel = Turret.base_model;
+	public Model turretBaseModel = TankModels.turret_base_model;
 	@TankProperty(category = appearanceTurretBarrel, id = "turret_model", name = "Turret barrel model", miscType = TankProperty.MiscType.turretModel)
-	public Model turretModel = Turret.turret_model;
+	public Model turretModel = TankModels.turret_model;
 
 	public double angle = 0;
 	public double pitch = 0;
@@ -775,16 +772,16 @@ public abstract class Tank extends Movable implements ISolidObject
 			if (forInterface)
 			{
 				if (interface3d)
-					drawing.drawInterfaceImage(0, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
+					drawing.drawInterfaceImage(-Math.PI / 2, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawInterfaceImage(this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
 			else
 			{
 				if (Game.enable3d)
-					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle - Math.PI / 2, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
 				else
-					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle - Math.PI / 2, this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
 		}
 

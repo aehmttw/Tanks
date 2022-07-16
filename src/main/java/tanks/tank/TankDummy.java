@@ -16,7 +16,10 @@ public class TankDummy extends TankAIControlled
 		this.bullet.maxLiveBullets = 0;
 		this.turretIdleSpeed = 0;
 		this.enableLookingAtTargetEnemy = false;
-
+		this.colorModel = TankModels.fixed_color_model;
+		this.emblem = "emblems/x.png";
+		this.emblemR = 50;
+		this.emblemG = 25;
 		this.coinValue = 0;
 
 		this.description = "A dummy tank used to practice your aim";

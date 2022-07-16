@@ -24,6 +24,11 @@ public class TankPink extends TankAIControlled
 		this.turretIdleTimerBase = 25;
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
+		this.colorModel = TankModels.fixed_color_model;
+		this.emblem = "emblems/squares.png";
+		this.emblemR = this.secondaryColorR;
+		this.emblemG = this.secondaryColorG;
+		this.emblemB = this.secondaryColorB;
 
 		this.enableSpawning = true;
 		this.spawnedTank = new TankMini("mini", 0, 0, 0);

@@ -99,7 +99,7 @@ public class TankAIControlled extends Tank
 	public double targetSightDistance = Game.tile_size * 6;
 
 	/** If set to true, will transform into another tank when entering line of sight with target enemy */
-	@TankProperty(category = transformationOnSight, id = "transform_on_sight", name = "Enabled", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target \n \n Requires 'Test sight'  in 'Movement on sight' to take effect")
+	@TankProperty(category = transformationOnSight, id = "transform_on_sight", name = "Enabled", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target")
 	public boolean transformOnSight = false;
 	/** Tank to transform into*/
 	@TankProperty(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "Tank to transform into upon line of sight")
@@ -434,7 +434,6 @@ public class TankAIControlled extends Tank
 
 		this.random = new Random(Level.random.nextLong());
 		this.direction = ((int)(this.random.nextDouble() * 8)) / 2.0;
-		this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
 
 		if (this.random.nextDouble() < 0.5)
 			this.idlePhase = RotationPhase.counterClockwise;
@@ -445,10 +444,6 @@ public class TankAIControlled extends Tank
 		this.bullet.maxLiveBullets = 5;
 		this.bullet.recoil = 0;
 		this.bullet.cooldownBase = 1;
-
-		this.baseColorR = this.colorR;
-		this.baseColorG = this.colorG;
-		this.baseColorB = this.colorB;
 
 		this.shootAIType = ai;
 	}
@@ -496,6 +491,10 @@ public class TankAIControlled extends Tank
 		{
 			this.baseMaxSpeed = this.maxSpeed;
 			this.dealsDamage = !this.isSupportTank();
+			this.baseColorR = this.colorR;
+			this.baseColorG = this.colorG;
+			this.baseColorB = this.colorB;
+			this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
 		}
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
@@ -847,7 +846,7 @@ public class TankAIControlled extends Tank
 		{
 			fleeDirection = -fleeDirection;
 
-			if (this.targetEnemy != null && this.seesTargetEnemy && this.enableTargetEnemyReaction)
+			if (this.targetEnemy != null && this.seesTargetEnemy && this.enableTargetEnemyReaction && this.enableLookingAtTargetEnemy)
 			{
 				if (this.currentlySeeking)
 				{
@@ -878,9 +877,7 @@ public class TankAIControlled extends Tank
 		if (this.stopSeekingOnSight)
 			this.currentlySeeking = false;
 
-		if (this.suicidal)
-			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, acceleration);
-		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.approach)
+		if (this.suicidal || this.targetEnemySightBehavior == TargetEnemySightBehavior.approach)
 			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.flee)
 			this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
@@ -943,10 +940,6 @@ public class TankAIControlled extends Tank
 		t.attributes = this.attributes;
 		t.coinValue = this.coinValue;
 		t.cooldown = this.cooldown;
-
-		t.baseModel = this.baseModel;
-		t.turretModel = this.turretModel;
-		t.turretBaseModel = this.turretBaseModel;
 
 		Tank.idMap.remove(t.networkID);
 		Tank.freeIDs.add(t.networkID);
@@ -1274,7 +1267,7 @@ public class TankAIControlled extends Tank
 			return;
 		}
 
-		if (this.enableLookingAtTargetEnemy)
+		if (this.enableLookingAtTargetEnemy || this.straightShoot || this.sightTransformTank != null)
 			this.lookAtTargetEnemy();
 
 		if (this.shootAIType.equals(ShootAI.homing))
@@ -1318,7 +1311,7 @@ public class TankAIControlled extends Tank
 			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 				speed /= 2;
 
-			if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold)
+			if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.turretAimSpeed * Panel.frameFrequency)
 			{
 				if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
 					this.angle += speed * Panel.frameFrequency;
@@ -1442,7 +1435,7 @@ public class TankAIControlled extends Tank
 		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 			speed /= 2;
 
-		if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold)
+		if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.turretAimSpeed * Panel.frameFrequency)
 		{
 			if (Movable.angleBetween(this.angle, this.aimAngle) < 0)
 				this.angle += speed * Panel.frameFrequency;
@@ -1685,9 +1678,7 @@ public class TankAIControlled extends Tank
 		Movable target = rayToTarget.getTarget();
 
 		if (target != null)
-		{
 			this.seesTargetEnemy = target.equals(this.targetEnemy);
-		}
 		else
 			this.seesTargetEnemy = false;
 
@@ -1696,18 +1687,12 @@ public class TankAIControlled extends Tank
 			if (target != null)
 			{
 				if (target.equals(this.targetEnemy))
-				{
 					this.aimAngle = a;
-				}
 				else
-				{
 					this.straightShoot = false;
-				}
 			}
 			else
-			{
 				this.straightShoot = false;
-			}
 		}
 
 		if (this.transformOnSight && this.sightTransformTank != null && seesTargetEnemy)
@@ -1716,7 +1701,7 @@ public class TankAIControlled extends Tank
 
 	public void updateAimingTurret()
 	{
-		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold)
+		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.turretAimSpeed * Panel.frameFrequency)
 		{
 			this.angle = this.aimAngle;
 			this.shoot();
@@ -1737,7 +1722,7 @@ public class TankAIControlled extends Tank
 			if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) < this.aimThreshold * 2)
 				speed /= 2;
 
-			if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.aimThreshold)
+			if (Movable.absoluteAngleBetween(this.aimAngle, this.angle) > this.turretAimSpeed * Panel.frameFrequency)
 			{
 				if ((this.angle - this.aimAngle + Math.PI * 3) % (Math.PI*2) - Math.PI < 0)
 					this.angle += speed * Panel.frameFrequency;
@@ -2140,17 +2125,11 @@ public class TankAIControlled extends Tank
 		if (this.transformTank.targetEnemy != null)
 		{
 			this.targetEnemy = this.transformTank.targetEnemy;
-			Ray r = new Ray(this.transformTank.posX, this.transformTank.posY, 0, 0, this);
-			r.vX = this.targetEnemy.posX - this.transformTank.posX;
-			r.vY = this.targetEnemy.posY - this.transformTank.posY;
-
-			double ma = Math.sqrt(r.vX * r.vX + r.vY * r.vY) / r.speed;
-			r.vX /= ma;
-			r.vY /= ma;
+			Ray r = new Ray(this.transformTank.posX, this.transformTank.posY, this.transformTank.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
 
 			r.moveOut(5);
 
-			m = r.getTarget(2, (Tank) this.targetEnemy);
+			m = r.getTarget();
 		}
 
 		if (this.targetEnemy == null || m != this.targetEnemy || this.targetEnemy.destroy)
@@ -2619,7 +2598,10 @@ public class TankAIControlled extends Tank
 					if (f.get(this) != null)
 					{
 						if (a.miscType() == TankProperty.MiscType.description)
-							s.append("\u00A7").append(f.get(this)).append("\u00A7");
+						{
+							String desc = (String) f.get(this);
+							s.append("<").append(desc.length()).append(">").append(desc);
+						}
 						else
 							s.append(f.get(this));
 					}
@@ -2682,6 +2664,15 @@ public class TankAIControlled extends Tank
 								int end = s.indexOf("\u00A7");
 								value = s.substring(0, end);
 								s = s.substring(end + 1);
+								f.set(t, value);
+							}
+							else if (value.startsWith("<"))
+							{
+								s = s.substring(equals + 2);
+								int end = s.indexOf(">");
+								int length = Integer.parseInt(s.substring(0, end));
+								value = s.substring(end + 1, end + 1 + length);
+								s = s.substring(end + 1 + length);
 								f.set(t, value);
 							}
 							else

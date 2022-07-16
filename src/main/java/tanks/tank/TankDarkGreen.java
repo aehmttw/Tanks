@@ -24,7 +24,12 @@ public class TankDarkGreen extends TankAIControlled
 		this.bullet.effect = Bullet.BulletEffect.trail;
 		this.bullet.name = "Mini bullet";
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
-		
+
+		this.baseModel = TankModels.camo_base_model;
+		this.colorModel = TankModels.camo_color_model;
+		this.turretBaseModel = TankModels.camo_turret_base_model;
+		this.turretModel = TankModels.turret_model;
+
 		this.coinValue = 10;
 
 		this.description = "A fast tank which rapidly fires many small, low-damage bullets";

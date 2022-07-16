@@ -1,6 +1,7 @@
 package tanks.registry;
 
 import tanks.Game;
+import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
 
@@ -71,6 +72,7 @@ public class RegistryTank
 			{
 				Tank t = tank.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, x, y, a);
 				t.fromRegistry = true;
+				t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
 				return t;
 			}
 			catch (Exception e)

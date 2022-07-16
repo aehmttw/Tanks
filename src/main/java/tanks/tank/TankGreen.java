@@ -25,6 +25,8 @@ public class TankGreen extends TankAIControlled
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
 		this.enableDefensiveFiring = true;
+		this.colorModel = TankModels.fixed_color_model;
+		this.baseModel = TankModels.diagonalstripes_base_model;
 
 		this.coinValue = 10;
 

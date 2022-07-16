@@ -20,10 +20,15 @@ public class TankBlue extends TankAIControlled
 		this.bullet.bulletClass = BulletElectric.class;
 		this.bullet.damage = 0.125;
 		this.bullet.name = "Zap";
+		this.colorModel = TankModels.fixed_color_model;
 		this.turretAimSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
 		this.cooldownBase = 200;
 		this.cooldownRandom = 0;
+
+		this.emblem = "emblems/electric.png";
+		this.emblemG = 160;
+		this.emblemB = 255;
 
 		this.coinValue = 4;
 

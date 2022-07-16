@@ -8,11 +8,6 @@ import tanks.*;
  */
 public class TankMimic extends TankAIControlled
 {
-    public static Model base_model;
-    public static Model color_model;
-    public static Model turret_model;
-    public static Model turret_base_model;
-
     public TankMimic(String name, double x, double y, double angle)
     {
         super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.reflect);
@@ -24,10 +19,10 @@ public class TankMimic extends TankAIControlled
         this.cooldownRandom = 400;
         this.enableMineLaying = true;
 
-        this.baseModel = base_model;
-        this.colorModel = color_model;
-        this.turretModel = turret_model;
-        this.turretBaseModel = turret_base_model;
+        this.baseModel = TankModels.mimic_base_model;
+        this.colorModel = TankModels.mimic_color_model;
+        this.turretModel = TankModels.mimic_turret_model;
+        this.turretBaseModel = TankModels.mimic_turret_base_model;
 
         this.transformMimic = true;
 

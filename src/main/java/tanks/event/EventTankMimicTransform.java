@@ -4,10 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
 import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankMimic;
-import tanks.tank.TankRemote;
-import tanks.tank.Turret;
+import tanks.tank.*;
 
 public class EventTankMimicTransform extends PersonalEvent
 {
@@ -67,14 +64,14 @@ public class EventTankMimicTransform extends PersonalEvent
                 t.secondaryColorG = green2;
                 t.secondaryColorB = blue2;
 
-                t.colorModel = Tank.color_model;
+                t.colorModel = TankModels.color_model;
             }
 
             if (!(t1 instanceof TankMimic) || isPlayer)
             {
-                t.baseModel = TankMimic.base_model;
-                t.turretBaseModel = TankMimic.turret_base_model;
-                t.turretModel = TankMimic.turret_model;
+                t.baseModel = TankModels.mimic_base_model;
+                t.turretBaseModel = TankModels.mimic_turret_base_model;
+                t.turretModel = TankModels.mimic_turret_model;
 
                 if (Game.effectsEnabled)
                 {

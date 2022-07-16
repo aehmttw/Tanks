@@ -583,6 +583,7 @@ public class LWJGLWindow extends BaseWindow
 		}
 		catch (Exception e)
 		{
+			System.err.println("Failed to load: " + image);
 			e.printStackTrace();
 		}
 	}

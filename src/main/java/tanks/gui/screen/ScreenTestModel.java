@@ -33,6 +33,9 @@ public class ScreenTestModel extends Screen
     @Override
     public void update()
     {
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_ESCAPE))
+            Game.screen = new ScreenDebug();
+
         double frac = 0.02;
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT))

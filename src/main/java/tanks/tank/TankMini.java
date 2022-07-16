@@ -32,6 +32,10 @@ public class TankMini extends TankAIControlled
 		this.baseHealth = 0.25;
 		this.mineAvoidSensitivity = 0.5;
 		this.stayNearParent = true;
+		this.emblem = "emblems/square.png";
+		this.emblemR = this.secondaryColorR;
+		this.emblemG = this.secondaryColorG;
+		this.emblemB = this.secondaryColorB;
 
 		this.description = "A small, primitive tank which shoots tiny, low damage bullets";
 	}

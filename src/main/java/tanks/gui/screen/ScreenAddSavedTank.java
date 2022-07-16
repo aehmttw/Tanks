@@ -242,7 +242,6 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
                 {
                     TankAIControlled clone = tt.instantiate(tt.name, tt.posX, tt.posY, tt.angle);
-                    clone.name = System.currentTimeMillis() + "";
                     ScreenTankEditor s = new ScreenTankEditor(clone, tankScreen);
                     s.drawBehindScreen = true;
                     Game.screen = s;

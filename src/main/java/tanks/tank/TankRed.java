@@ -26,6 +26,10 @@ public class TankRed extends TankAIControlled
 		this.bullet.bounces = 0;
 		this.chargeUp = true;
 		this.coinValue = 6;
+		this.colorModel = TankModels.fixed_color_model;
+		this.emblem = "emblems/laser.png";
+		this.emblemR = 110;
+		this.turretModel = TankModels.cross_turret_model;
 
 		this.description = "A stationary tank which shoots deadly lasers";
 	}

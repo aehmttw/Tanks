@@ -1,18 +1,14 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFontRenderer;
-import basewindow.BaseShapeRenderer;
 import tanks.challenges.*;
 import tanks.event.*;
 import tanks.gui.IFixedMenu;
 import tanks.network.NetworkEventMap;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
+import tanks.tank.TankModels;
 import tanks.tank.TankNPC;
-import tanks.tank.Turret;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -85,16 +81,16 @@ public class ModAPI
     public static void drawTank(double x, double y, double size, double angle, double r1, double g1, double b1, double r2, double g2, double b2)
     {
         Drawing.drawing.setColor(r2, g2, b2);
-        Tank.base_model.draw(x, y, size, size, angle);
+        TankModels.base_model.draw(x, y, size, size, angle);
 
         Drawing.drawing.setColor(r1, g1, b1);
-        Tank.color_model.draw(x, y, size, size, angle);
+        TankModels.color_model.draw(x, y, size, size, angle);
 
         Drawing.drawing.setColor(r2, g2, b2);
-        Turret.turret_model.draw(x, y, size, size, angle);
+        TankModels.turret_model.draw(x, y, size, size, angle);
 
         Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
-        Turret.base_model.draw(x, y, size, size, angle);
+        TankModels.turret_base_model.draw(x, y, size, size, angle);
     }
 
     public static void displayText(String location, String text) {

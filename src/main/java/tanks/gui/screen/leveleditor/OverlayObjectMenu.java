@@ -412,6 +412,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     {
         this.screenLevelEditor.level.customTanks.add(t);
         this.screenLevelEditor.tankNum = this.screenLevelEditor.level.customTanks.size() + Game.registryTank.tankEntries.size() - 1;
+        this.screenLevelEditor.refreshMouseTank();
     }
 
     @Override

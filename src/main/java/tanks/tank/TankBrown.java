@@ -22,7 +22,8 @@ public class TankBrown extends TankAIControlled
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
 		this.aimAccuracyOffset = 0;
-		
+		this.colorModel = TankModels.fixed_color_model;
+
 		this.coinValue = 1;
 
 		this.description = "A primitive stationary tank";

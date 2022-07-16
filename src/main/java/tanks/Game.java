@@ -417,12 +417,6 @@ public class Game
 
 		ItemBullet.initializeMaps();
 
-		registerTankModel("/models/tank");
-		registerTankModel("/models/tankmimic");
-
-		registerTankEmblem("medic.png");
-		registerTankEmblem("player_spawn.png");
-
 		registerObstacle(Obstacle.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
 		registerObstacle(ObstacleHole.class, "hole");
@@ -636,15 +630,7 @@ public class Game
 		Tank.health_model = Drawing.drawing.createModel();
 		Drawing.rotatedRect = Drawing.drawing.createModel();
 
-		Tank.base_model = Drawing.drawing.createModel("/models/tank/base/");
-		Tank.color_model = Drawing.drawing.createModel("/models/tank/color/");
-		Turret.base_model = Drawing.drawing.createModel("/models/tank/turretbase/");
-		Turret.turret_model = Drawing.drawing.createModel("/models/tank/turret/");
-
-		TankMimic.base_model = Drawing.drawing.createModel("/models/tankmimic/base/");
-		TankMimic.color_model = Drawing.drawing.createModel("/models/tankmimic/color/");
-		TankMimic.turret_model = Drawing.drawing.createModel("/models/tankmimic/turret/");
-		TankMimic.turret_base_model = Drawing.drawing.createModel("/models/tankmimic/turretbase/");
+		TankModels.initialize();
 
 		Drawing.rotatedRect.shapes = new ModelPart.Shape[1];
 		Drawing.rotatedRect.shapes[0] = new ModelPart.Quad(

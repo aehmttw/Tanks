@@ -30,6 +30,11 @@ public class TankMaroon extends TankAIControlled
 		this.turretSize *= 1.5;
 		this.enablePathfinding = true;
 		this.stopSeekingOnSight = true;
+
+		this.emblem = "emblems/circle.png";
+		this.emblemR = this.colorR * 0.8;
+		this.emblemG = this.colorG * 0.8;
+		this.emblemB = this.colorB * 0.8;
 		
 		this.coinValue = 4;
 

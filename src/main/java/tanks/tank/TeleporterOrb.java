@@ -23,14 +23,12 @@ public class TeleporterOrb extends Movable
 	public double endAge = 300;
 
 	public double size;
-	public double tSize;
 
 	public TeleporterOrb(double x, double y, double iX, double iY, double destX, double destY, Tank t)
 	{
 		super(x, y);
 		this.tank = t;
 		this.size = t.size;
-		this.tSize = t.turretSize;
 		this.drawLevel = 9;
 		t.invulnerable = true;
 		t.targetable = false;
@@ -102,7 +100,6 @@ public class TeleporterOrb extends Movable
 			}
 
 			this.tank.size = this.size;
-			this.tank.turretSize = this.tSize;
 			return;
 		}
 
@@ -149,9 +146,7 @@ public class TeleporterOrb extends Movable
 		double size = Math.max(-this.age / 100, Math.max((this.age - this.maxAge) / (this.endAge - this.maxAge), 0));
 		
 		this.tank.size = size * this.size;
-		this.tank.turretSize = size * this.tSize;
-		this.tank.turretLength = this.tank.size;
-		
+
 		this.tank.disabled = this.tank.size <= 0;
 
 		if (Math.random() < Panel.frameFrequency * Game.effectMultiplier)

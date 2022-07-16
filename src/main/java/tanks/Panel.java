@@ -155,6 +155,14 @@ public class Panel
 		zoomTranslation.applyAsShadow = true;
 		dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
 
+		ScreenChangelog.Changelog.setupLogs();
+
+		ScreenChangelog s = new ScreenChangelog();
+		s.setup();
+
+		if (!s.pages.isEmpty())
+			Game.screen = s;
+
 		new Thread(() ->
 		{
 			if (Game.usernameInvalid(Game.player.username))
@@ -168,14 +176,6 @@ public class Panel
 			}
 
 			Game.loadTankMusic();
-
-			ScreenChangelog.Changelog.setupLogs();
-
-			ScreenChangelog s = new ScreenChangelog();
-			s.setup();
-
-			if (!s.pages.isEmpty())
-				Game.screen = s;
 
 			if (Game.game.window.soundsEnabled)
 			{
@@ -231,12 +231,8 @@ public class Panel
 
 		firstFrame = false;
 
-		if (settingUp)
-			return;
-
 		Game.prevScreen = Game.screen;
 		Obstacle.lastDrawSize = Obstacle.draw_size;
-
 
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
@@ -347,6 +343,9 @@ public class Panel
 			dummySpin.angle = Math.PI * 2 * (System.currentTimeMillis() - startTime) / (introTime + introAnimationTime);
 			return;
 		}
+
+		if (settingUp)
+			return;
 
 		if (Game.screen instanceof ScreenGame)
 		{

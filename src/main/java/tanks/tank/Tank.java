@@ -32,13 +32,13 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean fromRegistry = false;
 
 	@TankProperty(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = TankProperty.MiscType.colorModel)
-	public Model colorModel = TankModels.color_model;
+	public Model colorModel = TankModels.tank.color;
 	@TankProperty(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = TankProperty.MiscType.baseModel)
-	public Model baseModel = TankModels.base_model;
+	public Model baseModel = TankModels.tank.base;
 	@TankProperty(category = appearanceTurretBase, id = "turret_base_model", name = "Turret base model", miscType = TankProperty.MiscType.turretBaseModel)
-	public Model turretBaseModel = TankModels.turret_base_model;
+	public Model turretBaseModel = TankModels.tank.turretBase;
 	@TankProperty(category = appearanceTurretBarrel, id = "turret_model", name = "Turret barrel model", miscType = TankProperty.MiscType.turretModel)
-	public Model turretModel = TankModels.turret_model;
+	public Model turretModel = TankModels.tank.turret;
 
 	public double angle = 0;
 	public double pitch = 0;

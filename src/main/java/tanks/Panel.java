@@ -148,6 +148,10 @@ public class Panel
 
 		Game.createModels();
 
+		Game.dummyTank = new TankDummy("dummy",0, 0, 0);
+		Game.dummyTank.team = null;
+		Game.dummyTank.networkID = -1;
+
 		for (Extension e : Game.extensionRegistry.extensions)
 			e.loadResources();
 
@@ -163,65 +167,61 @@ public class Panel
 		if (!s.pages.isEmpty())
 			Game.screen = s;
 
-		new Thread(() ->
+		if (Game.usernameInvalid(Game.player.username))
+			Game.screen = new ScreenUsernameInvalid();
+		else
 		{
-			if (Game.usernameInvalid(Game.player.username))
-				Game.screen = new ScreenUsernameInvalid();
+			if (Game.cinematic)
+				Game.screen = new ScreenCinematicTitle();
 			else
+				Game.screen = new ScreenTitle();
+		}
+
+		Game.loadTankMusic();
+
+		if (Game.game.window.soundsEnabled)
+		{
+			Game.game.window.soundPlayer.musicPlaying = true;
+
+			for (int i = 1; i <= 5; i++)
 			{
-				if (Game.cinematic)
-					Game.screen = new ScreenCinematicTitle();
-				else
-					Game.screen = new ScreenTitle();
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_" + i + ".ogg", "menu");
 			}
 
-			Game.loadTankMusic();
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_options.ogg", "menu");
 
-			if (Game.game.window.soundsEnabled)
+			for (int i = 1; i <= 2; i++)
 			{
-				Game.game.window.soundPlayer.musicPlaying = true;
-
-				for (int i = 1; i <= 5; i++)
-				{
-					Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_" + i + ".ogg", "menu");
-				}
-
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/menu_options.ogg", "menu");
-
-				for (int i = 1; i <= 2; i++)
-				{
-					Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
-				}
-
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
-
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle_night");
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle_night");
-
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
-				Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
-
-				//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
-				//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
+				Game.game.window.soundPlayer.registerCombinedMusic("/music/ready_music_" + i + ".ogg", "ready");
 			}
 
-			if (Game.game.window.soundsEnabled)
-			{
-				Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_night.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
-				Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle.ogg", "battle");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle");
 
-				Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
-			}
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_night.ogg", "battle_night");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_paused.ogg", "battle_night");
 
-			System.out.println("setup complete");
-			settingUp = false;
-		}).start();
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed.ogg", "battle_timed");
+			Game.game.window.soundPlayer.registerCombinedMusic("/music/battle_timed_paused.ogg", "battle_timed");
+
+			//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor.ogg", "editor");
+			//Game.game.window.soundPlayer.registerCombinedMusic("/music/editor_paused.ogg", "editor");
+		}
+
+		if (Game.game.window.soundsEnabled)
+		{
+			Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_night.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_timed.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_paused.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
+
+			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+		}
+
+		settingUp = false;
 	}
 
 	public void update()

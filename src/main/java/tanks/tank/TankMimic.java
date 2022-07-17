@@ -19,10 +19,10 @@ public class TankMimic extends TankAIControlled
         this.cooldownRandom = 400;
         this.enableMineLaying = true;
 
-        this.baseModel = TankModels.mimic_base_model;
-        this.colorModel = TankModels.mimic_color_model;
-        this.turretModel = TankModels.mimic_turret_model;
-        this.turretBaseModel = TankModels.mimic_turret_base_model;
+        this.baseModel = TankModels.checkerboard.base;
+        this.colorModel = TankModels.checkerboard.color;
+        this.turretModel = TankModels.checkerboard.turret;
+        this.turretBaseModel = TankModels.checkerboard.turretBase;
 
         this.transformMimic = true;
 

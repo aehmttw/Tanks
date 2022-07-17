@@ -64,14 +64,14 @@ public class EventTankMimicTransform extends PersonalEvent
                 t.secondaryColorG = green2;
                 t.secondaryColorB = blue2;
 
-                t.colorModel = TankModels.color_model;
+                t.colorModel = TankModels.tank.color;
             }
 
             if (!(t1 instanceof TankMimic) || isPlayer)
             {
-                t.baseModel = TankModels.mimic_base_model;
-                t.turretBaseModel = TankModels.mimic_turret_base_model;
-                t.turretModel = TankModels.mimic_turret_model;
+                t.baseModel = TankModels.checkerboard.base;
+                t.turretBaseModel = TankModels.checkerboard.turretBase;
+                t.turretModel = TankModels.checkerboard.turret;
 
                 if (Game.effectsEnabled)
                 {

@@ -34,12 +34,16 @@ public class TankOrangeRed extends TankAIControlled
         this.resistExplosions = true;
         this.enableMineAvoidance = false;
         this.explodeOnDestroy = true;
-        this.baseModel = TankModels.diagonalstripes_base_model;
-        this.emblem = "emblems/bang.png";
-        this.emblemR = 159;
-        this.emblemG = 67;
-        this.emblemB = 32;
-        this.coinValue = 4;
+
+        if (Game.tankTextures)
+        {
+            this.baseModel = TankModels.diagonalStripes.base;
+            this.emblem = "emblems/bang.png";
+            this.emblemR = 159;
+            this.emblemG = 67;
+            this.emblemB = 32;
+            this.coinValue = 4;
+        }
 
         this.description = "A tank which shoots explosive bullets";
     }

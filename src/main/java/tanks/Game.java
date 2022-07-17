@@ -95,7 +95,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.i";
+	public static final String version = "Tanks v1.4.j";
 	public static final int network_protocol = 44;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -123,6 +123,8 @@ public class Game
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
+
+	public static boolean tankTextures = true;
 
 	public static boolean soundsEnabled = true;
 	public static boolean musicEnabled = true;
@@ -478,9 +480,6 @@ public class Game
 
 		TankPlayer.default_bullet = (ItemBullet) Item.parseItem(null, Translation.translate("Basic bullet") + ",bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
 		TankPlayer.default_mine = (ItemMine) Item.parseItem(null, Translation.translate("Basic mine") + ",mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");
-		dummyTank = new TankDummy("dummy",0, 0, 0);
-		dummyTank.team = null;
-		dummyTank.networkID = -1;
 
 		homedir = System.getProperty("user.home");
 

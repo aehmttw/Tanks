@@ -28,7 +28,11 @@ public class TankMint extends TankAIControlled
 		this.enableLookingAtTargetEnemy = false;
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;
-		this.baseModel = TankModels.diagonalstripes_base_model;
+
+		if (Game.tankTextures)
+		{
+			this.baseModel = TankModels.diagonalStripes.base;
+		}
 
 		this.coinValue = 2;
 

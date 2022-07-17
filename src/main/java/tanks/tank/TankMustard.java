@@ -31,7 +31,11 @@ public class TankMustard extends TankAIControlled
         this.bullet.bounces = 0;
         this.aimAccuracyOffset = 0;
         this.bullet.name = "Artillery shell";
-        this.colorModel = TankModels.fixed_color_model;
+
+        if (Game.tankTextures)
+        {
+            this.colorModel = TankModels.fixed.color;
+        }
 
         this.coinValue = 4;
         this.turretSize *= 1.75;

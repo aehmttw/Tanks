@@ -24,7 +24,12 @@ public class TankBoss extends TankAIControlled
 		this.bullet.size = 25;
 		this.bullet.heavy = true;
 		this.bullet.name = "Mega bullet";
-		this.colorModel = TankModels.fixed_color_model;
+
+		if (Game.tankTextures)
+		{
+			this.colorModel = TankModels.fixed.color;
+		}
+
 		this.health = 5;
 		this.baseHealth = 5;
 		this.coinValue = 25;

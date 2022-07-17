@@ -25,10 +25,13 @@ public class TankDarkGreen extends TankAIControlled
 		this.bullet.name = "Mini bullet";
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
 
-		this.baseModel = TankModels.camo_base_model;
-		this.colorModel = TankModels.camo_color_model;
-		this.turretBaseModel = TankModels.camo_turret_base_model;
-		this.turretModel = TankModels.turret_model;
+		if (Game.tankTextures)
+		{
+			this.baseModel = TankModels.camo.base;
+			this.colorModel = TankModels.camo.color;
+			this.turretBaseModel = TankModels.camo.turretBase;
+			this.turretModel = TankModels.camo.turret;
+		}
 
 		this.coinValue = 10;
 

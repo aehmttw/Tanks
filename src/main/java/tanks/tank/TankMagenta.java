@@ -20,6 +20,11 @@ public class TankMagenta extends TankAIControlled
 		
 		this.coinValue = 3;
 
+		if (Game.tankTextures)
+		{
+			this.baseModel = TankModels.cross.base;
+		}
+
 		this.description = "A medium-speed smart tank";
 	}
 }

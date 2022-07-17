@@ -28,7 +28,10 @@ public class TankGray extends TankAIControlled
 
 		this.coinValue = 1;
 
-		this.colorModel = TankModels.horizontalstripes_color_model;
+		if (Game.tankTextures)
+		{
+			this.colorModel = TankModels.horizontalStripes.color;
+		}
 
 		this.description = "A primitive mobile tank";
 	}

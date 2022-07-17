@@ -27,10 +27,14 @@ public class TankLightPink extends TankAIControlled
         this.bullet.bounces = 1;
         this.bullet.effect = Bullet.BulletEffect.trail;
         this.shootAIType = ShootAI.reflect;
-        this.emblem = "emblems/angry.png";
-        this.emblemR = this.secondaryColorR;
-        this.emblemG = this.secondaryColorG;
-        this.emblemB = this.secondaryColorB;
+
+        if (Game.tankTextures)
+        {
+            this.emblem = "emblems/angry.png";
+            this.emblemR = this.secondaryColorR;
+            this.emblemG = this.secondaryColorG;
+            this.emblemB = this.secondaryColorB;
+        }
 
         this.setSightTransformTank(new TankLightPinkAngry(this.name, x, y, angle));
 

@@ -31,7 +31,11 @@ public class TankGold extends TankAIControlled
 		this.enableSuicide = true;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.keep_distance;
 		this.mine.radius *= 1.5;
-		this.colorModel = TankModels.arrow_color_model;
+
+		if (Game.tankTextures)
+		{
+			this.colorModel = TankModels.arrow.color;
+		}
 
 		this.coinValue = 4;
 

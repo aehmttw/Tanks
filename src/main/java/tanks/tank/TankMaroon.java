@@ -31,11 +31,14 @@ public class TankMaroon extends TankAIControlled
 		this.enablePathfinding = true;
 		this.stopSeekingOnSight = true;
 
-		this.emblem = "emblems/circle.png";
-		this.emblemR = this.colorR * 0.8;
-		this.emblemG = this.colorG * 0.8;
-		this.emblemB = this.colorB * 0.8;
-		
+		if (Game.tankTextures)
+		{
+			this.emblem = "emblems/circle.png";
+			this.emblemR = this.colorR * 0.8;
+			this.emblemG = this.colorG * 0.8;
+			this.emblemB = this.colorB * 0.8;
+		}
+
 		this.coinValue = 4;
 
 		this.description = "A tank which shoots huge bullets which bounce 3 times and can't be stopped";

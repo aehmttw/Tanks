@@ -60,7 +60,6 @@ public class Tanks
             if (Game.framework == Game.Framework.lwjgl)
                 Game.game.fileManager = new ComputerFileManager();
 
-            System.out.println("initializing");
             Game.initScript();
 
             if (Game.framework == Game.Framework.lwjgl)
@@ -77,8 +76,6 @@ public class Tanks
             }
 
             Game.postInitScript();
-
-            System.out.println("running");
 
             Game.game.window.run();
         }

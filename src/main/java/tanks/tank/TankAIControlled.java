@@ -833,10 +833,10 @@ public class TankAIControlled extends Tank
 
 	public void updateMotionAI()
 	{
-		if (this.enableBulletAvoidance)
+		if (this.enableBulletAvoidance || this.enableDefensiveFiring)
 			this.checkForBulletThreats();
 
-		if (this.avoidTimer > 0)
+		if (this.avoidTimer > 0 && this.enableBulletAvoidance)
 		{
 			this.avoidTimer -= Panel.frameFrequency;
 			this.setPolarAcceleration(avoidDirection, acceleration * 2);
@@ -1298,7 +1298,18 @@ public class TankAIControlled extends Tank
 	{
 		if (this.shootTimer <= -this.shootRoundTime / 2 && this.targetEnemy != null)
 		{
-			this.aimAngle = this.fanOffset + this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
+			double a;
+
+			if (this.shootAIType == ShootAI.sprinkler)
+				this.aimAngle = this.angle;
+
+			if (this.shootAIType == ShootAI.straight || (this.shootAIType == ShootAI.alternate && this.straightShoot))
+				a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
+			else
+				a = this.aimAngle;
+
+			double originalAimAngle = this.aimAngle;
+			this.aimAngle = this.fanOffset + a;
 
 			double speed = this.turretAimSpeed;
 
@@ -1325,6 +1336,8 @@ public class TankAIControlled extends Tank
 				this.angle = this.aimAngle;
 				this.shootTimer += Panel.frameFrequency;
 			}
+
+			this.aimAngle = originalAimAngle;
 		}
 		else
 		{
@@ -1359,7 +1372,17 @@ public class TankAIControlled extends Tank
 		if (this.shootAIType == ShootAI.sprinkler)
 		{
 			if (this.cooldown <= 0)
-				this.bullet.attemptUse(this);
+			{
+				if (this.shotRoundCount <= 1)
+					this.bullet.attemptUse(this);
+				else
+				{
+					this.shootingInFan = true;
+					this.shootTimer = -this.shootRoundTime / 2;
+					this.shots = 0;
+					this.fanDirection = this.random.nextDouble() < 0.5 ? 1 : -1;
+				}
+			}
 		}
 		else
 		{

@@ -154,10 +154,6 @@ public class EventTankTransform extends PersonalEvent
             }
             else if (effect == poof)
             {
-                t.baseModel = TankModels.mimic_base_model;
-                t.turretBaseModel = TankModels.mimic_turret_base_model;
-                t.turretModel = TankModels.mimic_turret_model;
-
                 if (Game.effectsEnabled)
                 {
                     for (int i = 0; i < 50 * Game.effectMultiplier; i++)

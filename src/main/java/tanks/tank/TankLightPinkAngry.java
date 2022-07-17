@@ -31,8 +31,11 @@ public class TankLightPinkAngry extends TankAIControlled
         this.bullet.bounces = 0;
         this.bullet.effect = Bullet.BulletEffect.fire;
 
-        this.emblem = "emblems/angry.png";
-        this.emblemR = 200;
+        if (Game.tankTextures)
+        {
+            this.emblem = "emblems/angry.png";
+            this.emblemR = 200;
+        }
 
         // TODO fix music in mimic
         this.shotRoundCount = 5;

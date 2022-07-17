@@ -227,17 +227,17 @@ public class Hotbar
 			int y = (int) (Drawing.drawing.interfaceSizeY - 17.5 + percentHidden - verticalOffset);
 
 			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.drawInterfaceModel(TankModels.base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+			Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
 			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.drawInterfaceModel(TankModels.color_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+			Drawing.drawing.drawInterfaceModel(TankModels.tank.color, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
 			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);
 
-			Drawing.drawing.drawInterfaceModel(TankModels.turret_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+			Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
 			Drawing.drawing.setColor(207, 16, 16, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.drawInterfaceModel(TankModels.turret_base_model, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
+			Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);
 
 			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.setInterfaceFontSize(24);

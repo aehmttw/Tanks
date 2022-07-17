@@ -16,10 +16,13 @@ public class TankYellow extends TankAIControlled
 		this.mineTimerRandom = 400;
 		this.mineTimer = this.mineTimerBase + this.mineTimerRandom * this.random.nextDouble();
 
-		this.emblem = "emblems/circle_double.png";
-		this.emblemR = this.secondaryColorR;
-		this.emblemG = this.secondaryColorG;
-		this.emblemB = this.secondaryColorB;
+		if (Game.tankTextures)
+		{
+			this.emblem = "emblems/circle_double.png";
+			this.emblemR = this.secondaryColorR;
+			this.emblemG = this.secondaryColorG;
+			this.emblemB = this.secondaryColorB;
+		}
 
 		this.coinValue = 2;
 		this.description = "A tank which lays many mines";

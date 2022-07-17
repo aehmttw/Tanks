@@ -6,67 +6,44 @@ import tanks.Game;
 
 public class TankModels
 {
-    public static Model base_model;
-    public static Model color_model;
-    public static Model turret_model;
-    public static Model turret_base_model;
+    public static FullTankModel tank;
+    public static FullTankModel checkerboard;
+    public static FullTankModel fixed;
+    public static FullTankModel cross;
+    public static FullTankModel horizontalStripes;
+    public static FullTankModel verticalStripes;
+    public static FullTankModel diagonalStripes;
+    public static FullTankModel arrow;
+    public static FullTankModel camo;
 
-    public static Model mimic_base_model;
-    public static Model mimic_color_model;
-    public static Model mimic_turret_model;
-    public static Model mimic_turret_base_model;
+    public static class FullTankModel
+    {
+        public Model base;
+        public Model color;
+        public Model turretBase;
+        public Model turret;
 
-    public static Model fixed_color_model;
-
-    public static Model horizontalstripes_color_model;
-
-    public static Model cross_turret_model;
-
-    public static Model diagonalstripes_base_model;
-
-    public static Model arrow_color_model;
-
-    public static Model camo_base_model;
-    public static Model camo_color_model;
-    public static Model camo_turret_model;
-    public static Model camo_turret_base_model;
+        public FullTankModel(String name)
+        {
+            base = Drawing.drawing.createModel("/models/" + name + "/base/");
+            color = Drawing.drawing.createModel("/models/" + name + "/color/");
+            turretBase = Drawing.drawing.createModel("/models/" + name + "/turretbase/");
+            turret = Drawing.drawing.createModel("/models/" + name + "/turret/");
+            Game.registerTankModel("/models/" + name);
+        }
+    }
 
     public static void initialize()
     {
-        base_model = Drawing.drawing.createModel("/models/tank/base/");
-        color_model = Drawing.drawing.createModel("/models/tank/color/");
-        turret_base_model = Drawing.drawing.createModel("/models/tank/turretbase/");
-        turret_model = Drawing.drawing.createModel("/models/tank/turret/");
-        Game.registerTankModel("/models/tank");
-
-        mimic_base_model = Drawing.drawing.createModel("/models/tankmimic/base/");
-        mimic_color_model = Drawing.drawing.createModel("/models/tankmimic/color/");
-        mimic_turret_model = Drawing.drawing.createModel("/models/tankmimic/turret/");
-        mimic_turret_base_model = Drawing.drawing.createModel("/models/tankmimic/turretbase/");
-        Game.registerTankModel("/models/tankmimic");
-
-        fixed_color_model = Drawing.drawing.createModel("/models/tankfixed/color/");
-        Game.registerTankModel("/models/tankfixed");
-
-        cross_turret_model = Drawing.drawing.createModel("/models/tankcross/turret/");
-        Game.registerTankModel("/models/tankcross");
-
-        Game.registerTankModel("/models/tankverticalstripes");
-
-        horizontalstripes_color_model = Drawing.drawing.createModel("/models/tankhorizontalstripes/color/");
-        Game.registerTankModel("/models/tankhorizontalstripes");
-
-        Game.registerTankModel("/models/tankdiagonalstripes");
-        diagonalstripes_base_model = Drawing.drawing.createModel("/models/tankdiagonalstripes/base/");
-
-        Game.registerTankModel("/models/tankarrow");
-        arrow_color_model = Drawing.drawing.createModel("/models/tankarrow/color/");
-
-        Game.registerTankModel("/models/tankcamoflauge");
-        camo_base_model = Drawing.drawing.createModel("/models/tankcamoflauge/base/");
-        camo_color_model = Drawing.drawing.createModel("/models/tankcamoflauge/color/");
-        camo_turret_model = Drawing.drawing.createModel("/models/tankcamoflauge/turret/");
-        camo_turret_base_model = Drawing.drawing.createModel("/models/tankcamoflauge/turretbase/");
+        tank = new FullTankModel("tank");
+        checkerboard = new FullTankModel("tankmimic");
+        fixed = new FullTankModel("tankfixed");
+        cross = new FullTankModel("tankcross");
+        verticalStripes = new FullTankModel("tankverticalstripes");
+        horizontalStripes = new FullTankModel("tankhorizontalstripes");
+        diagonalStripes = new FullTankModel("tankdiagonalstripes");
+        arrow = new FullTankModel("tankarrow");
+        camo = new FullTankModel("tankcamoflauge");
 
 
         Game.registerTankEmblem("medic.png");

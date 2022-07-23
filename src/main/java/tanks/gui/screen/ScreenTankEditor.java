@@ -2,12 +2,11 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import basewindow.IModel;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.registry.RegistryModelTank;
@@ -17,6 +16,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 public class ScreenTankEditor extends Screen implements IItemScreen
 {
@@ -37,11 +38,18 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
     public ITankScreen tankScreen;
 
+    public HashSet<String> prevTankMusics = new HashSet<>();
+    public HashSet<String> tankMusics = new HashSet<>();
+
     public Button delete = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Delete tank", () ->
     {
         Game.screen = (Screen) this.tankScreen;
         this.tankScreen.removeTank(this.tank);
         this.tankScreen.refreshTanks(this.tank);
+        for (String m : this.tankMusics)
+        {
+            Drawing.drawing.removeSyncedMusic(m, 500);
+        }
     }
     );
 
@@ -79,6 +87,10 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Done", () ->
     {
         Game.screen = (Screen) this.tankScreen;
+        for (String m : this.tankMusics)
+        {
+            Drawing.drawing.removeSyncedMusic(m, 500);
+        }
 
         this.tankScreen.refreshTanks(this.tank);
     }
@@ -1185,6 +1197,90 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                 return t;
             }
+            else if (p.miscType() == TankProperty.MiscType.music)
+            {
+                ArrayList<String> a = ((ArrayList<String>) f.get(tank));
+                ArrayList<String> musics = new ArrayList<>();
+
+                for (ArrayList<String> s: Game.registryTank.tankMusics.values())
+                {
+                    for (String m: s)
+                    {
+                        if (!musics.contains(m))
+                            musics.add(m);
+                    }
+                }
+
+                Collections.sort(musics, (o1, o2) -> o1.compareTo(o2));
+
+                String[] musicsArray = new String[musics.size()];
+                boolean[] selectedMusicsArray = new boolean[musics.size()];
+                for (int i = 0; i < musics.size(); i++)
+                {
+                    musicsArray[i] = musics.get(i);
+                    if (a.contains(musicsArray[i]))
+                        selectedMusicsArray[i] = true;
+                }
+
+                SelectorMusic s = new SelectorMusic(0, 0, 350, 40, p.name(), musicsArray, () ->
+                {
+                    tank.musicTracks.clear();
+                    for (int i = 0; i < musicsArray.length; i++)
+                    {
+                        if (selectedMusicsArray[i])
+                            tank.musicTracks.add(musicsArray[i]);
+                    }
+                }, this);
+
+                s.selectedOptions = selectedMusicsArray;
+                return s;
+
+                /*SelectorDrawable s = new SelectorDrawable(0, 0, 350, 40, p.name());
+                s.function = () ->
+                {
+                    ScreenArrayListSelector sc = new ScreenArrayListSelector(this, "Select " + p.name().toLowerCase());
+                    Game.screen = sc;
+
+                    ArrayList<ScreenArrayListSelector.Entry> entries = new ArrayList<>();
+                    for (String m: a)
+                    {
+                        Selector sel = new Selector(0, 0, 700, 40, "Track", musicsArray, () ->
+                        {
+                            this.tank.musicTracks.clear();
+                            this.updateMusic();
+                            a.clear();
+                            //sc.apply();
+                            //this.updateMusic();
+                        });
+                        sel.music = true;
+                        sel.selectedOption = musics.indexOf(m);
+                        entries.add(new ScreenArrayListSelector.Entry(sel, null, sc));
+                    }
+
+                    a.clear();
+
+                    sc.setContent(entries,
+                    () ->
+                    {
+                        Selector sel = new Selector(0, 0, 700, 40, "Track", musicsArray, () ->
+                        {
+                            this.tank.musicTracks.clear();
+                            this.updateMusic();
+                            a.clear();
+                            //sc.apply();
+                            //this.updateMusic();
+                        });
+                        sel.music = true;
+                        return new ScreenArrayListSelector.Entry(sel, null, sc);
+                    },
+                    (entry) ->
+                    {
+                        Selector sel = ((Selector) entry.element1);
+                        a.add(sel.options[sel.selectedOption]);
+                    });
+                };
+                s.enabled = true;*/
+            }
         }
         catch (Exception e)
         {
@@ -1236,6 +1332,11 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     @Override
     public void update()
     {
+        if (this.tankScreen instanceof ScreenLevelEditorOverlay)
+        {
+            this.updateMusic();
+        }
+
         if (this.message != null)
             this.dismissMessage.update();
         else
@@ -1257,6 +1358,28 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.quit.update();
             this.delete.update();
             this.save.update();
+        }
+    }
+
+    public void updateMusic()
+    {
+        ((ScreenLevelEditorOverlay) tankScreen).screenLevelEditor.updateMusic(false);
+
+        this.prevTankMusics.clear();
+        this.prevTankMusics.addAll(this.tankMusics);
+        this.tankMusics.clear();
+        this.tankMusics.addAll(this.tank.musicTracks);
+
+        for (String m : this.prevTankMusics)
+        {
+            if (!this.tankMusics.contains(m))
+                Drawing.drawing.removeSyncedMusic(m, 500);
+        }
+
+        for (String m : this.tankMusics)
+        {
+            if (!this.prevTankMusics.contains(m))
+                Drawing.drawing.addSyncedMusic(m, Game.musicVolume * 0.5f, true, 500);
         }
     }
 

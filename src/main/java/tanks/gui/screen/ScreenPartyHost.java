@@ -83,14 +83,13 @@ public class ScreenPartyHost extends Screen
 
     Button share = new Button(this.centerX + 190, this.centerY + 40, this.objWidth, this.objHeight, "Upload", () -> Game.screen = new ScreenShareSelect());
 
-    Button shared = new Button(this.centerX + 190, this.centerY + 100, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades)
-    );
+    Button shared = new Button(this.centerX + 190, this.centerY + 100, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
 
-    Button partyOptions = new Button(this.centerX + 190, this.centerY + 180, this.objWidth, this.objHeight, "Party options", () -> Game.screen = new ScreenOptionsPartyHost()
-    );
+    Button partyOptions = new Button(this.centerX + 190, this.centerY + 180, this.objWidth, this.objHeight, "Party options", () -> Game.screen = new ScreenOptionsPartyHost());
 
-    Button quit = new Button(this.centerX, this.centerY + 270, this.objWidth, this.objHeight, "End party", () -> Game.screen = new ScreenConfirmEndParty()
-    );
+    Button quit = new Button(this.centerX, this.centerY + 270, this.objWidth, this.objHeight, "End party", () -> Game.screen = new ScreenConfirmEndParty());
+
+    Button toggleIP = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () -> Game.showIP = !Game.showIP, "Toggle showing IP address");
 
     public ScreenPartyHost()
     {
@@ -98,6 +97,9 @@ public class ScreenPartyHost extends Screen
 
         this.music = "menu_3.ogg";
         this.musicID = "menu";
+        toggleIP.fullInfo = true;
+        toggleIP.textOffsetX = 1.5;
+        toggleIP.textOffsetY = 1.5;
 
         chatbox = new ChatBox(this.centerX, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () ->
         {
@@ -201,6 +203,9 @@ public class ScreenPartyHost extends Screen
                 this.kickButtons[i].update();
             }
         }
+
+        if (!this.ip.equals(Translation.translate("Party host")))
+            this.toggleIP.update();
     }
 
     @Override
@@ -217,18 +222,33 @@ public class ScreenPartyHost extends Screen
         shared.draw();
         quit.draw();
 
-
         Drawing.drawing.setColor(0, 0, 0);
 
+        double ipY = 360;
         if (Game.steamNetworkHandler.initialized)
-        {
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 360, this.ip);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 320, "Also hosting on Steam peer-to-peer (Steam friends can join)");
-        }
         else
-        {
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 330, this.ip);
-        }
+            ipY = 330;
+
+        String title = this.ip;
+
+        if (!Game.showIP)
+            title = Translation.translate("Party host");
+
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - ipY, title);
+        this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+        this.toggleIP.posY = this.centerY - ipY;
+
+        if (Game.showIP)
+            this.toggleIP.setText("-");
+        else
+            this.toggleIP.setText("+");
+
+        if (!this.ip.equals(Translation.translate("Party host")))
+            this.toggleIP.draw();
+
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
 
         Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY - 280, "Play:");
 

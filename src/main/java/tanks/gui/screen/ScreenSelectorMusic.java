@@ -9,23 +9,18 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
+import tanks.gui.SelectorMusic;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
-public class ScreenSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen
+public class ScreenSelectorMusic extends Screen implements IConditionalOverlayScreen, IDarkScreen
 {
     public Screen screen;
-    public Selector selector;
+    public SelectorMusic selector;
 
     public String[] images;
-    public boolean drawImages = false;
-
-    public IModel[] models;
-    public boolean drawModels = false;
-
     public boolean drawBehindScreen = false;
-    public int oldOption;
 
     public String title;
 
@@ -34,36 +29,33 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         @Override
         public void run()
         {
-            if (!selector.quick)
-            {
-                selector.function.run();
-                Drawing.drawing.playSound("destroy.ogg", 2f);
-                Drawing.drawing.playVibration("click");
-            }
-
+            Drawing.drawing.playSound("destroy.ogg", 2f);
+            Drawing.drawing.playVibration("click");
             selector.submitEffect();
             selector.lastFrame = Panel.panel.ageFrames;
-
             Game.screen = screen;
-            Drawing.drawing.removeSyncedMusic(selector.options[selector.selectedOption], 500);
+
+            for (int i = 0; i < selector.options.length; i++)
+            {
+                if (selector.selectedOptions[i])
+                    Drawing.drawing.removeSyncedMusic(selector.options[i], 500);
+            }
+
+            selector.function.run();
         }
     }
     );
 
     public ButtonList buttonList;
 
-    public ScreenSelector(Selector s, Screen sc)
+    public ScreenSelectorMusic(SelectorMusic s, Screen sc)
     {
         super(350, 40, 380, 60);
 
-        this.selector = s;
-
-        if (!selector.quick)
-            this.quit.silent = true;
-
-        this.oldOption = s.selectedOption;
+        this.quit.silent = true;
 
         this.screen = sc;
+        this.selector = s;
 
         this.allowClose = sc.allowClose;
 
@@ -72,9 +64,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         for (int i = 0; i < selector.options.length; i++)
         {
             String n = selector.options[i];
-
-            if (selector.music)
-                n = n.substring(n.indexOf("tank/") + "tank/".length(), n.indexOf(".ogg"));
+            n = n.substring(n.indexOf("tank/") + "tank/".length(), n.indexOf(".ogg"));
 
             if (selector.format)
                 n = Game.formatString(n);
@@ -83,23 +73,14 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
 
             Button b = new Button(0, 0, this.objWidth, this.objHeight, n, () ->
             {
-                if (selector.music)
-                {
-                    Drawing.drawing.removeSyncedMusic(selector.options[selector.selectedOption], 500);
+                selector.selectedOptions[j] = !selector.selectedOptions[j];
+
+                if (!selector.selectedOptions[j])
+                    Drawing.drawing.removeSyncedMusic(selector.options[j], 500);
+                else
                     Drawing.drawing.addSyncedMusic(selector.options[j], 1, true, 500);
-                }
-
-                selector.selectedOption = j;
-
-                if (selector.quick)
-                {
-                    Game.screen = screen;
-                    Drawing.drawing.removeSyncedMusic(selector.options[selector.selectedOption], 500);
-                    selector.function.run();
-                }
             }
             );
-
 
             buttons.add(b);
         }
@@ -116,6 +97,12 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         this.musicID = sc.musicID;
 
         this.title = Translation.translate("Select ") + s.translatedText.toLowerCase();
+
+        for (int i = 0; i < selector.options.length; i++)
+        {
+            if (selector.selectedOptions[i])
+                Drawing.drawing.addSyncedMusic(selector.options[i], 1, true, 500);
+        }
     }
 
     @Override
@@ -124,49 +111,20 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         for (int i = 0; i < buttonList.buttons.size(); i++)
         {
             Button b = buttonList.buttons.get(i);
-            b.enabled = i != selector.selectedOption || selector.quick;
-
-            if (drawImages || drawModels)
+            if (selector.selectedOptions[i])
             {
-                if (drawImages)
-                {
-                    b.image = selector.options[i];
-
-                    if (images != null)
-                        b.image = selector.images[i];
-                }
-
-                if (drawModels && models != null)
-                    b.model = selector.models[i];
-
-                b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-                b.imageSizeX = b.sizeY;
-                b.imageSizeY = b.sizeY;
-
-                if (b.sizeX == b.sizeY)
-                {
-                    b.imageXOffset = 0;
-                    b.imageSizeX *= 0.8;
-                    b.imageSizeY *= 0.8;
-                }
+                b.image = "icons/play.png";
+                b.imageSizeX = 30;
+                b.imageSizeY = 30;
+                b.imageXOffset = -135;
             }
+            else
+                b.image = null;
         }
 
         buttonList.update();
 
         quit.update();
-
-        if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE))
-        {
-            Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
-            selector.selectedOption = oldOption;
-
-            Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
-            Drawing.drawing.playVibration("click");
-
-            Game.screen = screen;
-            Drawing.drawing.removeSyncedMusic(selector.options[selector.selectedOption], 500);
-        }
 
         if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
         {
@@ -198,6 +156,8 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             Drawing.drawing.setColor(0, 0, 0);
 
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.8, "You may select multiple options");
     }
 
     @Override

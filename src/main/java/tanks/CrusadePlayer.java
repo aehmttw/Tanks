@@ -32,7 +32,7 @@ public class CrusadePlayer
     public HashMap<String, Integer> itemUses = new HashMap<>();
     public HashMap<String, Integer> itemHits = new HashMap<>();
 
-    public void addKill(tanks.tank.Tank t)
+    public void addKill(Tank t)
     {
         String name = t.name;
 

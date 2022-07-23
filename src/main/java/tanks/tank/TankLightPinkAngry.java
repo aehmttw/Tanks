@@ -35,9 +35,10 @@ public class TankLightPinkAngry extends TankAIControlled
         {
             this.emblem = "emblems/angry.png";
             this.emblemR = 200;
+            this.baseModel = TankModels.diagonalStripes.base;
         }
 
-        // TODO fix music in mimic
+        this.musicTracks.addAll(Game.registryTank.tankMusics.get("lightpink_angry"));
         this.shotRoundCount = 5;
 
         this.description = "A tank which gets angry on line of sight, shooting fans of bullets";

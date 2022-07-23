@@ -9,6 +9,8 @@ import tanks.gui.ChatMessage;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
 import tanks.network.SynchronizedList;
+import tanks.tank.Tank;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +42,10 @@ public class ScreenPartyLobby extends Screen
 	{
 		super(350, 40, 380, 60);
 
+		toggleIP.fullInfo = true;
+		toggleIP.textOffsetX = 1.5;
+		toggleIP.textOffsetY = 1.5;
+
 		this.music = "menu_4.ogg";
 		this.musicID = "menu";
 
@@ -59,8 +65,9 @@ public class ScreenPartyLobby extends Screen
 
 	Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Upload", () -> Game.screen = new ScreenShareSelect());
 
-	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades)
-	);
+	Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
+
+	Button toggleIP = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () -> Game.showIP = !Game.showIP, "Toggle showing IP address");
 
 	@Override
 	public void update()
@@ -75,6 +82,7 @@ public class ScreenPartyLobby extends Screen
 
 		share.update();
 		shared.update();
+		toggleIP.update();
 	}
 
 	@Override
@@ -85,10 +93,28 @@ public class ScreenPartyLobby extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 
-		if (Client.handler.steamID == null)
-			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Party IP Address: %s (Port: %d)", Client.currentHost, Client.currentPort);
+		String title = Translation.translate("Party IP Address: %s (Port: %d)", Client.currentHost, Client.currentPort);
+
+		if (Client.handler.steamID != null)
+			title = "Connected to party via Steam Peer-to-Peer";
+
+		if (!Game.showIP)
+			title = Translation.translate("Connected to party");
+
+		this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+		this.toggleIP.posY = this.centerY - 270;
+
+		if (Game.showIP)
+			this.toggleIP.setText("-");
 		else
-			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, "Connected to party via Steam Peer-to-Peer");
+			this.toggleIP.setText("+");
+
+		this.toggleIP.draw();
+
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+
+		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, title);
 
 		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
 

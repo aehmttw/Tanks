@@ -34,9 +34,9 @@ public class TankMaroon extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/circle.png";
-			this.emblemR = this.colorR * 0.8;
-			this.emblemG = this.colorG * 0.8;
-			this.emblemB = this.colorB * 0.8;
+			this.emblemR = this.colorR * 0.7;
+			this.emblemG = this.colorG * 0.7;
+			this.emblemB = this.colorB * 0.7;
 		}
 
 		this.coinValue = 4;

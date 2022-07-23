@@ -46,7 +46,8 @@ public @interface TankProperty
         turretModel,
         emblem,
         color,
-        description
+        description,
+        music
     }
 
     Category category();

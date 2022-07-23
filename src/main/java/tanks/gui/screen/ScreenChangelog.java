@@ -452,6 +452,14 @@ public class ScreenChangelog extends Screen
                             "*What's new in Tanks v1.4.i:\n\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.j", new String[]
+                    {
+                            "*What's new in Tanks v1.4.j:\n\n" +
+                                    "New tank models and emblems\n" +
+                                    "The built-in tanks now have models and emblems\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

@@ -31,8 +31,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
 
-    public ArrayList<Bullet> recentBullets = new ArrayList<>();
-
     public boolean forceMotion = false;
     public boolean recoil = false;
 
@@ -294,10 +292,10 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.lastVX = vX;
             this.lastVY = vY;
 
-            if (action1 && this.bullet.cooldown <= 0 && this.bullet.liveBullets < this.bullet.maxLiveBullets && !this.disabled)
+            if (action1 && !this.disabled)
                 this.shoot();
 
-            if (action2 && this.bullet.cooldown <= 0 && this.mine.liveMines < this.mine.maxLiveMines && !this.disabled)
+            if (action2 && !this.disabled)
                 this.layMine();
         }
     }
@@ -472,5 +470,23 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public Player getPlayer()
     {
         return this.player;
+    }
+
+    @Override
+    public void setBufferCooldown(double value)
+    {
+        super.setBufferCooldown(value);
+
+        Hotbar h = this.player.hotbar;
+        if (h.enabledItemBar)
+        {
+            for (Item i: h.itemBar.slots)
+            {
+                if (i != null && !(i instanceof ItemEmpty))
+                {
+                    i.cooldown = Math.max(i.cooldown, value);
+                }
+            }
+        }
     }
 }

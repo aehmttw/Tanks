@@ -15,6 +15,7 @@ import static tanks.tank.TankProperty.Category.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /** This class is the 'skeleton' tank class.
@@ -2700,6 +2701,13 @@ public class TankAIControlled extends Tank
 							}
 							else
 								f.set(t, value);
+						}
+						else if (a.miscType() == TankProperty.MiscType.music)
+						{
+							int end = s.indexOf("]");
+							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
+							ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(csv));
+							f.set(t, arrayList);
 						}
 						else if (IModel.class.isAssignableFrom(f.getType()))
 						{

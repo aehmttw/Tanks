@@ -9,6 +9,7 @@ public class ScreenOptionsGraphics extends Screen
     public static final String terrainText = "Terrain: ";
     public static final String trailsText = "Bullet trails: ";
     public static final String glowText = "Glow effects: ";
+    public static final String tankTexturesText = "Tank textures: ";
     public static final String previewCrusadesText = "Crusade preview: ";
 
     public static final String graphics3dText = "3D graphics: ";
@@ -48,13 +49,6 @@ public class ScreenOptionsGraphics extends Screen
             glow.setText(glowText, ScreenOptions.onText);
         else
             glow.setText(glowText, ScreenOptions.offText);
-
-        if (Game.vsync)
-            maxFPS.setText("Max FPS: \u00A7200100000255V-Sync");
-        else if (Game.maxFPS > 0)
-            maxFPS.setText("Max FPS: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
-        else
-            maxFPS.setText("Max FPS: \u00A7000100200255unlimited");
 
         if (Game.enable3d)
             graphics3d.setText(graphics3dText, ScreenOptions.onText);
@@ -102,7 +96,6 @@ public class ScreenOptionsGraphics extends Screen
 
         if (Game.framework == Game.Framework.libgdx)
         {
-            maxFPS.enabled = false;
             altPerspective.enabled = false;
             shadows.enabled = false;
         }
@@ -132,6 +125,11 @@ public class ScreenOptionsGraphics extends Screen
             previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
         else
             previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
+
+        if (Game.tankTextures)
+            tankTextures.setText(tankTexturesText, ScreenOptions.onText);
+        else
+            tankTextures.setText(tankTexturesText, ScreenOptions.offText);
     }
 
     protected void update3dGroundButton()
@@ -259,7 +257,12 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            viewNo = (viewNo + 1) % 2;
+            viewNo = (viewNo + 1);
+            if (!Game.debug)
+                viewNo = viewNo % 2;
+            else
+                viewNo = viewNo % 4;
+
             switch (viewNo)
             {
                 case 0:
@@ -295,17 +298,6 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Changes the angle at which---you view the game field");
 
-
-    Button maxFPS = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptionsFramerate();
-        }
-    },
-            "Limiting your framerate may---decrease battery consumption");
-
     Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
@@ -339,18 +331,30 @@ public class ScreenOptionsGraphics extends Screen
                 previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
         }
     },
-            "When enabled, the crusade preview and---summary screens show all the levels---in that crusade scroll by.");
+            "When enabled, the crusade preview and---summary screens show all the levels---in that crusade scroll by");
+
+    Button tankTextures = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.tankTextures = !Game.tankTextures;
+
+            if (Game.tankTextures)
+                tankTextures.setText(tankTexturesText, ScreenOptions.onText);
+            else
+                tankTextures.setText(tankTexturesText, ScreenOptions.offText);
+        }
+    },
+            "Adds designs to the built-in tanks---which can help differentiate them");
 
     Button window = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
-    );
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
-    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsShadows(), "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate"
-    );
+    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsShadows(), "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate");
 
-    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance"
-    );
+    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance");
 
     @Override
     public void update()
@@ -359,7 +363,7 @@ public class ScreenOptionsGraphics extends Screen
         bulletTrails.update();
         glow.update();
         effects.update();
-        maxFPS.update();
+        tankTextures.update();
         previewCrusades.update();
 
         graphics3d.update();
@@ -403,7 +407,7 @@ public class ScreenOptionsGraphics extends Screen
         graphics3d.draw();
 
         previewCrusades.draw();
-        maxFPS.draw();
+        tankTextures.draw();
         effects.draw();
         glow.draw();
         bulletTrails.draw();

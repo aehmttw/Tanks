@@ -388,10 +388,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				if (m instanceof Tank && !m.destroy)
 				{
-					ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
+					if (m instanceof TankAIControlled && ((TankAIControlled) m).fromRegistry)
+					{
+						ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
 
-					if (s != null)
-						this.tankMusics.addAll(s);
+						if (s != null)
+							this.tankMusics.addAll(s);
+					}
+
+					this.tankMusics.addAll(((Tank) m).musicTracks);
 				}
 			}
 		}

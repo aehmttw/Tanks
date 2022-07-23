@@ -39,6 +39,14 @@ public class TankLightBlue extends TankAIControlled
 
 		this.coinValue = 8;
 
+		if (Game.tankTextures)
+		{
+			this.emblem = "emblems/pinwheel.png";
+			this.emblemR = this.secondaryColorR;
+			this.emblemG = this.secondaryColorG;
+			this.emblemB = this.secondaryColorB;
+		}
+
 		this.description = "A tank which blows strong gusts of air";
 	}
 }

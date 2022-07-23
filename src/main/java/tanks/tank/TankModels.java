@@ -15,6 +15,7 @@ public class TankModels
     public static FullTankModel diagonalStripes;
     public static FullTankModel arrow;
     public static FullTankModel camo;
+    public static FullTankModel flames;
 
     public static class FullTankModel
     {
@@ -44,7 +45,7 @@ public class TankModels
         diagonalStripes = new FullTankModel("tankdiagonalstripes");
         arrow = new FullTankModel("tankarrow");
         camo = new FullTankModel("tankcamoflauge");
-
+        flames = new FullTankModel("tankflames");
 
         Game.registerTankEmblem("medic.png");
         Game.registerTankEmblem("player_spawn.png");
@@ -57,5 +58,10 @@ public class TankModels
         Game.registerTankEmblem("electric.png");
         Game.registerTankEmblem("squares.png");
         Game.registerTankEmblem("square.png");
+        Game.registerTankEmblem("angry.png");
+        Game.registerTankEmblem("snowflake.png");
+        Game.registerTankEmblem("curve.png");
+        Game.registerTankEmblem("star.png");
+        Game.registerTankEmblem("pinwheel.png");
     }
 }

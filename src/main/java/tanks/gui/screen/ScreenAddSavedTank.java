@@ -99,6 +99,10 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 if (tt instanceof TankAIControlled)
                 {
                     t = (TankAIControlled) tt;
+                    ArrayList<String> m = Game.registryTank.tankMusics.get(t.name);
+
+                    if (m != null)
+                        t.musicTracks.addAll(m);
 
                     for (RegistryBullet.BulletEntry e: Game.registryBullet.bulletEntries)
                     {

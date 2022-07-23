@@ -2,6 +2,9 @@ package tanks.generator;
 
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.hotbar.item.Item;
+import tanks.tank.TankPlayer;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,10 +17,6 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 	public static String generateLevelString(int seed)
 	{
-		//int type = (int) (random.nextDouble()() * 13);
-		//test ^
-		//String name = Game.registryTank.getRandomTank().name;
-
 		Random random;
 		if (seed != -1)
 			random = new Random(seed);
@@ -105,7 +104,21 @@ public class LevelGeneratorVersus extends LevelGenerator
 		if (random.nextDouble() < 0.2)
 			shadeFactor = random.nextDouble() * 0.6 + 0.2;
 
-		StringBuilder s = new StringBuilder("{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20," + time + "," + (int) light + "," + (int) (light * shadeFactor) + "|");
+		StringBuilder itemsString = new StringBuilder("coins\n50\nshop\n");
+		ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
+
+		for (String si: items)
+		{
+			Item i = Item.parseItem(null, si);
+
+			if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name))
+				continue;
+
+			i.name = Translation.translate(i.name);
+			itemsString.append(i.toString()).append("\n");
+		}
+
+		StringBuilder s = new StringBuilder(itemsString.toString() + "level\n{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20," + time + "," + (int) light + "," + (int) (light * shadeFactor) + "|");
 
 		int[][] teleporterArray = new int[width][height];
 

@@ -28,6 +28,7 @@ public class TankPink extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.colorModel = TankModels.fixed.color;
+			this.baseModel = TankModels.diagonalStripes.base;
 			this.emblem = "emblems/squares.png";
 			this.emblemR = this.secondaryColorR;
 			this.emblemG = this.secondaryColorG;

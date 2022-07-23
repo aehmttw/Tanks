@@ -31,6 +31,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
     public HashMap<String, Integer> musicBuffers = new HashMap<>();
     public ArrayList<Integer> musicSources = new ArrayList<>();
+    public ArrayList<Integer> playingMusicSources = new ArrayList<>();
 
     public boolean musicsToLoad = false;
     public final HashMap<String, Integer> finishedMusicBuffers = new HashMap<>();
@@ -52,6 +53,37 @@ public class SoundPlayer extends BaseSoundPlayer
 
     public float prevVolume;
     public float currentVolume;
+
+    protected void playMusicSource(int i)
+    {
+        alSourcePlay(i);
+        this.playingMusicSources.add(i);
+    }
+
+    protected void stopMusicSource(int i)
+    {
+        alSourceStop(i);
+        this.playingMusicSources.remove((Integer) i);
+    }
+
+    protected int newMusicSource()
+    {
+        if (musicSources.size() >= 25)
+        {
+            for (int i = 0; i < musicSources.size(); i++)
+            {
+                if (!playingMusicSources.contains(musicSources.get(i)))
+                {
+                    alDeleteSources(musicSources.remove(i));
+                    return alGenSources();
+                }
+            }
+
+            alDeleteSources(musicSources.remove(0));
+        }
+
+        return alGenSources();
+    }
 
     /**
      * Warning! This will give an exception if there are no audio devices plugged into the computer!
@@ -129,15 +161,13 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcef(sourcePointer, AL_GAIN, volume);
 
         alSourcePlay(sourcePointer);
-
         sources.add(sourcePointer);
     }
 
     @Override
     public void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime)
     {
-        if (musicSources.size() >= 25)
-            alDeleteSources(musicSources.remove(0));
+        int sourcePointer = newMusicSource();
 
         if (this.musicBuffers.get(path) == null)
             createMusic(path);
@@ -149,9 +179,8 @@ public class SoundPlayer extends BaseSoundPlayer
         if (looped)
             loop = AL_TRUE;
 
-        int sourcePointer = alGenSources();
 
-        alSourceStop(prevMusic);
+        stopMusicSource(prevMusic);
         alSourceUnqueueBuffers(prevMusic);
         prevMusic = currentMusic;
         currentMusic = sourcePointer;
@@ -172,7 +201,7 @@ public class SoundPlayer extends BaseSoundPlayer
         else
         {
             for (int i: this.syncedTracks.values())
-                alSourceStop(i);
+                stopMusicSource(i);
 
             this.syncedTracks.clear();
             this.stoppingSyncedTracks.clear();
@@ -181,7 +210,7 @@ public class SoundPlayer extends BaseSoundPlayer
             this.syncedTrackFadeRate.clear();
         }
 
-        alSourcePlay(sourcePointer);
+        playMusicSource(sourcePointer);
         prevVolume = volume;
 
         this.musicID = continueID;
@@ -192,8 +221,7 @@ public class SoundPlayer extends BaseSoundPlayer
     @Override
     public void addSyncedMusic(String path, float volume, boolean looped, long fadeTime)
     {
-        if (musicSources.size() >= 25)
-            alDeleteSources(musicSources.remove(0));
+        int sourcePointer = newMusicSource();
 
         if (this.musicBuffers.get(path) == null)
             createMusic(path);
@@ -205,12 +233,10 @@ public class SoundPlayer extends BaseSoundPlayer
         if (looped)
             loop = AL_TRUE;
 
-        int sourcePointer = alGenSources();
-
         Integer i = this.stoppingSyncedTracks.remove(path);
         if (i != null)
         {
-            alSourceStop(i);
+            stopMusicSource(i);
         }
 
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
@@ -221,7 +247,7 @@ public class SoundPlayer extends BaseSoundPlayer
         this.syncedTrackCurrentVolumes.put(path, 0f);
         this.syncedTrackMaxVolumes.put(path, volume);
         this.syncedTrackFadeRate.put(path, volume / fadeTime * 10);
-        alSourcePlay(sourcePointer);
+        playMusicSource(sourcePointer);
 
         musicSources.add(sourcePointer);
     }
@@ -248,8 +274,8 @@ public class SoundPlayer extends BaseSoundPlayer
     @Override
     public void stopMusic()
     {
-        alSourceStop(currentMusic);
-        alSourceStop(prevMusic);
+        stopMusicSource(currentMusic);
+        stopMusicSource(prevMusic);
         alSourceUnqueueBuffers(currentMusic);
         alSourceUnqueueBuffers(prevMusic);
         this.currentMusic = -1;
@@ -257,7 +283,7 @@ public class SoundPlayer extends BaseSoundPlayer
         this.musicID = null;
 
         for (int i: this.syncedTracks.values())
-            alSourceStop(i);
+            stopMusicSource(i);
 
         this.syncedTracks.clear();
         this.stoppingSyncedTracks.clear();
@@ -430,7 +456,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
         if (this.prevMusic != -1 && this.fadeEnd < System.currentTimeMillis())
         {
-            AL10.alSourceStop(this.prevMusic);
+            stopMusicSource(this.prevMusic);
             this.prevMusic = -1;
 
             if (this.currentMusic != -1)
@@ -469,7 +495,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
                 if (vol <= 0)
                 {
-                    alSourceStop(i);
+                    stopMusicSource(i);
                     this.stoppingSyncedTracks.remove(s);
                     this.syncedTrackFadeRate.remove(s);
                     this.syncedTrackMaxVolumes.remove(s);

@@ -59,6 +59,7 @@ public class Selector implements IDrawable, ITrigger
 
     public boolean format = true;
     public boolean translate = true;
+    public boolean music = false;
 
     public boolean drawBehindScreen = false;
 
@@ -105,7 +106,7 @@ public class Selector implements IDrawable, ITrigger
         this.posY = y;
         this.sizeX = sX;
         this.sizeY = sY;
-        this.text = text;
+        this.setText(text);
         this.options = o;
 
         this.enabled = false;
@@ -172,16 +173,7 @@ public class Selector implements IDrawable, ITrigger
 
         drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedText);
 
-        String s;
-        if (format)
-            s = Game.formatString(options[selectedOption]);
-        else
-            s = options[selectedOption];
-
-        if (translate)
-            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
-        else
-            Drawing.drawing.drawInterfaceText(posX, posY, s);
+        this.drawSelection();
 
         if (enableHover)
         {
@@ -225,6 +217,23 @@ public class Selector implements IDrawable, ITrigger
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.drawInterfaceModel2D(models[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, 0, this.sizeY, this.sizeY, this.sizeY);
         }
+    }
+
+    public void drawSelection()
+    {
+        String s = options[selectedOption];
+
+        if (music)
+            s = s.substring(s.indexOf("tank/") + "tank/".length(), s.indexOf(".ogg"));
+
+        if (format)
+            s = Game.formatString(s);
+
+
+        if (translate)
+            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
+        else
+            Drawing.drawing.drawInterfaceText(posX, posY, s);
     }
 
     public void update()

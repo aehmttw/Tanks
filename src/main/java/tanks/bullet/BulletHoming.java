@@ -132,7 +132,7 @@ public class BulletHoming extends Bullet
 
             frac = Math.min(targetTime / limit, 1);
 
-            double s = (2 - frac) * this.size * 8;
+            double s = (2 - frac) * 80;
             double d = Math.min((1 - this.destroyTimer / this.maxDestroyTimer) * 2, 1);
 
             Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);

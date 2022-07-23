@@ -137,6 +137,7 @@ public class ScreenOptions extends Screen
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
 			f.println("preview_crusades=" + Game.previewCrusades);
+			f.println("tank_textures=" + Game.tankTextures);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
@@ -157,6 +158,7 @@ public class ScreenOptions extends Screen
 			f.println("port=" + Game.port);
 			f.println("last_party=" + Game.lastParty);
 			f.println("last_online_server=" + Game.lastOnlineServer);
+			f.println("show_ip=" + Game.showIP);
 			f.println("chat_filter=" + Game.enableChatFilter);
 			f.println("auto_ready=" + Game.autoReady);
 			f.println("anticheat=" + TankPlayerRemote.checkMotion);
@@ -320,6 +322,9 @@ public class ScreenOptions extends Screen
 								Game.firstPerson = true;
 						}
 						break;
+					case "tank_textures":
+						Game.tankTextures = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "preview_crusades":
 						Game.previewCrusades = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -340,6 +345,9 @@ public class ScreenOptions extends Screen
 							Game.lastOnlineServer = optionLine[1];
 						else
 							Game.lastOnlineServer = "";
+						break;
+					case "show_ip":
+						Game.showIP = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);

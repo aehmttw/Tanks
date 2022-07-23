@@ -185,6 +185,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankProperty(category = general, id = "mandatory_kill", name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
 	public boolean mandatoryKill = true;
 
+	/** Used for custom tanks, see /music/tank for built-in tanks */
+	@TankProperty(category = general, id = "music", name = "Music tracks", miscType = TankProperty.MiscType.music)
+	public ArrayList<String> musicTracks = new ArrayList<>();
+
 	public boolean[][] hiddenPoints = new boolean[3][3];
 	public boolean hidden = false;
 
@@ -830,7 +834,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.emblem != null)
 		{
 			Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 127);
-			drawing.drawImage(this.emblem, this.posX, this.posY, this.size / 2, this.size / 2);
+			drawing.drawImage(this.angle - Math.PI / 2, this.emblem, this.posX, this.posY, this.size / 2, this.size / 2);
 		}
 
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
@@ -981,7 +985,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (cp != null && this.health <= 0)
 				{
 					if (this.possessor != null && this.possessor.overridePossessedKills)
-						cp.addKill(this.possessor);
+						cp.addKill(this.getTopLevelPossessor());
 					else
 						cp.addKill(this);
 				}
@@ -997,7 +1001,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (cp != null)
 				{
 					if (owner.possessor != null && owner.possessor.overridePossessedKills)
-						cp.addDeath(owner.possessor);
+						cp.addDeath(owner.getTopLevelPossessor());
 					else
 						cp.addDeath(owner);
 				}

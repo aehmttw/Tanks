@@ -27,6 +27,15 @@ public class TankSalmon extends TankAIControlled
 
 		this.coinValue = 10;
 
+		if (Game.tankTextures)
+		{
+			this.emblem = "emblems/curve.png";
+			this.emblemR = this.secondaryColorR;
+			this.emblemG = this.secondaryColorG;
+			this.emblemB = this.secondaryColorB;
+			this.baseModel = TankModels.diagonalStripes.base;
+		}
+
 		this.description = "A tank which shoots homing rockets";
 	}
 }

@@ -10,6 +10,8 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.tank.Tank;
 
+import java.util.ArrayList;
+
 public class SelectorDrawable extends Button
 {
     public double colorR = 255;
@@ -23,6 +25,7 @@ public class SelectorDrawable extends Button
     public double hoverColorB = 255;
     public String optionText = "";
     public Tank tank;
+    public ArrayList<Tank> multiTanks = new ArrayList<>();
 
     public SelectorDrawable(double x, double y, double sX, double sY, String text, Runnable f)
     {
@@ -136,7 +139,19 @@ public class SelectorDrawable extends Button
             Drawing.drawing.drawInterfaceImage(this.image, this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
         }
 
-        if (this.tank != null)
+        if (this.multiTanks.size() > 1)
+        {
+            double start = -this.sizeX / 2 + this.sizeY / 2 + 30;
+            double end = this.sizeX / 2 - this.sizeY / 2 - 30;
+
+            for (int i = 0; i < this.multiTanks.size(); i++)
+            {
+                double base = Math.min(1, 1.0 / 6 * this.multiTanks.size());
+                double frac = base * i / (this.multiTanks.size() - 1);
+                this.multiTanks.get(i).drawForInterface(this.posX + start * (base - frac) + end * frac, this.posY, 0.5);
+            }
+        }
+        else if (this.tank != null)
         {
             this.tank.drawForInterface(this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, 0.5);
         }

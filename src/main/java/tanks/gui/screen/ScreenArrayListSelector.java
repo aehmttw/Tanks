@@ -4,6 +4,8 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ITrigger;
 import tanks.gui.Selector;
+import tanks.gui.SelectorDrawable;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -31,6 +33,8 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
 
         if (e.element1 instanceof Selector)
             ((Selector) e.element1).setScreen();
+        else if (e.element1 instanceof SelectorDrawable)
+            ((SelectorDrawable) e.element1).function.run();
     });
 
     public void apply()
@@ -46,6 +50,26 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
         this.apply();
         Game.screen = screen;
     });
+
+    Button next = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Next page", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            page++;
+        }
+    }
+    );
+
+    Button previous = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Previous page", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            page--;
+        }
+    }
+    );
 
     public static class Entry
     {
@@ -118,9 +142,20 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
     {
         this.screen = prev;
         this.title = title;
+        this.allowClose = false;
 
         this.music = prev.music;
         this.musicID = prev.musicID;
+
+        this.next.image = "icons/forward.png";
+        this.next.imageSizeX = 25;
+        this.next.imageSizeY = 25;
+        this.next.imageXOffset = 145;
+
+        this.previous.image = "icons/back.png";
+        this.previous.imageSizeX = 25;
+        this.previous.imageSizeY = 25;
+        this.previous.imageXOffset = -145;
     }
 
     public void setContent(ArrayList<Entry> entries, Producer<Entry> defaultEntry, Consumer<Entry> saveEntry)
@@ -154,6 +189,15 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
                 this.entries.get(i).update();
         }
 
+        if (entries.size() >= entriesPerPage)
+        {
+            previous.enabled = page > 0;
+            next.enabled = page < entries.size() / entriesPerPage;
+
+            previous.update();
+            next.update();
+        }
+
         done.update();
     }
 
@@ -166,7 +210,13 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
             this.screen.draw();
         }
         else
+        {
+            Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();
+        }
+
+        if (Game.screen != this)
+            return;
 
         for (int i = Math.min((this.page + 1) * this.entriesPerPage, this.entries.size() + 1) - 1; i >= this.page * this.entriesPerPage; i--)
         {
@@ -177,6 +227,12 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
         }
 
         done.draw();
+
+        if (entries.size() >= entriesPerPage)
+        {
+            previous.draw();
+            next.draw();
+        }
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 

@@ -34,10 +34,15 @@ public class TankBoss extends TankAIControlled
 			this.emblemB = this.secondaryColorB;
 		}
 
+		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankBrown("brown", 0, 0, 0), 1));
+		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankGray("gray", 0, 0, 0), 1));
+		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankMint("mint", 0, 0, 0), 0.5));
+		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankYellow("yellow", 0, 0, 0), 0.5));
+		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankMagenta("magenta", 0, 0, 0), 0.3333));
+
 		this.health = 5;
 		this.baseHealth = 5;
 		this.coinValue = 25;
-		this.enableSpawning = true;
 
 		this.description = "A big boss tank which spawns other tanks and takes 5 regular bullets to destroy";
 	}

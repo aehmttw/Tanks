@@ -46,7 +46,7 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
     }
     );
 
-    public ScreenSelectorTank(String title, Tank tank, Screen tankScreen, ArrayList<TankAIControlled> customTanks, Consumer<TankAIControlled> function)
+    public ScreenSelectorTank(String title, Tank tank, Screen tankScreen, ArrayList<TankAIControlled> customTanks, Consumer<TankAIControlled> function, boolean nullTank)
     {
         super(350, 40, 380, 60);
 
@@ -71,10 +71,14 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
         this.previousTankPage.imageSizeY = 25;
         this.previousTankPage.imageXOffset = -145;
 
+        int nt = 1;
+        if (nullTank)
+            nt = 0;
+
         int count = Game.registryTank.tankEntries.size() + customTanks.size() + 1;
-        for (int i = 0; i < count; i++)
+        for (int i = nt; i < count; i++)
         {
-            int index = i % (rows * cols);
+            int index = (i - nt) % (rows * cols);
             double x = this.centerX - 450 + 100 * (index % cols);
             double y = this.centerY - 100 + 100 * ((index / cols) % rows);
 
@@ -193,7 +197,7 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
         {
             BaseFile file = Game.game.fileManager.getFile(l);
 
-            int index = count % (rows * cols);
+            int index = (count - nt) % (rows * cols);
             double x = this.centerX - 450 + 100 * (index % cols);
             double y = this.centerY - 100 + 100 * ((index / cols) % rows);
             count++;

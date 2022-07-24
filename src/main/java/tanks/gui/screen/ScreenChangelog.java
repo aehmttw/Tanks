@@ -460,6 +460,17 @@ public class ScreenChangelog extends Screen
                                     "The built-in tanks now have models and emblems\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.k", new String[]
+                    {
+                            "*What's new in Tanks v1.4.k:\n\n" +
+                                    "Shop is now available in versus mode\n" +
+                                    "Select music tracks for custom tanks\n" +
+                                    "Added option to disable the new tank designs\n" +
+                                    "IP address can now be hidden in parties\n" +
+                                    "Added more new tank designs\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

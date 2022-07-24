@@ -11,6 +11,7 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
+import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -1137,7 +1138,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                         {
                             Game.exitToCrash(e);
                         }
-                    });
+                    }, true);
 
                     s.drawBehindScreen = true;
                     Game.screen = s;
@@ -1147,6 +1148,9 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                     b.optionText = b.tank.name;
                 else
                     b.optionText = "\u00A7127000000255none";
+
+                b.enableHover = !p.desc().equals("");
+                b.hoverText = formatDescription(p);
 
                 return b;
             }
@@ -1234,52 +1238,59 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                 s.selectedOptions = selectedMusicsArray;
                 return s;
+            }
+            else if (p.miscType() == TankProperty.MiscType.spawnedTanks)
+            {
+                SelectorDrawable s = new SelectorDrawable(0, 0, 350, 40, p.name());
+                ArrayList<TankAIControlled.SpawnedTankEntry> a = ((ArrayList<TankAIControlled.SpawnedTankEntry>) f.get(tank));
 
-                /*SelectorDrawable s = new SelectorDrawable(0, 0, 350, 40, p.name());
                 s.function = () ->
                 {
                     ScreenArrayListSelector sc = new ScreenArrayListSelector(this, "Select " + p.name().toLowerCase());
                     Game.screen = sc;
 
                     ArrayList<ScreenArrayListSelector.Entry> entries = new ArrayList<>();
-                    for (String m: a)
+                    for (TankAIControlled.SpawnedTankEntry e: a)
                     {
-                        Selector sel = new Selector(0, 0, 700, 40, "Track", musicsArray, () ->
-                        {
-                            this.tank.musicTracks.clear();
-                            this.updateMusic();
-                            a.clear();
-                            //sc.apply();
-                            //this.updateMusic();
-                        });
-                        sel.music = true;
-                        sel.selectedOption = musics.indexOf(m);
-                        entries.add(new ScreenArrayListSelector.Entry(sel, null, sc));
+                        entries.add(getSpawnedTankEntry(e, sc));
                     }
 
                     a.clear();
+                    s.multiTanks.clear();
+                    s.tank = null;
+                    s.optionText = Translation.translate("\u00A7127000000255none");
 
                     sc.setContent(entries,
-                    () ->
-                    {
-                        Selector sel = new Selector(0, 0, 700, 40, "Track", musicsArray, () ->
-                        {
-                            this.tank.musicTracks.clear();
-                            this.updateMusic();
-                            a.clear();
-                            //sc.apply();
-                            //this.updateMusic();
-                        });
-                        sel.music = true;
-                        return new ScreenArrayListSelector.Entry(sel, null, sc);
-                    },
+                    () -> getSpawnedTankEntry(new TankAIControlled.SpawnedTankEntry((TankAIControlled) Game.registryTank.getEntry("dummy").getTank(0, 0, 0), 1.0), sc),
                     (entry) ->
                     {
-                        Selector sel = ((Selector) entry.element1);
-                        a.add(sel.options[sel.selectedOption]);
+                        SelectorDrawable sel = ((SelectorDrawable) entry.element1);
+                        a.add(new TankAIControlled.SpawnedTankEntry((TankAIControlled) sel.tank, Double.parseDouble(((TextBox) entry.element2).inputText)));
+                        s.multiTanks.add(sel.tank);
+                        s.tank = sel.tank;
+                        if (s.multiTanks.size() == 1)
+                            s.optionText = sel.tank.name;
+                        else
+                            s.optionText = "";
                     });
                 };
-                s.enabled = true;*/
+                s.enabled = true;
+
+                s.optionText = Translation.translate("\u00A7127000000255none");
+                for (TankAIControlled.SpawnedTankEntry e: a)
+                {
+                    s.multiTanks.add(e.tank);
+                    s.tank = e.tank;
+                    if (s.multiTanks.size() == 1)
+                        s.optionText = e.tank.name;
+                    else
+                        s.optionText = "";
+                }
+
+                s.enableHover = !p.desc().equals("");
+                s.hoverText = formatDescription(p);
+
+                return s;
             }
         }
         catch (Exception e)
@@ -1288,6 +1299,53 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         }
 
         return new Button(0, 0, 350, 40, p.name(), "This option is not available yet");
+    }
+
+    public ScreenArrayListSelector.Entry getSpawnedTankEntry(TankAIControlled.SpawnedTankEntry e, ScreenArrayListSelector s)
+    {
+        SelectorDrawable b = new SelectorDrawable(0, 0, 350, 40, "Spawned tank", () -> {});
+        b.tank = e.tank;
+        b.function = () ->
+        {
+            ArrayList<TankAIControlled> tanks = new ArrayList<>();
+
+            if (this.tankScreen instanceof OverlayObjectMenu)
+                tanks = ((OverlayObjectMenu) this.tankScreen).screenLevelEditor.level.customTanks;
+
+            ScreenSelectorTank screen = new ScreenSelectorTank("Select spawned tank", b.tank, Game.screen, tanks, (t) ->
+            {
+                e.tank = t;
+                b.tank = t;
+
+                if (b.tank != null)
+                    b.optionText = b.tank.name;
+                else
+                    b.optionText = "\u00A7127000000255none";
+            }, false);
+
+            screen.drawBehindScreen = true;
+            Game.screen = screen;
+        };
+
+        if (b.tank != null)
+            b.optionText = b.tank.name;
+        else
+            b.optionText = "\u00A7127000000255none";
+
+        TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, "Spawn weight", () -> {}, e.weight + "", "Bigger numbers relative to---other spawned tanks increase---the likelihood of this tank---being spawned");
+        t.function = () ->
+        {
+            if (t.inputText.length() == 0)
+                t.inputText = e.weight + "";
+            else
+                e.weight = Double.parseDouble(t.inputText);
+        };
+
+        t.allowDoubles = true;
+        t.allowLetters = false;
+        t.allowSpaces = false;
+
+        return new ScreenArrayListSelector.Entry(b, t, s);
     }
 
     public void sortTopLevelTabs()

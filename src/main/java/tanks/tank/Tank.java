@@ -783,9 +783,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			else
 			{
 				if (Game.enable3d)
-					drawing.drawImage(this.angle - Math.PI / 2, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle + Math.PI / 2, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
 				else
-					drawing.drawImage(this.angle - Math.PI / 2, this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle + Math.PI / 2, this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
 		}
 
@@ -834,7 +834,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.emblem != null)
 		{
 			Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 127);
-			drawing.drawImage(this.angle - Math.PI / 2, this.emblem, this.posX, this.posY, this.size / 2, this.size / 2);
+			drawing.drawImage(this.angle + Math.PI / 2, this.emblem, this.posX, this.posY, this.size / 2, this.size / 2);
 		}
 
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);

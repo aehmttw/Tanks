@@ -34,7 +34,7 @@ public @interface TankProperty
             transformationOnProximity,
             transformationOnAlone,
             transformationMimic,
-        lastStand,
+        lastStand
     }
 
     enum MiscType
@@ -47,7 +47,8 @@ public @interface TankProperty
         emblem,
         color,
         description,
-        music
+        music,
+        spawnedTanks
     }
 
     Category category();

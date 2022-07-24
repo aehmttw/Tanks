@@ -99,21 +99,15 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = movementOnSight, id = "target_sight_distance", name = "Target distance", desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target")
 	public double targetSightDistance = Game.tile_size * 6;
 
-	/** If set to true, will transform into another tank when entering line of sight with target enemy */
-	@TankProperty(category = transformationOnSight, id = "transform_on_sight", name = "Enabled", desc = "When enabled, the tank will transform into another tank upon entering line of sight with its target")
-	public boolean transformOnSight = false;
 	/** Tank to transform into*/
-	@TankProperty(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "Tank to transform into upon line of sight")
+	@TankProperty(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target")
 	public TankAIControlled sightTransformTank = null;
 	/** Time for tank to revert after losing line of sight */
 	@TankProperty(category = transformationOnSight, id = "sight_transformation_revert_time", name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form")
 	public double sightTransformRevertTime = 500;
 
-	/** If set to true, will transform into another tank when health is at or below threshold */
-	@TankProperty(category = transformationOnHealth, id = "transform_on_health", name = "Enabled", desc = "When enabled, the tank will transform into another tank when its health is at or below the health threshold")
-	public boolean transformOnHealth = false;
 	/** Tank to transform into*/
-	@TankProperty(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "Tank to transform into upon reaching health threshold")
+	@TankProperty(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold")
 	public TankAIControlled healthTransformTank = null;
 	/** Health threshold to transform */
 	@TankProperty(category = transformationOnHealth, id = "transform_health_threshold", name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
@@ -217,11 +211,25 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = firingPattern, id = "shot_round_spread", name = "Round spread", desc = "Total angle of spread of a round")
 	public double shotRoundSpread = 36;
 
-	/** When set to true, will spawn other tanks*/
-	@TankProperty(category = spawning, id = "enable_spawning", name = "Spawn tanks", desc = "When enabled, will create other tanks to fight as support")
-	public boolean enableSpawning = false;
-	@TankProperty(category = spawning, id = "spawned_tank", name = "Spawned tank", desc = "Tank which will be spawned by this tank")
-	public TankAIControlled spawnedTank = null;
+	public static class SpawnedTankEntry
+	{
+		public TankAIControlled tank;
+		public double weight;
+
+		public SpawnedTankEntry(TankAIControlled t, double weight)
+		{
+			this.tank = t;
+			this.weight = weight;
+		}
+
+		public String toString()
+		{
+			return this.weight + "x" + this.tank.toString();
+		}
+	}
+
+	@TankProperty(category = spawning, id = "spawned_tanks", name = "Spawned tanks", desc = "Tanks which will be spawned by this tank as support", miscType = TankProperty.MiscType.spawnedTanks)
+	public ArrayList<SpawnedTankEntry> spawnedTankEntries = new ArrayList<>();
 	/** Tanks spawned on initial load*/
 	@TankProperty(category = spawning, id = "spawned_initial_count", name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
 	public int spawnedInitialCount = 4;
@@ -500,7 +508,7 @@ public class TankAIControlled extends Tank
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 
-		if (this.enableSpawning && !ScreenGame.finishedQuick && !this.destroy)
+		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
 		this.age += Panel.frameFrequency;
@@ -538,7 +546,7 @@ public class TankAIControlled extends Tank
 			if (this.transformMimic)
 				this.updateMimic();
 
-			if (this.transformOnHealth && this.healthTransformTank != null && this.health <= this.transformHealthThreshold)
+			if (this.healthTransformTank != null && this.health <= this.transformHealthThreshold)
 				this.handleHealthTransformation();
 
 			this.postUpdate();
@@ -1719,7 +1727,7 @@ public class TankAIControlled extends Tank
 				this.straightShoot = false;
 		}
 
-		if (this.transformOnSight && this.sightTransformTank != null && seesTargetEnemy)
+		if (this.sightTransformTank != null && seesTargetEnemy)
 			this.handleSightTransformation();
 	}
 
@@ -2030,23 +2038,27 @@ public class TankAIControlled extends Tank
 
 			Tank t;
 
-			if (this.spawnedTank == null)
-			{
-				RegistryTank.TankEntry e = Game.registryTank.getEntry(this.name);
+			TankAIControlled t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
 
-				while (e.name.equals(this.name) || e.isBoss)
+			double totalWeight = 0;
+			for (SpawnedTankEntry s: this.spawnedTankEntries)
+			{
+				totalWeight += s.weight;
+			}
+			double selected = Math.random() * totalWeight;
+
+			for (SpawnedTankEntry s: this.spawnedTankEntries)
+			{
+				selected -= s.weight;
+
+				if (selected <= 0)
 				{
-					e = Game.registryTank.getRandomTank(this.random);
+					s.tank.cloneProperties(t2);
+					break;
 				}
+			}
 
-				t = e.getTank(this.posX + x, this.posY + y, this.angle);
-			}
-			else
-			{
-				TankAIControlled t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
-				this.spawnedTank.cloneProperties(t2);
-				t = t2;
-			}
+			t = t2;
 
 			t.team = this.team;
 			t.crusadeID = this.crusadeID;
@@ -2653,6 +2665,7 @@ public class TankAIControlled extends Tank
 
 	public static TankAIControlled fromString(String s, String[] remainder)
 	{
+		System.out.println(s);
 		String original = s;
 		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
 
@@ -2670,7 +2683,7 @@ public class TankAIControlled extends Tank
 					boolean found = true;
 
 					TankProperty a = f.getAnnotation(TankProperty.class);
-					if (a != null && a.id().equals(propname))
+					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank"))))
 					{
 						if (f.getType().equals(int.class))
 							f.set(t, Integer.parseInt(value));
@@ -2706,8 +2719,55 @@ public class TankAIControlled extends Tank
 						{
 							int end = s.indexOf("]");
 							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
-							ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(csv));
+							ArrayList<String> arrayList;
+							if (csv[0].equals(""))
+								arrayList = new ArrayList<>();
+							else
+								arrayList = new ArrayList<>(Arrays.asList(csv));
+
 							f.set(t, arrayList);
+						}
+						else if (a.miscType() == TankProperty.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
+						{
+							s = s.substring(s.indexOf("[") + 1);
+							ArrayList<TankAIControlled.SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
+
+							TankAIControlled target;
+							while (!s.startsWith("]"))
+							{
+								int x = s.indexOf("x");
+								String s1 = s.substring(0, x);
+								s = s.substring(x + 1);
+								if (s.equals("*"))
+									target = null;
+								else if (s.startsWith("<"))
+								{
+									String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
+									s = s.substring(s.indexOf(">") + 1);
+									target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
+								}
+								else
+								{
+									String[] r = new String[1];
+									TankAIControlled t2 = TankAIControlled.fromString(s, r);
+
+									if (ScreenPartyHost.isServer)
+									{
+										Tank.freeIDs.add(t2.networkID);
+										Tank.idMap.remove(t2.networkID);
+									}
+
+									s = r[0];
+									target = t2;
+									s = s.substring(s.indexOf("]") + 1);
+								}
+
+								if (s.startsWith(", "))
+									s = s.substring(2);
+								entries.add(new SpawnedTankEntry(target, Double.parseDouble(s1)));
+							}
+
+							s = s.substring(1);
 						}
 						else if (IModel.class.isAssignableFrom(f.getType()))
 						{
@@ -2725,15 +2785,17 @@ public class TankAIControlled extends Tank
 							f.set(t, i);
 							s = s.substring(s.indexOf("]") + 1);
 						}
-						else if (Tank.class.isAssignableFrom(f.getType()))
+						else if (Tank.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
 						{
+							TankAIControlled target;
+
 							if (value.equals("*"))
-								f.set(t, null);
+								target = null;
 							else if (value.startsWith("<"))
 							{
 								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
 								s = s.substring(s.indexOf(">") + 1);
-								f.set(t, Game.registryTank.getEntry(tank).getTank(0, 0, 0));
+								target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
 							}
 							else
 							{
@@ -2747,9 +2809,17 @@ public class TankAIControlled extends Tank
 								}
 
 								s = r[0];
-								f.set(t, t2);
+								target = t2;
 								s = s.substring(s.indexOf("]") + 1);
 							}
+
+							if (propname.equals("spawned_tank"))
+							{
+								if (target != null)
+									t.spawnedTankEntries.add(new SpawnedTankEntry(target, 1));
+							}
+							else
+								f.set(t, target);
 						}
 					}
 					else

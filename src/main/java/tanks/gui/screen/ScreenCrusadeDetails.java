@@ -148,11 +148,17 @@ public class ScreenCrusadeDetails extends Screen
         else
             this.drawDefaultBackground();
 
-        Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7, this.objYSpace * 9);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7 - 20, this.objYSpace * 9 - 20);
+        Drawing.drawing.setColor(0, 0, 0, 255);
 
-        Drawing.drawing.setColor(255, 255, 255);
+        if (Game.previewCrusades)
+        {
+            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7, this.objYSpace * 9);
+            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7 - 20, this.objYSpace * 9 - 20);
+
+            Drawing.drawing.setColor(255, 255, 255);
+        }
+
         Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
 
         if (this.crusade.internal)

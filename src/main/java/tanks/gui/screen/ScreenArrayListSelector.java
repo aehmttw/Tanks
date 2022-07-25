@@ -5,10 +5,8 @@ import tanks.gui.Button;
 import tanks.gui.ITrigger;
 import tanks.gui.Selector;
 import tanks.gui.SelectorDrawable;
-import tanks.translation.Translation;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class ScreenArrayListSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen
 {
@@ -140,6 +138,8 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
 
     public ScreenArrayListSelector(Screen prev, String title)
     {
+        super(350, 40, 380, 60);
+
         this.screen = prev;
         this.title = title;
         this.allowClose = false;

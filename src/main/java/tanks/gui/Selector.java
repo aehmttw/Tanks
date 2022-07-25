@@ -359,6 +359,7 @@ public class Selector implements IDrawable, ITrigger
 
     public void setScreen()
     {
+        this.resetLayout();
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.images = this.images;
         s.models = this.models;
@@ -371,6 +372,13 @@ public class Selector implements IDrawable, ITrigger
 
         s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;
+    }
+
+    public void resetLayout()
+    {
+        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
     }
 
     @Override

@@ -2,10 +2,11 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import basewindow.IModel;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
@@ -44,6 +45,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
     public Button delete = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Delete tank", () ->
     {
+        this.resetLayout();
         Game.screen = (Screen) this.tankScreen;
         this.tankScreen.removeTank(this.tank);
         this.tankScreen.refreshTanks(this.tank);
@@ -87,6 +89,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Done", () ->
     {
+        this.resetLayout();
         Game.screen = (Screen) this.tankScreen;
         for (String m : this.tankMusics)
         {
@@ -97,8 +100,27 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     }
     );
 
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.interfaceScaleZoomOverride = 1;
+        centerX = Drawing.drawing.baseInterfaceSizeX / 2;
+        centerY = Drawing.drawing.baseInterfaceSizeY / 2;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY;
+    }
+
+    public void resetLayout()
+    {
+        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+    }
+
     public ScreenTankEditor(TankAIControlled t, ITankScreen screen)
     {
+        super(350, 40, 380, 60);
+
         this.allowClose = false;
 
         this.tankScreen = screen;
@@ -110,6 +132,17 @@ public class ScreenTankEditor extends Screen implements IItemScreen
         t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
 
         this.fields = TankAIControlled.class.getFields();
+
+        if (Game.framework == Game.Framework.libgdx)
+        {
+            Field[] fields2 = new Field[this.fields.length];
+            for (int i = 0; i < fields2.length; i++)
+            {
+                fields2[i] = fields[fields.length - 1 - i];
+            }
+            this.fields = fields2;
+        }
+
         Arrays.sort(this.fields, (o1, o2) ->
         {
             Class<?> c1 = o1.getDeclaringClass();
@@ -248,7 +281,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.previous.imageSizeY = 25;
             this.previous.imageXOffset = -145;
 
-            this.addFields(TankAIControlled.class);
+            this.addFields();
         }
 
         public void set()
@@ -256,7 +289,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
         }
 
-        public void addFields(Class<?> c)
+        public void addFields()
         {
             for (Field f: this.screen.fields)
             {
@@ -276,7 +309,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                         t.sizeX *= 3;
                         ((TabGeneral) this).description = t;
                     }
-                    else
+                    else if (!(p.miscType() == TankProperty.MiscType.music && Game.framework == Game.Framework.libgdx))
                         this.uiElements.add(screen.getUIElementForField(f, p, screen.tank));
                 }
             }
@@ -874,17 +907,22 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 Drawing.drawing.drawInterfaceImage(screen.tank.emblem, margin, screen.centerY + 60 - space * 3, s, s);
             }
 
+            double offmul = 1;
+
+            if (Game.framework == Game.Framework.libgdx)
+                offmul = 0;
+
             Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, 0.5);
-            Drawing.drawing.drawInterfaceModel2D(screen.tank.turretBaseModel, margin, screen.centerY + 60 - space * 2 + 4, 0, s, s, s);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.turretBaseModel, margin, screen.centerY + 60 - space * 2 + 4 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 0.5);
             Drawing.drawing.drawInterfaceModel2D(screen.tank.turretModel, margin, screen.centerY + 60 - space * 1, 0, s, s, s);
 
             Drawing.drawing.setColor(screen.tank.colorR, screen.tank.colorG, screen.tank.colorB, 255, 0.5);
-            Drawing.drawing.drawInterfaceModel2D(screen.tank.colorModel, margin, screen.centerY + 60 - space * 0 + 7, 0, s, s, s);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.colorModel, margin, screen.centerY + 60 - space * 0 + 7 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(screen.tank.secondaryColorR, screen.tank.secondaryColorG, screen.tank.secondaryColorB, 255, 0.5);
-            Drawing.drawing.drawInterfaceModel2D(screen.tank.baseModel, margin, screen.centerY + 60 + space * 1 + 7, 0, s, s, s);
+            Drawing.drawing.drawInterfaceModel2D(screen.tank.baseModel, margin, screen.centerY + 60 + space * 1 + 7 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
@@ -1096,6 +1134,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 {
                     this.lastItem = i;
                     this.lastItemField = f;
+                    this.resetLayout();
                     ScreenEditItem editItem = new ScreenEditItem(i, this);
                     editItem.delete.setText("Load from template");
                     Game.screen = editItem;
@@ -1122,6 +1161,9 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                     if (this.tankScreen instanceof OverlayObjectMenu)
                         tanks = ((OverlayObjectMenu) this.tankScreen).screenLevelEditor.level.customTanks;
+
+                    this.resetLayout();
+
                     ScreenSelectorTank s = new ScreenSelectorTank("Select " + p.name().toLowerCase(), b.tank, this, tanks, (t) ->
                     {
                         try
@@ -1246,6 +1288,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                 s.function = () ->
                 {
+                    this.resetLayout();
                     ScreenArrayListSelector sc = new ScreenArrayListSelector(this, "Select " + p.name().toLowerCase());
                     Game.screen = sc;
 
@@ -1390,6 +1433,8 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     @Override
     public void update()
     {
+        this.setupLayoutParameters();
+
         if (this.tankScreen instanceof ScreenLevelEditorOverlay)
         {
             this.updateMusic();
@@ -1399,12 +1444,6 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.dismissMessage.update();
         else
         {
-            if (Game.game.input.editorPause.isValid())
-            {
-                Game.game.input.editorPause.invalidate();
-                this.quit.function.run();
-            }
-
             for (Button b : this.topLevelButtons)
             {
                 b.enabled = !currentTab.getRoot().name.equals(b.text);
@@ -1416,6 +1455,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             this.quit.update();
             this.delete.update();
             this.save.update();
+
+            if (Game.game.input.editorPause.isValid())
+            {
+                Game.game.input.editorPause.invalidate();
+                this.quit.function.run();
+            }
+
         }
     }
 
@@ -1452,6 +1498,8 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
         if (Game.screen != this)
             return;
+        else
+            this.setupLayoutParameters();
 
         if (this.message != null)
         {

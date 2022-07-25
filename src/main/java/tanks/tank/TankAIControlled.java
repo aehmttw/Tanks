@@ -2665,7 +2665,6 @@ public class TankAIControlled extends Tank
 
 	public static TankAIControlled fromString(String s, String[] remainder)
 	{
-		System.out.println(s);
 		String original = s;
 		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
 
@@ -2730,7 +2729,7 @@ public class TankAIControlled extends Tank
 						else if (a.miscType() == TankProperty.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
 						{
 							s = s.substring(s.indexOf("[") + 1);
-							ArrayList<TankAIControlled.SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
+							ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
 
 							TankAIControlled target;
 							while (!s.startsWith("]"))

@@ -557,6 +557,14 @@ public class Panel
 
 		ScreenOverlayChat.update(!(Game.screen instanceof IHiddenChatboxScreen));
 
+		if (Game.screen.interfaceScaleZoomOverride > 0)
+			Drawing.drawing.interfaceScaleZoom = Game.screen.interfaceScaleZoomOverride;
+		else
+			Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+
+		Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+		Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+
 		if (!onlinePaused)
 			Game.screen.update();
 		else
@@ -590,7 +598,12 @@ public class Panel
 		}
 
 		if (prevScreen != Game.screen)
+		{
+			Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+			Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+
 			Panel.selectedTextBox = null;
+		}
 
 		if (ScreenPartyLobby.isClient)
 		{

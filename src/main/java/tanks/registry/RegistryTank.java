@@ -3,8 +3,10 @@ package tanks.registry;
 import tanks.Game;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 import tanks.tank.TankUnknown;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -70,7 +72,8 @@ public class RegistryTank
 		{
 			try 
 			{
-				Tank t = tank.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, x, y, a);
+				Constructor<? extends Tank> c = tank.getConstructor(String.class, double.class, double.class, double.class);
+				Tank t = c.newInstance(this.name, x, y, a);
 				t.fromRegistry = true;
 				t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
 				return t;

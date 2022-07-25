@@ -3,6 +3,8 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 
+import java.util.ArrayList;
+
 public class TankLightPinkAngry extends TankAIControlled
 {
     public TankLightPinkAngry(String name, double x, double y, double angle)
@@ -38,7 +40,11 @@ public class TankLightPinkAngry extends TankAIControlled
             this.baseModel = TankModels.diagonalStripes.base;
         }
 
-        this.musicTracks.addAll(Game.registryTank.tankMusics.get("lightpink_angry"));
+        ArrayList<String> musics = Game.registryTank.tankMusics.get("lightpink_angry");
+
+        if (musics != null)
+            this.musicTracks.addAll(musics);
+
         this.shotRoundCount = 5;
 
         this.description = "A tank which gets angry on line of sight, shooting fans of bullets";

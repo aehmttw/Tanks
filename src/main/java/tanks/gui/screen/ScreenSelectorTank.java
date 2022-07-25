@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -15,7 +16,6 @@ import tanks.translation.Translation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.function.Consumer;
 
 public class ScreenSelectorTank extends Screen implements IConditionalOverlayScreen
 {

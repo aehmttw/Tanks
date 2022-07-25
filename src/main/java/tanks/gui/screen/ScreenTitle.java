@@ -168,6 +168,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.drawAge = 50;
 			this.logo.depthTest = false;
 
+			if (Drawing.drawing.interfaceScaleZoom > 1)
+			{
+				this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
+				this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
+			}
+
 			Game.movables.add(logo);
 		}
 
@@ -252,9 +258,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 			this.lCenterX = Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2;
 			this.lCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
-
-			this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
-			this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
 		}
 	}
 }

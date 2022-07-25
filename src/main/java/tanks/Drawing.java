@@ -21,6 +21,7 @@ public class Drawing
 	public double playerX = sizeX / 2;
 	public double playerY = sizeY / 2;
 
+	public double interfaceScaleZoomDefault = 1;
 	public double interfaceScaleZoom = 1;
 	public double baseInterfaceSizeX = 1400;
 	public double baseInterfaceSizeY = 900;
@@ -126,6 +127,7 @@ public class Drawing
 
 	public void setInterfaceScaleZoom(double value)
 	{
+		this.interfaceScaleZoomDefault = value;
 		this.interfaceScaleZoom = value;
 		this.interfaceSizeX = baseInterfaceSizeX / interfaceScaleZoom;
 		this.interfaceSizeY = baseInterfaceSizeY / interfaceScaleZoom;

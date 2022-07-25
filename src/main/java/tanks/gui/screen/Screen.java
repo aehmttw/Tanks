@@ -34,6 +34,8 @@ public abstract class Screen implements IBatchRenderableObject
 	public int minBgWidth = 0;
 	public int minBgHeight = 0;
 
+	public double interfaceScaleZoomOverride = -1;
+
 	protected boolean redrawn = false;
 
 	public double lastObsSize;

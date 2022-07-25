@@ -410,6 +410,7 @@ public class ScreenOptions extends Screen
 				Game.angledView = false;
 				Panel.showMouseTarget = false;
 				Game.vsync = true;
+				Game.previewCrusades = false;
 			}
 
 			if (!Game.soundsEnabled)

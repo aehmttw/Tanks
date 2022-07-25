@@ -471,6 +471,14 @@ public class ScreenChangelog extends Screen
                                     "Added more new tank designs\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.l", new String[]
+                    {
+                            "*What's new in Tanks v1.4.l:\n\n" +
+                                    "Custom tanks can spawn multiple tank types\n" +
+                                    "Boss tank now only spawns 5 tank types\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

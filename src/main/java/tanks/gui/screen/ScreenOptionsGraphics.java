@@ -98,6 +98,7 @@ public class ScreenOptionsGraphics extends Screen
         {
             altPerspective.enabled = false;
             shadows.enabled = false;
+            previewCrusades.enabled = false;
         }
 
         if (!Game.game.window.antialiasingSupported)

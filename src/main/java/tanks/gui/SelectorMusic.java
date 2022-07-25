@@ -1,14 +1,10 @@
 package tanks.gui;
 
 import tanks.Drawing;
-import tanks.Function;
 import tanks.Game;
 import tanks.gui.screen.ScreenSelectorMusic;
 import tanks.gui.screen.ScreenTankEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.translation.Translation;
-
-import java.util.function.Consumer;
 
 public class SelectorMusic extends Selector
 {

@@ -151,9 +151,18 @@ public class SelectorImage extends Selector
         Button.addEffect(posX - sizeX / 2 + sizeY * 7 / 8, posY - sizeY * 3 / 8, this.sizeY * 1.5, this.sizeY * 1.5, this.glowEffects);
     }
 
+    public void resetLayout()
+    {
+        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+    }
+
     @Override
     public void setScreen()
     {
+        this.resetLayout();
+
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.images = this.images;
         s.models = this.models;

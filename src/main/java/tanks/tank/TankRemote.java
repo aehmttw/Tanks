@@ -91,6 +91,8 @@ public class TankRemote extends Tank
 		this.lightIntensity = t.lightIntensity;
 		this.bullet = t.bullet;
 		this.mine = t.mine;
+		this.musicTracks = t.musicTracks;
+		this.fromRegistry = t.fromRegistry;
 	}
 
 	@Override

@@ -14,7 +14,6 @@ import tanks.tank.TankAIControlled;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScreen

@@ -479,6 +479,12 @@ public class ScreenChangelog extends Screen
                                     "Boss tank now only spawns 5 tank types\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.m", new String[]
+                    {
+                            "*What's new in Tanks v1.4.m:\n\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

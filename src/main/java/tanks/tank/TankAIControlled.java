@@ -7,6 +7,7 @@ import tanks.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
@@ -949,6 +950,19 @@ public class TankAIControlled extends Tank
 		t.attributes = this.attributes;
 		t.coinValue = this.coinValue;
 		t.cooldown = this.cooldown;
+
+		Tank p = this;
+		if (this.getTopLevelPossessor() != null)
+		{
+			p = this.getTopLevelPossessor();
+		}
+
+		if (p instanceof TankAIControlled && ((TankAIControlled) p).transformMimic)
+		{
+			t.baseModel = this.baseModel;
+			t.turretModel = this.turretModel;
+			t.turretBaseModel = this.turretBaseModel;
+		}
 
 		Tank.idMap.remove(t.networkID);
 		Tank.freeIDs.add(t.networkID);
@@ -2038,7 +2052,7 @@ public class TankAIControlled extends Tank
 
 			Tank t;
 
-			TankAIControlled t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
+			Tank t2 = null;
 
 			double totalWeight = 0;
 			for (SpawnedTankEntry s: this.spawnedTankEntries)
@@ -2053,7 +2067,16 @@ public class TankAIControlled extends Tank
 
 				if (selected <= 0)
 				{
-					s.tank.cloneProperties(t2);
+					if (s.tank.getClass().equals(TankAIControlled.class))
+					{
+						t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
+						s.tank.cloneProperties((TankAIControlled) t2);
+					}
+					else
+					{
+						t2 = Game.registryTank.getEntry(s.tank.name).getTank(this.posX + x, this.posY + y, 0);
+					}
+
 					break;
 				}
 			}
@@ -2254,7 +2277,7 @@ public class TankAIControlled extends Tank
 			Game.movables.add(this);
 			Game.removeMovables.add(t);
 			this.skipNextUpdate = true;
-			Game.eventsOut.add(new EventTankMimicTransform(this, false));
+			Game.eventsOut.add(new EventTankMimicTransform(this, this));
 
 			this.tryPossess();
 		}
@@ -2309,7 +2332,15 @@ public class TankAIControlled extends Tank
 				((TankAIControlled) ct).cloneProperties((TankAIControlled) t);
 			}
 			else
+			{
 				t = (Tank) c.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, this.posX, this.posY, this.angle);
+				t.fromRegistry = true;
+				t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
+				t.musicTracks = Game.registryTank.tankMusics.get(ct.name);
+
+				if (t.musicTracks == null)
+					t.musicTracks = new ArrayList<>();
+			}
 
 			t.vX = this.vX;
 			t.vY = this.vY;
@@ -2358,7 +2389,7 @@ public class TankAIControlled extends Tank
 				}
 			}
 
-			Game.eventsOut.add(new EventTankMimicTransform(this.possessingTank, player));
+			Game.eventsOut.add(new EventTankMimicTransform(this, (Tank) this.targetEnemy));
 
 			if (Game.effectsEnabled)
 			{
@@ -2795,6 +2826,7 @@ public class TankAIControlled extends Tank
 								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
 								s = s.substring(s.indexOf(">") + 1);
 								target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
+								target.fromRegistry = true;
 							}
 							else
 							{

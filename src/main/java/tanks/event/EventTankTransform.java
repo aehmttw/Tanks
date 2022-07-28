@@ -10,6 +10,8 @@ import tanks.tank.TankMimic;
 import tanks.tank.TankModels;
 import tanks.tank.TankRemote;
 
+import java.util.ArrayList;
+
 public class EventTankTransform extends PersonalEvent
 {
     public int tank;
@@ -48,6 +50,8 @@ public class EventTankTransform extends PersonalEvent
     public double luminance;
 
     public boolean requiredKill = false;
+
+    public ArrayList<String> tankMusic;
 
     public static final int no_effect = 0;
     public static final int exclamation = 1;
@@ -106,6 +110,7 @@ public class EventTankTransform extends PersonalEvent
         this.bulletSpread = newTank.bullet.shotSpread;
 
         this.requiredKill = newTank.mandatoryKill;
+        this.tankMusic = newTank.musicTracks;
     }
 
     @Override
@@ -139,6 +144,7 @@ public class EventTankTransform extends PersonalEvent
             t.bullet.shotSpread = bulletSpread;
 
             t.mandatoryKill = requiredKill;
+            t.musicTracks = tankMusic;
 
             if (effect == exclamation)
             {
@@ -232,6 +238,13 @@ public class EventTankTransform extends PersonalEvent
 
         b.writeBoolean(this.requiredKill);
 
+        b.writeInt(this.tankMusic.size());
+
+        for (String s: this.tankMusic)
+        {
+            NetworkUtils.writeString(b, s);
+        }
+
         b.writeInt(this.effect);
     }
 
@@ -277,6 +290,13 @@ public class EventTankTransform extends PersonalEvent
         this.bulletSpread = b.readDouble();
 
         this.requiredKill = b.readBoolean();
+
+        int size = b.readInt();
+        this.tankMusic = new ArrayList<>();
+        for (int i = 0; i < size; i++)
+        {
+            this.tankMusic.add(NetworkUtils.readString(b));
+        }
 
         this.effect = b.readInt();
     }

@@ -4,41 +4,26 @@ import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
 import tanks.network.NetworkUtils;
+import tanks.registry.RegistryTank;
 import tanks.tank.*;
+
+import java.util.ArrayList;
 
 public class EventTankMimicTransform extends PersonalEvent
 {
     public int tank;
-    public String type;
+    public int target;
 
-    public boolean isPlayer;
-
-    public double red;
-    public double green;
-    public double blue;
-
-    public double red2;
-    public double green2;
-    public double blue2;
 
     public EventTankMimicTransform()
     {
 
     }
 
-    public EventTankMimicTransform(Tank t, boolean isPlayer)
+    public EventTankMimicTransform(Tank t, Tank target)
     {
-        tank = t.networkID;
-        type = t.name;
-        this.isPlayer = isPlayer;
-
-        this.red = t.colorR;
-        this.green = t.colorG;
-        this.blue = t.colorB;
-
-        this.red2 = t.secondaryColorR;
-        this.green2 = t.secondaryColorG;
-        this.blue2 = t.secondaryColorB;
+        this.tank = t.networkID;
+        this.target = target.networkID;
     }
 
     @Override
@@ -48,26 +33,39 @@ public class EventTankMimicTransform extends PersonalEvent
 
         if (this.clientID == null && t instanceof TankRemote)
         {
-            Tank t1 = Game.registryTank.getEntry(type).getTank(t.posX, t.posY, t.angle);
-            Tank.freeIDs.add(t1.networkID);
+            Tank t1 = null;
+
+            if (this.target == this.tank)
+            {
+                for (TankAIControlled t2 : Game.currentLevel.customTanks)
+                {
+                    if (t2.name.equals(t.name))
+                    {
+                        t1 = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
+                        t2.cloneProperties((TankAIControlled) t1);
+                        break;
+                    }
+                }
+
+                if (t1 == null)
+                {
+                    RegistryTank.TankEntry e = Game.registryTank.getEntry(t.name);
+                    t1 = e.getTank(0, 0, 0);
+                }
+            }
+            else
+                t1 = Tank.idMap.get(target);
+
+            if (t1 == null)
+            {
+                t1 = new TankDummy(t.name, t.posX, t.posY, t.angle);
+            }
 
             ((TankRemote) t).copyTank(t1);
             ((TankRemote) t).invisible = false;
+            t.fromRegistry = false;
 
-            if (this.isPlayer)
-            {
-                t.colorR = red;
-                t.colorG = green;
-                t.colorB = blue;
-
-                t.secondaryColorR = red2;
-                t.secondaryColorG = green2;
-                t.secondaryColorB = blue2;
-
-                t.colorModel = TankModels.tank.color;
-            }
-
-            if (!(t1 instanceof TankMimic) || isPlayer)
+            if (!(this.target == this.tank))
             {
                 t.baseModel = TankModels.checkerboard.base;
                 t.turretBaseModel = TankModels.checkerboard.turretBase;
@@ -99,31 +97,13 @@ public class EventTankMimicTransform extends PersonalEvent
     public void write(ByteBuf b)
     {
         b.writeInt(this.tank);
-        NetworkUtils.writeString(b, this.type);
-        b.writeBoolean(this.isPlayer);
-
-        b.writeDouble(this.red);
-        b.writeDouble(this.green);
-        b.writeDouble(this.blue);
-
-        b.writeDouble(this.red2);
-        b.writeDouble(this.green2);
-        b.writeDouble(this.blue2);
+        b.writeInt(this.target);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.tank = b.readInt();
-        this.type = NetworkUtils.readString(b);
-        this.isPlayer = b.readBoolean();
-
-        this.red = b.readDouble();
-        this.green = b.readDouble();
-        this.blue = b.readDouble();
-
-        this.red2 = b.readDouble();
-        this.green2 = b.readDouble();
-        this.blue2 = b.readDouble();
+        this.target = b.readInt();
     }
 }

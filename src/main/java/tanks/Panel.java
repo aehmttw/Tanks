@@ -159,14 +159,6 @@ public class Panel
 		zoomTranslation.applyAsShadow = true;
 		dummySpin = new TankDummyLoadingScreen(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2);
 
-		ScreenChangelog.Changelog.setupLogs();
-
-		ScreenChangelog s = new ScreenChangelog();
-		s.setup();
-
-		if (!s.pages.isEmpty())
-			Game.screen = s;
-
 		if (Game.usernameInvalid(Game.player.username))
 			Game.screen = new ScreenUsernameInvalid();
 		else
@@ -176,6 +168,14 @@ public class Panel
 			else
 				Game.screen = new ScreenTitle();
 		}
+
+		ScreenChangelog.Changelog.setupLogs();
+
+		ScreenChangelog s = new ScreenChangelog();
+		s.setup();
+
+		if (!s.pages.isEmpty())
+			Game.screen = s;
 
 		Game.loadTankMusic();
 

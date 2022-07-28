@@ -3,7 +3,6 @@ package tanks.registry;
 import tanks.Game;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
 import tanks.tank.TankUnknown;
 
 import java.lang.reflect.Constructor;
@@ -76,6 +75,11 @@ public class RegistryTank
 				Tank t = c.newInstance(this.name, x, y, a);
 				t.fromRegistry = true;
 				t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
+				t.musicTracks = Game.registryTank.tankMusics.get(this.name);
+
+				if (t.musicTracks == null)
+					t.musicTracks = new ArrayList<>();
+
 				return t;
 			}
 			catch (Exception e)

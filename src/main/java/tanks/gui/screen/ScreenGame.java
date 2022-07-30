@@ -2053,7 +2053,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				((IPlayerTank) Game.playerTank).setDrawRange(-1);
 			}
 
-			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy
 					&& Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing && Game.movables.contains(Game.playerTank))
 			{
 				double s = Game.startTime;
@@ -2065,7 +2065,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				double frac = (System.currentTimeMillis() % 2000) / 2000.0;
 				double size = Math.max(800 * (0.5 - frac), 0) * fade;
-				Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
+				Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, size, size, false, false);
@@ -2075,16 +2075,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				double frac2 = ((250 + System.currentTimeMillis()) % 2000) / 2000.0;
 				double size2 = Math.max(800 * (0.5 - frac2), 0) * fade;
 
-				Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
+				Drawing.drawing.setColor(Game.playerTank.secondaryColorR, Game.playerTank.secondaryColorG, Game.playerTank.secondaryColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, size2, size2, false, false);
 				else
 					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, size2, size2);
 
-				Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+				Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB);
 				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 200, 4, 0.3, 75 * fade, 0.5 * fade, false);
-				Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
+				Drawing.drawing.setColor(Game.playerTank.secondaryColorR, Game.playerTank.secondaryColorG, Game.playerTank.secondaryColorB);
 				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 198, 3, 0.5, 60 * fade, 0.375 * fade, false);
 			}
 
@@ -2346,7 +2346,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					if (newItemsNotification)
 					{
 						Button.drawGlow(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY + 2.5 + 1, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
-						drawing.setInterfaceFontSize(this.textSize);
+						drawing.setInterfaceFontSize(this.textSize / Drawing.drawing.interfaceScaleZoom);
 						drawing.setColor(255, 127, 0);
 						drawing.fillInterfaceOval(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4);
 						drawing.setColor(255, 255, 255);

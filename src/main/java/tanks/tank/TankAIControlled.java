@@ -14,6 +14,7 @@ import tanks.registry.RegistryTank;
 
 import static tanks.tank.TankProperty.Category.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2890,7 +2891,8 @@ public class TankAIControlled extends Tank
 		{
 			for (Field f : TankAIControlled.class.getFields())
 			{
-				if (f.getAnnotation(TankProperty.class) != null)
+				TankProperty a = f.getAnnotation(TankProperty.class);
+				if (a != null)
 				{
 					if (Item.class.isAssignableFrom(f.getType()))
 					{
@@ -2917,6 +2919,18 @@ public class TankAIControlled extends Tank
 						}
 						else
 							f.set(t, null);
+					}
+					else if (a.miscType() == TankProperty.MiscType.spawnedTanks)
+					{
+						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
+
+						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
+						for (SpawnedTankEntry o: a1)
+						{
+							al.add(new SpawnedTankEntry(o.tank, o.weight));
+						}
+
+						f.set(t, al);
 					}
 					else
 						f.set(t, f.get(this));

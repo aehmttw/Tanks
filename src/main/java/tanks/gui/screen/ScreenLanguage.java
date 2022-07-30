@@ -61,13 +61,13 @@ public class ScreenLanguage extends Screen
         }
         ));*/
 
-        /*languages.buttons.add(2, new Button(0, 0, 350, 40, "Svenska", () ->
+        languages.buttons.add(2, new Button(0, 0, 350, 40, "Svenska", () ->
         {
             changeLanguage(new Translation("se.lang"));
         }
         ));
 
-        languages.buttons.add(3, new Button(0, 0, 350, 40, "Română", () ->
+        /*languages.buttons.add(3, new Button(0, 0, 350, 40, "Română", () ->
         {
             changeLanguage(new Translation("ro.lang"));
         }

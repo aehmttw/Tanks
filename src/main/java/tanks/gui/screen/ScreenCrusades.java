@@ -147,6 +147,20 @@ public class ScreenCrusades extends Screen
 		}
 		));
 
+		fullCrusadesList.buttons.add(3, new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate("Beginner crusade"), () ->
+		{
+			Crusade c = findExistingCrusadeProgress("internal/Beginner crusade");
+
+			if (c == null)
+			{
+				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/beginner_crusade.tanks");
+				c = new Crusade(al, "Beginner crusade", "/beginner_crusade.tanks");
+			}
+
+			Game.screen = new ScreenCrusadeDetails(c);
+		}
+		));
+
 		fullCrusadesList.sortedByTime = sortByTime;
 		fullCrusadesList.sort(sortByTime);
 		crusadesList = fullCrusadesList.clone();

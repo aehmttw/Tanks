@@ -25,7 +25,7 @@ public class FontRenderer extends BaseFontRenderer
 				"'abcdefghijklmno" +
 				"pqrstuvwxyz{|}~`" +
 				"âăîşţàçæèéêëïôœù" +
-				"úûüÿáíóñ¡¿";
+				"úûüÿáíóñ¡¿äöå";
 		this.charSizes = new int[]
 				{
 						3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 1, 5, 1, 5,
@@ -35,7 +35,7 @@ public class FontRenderer extends BaseFontRenderer
 						2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
 						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2,
 						5, 5, 5, 5, 3, 5, 5, 7, 5, 5, 5, 5, 3, 5, 7, 5,
-						5, 5, 5, 5, 5, 3, 5, 5, 3, 5
+						5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5
 				};
 
 		this.image = fontFile;

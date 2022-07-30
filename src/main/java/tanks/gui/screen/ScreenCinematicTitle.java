@@ -42,15 +42,19 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
     {
         /*Drawing.drawing.setInterfaceFontSize(70);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 70, "But be careful!");
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 70,"One mistake, and its over!");*/
-        //Drawing.drawing.drawInterfaceText(this.centerX, this.centerY,"Make your own levels!");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 70, "Go wild with a hundred options");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 70,"to customize for each tank!");*/
+        //Drawing.drawing.drawInterfaceText(this.centerX, this.centerY,"Make your own custom tanks!");
+
+        Drawing.drawing.setColor(174, 92, 16);
+        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.drawInterfaceImage("img.png", this.centerX, this.centerY, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
 
         Drawing.drawing.setColor(255, 255, 255, 127);
         Drawing.drawing.fillInterfaceRect(Math.min(t * 20 / 2, Drawing.drawing.interfaceSizeX / 2), this.centerY, Math.min(t * 20, Drawing.drawing.interfaceSizeX), 280);
+
 
         if (mine.destroy)
         {
@@ -78,9 +82,9 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
             Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 170, 600, 140);
             Drawing.drawing.fillInterfaceGlow(this.centerX, this.centerY + 340, 1200, 140);
             Drawing.drawing.setColor(0, 0, 0, a);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.3");
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 170, "Update 1.4");
             Drawing.drawing.setInterfaceFontSize(64 * t2 / 75);
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 340, "With the all-new castle crusade!");
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 340, "Make your own custom tanks!");
 
         }
 

@@ -369,120 +369,43 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     });
 
-            new Changelog("v1.4.a", new String[]
+            new Changelog("v1.4.0", new String[]
                     {
-                            "*What's new in Tanks v1.4.a:\n\n" +
+                            "*What's new in Tanks v1.4.0:\n\n" +
+                                    "*New features:\n\n" +
+                                    "Added tank editor and custom tanks\n" +
                                     "Added air bullet which pushes things\n" +
                                     "Added homing bullet which moves towards targets\n" +
                                     "Added light blue tank which uses air bullets\n" +
                                     "Added salmon tank which uses homing bullets\n" +
-                                    "Cooldowns are now per item\n" +
-                                    "Added cooldown indicator to hotbar\n" +
-                                    "Updated item icons\n" +
-                                    "Many internal improvements\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
+                                    "Added beginner crusade\n\n" +
 
-            new Changelog("v1.4.b", new String[]
-                    {
-                            "*What's new in Tanks v1.4.b:\n\n" +
-                                    "Updated crusade info and stats screens\n" +
-                                    "New singleplayer shop music\n" +
-                                    "Tanks now avoid explosive blocks\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.c", new String[]
-                    {
-                            "*What's new in Tanks v1.4.c:\n\n" +
-                                    "Tanks will now see through destructible blocks\n" +
-                                    "Updated 3D explosion particle effect\n" +
-                                    "Added option to disable crusade levels background\n" +
-                                    "Changed castle crusade level 'Castle artillery'\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.d", new String[]
-                    {
-                            "*What's new in Tanks v1.4.d:\n\n" +
-                                    "Added tank editor and custom tanks (still WIP)\n" +
-                                    "Made UI icons more colorful\n" +
-                                    "New editor music\n" +
-                                    "Added Español translation\n" +
-                                    "Other UI improvements\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.e", new String[]
-                    {
-                            "*What's new in Tanks v1.4.e:\n\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.f", new String[]
-                    {
-                            "*What's new in Tanks v1.4.f:\n\n" +
-                                    "Improved custom tank appearance customization\n" +
-                                    "Added support for custom tanks in crusades\n" +
+                                    "*Tank behavior:\n\n" +
                                     "Tanks now try to avoid walls\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
+                                    "Tanks now see through destructible blocks\n" +
+                                    "Tanks now avoid explosive blocks",
 
-            new Changelog("v1.4.g", new String[]
-                    {
-                            "*What's new in Tanks v1.4.g:\n\n" +
-                                    "Added new custom tank options\n" +
+                                    "*Balancing:\n\n" +
+                                    "Boss tank now only spawns 5 tank types\n" +
+                                    "Cooldowns are now per item\n" +
                                     "Made random level teleporters rarer\n" +
                                     "Increased player tank acceleration\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
+                                    "Nerfed castle crusade level 'Castle artillery'\n\n" +
 
-            new Changelog("v1.4.h", new String[]
-                    {
-                            "*What's new in Tanks v1.4.h:\n\n" +
-                                    "Added tank description option\n" +
+                                    "*Graphics:\n\n" +
+                                    "New tank textures and models\n" +
+                                    "Updated crusade info and stats screen background\n" +
+                                    "Updated item icons\n" +
+                                    "Made UI icons more colorful\n" +
+                                    "Updated 3D explosion particle effect\n" +
                                     "Added indicator when new shop items are available\n" +
-                                    "Use custom tanks in current level as templates\n" +
-                                    "Increased some textbox character limits\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
+                                    "Added bullet cooldown indicator to hotbar",
 
-            new Changelog("v1.4.i", new String[]
-                    {
-                            "*What's new in Tanks v1.4.i:\n\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.j", new String[]
-                    {
-                            "*What's new in Tanks v1.4.j:\n\n" +
-                                    "New tank models and emblems\n" +
-                                    "The built-in tanks now have models and emblems\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.k", new String[]
-                    {
-                            "*What's new in Tanks v1.4.k:\n\n" +
+                                    "*More:\n\n" +
+                                    "New editor music\n" +
                                     "Shop is now available in versus mode\n" +
-                                    "Select music tracks for custom tanks\n" +
-                                    "Added option to disable the new tank designs\n" +
-                                    "IP address can now be hidden in parties\n" +
-                                    "Added more new tank designs\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.l", new String[]
-                    {
-                            "*What's new in Tanks v1.4.l:\n\n" +
-                                    "Custom tanks can spawn multiple tank types\n" +
-                                    "Boss tank now only spawns 5 tank types\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    });
-
-            new Changelog("v1.4.m", new String[]
-                    {
-                            "*What's new in Tanks v1.4.m:\n\n" +
+                                    "Increased some textbox character limits\n" +
+                                    "IP address can now be hidden in parties\n\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
         }

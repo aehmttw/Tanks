@@ -11,6 +11,7 @@ import tanks.tank.TankModels;
 import tanks.tank.TankRemote;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class EventTankTransform extends PersonalEvent
 {
@@ -51,7 +52,7 @@ public class EventTankTransform extends PersonalEvent
 
     public boolean requiredKill = false;
 
-    public ArrayList<String> tankMusic;
+    public HashSet<String> tankMusic;
 
     public static final int no_effect = 0;
     public static final int exclamation = 1;
@@ -292,7 +293,7 @@ public class EventTankTransform extends PersonalEvent
         this.requiredKill = b.readBoolean();
 
         int size = b.readInt();
-        this.tankMusic = new ArrayList<>();
+        this.tankMusic = new HashSet<>();
         for (int i = 0; i < size; i++)
         {
             this.tankMusic.add(NetworkUtils.readString(b));

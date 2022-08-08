@@ -408,6 +408,12 @@ public class ScreenChangelog extends Screen
                                     "IP address can now be hidden in parties\n\n" +
                                     "Bug fixes and other minor improvements\n"
                     });
+
+            new Changelog("v1.4.1a", new String[]
+                    {
+                            "*What's new in Tanks v1.4.1a:\n\n" +
+                                    "Fixed a memory leak with custom tank music\n"
+                    });
         }
     }
 }

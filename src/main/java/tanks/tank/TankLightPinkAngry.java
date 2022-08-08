@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TankLightPinkAngry extends TankAIControlled
 {
@@ -40,7 +41,7 @@ public class TankLightPinkAngry extends TankAIControlled
             this.baseModel = TankModels.diagonalStripes.base;
         }
 
-        ArrayList<String> musics = Game.registryTank.tankMusics.get("lightpink_angry");
+        HashSet<String> musics = Game.registryTank.tankMusics.get("lightpink_angry");
 
         if (musics != null)
             this.musicTracks.addAll(musics);

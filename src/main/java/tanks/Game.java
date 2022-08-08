@@ -95,7 +95,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.0";
+	public static final String version = "Tanks v1.4.1a";
 	public static final int network_protocol = 46;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -1026,7 +1026,7 @@ public class Game
 	public static void registerTankMusic(String tank, String track)
 	{
 		if (!Game.registryTank.tankMusics.containsKey(tank))
-			Game.registryTank.tankMusics.put(tank, new ArrayList<>());
+			Game.registryTank.tankMusics.put(tank, new HashSet<>());
 
 		Game.registryTank.tankMusics.get(tank).add(track);
 	}

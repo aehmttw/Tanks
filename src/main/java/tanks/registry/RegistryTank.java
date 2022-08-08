@@ -8,11 +8,12 @@ import tanks.tank.TankUnknown;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 public class RegistryTank 
 {
-	public HashMap<String, ArrayList<String>> tankMusics = new HashMap<>();
+	public HashMap<String, HashSet<String>> tankMusics = new HashMap<>();
 
 	public ArrayList<TankEntry> tankEntries = new ArrayList<>();
 	protected double maxTankWeight = 0;
@@ -78,7 +79,7 @@ public class RegistryTank
 				t.musicTracks = Game.registryTank.tankMusics.get(this.name);
 
 				if (t.musicTracks == null)
-					t.musicTracks = new ArrayList<>();
+					t.musicTracks = new HashSet<>();
 
 				return t;
 			}

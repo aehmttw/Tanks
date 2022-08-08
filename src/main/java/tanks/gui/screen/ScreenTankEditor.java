@@ -1245,10 +1245,10 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             }
             else if (p.miscType() == TankProperty.MiscType.music)
             {
-                ArrayList<String> a = ((ArrayList<String>) f.get(tank));
+                HashSet<String> a = ((HashSet<String>) f.get(tank));
                 ArrayList<String> musics = new ArrayList<>();
 
-                for (ArrayList<String> s: Game.registryTank.tankMusics.values())
+                for (HashSet<String> s: Game.registryTank.tankMusics.values())
                 {
                     for (String m: s)
                     {

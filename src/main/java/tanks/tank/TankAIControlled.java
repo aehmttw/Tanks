@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
 
 /** This class is the 'skeleton' tank class.
@@ -2340,7 +2341,7 @@ public class TankAIControlled extends Tank
 				t.musicTracks = Game.registryTank.tankMusics.get(ct.name);
 
 				if (t.musicTracks == null)
-					t.musicTracks = new ArrayList<>();
+					t.musicTracks = new HashSet<>();
 			}
 
 			t.vX = this.vX;
@@ -2750,13 +2751,13 @@ public class TankAIControlled extends Tank
 						{
 							int end = s.indexOf("]");
 							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
-							ArrayList<String> arrayList;
+							HashSet<String> hashSet;
 							if (csv[0].equals(""))
-								arrayList = new ArrayList<>();
+								hashSet = new HashSet<>();
 							else
-								arrayList = new ArrayList<>(Arrays.asList(csv));
+								hashSet = new HashSet<>(Arrays.asList(csv));
 
-							f.set(t, arrayList);
+							f.set(t, hashSet);
 						}
 						else if (a.miscType() == TankProperty.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
 						{
@@ -2931,6 +2932,10 @@ public class TankAIControlled extends Tank
 						}
 
 						f.set(t, al);
+					}
+					else if (a.miscType() == TankProperty.MiscType.music)
+					{
+						f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
 					}
 					else
 						f.set(t, f.get(this));

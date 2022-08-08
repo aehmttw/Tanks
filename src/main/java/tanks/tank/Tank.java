@@ -20,6 +20,7 @@ import static tanks.tank.TankProperty.Category.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -187,7 +188,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	/** Used for custom tanks, see /music/tank for built-in tanks */
 	@TankProperty(category = general, id = "music", name = "Music tracks", miscType = TankProperty.MiscType.music)
-	public ArrayList<String> musicTracks = new ArrayList<>();
+	public HashSet<String> musicTracks = new HashSet<>();
 
 	public boolean[][] hiddenPoints = new boolean[3][3];
 	public boolean hidden = false;

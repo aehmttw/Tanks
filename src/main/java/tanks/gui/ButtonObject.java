@@ -3,10 +3,16 @@ package tanks.gui;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawableForInterface;
+import tanks.tank.TankProperty;
+import tanks.translation.Translation;
+
+import java.util.ArrayList;
 
 public class ButtonObject extends Button
 {
 	public IDrawableForInterface object;
+	public boolean tempDisableHover = false;
+	public Runnable drawBeforeTooltip = null;
 	
 	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f)
 	{
@@ -14,9 +20,13 @@ public class ButtonObject extends Button
 		this.initialize(d);
 	}
 
-	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f, String hoverText, Object... hoverTextOptions)
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f, String hoverText)
 	{
-		super(x, y, sX, sY, "", f, hoverText, hoverTextOptions);
+		super(x, y, sX, sY, "", f);
+		this.enableHover = true;
+		this.hoverTextRaw = hoverText;
+		this.hoverTextRawTranslated = Translation.translate(this.hoverTextRaw);
+		this.hoverText = formatDescription(this.hoverTextRawTranslated);
 		this.initialize(d);
 	}
 	
@@ -25,11 +35,22 @@ public class ButtonObject extends Button
 		super(x, y, sX, sY, "");	
 		this.initialize(d);
 	}
-	
-	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, String hoverText, Object... hoverTextOptions)
+
+	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, String hoverText)
 	{
-		super(x, y, sX, sY, "", hoverText, hoverTextOptions);
+		super(x, y, sX, sY, "");
+		this.enableHover = true;
+		this.hoverTextRaw = hoverText;
+		this.hoverTextRawTranslated = Translation.translate(this.hoverTextRaw);
+		this.hoverText = formatDescription(this.hoverTextRawTranslated);
 		this.initialize(d);
+	}
+
+	public String[] formatDescription(String desc)
+	{
+		ArrayList<String> text = Drawing.drawing.wrapText(desc, 300, 12);
+		String[] s = new String[text.size()];
+		return text.toArray(s);
 	}
 	
 	public void initialize(IDrawableForInterface d)
@@ -59,28 +80,14 @@ public class ButtonObject extends Button
 
 		drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 
-		if (this.enableHover && this.selected)
+		if (this.drawBeforeTooltip != null)
+			this.drawBeforeTooltip.run();
+
+		this.drawBeforeTooltip = null;
+
+		if (this.enableHover && this.selected && !tempDisableHover)
 			drawing.drawTooltip(this.hoverText);
 
-		/*if (enableHover)
-		{
-			if (selected)
-			{
-				drawing.setColor(0, 0, 255);
-				drawing.fillInterfaceOval(this.posX + this.sizeX / 2, this.posY + this.sizeY / 2, 30, 30);
-				drawing.setColor(255, 255, 255);
-				drawing.setInterfaceFontSize(24);
-				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2, this.posY + this.sizeY / 2, "i");
-				drawing.drawTooltip(this.hoverText);
-			}
-			else
-			{
-				drawing.setColor(0, 150, 255);
-				drawing.fillInterfaceOval(this.posX + this.sizeX / 2, this.posY + this.sizeY / 2, 30, 30);
-				drawing.setColor(255, 255, 255);
-				drawing.setInterfaceFontSize(24);
-				drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2, this.posY + this.sizeY / 2, "i");
-			}
-		}*/
+		this.tempDisableHover = false;
 	}
 }

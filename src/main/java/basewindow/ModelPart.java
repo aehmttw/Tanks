@@ -78,7 +78,7 @@ public abstract class ModelPart implements IModel
         public abstract void drawShape(ModelPart m, Shape s, double posX, double posY, double sX, double sY, double yaw);
     }
 
-    @Deprecated
+    //@Deprecated
     public static class Quad extends Shape
     {
         public Quad(Point a, Point b, Point c, Point d, double brightness)

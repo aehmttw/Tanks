@@ -12,6 +12,10 @@ public abstract class BaseShapeBatchRenderer
     public double pitch = 0;
     public double roll = 0;
 
+    public float offX;
+    public float offY;
+    public float offZ;
+
     public abstract void fillRect(IBatchRenderableObject o, double x, double y, double sX, double sY);
 
     public abstract void fillBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options);
@@ -43,9 +47,15 @@ public abstract class BaseShapeBatchRenderer
 
     public abstract void begin(boolean depth, boolean glow, boolean depthMask);
 
+    public abstract void stage();
+
     public abstract void end();
 
     public abstract void forceRedraw();
 
+    public abstract void draw();
+
     public abstract void setColor(double r, double g, double b, double a, double glow);
+
+    public abstract void free();
 }

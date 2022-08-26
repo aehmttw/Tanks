@@ -2,6 +2,9 @@ package tanks.tank;
 
 import tanks.Game;
 
+/**
+ * A medium-speed smart tank
+ */
 public class TankMagenta extends TankAIControlled
 {
 	public TankMagenta(String name, double x, double y, double angle)
@@ -10,12 +13,17 @@ public class TankMagenta extends TankAIControlled
 		this.enableTargetEnemyReaction = true;
 		this.maxSpeed = 1.0;
 		this.enableMineLaying = false;
-		this.liveBulletMax = 3;
+		this.bullet.maxLiveBullets = 3;
 		this.cooldownRandom = 20;
 		this.cooldownBase = 40;
-		this.avoidSensitivity = 1.25;
+		this.mineAvoidSensitivity = 1.25;
 		
 		this.coinValue = 3;
+
+		if (Game.tankTextures)
+		{
+			this.baseModel = TankModels.cross.base;
+		}
 
 		this.description = "A medium-speed smart tank";
 	}

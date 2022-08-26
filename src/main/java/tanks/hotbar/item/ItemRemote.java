@@ -1,18 +1,20 @@
 package tanks.hotbar.item;
 
+import tanks.tank.Tank;
+
 public class ItemRemote extends Item
 {
     public int bounces;
     public double range;
 
     @Override
-    public boolean usable()
+    public boolean usable(Tank t)
     {
         return false;
     }
 
     @Override
-    public void use()
+    public void use(Tank t)
     {
 
     }

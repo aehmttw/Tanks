@@ -66,7 +66,9 @@ public class RegistryObstacle
 			ObstacleEntry r = obstacleEntries.get(i);
 
 			if (r.name.equals(name))
+			{
 				return r;
+			}
 		}
 
 		return ObstacleEntry.getUnknownEntry(name);

@@ -1,6 +1,7 @@
 package tanks.obstacle;
 
 import tanks.*;
+import tanks.bullet.BulletAir;
 import tanks.bullet.BulletFlame;
 import tanks.bullet.BulletInstant;
 import tanks.event.EventObstacleShrubberyBurn;
@@ -45,7 +46,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.update = true;
 
-		this.description = "A destructible bush in which you---can hide by standing still";
+		this.description = "A destructible bush in which you can hide by standing still";
 	}
 
 	@Override
@@ -60,27 +61,27 @@ public class ObstacleShrubbery extends Obstacle
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
 
-		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 	}
 
 	@Override
 	public void draw()
 	{
-		this.checkForTransparency();
-
-		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (!Game.game.window.shapeRenderer.supportsBatching)
 		{
 			if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+			{
 				this.height = 127;
+			}
 		}
 
 		if (Game.enable3d)
 		{
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 			Drawing.drawing.setShrubberyMode();
-			Drawing.drawing.fillBox(this, this.posX, this.posY, this.startHeight * Game.tile_size, draw_size, draw_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, draw_size, draw_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
 		}
 		else
 		{
@@ -107,9 +108,6 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntry(Movable m)
 	{
-		if (this.startHeight > 0)
-			return;
-
 		if (m instanceof Tank)
 		{
 			for (int x = -1; x <= 1; x++)
@@ -134,7 +132,7 @@ public class ObstacleShrubbery extends Obstacle
 
 			Effect e;
 			if (Game.enable3d)
-				e = Effect.createNewEffect(this.posX, this.posY,Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
+				e = Effect.createNewEffect(this.posX, this.posY,this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
 			else
 				e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
 
@@ -149,25 +147,43 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.onObjectEntryLocal(m);
 
-		this.finalHeight = Game.sampleGroundHeight(this.posX, this.posY) + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 	}
 
 	@Override
 	public void onObjectEntryLocal(Movable m)
 	{
-		double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
-		this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
-
-		if (Game.playerTank == null || Game.playerTank.destroy)
-			return;
-
-		double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
-
-		double radius = 62500;
-		if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+		if (m instanceof BulletAir)
 		{
-			int sound = (int) (Math.random() * 4 + 1);
-			Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+			if (Math.random() < Panel.frameFrequency / Math.pow(((BulletAir) m).size, 2) * 20 * Game.effectMultiplier)
+			{
+				Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size, this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
+				e.vX = m.vX * (Math.random() * 0.5 + 0.5);
+				e.vY = m.vY * (Math.random() * 0.5 + 0.5);
+				e.vZ = Math.random() * m.getSpeed() / 8;
+				e.colR = this.colorR;
+				e.colG = this.colorG;
+				e.colB = this.colorB;
+				e.enableGlow = false;
+				Game.effects.add(e);
+			}
+		}
+		else
+		{
+			double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
+			this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
+
+			if (Game.playerTank == null || Game.playerTank.destroy)
+				return;
+
+			double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+
+			double radius = 62500;
+			if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+			{
+				int sound = (int) (Math.random() * 4 + 1);
+				Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+			}
 		}
 	}
 
@@ -176,7 +192,7 @@ public class ObstacleShrubbery extends Obstacle
 		if (Obstacle.draw_size < Game.tile_size)
 			return 0;
 
-		double shrubScale = 0.5;
+		double shrubScale = 0.25;
 		if (Game.screen instanceof ScreenGame)
 			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 

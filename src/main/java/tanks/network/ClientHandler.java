@@ -95,12 +95,22 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 			Client.handler.channelInactive(null);
 		}
 	}
-	
+
 	public synchronized void sendEvent(INetworkEvent e)
+	{
+		this.sendEvent(e, true);
+	}
+
+	public synchronized void sendEvent(INetworkEvent e, boolean flush)
 	{
 		if (steamID != null)
 		{
-			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+			SteamNetworking.P2PSend sendType = SteamNetworking.P2PSend.ReliableWithBuffering;
+
+			if (flush)
+				sendType = SteamNetworking.P2PSend.Reliable;
+
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, sendType);
 			return;
 		}
 
@@ -116,7 +126,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		ByteBuf b2 = ctx.channel().alloc().buffer();
 		b2.writeInt(b.readableBytes());
 		b2.writeBytes(b);
-		ctx.channel().writeAndFlush(b2);
+
+		if (flush)
+			ctx.channel().writeAndFlush(b2);
+		else
+			ctx.channel().write(b2);
 		
 		ReferenceCountUtil.release(b);
 	}
@@ -196,8 +210,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (Game.eventsOut)
 		{
-			for (INetworkEvent e : Game.eventsOut)
-				this.sendEvent(e);
+			//EventKeepConnectionAlive k = new EventKeepConnectionAlive();
+			//Game.eventsOut.add(k);
+
+			for (int i = 0; i < Game.eventsOut.size(); i++)
+			{
+				INetworkEvent e = Game.eventsOut.get(i);
+				this.sendEvent(e, i >= Game.eventsOut.size() - 1);
+			}
+
+			if (steamID == null)
+				this.ctx.flush();
 
 			Game.eventsOut.clear();
 		}
@@ -206,12 +229,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
     {
-		System.err.println("A network exception has occurred: " + e);
-		Game.logger.println("A network exception has occurred: " + e);
+		System.err.println("A network exception has occurred: " + e.toString());
+		Game.logger.println("A network exception has occurred: " + e.toString());
 		e.printStackTrace();
 		e.printStackTrace(Game.logger);
 
-		EventKick ev = new EventKick("A network exception has occurred: " + e);
+		EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
 		ev.clientID = null;
 		Game.eventsIn.add(ev);
 

@@ -8,7 +8,8 @@ import tanks.modapi.ModAPI;
 
 public class FixedText extends FixedMenu
 {
-    public enum types {title, subtitle, actionbar}
+    public enum types
+    {title, subtitle, actionbar}
 
     public types location;
     public double posX;
@@ -25,11 +26,13 @@ public class FixedText extends FixedMenu
 
     private long defineTime = 0;
 
-    public FixedText(double x, double y, String text) {
+    public FixedText(double x, double y, String text)
+    {
         this(x, y, text, false, 0, 24, 255, 255, 255);
     }
 
-    public FixedText(types location, String text) {
+    public FixedText(types location, String text)
+    {
         this(location, text, false, 0, 255, 255, 255);
     }
 

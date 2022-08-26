@@ -4,6 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.*;
 import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
@@ -104,6 +105,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 , name.replace("_", " "));
 
         levelName.enableCaps = true;
+        levelName.maxChars = 18;
 
         this.updateDownloadButton();
 

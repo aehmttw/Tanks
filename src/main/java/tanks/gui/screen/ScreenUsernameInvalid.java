@@ -36,7 +36,7 @@ public class ScreenUsernameInvalid extends Screen
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "The username you picked is invalid!");
 
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "To prevent potential issues, it has been reset.");
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Valid usernames are 1-18 characters long and");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Valid usernames are 1-20 characters long and");
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "contain capital or lowercase letters,");
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 0.5, "numbers, and underscores.");
 

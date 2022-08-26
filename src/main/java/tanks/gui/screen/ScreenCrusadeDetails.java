@@ -13,6 +13,7 @@ import java.util.List;
 public class ScreenCrusadeDetails extends Screen
 {
     public Crusade crusade;
+    public ScreenCrusadeLevels background;
 
     public Button begin = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Play", new Runnable()
     {
@@ -104,12 +105,18 @@ public class ScreenCrusadeDetails extends Screen
         this.music = "menu_5.ogg";
         this.musicID = "menu";
 
+        if (Game.previewCrusades)
+            this.forceInBounds = true;
+
         if (c.levels.size() <= 0)
         {
             begin.enabled = false;
             begin.enableHover = true;
             begin.setHoverText("This crusade has no levels.---Add some to play it!");
         }
+
+        if (Game.previewCrusades)
+            this.background = new ScreenCrusadeLevels(this.crusade);
     }
 
     @Override
@@ -136,9 +143,22 @@ public class ScreenCrusadeDetails extends Screen
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        if (Game.previewCrusades)
+            this.background.draw();
+        else
+            this.drawDefaultBackground();
 
-        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setColor(0, 0, 0, 255);
+
+        if (Game.previewCrusades)
+        {
+            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7, this.objYSpace * 9);
+            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7 - 20, this.objYSpace * 9 - 20);
+
+            Drawing.drawing.setColor(255, 255, 255);
+        }
+
         Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
 
         if (this.crusade.internal)

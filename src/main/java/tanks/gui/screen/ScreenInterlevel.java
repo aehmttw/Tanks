@@ -251,7 +251,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 		Game.player.hotbar.percentHidden = 100;
 
-		save.image = "save.png";
+		save.image = "icons/save.png";
 
 		save.imageSizeX = this.objHeight;
 		save.imageSizeY = this.objHeight;
@@ -410,8 +410,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
-		if (Game.showSpeedrunTimer)
-			SpeedrunTimer.draw();
+		SpeedrunTimer.draw();
 
 		if ((Panel.win && Game.effectsEnabled) || Level.isDark())
 			Drawing.drawing.setColor(255, 255, 255);

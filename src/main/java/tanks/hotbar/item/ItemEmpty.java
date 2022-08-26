@@ -1,5 +1,7 @@
 package tanks.hotbar.item;
 
+import tanks.tank.Tank;
+
 public class ItemEmpty extends Item
 {
 	public ItemEmpty()
@@ -21,13 +23,13 @@ public class ItemEmpty extends Item
 	}
 
 	@Override
-	public boolean usable()
+	public boolean usable(Tank t)
 	{
 		return false;
 	}
 
 	@Override
-	public void use()
+	public void use(Tank t)
 	{
 		
 	}

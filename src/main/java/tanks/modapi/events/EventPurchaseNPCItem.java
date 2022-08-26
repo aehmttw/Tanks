@@ -14,7 +14,8 @@ public class EventPurchaseNPCItem extends EventPurchaseItem
 {
     public int id;
 
-    public EventPurchaseNPCItem() {
+    public EventPurchaseNPCItem()
+    {
 
     }
 
@@ -25,13 +26,15 @@ public class EventPurchaseNPCItem extends EventPurchaseItem
     }
 
     @Override
-    public void write(ByteBuf b) {
+    public void write(ByteBuf b)
+    {
         super.write(b);
         b.writeInt(id);
     }
 
     @Override
-    public void read(ByteBuf b) {
+    public void read(ByteBuf b)
+    {
         super.read(b);
         this.id = b.readInt();
     }

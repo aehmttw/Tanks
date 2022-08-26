@@ -22,7 +22,7 @@ public class ScreenJoinParty extends Screen
 		this.musicID = "menu";
 
 		ip.allowDots = true;
-		ip.maxChars = 43;
+		ip.maxChars = 100;
 		ip.allowColons = true;
 		ip.lowerCase = true;
 	}

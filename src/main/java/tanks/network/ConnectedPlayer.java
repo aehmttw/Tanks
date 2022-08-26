@@ -8,11 +8,11 @@ public class ConnectedPlayer
 {
 	public String username;
 	public final String rawUsername;
-	public final UUID clientID;
+	public final UUID clientId;
 	
 	public ConnectedPlayer(UUID id, String name)
 	{
-		this.clientID = id;
+		this.clientId = id;
 		this.rawUsername = name;
 		this.username = name;
 		

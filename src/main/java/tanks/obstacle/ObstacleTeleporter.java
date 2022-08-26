@@ -7,6 +7,9 @@ import tanks.tank.TeleporterOrb;
 
 import java.util.ArrayList;
 
+/**
+ * A teleporter which randomly transports the player to another teleporter in the level
+ */
 public class ObstacleTeleporter extends Obstacle
 {
 	public double cooldown;
@@ -36,15 +39,13 @@ public class ObstacleTeleporter extends Obstacle
 
 		glow = Effect.createNewEffect(this.posX, this.posY, 0, Effect.EffectType.teleporterLight);
 
-		this.description = "A teleporter which randomly---transports you to another---teleporter in the level";
+		this.description = "A teleporter which randomly transports you to another teleporter in the level";
 	}
 
 	@Override
 	public void draw()
 	{
-		Drawing.drawing.setColor(127, 127, 127, 255, 0.25);
-
-		double height = Game.sampleGroundHeight(this.posX, this.posY);
+		double height = this.baseGroundHeight;
 
 		if (Game.enable3d)
 		{
@@ -120,8 +121,10 @@ public class ObstacleTeleporter extends Obstacle
 
 		if (!ScreenGame.finished)
 		{
-			for (Movable m : Game.movables)
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
+				Movable m = Game.movables.get(i);
+
 				if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank) m).size)
 				{
 					t = (Tank) m;
@@ -134,10 +137,13 @@ public class ObstacleTeleporter extends Obstacle
 
 					if (!m.isRemote)
 					{
-						for (Obstacle o : Game.obstacles)
+						for (int j = 0; j < Game.obstacles.size(); j++)
 						{
+							Obstacle o = Game.obstacles.get(j);
 							if (o instanceof ObstacleTeleporter && o != this && o.groupID == this.groupID && ((ObstacleTeleporter) o).cooldown <= 0)
+							{
 								teleporters.add((ObstacleTeleporter) o);
+							}
 						}
 					}
 				}

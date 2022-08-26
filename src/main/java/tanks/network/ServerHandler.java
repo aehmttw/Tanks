@@ -7,7 +7,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import tanks.Colors;
 import tanks.Game;
 import tanks.Player;
 import tanks.event.*;
@@ -19,7 +18,7 @@ import java.util.UUID;
 public class ServerHandler extends ChannelInboundHandlerAdapter
 {
 	public MessageReader reader = new MessageReader();
-	public final SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
+	public SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
 
 	public ChannelHandlerContext ctx;
 	public SteamID steamID;
@@ -76,11 +75,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			{
 				Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
 				Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(this.clientID, this.rawUsername), false));
-				Game.eventsOut.add(new EventChat(Colors.blue + this.username + " has left the party" + Colors.black));
+				Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
 				Game.eventsOut.add(new EventPlaySound("leave.ogg", 1.0f, 1.0f));
 
 				Game.eventsIn.add(new EventPlaySound("leave.ogg", 1.0f, 1.0f));
-				ScreenPartyHost.chat.add(0, new ChatMessage(Colors.blue + this.username + " has left the party" + Colors.black));
+				ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
 			}
 		}
 	}
@@ -127,8 +126,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (this.events)
 		{
-			for (INetworkEvent e : this.events)
-				this.sendEvent(e);
+			for (int i = 0; i < this.events.size(); i++)
+			{
+				INetworkEvent e = this.events.get(i);
+				this.sendEvent(e, i >= this.events.size() - 1);
+			}
+
+			if (steamID == null)
+				this.ctx.flush();
 
 			this.events.clear();
 		}
@@ -136,9 +141,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public synchronized void sendEvent(INetworkEvent e)
 	{
+		this.sendEvent(e, true);
+	}
+
+	public synchronized void sendEvent(INetworkEvent e, boolean flush)
+	{
 		if (steamID != null)
 		{
-			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+			SteamNetworking.P2PSend sendType = SteamNetworking.P2PSend.ReliableWithBuffering;
+
+			if (flush)
+				sendType = SteamNetworking.P2PSend.Reliable;
+
+			Game.steamNetworkHandler.send(steamID.getAccountID(), e, sendType);
 			return;
 		}
 
@@ -154,7 +169,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		ByteBuf b2 = ctx.channel().alloc().buffer();
 		b2.writeInt(b.readableBytes());
 		b2.writeBytes(b);
-		ctx.channel().writeAndFlush(b2);
+
+		if (flush)
+			ctx.channel().writeAndFlush(b2);
+		else
+			ctx.channel().write(b2);
 
 		ReferenceCountUtil.release(b);
 	}

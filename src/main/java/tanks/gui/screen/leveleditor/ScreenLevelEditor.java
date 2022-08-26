@@ -12,6 +12,7 @@ import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
 import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankSpawnMarker;
 
@@ -26,6 +27,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public int redoLength = -1;
 
 	public Placeable currentPlaceable = Placeable.enemyTank;
+
+	public int tankPage = 0;
+	public int obstaclePage = 0;
+
 	public int tankNum = 0;
 	public int obstacleNum = 0;
 	public int teamNum = 1;
@@ -33,6 +38,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public Tank mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
 	public int mouseTankOrientation = 0;
 	public Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+	public Obstacle hoverObstacle = null;
 	public double mouseObstacleHeight = 1;
 	public double mouseObstacleStartHeight = 0;
 	public boolean stagger = false;
@@ -370,28 +376,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			mouseTank.team = this.teams.get(teamNum);
 	}
 
-	@Override
-	public void update()
+	public void updateMusic(boolean tanks)
 	{
-		if (Level.isDark())
-			this.fontBrightness = 255;
-		else
-			this.fontBrightness = 0;
-
-		clickCooldown = Math.max(0, clickCooldown - Panel.frameFrequency);
-
 		this.prevTankMusics.clear();
 		this.prevTankMusics.addAll(this.tankMusics);
 		this.tankMusics.clear();
 
-		for (Movable m : Game.movables)
+		if (tanks)
 		{
-			if (m instanceof Tank && !m.destroy)
+			for (Movable m : Game.movables)
 			{
-				ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
-
-				if (s != null)
-					this.tankMusics.addAll(s);
+				if (m instanceof Tank && !m.destroy)
+				{
+					this.tankMusics.addAll(((Tank) m).musicTracks);
+				}
 			}
 		}
 
@@ -406,6 +404,19 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!this.prevTankMusics.contains(m))
 				Drawing.drawing.addSyncedMusic(m, Game.musicVolume * 0.5f, true, 500);
 		}
+	}
+
+	@Override
+	public void update()
+	{
+		if (Level.isDark())
+			this.fontBrightness = 255;
+		else
+			this.fontBrightness = 0;
+
+		clickCooldown = Math.max(0, clickCooldown - Panel.frameFrequency);
+
+		this.updateMusic(true);
 
 		if (showControls)
 		{
@@ -680,10 +691,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (down && currentPlaceable == Placeable.enemyTank)
 			{
-				tankNum = (tankNum + 1) % Game.registryTank.tankEntries.size();
-				Tank t = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
-				t.drawAge = mouseTank.drawAge;
-				mouseTank = t;
+				tankNum = (tankNum + 1) % (Game.registryTank.tankEntries.size() + this.level.customTanks.size());
+				this.refreshMouseTank();
 			}
 			else if (down && currentPlaceable == Placeable.obstacle)
 			{
@@ -696,10 +705,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (up && currentPlaceable == Placeable.enemyTank)
 			{
-				tankNum = ((tankNum - 1) + Game.registryTank.tankEntries.size()) % Game.registryTank.tankEntries.size();
-				Tank t = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
-				t.drawAge = mouseTank.drawAge;
-				mouseTank = t;
+				tankNum = ((tankNum - 1) + Game.registryTank.tankEntries.size() + this.level.customTanks.size()) % (Game.registryTank.tankEntries.size() + this.level.customTanks.size());
+				this.refreshMouseTank();
 			}
 			else if (up && currentPlaceable == Placeable.obstacle)
 			{
@@ -742,7 +749,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				else if (currentPlaceable == Placeable.playerTank)
 				{
 					currentPlaceable = Placeable.enemyTank;
-					mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+					this.refreshMouseTank();
 				}
 			}
 
@@ -755,7 +762,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				else if (currentPlaceable == Placeable.obstacle)
 				{
 					currentPlaceable = Placeable.enemyTank;
-					mouseTank = Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
+					this.refreshMouseTank();
 				}
 				else if (currentPlaceable == Placeable.enemyTank)
 				{
@@ -825,6 +832,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			double mx = Drawing.drawing.getMouseX();
 			double my = Drawing.drawing.getMouseY();
+
+			int x = (int) (mx / 50);
+			int y = (int) (my / 50);
+
+			if (x >= 0 && y >= 0 && x < Game.obstacleMap.length && y < Game.obstacleMap[0].length)
+				hoverObstacle = Game.obstacleMap[x][y];
+			else
+				hoverObstacle = null;
 
 			boolean[] handled = checkMouse(mx, my,
 					Game.game.input.editorUse.isPressed(),
@@ -921,9 +936,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 
 		if (Game.game.input.editorDeselect.isValid())
-		{
 			this.clearSelection();
-		}
+
 
 		if (Game.game.input.editorToggleControls.isValid())
 		{
@@ -950,7 +964,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Game.game.input.editorCamera.invalidate();
 		}
 
-		if (Game.game.input.editorPaste.isValid() && !pasteMode)
+		if (Game.game.input.editorPaste.isValid() && !pasteMode && !this.clipboard.isEmpty())
 		{
 			this.changeCameraMode = false;
 			this.eraseMode = false;
@@ -1380,7 +1394,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						if (paste)
 							t = mouseTank;
 						else
-							t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+						{
+							if (tankNum < Game.registryTank.tankEntries.size())
+								t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+							else
+								t = ((TankAIControlled) mouseTank).instantiate(mouseTank.name, mouseTank.posX, mouseTank.posY, mouseTank.angle);
+						}
 
 						t.team = mouseTank.team;
 						this.actions.add(new Action.ActionTank(t, true));
@@ -1516,7 +1535,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				try
 				{
-					Tank n = (Tank) o.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((Tank) o).angle);
+					Tank n;
+
+					if (o.getClass().equals(TankAIControlled.class))
+					{
+						n = new TankAIControlled(((TankAIControlled) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((TankAIControlled) o).size, ((TankAIControlled) o).colorR, ((TankAIControlled) o).colorG, ((TankAIControlled) o).colorB, ((TankAIControlled) o).angle, ((TankAIControlled) o).shootAIType);
+						((TankAIControlled) o).cloneProperties((TankAIControlled) n);
+					}
+					else
+						n = (Tank) o.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((Tank) o).angle);
 
 					n.team = ((Tank) o).team;
 					n.destroy = ((Tank) o).destroy;
@@ -1761,6 +1788,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				level.append("\n").append(i.toString());
 		}
 
+		if (!this.level.customTanks.isEmpty())
+		{
+			level.append("\ntanks");
+
+			for (Tank t : this.level.customTanks)
+				level.append("\n").append(t.toString());
+		}
+
 		Game.currentLevelString = level.toString();
 
 		BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name);
@@ -1797,6 +1832,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		else
 			this.fontBrightness = 0;
 
+		for (Obstacle o: Game.obstacles)
+		{
+			o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
+		}
+
 		if (Game.enable3d)
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
@@ -1831,6 +1871,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (Movable m: Game.movables)
 			drawables[m.drawLevel].add(m);
+
+		double extra = Math.sin(System.currentTimeMillis() * Math.PI / 1000.0) * 25;
 
 		for (int i = 0; i < drawables.length; i++)
 		{
@@ -1893,13 +1935,19 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				Drawing.drawing.setColor(255, 0, 0, 64);
 
 				if (Game.enable3d)
-					Drawing.drawing.fillBox(mouseObstacle.posX, mouseObstacle.posY, 0, Game.tile_size, Game.tile_size, Game.tile_size, (byte) 64);
+				{
+					if (hoverObstacle == null)
+						Drawing.drawing.fillBox(mouseObstacle.posX, mouseObstacle.posY, 0, Game.tile_size, Game.tile_size, Game.tile_size, (byte) 64);
+					else
+						hoverObstacle.draw3dOutline(255, 0, 0, 64);
+				}
 				else
 					Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
 			}
 			else if (pasteMode && !changeCameraMode)
 			{
-				Drawing.drawing.drawImage("paste.png", mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+				Drawing.drawing.setColor(255, 255, 255, 127);
+				Drawing.drawing.drawImage("icons/paste.png", mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
 
 				for (Object o: this.clipboard)
 				{
@@ -1922,8 +1970,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				if (currentPlaceable == Placeable.playerTank && !this.movePlayer)
 				{
-					Drawing.drawing.setColor(255, 255, 255, 127);
-					Drawing.drawing.drawImage("player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size, mouseTank.size);
+					Drawing.drawing.setColor(0, 200, 255, 127);
+					Drawing.drawing.drawImage("emblems/player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size * 0.7, mouseTank.size * 0.7);
 				}
 			}
 			else if (currentPlaceable == Placeable.obstacle && !selectMode && !changeCameraMode)
@@ -1944,17 +1992,27 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		double extra = Math.sin(System.currentTimeMillis() * Math.PI / 1000.0) * 25;
 		Drawing.drawing.setColor(230 + extra, 230 + extra, 230 + extra, 128);
 
 		if (selectedTiles != null)
 		{
-			for (int i = 0; i < selectedTiles.length; i++)
+			for (int x = 0; x < selectedTiles.length; x++)
 			{
-				for (int j = 0; j < selectedTiles[i].length; j++)
+				for (int y = 0; y < selectedTiles[x].length; y++)
 				{
-					if (selectedTiles[i][j])
-						Drawing.drawing.fillRect((i + 0.5) * Game.tile_size, (j + 0.5) * Game.tile_size, Game.tile_size, Game.tile_size);
+					if (selectedTiles[x][y])
+					{
+						if (Game.enable3d)
+						{
+							if (!(x < Game.currentSizeX && y < Game.currentSizeY && Game.game.solidGrid[x][y]))
+								Drawing.drawing.fillBox((x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, 15,
+										Game.tile_size, Game.tile_size, 1);
+							else
+								Game.obstacleMap[x][y].draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
+						}
+						else
+							Drawing.drawing.fillRect((x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, Game.tile_size, Game.tile_size);
+					}
 				}
 			}
 		}
@@ -1992,7 +2050,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!selectHeld)
 			{
 				if (!Game.game.window.touchscreen)
-					Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+				{
+					int x = (int) (mouseObstacle.posX / Game.tile_size);
+					int y = (int) (mouseObstacle.posY / Game.tile_size);
+
+					if (Game.enable3d && (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY) && Game.game.solidGrid[x][y])
+						Game.obstacleMap[x][y].draw3dOutline(255, 255, 255, 128);
+					else
+						Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+				}
 			}
 			else
 			{
@@ -2005,7 +2071,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				{
 					for (double y = lowY; y <= highY; y += Game.tile_size)
 					{
-						Drawing.drawing.fillRect(x, y, Game.tile_size, Game.tile_size);
+						int gridX = (int) (x / Game.tile_size);
+						int gridY = (int) (y / Game.tile_size);
+						if (Game.enable3d)
+						{
+							if (Game.game.solidGrid[gridX][gridY])
+								Game.obstacleMap[gridX][gridY].draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
+							else
+								Drawing.drawing.fillBox(x, y, 15, Game.tile_size, Game.tile_size, 1);
+						}
+						else
+							Drawing.drawing.fillRect(x, y, Game.tile_size, Game.tile_size);
 					}
 				}
 			}
@@ -2020,87 +2096,87 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (!paused && showControls)
 		{
-			pause.image = "pause.png";
+			pause.image = "icons/pause.png";
 			pause.imageSizeX = 40 * controlsSizeMultiplier;
 			pause.imageSizeY = 40 * controlsSizeMultiplier;
 
-			menu.image = "menu.png";
+			menu.image = "icons/menu.png";
 			menu.imageSizeX = 50 * controlsSizeMultiplier;
 			menu.imageSizeY = 50 * controlsSizeMultiplier;
 
-			playControl.image = "play.png";
+			playControl.image = "icons/play.png";
 			playControl.imageSizeX = 30 * controlsSizeMultiplier;
 			playControl.imageSizeY = 30 * controlsSizeMultiplier;
 
-			place.image = "pencil.png";
+			place.image = "icons/pencil.png";
 			place.imageSizeX = 40 * controlsSizeMultiplier;
 			place.imageSizeY = 40 * controlsSizeMultiplier;
 
-			erase.image = "eraser.png";
+			erase.image = "icons/eraser.png";
 			erase.imageSizeX = 40 * controlsSizeMultiplier;
 			erase.imageSizeY = 40 * controlsSizeMultiplier;
 
-			panZoom.image = "zoom_pan.png";
+			panZoom.image = "icons/zoom_pan.png";
 			panZoom.imageSizeX = 40 * controlsSizeMultiplier;
 			panZoom.imageSizeY = 40 * controlsSizeMultiplier;
 
-			select.image = "select.png";
+			select.image = "icons/select.png";
 			select.imageSizeX = 40 * controlsSizeMultiplier;
 			select.imageSizeY = 40 * controlsSizeMultiplier;
 
-			undo.image = "undo.png";
+			undo.image = "icons/undo.png";
 			undo.imageSizeX = 40 * controlsSizeMultiplier;
 			undo.imageSizeY = 40 * controlsSizeMultiplier;
 
-			redo.image = "redo.png";
+			redo.image = "icons/redo.png";
 			redo.imageSizeX = 40 * controlsSizeMultiplier;
 			redo.imageSizeY = 40 * controlsSizeMultiplier;
 
-			selectClear.image = "select_clear.png";
+			selectClear.image = "icons/select_clear.png";
 			selectClear.imageSizeX = 40 * controlsSizeMultiplier;
 			selectClear.imageSizeY = 40 * controlsSizeMultiplier;
 
 			if (selectAdd)
-				selectAddToggle.image = "select_add.png";
+				selectAddToggle.image = "icons/select_add.png";
 			else
-				selectAddToggle.image = "select_remove.png";
+				selectAddToggle.image = "icons/select_remove.png";
 
 			selectAddToggle.imageSizeX = 40 * controlsSizeMultiplier;
 			selectAddToggle.imageSizeY = 40 * controlsSizeMultiplier;
 
 			if (selectSquare)
-				selectSquareToggle.image = "square_locked.png";
+				selectSquareToggle.image = "icons/square_locked.png";
 			else
-				selectSquareToggle.image = "square_unlocked.png";
+				selectSquareToggle.image = "icons/square_unlocked.png";
 
 			selectSquareToggle.imageSizeX = 40 * controlsSizeMultiplier;
 			selectSquareToggle.imageSizeY = 40 * controlsSizeMultiplier;
 
-			heightShortcut.image = "obstacle_height.png";
+			heightShortcut.image = "icons/obstacle_height.png";
 			heightShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			heightShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 
-			groupShortcut.image = "id.png";
+			groupShortcut.image = "icons/id.png";
 			groupShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			groupShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 
-			rotateShortcut.image = "rotate_tank.png";
+			rotateShortcut.image = "icons/rotate_tank.png";
 			rotateShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			rotateShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 
-			teamShortcut.image = "team.png";
+			teamShortcut.image = "icons/team.png";
 			teamShortcut.imageSizeX = 50 * controlsSizeMultiplier;
 			teamShortcut.imageSizeY = 50 * controlsSizeMultiplier;
 
-			copy.image = "copy.png";
+			copy.image = "icons/copy.png";
 			copy.imageSizeX = 50 * controlsSizeMultiplier;
 			copy.imageSizeY = 50 * controlsSizeMultiplier;
 
-			cut.image = "cut.png";
+			cut.image = "icons/cut.png";
 			cut.imageSizeX = 60 * controlsSizeMultiplier;
 			cut.imageSizeY = 60 * controlsSizeMultiplier;
 
-			paste.image = "paste.png";
+			paste.image = "icons/paste.png";
 			paste.imageSizeX = 50 * controlsSizeMultiplier;
 			paste.imageSizeY = 50 * controlsSizeMultiplier;
 
@@ -2165,6 +2241,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
 		for (Obstacle o: Game.obstacles)
 		{
@@ -2174,7 +2251,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
 				Game.game.solidGrid[x][y] = true;
+
+				if (!o.shouldShootThrough)
+					Game.game.unbreakableGrid[x][y] = true;
 			}
+			Game.obstacleMap[x][y] = o;
 		}
 
 		Game.currentLevel = new Level(Game.currentLevelString);
@@ -2358,7 +2439,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				try
 				{
-					Tank n = (Tank) t.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) t).name, t.posX, t.posY, ((Tank) t).angle);
+					Tank n;
+
+					if (t.getClass().equals(TankAIControlled.class))
+					{
+						n = new TankAIControlled(((TankAIControlled) t).name, t.posX, t.posY, ((TankAIControlled) t).size, ((TankAIControlled) t).colorR, ((TankAIControlled) t).colorG, ((TankAIControlled) t).colorB, ((TankAIControlled) t).angle, ((TankAIControlled) t).shootAIType);
+						((TankAIControlled) t).cloneProperties((TankAIControlled) n);
+					}
+					else
+						n = (Tank) t.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) t).name, t.posX, t.posY, ((Tank) t).angle);
+
 					n.team = t.team;
 					n.destroy = t.destroy;
 					this.clipboard.add(n);
@@ -2411,6 +2501,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (!this.clipboard.isEmpty())
 			this.pasteMode = true;
+	}
+
+	public void refreshMouseTank()
+	{
+		Tank t;
+		if (tankNum < Game.registryTank.tankEntries.size())
+			t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+		else
+			t = this.level.customTanks.get(tankNum - Game.registryTank.tankEntries.size()).instantiate(mouseTank.name, mouseTank.posX, mouseTank.posY, mouseTank.angle);
+		t.drawAge = mouseTank.drawAge;
+		mouseTank = t;
 	}
 
 	public double clampTileX(double x)
@@ -2756,23 +2857,23 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			@Override
 			public void redo()
 			{
-				for (Obstacle o : Game.obstacles)
+				for (int i = 0; i < Game.obstacles.size(); i++)
 				{
-					for (Obstacle o1 : this.obstacles)
+					for (Obstacle o : this.obstacles)
 					{
-						if (o.equals(o1))
-							Game.obstacles.remove(o);
+						if (Game.obstacles.get(i).equals(o))
+							Game.obstacles.remove(i);
 					}
 				}
 
-				for (Movable m : Game.movables)
+				for (int i = 0; i < Game.movables.size(); i++)
 				{
-					if (m instanceof Tank)
+					if (Game.movables.get(i) instanceof Tank)
 					{
 						for (Tank o : this.tanks)
 						{
-							if (m.equals(o))
-								Game.movables.remove(m);
+							if (Game.movables.get(i).equals(o))
+								Game.movables.remove(i);
 						}
 					}
 				}

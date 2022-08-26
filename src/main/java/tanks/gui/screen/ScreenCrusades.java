@@ -102,7 +102,8 @@ public class ScreenCrusades extends Screen
 					else
 						Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
 				},
-				(file) -> "Last modified on " + Game.formatTime(file.lastModified(), "M/d/u---hh:mm a (") + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago)");
+				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+
 
 		fullCrusadesList.buttons.add(0, new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate("Adventure crusade"), () ->
 		{
@@ -140,6 +141,48 @@ public class ScreenCrusades extends Screen
 			{
 				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/castle_crusade.tanks");
 				c = new Crusade(al, "Castle crusade", "/castle_crusade.tanks");
+			}
+
+			Game.screen = new ScreenCrusadeDetails(c);
+		}
+		));
+
+		fullCrusadesList.buttons.add(3, new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate("Beginner crusade"), () ->
+		{
+			Crusade c = findExistingCrusadeProgress("internal/Beginner crusade");
+
+			if (c == null)
+			{
+				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/beginner_crusade.tanks");
+				c = new Crusade(al, "Beginner crusade", "/beginner_crusade.tanks");
+			}
+
+			Game.screen = new ScreenCrusadeDetails(c);
+		}
+		));
+
+		fullCrusadesList.buttons.add(3, new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate("Beginner crusade"), () ->
+		{
+			Crusade c = findExistingCrusadeProgress("internal/Beginner crusade");
+
+			if (c == null)
+			{
+				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/beginner_crusade.tanks");
+				c = new Crusade(al, "Beginner crusade", "/beginner_crusade.tanks");
+			}
+
+			Game.screen = new ScreenCrusadeDetails(c);
+		}
+		));
+
+		fullCrusadesList.buttons.add(3, new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate("Beginner crusade"), () ->
+		{
+			Crusade c = findExistingCrusadeProgress("internal/Beginner crusade");
+
+			if (c == null)
+			{
+				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/beginner_crusade.tanks");
+				c = new Crusade(al, "Beginner crusade", "/beginner_crusade.tanks");
 			}
 
 			Game.screen = new ScreenCrusadeDetails(c);
@@ -199,9 +242,9 @@ public class ScreenCrusades extends Screen
 		this.sort.fullInfo = true;
 
 		if (this.fullCrusadesList.sortedByTime)
-			this.sort.image = "sort_chronological.png";
+			this.sort.image = "icons/sort_chronological.png";
 		else
-			this.sort.image = "sort_alphabetical.png";
+			this.sort.image = "icons/sort_alphabetical.png";
 
 		sort.update();
 

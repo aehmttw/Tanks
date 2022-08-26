@@ -27,10 +27,7 @@ public class ObstacleIce extends Obstacle
         this.colorB = 255;
         this.colorA = 180;
 
-        this.attributeModifierDuration = 10;
-
         this.replaceTiles = true;
-        this.updateEventTime = true;
 
         this.description = "A slippery layer of ice";
     }
@@ -38,10 +35,10 @@ public class ObstacleIce extends Obstacle
     @Override
     public void onObjectEntry(Movable m)
     {
-        if (m instanceof Tank && shouldSendEvent)
+        if (m instanceof Tank)
         {
             AttributeModifier a = new AttributeModifier("ice_accel", "acceleration", AttributeModifier.Operation.multiply, -0.75);
-            a.duration = this.attributeModifierDuration;
+            a.duration = 10;
             a.deteriorationAge = 5;
             m.addUnduplicateAttribute(a);
 
@@ -60,7 +57,7 @@ public class ObstacleIce extends Obstacle
     @Override
     public void draw()
     {
-        double h = (Game.sampleGroundHeight(this.posX, this.posY));
+        double h = this.baseGroundHeight;
 
         Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA * (h - Obstacle.draw_size / Game.tile_size * 15) / (h - 15));
 
@@ -71,12 +68,12 @@ public class ObstacleIce extends Obstacle
     }
 
     @Override
-    public void drawTile(double r, double g, double b, double depth, double extra)
+    public void drawTile(double r, double g, double b, double d, double extra)
     {
         double frac = Obstacle.draw_size / Game.tile_size;
 
         Drawing.drawing.setColor(r, g, b);
-        Drawing.drawing.fillBox(this, this.posX, this.posY, -frac * 15 - extra, Game.tile_size, Game.tile_size, depth + extra);
+        Drawing.drawing.fillBox(this, this.posX, this.posY, -frac * 15 - extra, Game.tile_size, Game.tile_size, d + extra);
     }
 
     public double getTileHeight()

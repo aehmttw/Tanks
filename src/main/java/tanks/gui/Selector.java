@@ -1,5 +1,6 @@
 package tanks.gui;
 
+import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
@@ -50,6 +51,7 @@ public class Selector implements IDrawable, ITrigger
     public ArrayList<Effect> glowEffects = new ArrayList<>();
 
     public String[] images;
+    public IModel[] models;
 
     public boolean quick = false;
 
@@ -57,6 +59,7 @@ public class Selector implements IDrawable, ITrigger
 
     public boolean format = true;
     public boolean translate = true;
+    public boolean music = false;
 
     public boolean drawBehindScreen = false;
 
@@ -103,7 +106,7 @@ public class Selector implements IDrawable, ITrigger
         this.posY = y;
         this.sizeX = sX;
         this.sizeY = sY;
-        this.text = text;
+        this.setText(text);
         this.options = o;
 
         this.enabled = false;
@@ -170,16 +173,7 @@ public class Selector implements IDrawable, ITrigger
 
         drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedText);
 
-        String s;
-        if (format)
-            s = Game.formatString(options[selectedOption]);
-        else
-            s = options[selectedOption];
-
-        if (translate)
-            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
-        else
-            Drawing.drawing.drawInterfaceText(posX, posY, s);
+        this.drawSelection();
 
         if (enableHover)
         {
@@ -217,6 +211,29 @@ public class Selector implements IDrawable, ITrigger
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.drawInterfaceImage(images[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
         }
+
+        if (models != null)
+        {
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.drawInterfaceModel2D(models[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, 0, this.sizeY, this.sizeY, this.sizeY);
+        }
+    }
+
+    public void drawSelection()
+    {
+        String s = options[selectedOption];
+
+        if (music)
+            s = s.substring(s.indexOf("tank/") + "tank/".length(), s.indexOf(".ogg"));
+
+        if (format)
+            s = Game.formatString(s);
+
+
+        if (translate)
+            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
+        else
+            Drawing.drawing.drawInterfaceText(posX, posY, s);
     }
 
     public void update()
@@ -289,6 +306,12 @@ public class Selector implements IDrawable, ITrigger
         Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects);
     }
 
+    public void submitEffect()
+    {
+        for (int i = 0; i < 0.2 * (this.sizeX + this.sizeY) * Game.effectMultiplier; i++)
+            Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8, 0.25);
+    }
+
     public boolean checkMouse(double mx, double my, boolean valid)
     {
         boolean handled = false;
@@ -308,7 +331,6 @@ public class Selector implements IDrawable, ITrigger
             {
                 handled = true;
                 Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
-                //Drawing.drawing.playSound(this.sound, 1f, 1f);
                 Drawing.drawing.playVibration("click");
                 Game.screen = new ScreenInfo(Game.screen, this.translatedText, this.hoverText);
             }
@@ -321,7 +343,6 @@ public class Selector implements IDrawable, ITrigger
                 if (!this.silent)
                 {
                     Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
-                    //Drawing.drawing.playSound(this.sound, 1f, 1f);
                     Drawing.drawing.playVibration("click");
                 }
             }
@@ -338,14 +359,26 @@ public class Selector implements IDrawable, ITrigger
 
     public void setScreen()
     {
+        this.resetLayout();
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.images = this.images;
+        s.models = this.models;
 
         if (this.images != null)
             s.drawImages = true;
 
+        if (this.models != null)
+            s.drawModels = true;
+
         s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;
+    }
+
+    public void resetLayout()
+    {
+        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
     }
 
     @Override

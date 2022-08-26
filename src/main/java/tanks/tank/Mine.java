@@ -1,23 +1,13 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletFlame;
-import tanks.event.EventChat;
 import tanks.event.EventMineChangeTimer;
 import tanks.event.EventMineExplode;
-import tanks.event.EventUpdateCoins;
-import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemMine;
-import tanks.modapi.ModAPI;
-import tanks.modapi.ModLevel;
 import tanks.modapi.menus.FixedMenu;
 import tanks.modapi.menus.Scoreboard;
-import tanks.obstacle.Obstacle;
+import tanks.gui.screen.ScreenPartyLobby;
+import tanks.hotbar.item.ItemMine;
+import tanks.modapi.ModAPI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +15,7 @@ import java.util.HashMap;
 public class Mine extends Movable implements IAvoidObject
 {
     public static double mine_size = 30;
+    public static double mine_radius = Game.tile_size * 2.5;
 
     public double timer;
     public double size = mine_size;
@@ -37,10 +28,9 @@ public class Mine extends Movable implements IAvoidObject
     public double damage = 2;
     public boolean destroysObstacles = true;
 
-    public double radius = Game.tile_size * 2.5;
+    public double radius = mine_radius;
     public Tank tank;
-    public Item item;
-    public boolean exploded = false;
+    public ItemMine item;
     public double cooldown = 0;
     public int lastBeep = Integer.MAX_VALUE;
 
@@ -50,11 +40,6 @@ public class Mine extends Movable implements IAvoidObject
     public static ArrayList<Integer> freeIDs = new ArrayList<>();
     public static HashMap<Integer, Mine> idMap = new HashMap<>();
 
-    public Mine(double x, double y, double timer, Tank t)
-    {
-        this(x, y, timer, t, null);
-    }
-
     public Mine(double x, double y, double timer, Tank t, ItemMine item)
     {
         super(x, y);
@@ -62,21 +47,15 @@ public class Mine extends Movable implements IAvoidObject
         if (t != null)
             this.posZ = t.posZ;
 
-        if (this.posZ == 0)
-            this.posZ = Game.sampleGroundHeight(this.posX, this.posY);
-
         this.timer = timer;
         this.drawLevel = 2;
-        this.tank = t;
+        tank = t;
 
         this.item = item;
 
         if (!ScreenPartyLobby.isClient)
         {
-            if (this.item == null)
-                t.liveMines++;
-            else
-                ((ItemMine) this.item).liveMines++;
+            this.item.liveMines++;
         }
 
         this.team = t.team;
@@ -114,9 +93,9 @@ public class Mine extends Movable implements IAvoidObject
         }
     }
 
-    public Mine(double x, double y, Tank t)
+    public Mine(double x, double y, Tank t, ItemMine im)
     {
-        this(x, y, 1000, t);
+        this(x, y, 1000, t, im);
     }
 
     @Override
@@ -210,165 +189,30 @@ public class Mine extends Movable implements IAvoidObject
 
     public void explode()
     {
-        Drawing.drawing.playSound("explosion.ogg", (float) (mine_size / this.size));
-        this.exploded = true;
-
-        if (Game.effectsEnabled)
-        {
-            for (int j = 0; j < 200 * this.radius / 125 * Game.effectMultiplier; j++)
-            {
-                double random = Math.random();
-                Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
-                e.maxAge /= 2;
-                e.colR = 255;
-                e.colG = (1 - random) * 155 + Math.random() * 100;
-                e.colB = 0;
-
-                if (Game.enable3d)
-                    e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI / 2, random * (this.radius - Game.tile_size / 2) / Game.tile_size * 2);
-                else
-                    e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tile_size / 2) / Game.tile_size * 2);
-                Game.effects.add(e);
-            }
-        }
-
-        this.destroy = true;
-
-        if (!ScreenPartyLobby.isClient)
-        {
-            Game.eventsOut.add(new EventMineExplode(this));
-
-            for (Movable m: Game.movables)
-            {
-                if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(radius, 2))
-                {
-                    if (m instanceof Tank && !m.destroy && ((Tank) m).getDamageMultiplier(this) > 0)
-                    {
-                        if (!(Team.isAllied(this, m) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
-                        {
-                            Tank t = (Tank) m;
-
-                            boolean kill = t.damage(this.damage, this);
-
-                            if (kill)
-                            {
-                                for (FixedMenu menu : ModAPI.menuGroup)
-                                {
-                                    if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-                                    {
-                                        Scoreboard s = (Scoreboard) menu;
-
-                                        if (!s.teams.isEmpty())
-                                            s.addTeamScore(this.tank.team, 1);
-
-                                        else if (this.tank instanceof TankPlayer && !s.players.isEmpty())
-                                            s.addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-                                        else if (this.tank instanceof TankPlayerRemote && !s.players.isEmpty())
-                                            s.addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-                                    }
-                                }
-
-                                if (Game.currentLevel instanceof ModLevel && Game.currentLevel.enableKillMessages && ScreenPartyHost.isServer)
-                                {
-                                    String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, false);
-                                    ScreenPartyHost.chat.add(0, new ChatMessage(message));
-                                    Game.eventsOut.add(new EventChat(message));
-                                }
-
-
-                                if (this.tank.equals(Game.playerTank))
-                                {
-                                    if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
-                                    {
-                                        if (Game.currentGame != null)
-                                            Game.player.hotbar.coins += Game.currentGame.playerKillCoins;
-                                        else
-                                            Game.player.hotbar.coins += Game.currentLevel.playerKillCoins;
-                                    }
-
-                                    else
-                                        Game.player.hotbar.coins += t.coinValue;
-                                }
-                                else if (this.tank instanceof TankPlayerRemote && (Crusade.crusadeMode || Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0))
-                                {
-                                    if (t instanceof TankPlayer)
-                                    {
-                                        TankPlayer tank = (TankPlayer) t;
-
-                                        if (Game.currentGame != null)
-                                            tank.player.hotbar.coins += Game.currentGame.playerKillCoins;
-                                        else
-                                            tank.player.hotbar.coins += Game.currentLevel.playerKillCoins;
-
-                                        Game.eventsOut.add(new EventUpdateCoins(tank.player));
-                                    }
-                                    else if (t instanceof TankPlayerRemote)
-                                    {
-                                        TankPlayerRemote tank = (TankPlayerRemote) t;
-
-                                        if (Game.currentGame != null)
-                                            tank.player.hotbar.coins += Game.currentGame.playerKillCoins;
-                                        else
-                                            tank.player.hotbar.coins += Game.currentLevel.playerKillCoins;
-
-                                        Game.eventsOut.add(new EventUpdateCoins(tank.player));
-                                    }
-                                }
-                            }
-                            else
-                                Drawing.drawing.playGlobalSound("damage.ogg");
-                        }
-                    }
-                    else if (m instanceof Mine && !m.destroy)
-                    {
-                        if (((Mine) m).timer > 10 && !this.isRemote)
-                        {
-                            ((Mine) m).timer = 10;
-                            Game.eventsOut.add(new EventMineChangeTimer((Mine) m));
-                        }
-                    }
-                    else if (m instanceof Bullet && !(m instanceof BulletFlame) && !m.destroy)
-                    {
-                        m.destroy = true;
-                    }
-                }
-            }
-        }
-
-        if (this.destroysObstacles)
-        {
-            for (Obstacle o: Game.obstacles)
-            {
-                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible && !Game.removeObstacles.contains(o))
-                {
-                    o.onDestroy(this);
-                    o.playDestroyAnimation(this.posX, this.posY, this.radius);
-                }
-            }
-        }
-
-        if (!ScreenPartyLobby.isClient)
-        {
-            if (!(this.item instanceof ItemMine))
-                this.tank.liveMines--;
-            else
-                ((ItemMine) this.item).liveMines--;
-        }
-
-        Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.mineExplosion);
-        e.radius = Math.max(this.radius - Game.tile_size * 0.5, 0);
-        Game.effects.add(e);
-
+        Game.eventsOut.add(new EventMineExplode(this));
         Game.removeMovables.add(this);
 
         freeIDs.add(this.networkID);
         idMap.remove(this.networkID);
+
+        if (!ScreenPartyLobby.isClient)
+        {
+            Explosion e = new Explosion(this);
+            e.explode();
+
+            this.item.liveMines--;
+        }
     }
 
     @Override
     public double getRadius()
     {
         return this.radius;
+    }
+
+    @Override
+    public double getSeverity(double posX, double posY)
+    {
+        return this.timer;
     }
 }

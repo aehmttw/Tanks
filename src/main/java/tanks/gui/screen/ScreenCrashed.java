@@ -14,8 +14,6 @@ public class ScreenCrashed extends Screen
 
 		if (Math.random() < 0.01)
 			sadFace = ":)";
-
-		Game.game.window.setCursorLocked(false);
 	}
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", () -> System.exit(0));

@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import tanks.Crusade;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
@@ -29,10 +30,11 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
         this.allLevels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, -30,
                 (name, file) ->
                 {
-                    ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(name, null, this, previous);
+                    ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(new Crusade.CrusadeLevel(name, null), this, previous);
                     if (Game.loadLevel(file, s))
                     {
-                        s.level = Game.currentLevel.levelString;
+                        s.level.levelString = Game.currentLevel.levelString;
+                        s.level.tanks.addAll(Game.currentLevel.customTanks);
                         Game.screen = s;
                     }
                 }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");

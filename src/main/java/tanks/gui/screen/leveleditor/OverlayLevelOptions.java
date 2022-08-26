@@ -11,26 +11,19 @@ public class OverlayLevelOptions extends ScreenLevelEditorOverlay
 {
     public TextBox levelName;
 
-    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape
-    );
+    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape);
 
-    public Button colorOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Background colors", () -> Game.screen = new OverlayLevelOptionsColor(Game.screen, screenLevelEditor)
-    );
+    public Button colorOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Background colors", () -> Game.screen = new OverlayLevelOptionsColor(Game.screen, screenLevelEditor));
 
-    public Button sizeOptions = new Button(this.centerX  - this.objXSpace / 2, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Level size", () -> Game.screen = new OverlayLevelOptionsSize(Game.screen, screenLevelEditor)
-    );
+    public Button sizeOptions = new Button(this.centerX  - this.objXSpace / 2, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Level size", () -> Game.screen = new OverlayLevelOptionsSize(Game.screen, screenLevelEditor));
 
-    public Button timerOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Time limit", () -> Game.screen = new OverlayLevelOptionsTimer(Game.screen, screenLevelEditor)
-    );
+    public Button timerOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Time limit", () -> Game.screen = new OverlayLevelOptionsTimer(Game.screen, screenLevelEditor));
 
-    public Button lightingOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Lighting", () -> Game.screen = new OverlayLevelOptionsLighting(Game.screen, screenLevelEditor)
-    );
+    public Button lightingOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Lighting", () -> Game.screen = new OverlayLevelOptionsLighting(Game.screen, screenLevelEditor));
 
-    public Button teamsOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Teams", () -> Game.screen = new OverlayLevelOptionsTeams(Game.screen, screenLevelEditor)
-    );
+    public Button teamsOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Teams", () -> Game.screen = new OverlayLevelOptionsTeams(Game.screen, screenLevelEditor));
 
-    public Button itemOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Items", () -> Game.screen = new OverlayLevelOptionsItems(Game.screen, screenLevelEditor)
-    );
+    public Button itemOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Items", () -> Game.screen = new OverlayLevelOptionsItems(Game.screen, screenLevelEditor));
 
     public OverlayLevelOptions(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -65,6 +58,7 @@ public class OverlayLevelOptions extends ScreenLevelEditorOverlay
         }
                 ,  screenLevelEditor.name.split("\\.")[0].replace("_", " "));
 
+        levelName.maxChars = 18;
         levelName.enableCaps = true;
 
         lightingOptions.enabled = Game.framework != Game.Framework.libgdx;

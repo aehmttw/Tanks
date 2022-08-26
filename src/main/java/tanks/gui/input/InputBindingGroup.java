@@ -18,15 +18,6 @@ public class InputBindingGroup
         Game.game.inputBindings.add(this);
     }
 
-    public InputBindingGroup(String name)
-    {
-        this.name = name;
-        this.input1 = new InputBinding();
-        this.input2 = new InputBinding();
-
-        Game.game.inputBindings.add(this);
-    }
-
     public InputBindingGroup(String name, InputBinding i1)
     {
         this.name = name;

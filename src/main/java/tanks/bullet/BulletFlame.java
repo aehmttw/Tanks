@@ -1,6 +1,9 @@
 package tanks.bullet;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.IDrawableWithGlow;
+import tanks.Panel;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
@@ -12,18 +15,11 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 	double age = 0;
 	public double sizeMul = 1;
 
-	public BulletFlame(double x, double y, int bounces, Tank t) 
+	public BulletFlame(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
-		this(x, y, bounces, t, false, null);
+		this(x, y, bounces, t, false, ib);
 	}
-	
-	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-	@Deprecated
-	public BulletFlame(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
-	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, false, ib);
-	}
-	
+
 	public BulletFlame(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsLiveBulletCount, ib);
@@ -33,7 +29,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		this.name = bullet_name;
 		this.bulletCollision = false;
 		this.itemSound = "flame.ogg";
-		this.itemSoundVolume = 0.7f;
+		this.pitchVariation = 0.0;
 	}
 	
 	@Override
@@ -95,5 +91,8 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 	}
 
 	@Override
-	public void collidedWithObject(Movable m) {}
+	public void addDestroyEffect()
+	{
+
+	}
 }

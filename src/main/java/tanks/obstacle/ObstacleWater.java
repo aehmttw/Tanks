@@ -32,14 +32,14 @@ public class ObstacleWater extends Obstacle
         {
             this.colorR = 50;
             this.colorG = 100;
-            this.colorB = 250 - Math.random() * 40;
+            this.colorB = 255 - Math.random() * 45;
             this.colorA = 175;
         }
         else
         {
             this.colorR = 50;
             this.colorG = 100;
-            this.colorB = 250;
+            this.colorB = 255;
         }
 
         for (int i = 0; i < default_max_height; i++)
@@ -49,8 +49,9 @@ public class ObstacleWater extends Obstacle
             this.stackColorG[i] = this.colorG;
         }
 
-        this.description = "A small block of water";
+        this.description = "A pool of water that can slow and drown tanks";
     }
+
 
     @Override
     public void onObjectEntry(Movable m)
@@ -59,21 +60,20 @@ public class ObstacleWater extends Obstacle
         {
             Tank t = (Tank) m;
 
-            if (shouldSendEvent)
-            {
-                AttributeModifier a = new AttributeModifier("water", "velocity", AttributeModifier.Operation.multiply, -0.5);
-                a.duration = 30;
-                a.deteriorationAge = 20;
-                t.addUnduplicateAttribute(a);
-            }
+            AttributeModifier a = new AttributeModifier("water", "velocity", AttributeModifier.Operation.multiply, -0.5);
+            a.duration = 30;
+            a.deteriorationAge = 20;
+            t.addUnduplicateAttribute(a);
 
             if (!Game.enable3dBg)
                 return;
 
-            if (t.posZ < 0)
-                t.waterEnterTime += Panel.frameFrequency;
+            if (t.posZ < -Game.tile_size)
+                t.waterEnterTime = Math.min(t.waterEnterTime + Panel.frameFrequency, drownTime);
+            else
+                t.waterEnterTime = Math.max(t.waterEnterTime - Panel.frameFrequency, 0);
 
-            if (this.stackHeight > 1 && t.waterEnterTime > drownTime && t.health > 0)
+            if (this.stackHeight > 1 && t.waterEnterTime >= drownTime && t.health > 0)
             {
                 boolean kill = t.damage(Panel.frameFrequency / 2500, this);
 
@@ -84,10 +84,10 @@ public class ObstacleWater extends Obstacle
                     if (Game.currentGame != null && Game.currentGame.enableKillMessages)
                         message = Game.currentGame.generateDrownMessage(t);
 
-                    else if (Game.currentLevel instanceof ModLevel && Game.currentLevel.enableKillMessages)
+                    else if (Game.currentLevel instanceof ModLevel && ((ModLevel) Game.currentLevel).enableKillMessages)
                         message = ((ModLevel) Game.currentLevel).generateDrownMessage(t);
 
-                    else if (Game.currentLevel.enableKillMessages)
+                    else if (((ModLevel) Game.currentLevel).enableKillMessages)
                         message = Level.genDrownMessage(t);
 
                     if (message != null)
@@ -101,13 +101,13 @@ public class ObstacleWater extends Obstacle
             {
                 if (o instanceof ObstacleWater)
                 {
-                    if (Game.lessThan(o.posX - 25, t.posX + Game.tile_size, o.posX + 25))
+                    if (Game.lessThan(o.posX - 25, t.posX + Game.tile_size * t.vX, o.posX + 25 + 50 * t.vX))
                         found[0] = true;
-                    if (Game.lessThan(o.posY - 25, t.posY + Game.tile_size, o.posY + 25))
+                    if (Game.lessThan(o.posY - 25, t.posY + Game.tile_size * t.vY, o.posY + 25 + 50 * t.vY))
                         found[1] = true;
-                    if (Game.lessThan(o.posX - 25, t.posX - Game.tile_size, o.posX + 25))
+                    if (Game.lessThan(o.posX - 25 - 50 * t.vX, t.posX - Game.tile_size * t.vX, o.posX + 25))
                         found[2] = true;
-                    if (Game.lessThan(o.posY - 25, t.posY - Game.tile_size, o.posY + 25))
+                    if (Game.lessThan(o.posY - 25 - 50 * t.vY, t.posY - Game.tile_size * t.vY, o.posY + 25))
                         found[3] = true;
                 }
             }
@@ -119,7 +119,8 @@ public class ObstacleWater extends Obstacle
                     (t.posZ < -this.stackHeight * Game.tile_size))
                 floatUp = true;
 
-            if (!floatUp && t.posZ > -this.stackHeight * Game.tile_size) {
+            if (!floatUp && t.posZ > -this.stackHeight * Game.tile_size)
+            {
                 if (((t.vX > 0 || t.vY < 0) && (t.posX > this.posX && t.posX < this.posX + Game.tile_size) && (t.posY < this.posY && t.posY > this.posY - Game.tile_size)) ||
                         (t.vX < 0 || t.vY > 0) && (t.posX < this.posX && t.posX > this.posX - Game.tile_size) && (t.posY > this.posY && t.posY < t.posY + Game.tile_size))
                     t.posZ -= Panel.frameFrequency;

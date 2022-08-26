@@ -93,12 +93,18 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
     public ScreenPartyInterlevel()
     {
-        if (Game.followingCam)
-            Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);
-
         Game.player.hotbar.percentHidden = 100;
 
-        this.music = (Panel.win ? "win" : "lose") + "_music.ogg";
+        if (Panel.win)
+        {
+            //Drawing.drawing.playSound("win.ogg");
+            this.music = "win_music.ogg";
+        }
+        else
+        {
+            //Drawing.drawing.playSound("lose.ogg");
+            this.music = "lose_music.ogg";
+        }
 
         if (Panel.win && Game.effectsEnabled)
         {
@@ -113,7 +119,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
         save.posX = Drawing.drawing.interfaceSizeX - Drawing.drawing.interfaceScaleZoom * 40;
         save.posY = Drawing.drawing.interfaceSizeY - 50 - Drawing.drawing.interfaceScaleZoom * 40;
-        save.image = "save.png";
+        save.image = "icons/save.png";
 
         save.imageSizeX = this.objHeight;
         save.imageSizeY = this.objHeight;
@@ -201,8 +207,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             newLevel.draw();
         }
 
-        if (Game.showSpeedrunTimer)
-            SpeedrunTimer.draw();
+        SpeedrunTimer.draw();
 
         if ((Panel.win && Game.effectsEnabled) || Level.isDark())
             Drawing.drawing.setColor(255, 255, 255);

@@ -45,11 +45,13 @@ public class ScreenOptionsInterface extends Screen
     },
             "Warn before closing the game---while in an editor");
 
-    Button defocus = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable() {
+    Button pauseOnDefocus = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    {
         @Override
-        public void run() {
+        public void run()
+        {
             Game.pauseOnDefocus = !Game.pauseOnDefocus;
-            defocus.setText("Pause on defocus: ", (Game.pauseOnDefocus ? ScreenOptions.onText : ScreenOptions.offText));
+            pauseOnDefocus.setText("Pause on defocus: " + (Game.pauseOnDefocus ? ScreenOptions.onText : ScreenOptions.offText));
         }
     });
 
@@ -71,7 +73,7 @@ public class ScreenOptionsInterface extends Screen
         else
             confirmClose.setText(warnText, ScreenOptions.offText);
 
-        defocus.setText("Pause on defocus: " + (Game.pauseOnDefocus ? ScreenOptions.onText : ScreenOptions.offText));
+        pauseOnDefocus.setText("Pause on defocus: ", Game.pauseOnDefocus ? ScreenOptions.onText : ScreenOptions.offText);
 
         if (Game.framework == Game.Framework.libgdx)
         {
@@ -85,8 +87,8 @@ public class ScreenOptionsInterface extends Screen
     {
         back.update();
         showStats.update();
-        defocus.update();
         confirmClose.update();
+        pauseOnDefocus.update();
     }
 
     @Override
@@ -95,8 +97,8 @@ public class ScreenOptionsInterface extends Screen
         this.drawDefaultBackground();
 
         back.draw();
+        pauseOnDefocus.draw();
         confirmClose.draw();
-        defocus.draw();
         showStats.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

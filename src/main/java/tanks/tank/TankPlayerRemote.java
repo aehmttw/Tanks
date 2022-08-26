@@ -3,15 +3,16 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.event.*;
-import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
-import tanks.modapi.ModAPI;
 import tanks.modapi.menus.FixedMenu;
 import tanks.modapi.menus.Scoreboard;
-
-import java.util.ArrayList;
+import tanks.gui.screen.ScreenGame;
+import tanks.hotbar.Hotbar;
+import tanks.hotbar.ItemBar;
+import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemEmpty;
+import tanks.hotbar.item.ItemMine;
+import tanks.modapi.ModAPI;
 
 public class TankPlayerRemote extends Tank implements IServerPlayerTank
 {
@@ -28,8 +29,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public double lastUpdateTime = 0;
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
-
-    public ArrayList<Bullet> recentBullets = new ArrayList<>();
 
     public boolean forceMotion = false;
     public boolean recoil = false;
@@ -66,8 +65,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         this.angle = angle;
         this.orientation = angle;
 
-        this.liveBulletMax = 5;
-        this.liveMinesMax = 2;
         this.standardUpdateEvent = false;
         this.player.tank = this;
 
@@ -80,17 +77,26 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     {
         super.update();
 
-        if (this.cooldown > 0)
-            this.cooldown -= Panel.frameFrequency;
+        this.bullet.updateCooldown();
+        this.mine.updateCooldown();
 
-        if (shouldSendEvent)
+        Hotbar h = this.player.hotbar;
+        if (h.enabledItemBar)
         {
-            Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion, this.recoil));
-            this.forceMotion = false;
-            this.recoil = false;
-            this.dXSinceFrame = 0;
-            this.dYSinceFrame = 0;
+            for (Item i: h.itemBar.slots)
+            {
+                if (i != null && !(i instanceof ItemEmpty))
+                {
+                    i.updateCooldown();
+                }
+            }
         }
+
+        Game.eventsOut.add(new EventTankControllerUpdateS(this, this.forceMotion, this.recoil));
+        this.forceMotion = false;
+        this.recoil = false;
+        this.dXSinceFrame = 0;
+        this.dYSinceFrame = 0;
 
         if (this.hasCollided)
         {
@@ -110,7 +116,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             else
             {
                 this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-                this.recoilSpeed *= Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, Panel.frameFrequency);
+                this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
             }
         }
 
@@ -123,18 +129,18 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public void refreshAmmo()
     {
         ItemBar b = this.player.hotbar.itemBar;
-        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1 && b.slots[b.selected] instanceof ItemBullet)
+        ItemBullet ib = this.bullet;
+        ItemMine im = this.mine;
+
+        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1)
         {
-            ItemBullet ib = (ItemBullet) b.slots[b.selected];
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxAmount, this.liveMines, this.liveMinesMax));
+            if (b.slots[b.selected] instanceof ItemBullet)
+                ib = (ItemBullet) b.slots[b.selected];
+            else if (b.slots[b.selected] instanceof ItemMine)
+                im = (ItemMine) b.slots[b.selected];
         }
-        else if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1 && b.slots[b.selected] instanceof ItemMine)
-        {
-            ItemMine im = (ItemMine) b.slots[b.selected];
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, this.liveBullets, this.liveBulletMax, im.liveMines, im.maxAmount));
-        }
-        else
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, this.liveBullets, this.liveBulletMax, this.liveMines, this.liveMinesMax));
+
+        Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxLiveBullets, im.liveMines, im.maxLiveMines));
     }
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)
@@ -178,8 +184,8 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
                         && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
                         && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVX) < 0.001)
-                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, time)) || Math.abs(this.lastVY) < 0.001)))
+                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - this.friction * this.frictionModifier, time)) || Math.abs(this.lastVX) < 0.001)
+                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - this.friction * this.frictionModifier, time)) || Math.abs(this.lastVY) < 0.001)))
                 {
                     double changeVelocity = Math.sqrt(changeVelocitySq);
 
@@ -195,6 +201,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
                 if (speedSq > Math.pow(this.maxSpeed * this.maxSpeedModifier, 2) * 1.00001)
                 {
+                    forceMotion = true;
                     double speed = Math.sqrt(speedSq);
                     double maxSpeed = this.maxSpeed * this.maxSpeedModifier;
 
@@ -224,7 +231,9 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
                 double distSq2 = dX2 * dX2 + dY2 * dY2;
                 if (distSq2 > maxDist * maxDist)
+                {
                     forceMotion = true;
+                }
 
                 x = ourPosX;
                 y = ourPosY;
@@ -282,10 +291,10 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.lastVX = vX;
             this.lastVY = vY;
 
-            if (action1 && this.cooldown <= 0 && this.liveBullets < this.liveBulletMax && !this.disabled)
+            if (action1 && !this.disabled)
                 this.shoot();
 
-            if (action2 && this.cooldown <= 0 && this.liveMines < this.liveMinesMax && !this.disabled)
+            if (action2 && !this.disabled)
                 this.layMine();
         }
     }
@@ -322,43 +331,12 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         this.posY = realPosY;
     }
 
-    public void layMine()
-    {
-        if (Game.currentGame != null && !Game.currentGame.enableLayingMines)
-            return;
-
-        if (Game.bulletLocked || this.destroy)
-            return;
-
-        if (this.player.hotbar.enabledItemBar)
-        {
-            if (this.player.hotbar.itemBar.useItem(true))
-                return;
-        }
-
-        Drawing.drawing.playGlobalSound("lay_mine.ogg");
-
-        this.cooldown = 50;
-        Mine m = new Mine(posX, posY, this);
-
-        Game.eventsOut.add(new EventLayMine(m));
-        Game.movables.add(m);
-
-        if (Crusade.crusadeMode && Crusade.currentCrusade != null)
-        {
-            CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-            cp.addItemUse(TankPlayer.default_mine);
-        }
-    }
-
     public void layMine(Mine m)
     {
         if (Game.bulletLocked || this.destroy)
             return;
 
         Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
-
-        this.cooldown = m.cooldown;
 
         Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
@@ -372,9 +350,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
     public void shoot()
     {
-        if (Game.currentGame != null && !Game.currentGame.enableShooting)
-            return;
-
         if (Game.bulletLocked || this.destroy)
             return;
 
@@ -384,39 +359,21 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 return;
         }
 
-        this.cooldown = 20;
-
-        fireBullet(25 / 8.0, 1, Bullet.BulletEffect.trail);
+        this.bullet.attemptUse(this);
     }
 
-    public void fireBullet(double speed, int bounces, Bullet.BulletEffect effect)
+    public void layMine()
     {
-        Drawing.drawing.playGlobalSound("shoot.ogg");
+        if (Game.bulletLocked || this.destroy)
+            return;
 
-        Bullet b = new Bullet(posX, posY, bounces, this);
-        b.addPolarMotion(this.angle, speed);
-        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
-
-        b.moveOut(50 / speed * this.size / Game.tile_size);
-        b.effect = effect;
-
-        Game.eventsOut.add(new EventShootBullet(b));
-        Game.movables.add(b);
-
-        this.recentBullets.add(b);
-
-        this.forceMotion = true;
-
-        if (!this.hasCollided)
-            this.recoil = true;
-
-        this.processRecoil();
-
-        if (Crusade.crusadeMode && Crusade.currentCrusade != null)
+        if (this.player.hotbar.enabledItemBar)
         {
-            CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-            cp.addItemUse(TankPlayer.default_bullet);
+            if (this.player.hotbar.itemBar.useItem(true))
+                return;
         }
+
+        this.mine.attemptUse(this);
     }
 
     public void fireBullet(Bullet b, double speed, double offset)
@@ -425,9 +382,15 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             speed = Double.MIN_NORMAL;
 
         if (b.itemSound != null)
-            Drawing.drawing.playGlobalSound(b.itemSound, (float) (Bullet.bullet_size / b.size), Game.soundVolume * b.itemSoundVolume);
+        {
+            Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
+        }
 
         b.addPolarMotion(this.angle + offset, speed);
+        b.speed = speed;
+
+        double vX = this.vX;
+        double vY = this.vY;
         this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
         if (b.moveOut)
@@ -444,7 +407,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (!this.hasCollided)
             this.recoil = true;
 
-        this.processRecoil();
+        Game.eventsOut.add(new EventTankControllerAddVelocity(this, this.vX - vX, this.vY - vY));
 
         if (Crusade.crusadeMode && Crusade.currentCrusade != null)
         {
@@ -491,7 +454,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
 
         Drawing.drawing.setFontSize(this.nameTag.size);
-        Drawing.drawing.setColor(this.turret.colorR, this.turret.colorG, this.turret.colorB);
+        Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
 
         if (Game.enable3d)
             Drawing.drawing.drawText(this.posX + this.nameTag.ox, this.posY + this.nameTag.oy, this.posZ + this.nameTag.oz, this.nameTag.name);
@@ -506,5 +469,23 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public Player getPlayer()
     {
         return this.player;
+    }
+
+    @Override
+    public void setBufferCooldown(double value)
+    {
+        super.setBufferCooldown(value);
+
+        Hotbar h = this.player.hotbar;
+        if (h.enabledItemBar)
+        {
+            for (Item i: h.itemBar.slots)
+            {
+                if (i != null && !(i instanceof ItemEmpty))
+                {
+                    i.cooldown = Math.max(i.cooldown, value);
+                }
+            }
+        }
     }
 }

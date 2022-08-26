@@ -4,13 +4,13 @@ import io.netty.buffer.ByteBuf;
 import tanks.event.PersonalEvent;
 import tanks.modapi.ModAPI;
 import tanks.modapi.menus.RemoteScoreboard;
-import tanks.modapi.menus.Scoreboard;
 import tanks.network.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class EventAddScoreboard extends PersonalEvent {
+public class EventAddScoreboard extends PersonalEvent
+{
     public String objectiveName;
     public ArrayList<String> names = new ArrayList<>();
     public String objectiveType;
@@ -23,11 +23,13 @@ public class EventAddScoreboard extends PersonalEvent {
     public double titleFontSize;
     public double namesFontSize;
 
-    public EventAddScoreboard() {
+    public EventAddScoreboard()
+    {
 
     }
 
-    public EventAddScoreboard(RemoteScoreboard scoreboard) {
+    public EventAddScoreboard(RemoteScoreboard scoreboard)
+    {
         this.id = scoreboard.id;
 
         this.objectiveName = scoreboard.name;
@@ -42,7 +44,8 @@ public class EventAddScoreboard extends PersonalEvent {
     }
 
     @Override
-    public void write(ByteBuf b) {
+    public void write(ByteBuf b)
+    {
         b.writeInt(this.id);
 
         NetworkUtils.writeString(b, this.objectiveName);
@@ -62,7 +65,8 @@ public class EventAddScoreboard extends PersonalEvent {
     }
 
     @Override
-    public void read(ByteBuf b) {
+    public void read(ByteBuf b)
+    {
         this.id = b.readInt();
 
         this.objectiveName = NetworkUtils.readString(b);
@@ -79,7 +83,8 @@ public class EventAddScoreboard extends PersonalEvent {
     }
 
     @Override
-    public void execute() {
+    public void execute()
+    {
         RemoteScoreboard scoreboard = new RemoteScoreboard(objectiveName, objectiveType, names);
         scoreboard.id = this.id;
         scoreboard.titleColR = this.titleColorR;

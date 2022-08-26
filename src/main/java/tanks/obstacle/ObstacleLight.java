@@ -35,12 +35,10 @@ public class ObstacleLight extends Obstacle
 	@Override
 	public void draw()
 	{
-		this.checkForTransparency();
-
 		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA, this.glow);
 
 		if (Game.enable3d)
-			Drawing.drawing.fillBox(this, this.posX, this.posY, this.startHeight * Game.tile_size, Obstacle.draw_size / 2, Obstacle.draw_size / 2, Obstacle.draw_size / 2);
+			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Obstacle.draw_size / 2, Obstacle.draw_size / 2, Obstacle.draw_size / 2);
 		else
 			Drawing.drawing.fillRect(this, this.posX, this.posY, Obstacle.draw_size / 2, Obstacle.draw_size / 2);
 

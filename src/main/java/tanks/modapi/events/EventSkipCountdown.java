@@ -17,12 +17,14 @@ public class EventSkipCountdown extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b) {
+    public void write(ByteBuf b)
+    {
 
     }
 
     @Override
-    public void read(ByteBuf b) {
+    public void read(ByteBuf b)
+    {
 
     }
 }

@@ -29,7 +29,7 @@ public class Cloud extends Movable
 
         for (int i = 0; i < this.posY.size(); i++)
         {
-            Drawing.drawing.setColor(255 * Level.currentLightIntensity, 255 * Level.currentLightIntensity, 255 * Level.currentLightIntensity, 255);
+            Drawing.drawing.setColor(255 * Level.currentLightIntensity, 255 * Level.currentLightIntensity, 255 * Level.currentLightIntensity, 128);
             Drawing.drawing.fillBox(this.posX.get(i), this.posY.get(i), this.posZ, size, size, 30, (byte) 0);
         }
     }

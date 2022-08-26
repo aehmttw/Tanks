@@ -54,10 +54,10 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
     {
         if (this.clientID == null && clientIdTarget.equals(Game.clientID))
         {
-            Game.playerTank.liveBullets = action1Live;
-            Game.playerTank.liveBulletMax = action1Max;
-            Game.playerTank.liveMines = action2Live;
-            Game.playerTank.liveMinesMax = action2Max;
+            Game.playerTank.bullet.liveBullets = action1Live;
+            Game.playerTank.bullet.maxLiveBullets = action1Max;
+            Game.playerTank.mine.liveMines = action2Live;
+            Game.playerTank.mine.maxLiveMines = action2Max;
         }
     }
 }

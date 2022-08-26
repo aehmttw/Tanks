@@ -46,7 +46,7 @@ public class EventShareCrusade extends PersonalEvent
 
 			Game.eventsOut.add(this);
 
-			String s = "\u00A7200000200255" + p.username + " has shared the crusade " + this.name.replace("_", " ") + "" + Colors.black + "";
+			String s = "\u00A7200000200255" + p.username + " has shared the crusade " + this.name.replace("_", " ") + "\u00A7000000000255";
 
 			Drawing.drawing.playGlobalSound("join.ogg", 1.5f);
 			ScreenPartyHost.chat.add(0, new ChatMessage(s));

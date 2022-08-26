@@ -1,12 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Colors;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
-import tanks.modapi.menus.Minimap;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 import tanks.translation.Translation;
@@ -18,7 +16,7 @@ import java.util.Date;
 
 public class ScreenOptions extends Screen
 {
-	public static final String onText = Colors.green + "on";
+	public static final String onText = "\u00A7000200000255on";
 	public static final String offText = "\u00A7200000000255off";
 	public static ArrayList<String> extraOptions = new ArrayList<>();
 
@@ -34,14 +32,10 @@ public class ScreenOptions extends Screen
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
 	{
 		saveOptions(Game.homedir);
+		Game.screen = new ScreenTitle();
+	}
+	);
 
-		if (ScreenPartyHost.isServer)
-			Game.screen = ScreenPartyHost.activeScreen;
-		else if (ScreenPartyLobby.isClient)
-			Game.screen = new ScreenPartyLobby();
-		else
-			Game.screen = new ScreenTitle();
-	});
 
 	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer()
 	);
@@ -76,7 +70,6 @@ public class ScreenOptions extends Screen
 
 		graphicsOptions.update();
 		inputOptions.update();
-
 		multiplayerOptions.update();
 
 		back.update();
@@ -87,13 +80,12 @@ public class ScreenOptions extends Screen
 	{
 		this.drawDefaultBackground();
 		back.draw();
+		multiplayerOptions.draw();
 		inputOptions.draw();
 		graphicsOptions.draw();
 		interfaceOptions.draw();
 		gameOptions.draw();
 		soundOptions.draw();
-
-		multiplayerOptions.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
@@ -110,7 +102,7 @@ public class ScreenOptions extends Screen
 		}
 		catch (IOException e)
 		{
-			Game.logger.println (new Date() + " (syserr) file permissions are broken! cannot initialize options file.");
+			Game.logger.println (new Date().toString() + " (syserr) file permissions are broken! cannot initialize options file.");
 			System.exit(1);
 		}
 
@@ -143,8 +135,11 @@ public class ScreenOptions extends Screen
 			f.println("shadows_enabled=" + Game.shadowsEnabled);
 			f.println("shadow_quality=" + Game.shadowQuality);
 			f.println("vsync=" + Game.vsync);
+			f.println("max_fps=" + Game.maxFPS);
 			f.println("antialiasing=" + Game.antialiasing);
 			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
+			f.println("preview_crusades=" + Game.previewCrusades);
+			f.println("tank_textures=" + Game.tankTextures);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
@@ -159,18 +154,15 @@ public class ScreenOptions extends Screen
 			f.println("auto_start=" + Game.autostart);
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
-			f.println("minimap_x=" + Minimap.posOffsetX);
-			f.println("minimap_y=" + Minimap.posOffsetY);
-			f.println("minimap_zoom=" + Minimap.defaultZoom);
-			f.println("minimap_auto_enabled=" + Minimap.enabled);
 			f.println("deterministic=" + Game.deterministicMode);
-			f.println("deterministic-seed=" + Game.seed);
+			f.println("pause_on_defocus=" + Game.pauseOnDefocus);
+			f.println("display_zoom=" + Panel.displayZoom);
 			f.println("warn_before_closing=" + Game.warnBeforeClosing);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
-			f.println("pause_on_defocus=" + Game.pauseOnDefocus);
 			f.println("port=" + Game.port);
 			f.println("last_party=" + Game.lastParty);
 			f.println("last_online_server=" + Game.lastOnlineServer);
+			f.println("show_ip=" + Game.showIP);
 			f.println("chat_filter=" + Game.enableChatFilter);
 			f.println("auto_ready=" + Game.autoReady);
 			f.println("anticheat=" + TankPlayerRemote.checkMotion);
@@ -184,17 +176,14 @@ public class ScreenOptions extends Screen
 			f.println("tank_red_2=" + Game.player.turretColorR);
 			f.println("tank_green_2=" + Game.player.turretColorG);
 			f.println("tank_blue_2=" + Game.player.turretColorB);
-			f.println("eps=" + Game.eventsPerSecond);
-			f.println("transparent_tall_tiles=" + Game.transparentTallTiles);
 			f.println("translation=" + (Translation.currentTranslation == null ? "null" : Translation.currentTranslation.fileName));
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
+			f.stopWriting();
 
 			for (String s : extraOptions)
 				f.println(s);
-
-			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
 		{
@@ -261,6 +250,9 @@ public class ScreenOptions extends Screen
 					case "vsync":
 						Game.vsync = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "max_fps":
+						Game.maxFPS = Integer.parseInt(optionLine[1]);
+						break;
 					case "antialiasing":
 						Game.antialiasing = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -297,35 +289,23 @@ public class ScreenOptions extends Screen
 					case "auto_start":
 						Game.autostart = Boolean.parseBoolean(optionLine[1]);
 						break;
-					case "force_team_colors":
-						Game.forceTeamColors = Boolean.parseBoolean(optionLine[1]);
-						break;
 					case "full_stats":
 						Game.fullStats = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "timer":
 						Game.showSpeedrunTimer = Boolean.parseBoolean(optionLine[1]);
 						break;
-					case "minimap_x":
-						Minimap.posOffsetX = Integer.parseInt(optionLine[1]);
-						break;
-					case "minimap_y":
-						Minimap.posOffsetY = Integer.parseInt(optionLine[1]);
-						break;
-					case "minimap_zoom":
-						Minimap.scale = Float.parseFloat(optionLine[1]);
-						break;
-					case "minimap_auto_enabled":
-						Minimap.enabled = Boolean.parseBoolean(optionLine[1]);
-						break;
 					case "deterministic":
 						Game.deterministicMode = Boolean.parseBoolean(optionLine[1]);
 						break;
-					case "info_bar":
-						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));
-						break;
 					case "pause_on_defocus":
 						Game.pauseOnDefocus = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "display_zoom":
+						Panel.displayZoom = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "info_bar":
+						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));
 						break;
 					case "warn_before_closing":
 						Game.warnBeforeClosing = Boolean.parseBoolean(optionLine[1]);
@@ -355,6 +335,12 @@ public class ScreenOptions extends Screen
 								Game.firstPerson = true;
 						}
 						break;
+					case "tank_textures":
+						Game.tankTextures = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "preview_crusades":
+						Game.previewCrusades = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "fullscreen":
 						Game.game.fullscreen = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -372,6 +358,9 @@ public class ScreenOptions extends Screen
 							Game.lastOnlineServer = optionLine[1];
 						else
 							Game.lastOnlineServer = "";
+						break;
+					case "show_ip":
+						Game.showIP = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
@@ -412,12 +401,6 @@ public class ScreenOptions extends Screen
 					case "tank_blue_2":
 						Game.player.turretColorB = Integer.parseInt(optionLine[1]);
 						break;
-					case "eps":
-						Game.eventsPerSecond = Integer.parseInt(optionLine[1]);
-						break;
-					case "transparent_tall_tiles":
-						Game.transparentTallTiles = Boolean.parseBoolean(optionLine[1]);
-						break;
 					case "translation":
 						Translation.setCurrentTranslation(optionLine[1]);
 						break;
@@ -442,6 +425,7 @@ public class ScreenOptions extends Screen
 				Game.angledView = false;
 				Panel.showMouseTarget = false;
 				Game.vsync = true;
+				Game.previewCrusades = false;
 			}
 
 			if (!Game.soundsEnabled)
@@ -458,7 +442,7 @@ public class ScreenOptions extends Screen
 		}
 		catch (Exception e)
 		{
-			Game.logger.println (new Date() + " (syswarn) options file is nonexistent or broken, using default:");
+			Game.logger.println (new Date().toString() + " (syswarn) options file is nonexistent or broken, using default:");
 			e.printStackTrace(Game.logger);
 		}
 	}

@@ -3,6 +3,9 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 
+/**
+ * A tank which shoots huge bullets which bounce 3 times and can't be stopped
+ */
 public class TankMaroon extends TankAIControlled
 {
 	public TankMaroon(String name, double x, double y, double angle)
@@ -13,27 +16,32 @@ public class TankMaroon extends TankAIControlled
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 120;
 		this.cooldownBase = 480;
-		this.aimTurretSpeed = 0.02;
-		this.bulletBounces = 3;
-		this.bulletEffect = Bullet.BulletEffect.trail;
-		this.bulletSize = 25;
-		this.bulletHeavy = true;
+		this.turretAimSpeed = 0.02;
+		this.bullet.bounces = 3;
+		this.bullet.effect = Bullet.BulletEffect.trail;
+		this.bullet.size = 25;
+		this.bullet.heavy = true;
+		this.bullet.name = "Mega bullet";
 		this.enableLookingAtTargetEnemy = true;
-		this.motionChangeChance = 0.001;
-		this.turret.size *= 1.5;
+		this.turnChance = 0.001;
+		this.turretSize *= 1.5;
 		this.enablePathfinding = true;
-		
+		this.stopSeekingOnSight = true;
+
+		if (Game.tankTextures)
+		{
+			this.emblem = "emblems/circle.png";
+			this.emblemR = this.colorR * 0.7;
+			this.emblemG = this.colorG * 0.7;
+			this.emblemB = this.colorB * 0.7;
+		}
+
 		this.coinValue = 4;
 
-		this.description = "A tank which shoots huge bullets which---bounce 3 times and can't be stopped";
-	}
-
-	public void reactToTargetEnemySight()
-	{
-		this.currentlySeeking = false;
+		this.description = "A tank which shoots huge bullets which bounce 3 times and can't be stopped";
 	}
 
 }

@@ -1,9 +1,12 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.Movable;
+import tanks.bullet.Bullet;
 import tanks.bullet.BulletFlame;
 
+/**
+ * A short-range tank which shoots fire
+ */
 public class TankOrange extends TankAIControlled
 {
 	public TankOrange(String name, double x, double y, double angle)
@@ -15,34 +18,32 @@ public class TankOrange extends TankAIControlled
 
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.aimTurretSpeed = 0.01;
+		this.turretAimSpeed = 0.01;
 		this.enablePathfinding = true;
+		this.aimAccuracyOffset = 0;
 
-		this.motionChangeChance = 0.001;
-		this.avoidSensitivity = 1;
+		this.turnChance = 0.001;
+		this.mineAvoidSensitivity = 1;
 
-		this.bulletClass = BulletFlame.class;
-		this.bulletSound = "flame.ogg";
-		this.bulletSoundVolume = 0.7f;
-		this.cooldown = 200;
-		this.cooldownBase = 1;
+		this.bullet.maxLiveBullets = 0;
+		this.bullet.bulletClass = BulletFlame.class;
+		this.bullet.cooldownBase = 0;
+		this.cooldownBase = 0;
 		this.cooldownRandom = 0;
-		this.bulletBounces = 0;
+		this.bullet.effect = Bullet.BulletEffect.none;
+		this.bullet.bounces = 0;
+		this.bullet.name = "Flamethrower";
 
 		this.coinValue = 4;
 
-		this.description = "A short-range tank which shoots fire";
-	}
-
-	@Override
-	public void shoot()
-	{
-		if (this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < 400 && this.cooldown <= 0 && !this.disabled && !this.destroy)
+		if (Game.tankTextures)
 		{
-			Ray a = new Ray(this.posX, this.posY, this.angle, 0, this);
-
-			if (a.getTarget() != null)
-				super.shoot();
+			this.baseModel = TankModels.flames.base;
+			this.colorModel = TankModels.flames.color;
+			this.turretBaseModel = TankModels.flames.turretBase;
+			this.turretModel = TankModels.flames.turret;
 		}
+
+		this.description = "A short-range tank which shoots fire";
 	}
 }

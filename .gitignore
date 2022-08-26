@@ -4,3 +4,11 @@
 .settings
 .DS_Store
 /.vscode
+/src/main/java/tanks/modapi/modlevels/PartyGames/
+/src/main/java/tanks/modapi/modlevels/MapLoaderTester.java
+/src/main/java/tanks/modapi/modlevels/Battle_Tanks_3/
+/out/
+/src/main/java/tanks/modapi/modlevels/PartyGames/
+/src/main/java/tanks/modapi/modlevels/MapLoaderTester.java
+/src/main/java/tanks/modapi/modlevels/Battle_Tanks_3/
+/out/

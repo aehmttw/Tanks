@@ -872,13 +872,13 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         }
     }
 
-    public double rotateX(double px, double py, double posX, double rotation)
-    {
-        return (px * Math.cos(rotation) - py * Math.sin(rotation)) + posX;
-    }
-
     public double rotateY(double px, double py, double posY, double rotation)
     {
-        return (py * Math.cos(rotation) + px * Math.sin(rotation)) + posY;
+        return (px * Math.cos(rotation) + py * Math.sin(rotation)) + posY;
+    }
+
+    public double rotateX(double px, double py, double posX, double rotation)
+    {
+        return (py * Math.cos(rotation) - px * Math.sin(rotation)) + posX;
     }
 }

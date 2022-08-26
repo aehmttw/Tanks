@@ -8,6 +8,9 @@ public class SpeedrunTimer
 {
     public static void draw()
     {
+        if (!Game.showSpeedrunTimer || Game.recordMode)
+            return;
+
         double alpha = 127;
 
         if (!(Game.screen instanceof ScreenGame) || ScreenGame.finishedQuick)

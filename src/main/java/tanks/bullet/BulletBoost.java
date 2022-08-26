@@ -8,9 +8,9 @@ public class BulletBoost extends Bullet
 {
 	public static String bullet_name = "boost";
 
-	public BulletBoost(double x, double y, int bounces, Tank t)
+	public BulletBoost(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
-		this(x, y, bounces, t, true, null);
+		this(x, y, bounces, t, true, ib);
 	}
 
 	public BulletBoost(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
@@ -25,13 +25,6 @@ public class BulletBoost extends Bullet
 		this.dealsDamage = false;
 
 		this.playPopSound = false;
-	}
-
-	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-	@Deprecated
-	public BulletBoost(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
-	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
 	}
 
 	@Override

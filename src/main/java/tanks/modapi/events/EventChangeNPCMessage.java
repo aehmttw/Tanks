@@ -11,7 +11,9 @@ public class EventChangeNPCMessage extends PersonalEvent
     public String[] messages;
     public int id;
 
-    public EventChangeNPCMessage() {}
+    public EventChangeNPCMessage()
+    {
+    }
 
     public EventChangeNPCMessage(TankNPC t)
     {

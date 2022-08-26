@@ -9,7 +9,8 @@ import tanks.tank.Tank;
 
 import java.util.ArrayList;
 
-public class EventClearNPCShop extends PersonalEvent {
+public class EventClearNPCShop extends PersonalEvent
+{
     public int id;
 
     public EventClearNPCShop()

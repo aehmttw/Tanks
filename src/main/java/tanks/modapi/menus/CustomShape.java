@@ -5,7 +5,9 @@ import tanks.modapi.ModAPI;
 
 public class CustomShape extends FixedMenu
 {
-    public enum types {fillRect, fillOval, drawRect, drawOval}
+    public enum types
+    {fillRect, fillOval, drawRect, drawOval}
+
     public types type;
 
     public int posX;

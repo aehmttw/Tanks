@@ -69,5 +69,4 @@ public class ScreenPlaySingleplayer extends Screen
         crusade.draw();
         randomLevel.draw();
     }
-
 }

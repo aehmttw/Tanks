@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glDepthMask;
 
 public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 {
@@ -88,8 +89,13 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public void end()
     {
-        this.reinitializeBuffers();
+        this.stage();
 
+        this.draw();
+    }
+
+    public void draw()
+    {
         glDepthMask(this.depthMask);
 
         if (this.depth)
@@ -253,10 +259,15 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         public void pushNode(PointQueueNode n)
         {
             if (start == null)
+            {
                 start = n;
+                end = n;
+            }
             else
+            {
                 end.next = n;
-            end = n;
+                end = n;
+            }
         }
 
         public PointQueueNode popNode()
@@ -300,7 +311,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         else
             p = getRecycledPoint();
 
-        p.initialize(x, y, z, r, g, b, a);
+        p.initialize(x + offX, y + offY, z + offZ, r, g, b, a);
         return p;
     }
 
@@ -316,6 +327,13 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         this.colorB = b / 255;
         this.colorA = a / 255;
         this.colorGlow = glow;
+    }
+
+    @Override
+    public void free()
+    {
+        this.window.freeVBO(this.colVBO);
+        this.window.freeVBO(this.vertVBO);
     }
 
     public void setWorkingColor(float r, float g, float b, float a, float glow)
@@ -605,7 +623,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         this.forceRedraw = false;
     }
 
-    public void reinitializeBuffers()
+    public void stage()
     {
         if (this.window.shadowsEnabled && !this.window.drawingShadow)
             return;

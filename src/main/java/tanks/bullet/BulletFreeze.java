@@ -10,9 +10,9 @@ public class BulletFreeze extends Bullet
 {
 	public static String bullet_name = "freezing";
 
-	public BulletFreeze(double x, double y, int bounces, Tank t) 
+	public BulletFreeze(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
-		this(x, y, bounces, t, true, null);
+		this(x, y, bounces, t, true, ib);
 	}
 	
 	public BulletFreeze(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
@@ -26,13 +26,6 @@ public class BulletFreeze extends Bullet
 		this.playPopSound = false;
 	}
 
-	/** Do not use, instead use the constructor with primitive data types. Intended for Item use only!*/
-	@Deprecated
-	public BulletFreeze(Double x, Double y, Integer bounces, Tank t, ItemBullet ib) 
-	{
-		this(x.doubleValue(), y.doubleValue(), bounces.intValue(), t, true, ib);
-	}
-	
 	@Override
 	public void onDestroy()
 	{

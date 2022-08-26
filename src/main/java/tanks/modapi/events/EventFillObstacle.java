@@ -19,9 +19,11 @@ public class EventFillObstacle extends PersonalEvent
     public double stackHeight;
     public double startHeight;
 
-    public EventFillObstacle() {}
+    public EventFillObstacle()
+    {
+    }
 
-    public EventFillObstacle (int startX, int startY, int endX, int endY, String registryName, double stackHeight, double startHeight)
+    public EventFillObstacle(int startX, int startY, int endX, int endY, String registryName, double stackHeight, double startHeight)
     {
         this.startX = startX;
         this.startY = startY;
@@ -35,7 +37,8 @@ public class EventFillObstacle extends PersonalEvent
     @Override
     public void execute()
     {
-        try {
+        try
+        {
             Constructor<? extends Obstacle> c = Game.registryObstacle.getEntry(registryName).obstacle
                     .getConstructor(String.class, double.class, double.class);
 
@@ -50,7 +53,8 @@ public class EventFillObstacle extends PersonalEvent
                 }
             }
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Game.exitToCrash(e);
         }
     }

@@ -50,7 +50,6 @@ public abstract class BaseShapeRenderer
                                      byte options);
 
     public abstract void drawRect(double x, double y, double sX, double sY);
-
     public abstract void drawRect(double x, double y, double sX, double sY, double lineWidth);
 
     public abstract void drawImage(double x, double y, double sX, double sY, String image, boolean scaled);

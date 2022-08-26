@@ -18,11 +18,14 @@ public class EventAddObstacleText extends PersonalEvent
     public double colorG;
     public long duration;
 
-    public EventAddObstacleText() {
+    public EventAddObstacleText()
+    {
 
     }
 
-    /**This event adds an ObstacleText at the desired location.*/
+    /**
+     * This event adds an ObstacleText at the desired location.
+     */
     public EventAddObstacleText(int id, String text, double posX, double posY, double colorR, double colorG, double colorB, long duration)
     {
         this.id = id;

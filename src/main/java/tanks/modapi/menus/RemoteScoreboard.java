@@ -7,7 +7,8 @@ import tanks.modapi.ModAPI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RemoteScoreboard extends FixedMenu {
+public class RemoteScoreboard extends FixedMenu
+{
     public String name;
     public int id;
 
@@ -22,11 +23,13 @@ public class RemoteScoreboard extends FixedMenu {
 
     public String objectiveType;
 
-    public RemoteScoreboard(String objectiveName, String objectiveType, ArrayList<String> names) {
+    public RemoteScoreboard(String objectiveName, String objectiveType, ArrayList<String> names)
+    {
         this.name = objectiveName;
         this.objectiveType = objectiveType;
 
-        for (String name : names) {
+        for (String name : names)
+        {
             this.names.add(name);
             scores.put(name, 0.0);
         }
@@ -35,7 +38,8 @@ public class RemoteScoreboard extends FixedMenu {
     }
 
     @Override
-    public void draw() {
+    public void draw()
+    {
         Drawing.drawing.setColor(0, 0, 0, 128);
         ModAPI.fixedShapes.fillRect(Panel.windowWidth - sizeX, Panel.windowHeight / 2 - sizeY, sizeX, sizeY);
 
@@ -56,7 +60,8 @@ public class RemoteScoreboard extends FixedMenu {
                     "Objective: " + this.objectiveType.replaceAll("_", " "));
 
         double longestSX = 0;
-        for (int i = 0; i < names.size(); i++) {
+        for (int i = 0; i < names.size(); i++)
+        {
             double textSizeX = ModAPI.fixedText.getStringSizeX(namesFontSize / 40, names.get(i));
 
             Drawing.drawing.setColor(255, 255, 255);

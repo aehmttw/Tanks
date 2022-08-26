@@ -59,7 +59,8 @@ public class FixedTextGroup extends FixedMenu
 
         this.fontSize = fontSize;
 
-        if (r < 0 || g < 0 || b < 0) {
+        if (r < 0 || g < 0 || b < 0)
+        {
             int brightness = Level.isDark() ? 255 : 0;
             this.colorR = brightness;
             this.colorG = brightness;
@@ -73,11 +74,13 @@ public class FixedTextGroup extends FixedMenu
             actionBarLocation = 200;
     }
 
-    public FixedTextGroup(double x, double y, ArrayList<String> texts, boolean afterGameStarted, ArrayList<Integer> durationsInMs, double fontSize, double r, double g, double b) {
+    public FixedTextGroup(double x, double y, ArrayList<String> texts, boolean afterGameStarted, ArrayList<Integer> durationsInMs, double fontSize, double r, double g, double b)
+    {
         this(x, y, texts.toArray(new String[0]), afterGameStarted, durationsInMs.toArray(new Integer[0]), fontSize, r, g, b);
     }
 
-    public FixedTextGroup(String location, ArrayList<String> texts, boolean afterGameStarted, ArrayList<Integer> durationsInMs, double fontSize, double r, double g, double b) {
+    public FixedTextGroup(String location, ArrayList<String> texts, boolean afterGameStarted, ArrayList<Integer> durationsInMs, double fontSize, double r, double g, double b)
+    {
         this(location, texts.toArray(new String[0]), afterGameStarted, durationsInMs.toArray(new Integer[0]), fontSize, r, g, b);
     }
 

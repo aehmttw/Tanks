@@ -76,6 +76,12 @@ public class ImmediateModeModelPart extends ModelPart
         window.shapeRenderer.setBatchMode(false, false, false);
     }
 
+    @Override
+    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
+    {
+
+    }
+
     public static class ImmediateModeShapeDrawer extends ShapeDrawer
     {
         public BaseWindow window;

@@ -3,6 +3,9 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.BulletElectric;
 
+/**
+ * A stationary tank which shoots stunning electricity that arcs between targets
+ */
 public class TankBlue extends TankAIControlled
 {
 	public TankBlue(String name, double x, double y, double angle)
@@ -12,36 +15,26 @@ public class TankBlue extends TankAIControlled
 		this.enableMovement = false;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.liveBulletMax = 1;
-		this.bulletBounces = 3;
-		this.aimTurretSpeed = 0.02;
+		this.bullet.maxLiveBullets = 1;
+		this.bullet.bounces = 3;
+		this.bullet.bulletClass = BulletElectric.class;
+		this.bullet.damage = 0.125;
+		this.bullet.name = "Zap";
+		this.turretAimSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
-		this.cooldown = 100;
 		this.cooldownBase = 200;
 		this.cooldownRandom = 0;
-		this.bulletSpeed = 25.0 / 8;
-		this.bulletSound = "laser.ogg";
-		this.bulletDamage = 0.2;
-		this.setFrameDamageMultiplier = false;
-		this.bulletClass = BulletElectric.class;
+
+		if (Game.tankTextures)
+		{
+			this.colorModel = TankModels.fixed.color;
+			this.emblem = "emblems/electric.png";
+			this.emblemG = 160;
+			this.emblemB = 255;
+		}
 
 		this.coinValue = 4;
 
-		this.description = "A stationary tank---which shoots---stunning electricity---that arcs between---targets";
-	}
-
-	@Override
-	public void update()
-	{
-		super.update();
-	}
-
-	@Override
-	public void shoot()
-	{
-		if (this.cooldown > 0 || this.disabled || this.destroy)
-			return;
-
-		super.launchBullet(0);
+		this.description = "A stationary tank which shoots stunning electricity that arcs between targets";
 	}
 }

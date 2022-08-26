@@ -2,6 +2,7 @@ package tanks.tank;
 
 import basewindow.InputPoint;
 import tanks.Drawing;
+import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.BulletElectric;
@@ -94,7 +95,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
             else
             {
                 this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-                this.recoilSpeed *= Math.pow(1 - TankPlayer.base_deceleration * this.frictionModifier, Panel.frameFrequency);
+                this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
             }
         }
         else if (this.inControlOfMotion)
@@ -133,7 +134,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
             else if (x == 1 && y == -1)
                 a = 7 * Math.PI / 4;
 
-            double intensity;
+            double intensity = 1;
 
             if (a < 0 && Game.game.window.touchscreen)
             {
@@ -143,7 +144,7 @@ public class TankPlayerController extends Tank implements IPlayerTank
                     a = TankPlayer.controlStick.inputAngle;
             }
 
-            if (a >= 0)
+            if (a >= 0 && intensity >= 0.2)
             {
                 if (Game.followingCam)
                     a += this.angle + Math.PI / 2;
@@ -153,8 +154,8 @@ public class TankPlayerController extends Tank implements IPlayerTank
 
             if (a == -1)
             {
-                this.vX *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
-                this.vY *= Math.pow(1 - (0.05 * this.frictionModifier), Panel.frameFrequency);
+                this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+                this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
 
                 if (Math.abs(this.vX) < 0.001)
                     this.vX = 0;
@@ -326,16 +327,15 @@ public class TankPlayerController extends Tank implements IPlayerTank
                 r.getTarget();
         }
 
+        super.update();
+
         this.interpolatedPosX = this.posX;
         this.interpolatedPosY = this.posY;
 
         this.posX = this.posX + this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.posY = this.posY + this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
 
-        if (shouldSendEvent)
-            Game.eventsOut.add(new EventTankControllerUpdateC(this));
-
-        super.update();
+        Game.eventsOut.add(new EventTankControllerUpdateC(this));
     }
 
     @Override

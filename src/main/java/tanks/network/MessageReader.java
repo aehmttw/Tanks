@@ -147,9 +147,7 @@ public class MessageReader
 		e.read(m);
 
 		if (e instanceof PersonalEvent)
-		{
 			((PersonalEvent) e).clientID = clientID;
-		}
 
 		if (e instanceof EventPing)
 			return true;

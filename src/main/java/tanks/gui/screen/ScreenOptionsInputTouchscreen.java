@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import tanks.Colors;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -14,7 +13,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
     public static final String dualJoysticksText = "Joystick mode: ";
 
     public static final String singleText = "\u00A7000100200255single";
-    public static final String dualText = Colors.orange + "dual";
+    public static final String dualText = "\u00A7200100000255dual";
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );

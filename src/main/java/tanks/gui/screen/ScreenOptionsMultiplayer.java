@@ -2,7 +2,6 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.event.EventChangeUsername;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 
@@ -10,6 +9,10 @@ public class ScreenOptionsMultiplayer extends Screen
 {
 	public static final String chatFilterText = "Chat filter: ";
 	public static final String autoReadyText = "Auto ready: ";
+	public static final String anticheatText = "Anticheat: ";
+
+	public static final String weakText = "\u00A7200100000255weak";
+	public static final String strongText = "\u00A7000200000255strong";
 
 	TextBox username = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Username", new Runnable()
 	{
@@ -18,21 +21,14 @@ public class ScreenOptionsMultiplayer extends Screen
 		{
 			Game.player.username = username.inputText;
 			username.inputText = Game.player.username + "";
-
-			if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-			{
-				EventChangeUsername e = new EventChangeUsername(Game.player.clientID, Game.player.username);
-				e.execute();
-				Game.eventsOut.add(e);
-			}
-
+			
 			if (!Game.player.username.equals(Game.chatFilter.filterChat(Game.player.username)))
 				Game.screen = new ScreenUsernameWarning();
 		}
 	},
 			Game.player.username, "Pick a username that players---will see in multiplayer");
 
-	Button chatFilter = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+	Button chatFilter = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -116,4 +112,5 @@ public class ScreenOptionsMultiplayer extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Multiplayer options");
 	}
+
 }

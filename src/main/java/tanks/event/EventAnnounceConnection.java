@@ -21,7 +21,7 @@ public class EventAnnounceConnection extends PersonalEvent
 	public EventAnnounceConnection(ConnectedPlayer p, boolean joined)
 	{
 		this.name = p.rawUsername;
-		this.clientIdTarget = p.clientID;
+		this.clientIdTarget = p.clientId;
 		this.joined = joined;
 	}
 
@@ -41,7 +41,7 @@ public class EventAnnounceConnection extends PersonalEvent
 
 			for (int i = 0; i < ScreenPartyLobby.connections.size(); i++)
 			{
-				if (ScreenPartyLobby.connections.get(i).clientID.equals(this.clientIdTarget))
+				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))
 				{
 					ScreenPartyLobby.connections.remove(i);
 					i--;

@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.event.online.EventUploadLevel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;

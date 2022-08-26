@@ -24,7 +24,9 @@ public class Scoreboard extends FixedMenu
     public Team[] teamNames;
     public Player[] playerNames;
 
-    public enum objectiveTypes {custom, kills, deaths, items_used, shots_fired, mines_placed, shots_fired_no_multiple_fire}
+    public enum objectiveTypes
+    {custom, kills, deaths, items_used, shots_fired, mines_placed, shots_fired_no_multiple_fire}
+
     public objectiveTypes objectiveType;
 
     private final RemoteScoreboard remoteScoreboard;
@@ -34,7 +36,9 @@ public class Scoreboard extends FixedMenu
         this.name = objectiveName;
         this.objectiveType = objectiveType;
 
-        this.remoteScoreboard = new RemoteScoreboard(objectiveName, objectiveType.toString(), new ArrayList<>(){});
+        this.remoteScoreboard = new RemoteScoreboard(objectiveName, objectiveType.toString(), new ArrayList<>()
+        {
+        });
         this.remoteScoreboard.titleColR = this.titleColR;
         this.remoteScoreboard.titleColG = this.titleColG;
         this.remoteScoreboard.titleColB = this.titleColB;
@@ -51,7 +55,8 @@ public class Scoreboard extends FixedMenu
 
         ArrayList<String> names = new ArrayList<>();
 
-        for (Player p : players) {
+        for (Player p : players)
+        {
             this.players.put(p, 0.0);
             names.add(p.username);
         }
@@ -75,7 +80,8 @@ public class Scoreboard extends FixedMenu
 
         ArrayList<String> names = new ArrayList<>();
 
-        for (Team t : teams) {
+        for (Team t : teams)
+        {
             this.teams.put(t, 0.0);
             names.add(t.name);
         }
@@ -92,7 +98,8 @@ public class Scoreboard extends FixedMenu
         Game.eventsOut.add(new EventAddScoreboard(this.remoteScoreboard));
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(Player player)
+    {
         addPlayerScore(player, 0);
     }
 
@@ -136,7 +143,8 @@ public class Scoreboard extends FixedMenu
         return false;
     }
 
-    public void addTeam(Team t) {
+    public void addTeam(Team t)
+    {
         addTeamScore(t, 0);
     }
 
@@ -153,12 +161,13 @@ public class Scoreboard extends FixedMenu
         Game.eventsOut.add(new EventScoreboardUpdateScore(this.remoteScoreboard.id, t.name, teams.get(t)));
     }
 
-    /** Use this function to change an attribute of a scoreboard.<br>
-     You could change the variables directly, but side effects may occur if you do so.<br>
-
-     @param attributeName Can be "titleColR", "titleColG", "titleColB", "titleFontSize", "namesFontSize", which each edit their own variables.
-     @param value Can be any double.
-     @return itself
+    /**
+     * Use this function to change an attribute of a scoreboard.<br>
+     * You could change the variables directly, but side effects may occur if you do so.<br>
+     *
+     * @param attributeName Can be "titleColR", "titleColG", "titleColB", "titleFontSize", "namesFontSize", which each edit their own variables.
+     * @param value         Can be any double.
+     * @return itself
      */
     public Scoreboard changeAttribute(String attributeName, double value)
     {
@@ -239,7 +248,8 @@ public class Scoreboard extends FixedMenu
         }
         else
         {
-            for (int i = 0; i < teamNames.length; i++) {
+            for (int i = 0; i < teamNames.length; i++)
+            {
                 double textSizeX = ModAPI.fixedText.getStringSizeX(namesFontSize / 40, teamNames[i].name);
 
                 Drawing.drawing.setColor(255, 255, 255);
@@ -271,7 +281,8 @@ public class Scoreboard extends FixedMenu
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
 
     }
 }

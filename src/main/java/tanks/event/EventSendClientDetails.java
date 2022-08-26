@@ -1,7 +1,6 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Colors;
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
@@ -74,8 +73,8 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			s.sendEventAndClose(new EventKick("Please wait for the current game to finish!"));
 
 			Game.eventsIn.add(new EventPlaySound("join.ogg", 0.75f, 1.0f));
-			ScreenPartyHost.chat.add(0, new ChatMessage(Colors.orange + this.username + " would like to join the party" + Colors.black));
-			Game.eventsOut.add(new EventChat(Colors.orange + this.username + " would like to join the party" + Colors.black));
+			ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
+			Game.eventsOut.add(new EventChat("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
 			return;
 		}
 
@@ -144,7 +143,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 
 		Game.eventsIn.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
 		
-		ScreenPartyHost.chat.add(0, new ChatMessage(Colors.blue + s.username + " has joined the party" + Colors.black));
+		ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
 
 		for (ScreenPartyHost.SharedLevel l: ScreenPartyHost.activeScreen.sharedLevels)
 		{
@@ -155,7 +154,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			s.sendEvent(e);
 		}
 
-		Game.eventsOut.add(new EventChat(Colors.blue + this.username + " has joined the party" + Colors.black));
+		Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has joined the party\u00A7000000000255"));
 		
 		for (int i = 0; i < s.server.connections.size(); i++)
 		{

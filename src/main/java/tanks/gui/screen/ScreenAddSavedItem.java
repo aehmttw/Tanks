@@ -73,6 +73,11 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
 
     public ScreenAddSavedItem(IItemScreen itemScreen, Button prev)
     {
+        this(itemScreen, prev, Item.class);
+    }
+
+    public ScreenAddSavedItem(IItemScreen itemScreen, Button prev, Class<? extends Item> itemClass)
+    {
         super(350, 40, 380, 60);
 
         this.allowClose = false;
@@ -111,6 +116,9 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
                         b.imageSizeX = b.sizeY;
                         b.imageSizeY = b.sizeY;
 
+                        if (!itemClass.isAssignableFrom(i.getClass()))
+                            b.text = null;
+
                         int p = i.price;
 
                         if (p == 0)
@@ -130,36 +138,40 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
 
         for (String s: items)
         {
-            builtInItemsCount++;
             Item i = Item.parseItem(null, s);
             i.name = Translation.translate(i.name);
 
-            Button b = new Button(0, 0, this.allItems.objWidth, this.allItems.objHeight, i.name, () ->
+            if (itemClass.isAssignableFrom(i.getClass()))
             {
-                Item i1 = Item.parseItem(null, s);
-                i1.name = Translation.translate(i1.name);
-                i1.importProperties();
-                itemScreen.addItem(i1);
+                builtInItemsCount++;
+
+                Button b = new Button(0, 0, this.allItems.objWidth, this.allItems.objHeight, i.name, () ->
+                {
+                    Item i1 = Item.parseItem(null, s);
+                    i1.name = Translation.translate(i1.name);
+                    i1.importProperties();
+                    itemScreen.addItem(i1);
+                }
+                );
+
+                this.allItems.buttons.add(b);
+
+                b.translated = false;
+
+                b.image = i.icon;
+                b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
+                b.imageSizeX = b.sizeY;
+                b.imageSizeY = b.sizeY;
+
+                int p = i.price;
+
+                if (p == 0)
+                    b.setSubtext("Free!");
+                else if (p == 1)
+                    b.setSubtext("1 coin");
+                else
+                    b.setSubtext("%d coins", p);
             }
-            );
-
-            this.allItems.buttons.add(b);
-
-            b.translated = false;
-
-            b.image = i.icon;
-            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-            b.imageSizeX = b.sizeY;
-            b.imageSizeY = b.sizeY;
-
-            int p = i.price;
-
-            if (p == 0)
-                b.setSubtext("Free!");
-            else if (p == 1)
-                b.setSubtext("1 coin");
-            else
-                b.setSubtext("%d coins", p);
         }
 
         delete.textOffsetY = -1;
@@ -261,6 +273,7 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
 
                 delete.posX = b.posX + b.sizeX / 2 - b.sizeY / 2;
                 delete.posY = b.posY;
+                delete.update();
                 delete.draw();
             }
         }

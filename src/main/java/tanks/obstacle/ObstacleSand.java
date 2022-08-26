@@ -25,23 +25,27 @@ public class ObstacleSand extends Obstacle
         else
             this.stackHeight = 0.55;
 
-        if (Game.fancyTerrain) {
+        if (Game.fancyTerrain)
+        {
             this.colorR = 233 - Math.random() * 20;
             this.colorG = 215 - Math.random() * 20;
             this.colorB = 188 - Math.random() * 20;
-        } else {
+        }
+        else
+        {
             this.colorR = 233;
             this.colorG = 215;
             this.colorB = 188;
         }
 
-        for (int i = 0; i < default_max_height; i++) {
+        for (int i = 0; i < default_max_height; i++)
+        {
             this.stackColorR[i] = this.colorR;
             this.stackColorB[i] = this.colorB;
             this.stackColorG[i] = this.colorG;
         }
 
-        this.description = "A small patch of sand";
+        this.description = "A thick patch of sand---that slows tanks down";
     }
 
     @Override

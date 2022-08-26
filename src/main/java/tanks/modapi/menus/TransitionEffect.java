@@ -6,7 +6,8 @@ import tanks.modapi.ModAPI;
 
 public class TransitionEffect extends FixedMenu
 {
-    public enum types {fade, fadeIn, fadeOut}
+    public enum types
+    {fade, fadeIn, fadeOut}
 
     public types type;
     public int posX;
@@ -57,7 +58,8 @@ public class TransitionEffect extends FixedMenu
                 break;
 
             default:
-                if (!printed) {
+                if (!printed)
+                {
                     System.err.println("Invalid transition effect '" + this.type + "'");
                     printed = true;
                 }

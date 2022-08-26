@@ -11,7 +11,9 @@ public class EventOverrideNPCState extends PersonalEvent
     public boolean display;
     public boolean override;
 
-    public EventOverrideNPCState() {}
+    public EventOverrideNPCState()
+    {
+    }
 
     public EventOverrideNPCState(TankNPC t)
     {

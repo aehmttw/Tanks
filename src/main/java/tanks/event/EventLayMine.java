@@ -13,10 +13,8 @@ public class EventLayMine extends PersonalEvent
 	public double posX;
 	public double posY;
 	public double timer;
-	public double radius;
 	public double size;
-	public boolean destroysObstacles;
-	
+
 	public EventLayMine()
 	{
 		
@@ -29,9 +27,7 @@ public class EventLayMine extends PersonalEvent
 		this.posX = m.posX;
 		this.posY = m.posY;
 		this.timer = m.timer;
-		this.radius = m.radius;
 		this.size = m.size;
-		this.destroysObstacles = m.destroysObstacles;
 	}
 
 	@Override
@@ -47,11 +43,9 @@ public class EventLayMine extends PersonalEvent
 			if (t == null)
 				return;
 
-			Mine m = new Mine(this.posX, this.posY, this.timer, t);
+			Mine m = new Mine(this.posX, this.posY, this.timer, t, t.mine);
 			m.networkID = id;
 			m.size = size;
-			m.radius = radius;
-			m.destroysObstacles = destroysObstacles;
 			Game.movables.add(m);
 
 			Mine.idMap.put(id, m);
@@ -66,9 +60,7 @@ public class EventLayMine extends PersonalEvent
 		b.writeDouble(this.posX);
 		b.writeDouble(this.posY);
 		b.writeDouble(this.timer);
-		b.writeDouble(this.radius);
 		b.writeDouble(this.size);
-		b.writeBoolean(this.destroysObstacles);
 	}
 
 	@Override
@@ -79,8 +71,6 @@ public class EventLayMine extends PersonalEvent
 		this.posX = b.readDouble();
 		this.posY = b.readDouble();
 		this.timer = b.readDouble();
-		this.radius = b.readDouble();
 		this.size = b.readDouble();
-		this.destroysObstacles = b.readBoolean();
 	}
 }

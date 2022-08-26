@@ -157,4 +157,9 @@ public abstract class BulletInstant extends Bullet
 	{
 		super.update();
 	}
+
+	public void addTrail(boolean redirect)
+	{
+
+	}
 }

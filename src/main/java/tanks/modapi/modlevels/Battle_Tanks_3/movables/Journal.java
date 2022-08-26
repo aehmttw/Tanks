@@ -15,15 +15,15 @@ public class Journal extends CustomMovable
 
     public Journal()
     {
-        super(71 *50+25, 18 *50+25);
+        super(71 * 50 + 25, 18 * 50 + 25);
 
         this.setDrawInstructions("    Drawing.drawing.setColor(226, 161, 64);" +
-                                 "    Drawing.drawing.fillBox(_r1, _r2, 25, 40, 50, 15);" +
-                                 "    Drawing.drawing.setColor(255, 255, 255);" +
-                                 "    Drawing.drawing.fillBox(_r3, _r2, 28, 30, 50, 9);" +
-                                 "    Drawing.drawing.setFontSize(5);" +
-                                 "    Drawing.drawing.drawText(_r1, 915, 43, \"Development of\");" +
-                                 "    Drawing.drawing.drawText(_r1, 925, 43, \"Formula IV\");",
+                        "    Drawing.drawing.fillBox(_r1, _r2, 25, 40, 50, 15);" +
+                        "    Drawing.drawing.setColor(255, 255, 255);" +
+                        "    Drawing.drawing.fillBox(_r3, _r2, 28, 30, 50, 9);" +
+                        "    Drawing.drawing.setFontSize(5);" +
+                        "    Drawing.drawing.drawText(_r1, 915, 43, \"Development of\");" +
+                        "    Drawing.drawing.drawText(_r1, 925, 43, \"Formula IV\");",
 
                 this.posX, this.posY, this.posX + 5
         );

@@ -10,7 +10,8 @@ public class ScreenOptionsGraphics extends Screen
     public static final String terrainText = "Terrain: ";
     public static final String trailsText = "Bullet trails: ";
     public static final String glowText = "Glow effects: ";
-    public static final String vsyncText = "V-Sync: ";
+    public static final String tankTexturesText = "Tank textures: ";
+    public static final String previewCrusadesText = "Crusade preview: ";
 
     public static final String graphics3dText = "3D graphics: ";
     public static final String ground3dText = "3D ground: ";
@@ -18,10 +19,10 @@ public class ScreenOptionsGraphics extends Screen
     public static final String antialiasingText = "Antialiasing: ";
 
     public static final String fancyText = "\u00A7000100200255fancy";
-    public static final String fastText = "" + Colors.orange + "fast";
+    public static final String fastText = "\u00A7200100000255fast";
 
     public static final String birdsEyeText = "\u00A7000100200255bird's-eye";
-    public static final String angledText = "" + Colors.orange + "angled";
+    public static final String angledText = "\u00A7200100000255angled";
 
     public static int viewNo = 0;
 
@@ -49,11 +50,6 @@ public class ScreenOptionsGraphics extends Screen
             glow.setText(glowText, ScreenOptions.onText);
         else
             glow.setText(glowText, ScreenOptions.offText);
-
-        if (Game.vsync)
-            vsync.setText(vsyncText, ScreenOptions.onText);
-        else
-            vsync.setText(vsyncText, ScreenOptions.offText);
 
         if (Game.enable3d)
             graphics3d.setText(graphics3dText, ScreenOptions.onText);
@@ -101,9 +97,9 @@ public class ScreenOptionsGraphics extends Screen
 
         if (Game.framework == Game.Framework.libgdx)
         {
-            vsync.enabled = false;
             altPerspective.enabled = false;
             shadows.enabled = false;
+            previewCrusades.enabled = false;
         }
 
         if (!Game.game.window.antialiasingSupported)
@@ -118,14 +114,24 @@ public class ScreenOptionsGraphics extends Screen
         if (!Game.shadowsEnabled)
             shadows.setText("Fancy lighting: ", ScreenOptions.offText);
         else
-            shadows.setText("Fancy lighting: %s", (Object)("" + Colors.green + "" + Game.shadowQuality));
+            shadows.setText("Fancy lighting: %s", (Object)("\u00A7000200000255" + Game.shadowQuality));
 
         if (!Game.effectsEnabled)
             effects.setText("Particle effects: ", ScreenOptions.offText);
         else if (Game.effectMultiplier < 1)
-            effects.setText("Particle effects: %s", (Object)("" + Colors.orange + "" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
+            effects.setText("Particle effects: %s", (Object)("\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
         else
             effects.setText("Particle effects: ", ScreenOptions.onText);
+
+        if (Game.previewCrusades)
+            previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
+        else
+            previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
+
+        if (Game.tankTextures)
+            tankTextures.setText(tankTexturesText, ScreenOptions.onText);
+        else
+            tankTextures.setText(tankTexturesText, ScreenOptions.offText);
     }
 
     protected void update3dGroundButton()
@@ -160,6 +166,9 @@ public class ScreenOptionsGraphics extends Screen
                 terrain.setText(terrainText, fastText);
 
             update3dGroundButton();
+
+            Game.resetTiles();
+            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
@@ -220,6 +229,7 @@ public class ScreenOptionsGraphics extends Screen
 
             update3dGroundButton();
 
+            Game.resetTiles();
             Drawing.drawing.forceRedrawTerrain();
         }
     },
@@ -237,6 +247,7 @@ public class ScreenOptionsGraphics extends Screen
             else
                 ground3d.setText(ground3dText, ScreenOptions.offText);
 
+            Game.resetTiles();
             Drawing.drawing.forceRedrawTerrain();
         }
     },
@@ -248,7 +259,12 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            viewNo = (viewNo + 1) % (Game.followingCamEnabled ? 4 : 2);
+            viewNo = (viewNo + 1);
+            if (!Game.debug)
+                viewNo = viewNo % 2;
+            else
+                viewNo = viewNo % 4;
+
             switch (viewNo)
             {
                 case 0:
@@ -284,23 +300,6 @@ public class ScreenOptionsGraphics extends Screen
     },
             "Changes the angle at which---you view the game field");
 
-
-    Button vsync = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.vsync = !Game.vsync;
-            Game.game.window.setVsync(Game.vsync);
-
-            if (Game.vsync)
-                vsync.setText(vsyncText, ScreenOptions.onText);
-            else
-                vsync.setText(vsyncText, ScreenOptions.offText);
-        }
-    },
-            "Limits framerate to your---screen's refresh rate------May decrease battery---consumption------Also, might fix issues with---inconsistent game speed");
-
     Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
@@ -321,16 +320,43 @@ public class ScreenOptionsGraphics extends Screen
     },
             "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
-    Button window = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
+    Button previewCrusades = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.previewCrusades = !Game.previewCrusades;
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
-    );
+            if (Game.previewCrusades)
+                previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
+            else
+                previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
+        }
+    },
+            "When enabled, the crusade preview and---summary screens show all the levels---in that crusade scroll by");
 
-    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsShadows(), "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate"
-    );
+    Button tankTextures = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.tankTextures = !Game.tankTextures;
 
-    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance"
-    );
+            if (Game.tankTextures)
+                tankTextures.setText(tankTexturesText, ScreenOptions.onText);
+            else
+                tankTextures.setText(tankTexturesText, ScreenOptions.offText);
+        }
+    },
+            "Adds designs to the built-in tanks---which can help differentiate them");
+
+    Button window = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
+
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
+
+    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsShadows(), "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate");
+
+    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance");
 
     @Override
     public void update()
@@ -339,7 +365,8 @@ public class ScreenOptionsGraphics extends Screen
         bulletTrails.update();
         glow.update();
         effects.update();
-        vsync.update();
+        tankTextures.update();
+        previewCrusades.update();
 
         graphics3d.update();
         ground3d.update();
@@ -381,7 +408,8 @@ public class ScreenOptionsGraphics extends Screen
         ground3d.draw();
         graphics3d.draw();
 
-        vsync.draw();
+        previewCrusades.draw();
+        tankTextures.draw();
         effects.draw();
         glow.draw();
         bulletTrails.draw();
@@ -392,7 +420,7 @@ public class ScreenOptionsGraphics extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Graphics options");
     }
 
-    public static void changePerspective()
+    public static String changePerspective()
     {
         viewNo = (viewNo + 1) % (Game.followingCamEnabled ? 4 : 2);
         switch (viewNo)
@@ -401,24 +429,26 @@ public class ScreenOptionsGraphics extends Screen
                 Game.angledView = false;
                 Game.followingCam = false;
                 Game.firstPerson = false;
-                break;
+                return Colors.blue + "bird's-eye";
+
             case 1:
                 Game.angledView = true;
                 Game.followingCam = false;
                 Game.firstPerson = false;
-                break;
+                return Colors.orange + "angled";
+
             case 2:
                 Game.angledView = false;
                 Game.followingCam = true;
                 Game.firstPerson = false;
-                break;
+                return Colors.red + "third person";
+
             case 3:
                 Game.angledView = false;
                 Game.followingCam = true;
                 Game.firstPerson = true;
-                break;
+                return "\u00a7255000000255FIRST PERSON!!";
         }
-
-        Drawing.drawing.forceRedrawTerrain();
+        return "Something's wrong here";
     }
 }

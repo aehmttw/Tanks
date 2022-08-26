@@ -12,7 +12,9 @@ public class EventAddCustomMovable extends PersonalEvent
     public double posY;
     public String drawInstructions;
 
-    public EventAddCustomMovable() {}
+    public EventAddCustomMovable()
+    {
+    }
 
     public EventAddCustomMovable(CustomMovable m)
     {

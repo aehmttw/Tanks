@@ -11,9 +11,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
-import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.ScreenGame;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -26,7 +24,6 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -102,6 +99,8 @@ public class LWJGLWindow extends BaseWindow
 	public String currentTexture = null;
 
 	public double lastDrawTime = Double.MIN_VALUE;
+
+	private boolean prevFocused = true;
 
 	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
@@ -378,10 +377,14 @@ public class LWJGLWindow extends BaseWindow
 
 		glfwGetWindowSize(window, w, h);
 
-		this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
+		if (w[0] > 0 || h[0] > 0)
+			this.hasResized = absoluteWidth != w[0] || absoluteHeight != h[0];
 
-		absoluteWidth = w[0];
-		absoluteHeight = h[0];
+		if (w[0] > 0)
+			absoluteWidth = w[0];
+
+		if (h[0] > 0)
+			absoluteHeight = h[0];
 
 		glfwGetCursorPos(window, mx, my);
 		absoluteMouseX = mx[0];
@@ -428,10 +431,11 @@ public class LWJGLWindow extends BaseWindow
 				glfwSetWindowShouldClose(window, false);
 		}
 
-		Panel.focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
+		boolean focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
+		if (focused != prevFocused)
+			Panel.onChangeFocus(focused);
 
-		if (!Panel.focused && Game.pauseOnDefocus && Game.screen instanceof ScreenGame)
-			((ScreenGame) Game.screen).paused = true;
+		prevFocused = focused;
 
 		this.stopTiming();
 
@@ -587,6 +591,7 @@ public class LWJGLWindow extends BaseWindow
 		}
 		catch (Exception e)
 		{
+			System.err.println("Failed to load: " + image);
 			e.printStackTrace();
 		}
 	}
@@ -618,6 +623,7 @@ public class LWJGLWindow extends BaseWindow
 		}
 		catch (Exception e)
 		{
+			System.err.println("Failed to load: " + icon);
 			e.printStackTrace();
 		}
 	}
@@ -720,6 +726,11 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
+	public void clearDepth()
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
 	@Override
 	public String getClipboard()
 	{
@@ -747,7 +758,7 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public HashSet<Integer> getRawTextKeys()
+	public ArrayList<Integer> getRawTextKeys()
 	{
 		return this.textValidPressedKeys;
 	}
@@ -1087,6 +1098,11 @@ public class LWJGLWindow extends BaseWindow
 	public int createVBO()
 	{
 		return GL15.glGenBuffers();
+	}
+
+	public void freeVBO(int i)
+	{
+		GL15.glDeleteBuffers(i);
 	}
 
 	public void vertexBufferData(int id, FloatBuffer buffer)

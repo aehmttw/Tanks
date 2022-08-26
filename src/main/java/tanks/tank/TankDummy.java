@@ -2,25 +2,30 @@ package tanks.tank;
 
 import tanks.Game;
 
-public class TankDummy extends Tank
+/**
+ * A dummy tank used to practice your aim
+ * @see TankDummyLoadingScreen
+ */
+public class TankDummy extends TankAIControlled
 {
 	public TankDummy(String name, double x, double y, double angle)
 	{
-		super(name, x, y, Game.tile_size, 75, 40, 0);
-		this.angle = angle;
-		this.orientation = angle;
-		
-		this.coinValue = 0;
+		super(name, x, y, Game.tile_size, 75, 40, 0, angle, ShootAI.none);
+		this.enableMovement = false;
+		this.enableMineLaying = false;
+		this.bullet.maxLiveBullets = 0;
+		this.turretIdleSpeed = 0;
+		this.enableLookingAtTargetEnemy = false;
+
+		if (Game.tankTextures)
+		{
+			this.colorModel = TankModels.fixed.color;
+			this.emblem = "emblems/x.png";
+			this.emblemR = 50;
+			this.emblemG = 25;
+			this.coinValue = 0;
+		}
 
 		this.description = "A dummy tank used to practice your aim";
-	}
-
-    @Override
-	public void update()
-	{
-		this.vX *= 0.8;
-		this.vY *= 0.8;
-
-		super.update();
 	}
 }

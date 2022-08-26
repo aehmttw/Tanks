@@ -1,13 +1,13 @@
 package tanks.modapi.modlevels.Battle_Tanks_3.settings;
 
 import tanks.modapi.ModAPI;
-import tanks.modapi.modlevels.Battle_Tanks_3.Battle_Tanks_3;
+import tanks.modapi.modlevels.Battle_Tanks_3.BattleTanks3;
 
 public class Setting1
 {
     public static int messageNum = 0;
 
-    public static void setUp(Battle_Tanks_3 game)
+    public static void setUp(BattleTanks3 game)
     {
         messageNum = 0;
 
@@ -17,7 +17,7 @@ public class Setting1
 
         game.initGeneralTank(25, 15, 300);
 
-        game.createTree(21,9, 4);
+        game.createTree(21, 9, 4);
         game.createTree(24, 19, 4);
         game.createTree(77, 26, 3);
         game.createTree(91, 9, 5);
@@ -35,51 +35,60 @@ public class Setting1
         ModAPI.setObstacle(5, 6, "light", 1, 1);
     }
 
-    public static void draw(Battle_Tanks_3 game)
+    public static void draw(BattleTanks3 game)
     {
         if (game.timer > 2400 && game.generalTank.overrideDisplayState)
             game.generalTank.setOverrideState(false);
 
-        if (game.timer > 2200 && messageNum == 8) {
+        if (game.timer > 2200 && messageNum == 8)
+        {
             game.generalTank.setMessages("Good luck.");
             messageNum++;
         }
-        else if (game.timer > 1900 && messageNum == 7) {
+        else if (game.timer > 1900 && messageNum == 7)
+        {
             game.generalTank.setMessages("Then, blow the factory up. Just find some explosives and set them alight.");
             messageNum++;
         }
-        else if (game.timer > 1600 && messageNum == 6) {
+        else if (game.timer > 1600 && messageNum == 6)
+        {
             game.generalTank.setMessages("Go into the explosives factory and steal it, however you like.");
             messageNum++;
         }
-        else if (game.timer > 1400 && messageNum == 5) {
+        else if (game.timer > 1400 && messageNum == 5)
+        {
             game.generalTank.setMessages("Your first mission is to acquire their journal.");
             messageNum++;
         }
-        else if (game.timer > 1200 && messageNum == 4) {
+        else if (game.timer > 1200 && messageNum == 4)
+        {
             game.generalTank.setMessages("Let's go. Follow me.");
             messageNum++;
         }
-        else if (game.timer > 1000 && messageNum == 3) {
+        else if (game.timer > 1000 && messageNum == 3)
+        {
             game.generalTank.setMessages("So we must act now, to avoid being conquered in the future.");
             messageNum++;
         }
-        else if (game.timer > 700 && messageNum == 2) {
+        else if (game.timer > 700 && messageNum == 2)
+        {
             game.generalTank.setMessages("But one of our enemies has already sent a warning saying that there will be war soon.");
             messageNum++;
         }
-        else if (game.timer > 500 && messageNum == 1) {
+        else if (game.timer > 500 && messageNum == 1)
+        {
             game.generalTank.setMessages("You managed to conquer many small cities, so good job on that.");
             messageNum++;
         }
-        else if (game.timer > 300 && messageNum == 0) {
+        else if (game.timer > 300 && messageNum == 0)
+        {
             game.generalTank.setMessages("Hey there, I'm the general.");
             game.generalTank.setOverrideState(true);
             messageNum++;
         }
     }
 
-    public static void update(Battle_Tanks_3 game)
+    public static void update(BattleTanks3 game)
     {
         if (game.timer < 300)
             game.generalTank.vX = -1.8;

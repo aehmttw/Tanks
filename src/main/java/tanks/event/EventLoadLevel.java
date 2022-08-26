@@ -1,11 +1,13 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Crusade;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
+import tanks.tank.TankAIControlled;
 
 public class EventLoadLevel extends PersonalEvent
 {
@@ -22,6 +24,18 @@ public class EventLoadLevel extends PersonalEvent
 	public EventLoadLevel(Level l)
 	{
 		this.level = l.levelString;
+
+		if (Crusade.crusadeMode)
+		{
+			StringBuilder s = new StringBuilder("tanks\n");
+
+			for (TankAIControlled t : l.customTanks)
+				s.append(t.toString()).append("\n");
+
+			s.append("level\n");
+
+			this.level = s + level;
+		}
 
 		this.startTime = l.startTime;
 		this.disableFriendlyFire = l.disableFriendlyFire;

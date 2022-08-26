@@ -155,6 +155,7 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
                 , crusade.name.replace("_", " "));
 
         crusadeName.enableCaps = true;
+        crusadeName.maxChars = 18;
 
         this.updateDownloadButton();
     }
@@ -166,9 +167,9 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
             int j = i;
-            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), () ->
+            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levels.get(i).levelName.replace("_", " "), () ->
             {
-                String level = crusade.levels.get(j);
+                String level = crusade.levels.get(j).levelString;
 
                 ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, j, Game.screen);
                 new Level(level).loadLevel(s);

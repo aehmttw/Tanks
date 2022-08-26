@@ -2,10 +2,8 @@ package tanks.gui.screen;
 
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
-import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
@@ -140,16 +138,17 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
                 Drawing.drawing.playSound("lose.ogg");
         }*/
 
-        if (Panel.win)
+        if (Panel.levelPassed)
         {
-            this.music = "win_music.ogg";
-
             if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks)
             {
                 this.nextLevel.posY += this.objYSpace / 2;
                 this.quit.posY -= this.objYSpace / 2;
             }
         }
+
+        if (Panel.win)
+            this.music = "win_music.ogg";
         else
             this.music = "lose_music.ogg";
 
@@ -172,7 +171,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
         save.posX = Drawing.drawing.interfaceSizeX - Drawing.drawing.interfaceScaleZoom * 40;
         save.posY = Drawing.drawing.interfaceSizeY - 50 - Drawing.drawing.interfaceScaleZoom * 40;
-        save.image = "save.png";
+        save.image = "icons/save.png";
 
         save.imageSizeX = this.objHeight;
         save.imageSizeY = this.objHeight;
@@ -281,8 +280,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             }
         }
 
-        if (Game.showSpeedrunTimer)
-            SpeedrunTimer.draw();
+        SpeedrunTimer.draw();
 
         if ((Panel.win && Game.effectsEnabled) || Level.isDark())
             Drawing.drawing.setColor(255, 255, 255);

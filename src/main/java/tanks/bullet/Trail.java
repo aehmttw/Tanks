@@ -28,11 +28,13 @@ public class Trail implements IDrawable
     public double frontG;
     public double frontB;
     public double frontA;
+    protected double frontAngleOffset;
 
     public double backR;
     public double backG;
     public double backB;
     public double backA;
+    protected double backAngleOffset;
 
     public boolean glow;
     public double luminosity;
@@ -40,18 +42,20 @@ public class Trail implements IDrawable
     public boolean frontCircle = true;
     public boolean backCircle = true;
     public boolean showOutsides = true;
+    public boolean showOutsideFront = true;
+    public boolean showOutsideBack = true;
 
     public double speed;
 
     public Movable movable;
 
-    public Trail(Movable m, double backX, double backY, double backWidth, double frontWidth, double length, double angle,
+    public Trail(Movable m, double speed, double backX, double backY, double backWidth, double frontWidth, double length, double angle,
                  double frontR, double frontG, double frontB, double frontA,
                  double backR, double backG, double backB, double backA,
                  boolean glow, double luminosity)
     {
         this.movable = m;
-        this.speed = Math.sqrt(m.vX * m.vX + m.vY * m.vY);
+        this.speed = speed;
 
         this.angle = angle;
         this.backX = backX;
@@ -96,6 +100,20 @@ public class Trail implements IDrawable
         return this.currentLength;
     }
 
+    public void setFrontAngleOffset(double offset)
+    {
+        this.frontCircle = false;
+        this.showOutsideFront = false;
+        this.frontAngleOffset = offset;
+    }
+
+    public void setBackAngleOffset(double offset)
+    {
+        this.backCircle = false;
+        this.showOutsideBack = false;
+        this.backAngleOffset = offset;
+    }
+
     @Override
     public void draw()
     {
@@ -103,6 +121,12 @@ public class Trail implements IDrawable
 
         double ox = Math.cos(this.angle + Math.PI / 2);
         double oy = Math.sin(this.angle + Math.PI / 2);
+
+        double oxFront = Math.cos(this.angle + this.frontAngleOffset + Math.PI / 2);
+        double oyFront = Math.sin(this.angle + this.frontAngleOffset + Math.PI / 2);
+
+        double oxBack = Math.cos(this.angle + this.backAngleOffset + Math.PI / 2);
+        double oyBack = Math.sin(this.angle + this.backAngleOffset + Math.PI / 2);
 
         double frac1 = (this.age - delay) / this.maxLength;
         double frac2 = (this.age + this.currentLength - delay) / this.maxLength;
@@ -125,7 +149,7 @@ public class Trail implements IDrawable
                         this.frontB * (1 - frac1) + this.backB * frac1,
                         (this.frontA * (1 - frac1) + this.backA * frac1) * opacity, this.luminosity);
 
-                if (frontCircle || showOutsides)
+                if (frontCircle || (showOutsides && showOutsideFront))
                 {
                     Game.game.window.shapeRenderer.setBatchMode(true, false, depth, this.glow, false);
 
@@ -141,8 +165,8 @@ public class Trail implements IDrawable
 
                 Game.game.window.shapeRenderer.setBatchMode(true, true, depth, this.glow, false);
 
-                Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, ox * frontWidth, oy * frontWidth, 0);
-                Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, -ox * frontWidth, -oy * frontWidth, 0);
+                Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, oxFront * frontWidth, oyFront * frontWidth, 0);
+                Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, -oxFront * frontWidth, -oyFront * frontWidth, 0);
             }
             else
             {
@@ -178,12 +202,12 @@ public class Trail implements IDrawable
                         this.frontB * (1 - frac2) + this.backB * frac2,
                         (this.frontA * (1 - frac2) + this.backA * frac2) * opacity, this.luminosity);
 
-                Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, -ox * backWidth, -oy * backWidth, 0);
-                Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, ox * backWidth, oy * backWidth, 0);
+                Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, -oxBack * backWidth, -oyBack * backWidth, 0);
+                Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, oxBack * backWidth, oyBack * backWidth, 0);
 
                 Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
-                if (backCircle || showOutsides)
+                if (backCircle || (showOutsides && showOutsideBack))
                 {
                     Game.game.window.shapeRenderer.setBatchMode(true, false, depth, this.glow, false);
 

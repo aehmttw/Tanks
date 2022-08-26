@@ -17,6 +17,8 @@ public class Model implements IModel
     public ModelPart[] models;
     public BaseWindow window;
 
+    public String file;
+
     public double[] bonesMatrix = new double[]{1, 0, 0,  0, 1, 0,  0, 0, 1};
 
     public Model(BaseWindow window, BaseFileManager fileManager, String dir)
@@ -39,6 +41,8 @@ public class Model implements IModel
     public Model(BaseWindow window, String dir, ArrayList<String> lines)
     {
         this();
+
+        this.file = dir;
 
         this.window = window;
 
@@ -282,6 +286,12 @@ public class Model implements IModel
             m.draw(posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll, depthTest);
     }
 
+    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
+    {
+        for (ModelPart m: this.models)
+            m.draw2D(posX, posY, posZ, sX, sY, sZ);
+    }
+
     public static class Material
     {
         public String name;
@@ -347,5 +357,11 @@ public class Model implements IModel
             this.offY = this.posY - b.posY;
             this.offZ = this.posZ - b.posZ;
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.file;
     }
 }

@@ -34,8 +34,8 @@ public class TankRemote extends Tank
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = null;
-		this.turret.size = ts;
-		this.turret.length = tl;
+		this.turretSize = ts;
+		this.turretLength = tl;
 		this.invulnerable = true;
 		this.description = "A tank controlled by the server";
 	}
@@ -51,6 +51,7 @@ public class TankRemote extends Tank
 		this.isRemote = true;
 		this.isCopy = false;
 		this.tank = t;
+		this.mandatoryKill = t.mandatoryKill;
 
 		this.copyTank(t);
 
@@ -61,20 +62,37 @@ public class TankRemote extends Tank
 
 	public void copyTank(Tank t)
 	{
-		this.turret.length = t.turret.length;
-		this.turret.size = t.turret.size;
+		this.turretLength = t.turretLength;
+		this.turretSize = t.turretSize;
 		this.colorR = t.colorR;
 		this.colorG = t.colorG;
 		this.colorB = t.colorB;
-		this.turret.colorR = t.turret.colorR;
-		this.turret.colorG = t.turret.colorG;
-		this.turret.colorB = t.turret.colorB;
-		this.texture = t.texture;
+		this.secondaryColorR = t.secondaryColorR;
+		this.secondaryColorG = t.secondaryColorG;
+		this.secondaryColorB = t.secondaryColorB;
+		this.enableTertiaryColor = t.enableTertiaryColor;
+		this.tertiaryColorR = t.tertiaryColorR;
+		this.tertiaryColorG = t.tertiaryColorG;
+		this.tertiaryColorB = t.tertiaryColorB;
+		this.emblem = t.emblem;
+		this.emblemR = t.emblemR;
+		this.emblemG = t.emblemG;
+		this.emblemB = t.emblemB;
 		this.description = t.description;
 		this.baseModel = t.baseModel;
 		this.colorModel = t.colorModel;
 		this.turretBaseModel = t.turretBaseModel;
 		this.turretModel = t.turretModel;
+		this.mandatoryKill = t.mandatoryKill;
+		this.luminance = t.luminance;
+		this.glowIntensity = t.glowIntensity;
+		this.glowSize = t.glowSize;
+		this.lightSize = t.lightSize;
+		this.lightIntensity = t.lightIntensity;
+		this.bullet = t.bullet;
+		this.mine = t.mine;
+		this.musicTracks = t.musicTracks;
+		this.fromRegistry = t.fromRegistry;
 	}
 
 	@Override

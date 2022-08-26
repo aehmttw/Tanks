@@ -18,8 +18,8 @@ public class EventShowCrusadeStats extends PersonalEvent
     public String name;
     public String levels;
     public String stats;
-
     public String allItems;
+    public String crusade;
 
     public EventShowCrusadeStats()
     {
@@ -27,6 +27,7 @@ public class EventShowCrusadeStats extends PersonalEvent
             return;
 
         this.name = Crusade.currentCrusade.name;
+        this.crusade = Crusade.currentCrusade.contents;
 
         StringBuilder l = new StringBuilder();
 
@@ -69,7 +70,7 @@ public class EventShowCrusadeStats extends PersonalEvent
     @Override
     public void execute()
     {
-        Crusade.currentCrusade = new Crusade("", this.name);
+        Crusade.currentCrusade = new Crusade(this.crusade, this.name);
 
         String[] levels = this.levels.split("\n");
 
@@ -127,6 +128,7 @@ public class EventShowCrusadeStats extends PersonalEvent
         NetworkUtils.writeString(b, this.levels);
         NetworkUtils.writeString(b, this.stats);
         NetworkUtils.writeString(b, this.allItems);
+        NetworkUtils.writeString(b, this.crusade);
     }
 
     @Override
@@ -136,5 +138,6 @@ public class EventShowCrusadeStats extends PersonalEvent
         this.levels = NetworkUtils.readString(b);
         this.stats = NetworkUtils.readString(b);
         this.allItems = NetworkUtils.readString(b);
+        this.crusade = NetworkUtils.readString(b);
     }
 }

@@ -132,4 +132,10 @@ public class VBOPosedModel extends PosedModel
             glPopMatrix();
         }
     }
+
+    @Override
+    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
+    {
+
+    }
 }

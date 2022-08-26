@@ -34,19 +34,55 @@ public class ButtonList
     public double objXSpace = 380;
     public double objYSpace = 60;
 
+    public double imageR = 255;
+    public double imageG = 255;
+    public double imageB = 255;
+
     public boolean translate = false;
 
     public boolean hideText = false;
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", () -> page++);
+    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            page++;
+        }
+    }
+    );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", () -> page--);
+    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            page--;
+        }
+    }
+    );
 
-    Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", () -> page = 0);
+    Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            page = 0;
+        }
+    }
+    );
 
-    Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", () -> page = (buttons.size() - 1) / rows / columns);
+    Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            page = (buttons.size() - 1) / rows / columns;
+        }
+    }
+    );
 
     public ButtonList(ArrayList<Button> buttons, int page, double xOffset, double yOffset)
     {
@@ -91,23 +127,23 @@ public class ButtonList
         this.first.posX = this.previous.posX - this.objXSpace / 2 - this.objHeight / 2;
         this.first.posY = this.previous.posY;
 
-        this.next.image = "play.png";
+        this.next.image = "icons/forward.png";
         this.next.imageSizeX = 25;
         this.next.imageSizeY = 25;
         this.next.imageXOffset = 145;
 
-        this.previous.image = "play.png";
-        this.previous.imageSizeX = -25;
+        this.previous.image = "icons/back.png";
+        this.previous.imageSizeX = 25;
         this.previous.imageSizeY = 25;
         this.previous.imageXOffset = -145;
 
-        this.last.image = "last.png";
+        this.last.image = "icons/last.png";
         this.last.imageSizeX = 20;
         this.last.imageSizeY = 20;
         this.last.imageXOffset = 0;
 
-        this.first.image = "last.png";
-        this.first.imageSizeX = -20;
+        this.first.image = "icons/first.png";
+        this.first.imageSizeX = 20;
         this.first.imageSizeY = 20;
         this.first.imageXOffset = 0;
 
@@ -125,6 +161,10 @@ public class ButtonList
             buttons.get(i).sizeX = this.objWidth;
             buttons.get(i).sizeY = this.objHeight;
             buttons.get(i).translated = this.translate;
+            buttons.get(i).imageR = this.imageR;
+            buttons.get(i).imageG = this.imageG;
+            buttons.get(i).imageB = this.imageB;
+
 
             if (hideText)
                 buttons.get(i).text = "";
@@ -149,16 +189,16 @@ public class ButtonList
 
             Button up = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2 - b.sizeY, b.posY, b.sizeY * 0.8, b.sizeY * 0.8, "", () -> reorderBehavior.accept(finalI - 1, finalI));
 
-            up.image = "vertical_arrow.png";
+            up.image = "icons/arrow_up.png";
             up.imageSizeX = 15;
             up.imageSizeY = 15;
             this.upButtons.add(up);
 
             Button down = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2, b.posY, b.sizeY * 0.8, b.sizeY * 0.8, "", () -> reorderBehavior.accept(finalI + 1, finalI));
 
-            down.image = "vertical_arrow.png";
+            down.image = "icons/arrow_down.png";
             down.imageSizeX = 15;
-            down.imageSizeY = -15;
+            down.imageSizeY = 15;
             this.downButtons.add(down);
         }
     }
@@ -278,7 +318,13 @@ public class ButtonList
 
     public void filter(String s)
     {
-        if (s != null && !s.equals(""))
-            buttons.removeIf(b -> !b.text.toLowerCase().contains(s.toLowerCase()));
+        for (int i = 0; i < this.buttons.size(); i++)
+        {
+            if (!buttons.get(i).text.toLowerCase().contains(s.toLowerCase()))
+            {
+                buttons.remove(i);
+                i--;
+            }
+        }
     }
 }

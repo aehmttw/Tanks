@@ -25,7 +25,7 @@ public class FontRenderer extends BaseFontRenderer
 				"'abcdefghijklmno" +
 				"pqrstuvwxyz{|}~`" +
 				"âăîşţàçæèéêëïôœù" +
-				"úûüÿ";
+				"úûüÿáíóñ¡¿äöå";
 		this.charSizes = new int[]
 				{
 						3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 1, 5, 1, 5,
@@ -35,7 +35,7 @@ public class FontRenderer extends BaseFontRenderer
 						2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
 						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2,
 						5, 5, 5, 5, 3, 5, 5, 7, 5, 5, 5, 5, 3, 5, 7, 5,
-						5, 5, 5, 5
+						5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5
 				};
 
 		this.image = fontFile;
@@ -69,8 +69,7 @@ public class FontRenderer extends BaseFontRenderer
 		{
 			if (c[i] == '\u00C2')
 				continue;
-
-			if (c[i] == '\u00A7')
+			else if (c[i] == '\u00A7')
 			{
 				int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
@@ -96,8 +95,7 @@ public class FontRenderer extends BaseFontRenderer
 		{
 			if (c[i] == '\u00C2')
 				continue;
-
-			if (c[i] == '\u00A7')
+			else if (c[i] == '\u00A7')
 			{
 				int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 				int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
@@ -121,8 +119,7 @@ public class FontRenderer extends BaseFontRenderer
 		{
 			if (c[i] == '\u00C2')
 				continue;
-
-			if (c[i] == '\u00A7')
+			else if (c[i] == '\u00A7')
 				i += 12;
 			else if (this.chars.indexOf(c[i]) == -1)
 				c[i] = '?';

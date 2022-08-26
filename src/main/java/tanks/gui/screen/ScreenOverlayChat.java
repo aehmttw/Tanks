@@ -1,10 +1,12 @@
 package tanks.gui.screen;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
+import tanks.Panel;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
-import tanks.tank.Tank;
-import tanks.tank.Turret;
+import tanks.tank.TankModels;
 
 import java.util.ArrayList;
 
@@ -42,7 +44,7 @@ public class ScreenOverlayChat
         if (chatbox != null)
         {
             if (isDark())
-                chatbox.defaultTextColor = Colors.white;
+                chatbox.defaultTextColor = "\u00A7255255255255";
 
             chatbox.draw(persistent);
             long time = System.currentTimeMillis();
@@ -130,17 +132,17 @@ public class ScreenOverlayChat
                         if (c.enableTankIcon)
                         {
                             Drawing.drawing.setColor(c.r2, c.g2, c.b2);
-                            Drawing.drawing.drawInterfaceModel(Tank.base_model, x, y, size, size, 0);
+                            Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, size, size, 0);
 
                             Drawing.drawing.setColor(c.r1, c.g1, c.b1);
-                            Drawing.drawing.drawInterfaceModel(Tank.color_model, x, y, size, size, 0);
+                            Drawing.drawing.drawInterfaceModel(TankModels.tank.color, x, y, size, size, 0);
 
                             Drawing.drawing.setColor(c.r2, c.g2, c.b2);
 
-                            Drawing.drawing.drawInterfaceModel(Turret.turret_model, x, y, size, size, 0);
+                            Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, size, size, 0);
 
                             Drawing.drawing.setColor((c.r1 + c.r2) / 2, (c.g1 + c.g2) / 2, (c.b1 + c.b2) / 2);
-                            Drawing.drawing.drawInterfaceModel(Turret.base_model, x, y, size, size, 0);
+                            Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
                         }
 
                         for (int j = c.lines.size() - 1; j >= 0; j--)

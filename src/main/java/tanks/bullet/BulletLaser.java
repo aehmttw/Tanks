@@ -6,6 +6,10 @@ import tanks.Movable;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
+/**
+ * A laser which can be fired by a Tank.
+ * @see tanks.tank.TankRed
+ */
 public class BulletLaser extends BulletInstant
 {
 	public static String bullet_name = "laser";
@@ -22,14 +26,7 @@ public class BulletLaser extends BulletInstant
 		this.itemSound = "laser.ogg";
 	}
 
-	public BulletLaser(double x, double y, int bounces, Tank t)
-	{
-		this(x, y, bounces, t, false, null);
-	}
-
-	/** Do not use, instead use the constructor with primitive data types. */
-	@Deprecated
-	public BulletLaser(Double x, Double y, Integer bounces, Tank t, ItemBullet ib)
+	public BulletLaser(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
 		this(x, y, bounces, t, false, ib);
 	}

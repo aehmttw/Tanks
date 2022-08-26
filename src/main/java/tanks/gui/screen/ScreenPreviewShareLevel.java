@@ -7,6 +7,7 @@ import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;

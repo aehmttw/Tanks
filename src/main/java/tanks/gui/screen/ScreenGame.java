@@ -5,11 +5,11 @@ import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.event.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
+import tanks.modapi.menus.Minimap;
 import tanks.gui.SpeedrunTimer;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
@@ -17,8 +17,6 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;
 import tanks.modapi.ModAPI;
 import tanks.modapi.ModLevel;
-import tanks.modapi.menus.FixedMenu;
-import tanks.modapi.menus.Minimap;
 import tanks.network.Client;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
@@ -32,6 +30,8 @@ import java.util.HashSet;
 
 public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGameScreen
 {
+	public static float sensMultiplier = 1;
+
 	public boolean playing = false;
 	public boolean paused = false;
 	public boolean savedRemainingTanks = false;
@@ -50,6 +50,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean cancelCountdown = false;
 	public String name = null;
 
+	public static boolean newItemsNotification = false;
+	public static String lastShop = "";
 	public ArrayList<Item> shop = new ArrayList<>();
 	public boolean screenshotMode = false;
 
@@ -80,6 +82,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public double readyPanelCounter = 0;
 	public double playCounter = 0;
 
+	public double drawFOVCounter = 0;
+	public double drawZoomCounter = 0;
+
 	public double timeRemaining;
 	public double timePassed = 0;
 	public static double lastTimePassed = 0;
@@ -96,6 +101,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public HashSet<String> tankMusics = new HashSet<>();
 	protected boolean musicStarted = false;
 
+	public boolean zoomPressed = false;
+	public boolean zoomScrolled = false;
+	public double pitch = 0;
+
 	public static boolean setCameraPos = false;
 	public static double cameraX = 0;
 	public static double cameraY = 0;
@@ -109,41 +118,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean remoteLevelEndConditionMet = false;
 	public static boolean skipCountdown = false;
 
-	public double drawFovCounter = 0;
-	public double drawZoomCounter = 0;
-
-	/**
-	 * <code>drawables</code> is a list of {@link ArrayList}s, which specify the order of its contents to be drawn. Smaller numbers are drawn first, and larger numbers are drawn last.<br>
-	 * Add {@link IDrawable}s to it to be drawn accordingly.<br><br>
-	 * **/
 	@SuppressWarnings("unchecked")
-	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[11]);
+	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
 	Button play = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Play", () ->
 	{
 		playing = true;
-		Game.playerTank.cooldown = 20;
-	});
-
-	Button spectateButton = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, 350, 40, "Spectate", new Runnable() {
-		@Override
-		public void run()
-		{
-			if (ScreenPartyLobby.isClient)
-				Game.eventsOut.add(new EventPlayerSpectate());
-			else
-			{
-				if (ScreenPartyHost.includedPlayers.remove(Game.player.clientID) && ScreenPartyHost.readyPlayers.remove(Game.player))
-					Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
-
-				Game.removeMovables.add(Game.playerTank);
-				Game.eventsOut.add(new EventRemoveTank(Game.playerTank));
-			}
-
-			spectateButton.enabled = false;
-			ready = true;
-		}
-	});
+		Game.playerTank.setBufferCooldown(20);
+	}
+	);
 
 	Button readyButton = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Ready", () ->
 	{
@@ -164,8 +147,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 		}
 		ready = true;
-		spectateButton.enabled = true;
-	});
+	}
+	);
 
 	Button startNow = new Button( 200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Start now", () ->
 	{
@@ -194,55 +177,67 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			if (shopList != null)
 			{
+				newItemsNotification = false;
 				cancelCountdown = true;
 				shopScreen = true;
 			}
 		}
-	}
+	}, "New items available in shop!"
 	);
 
 	Button pause = new Button(0, -1000, 70, 70, "", () ->
 	{
 		paused = true;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
-	Button zoom = new Button(0, -1000, 70, 70, "", () -> Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera
-	);
+	Button zoom = new Button(0, -1000, 70, 70, "", () ->
+	{
+		Panel.autoZoom = false;
+		Panel.zoomTarget = -1;
+		Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+	});
+
+	Button zoomAuto = new Button(0, -1000, 70, 70, "", () ->
+	{
+		Panel.autoZoom = !Panel.autoZoom;
+		if (!Panel.autoZoom)
+			Panel.zoomTarget = -1;
+	});
 
 	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Continue playing", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Continue playing", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Close menu", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Close menu", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
 	Button closeMenuClient = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace / 2, this.objWidth, this.objHeight, "Close menu", () ->
 	{
 		paused = false;
-		Game.playerTank.cooldown = 20;
+		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
@@ -292,7 +287,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Game.silentCleanUp();
 
-		if (Game.currentLevel instanceof ModLevel)
+		if (!(Game.currentLevel instanceof ModLevel))
+		{
+			Level level = new Level(Game.currentLevelString);
+			level.loadLevel();
+		}
+		else
 		{
 			try
 			{
@@ -303,13 +303,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			{
 				Game.exitToCrash(e);
 			}
-		}
-		else if (Game.currentGame != null && Game.currentGame.customRestart)
-			Game.currentGame.onLevelRestart();
-		else
-		{
-			Level level = new Level(Game.currentLevelString);
-			level.loadLevel();
 		}
 
 		ScreenGame s = new ScreenGame();
@@ -336,24 +329,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (ScreenInterlevel.fromModdedLevels)
 		{
-			if (Game.currentGame != null)
-				Game.currentGame.onLevelRestart();
-
-			else if (Game.currentLevel instanceof ModLevel)
+			try
 			{
-				try
-				{
-					Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
-					Game.currentLevel.loadLevel();
-				}
-				catch (Exception e)
-				{
-					Game.exitToCrash(e);
-				}
+				Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
+				Game.currentLevel.loadLevel();
+			}
+			catch (Exception e)
+			{
+				Game.exitToCrash(e);
 			}
 		}
-		else if (Game.currentGame != null && Game.currentGame.customRestart)
-			Game.currentGame.onLevelRestart();
 		else
 		{
 			Level level = new Level(Game.currentLevelString);
@@ -395,16 +380,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		Game.cleanUp();
 		System.gc();
-
-		if (ScreenInterlevel.fromModdedLevels)
-			Game.screen = new ScreenModdedLevels();
-		else
-			Game.screen = new ScreenPlaySavedLevels();
-
 		Panel.panel.zoomTimer = 0;
-		Game.currentGame = null;
+		Game.screen = new ScreenPlaySavedLevels();
 		ScreenInterlevel.fromSavedLevels = false;
-		ScreenInterlevel.fromModdedLevels = false;
 
 		if (ScreenPartyHost.isServer)
 		{
@@ -425,7 +403,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		ScreenPartyHost.includedPlayers.clear();
 		Game.eventsOut.add(new EventReturnToLobby());
 		versus = false;
-		Game.currentGame = null;
 	}
 	);
 
@@ -465,13 +442,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (!finishedQuick)
 		{
-			for (Tank t : Tank.idMap.values())
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				if (t instanceof TankPlayer && !t.destroy)
-					((TankPlayer) t).player.remainingLives--;
-
-				else if (t instanceof TankPlayerRemote && t.destroy)
-					((TankPlayerRemote) t).player.remainingLives--;
+				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
+					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
+				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
+					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
 			}
 		}
 
@@ -487,13 +463,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, false);
 
 		Crusade.currentCrusade.retry = true;
-		Crusade.currentCrusade.livingTankIDs.clear();
-		for (Movable m : Game.movables)
-		{
-			if (!savedRemainingTanks && m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
-				Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-		}
-		savedRemainingTanks = false;
+
+		this.saveRemainingTanks();
 
 		Crusade.currentCrusade.saveHotbars();
 		Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
@@ -528,12 +499,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		if (!finishedQuick)
 		{
-			for (Tank t : Tank.idMap.values())
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				if (t instanceof TankPlayer && !t.destroy)
-					((TankPlayer) t).player.remainingLives--;
-				else if (t instanceof TankPlayerRemote && !t.destroy)
-					((TankPlayerRemote) t).player.remainingLives--;
+				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
+					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
+				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
+					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
 			}
 		}
 
@@ -547,13 +518,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, false);
 
 		Crusade.currentCrusade.retry = true;
-		Crusade.currentCrusade.livingTankIDs.clear();
-		for (Movable m : Game.movables)
-		{
-			if (!savedRemainingTanks && m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
-				Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-		}
-		savedRemainingTanks = false;
+
+		this.saveRemainingTanks();
 
 		Panel.panel.zoomTimer = 0;
 		Game.silentCleanUp();
@@ -592,7 +558,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		shopScreen = false;
 		npcShopScreen = false;
-	});
+	}
+
+	);
 
 	public ArrayList<Button> shopItemButtons = new ArrayList<>();
 	public ButtonList shopList;
@@ -600,9 +568,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public ScreenGame()
 	{
-		this.selfBatch = false;
+		if (remoteCustomLevelEndCondition)
+		{
+			remoteCustomLevelEndCondition = false;
+			remoteLevelEndCondition = true;
+		}
 
-		setCameraPos = false;
+		this.selfBatch = false;
+		this.enableMargins = !Game.followingCam;
 
 		introMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/ready_music_intro_length.txt").get(0));
 		introBattleMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
@@ -614,7 +587,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Game.clouds.clear();
 
-		if (Game.currentGame != null || Game.currentLevel instanceof ModLevel)
+		if (Game.currentLevel instanceof ModLevel)
 		{
 			ScreenInterlevel.fromModdedLevels = true;
 			ScreenInterlevel.fromSavedLevels = false;
@@ -623,8 +596,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		else
 		{
 			ScreenInterlevel.fromModdedLevels = false;
+			ModAPI.menuGroup.clear();
 		}
-		ModAPI.menuGroup.clear();
 
 		Game.startTime = Game.currentLevel.startTime;
 		ScreenGame.lastTimePassed = 0;
@@ -633,14 +606,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			this.music = "waiting_music.ogg";
 			cancelCountdown = true;
-
-			this.enterShop.posY -= 60;
 		}
 
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 
 		for (int i = 0; i < this.drawables.length; i++)
+		{
 			this.drawables[i] = new ArrayList<>();
+		}
 
 		slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0.5, 0.5, -1);
 		slantTranslation = new Translation(Game.game.window, 0, 0, 0);
@@ -707,7 +680,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 
 		if (Game.currentLevel != null && Game.currentLevel.timed)
+		{
 			this.timeRemaining = Game.currentLevel.timer;
+		}
 	}
 
 	public ScreenGame(String s)
@@ -765,24 +740,23 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void initializeShopList()
 	{
+		StringBuilder s = new StringBuilder();
+		for (Button b: this.shopItemButtons)
+			s.append(b.text);
+
+		if (!lastShop.equals(s.toString()))
+			newItemsNotification = true;
+
+		lastShop = s.toString();
+
 		this.shopList = new ButtonList(this.shopItemButtons, 0, 0, (int) shopOffset, -30);
 	}
 
 	@Override
 	public void update()
 	{
-		this.enableMargins = !Game.followingCam;
-
-		if (skipCountdown)
-			this.playing = true;
-
-		skipCountdown = false;
-
-
-		if (remoteCustomLevelEndCondition)
-			this.remoteLevelEndCondition = true;
-
-		remoteCustomLevelEndCondition = false;
+		if (Game.currentGame != null)
+			Game.currentGame.update();
 
 		if (Game.currentLevel instanceof ModLevel)
 			((ModLevel) Game.currentLevel).update();
@@ -790,51 +764,135 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)
 			this.readyButton.function.run();
 
-		Game.player.hotbar.update();
-		minimap.update();
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F8))
+		{
+			Game.recordMode = !Game.recordMode;
+			Game.game.window.validPressedKeys.remove(InputCodes.KEY_F8);
+		}
+
+		if (Game.game.input.zoom.isValid())
+		{
+			this.drawFOVCounter = 300;
+			zoomScrolled = false;
+			zoomPressed = true;
+			Game.game.input.zoom.invalidate();
+		}
 
 		if (Game.game.input.perspective.isValid())
 		{
-			Game.game.input.perspective.invalidate();
 			ScreenOptionsGraphics.changePerspective();
+			Game.game.input.perspective.invalidate();
 		}
 
-		if (Game.game.input.autoZoom.isValid())
+		if (playing)
 		{
-			Game.game.input.autoZoom.invalidate();
-			Game.autoZoom = !Game.autoZoom;
+			if (Game.game.input.zoomIn.isPressed())
+			{
+				this.drawFOVCounter = 300;
 
+				if (Panel.autoZoom)
+				{
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+					this.drawZoomCounter = 300;
+				}
+
+				Panel.autoZoom = false;
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.game.input.zoomOut.isPressed())
+			{
+				this.drawFOVCounter = 300;
+
+				if (Panel.autoZoom)
+				{
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+					this.drawZoomCounter = 300;
+				}
+
+				Panel.autoZoom = false;
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.02 * Panel.frameFrequency * Drawing.drawing.unzoomedScale);
+			}
+
+			if (!Game.followingCam && Game.playerTank != null && !Game.playerTank.destroy && Panel.autoZoom)
+				Panel.zoomTarget = Game.playerTank.getAutoZoom();
+
+			if (!Game.followingCam && spectatingTank != null && !spectatingTank.destroy && Panel.autoZoom)
+				Panel.zoomTarget = spectatingTank.getAutoZoom();
+		}
+
+		if (Game.game.input.zoom.isPressed() && playing)
+		{
+			if (Panel.autoZoom)
+			{
+				Panel.zoomTarget = Panel.panel.zoomTimer;
+				this.drawZoomCounter = 300;
+			}
+
+			Panel.autoZoom = false;
+
+			if (Game.game.window.validScrollUp)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollUp = false;
+				Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.1 * Drawing.drawing.unzoomedScale);
+			}
+
+			if (Game.game.window.validScrollDown)
+			{
+				zoomScrolled = true;
+				Drawing.drawing.movingCamera = true;
+
+				if (Panel.zoomTarget == -1)
+					Panel.zoomTarget = Panel.panel.zoomTimer;
+
+				Game.game.window.validScrollDown = false;
+				Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.1 * Drawing.drawing.unzoomedScale);
+			}
+		}
+		else if (zoomPressed)
+		{
+			if (!zoomScrolled)
+			{
+				Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
+				Panel.zoomTarget = -1;
+			}
+
+			zoomPressed = false;
+		}
+
+		if (Game.game.input.zoomAuto.isValid() && playing)
+		{
 			this.drawZoomCounter = 300;
-			this.drawFovCounter = 0;
-		}
 
-		if (!Game.followingCam && Game.game.input.zoomIn.isPressed())
-		{
-			if (Game.autoZoom)
-				this.drawZoomCounter = 300;
-
-			Drawing.drawing.movingCamera = true;
-			Game.autoZoom = false;
-
-			if (Panel.zoomTarget == -1)
+			if (Panel.autoZoom)
 				Panel.zoomTarget = Panel.panel.zoomTimer;
 
-			Panel.zoomTarget = Math.min(1, Panel.zoomTarget + 0.01 * Panel.frameFrequency);
+			Game.game.input.zoomAuto.invalidate();
+			Panel.autoZoom = !Panel.autoZoom;
 		}
 
-		if (Game.game.input.zoomOut.isPressed())
-		{
-			if (Game.autoZoom)
-				this.drawZoomCounter = 300;
-
-			Drawing.drawing.movingCamera = true;
-			Game.autoZoom = false;
-
-			if (Panel.zoomTarget == -1)
-				Panel.zoomTarget = Panel.panel.zoomTimer;
-
-			Panel.zoomTarget = Math.max(0, Panel.zoomTarget - 0.01 * Panel.frameFrequency);
-		}
+		Game.player.hotbar.update();
+		minimap.update();
 
 		for (Obstacle o: Game.obstacles)
 		{
@@ -915,14 +973,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					this.prevTankMusics.addAll(this.tankMusics);
 					this.tankMusics.clear();
 
-					for (Movable m : Game.movables)
+					if (!this.paused)
 					{
-						if (m instanceof Tank && !m.destroy)
+						for (Movable m : Game.movables)
 						{
-							ArrayList<String> s = Game.registryTank.tankMusics.get(((Tank) m).name);
-
-							if (s != null)
-								this.tankMusics.addAll(s);
+							if (m instanceof Tank && !m.destroy)
+							{
+								this.tankMusics.addAll(((Tank) m).musicTracks);
+							}
 						}
 					}
 
@@ -967,9 +1025,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (Game.followingCam)
 				Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);
 
-			prevCursorX = Drawing.drawing.getInterfaceMouseX();
-			prevCursorY = Drawing.drawing.getInterfaceMouseY();
-
 			if (this.paused)
 			{
 				Game.game.window.setCursorLocked(false);
@@ -994,21 +1049,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Game.game.input.hidePause.invalidate();
 		}
 
-		if (Game.game.input.zoom.isValid())
-		{
-			if (Panel.zoomTarget != 0 && Panel.zoomTarget != 1)
-				Drawing.drawing.movingCamera = !Drawing.drawing.movingCamera;
-
-			if (Game.autoZoom)
-				this.drawZoomCounter = 300;
-
-			this.drawFovCounter = 300;
-			Game.autoZoom = false;
-
-			Panel.zoomTarget = -1;
-			Game.game.input.zoom.invalidate();
-		}
-
 		if (!finished)
 		{
 			if (Obstacle.draw_size == 0)
@@ -1026,12 +1066,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			this.npcShopList.update();
 		}
-
-		if (Game.currentGame != null)
-			Game.currentGame.update();
-
-		for (FixedMenu menu : ModAPI.menuGroup)
-			menu.update();
 
 		if (paused)
 		{
@@ -1184,8 +1218,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			zoom.posX = pause.posX - hStep;
 			zoom.posY = pause.posY + vStep;
 
+			zoomAuto.posX = zoom.posX - hStep;
+			zoomAuto.posY = zoom.posY + vStep;
+
 			if (Drawing.drawing.enableMovingCamera)
+			{
 				zoom.update();
+
+				if (!Panel.autoZoom)
+					zoomAuto.update();
+			}
 
 			if (playing)
 			{
@@ -1310,9 +1352,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					readyButton.update();
 
-					if (!playing)
-						spectateButton.update();
-
 					if (Game.game.input.play.isValid() && readyButton.enabled)
 					{
 						readyButton.function.run();
@@ -1324,7 +1363,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					enterShop.update();
 
 				if (ScreenPartyHost.isServer && this.cancelCountdown)
+				{
 					startNow.update();
+				}
 
 				TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
 				TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
@@ -1337,8 +1378,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (Game.followingCam)
 			{
-				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 100;
-				Game.game.window.setCursorLocked(true);
+				Panel.zoomTarget = 1;
+
+				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / (sensMultiplier * 100);
+				Game.game.window.setCursorLocked(false);
+
+				if (Game.game.input.followingCamPitch.isPressed())
+					pitch += (Drawing.drawing.getInterfaceMouseY() - this.prevCursorY) / (sensMultiplier * 200);
+				pitch = Math.max(0, Math.min(0.5, pitch));
+
 				this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
 				this.prevCursorY = Drawing.drawing.getInterfaceMouseY();
 			}
@@ -1348,6 +1396,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			ArrayList<Team> fullyAliveTeams = new ArrayList<>();
 
 			for (Effect e : Game.effects)
+				e.update();
+
+			for (Effect e : Game.tracks)
 				e.update();
 
 			for (Cloud c : Game.clouds)
@@ -1372,11 +1423,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			for (Movable m: Game.movables)
 			{
 				if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
-					throw new RuntimeException("Movable with NaN position: " + m + " " + m.lastPosX + " " + m.lastPosY);
+				{
+					throw new RuntimeException("Movable with NaN position: " + m.toString() + " " + m.lastPosX + " " + m.lastPosY);
+				}
 
 				if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).targetable))
 				{
 					Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
+
 					Game.verticalFaces.addAll(Arrays.asList(((ISolidObject) m).getVerticalFaces()));
 				}
 			}
@@ -1384,7 +1438,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			for (Obstacle o: Game.obstacles)
 			{
 				Face[] faces = o.getHorizontalFaces();
-				boolean[] valid = o.getValidHorizontalFaces();
+				boolean[] valid = o.getValidHorizontalFaces(true);
 				for (int i = 0; i < faces.length; i++)
 				{
 					if (valid[i])
@@ -1392,7 +1446,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 
 				faces = o.getVerticalFaces();
-				valid = o.getValidVerticalFaces();
+				valid = o.getValidVerticalFaces(true);
 				for (int i = 0; i < faces.length; i++)
 				{
 					if (valid[i])
@@ -1421,9 +1475,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			for (int i = 0; i < Game.movables.size(); i++)
+			{
 				Game.movables.get(i).preUpdate();
+			}
 
-			double nearestDist = -1;
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
 				Movable m = Game.movables.get(i);
@@ -1436,15 +1491,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				m.update();
 
-				if (m instanceof Tank && ((Tank) m).needsToKill)
+				if (m instanceof Tank && ((Tank)m).mandatoryKill)
 				{
-					if (!Team.isAllied(Game.playerTank, m))
-					{
-						double dist = Movable.distanceBetween(Game.playerTank, m);
-						if (nearestDist == -1 || dist < nearestDist)
-							nearestDist = dist;
-					}
-
 					Team t;
 
 					if (m.team == null)
@@ -1467,31 +1515,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (Game.followingCam)
-				Panel.zoomTarget = -1;
-
-			if (!Game.followingCam && Game.autoZoom && nearestDist > -1)
-				autoZoom(nearestDist);
-
-			ArrayList<Obstacle> shouldUpdateEvents = new ArrayList<>();
 			for (Obstacle o : Game.obstacles)
 			{
 				if (o.update)
 					o.update();
-
-				if (ScreenPartyHost.isServer && o.updateEventTime)
-					shouldUpdateEvents.add(o);
 			}
-
-			for (Obstacle o : shouldUpdateEvents)
-			{
-				double d = 1000.0 / Game.eventsPerSecond * shouldUpdateEvents.size();
-				o.shouldSendEvent = System.currentTimeMillis() - Panel.panel.lastEventTime > d;
-				o.attributeModifierDuration = Math.max(o.attributeModifierDuration, d / 10);
-			}
-
-			for (Effect e : Game.tracks)
-				e.update();
 
 			Game.player.hotbar.update();
 
@@ -1530,10 +1558,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (this.timeRemaining <= 0)
 				{
-					for (int i = 0; i < Game.movables.size(); i++)
-					{
-						Movable m = Game.movables.get(i);
+					this.saveRemainingTanks();
 
+					for (Movable m : Game.movables)
+					{
 						m.destroy = true;
 
 						if (m instanceof Tank)
@@ -1542,15 +1570,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			boolean finished = fullyAliveTeams.size() <= 1;
-
-			if (Game.currentGame != null && Game.currentGame.customLevelEndCondition)
-				finished = Game.currentGame.levelEndCondition();
-
-			if (this.remoteLevelEndCondition)
-				finished = this.remoteLevelEndConditionMet;
-
-			if (Game.screen == this && finished)
+			if (!remoteLevelEndCondition && Game.screen == this && fullyAliveTeams.size() <= 1)
 			{
 				if (!ScreenGame.finishedQuick)
 				{
@@ -1573,69 +1593,66 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Drawing.drawing.playSound("lose.ogg", 1.0f, true);
 					}
 
-					if (Game.followingCam)
-						Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);
+					String s = "**";
+
+					if (fullyAliveTeams.size() > 0)
+						s = fullyAliveTeams.get(0).name;
+
+					if (ScreenPartyHost.isServer)
+						Game.eventsOut.add(new EventLevelEndQuick(s));
 				}
 
 				ScreenGame.finishedQuick = true;
 				TankPlayer.shootStickHidden = false;
 			}
 
-			finished = aliveTeams.size() <= 1;
-
-			if (Game.currentGame != null && Game.currentGame.customLevelEndCondition)
-				finished = Game.currentGame.levelEndCondition();
-
-			if (this.remoteLevelEndCondition)
-				finished = this.remoteLevelEndConditionMet;
-
-			if (finished)
+			if (!remoteLevelEndCondition && aliveTeams.size() <= 1)
 			{
 				ScreenGame.finished = true;
 				Game.bulletLocked = true;
 
 				if (ScreenGame.finishTimer > 0)
-					ScreenGame.finishTimer = Math.max(0, ScreenGame.finishTimer - Panel.frameFrequency);
+				{
+					ScreenGame.finishTimer -= Panel.frameFrequency;
+					if (ScreenGame.finishTimer < 0)
+						ScreenGame.finishTimer = 0;
+				}
 				else
 				{
 					boolean noMovables = true;
 
-					for (Movable m : Game.movables)
+					for (int m = 0; m < Game.movables.size(); m++)
 					{
-						if (m instanceof Bullet || m instanceof Mine)
+						Movable mo = Game.movables.get(m);
+						if (mo instanceof tanks.bullet.Bullet || mo instanceof Mine)
 						{
 							noMovables = false;
-							m.destroy = true;
+							mo.destroy = true;
 						}
 					}
 
 					if (Game.effects.size() <= 0 && noMovables)
 					{
+						if (Game.followingCam)
+							Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);
+
 						if (Obstacle.draw_size == Game.tile_size)
 							Drawing.drawing.playSound("level_end.ogg");
 
 						Obstacle.draw_size = Math.max(0, Obstacle.draw_size - Panel.frameFrequency);
 
-						if (!savedRemainingTanks && Crusade.crusadeMode)
-							Crusade.currentCrusade.livingTankIDs.clear();
+						this.saveRemainingTanks();
 
-						for (Movable m : Game.movables)
-						{
-							if (!savedRemainingTanks && m instanceof Tank && !m.destroy && Crusade.crusadeMode && ((Tank) m).crusadeID >= 0)
-								Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-
+						for (Movable m: Game.movables)
 							m.destroy = true;
-						}
-
-						savedRemainingTanks = true;
 
 						if (Obstacle.draw_size <= 0)
 						{
 							Panel.levelPassed = false;
 
-							for (Player p : Game.players)
+							for (int i = 0; i < Game.players.size(); i++)
 							{
-								if (p != null && p.tank != null && aliveTeams.contains(p.tank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(p.clientID.toString())))
+								if (Game.players.get(i) != null && Game.players.get(i).tank != null && aliveTeams.contains(Game.players.get(i).tank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.players.get(i).clientID.toString())))
 								{
 									Panel.levelPassed = true;
 
@@ -1666,15 +1683,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 									Panel.win = false;
 								}
+
+								if (Game.currentLevel instanceof ModLevel)
+									((ModLevel) Game.currentLevel).onLevelEnd(Panel.win);
 							}
 							else
 								Panel.win = false;
-
-							if (Game.currentGame != null)
-								Game.currentGame.onLevelEnd(Panel.win);
-
-							else if (Game.currentLevel instanceof ModLevel)
-								((ModLevel) Game.currentLevel).onLevelEnd(Panel.win);
 
 							if (Crusade.crusadeMode)
 								Crusade.currentCrusade.saveHotbars();
@@ -1694,16 +1708,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 								if (Crusade.crusadeMode)
 								{
 									Crusade.currentCrusade.levelFinished(Panel.levelPassed);
-
 									EventReturnToCrusade e = new EventReturnToCrusade(Crusade.currentCrusade);
+
 									e.execute();
 									Game.eventsOut.add(e);
 
 									if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
 										Game.eventsOut.add(new EventShowCrusadeStats());
 
-									for (Player p : Game.players)
-										Game.eventsOut.add(new EventUpdateRemainingLives(p));
+									for (int i = 0; i < Game.players.size(); i++)
+									{
+										Game.eventsOut.add(new EventUpdateRemainingLives(Game.players.get(i)));
+									}
 								}
 								else
 									Game.screen = new ScreenPartyInterlevel();
@@ -1736,7 +1752,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			boolean handled = checkMouse(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
 
 			if (handled)
-				Game.game.window.validPressedButtons.remove(InputCodes.MOUSE_BUTTON_1);
+				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
 		}
 		else
 		{
@@ -1758,10 +1774,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 
 		if (playing && !paused && !finishedQuick)
+		{
 			this.shrubberyScale = Math.min(this.shrubberyScale + Panel.frameFrequency / 200, 1);
+		}
 
 		if (finishedQuick)
+		{
 			this.shrubberyScale = Math.max(this.shrubberyScale - Panel.frameFrequency / 200, 0.25);
+		}
 
 		this.updateMusic(prevMusic);
 
@@ -1776,9 +1796,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && o.bulletCollision)
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
-				Game.game.solidGrid[x][y] = false;
+				if (o.bulletCollision)
+				{
+					Game.game.solidGrid[x][y] = false;
+					Game.game.unbreakableGrid[x][y] = false;
+				}
+				Game.obstacleMap[x][y] = null;
 			}
 
 			Game.obstacles.remove(o);
@@ -1794,20 +1819,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 		}
 
-		for (Effect e: Game.removeTracks)
-		{
-			if (e.state == Effect.State.removed)
-			{
-				e.state = Effect.State.recycle;
-				Game.tracks.remove(e);
-				Game.recycleEffects.add(e);
-			}
-		}
-
 		Game.removeMovables.clear();
 		Game.removeObstacles.clear();
 		Game.removeEffects.clear();
-		Game.removeTracks.clear();
 		Game.removeClouds.clear();
 		ModAPI.removeMenus.clear();
 
@@ -1922,7 +1936,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				{
 					Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
 					Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
-					Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac, 0, 0, 0, -1));
+					Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac + pitch, 0, Math.cos(pitch) * 2, Math.sin(pitch) * 2, -1));
 					Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0, 0.5 * frac));
 				}
 				else
@@ -1971,16 +1985,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-		this.setPerspective();
-
-		for (Obstacle o: Game.obstacles)
+		if (Game.game.lastHeightGrid == null || Game.game.heightGrid.length != Game.game.lastHeightGrid.length || Game.game.heightGrid[0].length != Game.game.lastHeightGrid[0].length)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
+			Game.game.lastHeightGrid = new double[Game.game.heightGrid.length][Game.game.heightGrid[0].length];
 		}
+
+		for (int i = 0; i < Game.game.heightGrid.length; i++)
+			System.arraycopy(Game.game.heightGrid[i], 0, Game.game.lastHeightGrid[i], 0, Game.game.heightGrid[i].length);
+
+		this.setPerspective();
 
 		Drawing.drawing.setColor(174, 92, 16);
 
@@ -1998,8 +2011,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Drawing drawing = Drawing.drawing;
 
-		drawables[0].addAll(Game.tracks);
-
 		for (Movable m: Game.movables)
 		{
 			drawables[m.drawLevel].add(m);
@@ -2008,19 +2019,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				drawables[m.nameTag.drawLevel].add(m.nameTag);
 		}
 
+		drawables[0].addAll(Game.tracks);
+
 		if (Game.enable3d && (Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size) && Game.game.window.shapeRenderer.supportsBatching)
 		{
-			for (Obstacle o : Game.obstacles)
+			for (int i = 0; i < drawables.length; i++)
 			{
-				for (int i = 0; i < drawables.length; i++)
+				for (Obstacle o : Game.obstacles)
 				{
-					if (o.drawLevel == i)
-					{
-						if (o.batchDraw)
-							o.draw();
-						else
-							drawables[i].add(o);
-					}
+					if (o.drawLevel == i && o.batchDraw)
+						o.draw();
+					else if (o.drawLevel == i)
+						drawables[i].add(o);
 				}
 			}
 		}
@@ -2060,9 +2070,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			if (i == 9 && this.tutorial != null)
-			{
 				this.tutorial.draw();
-			}
 
 			for (IDrawable d: this.drawables[i])
 			{
@@ -2104,7 +2112,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				((IPlayerTank) Game.playerTank).setDrawRange(-1);
 			}
 
-			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy
 					&& Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing && Game.movables.contains(Game.playerTank))
 			{
 				double s = Game.startTime;
@@ -2116,7 +2124,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				double frac = (System.currentTimeMillis() % 2000) / 2000.0;
 				double size = Math.max(800 * (0.5 - frac), 0) * fade;
-				Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
+				Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, size, size, false, false);
@@ -2126,23 +2134,35 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				double frac2 = ((250 + System.currentTimeMillis()) % 2000) / 2000.0;
 				double size2 = Math.max(800 * (0.5 - frac2), 0) * fade;
 
-				Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
+				Drawing.drawing.setColor(Game.playerTank.secondaryColorR, Game.playerTank.secondaryColorG, Game.playerTank.secondaryColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, size2, size2, false, false);
 				else
 					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, size2, size2);
 
-				Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+				Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB);
 				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 200, 4, 0.3, 75 * fade, 0.5 * fade, false);
-				Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
+				Drawing.drawing.setColor(Game.playerTank.secondaryColorR, Game.playerTank.secondaryColorG, Game.playerTank.secondaryColorB);
 				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 198, 3, 0.5, 60 * fade, 0.375 * fade, false);
 			}
 
 			drawables[i].clear();
 		}
 
-		Drawing.drawing.setColor(0, 0, 0, 127);
+		/*Drawing.drawing.setColor(255, 0, 0);
+		for (Face f: Game.horizontalFaces)
+		{
+			drawing.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
+		}
+
+		Drawing.drawing.setColor(0, 255, 0);
+		for (Face f: Game.verticalFaces)
+		{
+			drawing.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
+		}
+
+		Drawing.drawing.setColor(0, 0, 0, 127);*/
 
 		if (Panel.darkness > 0)
 		{
@@ -2159,6 +2179,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Drawing.drawing.setColor(255, 255, 0, 64);
 			Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size * 0.8, size * 0.8);
 
+			//Drawing.drawing.setColor(255, 255, 255, 64);
+			//Drawing.drawing.drawInterfaceImage("/mine.png", TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, TankPlayer.mineButton.sizeX, TankPlayer.mineButton.sizeY);
 		}
 
 		if (!this.showDefaultMouse)
@@ -2204,7 +2226,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				if (Crusade.currentCrusade != null && Crusade.currentCrusade.showNames)
 				{
 					Drawing.drawing.setInterfaceFontSize(50);
-					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 75, Crusade.currentCrusade.levelNames.get(Crusade.currentCrusade.currentLevel).replace("_", " "));
+					Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 75, Crusade.currentCrusade.levels.get(Crusade.currentCrusade.currentLevel).levelName.replace("_", " "));
 				}
 			}
 
@@ -2372,13 +2394,24 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					prevReadyNames = readyNamesCount;
 
 					readyButton.draw();
-
-					if (!playing)
-						spectateButton.draw();
 				}
 
 				if (!this.shopItemButtons.isEmpty() && this.readyButton.enabled)
+				{
+					enterShop.enableHover = newItemsNotification;
+					enterShop.fullInfo = true;
 					enterShop.draw();
+
+					if (newItemsNotification)
+					{
+						Button.drawGlow(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY + 2.5 + 1, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+						drawing.setInterfaceFontSize(this.textSize / Drawing.drawing.interfaceScaleZoom);
+						drawing.setColor(255, 127, 0);
+						drawing.fillInterfaceOval(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4);
+						drawing.setColor(255, 255, 255);
+						Drawing.drawing.drawInterfaceText(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2 + 1.5, enterShop.posY, "!");
+					}
+				}
 
 				if (ScreenPartyHost.isServer && this.cancelCountdown)
 					startNow.draw();
@@ -2401,35 +2434,43 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (!paused && Game.game.window.touchscreen && !shopScreen)
 		{
 			pause.draw();
-			Drawing.drawing.drawInterfaceImage("pause.png", pause.posX, pause.posY, 40, 40);
+			Drawing.drawing.drawInterfaceImage("icons/pause.png", pause.posX, pause.posY, 40, 40);
 
 			if (Drawing.drawing.enableMovingCamera)
 			{
 				zoom.draw();
 
+				if (!Panel.autoZoom)
+					zoomAuto.draw();
+
 				if (Drawing.drawing.movingCamera)
-					Drawing.drawing.drawInterfaceImage("zoom_out.png", zoom.posX, zoom.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("icons/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
 				else
-					Drawing.drawing.drawInterfaceImage("zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage("icons/zoom_in.png", zoom.posX, zoom.posY, 40, 40);
+
+				if (!Panel.autoZoom)
+					Drawing.drawing.drawInterfaceImage("icons/zoom_auto.png", zoomAuto.posX, zoomAuto.posY, 40, 40);
 			}
 		}
 
-		Game.player.hotbar.draw();
+		if (!(paused && screenshotMode))
+		{
+			Game.player.hotbar.draw();
 
-		if (Game.showSpeedrunTimer)
-			SpeedrunTimer.draw();
+			if (Game.showSpeedrunTimer && !(paused && screenshotMode))
+				SpeedrunTimer.draw();
 
-		if (!Game.followingCam && (Game.debug || Game.game.input.zoomIn.isPressed() || Game.game.input.zoomOut.isPressed()))
-			this.drawFovCounter = 300;
+			minimap.draw();
+		}
 
 		int brightness = Level.isDark() ? 255 : 0;
 		Drawing.drawing.setInterfaceFontSize(40);
 
-		if (this.drawFovCounter > 0)
+		if (this.drawFOVCounter > 0 && Panel.displayZoom)
 		{
-			this.drawFovCounter -= Panel.frameFrequency;
+			this.drawFOVCounter -= Panel.frameFrequency;
 
-			Drawing.drawing.setColor(brightness, brightness, brightness, drawFovCounter < 120 ? drawFovCounter * 1.5 : 180);
+			Drawing.drawing.setColor(brightness, brightness, brightness, Math.min(drawFOVCounter * 1.5, 180));
 
 			String fov = (int) (Panel.zoomTarget * 100) + "%";
 
@@ -2445,15 +2486,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 200, "FOV: " + fov);
 		}
 
-		if (this.drawZoomCounter > 0)
+		if (this.drawZoomCounter > 0 && Panel.displayZoom && !Game.followingCam)
 		{
 			this.drawZoomCounter -= Panel.frameFrequency;
 
-			Drawing.drawing.setColor(brightness, brightness, brightness, drawZoomCounter < 120 ? drawZoomCounter * 1.5 : 180);
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Auto Zoom: " + (Game.autoZoom ? "On" : "Off"));
+			Drawing.drawing.setColor(brightness, brightness, brightness, Math.min(drawZoomCounter * 1.5, 180));
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Auto Zoom: " + (Panel.autoZoom ? "On" : "Off"));
 		}
-
-		minimap.draw();
 
 		if (Game.deterministicMode && !ScreenPartyLobby.isClient)
 		{
@@ -2471,9 +2510,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Drawing.drawing.setInterfaceFontSize(24);
 			Drawing.drawing.drawInterfaceText(posX, posY, "Deterministic mode", true);
 		}
-
-		if (Game.currentGame != null)
-			Game.currentGame.draw();
 
 		if (paused && !screenshotMode)
 		{
@@ -2600,19 +2636,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 	}
 
-	public void autoZoom(double nearestDist)
+	public void saveRemainingTanks()
 	{
-		if (Panel.zoomTarget == -1)
-			Panel.zoomTarget = Drawing.drawing.movingCamera ? 1 : 0;
-
-		double optimalZoom = Math.min(1, Math.max(0.15, 0.75 - (nearestDist * (0.0006 * ((Panel.windowWidth + Panel.windowHeight) / (1400 + 920))) - 0.5)));
-		double zoomSpeed = Math.min(Panel.frameFrequency * 0.005, Math.abs(Panel.zoomTarget - optimalZoom) / 5);
-
-		if (Panel.zoomTarget > optimalZoom)
-			Panel.zoomTarget -= zoomSpeed;
-
-		else if (Panel.zoomTarget < optimalZoom)
-			Panel.zoomTarget += zoomSpeed;
+		if (!savedRemainingTanks && Crusade.crusadeMode && Crusade.currentCrusade != null)
+		{
+			Crusade.currentCrusade.livingTankIDs.clear();
+			for (Movable m : Game.movables)
+			{
+				if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+					Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+			}
+		}
+		savedRemainingTanks = true;
 	}
 
 	@Override

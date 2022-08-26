@@ -1,10 +1,7 @@
 package tanks.hotbar.item;
 
 import tanks.*;
-import tanks.modapi.ModAPI;
 import tanks.gui.property.*;
-import tanks.modapi.menus.FixedMenu;
-import tanks.modapi.menus.Scoreboard;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 
@@ -15,7 +12,7 @@ import java.util.LinkedHashMap;
 public abstract class Item implements IGameObject
 {
 	public static ArrayList<String> icons = new ArrayList<>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
-			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png",
+			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png", "bullet_air.png", "bullet_homing.png",
 			"mine.png",
 			"shield.png", "shield_gold.png"));
 
@@ -27,20 +24,32 @@ public abstract class Item implements IGameObject
 	public int price;
 	public int maxStackSize = 100;
 	public int stackSize = 1;
+	public boolean unlimitedStack = false;
 	public boolean inUse = false;
 	public String name = System.currentTimeMillis() + "";
 	public String icon;
 	public LinkedHashMap<String, UIProperty> properties = new LinkedHashMap<>();
 
 	public boolean destroy = false;
+	public double cooldown = 0;
 	
 	public boolean rightClick;
 
 	public Player player;
 
-	public abstract boolean usable();
-	
-	public abstract void use();
+	public boolean usable()
+	{
+		return this.usable(this.getUser());
+	}
+
+	public abstract boolean usable(Tank t);
+
+	public void use()
+	{
+		this.use(this.getUser());
+	}
+
+	public abstract void use(Tank user);
 
 	public Item(Player p)
 	{
@@ -68,6 +77,9 @@ public abstract class Item implements IGameObject
 	 * <br>if (type == bullet):-class-effect-speed-bounces-damage-max_on_screen-cooldown-size*/
 	public static Item parseItem(Player pl, String s)
 	{
+		if (s.contains("[") && s.contains("]"))
+			s = s.substring(s.indexOf("[") + 1, s.indexOf("]"));
+
 		String[] p = s.split(",");
 
 		String name = p[0];
@@ -98,20 +110,30 @@ public abstract class Item implements IGameObject
 		
 		return i;
 	}
-	
-	@Override
-	public String toString()
+
+	public String convertToString()
 	{
 		return name + "," + icon + "," + price + "," + levelUnlock + "," + stackSize + "," + maxStackSize;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "[" + convertToString() + "]";
+	}
+
 	public void attemptUse()
 	{
-		if (this.usable())
-		{
-			use();
+		this.attemptUse(this.getUser());
+	}
 
-			for (FixedMenu m : ModAPI.menuGroup)
+	public void attemptUse(Tank t)
+	{
+		if (this.usable(t))
+		{
+			use(t);
+
+			/*for (FixedMenu m : ModAPI.menuGroup)
 			{
 				if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.items_used)) {
 					if (((Scoreboard) m).players.isEmpty())
@@ -119,7 +141,7 @@ public abstract class Item implements IGameObject
 					else
 						((Scoreboard) m).addPlayerScore(this.player, 1);
 				}
-			}
+			} TODO*/
 		}
 	}
 
@@ -184,7 +206,9 @@ public abstract class Item implements IGameObject
 
 	public Tank getUser()
 	{
-		if (this.player == Game.player)
+		if (this.player == null)
+			return null;
+		else if (this.player == Game.player)
 		{
 			return Game.playerTank;
 		}
@@ -200,6 +224,26 @@ public abstract class Item implements IGameObject
 		}
 
 		return null;
+	}
+
+	public void updateCooldown()
+	{
+		this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency);
+	}
+
+	public Item clone()
+	{
+		Item i = Item.parseItem(this.player, this.toString());
+		i.unlimitedStack = this.unlimitedStack;
+		return i;
+	}
+
+	public void setOtherItemsCooldown()
+	{
+		Tank user = this.getUser();
+
+		if (user != null)
+			user.setBufferCooldown(20);
 	}
 
 	public abstract String getTypeName();

@@ -52,7 +52,8 @@ public class ScreenModdedLevels extends Screen
 			for (Class<? extends ModLevel> m : ModAPI.registeredCustomLevels)
 			{
 				String description = m.getConstructor().newInstance().description;
-				Button b = new Button(0, 0, 0, 0, m.getSimpleName().replace('_', ' '), () -> {
+				Button b = new Button(0, 0, 0, 0, m.getConstructor().newInstance().name, () ->
+				{
 					try
 					{
 						m.getConstructor().newInstance().loadLevel();
@@ -71,7 +72,8 @@ public class ScreenModdedLevels extends Screen
 			for (Class<? extends ModGame> m : ModAPI.registeredCustomGames)
 			{
 				String description = m.getConstructor().newInstance().description;
-				Button b = new Button(0, 0, 0, 0, m.getSimpleName().replace('_', ' '), () -> {
+				Button b = new Button(0, 0, 0, 0, m.getConstructor().newInstance().name, () ->
+				{
 					try
 					{
 						ModGame g = m.getConstructor().newInstance();
@@ -90,7 +92,8 @@ public class ScreenModdedLevels extends Screen
 				buttons.add(b);
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			Game.exitToCrash(e);
 		}
 

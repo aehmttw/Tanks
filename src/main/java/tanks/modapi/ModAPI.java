@@ -4,7 +4,7 @@ import basewindow.BaseFile;
 import basewindow.BaseFontRenderer;
 import basewindow.BaseShapeRenderer;
 import tanks.*;
-import tanks.event.EventAddTransitionEffect;
+import tanks.modapi.events.EventAddTransitionEffect;
 import tanks.event.EventCreateCustomTank;
 import tanks.event.EventSortNPCShopButtons;
 import tanks.event.EventTankTeleport;
@@ -15,21 +15,27 @@ import tanks.modapi.menus.CustomShape;
 import tanks.modapi.menus.FixedMenu;
 import tanks.modapi.menus.FixedText;
 import tanks.modapi.menus.TransitionEffect;
-import tanks.modapi.modlevels.Team_Deathmatch;
+import tanks.modapi.modlevels.MapLoaderTester;
+import tanks.modapi.modlevels.PartyGames.PartyGames;
+import tanks.modapi.modlevels.TeamDeathmatch;
 import tanks.network.NetworkEventMap;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
+import tanks.tank.TankModels;
 import tanks.tank.TeleporterOrb;
 import tanks.tank.Turret;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class ModAPI
 {
-    /** Stores registered mods */
+    /**
+     * Stores registered mods
+     */
     public static ArrayList<Class<? extends ModGame>> registeredCustomGames = new ArrayList<>();
     public static ArrayList<Class<? extends ModLevel>> registeredCustomLevels = new ArrayList<>();
     public static ArrayList<FixedMenu> menuGroup = new ArrayList<>();
@@ -46,10 +52,12 @@ public class ModAPI
      * To add a new mod, add {@code registerMod(yourMod.class)} to this function. Of course, type the name of your mod instead of "yourMod".<br><br>
      * You can also use other functions here, like the {@code ModAPI.printLevelString(levelPath)) function.<br><br>
      * However, keep in mind that this will only be called on the first frame of the game launch.
-     * */
+     */
     public static void registerMods()
     {
-        registerMod(Team_Deathmatch.class);
+        registerMod(TeamDeathmatch.class);
+        registerGame(MapLoaderTester.class);
+        registerGame(PartyGames.class);
     }
 
     public static void setUp()
@@ -74,6 +82,7 @@ public class ModAPI
         NetworkEventMap.register(EventDisplayText.class);
         NetworkEventMap.register(EventDisplayTextGroup.class);
         NetworkEventMap.register(EventFillObstacle.class);
+        NetworkEventMap.register(EventLoadMapLevel.class);
         NetworkEventMap.register(EventOverrideNPCState.class);
         NetworkEventMap.register(EventPurchaseNPCItem.class);
         NetworkEventMap.register(EventScoreboardUpdateScore.class);
@@ -84,8 +93,15 @@ public class ModAPI
         fixedText = Game.game.window.fontRenderer;
     }
 
-    public static void registerGame(Class<? extends ModGame> m) { registeredCustomGames.add(m); }
-    public static void registerMod(Class<? extends ModLevel> m) { registeredCustomLevels.add(m); }
+    public static void registerGame(Class<? extends ModGame> m)
+    {
+        registeredCustomGames.add(m);
+    }
+
+    public static void registerMod(Class<? extends ModLevel> m)
+    {
+        registeredCustomLevels.add(m);
+    }
 
     public static void skipCountdown()
     {
@@ -97,20 +113,25 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    public static String getLevelString(String levelName) {
+    public static String getLevelString(String levelName)
+    {
         return getLevelString(levelName, false);
     }
 
-    /**Prints the level or crusade string of a level file.*/
+    /**
+     * Prints the level or crusade string of a level file.
+     */
     public static String getLevelString(String levelName, boolean print)
     {
         StringBuilder levelString = new StringBuilder();
 
-        BaseFile level = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.replace(' ','_') + ".tanks");
-        try {
+        BaseFile level = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.replace(' ', '_') + ".tanks");
+        try
+        {
             level.startReading();
 
-            while (level.hasNextLine()) {
+            while (level.hasNextLine())
+            {
                 String line = level.nextLine();
 
                 if (print)
@@ -124,7 +145,8 @@ public class ModAPI
             return levelString.toString();
         }
 
-        catch (FileNotFoundException e) {
+        catch (IOException e)
+        {
             System.err.println("Invalid file name: " + levelName + "\n");
             Game.exitToCrash(new FileNotFoundException("Level \"" + levelName + "\" not found"));
         }
@@ -142,7 +164,8 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    public static void sendChatMessage(String message, int colorR, int colorG, int colorB) {
+    public static void sendChatMessage(String message, int colorR, int colorG, int colorB)
+    {
         sendChatMessage(message, colorR, colorG, colorB, (int) Turret.calculateSecondaryColor(colorR), (int) Turret.calculateSecondaryColor(colorG), (int) Turret.calculateSecondaryColor(colorB));
     }
 
@@ -192,26 +215,13 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    public static void drawTank(double x, double y, double size, double angle, double r1, double g1, double b1, double r2, double g2, double b2)
+    public static void displayText(FixedText.types location, String text)
     {
-        Drawing.drawing.setColor(r2, g2, b2);
-        Tank.base_model.draw(x, y, size, size, angle);
-
-        Drawing.drawing.setColor(r1, g1, b1);
-        Tank.color_model.draw(x, y, size, size, angle);
-
-        Drawing.drawing.setColor(r2, g2, b2);
-        Turret.turret_model.draw(x, y, size, size, angle);
-
-        Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
-        Turret.base_model.draw(x, y, size, size, angle);
-    }
-
-    public static void displayText(FixedText.types location, String text) {
         displayText(location, text, false, 0, 255, 255, 255);
     }
 
-    public static void displayText(FixedText.types location, String text, double r, double g, double b) {
+    public static void displayText(FixedText.types location, String text, double r, double g, double b)
+    {
         displayText(location, text, false, 0, r, g, b);
     }
 
@@ -229,7 +239,8 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    public static void editText(FixedText t, String text) {
+    public static void editText(FixedText t, String text)
+    {
         editText(t.id, text);
     }
 
@@ -252,7 +263,7 @@ public class ModAPI
     @Deprecated
     public static void displayTextGroup(String location, String[] texts, boolean afterGameStarted, Integer[] durationInMs)
     {
-        displayTextGroup(location, texts, afterGameStarted, durationInMs, 24,-1, -1, -1);
+        displayTextGroup(location, texts, afterGameStarted, durationInMs, 24, -1, -1, -1);
     }
 
     @Deprecated
@@ -263,9 +274,26 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    /** If any Tank is within range of an area (in tiles)
+    public static void drawTank(double x, double y, double size, double angle, double r1, double g1, double b1, double r2, double g2, double b2)
+    {
+        Drawing.drawing.setColor(r2, g2, b2);
+        TankModels.tank.base.draw(x, y, size, size, angle);
+
+        Drawing.drawing.setColor(r1, g1, b1);
+        TankModels.tank.color.draw(x, y, size, size, angle);
+
+        Drawing.drawing.setColor(r2, g2, b2);
+        TankModels.tank.turret.draw(x, y, size, size, angle);
+
+        Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
+        TankModels.tank.turretBase.draw(x, y, size, size, angle);
+    }
+
+    /**
+     * If any Tank is within range of an area (in tiles)
+     *
      * @return an ArrayList of Tanks
-     * */
+     */
     public static ArrayList<Tank> withinRange(double x, double y, double size)
     {
         ArrayList<Tank> output = new ArrayList<>();
@@ -279,7 +307,8 @@ public class ModAPI
         return output;
     }
 
-    public static void respawnPlayer(Player p, Object... params) {
+    public static void respawnPlayer(Player p, Object... params)
+    {
         respawnPlayer(p.tank, params);
     }
 
@@ -338,23 +367,36 @@ public class ModAPI
         return ("0".repeat((placeValues + decimalPlaceValues) - (number + "").length())) + number;
     }
 
+    public static String capitalize(String s)
+    {
+        if (!(Game.lessThan(64, s.charAt(1), 91) || Game.lessThan(96, s.charAt(1), 123)))
+            return s.charAt(0) + capitalize(s.substring(1));
+
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
     // Drawing functions added in this mod api
 
-    /** Abbreviations of renderers to draw fixed stuff */
+    /**
+     * Abbreviations of renderers to draw fixed stuff
+     */
     public static BaseShapeRenderer fixedShapes;
     public static BaseFontRenderer fixedText;
 
-    public static void setObstacle(int x, int y, String registryName) {
+    public static void setObstacle(int x, int y, String registryName)
+    {
         setObstacle(x, y, registryName, 1, 0);
     }
 
-    public static void setObstacle(int x, int y, String registryName, double stackHeight) {
+    public static void setObstacle(int x, int y, String registryName, double stackHeight)
+    {
         setObstacle(x, y, registryName, stackHeight, 0);
     }
 
     public static void setObstacle(int x, int y, String registryName, double stackHeight, double startHeight)
     {
-        try {
+        try
+        {
             Obstacle o = Game.registryObstacle.getEntry(registryName).obstacle
                     .getConstructor(String.class, double.class, double.class)
                     .newInstance(registryName, x, y);
@@ -363,16 +405,19 @@ public class ModAPI
 
             ModAPI.addObject(o);
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Game.exitToCrash(e);
         }
     }
 
-    public static void fillObstacle(int startX, int startY, int endX, int endY, String registryName) {
+    public static void fillObstacle(int startX, int startY, int endX, int endY, String registryName)
+    {
         fillObstacle(startX, startY, endX, endY, registryName, 1, 0);
     }
 
-    public static void fillObstacle(int startX, int startY, int endX, int endY, String registryName, double stackHeight) {
+    public static void fillObstacle(int startX, int startY, int endX, int endY, String registryName, double stackHeight)
+    {
         fillObstacle(startX, startY, endX, endY, registryName, stackHeight, 0);
     }
 
@@ -383,14 +428,15 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    public static void addTextObstacle(double x, double y, String text) {
+    public static void addTextObstacle(double x, double y, String text)
+    {
         addTextObstacle(x, y, text, 0);
     }
 
     /**
      * {@code duration} is how long you want to wait before the obstacle disappears.
      * Set it to 0 if you want it to be permanent
-     * */
+     */
     public static void addTextObstacle(double x, double y, String text, long duration)
     {
         EventAddObstacleText e = new EventAddObstacleText((int) (Math.random() * Integer.MAX_VALUE), text, x, y, Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB, duration);
@@ -398,11 +444,13 @@ public class ModAPI
         e.execute();
     }
 
-    public static void addTransitionEffect(TransitionEffect.types type) {
+    public static void addTransitionEffect(TransitionEffect.types type)
+    {
         addTransitionEffect(type, 1, 0, 0, 0);
     }
 
-    public static void addTransitionEffect(TransitionEffect.types type, int colR, int colG, int colB) {
+    public static void addTransitionEffect(TransitionEffect.types type, int colR, int colG, int colB)
+    {
         addTransitionEffect(type, 1, colR, colG, colB);
     }
 
@@ -413,11 +461,13 @@ public class ModAPI
         Game.eventsOut.add(e);
     }
 
-    public static void addCustomShape(boolean all, CustomShape.types type, int x, int y, int sizeX, int sizeY, int r, int g, int b) {
+    public static void addCustomShape(boolean all, CustomShape.types type, int x, int y, int sizeX, int sizeY, int r, int g, int b)
+    {
         addCustomShape(all, type, x, y, sizeX, sizeY, 0, r, g, b, 255);
     }
 
-    public static void addCustomShape(boolean all, CustomShape.types type, int x, int y, int sizeX, int sizeY, int r, int g, int b, int a) {
+    public static void addCustomShape(boolean all, CustomShape.types type, int x, int y, int sizeX, int sizeY, int r, int g, int b, int a)
+    {
         addCustomShape(all, type, x, y, sizeX, sizeY, 0, r, g, b, a);
     }
 
@@ -441,7 +491,8 @@ public class ModAPI
         loadLevel(new Level(levelString));
     }
 
-    public static void changeBackgroundColor(int r, int g, int b) {
+    public static void changeBackgroundColor(int r, int g, int b)
+    {
         changeBackgroundColor(r, g, b, -1, -1, -1);
     }
 

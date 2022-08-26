@@ -40,7 +40,8 @@ public class ObstacleBreakable extends Obstacle
             this.stackColorB[i] = 135 * frac2;
         }
 
-        this.description = "A block which breaks---when hit by a bullet";
+        this.shouldShootThrough = true;
+        this.description = "A block which breaks when hit by a bullet";
     }
 
     @Override
@@ -86,12 +87,6 @@ public class ObstacleBreakable extends Obstacle
 
         if (this.stackHeight <= 0)
             Game.removeObstacles.add(this);
-
-        for (Obstacle o: Game.obstacles)
-        {
-            if (Math.abs(o.posX - this.posX) <= Game.tile_size && Math.abs(o.posY - this.posY) <= Game.tile_size)
-                o.requiresRedraw = true;
-        }
     }
 
     @Override
@@ -107,8 +102,6 @@ public class ObstacleBreakable extends Obstacle
     {
         if (this.stackHeight <= 0)
             return;
-
-        this.checkForTransparency();
 
         Drawing drawing = Drawing.drawing;
 
@@ -141,12 +134,12 @@ public class ObstacleBreakable extends Obstacle
                 if (stackHeight % 1 == 0)
                 {
                     o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size + offset));
-                    drawing.fillBox(this, this.posX, this.posY, offset + (i + this.startHeight) * Game.tile_size, draw_size, draw_size, draw_size, o);
+                    drawing.fillBox(this, this.posX, this.posY, offset + i * Game.tile_size, draw_size, draw_size, draw_size, o);
                 }
                 else
                 {
                     o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size + offset));
-                    drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0 + this.startHeight) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, o);
+                    drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, o);
                 }
 
                 options[i] = o;
@@ -169,12 +162,12 @@ public class ObstacleBreakable extends Obstacle
         return this.fallAnimation != this.lastFallAnimation || super.positionChanged();
     }
 
-    public void drawTile(double r, double g, double b, double depth, double extra)
+    public void drawTile(double r, double g, double b, double d, double extra)
     {
         if (Obstacle.draw_size < Game.tile_size || extra != 0 || this.fallAnimation > 0)
         {
             Drawing.drawing.setColor(r, g, b);
-            Drawing.drawing.fillBox(this, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + depth * (1 - Obstacle.draw_size / Game.tile_size));
+            Drawing.drawing.fillBox(this, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d * (1 - Obstacle.draw_size / Game.tile_size));
         }
     }
 }

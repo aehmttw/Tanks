@@ -2,8 +2,9 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.event.EventChangeTankColor;
+import tanks.Panel;
 import tanks.gui.Button;
+import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
 import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
@@ -57,13 +58,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
                 colorRed.inputText = colorRed.previousInputText;
 
             Game.player.colorR = Integer.parseInt(colorRed.inputText);
-
-            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            {
-                EventChangeTankColor e = new EventChangeTankColor(Game.player.clientID, Game.player);
-                e.clientID = Game.player.clientID;
-                Game.eventsOut.add(e);
-            }
         }
                 , Game.player.colorR, 0, 255, 1);
 
@@ -80,13 +74,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
                 colorGreen.inputText = colorGreen.previousInputText;
 
             Game.player.colorG = Integer.parseInt(colorGreen.inputText);
-
-            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            {
-                EventChangeTankColor e = new EventChangeTankColor(Game.player.clientID, Game.player);
-                e.clientID = Game.player.clientID;
-                Game.eventsOut.add(e);
-            }
         }
                 , Game.player.colorG, 0, 255, 1);
 
@@ -103,13 +90,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
                 colorBlue.inputText = colorBlue.previousInputText;
 
             Game.player.colorB = Integer.parseInt(colorBlue.inputText);
-
-            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            {
-                EventChangeTankColor e = new EventChangeTankColor(Game.player.clientID, Game.player);
-                e.clientID = Game.player.clientID;
-                Game.eventsOut.add(e);
-            }
         }
                 , Game.player.colorB, 0, 255, 1);
 
@@ -126,13 +106,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
                 colorRed2.inputText = colorRed2.previousInputText;
 
             Game.player.turretColorR = Integer.parseInt(colorRed2.inputText);
-
-            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            {
-                EventChangeTankColor e = new EventChangeTankColor(Game.player.clientID, Game.player);
-                e.clientID = Game.player.clientID;
-                Game.eventsOut.add(e);
-            }
         }
                 , Game.player.turretColorR, 0, 255, 1);
 
@@ -149,13 +122,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
                 colorGreen2.inputText = colorGreen2.previousInputText;
 
             Game.player.turretColorG = Integer.parseInt(colorGreen2.inputText);
-
-            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            {
-                EventChangeTankColor e = new EventChangeTankColor(Game.player.clientID, Game.player);
-                e.clientID = Game.player.clientID;
-                Game.eventsOut.add(e);
-            }
         }
                 , Game.player.turretColorG, 0, 255, 1);
 
@@ -172,13 +138,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
                 colorBlue2.inputText = colorBlue2.previousInputText;
 
             Game.player.turretColorB = Integer.parseInt(colorBlue2.inputText);
-
-            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            {
-                EventChangeTankColor e = new EventChangeTankColor(Game.player.clientID, Game.player);
-                e.clientID = Game.player.clientID;
-                Game.eventsOut.add(e);
-            }
         }
                 , Game.player.turretColorB, 0, 255, 1);
 
@@ -190,7 +149,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
         colorBlue2.integer = true;
 
         this.preview.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
-        this.preview.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom;
         this.preview.invulnerable = true;
         this.preview.drawAge = 50;
         this.preview.depthTest = false;
@@ -230,13 +188,22 @@ public class ScreenOptionsMultiplayerColor extends Screen
 
         enableSecondary.update();
 
-        preview.colorR = Game.player.colorR;
-        preview.colorG = Game.player.colorG;
-        preview.colorB = Game.player.colorB;
+        preview.colorR = colorRed.value;
+        preview.colorG = colorGreen.value;
+        preview.colorB = colorBlue.value;
 
-        preview.turret.colorR = Game.player.turretColorR;
-        preview.turret.colorG = Game.player.turretColorG;
-        preview.turret.colorB = Game.player.turretColorB;
+        if (!Game.player.enableSecondaryColor)
+        {
+            preview.secondaryColorR = Turret.calculateSecondaryColor(colorRed.value);
+            preview.secondaryColorG = Turret.calculateSecondaryColor(colorGreen.value);
+            preview.secondaryColorB = Turret.calculateSecondaryColor(colorBlue.value);
+        }
+        else
+        {
+            preview.secondaryColorR = colorRed2.value;
+            preview.secondaryColorG = colorGreen2.value;
+            preview.secondaryColorB = colorBlue2.value;
+        }
     }
 
     public void setupButtons(boolean initial)
@@ -267,10 +234,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
             colorRed2.inputText = Game.player.turretColorR + "";
             colorGreen2.inputText = Game.player.turretColorG + "";
             colorBlue2.inputText = Game.player.turretColorB + "";
-            colorRed2.value = Game.player.turretColorR;
-            colorGreen2.value = Game.player.turretColorG;
-            colorBlue2.value = Game.player.turretColorB;
-
             colorRed2.value = Game.player.turretColorR;
             colorGreen2.value = Game.player.turretColorG;
             colorBlue2.value = Game.player.turretColorB;

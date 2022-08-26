@@ -30,6 +30,8 @@ public class Laser extends Movable implements IDrawableWithGlow
     public boolean backCircle = true;
     public boolean showOutsides = true;
 
+    public boolean glows = true;
+
     public Tank tank1;
     public Tank tank2;
 
@@ -118,6 +120,9 @@ public class Laser extends Movable implements IDrawableWithGlow
 
     public void drawGlow()
     {
+        if (!glows)
+            return;
+
         double ox = Math.cos(this.angle + Math.PI / 2);
         double oy = Math.sin(this.angle + Math.PI / 2);
 

@@ -27,11 +27,9 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
 
     public ArrayList<ITrigger> properties = new ArrayList<>();
 
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Next page", () -> page++
-    );
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Next page", () -> page++);
 
-    public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Previous page", () -> page--
-    );
+    public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Previous page", () -> page--);
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
@@ -41,20 +39,20 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
             item.exportProperties();
             screen.refreshItems();
             Game.screen = (Screen) screen;
+            screen.removeItem(item);
         }
     }
     );
 
-    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null
-    );
+    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
 
     public Button delete = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 - 250, this.objWidth, this.objHeight, "Delete item", new Runnable()
     {
         @Override
         public void run()
         {
-            screen.removeItem(item);
             Game.screen = (Screen) screen;
+            screen.removeItem(item);
         }
     }
     );
@@ -99,6 +97,16 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
         super(350, 40, 380, 60);
 
         this.allowClose = false;
+
+        this.next.image = "icons/forward.png";
+        this.next.imageSizeX = 25;
+        this.next.imageSizeY = 25;
+        this.next.imageXOffset = 145;
+
+        this.previous.image = "icons/back.png";
+        this.previous.imageSizeX = 25;
+        this.previous.imageSizeY = 25;
+        this.previous.imageXOffset = -145;
 
         this.item = item;
         this.screen = s;
@@ -171,6 +179,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
 
                 t.enableCaps = true;
                 t.allowSpaces = true;
+                t.maxChars = 18;
 
                 properties.add(t);
             }
@@ -203,7 +212,8 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
             }
             else if (p instanceof UIPropertyImageSelector)
             {
-                ImageSelector t = new ImageSelector(0, 0, this.objWidth, this.objHeight, name, ((UIPropertyImageSelector) p).values, () -> {});
+                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, name, ((UIPropertyImageSelector) p).values, () -> {});
+                t.drawImages = true;
                 t.selectedOption = (int) p.value;
 
                 t.function = () -> p.value = t.selectedOption;

@@ -4,6 +4,7 @@ import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.gui.ChatMessage;
 
 public class ScreenConfirmEndParty extends Screen
 {

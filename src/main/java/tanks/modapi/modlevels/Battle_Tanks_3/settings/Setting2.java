@@ -6,7 +6,7 @@ import tanks.Movable;
 import tanks.event.EventMineExplode;
 import tanks.modapi.ModAPI;
 import tanks.modapi.menus.FixedText;
-import tanks.modapi.modlevels.Battle_Tanks_3.Battle_Tanks_3;
+import tanks.modapi.modlevels.Battle_Tanks_3.BattleTanks3;
 import tanks.modapi.modlevels.Battle_Tanks_3.movables.Journal;
 import tanks.tank.Mine;
 
@@ -17,7 +17,7 @@ public class Setting2
     public static boolean added = false;
     public static boolean collected = false;
 
-    public static void setUp(Battle_Tanks_3 game)
+    public static void setUp(BattleTanks3 game)
     {
         messageNum = 0;
         added = false;
@@ -40,31 +40,35 @@ public class Setting2
         journal = new Journal();
     }
 
-    public static void draw(Battle_Tanks_3 game)
+    public static void draw(BattleTanks3 game)
     {
         if (game.timer > 1200 && game.generalTank.overrideDisplayState)
             game.generalTank.setOverrideState(false);
 
-        if (game.timer > 900 && messageNum == 3) {
+        if (game.timer > 900 && messageNum == 3)
+        {
             game.generalTank.setMessages("Good luck.");
             messageNum++;
         }
-        else if (game.timer > 600 && messageNum == 2) {
+        else if (game.timer > 600 && messageNum == 2)
+        {
             game.generalTank.setMessages("Steal their journal, lay the mine, and GET OUT OF THERE.");
             messageNum++;
         }
-        else if (game.timer > 300 && messageNum == 1) {
+        else if (game.timer > 300 && messageNum == 1)
+        {
             game.generalTank.setMessages("I've given you some mines with a 45 second fuse to blow the factory up.");
             messageNum++;
         }
-        else if (game.timer > 5 && messageNum == 0) {
+        else if (game.timer > 5 && messageNum == 0)
+        {
             game.generalTank.setMessages("Here is the explosives factory you need to sabotage.");
             game.generalTank.setOverrideState(true);
             messageNum++;
         }
     }
 
-    public static void update(Battle_Tanks_3 game)
+    public static void update(BattleTanks3 game)
     {
         if (game.fadeIsDone() && !Drawing.drawing.movingCamera)
             Drawing.drawing.movingCamera = true;

@@ -2,6 +2,10 @@ package tanks.tank;
 
 import tanks.Game;
 
+/**
+ * A primitive mobile tank
+ * @see TankBrown
+ */
 public class TankGray extends TankAIControlled
 {
 	public TankGray(String name, double x, double y, double angle)
@@ -11,19 +15,23 @@ public class TankGray extends TankAIControlled
 		this.enableMovement = true;
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
-		this.liveBulletMax = 1;
+		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
-		this.idleTurretSpeed = 0.01;
-		this.bulletBounces = 1;
+		this.turretIdleSpeed = 0.01;
 		this.turretIdleTimerBase = 500;
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
-		this.motionChangeChance = 0.001;
+		this.turnChance = 0.001;
 		this.aimAccuracyOffset = 0;
-		this.avoidSensitivity = 0.75;
+		this.mineAvoidSensitivity = 0.75;
 
 		this.coinValue = 1;
+
+		if (Game.tankTextures)
+		{
+			this.colorModel = TankModels.horizontalStripes.color;
+		}
 
 		this.description = "A primitive mobile tank";
 	}

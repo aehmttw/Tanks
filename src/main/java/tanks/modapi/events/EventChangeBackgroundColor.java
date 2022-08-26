@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Level;
 import tanks.event.PersonalEvent;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 
 public class EventChangeBackgroundColor extends PersonalEvent
 {

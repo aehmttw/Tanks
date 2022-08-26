@@ -23,5 +23,6 @@ public abstract class FixedMenu implements IDrawable
     }
 
     public abstract void draw();
+
     public abstract void update();
 }

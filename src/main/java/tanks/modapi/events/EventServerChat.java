@@ -17,7 +17,9 @@ public class EventServerChat extends PersonalEvent
     public int g2;
     public int b2;
 
-    public EventServerChat() {}
+    public EventServerChat()
+    {
+    }
 
     public EventServerChat(String message)
     {

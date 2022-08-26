@@ -18,7 +18,8 @@ public class Group extends FixedMenu
         this(true, false, menus);
     }
 
-    public Group(boolean displayAsync, FixedMenu... menus) {
+    public Group(boolean displayAsync, FixedMenu... menus)
+    {
         this(true, false, menus);
     }
 

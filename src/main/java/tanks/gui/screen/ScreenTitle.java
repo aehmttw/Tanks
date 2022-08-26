@@ -1,16 +1,11 @@
 package tanks.gui.screen;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
-
-import java.time.LocalDate;
 
 public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
@@ -22,9 +17,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 	public double rCenterX;
 	public double rCenterY;
-
-	public static LocalDate now = LocalDate.now();
-	public boolean birthday = now.getMonthValue() == 3 && Game.lessThan(20, now.getDayOfMonth(), 24);
 
 	Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", () ->
 	{
@@ -70,7 +62,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	}
 	);
 
-	Button takeControl = new Button(logo.posX, logo.posY, Game.tile_size, Game.tile_size, "", new Runnable()
+	Button takeControl = new Button(0, 0, Game.tile_size, Game.tile_size, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -96,13 +88,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	public ScreenTitle()
 	{
 		Game.movables.clear();
-		this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-		this.logo.turret.length *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-		this.logo.invulnerable = true;
-		this.logo.drawAge = 50;
-		this.logo.depthTest = false;
-
-		Game.movables.add(logo);
 		ScreenGame.finished = false;
 
 		takeControl.silent = true;
@@ -110,26 +95,15 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		this.music = "menu_1.ogg";
 		this.musicID = "menu";
 
-		languages.image = "language.png";
+		languages.image = "icons/language.png";
 
 		languages.imageSizeX = this.objHeight;
 		languages.imageSizeY = this.objHeight;
-
-		if (birthday)
-		{
-			this.logo.posX -= 150 * Drawing.drawing.interfaceScaleZoom;
-			this.logo.posY -= 50 * Drawing.drawing.interfaceScaleZoom;
-
-			Game.movables.add(new Cake());
-		}
 	}
 	
 	@Override
 	public void update()
 	{
-		this.takeControl.posX = this.logo.posX;
-		this.takeControl.posY = this.logo.posY;
-
 		play.update();
 		exit.update();
 		options.update();
@@ -142,7 +116,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		languages.update();
 
 		if (Drawing.drawing.interfaceScaleZoom == 1)
+		{
 			takeControl.update();
+		}
 
 		if (Game.debug)
 			debug.update();
@@ -152,8 +128,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		if (this.controlPlayer)
 		{
 			Obstacle.draw_size = Game.tile_size;
-			for (int i = 0; i < Game.tracks.size(); i++)
-				Game.tracks.get(i).update();
 
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
@@ -178,6 +152,25 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 	public void drawWithoutBackground()
 	{
+		if (this.logo == null)
+		{
+			this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
+			takeControl.posX = logo.posX;
+			takeControl.posY = logo.posY;
+			this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
+			this.logo.invulnerable = true;
+			this.logo.drawAge = 50;
+			this.logo.depthTest = false;
+
+			if (Drawing.drawing.interfaceScaleZoom > 1)
+			{
+				this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
+				this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
+			}
+
+			Game.movables.add(logo);
+		}
+
 		play.draw();
 		exit.draw();
 		options.draw();
@@ -187,6 +180,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			debug.draw();
 
 		about.draw();
+
 
 		Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
@@ -205,22 +199,31 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
 		for (int i = 0; i < Game.tracks.size(); i++)
+		{
 			Game.tracks.get(i).draw();
+		}
 
 		for (int i = Game.movables.size() - 1; i >= 0; i--)
+		{
 			Game.movables.get(i).draw();
+		}
 
 		for (int i = 0; i < Game.effects.size(); i++)
+		{
 			Game.effects.get(i).draw();
+		}
 
 		for (int i = 0; i < Game.effects.size(); i++)
+		{
 			Game.effects.get(i).drawGlow();
+		}
 	}
 
 	@Override
 	public void draw()
 	{
 		this.drawDefaultBackground();
+
 		this.drawWithoutBackground();
 	}
 
@@ -242,8 +245,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		this.rCenterX = Drawing.drawing.interfaceSizeX / 2;
 		this.rCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
 
-		this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
-
 		if (Drawing.drawing.interfaceScaleZoom > 1)
 		{
 			this.rCenterX = Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2;
@@ -251,54 +252,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 			this.lCenterX = Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2;
 			this.lCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
-
-			this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
-			this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
-		}
-	}
-
-	public static class Cake extends Tank
-	{
-		public int age = now.getYear() - 2018;
-
-		public Cake() {
-			super(
-					"cake",
-					Drawing.drawing.sizeX / 2 + Drawing.drawing.interfaceScaleZoom * 100,
-					Drawing.drawing.sizeY / 2 - Drawing.drawing.interfaceScaleZoom * 300,
-					200, 255, 255, 255, false
-			);
-
-			this.invulnerable = true;
-		}
-
-		@Override
-		public void draw()
-		{
-			Drawing.drawing.setColor(0, 0, 0, 100);
-			Drawing.drawing.fillOval(this.posX + 5, this.posY + 5, 200, 200);
-
-			Drawing.drawing.setColor(255, 255, 255);
-			Drawing.drawing.drawImage("lance's cake.png", this.posX, this.posY, 200, 200);
-
-			Drawing.drawing.setColor(255, 128, 0);
-			Drawing.drawing.setFontSize(72);
-			Drawing.drawing.drawText(this.posX, this.posY, age + "");
-
-			if (Game.lessThan(this.posX - 100, Drawing.drawing.getInterfaceMouseX(), this.posX + 100) && Game.lessThan(this.posY - 100, Drawing.drawing.getInterfaceMouseY(), this.posY + 100))
-				Drawing.drawing.drawTooltip(new String[] {"It's Tanks' birthday!"});
-		}
-
-		@Override
-		public void update()
-		{
-			super.update();
-
-			if (this.vX != 0)
-				this.vX *= 1 - 1.0 / 60;
-
-			if (this.vY != 0)
-				this.vY *= 1 - 1.0 / 60;
 		}
 	}
 }

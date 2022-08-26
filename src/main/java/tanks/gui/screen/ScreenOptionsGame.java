@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenOptionsGame extends Screen
@@ -39,16 +40,18 @@ public class ScreenOptionsGame extends Screen
     },
             "When off, skips directly to the summary tab---of the crusade end stats screen");
 
-    Button transparentTallTiles = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable() {
+    Button displayZoom = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    {
         @Override
-        public void run() {
-            Game.transparentTallTiles = !Game.transparentTallTiles;
-
-            transparentTallTiles.setText("Transparent tiles: " + (Game.transparentTallTiles ? ScreenOptions.onText : ScreenOptions.offText));
+        public void run()
+        {
+            Panel.displayZoom = !Panel.displayZoom;
+            displayZoom.setText("Display zoom: ", Panel.displayZoom ? ScreenOptions.onText : ScreenOptions.offText);
         }
-    }, "If enabled, any obstacles that are---tall enough so a tank can---fit under are rendered transparent.");
+    },
+            "Displays zoom and auto zoom when---its keybinds are pressed");
 
-    Button speedrunOptions = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
+    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
@@ -67,17 +70,20 @@ public class ScreenOptionsGame extends Screen
         else
             fullStats.setText(fullStatsText, ScreenOptions.offText);
 
-        transparentTallTiles.setText("Transparent tiles: " + (Game.transparentTallTiles ? ScreenOptions.onText : ScreenOptions.offText));
+        displayZoom.setText("Display zoom: ", (Game.framework == Game.Framework.lwjgl && Panel.displayZoom) ? ScreenOptions.onText : ScreenOptions.offText);
+
+        if (Game.framework == Game.Framework.libgdx)
+            displayZoom.enabled = false;
     }
 
     @Override
     public void update()
     {
         back.update();
-        transparentTallTiles.update();
         speedrunOptions.update();
         autostart.update();
         fullStats.update();
+        displayZoom.update();
     }
 
     @Override
@@ -86,10 +92,10 @@ public class ScreenOptionsGame extends Screen
         this.drawDefaultBackground();
 
         back.draw();
-        transparentTallTiles.draw();
         speedrunOptions.draw();
         fullStats.draw();
         autostart.draw();
+        displayZoom.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);

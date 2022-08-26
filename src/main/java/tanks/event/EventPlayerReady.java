@@ -19,20 +19,27 @@ public class EventPlayerReady extends PersonalEvent
 		if (!ScreenPartyHost.includedPlayers.contains(this.clientID))
 			return;
 
+		Player pl = null;
+
 		for (Player p: Game.players)
 		{
 			if (p.clientID.equals(this.clientID))
 			{
-				if (!ScreenPartyHost.readyPlayers.contains(p))
-					ScreenPartyHost.readyPlayers.add(p);
+				pl = p;
+			}
+		}
 
-				Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
+		if (pl != null)
+		{
+			if (!ScreenPartyHost.readyPlayers.contains(pl))
+				ScreenPartyHost.readyPlayers.add(pl);
 
-				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
-				{
-					Game.eventsOut.add(new EventBeginLevelCountdown());
-					((ScreenGame) Game.screen).cancelCountdown = false;
-				}
+			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
+
+			if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame)
+			{
+				Game.eventsOut.add(new EventBeginLevelCountdown());
+				((ScreenGame) Game.screen).cancelCountdown = false;
 			}
 		}
 	}

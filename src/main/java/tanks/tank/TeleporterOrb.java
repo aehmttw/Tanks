@@ -3,6 +3,11 @@ package tanks.tank;
 import tanks.*;
 import tanks.event.EventTankTeleport;
 
+/**
+ * The orb that transfers the player's tank which is fired from the teleporter.
+ * @see TankPlayer
+ * @see tanks.obstacle.ObstacleTeleporter
+ */
 public class TeleporterOrb extends Movable
 {
 	public Tank tank;
@@ -18,14 +23,12 @@ public class TeleporterOrb extends Movable
 	public double endAge = 300;
 
 	public double size;
-	public double tSize;
 
 	public TeleporterOrb(double x, double y, double iX, double iY, double destX, double destY, Tank t)
 	{
 		super(x, y);
 		this.tank = t;
 		this.size = t.size;
-		this.tSize = t.turret.size;
 		this.drawLevel = 9;
 		t.invulnerable = true;
 		t.targetable = false;
@@ -97,7 +100,6 @@ public class TeleporterOrb extends Movable
 			}
 
 			this.tank.size = this.size;
-			this.tank.turret.size = this.tSize;
 			return;
 		}
 
@@ -106,7 +108,6 @@ public class TeleporterOrb extends Movable
 
 		this.posZ = Math.sin((this.maxAge - Math.max(0, Math.min(this.maxAge, this.age))) / this.maxAge * Math.PI) *
 				Math.sqrt(Math.pow(this.dX - this.iX, 2) + Math.pow(this.dY - this.iY, 2)) / 2;
-
 
 		if (this.age <= 0)
 		{
@@ -145,9 +146,7 @@ public class TeleporterOrb extends Movable
 		double size = Math.max(-this.age / 100, Math.max((this.age - this.maxAge) / (this.endAge - this.maxAge), 0));
 		
 		this.tank.size = size * this.size;
-		this.tank.turret.size = size * this.tSize;
-		this.tank.turret.length = this.tank.size;
-		
+
 		this.tank.disabled = this.tank.size <= 0;
 
 		if (Math.random() < Panel.frameFrequency * Game.effectMultiplier)

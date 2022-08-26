@@ -32,7 +32,7 @@ public class CrusadePlayer
     public HashMap<String, Integer> itemUses = new HashMap<>();
     public HashMap<String, Integer> itemHits = new HashMap<>();
 
-    public void addKill(tanks.tank.Tank t)
+    public void addKill(Tank t)
     {
         String name = t.name;
 
@@ -92,10 +92,10 @@ public class CrusadePlayer
 
     public void addItemStat(HashMap<String, Integer> stat, IGameObject i)
     {
-        tanks.hotbar.item.Item item;
+        Item item;
 
-        if (i instanceof tanks.hotbar.item.Item)
-            item = (tanks.hotbar.item.Item) i;
+        if (i instanceof Item)
+            item = (Item) i;
         else if (i instanceof Bullet)
         {
             item = ((Bullet) i).item;
@@ -103,9 +103,9 @@ public class CrusadePlayer
             if (item == null)
                 item = TankPlayer.default_bullet;
         }
-        else if (i instanceof Mine)
+        else if (i instanceof Explosion)
         {
-            item = ((Mine) i).item;
+            item = ((Explosion) i).item;
 
             if (item == null)
                 item = TankPlayer.default_mine;

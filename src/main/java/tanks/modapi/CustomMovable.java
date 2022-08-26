@@ -8,7 +8,8 @@ public class CustomMovable extends Movable
     public String drawInstructions = "";
     public int startReadingAt = 0;
 
-    public CustomMovable(double x, double y) {
+    public CustomMovable(double x, double y)
+    {
         super(x, y);
     }
 
@@ -41,7 +42,7 @@ public class CustomMovable extends Movable
             }
             else if (c == ';')
             {
-                startReadingAt = i+1;
+                startReadingAt = i + 1;
                 break;
             }
             else
@@ -57,16 +58,18 @@ public class CustomMovable extends Movable
             }
         }
 
-        if (startReadingAt < this.drawInstructions.stripTrailing().length() - 1) {
+        if (startReadingAt < this.drawInstructions.stripTrailing().length() - 1)
+        {
             executeFunction(funcName.toString().stripTrailing(), parameters.toString().split(","));
             draw();
-        } else
+        }
+        else
             startReadingAt = 0;
     }
 
     public String getStringAround(int index)
     {
-        return this.drawInstructions.substring(Math.max(0, index-3), Math.min(this.drawInstructions.length()-1, index+3));
+        return this.drawInstructions.substring(Math.max(0, index - 3), Math.min(this.drawInstructions.length() - 1, index + 3));
     }
 
     public void executeFunction(String function, String[] parameters)
@@ -112,7 +115,7 @@ public class CustomMovable extends Movable
         this.drawInstructions = instructions;
 
         for (int i = 0; i < replace.length; i++)
-            this.drawInstructions = this.drawInstructions.replaceAll("_r" + (i+1), replace[i].toString());
+            this.drawInstructions = this.drawInstructions.replaceAll("_r" + (i + 1), replace[i].toString());
 
         return this;
     }

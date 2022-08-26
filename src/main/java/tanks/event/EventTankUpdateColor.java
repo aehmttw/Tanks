@@ -15,6 +15,11 @@ public class EventTankUpdateColor extends PersonalEvent
     public double green2;
     public double blue2;
 
+    public boolean tertiaryColor;
+    public double red3;
+    public double green3;
+    public double blue3;
+
     public EventTankUpdateColor()
     {
 
@@ -28,9 +33,14 @@ public class EventTankUpdateColor extends PersonalEvent
         green = t.colorG;
         blue = t.colorB;
 
-        red2 = t.turret.colorR;
-        green2 = t.turret.colorG;
-        blue2 = t.turret.colorB;
+        red2 = t.secondaryColorR;
+        green2 = t.secondaryColorG;
+        blue2 = t.secondaryColorB;
+
+        tertiaryColor = t.enableTertiaryColor;
+        red3 = t.tertiaryColorR;
+        green3 = t.tertiaryColorG;
+        blue3 = t.tertiaryColorB;
     }
 
     @Override
@@ -45,9 +55,14 @@ public class EventTankUpdateColor extends PersonalEvent
         t.colorG = green;
         t.colorB = blue;
 
-        t.turret.colorR = red2;
-        t.turret.colorG = green2;
-        t.turret.colorB = blue2;
+        t.secondaryColorR = red2;
+        t.secondaryColorG = green2;
+        t.secondaryColorB = blue2;
+
+        t.enableTertiaryColor = tertiaryColor;
+        t.tertiaryColorR = red3;
+        t.tertiaryColorG = green3;
+        t.tertiaryColorB = blue3;
     }
 
     @Override
@@ -60,6 +75,10 @@ public class EventTankUpdateColor extends PersonalEvent
         b.writeDouble(this.red2);
         b.writeDouble(this.green2);
         b.writeDouble(this.blue2);
+        b.writeBoolean(this.tertiaryColor);
+        b.writeDouble(this.red3);
+        b.writeDouble(this.green3);
+        b.writeDouble(this.blue3);
     }
 
     @Override
@@ -72,5 +91,9 @@ public class EventTankUpdateColor extends PersonalEvent
         this.red2 = b.readDouble();
         this.green2 = b.readDouble();
         this.blue2 = b.readDouble();
+        this.tertiaryColor = b.readBoolean();
+        this.red3 = b.readDouble();
+        this.green3 = b.readDouble();
+        this.blue3 = b.readDouble();
     }
 }

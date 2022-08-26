@@ -27,7 +27,9 @@ import static tanks.gui.screen.ScreenGame.shopOffset;
 
 public class TankNPC extends TankDummy
 {
-    /** Not recommended; it may bring back old network speeds if any event-sending functions are repeatedly called. */
+    /**
+     * Not recommended; it may bring back old network speeds if any event-sending functions are repeatedly called.
+     */
     public static boolean disableEventCooldown = false;
     public static final InputBindingGroup select = new InputBindingGroup("viewNPC", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_E));
 
@@ -77,7 +79,7 @@ public class TankNPC extends TankDummy
 
     public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, ArrayList<Item> shop)
     {
-        super(name, x, y*50+25, angle);
+        super(name, x, y * 50 + 25, angle);
 
         if (messages != null && messages.length() > 0)
             this.messages = messages.split("\n");
@@ -92,19 +94,19 @@ public class TankNPC extends TankDummy
         this.colorR = r;
         this.colorG = g;
         this.colorB = b;
-        this.turret.colorR = Turret.calculateSecondaryColor(this.colorR);
-        this.turret.colorG = Turret.calculateSecondaryColor(this.colorG);
-        this.turret.colorB = Turret.calculateSecondaryColor(this.colorB);
+        this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
+        this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
+        this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
 
         this.invulnerable = true;
-        this.needsToKill = false;
+        this.mandatoryKill = false;
 
         icon.colorR = r;
         icon.colorG = g;
         icon.colorB = b;
-        icon.turret.colorR = Turret.calculateSecondaryColor(this.colorR);
-        icon.turret.colorG = Turret.calculateSecondaryColor(this.colorG);
-        icon.turret.colorB = Turret.calculateSecondaryColor(this.colorB);
+        icon.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
+        icon.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
+        icon.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
 
         this.messager = new NPCMesssage(this);
         ModAPI.menuGroup.add(this.messager);
@@ -195,11 +197,13 @@ public class TankNPC extends TankDummy
                 else if (this.currentLine.length() < messages[messageNum].length())
                     this.currentLine = messages[messageNum];
 
-                else if (messageNum + 1 == messages.length) {
+                else if (messageNum + 1 == messages.length)
+                {
                     isChatting = false;
                     messageNum = 0;
                 }
-                else {
+                else
+                {
                     messageNum++;
                     initMessageScreen();
                 }

@@ -7,7 +7,6 @@ import tanks.gui.screen.ScreenInfo;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class TextBox implements IDrawable, ITrigger
 {
@@ -50,7 +49,7 @@ public class TextBox implements IDrawable, ITrigger
 	public boolean lowerCase = false;
 	public boolean enableCaps = false;
 
-	public int maxChars = 18;
+	public int maxChars = 20;
 	public double maxValue = Integer.MAX_VALUE;
 	public double minValue = Integer.MIN_VALUE;
 
@@ -161,10 +160,12 @@ public class TextBox implements IDrawable, ITrigger
 			else
 				drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB);
 		}
-		else if (hover && !Game.game.window.touchscreen)
+		else if (hover && !Game.game.window.touchscreen && this.enabled)
 			drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);
-		else
+		else if (this.enabled)
 			drawing.setColor(this.colorR, this.colorG, this.colorB);
+		else
+			drawing.setColor((this.colorR + this.bgColorR) / 2, (this.colorG + this.bgColorG) / 2, (this.colorB + this.bgColorB) / 2);
 
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY * m);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY * m, sizeY * m);
@@ -244,16 +245,20 @@ public class TextBox implements IDrawable, ITrigger
 		{
 			drawing.setColor(255, 255, 255);
 			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-			drawing.drawInterfaceImage("paste.png", this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
+			drawing.drawInterfaceImage("icons/paste.png", this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
 
 			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-			drawing.drawInterfaceImage("copy.png", this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
+			drawing.drawInterfaceImage("icons/copy.png", this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
 
 		}
 	}
 
 	public void drawInput()
 	{
+		double size = this.sizeY * 0.6;
+		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
+			Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale));
+
 		if (selected)
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText + "\u00a7127127127255_");
 		else
@@ -270,7 +275,7 @@ public class TextBox implements IDrawable, ITrigger
 			boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1), Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1), null);
 
 			if (handled)
-				Game.game.window.validPressedButtons.remove(InputCodes.MOUSE_BUTTON_1);
+				Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
 
 			checkDeselect(mx, my, Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
 		}
@@ -442,7 +447,9 @@ public class TextBox implements IDrawable, ITrigger
 		boolean hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
 
 		if (((!hover && valid)) && selected)
+		{
 			this.submit();
+		}
 
 		if (Game.game.window.touchscreen)
 		{
@@ -453,8 +460,8 @@ public class TextBox implements IDrawable, ITrigger
 
 	public void submit()
 	{
-		Game.game.window.validPressedKeys.remove(InputCodes.KEY_ENTER);
-		Game.game.window.validPressedKeys.remove(InputCodes.KEY_ESCAPE);
+		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
+		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 
 		this.performValueCheck();
 		function.run();
@@ -466,7 +473,9 @@ public class TextBox implements IDrawable, ITrigger
 		Panel.selectedTextBox = null;
 
 		if (Game.glowEnabled)
+		{
 			this.submitEffect();
+		}
 	}
 
 	public void submitEffect()
@@ -485,7 +494,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_ESCAPE) && selected)
 		{
-			Game.game.window.validPressedKeys.remove(InputCodes.KEY_ESCAPE);
+			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
 			selected = false;
 			Panel.selectedTextBox = null;
 			this.inputText = this.previousInputText;
@@ -520,7 +529,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		boolean caps = (this.enableCaps && (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)));
 
-		HashSet<Integer> texts = Game.game.window.getRawTextKeys();
+		ArrayList<Integer> texts = Game.game.window.getRawTextKeys();
 
 		for (int key : texts)
 		{
@@ -563,7 +572,7 @@ public class TextBox implements IDrawable, ITrigger
 		if (key == InputCodes.KEY_BACKSPACE || key == '\b')
 			inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
 
-		else if (inputText.length() + text.length() <= maxChars)
+		else if (text != null && inputText.length() + text.length() <= maxChars)
 		{
 			if (text.equals(" "))
 			{

@@ -4,7 +4,6 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
 import tanks.gui.screen.ScreenGame;
-import tanks.modapi.TankNPC;
 import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
@@ -24,6 +23,7 @@ public class Ray
 
 	public boolean enableBounciness = true;
 	public boolean ignoreDestructible = false;
+	public boolean ignoreShootThrough = false;
 
 	public boolean trace = Game.traceAllRays;
 	public boolean dotted = false;
@@ -176,13 +176,13 @@ public class Ray
 				if (this.posX + this.size / 2 >= t.posX - t.size / 2 &&
 						this.posX - this.size / 2 <= t.posX + t.size / 2 &&
 						this.posY + this.size / 2 >= t.posY - t.size / 2 &&
-						this.posY - this.size / 2 <= t.posY + t.size / 2 &&
-						!(m instanceof TankNPC))
+						this.posY - this.size / 2 <= t.posY + t.size / 2)
 					return t;
 			}
 		}
 
-		boolean firstBounce = true;
+		boolean firstBounce = this.targetTank == null;
+
 		while (this.bounces >= 0 && this.bouncyBounces >= 0)
 		{
 			double t = Double.MAX_VALUE;
@@ -197,15 +197,19 @@ public class Ray
 					double size = this.size;
 
 					Face f = Game.verticalFaces.get(i);
-
-					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
-						continue;
-
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
@@ -225,16 +229,22 @@ public class Ray
 				{
 					Face f = Game.verticalFaces.get(i);
 
-					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
-						continue;
-
 					double size = this.size;
 
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
@@ -252,18 +262,25 @@ public class Ray
 			boolean corner = false;
 			if (vY > 0)
 			{
-				for (Face f : Game.horizontalFaces)
+				for (int i = 0; i < Game.horizontalFaces.size(); i++)
 				{
-					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
-						continue;
+					Face f = Game.horizontalFaces.get(i);
 
 					double size = this.size;
 
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
@@ -291,16 +308,21 @@ public class Ray
 				{
 					Face f = Game.horizontalFaces.get(i);
 
-					if (f.owner instanceof Obstacle && ((Obstacle) f.owner).startHeight > 1)
-						continue;
-
 					double size = this.size;
 
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
 
-					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) ||
-							(this.ignoreDestructible && f.owner instanceof Obstacle && ((Obstacle) f.owner).destructible && !((Obstacle) f.owner).bouncy))
+					boolean passThrough = false;
+					if (f.owner instanceof Obstacle)
+					{
+						Obstacle o = (Obstacle) f.owner;
+
+						if (!o.bouncy)
+							passThrough = (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+					}
+
+					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
 						continue;
 
 					double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
@@ -347,7 +369,7 @@ public class Ray
 						this.traceAge++;
 
 						double frac = 1 / (1 + this.traceAge / 100.0);
-						double z = this.tank.size / 2 + this.tank.turret.size / 2 * frac + (Game.tile_size / 4) * (1 - frac);
+						double z = this.tank.size / 2 + this.tank.turretSize / 2 * frac + (Game.tile_size / 4) * (1 - frac);
 						if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
 							Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
 					}
@@ -358,7 +380,7 @@ public class Ray
 				this.posX = collisionX;
 				this.posY = collisionY;
 
-				if (collisionFace.owner instanceof Movable && !(collisionFace.owner instanceof TankNPC))
+				if (collisionFace.owner instanceof Movable)
 				{
 					this.targetX = collisionX;
 					this.targetY = collisionY;
@@ -411,6 +433,27 @@ public class Ray
 		}
 
 		return dist;
+	}
+
+	public double getAngleInDirection(double x, double y)
+	{
+		x -= this.posX;
+		y -= this.posY;
+
+		double angle = 0;
+		if (x > 0)
+			angle = Math.atan(y/x);
+		else if (x < 0)
+			angle = Math.atan(y/x) + Math.PI;
+		else
+		{
+			if (y > 0)
+				angle = Math.PI / 2;
+			else if (y < 0)
+				angle = Math.PI * 3 / 2;
+		}
+
+		return angle;
 	}
 
 	public static boolean isInsideObstacle(double x, double y)

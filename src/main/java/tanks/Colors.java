@@ -7,7 +7,7 @@ public class Colors
 
     public static String green = "\u00a7000200000255";
     public static String red = "\u00A7200000000255";
-    
+
     public static String black = "\u00a7000000000255";
     public static String white = "\u00a7255255255255";
 

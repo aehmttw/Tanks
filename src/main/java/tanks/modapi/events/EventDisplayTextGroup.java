@@ -22,11 +22,13 @@ public class EventDisplayTextGroup extends PersonalEvent
     public double colorG;
     public double colorB;
 
-    public EventDisplayTextGroup() {
+    public EventDisplayTextGroup()
+    {
 
     }
 
-    public EventDisplayTextGroup(String location, ArrayList<String> text, boolean afterGameStarted, ArrayList<Integer> durationInMs, double fontSize, double r, double g, double b) {
+    public EventDisplayTextGroup(String location, ArrayList<String> text, boolean afterGameStarted, ArrayList<Integer> durationInMs, double fontSize, double r, double g, double b)
+    {
         this.location = location;
         this.texts = text;
         this.duration = durationInMs;
@@ -39,7 +41,8 @@ public class EventDisplayTextGroup extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b) {
+    public void write(ByteBuf b)
+    {
         NetworkUtils.writeString(b, this.location);
 
         StringBuilder texts = new StringBuilder();
@@ -61,7 +64,8 @@ public class EventDisplayTextGroup extends PersonalEvent
     }
 
     @Override
-    public void read(ByteBuf b) {
+    public void read(ByteBuf b)
+    {
         this.location = NetworkUtils.readString(b);
 
         String[] texts = NetworkUtils.readString(b).split("---");
@@ -81,7 +85,8 @@ public class EventDisplayTextGroup extends PersonalEvent
     }
 
     @Override
-    public void execute() {
+    public void execute()
+    {
         ModAPI.menuGroup.add(new FixedTextGroup(location, texts, afterGameStarted, duration, this.fontSize, this.colorR, this.colorG, this.colorB));
     }
 }

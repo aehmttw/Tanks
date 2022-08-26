@@ -1,7 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
 import tanks.tank.TankSpawnMarker;
@@ -12,9 +11,12 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 {
     public Screen previous;
     public ScreenLevelEditor screenLevelEditor;
+    public boolean musicInstruments = false;
 
     public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
+        this.allowClose = false;
+
         this.previous = previous;
         this.screenLevelEditor = screenLevelEditor;
 
@@ -22,6 +24,9 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
         this.musicID = previous.musicID;
 
         this.enableMargins = false;
+
+        if (previous instanceof ScreenLevelEditorOverlay)
+            this.musicInstruments = ((ScreenLevelEditorOverlay) previous).musicInstruments;
     }
 
     public void escape()
@@ -46,13 +51,15 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void update()
     {
+        this.screenLevelEditor.updateMusic(this.musicInstruments);
+
         if (Game.game.input.editorPause.isValid())
         {
             Game.game.input.editorPause.invalidate();
             this.escape();
         }
 
-        if (Panel.selectedTextBox == null && Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
+        if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
         {
             Game.game.input.editorObjectMenu.invalidate();
             Game.screen = screenLevelEditor;
@@ -88,5 +95,11 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     public double getScale()
     {
         return screenLevelEditor.getScale();
+    }
+
+    @Override
+    public void onAttemptClose()
+    {
+        Game.screen = new OverlayConfirmSave(Game.screen, this.screenLevelEditor);
     }
 }

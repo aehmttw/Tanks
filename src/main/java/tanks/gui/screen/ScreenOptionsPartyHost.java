@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import tanks.Colors;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -12,13 +11,13 @@ public class ScreenOptionsPartyHost extends Screen
     public static final String anticheatText = "Anticheat: ";
     public static final String disableFriendlyFireText = "Friendly fire: ";
 
-    public static final String weakText = "" + Colors.orange + "weak";
-    public static final String strongText = Colors.green + "strong";
+    public static final String weakText = "\u00A7200100000255weak";
+    public static final String strongText = "\u00A7000200000255strong";
 
-    public static final String defaultText = Colors.green + "default";
+    public static final String defaultText = "\u00A7000200000255default";
     public static final String disabledText = "\u00A7200000000255off";
 
-    Button anticheat = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button anticheat = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -47,7 +46,7 @@ public class ScreenOptionsPartyHost extends Screen
     },
             "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
 
-    Button disableFriendlyFire = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button disableFriendlyFire = new Button(this.centerX, this.centerY - this.objYSpace * 0, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -61,16 +60,6 @@ public class ScreenOptionsPartyHost extends Screen
         }
     },
             "Disables all friendly fire in the party.---Useful for co-op in bigger parties.");
-
-    TextBox eps = new TextBox(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Events per Second", new Runnable() {
-        @Override
-        public void run() {
-            if (eps.inputText.equals(""))
-                eps.inputText = eps.previousInputText;
-
-            Game.eventsPerSecond = Integer.parseInt(eps.inputText);
-        }
-    }, Game.eventsPerSecond + "");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {
@@ -103,7 +92,7 @@ public class ScreenOptionsPartyHost extends Screen
         else
             disableFriendlyFire.setText(disableFriendlyFireText, defaultText);
 
-        timer = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Countdown time", () ->
+        timer = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Countdown time", () ->
         {
             if (timer.inputText.length() == 0)
                 timer.inputText = Game.partyStartTime / 100.0 + "";
@@ -126,7 +115,6 @@ public class ScreenOptionsPartyHost extends Screen
         timer.update();
         anticheat.update();
         disableFriendlyFire.update();
-        eps.update();
     }
 
     @Override
@@ -136,12 +124,11 @@ public class ScreenOptionsPartyHost extends Screen
         back.draw();
         anticheat.draw();
         disableFriendlyFire.draw();
-        eps.draw();
         timer.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Party host options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Party host options");
     }
 
 }

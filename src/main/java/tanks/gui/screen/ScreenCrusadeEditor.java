@@ -8,8 +8,10 @@ import tanks.gui.Selector;
 import tanks.gui.TextBox;
 import tanks.hotbar.item.Item;
 import tanks.registry.RegistryItem;
+import tanks.tank.TankAIControlled;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ScreenCrusadeEditor extends Screen implements IItemScreen
 {
@@ -40,7 +42,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         }
     }, "Show level names before---the battle begins");
 
-    public String toggleRespawnsText = "Tank respawn: ";
+    public String toggleRespawnsText = "Bots respawn: ";
     public Button toggleRespawns = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
@@ -230,6 +232,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
                 , crusade.name.split("\\.")[0].replace("_", " "));
 
         crusadeName.enableCaps = true;
+        crusadeName.maxChars = 18;
 
         startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", () ->
         {
@@ -283,7 +286,6 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         this.levelButtons.reorderBehavior = (i, j) ->
         {
             this.crusade.levels.add(j, this.crusade.levels.remove((int)i));
-            this.crusade.levelNames.add(j, this.crusade.levelNames.remove((int)i));
             this.refreshLevelButtons();
         };
 
@@ -306,13 +308,14 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
             int j = i;
-            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levelNames.get(i).replace("_", " "), () ->
+            this.levelButtons.buttons.add(new Button(0, 0, this.objWidth, this.objHeight, this.crusade.levels.get(i).levelName.replace("_", " "), () ->
             {
-                String name = crusade.levelNames.remove(j);
-                String level = crusade.levels.remove(j);
+                Crusade.CrusadeLevel level = crusade.levels.remove(j);
 
-                ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(name, level, j + 1, (ScreenCrusadeEditor) Game.screen);
-                new Level(level).loadLevel(s);
+                ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, j + 1, (ScreenCrusadeEditor) Game.screen);
+                Level l = new Level(level.levelString);
+                l.customTanks = level.tanks;
+                l.loadLevel(s);
                 Game.screen = s;
             }));
         }
@@ -480,12 +483,38 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
             for (Item i: this.crusade.crusadeItems)
                 f.println(i.toString());
 
+            f.println("tanks");
+            HashMap<String, TankAIControlled> customTanks = new HashMap<>();
+            HashMap<String, ArrayList<Integer>> customTankLevels = new HashMap<>();
+
+            for (int i = 0; i < this.crusade.levels.size(); i++)
+            {
+                ArrayList<TankAIControlled> tanks = this.crusade.levels.get(i).tanks;
+
+                for (TankAIControlled t: tanks)
+                {
+                    customTanks.put(t.name, t);
+                    ArrayList<Integer> a = customTankLevels.get(t.name);
+
+                    if (a == null)
+                        a = new ArrayList<>();
+
+                    a.add(i);
+                    customTankLevels.put(t.name, a);
+                }
+            }
+
+            for (String s: customTanks.keySet())
+            {
+                f.println(customTankLevels.get(s) + " " + customTanks.get(s));
+            }
+
             f.println("levels");
 
             for (int i = 0; i < this.crusade.levels.size(); i++)
             {
-                String l = this.crusade.levels.get(i);
-                f.println(l.substring(l.indexOf('{'), l.indexOf('}') + 1) + " name=" + this.crusade.levelNames.get(i));
+                String l = this.crusade.levels.get(i).levelString;
+                f.println(l.substring(l.indexOf('{'), l.indexOf('}') + 1) + " name=" + this.crusade.levels.get(i).levelName);
             }
 
             f.stopWriting();

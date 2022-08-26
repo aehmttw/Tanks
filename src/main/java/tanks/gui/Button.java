@@ -1,5 +1,6 @@
 package tanks.gui;
 
+import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
@@ -60,11 +61,17 @@ public class Button implements IDrawable, ITrigger
 	public double textOffsetX = 0;
 	public double textOffsetY = 0;
 
+	public double imageR = 255;
+	public double imageG = 255;
+	public double imageB = 255;
+	public boolean drawImageShadow = false;
+
 	public boolean silent = false;
 
 	public boolean fullInfo = false;
 
 	public String image = null;
+	public IModel model = null;
 	public double imageSizeX = 0;
 	public double imageSizeY = 0;
 
@@ -198,8 +205,20 @@ public class Button implements IDrawable, ITrigger
 
 		if (this.image != null)
 		{
-			drawing.setColor(255, 255, 255);
+			if (this.drawImageShadow)
+			{
+				drawing.setColor(127, 127, 127);
+				drawing.drawInterfaceImage(image, this.posX + this.imageXOffset + 1.5, this.posY + this.imageYOffset + 1.5, this.imageSizeX, this.imageSizeY);
+			}
+
+			drawing.setColor(this.imageR, this.imageG, this.imageB);
 			drawing.drawInterfaceImage(image, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
+		}
+
+		if (this.model != null)
+		{
+			Drawing.drawing.setColor(127, 180, 255);
+			drawing.drawInterfaceModel2D(model, this.posX + this.imageXOffset, this.posY + this.imageYOffset, 0,this.imageSizeX * 0.75, this.imageSizeY * 0.75, this.imageSizeY * 0.75);
 		}
 
 		if (enableHover)
@@ -346,7 +365,6 @@ public class Button implements IDrawable, ITrigger
 				if (!this.silent)
 				{
 					Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
-					//Drawing.drawing.playSound(this.sound, 1f, 1f);
 					Drawing.drawing.playVibration("click");
 				}
 

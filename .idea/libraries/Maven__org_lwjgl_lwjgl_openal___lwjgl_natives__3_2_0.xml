@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Maven: org.lwjgl:lwjgl-openal:${lwjgl.natives}:3.2.0">
+    <CLASSES />
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl-openal/3.2.0/lwjgl-openal-3.2.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl-openal/3.2.0/lwjgl-openal-3.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

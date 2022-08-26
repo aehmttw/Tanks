@@ -5,6 +5,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
@@ -77,6 +78,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
                 , name.replace("_", " "));
 
         levelName.enableCaps = true;
+        levelName.maxChars = 18;
 
         this.updateDownloadButton();
     }

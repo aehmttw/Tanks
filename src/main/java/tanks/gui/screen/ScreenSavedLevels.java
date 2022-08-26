@@ -1,7 +1,6 @@
 package tanks.gui.screen;
 
 import tanks.Drawing;
-import tanks.Function;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
@@ -10,15 +9,10 @@ import tanks.gui.SearchBox;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class ScreenSavedLevels extends Screen
 {
 	public static int page = 0;
 	public static boolean sortByTime = false;
-
-	public static String defaultLevelString = "{28,18||0-0-player}";
 
 	public SavedFilesList fullSavedLevelsList;
 	public SavedFilesList savedLevelsList;
@@ -61,7 +55,7 @@ public class ScreenSavedLevels extends Screen
 	{
 		String name = System.currentTimeMillis() + ".tanks";
 
-		Level l = new Level(defaultLevelString);
+		Level l = new Level("{28,18||1-8-player}");
 		Game.screen = new ScreenLevelEditor(name, l);
 		l.loadLevel((ILevelPreviewScreen) Game.screen);
 	}
@@ -128,9 +122,9 @@ public class ScreenSavedLevels extends Screen
 		sortByTime = fullSavedLevelsList.sortedByTime;
 
 		if (this.fullSavedLevelsList.sortedByTime)
-			this.sort.image = "sort_chronological.png";
+			this.sort.image = "icons/sort_chronological.png";
 		else
-			this.sort.image = "sort_alphabetical.png";
+			this.sort.image = "icons/sort_alphabetical.png";
 
 		this.sort.update();
 	}

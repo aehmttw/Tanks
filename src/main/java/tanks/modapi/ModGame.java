@@ -20,6 +20,8 @@ public abstract class ModGame
     public boolean forceDisableMinimap = false;
     public boolean enableKillMessages = false;
     public double playerKillCoins = 0;
+
+    public String name;
     public String description = null;
 
     public boolean listeningForEvents = false;
@@ -28,7 +30,7 @@ public abstract class ModGame
 
     public ModGame()
     {
-
+        this.name = this.getClass().getSimpleName().replace("_", " ");
     }
 
     public void start()
@@ -40,11 +42,18 @@ public abstract class ModGame
             Game.eventsOut.add(new EventCustomLevelEndCondition());
     }
 
-    /** Called when the <code>Restart this Level</code> button is clicked */
+    /**
+     * Called when the <code>Restart this Level</code> button is clicked
+     */
     public void onLevelRestart()
     {
         Game.cleanUp();
         ModAPI.loadLevel(Game.currentLevelString);
+    }
+
+    public void onKill(Tank killer, Tank killed)
+    {
+
     }
 
     public boolean levelEndCondition()
@@ -67,11 +76,13 @@ public abstract class ModGame
 
     }
 
-    public String generateKillMessage(Tank killed, Tank killer, boolean isBullet) {
+    public String generateKillMessage(Tank killed, Tank killer, boolean isBullet)
+    {
         return Level.genKillMessage(killed, killer, isBullet);
     }
 
-    public String generateDrownMessage(Tank killed) {
+    public String generateDrownMessage(Tank killed)
+    {
         return Level.genDrownMessage(killed);
     }
 }

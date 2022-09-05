@@ -414,6 +414,13 @@ public class ScreenChangelog extends Screen
                             "*What's new in Tanks v1.4.1a:\n\n" +
                                     "Fixed a memory leak with custom tank music\n"
                     });
+
+            new Changelog("v1.4.1b", new String[]
+                    {
+                            "*What's new in Tanks v1.4.1b:\n\n" +
+                                    "Added bandwidth usage to info bar\n" +
+                                    "Fixed a bug with spawning tanks in multiplayer\n"
+                    });
         }
     }
 }

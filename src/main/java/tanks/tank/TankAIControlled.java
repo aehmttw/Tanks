@@ -223,6 +223,12 @@ public class TankAIControlled extends Tank
 		{
 			this.tank = t;
 			this.weight = weight;
+
+			if (ScreenPartyHost.isServer)
+			{
+				Tank.freeIDs.add(t.networkID);
+				Tank.idMap.remove(t.networkID);
+			}
 		}
 
 		public String toString()

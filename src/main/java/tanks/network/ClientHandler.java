@@ -125,6 +125,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		
 		ByteBuf b2 = ctx.channel().alloc().buffer();
 		b2.writeInt(b.readableBytes());
+		MessageReader.upstreamBytes += b.readableBytes() + 4;
+		MessageReader.updateLastMessageTime();
 		b2.writeBytes(b);
 
 		if (flush)

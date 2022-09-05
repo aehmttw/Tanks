@@ -13,6 +13,13 @@ public class MessageReader
 {
 	public static final int max_event_size = 1048576;
 
+	public static int downstreamBytes;
+	public static int upstreamBytes;
+	public static long lastMessageTime;
+
+	public static int upstreamBytesPerSec;
+	public static int downstreamBytesPerSec;
+
 	public boolean useQueue = true;
 	public ByteBuf queue;
 	protected boolean reading = false;
@@ -42,6 +49,8 @@ public class MessageReader
 				if (!reading)
 				{
 					endpoint = queue.readInt();
+					downstreamBytes += endpoint + 4;
+					updateLastMessageTime();
 
 					if (endpoint > max_event_size)
 					{
@@ -166,5 +175,19 @@ public class MessageReader
 		}
 
 		return false;
+	}
+
+	public static void updateLastMessageTime()
+	{
+		long time = System.currentTimeMillis() / 1000;
+
+		if (lastMessageTime < time)
+		{
+			lastMessageTime = time;
+			upstreamBytesPerSec = upstreamBytes;
+			downstreamBytesPerSec = downstreamBytes;
+			upstreamBytes = 0;
+			downstreamBytes = 0;
+		}
 	}
 }

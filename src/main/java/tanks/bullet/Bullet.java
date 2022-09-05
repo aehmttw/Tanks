@@ -598,7 +598,7 @@ public class Bullet extends Movable implements IDrawable
 	@Override
 	public void update()
 	{
-		if (!this.isRemote && (this.vX != this.lastVX || this.lastVY != this.lastVY))
+		if (!this.isRemote && (this.vX != this.lastVX || this.vY != this.lastVY))
 			Game.eventsOut.add(new EventBulletUpdate(this));
 
 		super.update();

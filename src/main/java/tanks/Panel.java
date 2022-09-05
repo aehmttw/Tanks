@@ -14,6 +14,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
+import tanks.network.MessageReader;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
@@ -865,6 +866,13 @@ public class Panel
 			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
 			Drawing.drawing.setColor(col[0], col[1], col[2]);
 			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
+		}
+
+		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
+		{
+			Drawing.drawing.setColor(255, 227, 186);
+			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s");
+			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s");
 		}
 	}
 

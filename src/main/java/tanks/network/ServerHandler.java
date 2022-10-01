@@ -84,7 +84,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			}
 		}
 
-		System.out.println(eventFrequencies);
+		//System.out.println(eventFrequencies);
 	}
 
 	@Override
@@ -147,12 +147,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		this.sendEvent(e, true);
 	}
 
-	public HashMap<String, Integer> eventFrequencies = new HashMap<>();
+	//public HashMap<String, Integer> eventFrequencies = new HashMap<>();
 
 	public synchronized void sendEvent(INetworkEvent e, boolean flush)
 	{
-		eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
-		eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
+		//eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
+		//eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
 
 		if (steamID != null)
 		{

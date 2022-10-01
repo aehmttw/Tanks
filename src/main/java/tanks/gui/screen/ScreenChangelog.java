@@ -409,16 +409,11 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     });
 
-            new Changelog("v1.4.1a", new String[]
+            new Changelog("v1.4.1", new String[]
                     {
-                            "*What's new in Tanks v1.4.1a:\n\n" +
-                                    "Fixed a memory leak with custom tank music\n"
-                    });
-
-            new Changelog("v1.4.1b", new String[]
-                    {
-                            "*What's new in Tanks v1.4.1b:\n\n" +
+                            "*What's new in Tanks v1.4.1:\n\n" +
                                     "Added bandwidth usage to info bar\n" +
+                                    "Fixed a memory leak with custom tank music\n" +
                                     "Fixed a bug with spawning tanks in multiplayer\n"
                     });
         }

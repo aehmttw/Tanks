@@ -37,6 +37,7 @@ public class Panel
 	public boolean playedTutorialIntroMusic = false;
 
 	public static boolean showMouseTarget = true;
+	public static boolean showMouseTargetHeight = false;
 
 	public static Panel panel;
 
@@ -123,7 +124,7 @@ public class Panel
 		if (Game.game.fullscreen)
 			Game.game.window.setFullscreen(Game.game.fullscreen);
 
-		Game.game.window.setIcon("/images/icon.png");
+		Game.game.window.setIcon("/images/icon64.png");
 
 		double scale = 1;
 		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
@@ -825,6 +826,127 @@ public class Panel
 			}
 
 			Drawing.drawing.drawInterfaceImage("cursor.png", mx, my, 48, 48);
+		}
+
+		if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) || Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)
+		{
+			double c = 127 * Obstacle.draw_size / Game.tile_size;
+
+			double r = c;
+			double g = c;
+			double b = c;
+			double a = 255;
+
+			double r2 = 0;
+			double g2 = 0;
+			double b2 = 0;
+			double a2 = 0;
+
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Game.game.window.shapeRenderer.setBatchMode(true, false, true, true, false);
+
+			double size = 12 * Drawing.drawing.interfaceScale / Drawing.drawing.scale;
+			double height = 100;
+			double thickness = 2;
+
+			double x = Drawing.drawing.toGameCoordsX(mx);
+			double y = Drawing.drawing.toGameCoordsY(my);
+
+			Game.game.window.shapeRenderer.setBatchMode(false, false, true, true, false);
+			Game.game.window.shapeRenderer.setBatchMode(true, true, true, true, false);
+
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - size, y - thickness, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y - thickness, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x + size, y - thickness, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y - thickness, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - size, y + thickness, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y - thickness, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x + size, y + thickness, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y + thickness, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - size, y - thickness, 0);
+			Drawing.drawing.addVertex(x - size, y + thickness, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x + size, y - thickness, 0);
+			Drawing.drawing.addVertex(x + size, y + thickness, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - thickness, y - size, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x - thickness, y, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - thickness, y + size, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x - thickness, y, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x + thickness, y - size, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x + thickness, y, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x + thickness, y + size, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x + thickness, y, 0);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - thickness, y - size, 0);
+			Drawing.drawing.addVertex(x + thickness, y - size, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y, height);
+
+			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+			Drawing.drawing.addVertex(x - thickness, y + size, 0);
+			Drawing.drawing.addVertex(x + thickness, y + size, 0);
+			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.addVertex(x, y, height);
+
+			double res = 40;
+			double height2 = height * 0.75;
+			for (int i = 0; i < res; i++)
+			{
+				Drawing.drawing.setColor(r, g, b, a, 1);
+				double x1 = Math.cos(i / res * Math.PI * 2) * size;
+				double x2 = Math.cos((i + 1) / res * Math.PI * 2) * size;
+				double y1 = Math.sin(i / res * Math.PI * 2) * size;
+				double y2 = Math.sin((i + 1) / res * Math.PI * 2) * size;
+
+				Drawing.drawing.addVertex(x + x1, y + y1, 0);
+				Drawing.drawing.addVertex(x + x2, y + y2, 0);
+
+				Drawing.drawing.setColor(r2, g2, b2, a2, 1);
+				Drawing.drawing.addVertex(x + x2, y + y2, height2);
+				Drawing.drawing.addVertex(x + x1, y + y1, height2);
+			}
+
+			Game.game.window.shapeRenderer.setBatchMode(false, true, false);
 		}
 	}
 

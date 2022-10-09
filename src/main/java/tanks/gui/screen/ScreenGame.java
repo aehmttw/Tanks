@@ -1522,13 +1522,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							restartCrusadeParty.enabled = false;
 						}
 
-						Panel.win = true;
-						Drawing.drawing.playSound("win.ogg", 1.0f, true);
+						if (!ScreenPartyLobby.isClient)
+						{
+							Drawing.drawing.playSound("win.ogg", 1.0f, true);
+							Panel.win = true;
+						}
 					}
 					else
 					{
-						Panel.win = false;
-						Drawing.drawing.playSound("lose.ogg", 1.0f, true);
+						if (!ScreenPartyLobby.isClient)
+						{
+							Drawing.drawing.playSound("lose.ogg", 1.0f, true);
+							Panel.win = false;
+						}
 					}
 
 					String s = "**";
@@ -1610,7 +1616,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 									else
 										Panel.winlose = "Victory!";
 
-									Panel.win = true;
+									if (!ScreenPartyLobby.isClient)
+										Panel.win = true;
 								}
 								else
 								{
@@ -1619,13 +1626,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 									else
 										Panel.winlose = "You were destroyed!";
 
-									Panel.win = false;
+									if (!ScreenPartyLobby.isClient)
+										Panel.win = false;
 								}
 
 								if (Game.currentLevel instanceof ModLevel)
 									((ModLevel) Game.currentLevel).onLevelEnd(Panel.win);
 							}
-							else
+							else if (!ScreenPartyLobby.isClient)
 								Panel.win = false;
 
 							if (Crusade.crusadeMode)
@@ -1646,6 +1654,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 								if (Crusade.crusadeMode)
 								{
 									Crusade.currentCrusade.levelFinished(Panel.levelPassed);
+
 									EventReturnToCrusade e = new EventReturnToCrusade(Crusade.currentCrusade);
 
 									e.execute();

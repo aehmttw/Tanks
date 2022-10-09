@@ -441,7 +441,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 							}
 
 							double dist = Movable.distanceBetween(this, e);
-							double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
+							double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 							double rad = radius - Game.tile_size / 2;
 							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
 							e.addPolarMotion(angle, (v + Math.random() * 2) * 1.5);

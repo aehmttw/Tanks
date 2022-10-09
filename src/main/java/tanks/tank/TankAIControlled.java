@@ -231,6 +231,18 @@ public class TankAIControlled extends Tank
 			}
 		}
 
+		public SpawnedTankEntry(TankAIControlled t, double weight, boolean noDelete)
+		{
+			this.tank = t;
+			this.weight = weight;
+
+			if (ScreenPartyHost.isServer && !noDelete)
+			{
+				Tank.freeIDs.add(t.networkID);
+				Tank.idMap.remove(t.networkID);
+			}
+		}
+
 		public String toString()
 		{
 			return this.weight + "x" + this.tank.toString();
@@ -444,6 +456,9 @@ public class TankAIControlled extends Tank
 	protected double baseColorB;
 	protected double baseMaxSpeed;
 
+	/** Set if tank transformed in the last frame */
+	public boolean justTransformed = false;
+
 	protected double lastCooldown = this.cooldown;
 
 	public TankAIControlled(String name, double x, double y, double size, double r, double g, double b, double angle, ShootAI ai)
@@ -516,6 +531,8 @@ public class TankAIControlled extends Tank
 		}
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
+
+		this.justTransformed = false;
 
 		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
@@ -917,6 +934,9 @@ public class TankAIControlled extends Tank
 
 	public void handleSightTransformation()
 	{
+		if (this.justTransformed)
+			return;
+
 		this.transformRevertTimer = this.sightTransformRevertTime;
 		this.willRevertTransformation = true;
 		this.transform(this.sightTransformTank);
@@ -935,12 +955,16 @@ public class TankAIControlled extends Tank
 
 	public void handleHealthTransformation()
 	{
+		if (this.justTransformed)
+			return;
+
 		this.willRevertTransformation = false;
 		this.transform(this.healthTransformTank);
 	}
 
 	public void transform(TankAIControlled t)
 	{
+		this.justTransformed = true;
 		this.transformTank = t;
 		this.possessingTank = t;
 		t.posX = this.posX;
@@ -1940,7 +1964,7 @@ public class TankAIControlled extends Tank
 				this.mineTimer = Math.max(0, this.mineTimer - Panel.frameFrequency);
 		}
 
-		if (nearestDist <= 1 && this.mineFleeTimer <= 0)
+		if (nearestDist <= 1 && this.mineFleeTimer <= 0 && this.enableMovement)
 		{
 			this.overrideDirection = true;
 			this.setPolarAcceleration(this.random.nextDouble() * 2 * Math.PI, acceleration);
@@ -1982,9 +2006,12 @@ public class TankAIControlled extends Tank
 			}
 		}
 
-		//double angleV = this.getPolarDirection() + Math.PI + (this.random.nextDouble() - 0.5) * Math.PI / 2;
-		this.overrideDirection = true;
-		this.setPolarAcceleration(greatest * 2.0 / count * Math.PI, acceleration);
+		if (this.enableMovement) // Otherwise stationary tanks will take off when they lay mines :P
+		{
+			this.setPolarAcceleration(greatest * 2.0 / count * Math.PI, acceleration);
+			this.overrideDirection = true;
+		}
+
 		laidMine = true;
 	}
 
@@ -2095,7 +2122,7 @@ public class TankAIControlled extends Tank
 			t.crusadeID = this.crusadeID;
 			t.parent = this;
 
-			Game.eventsOut.add(new EventCreateTank(t));
+			Game.eventsOut.add(new EventSpawnTank(t, this));
 			this.spawnedTanks.add(t);
 
 			Game.movables.add(t);
@@ -2168,6 +2195,8 @@ public class TankAIControlled extends Tank
 	@Override
 	public void updatePossessing()
 	{
+		this.justTransformed = false;
+
 		if (this.transformMimic)
 			this.updatePossessingMimic();
 		else
@@ -2176,7 +2205,7 @@ public class TankAIControlled extends Tank
 
 	public void updatePossessingTransform()
 	{
-		if (this.transformTank.destroy || this.destroy || ScreenGame.finishedQuick || this.positionLock || !this.willRevertTransformation)
+		if (this.transformTank.destroy || this.destroy || ScreenGame.finishedQuick || this.positionLock || !this.willRevertTransformation || this.justTransformed)
 			return;
 
 		Movable m = null;
@@ -2220,6 +2249,7 @@ public class TankAIControlled extends Tank
 			Game.movables.add(this);
 			Game.removeMovables.add(this.sightTransformTank);
 			this.skipNextUpdate = true;
+			this.justTransformed = true;
 			this.seesTargetEnemy = false;
 		}
 
@@ -2373,6 +2403,8 @@ public class TankAIControlled extends Tank
 			t.crusadeID = this.crusadeID;
 			Tank.idMap.put(this.networkID, t);
 
+			this.justTransformed = true;
+
 			Game.movables.add(t);
 			Game.removeMovables.add(this);
 
@@ -2426,6 +2458,9 @@ public class TankAIControlled extends Tank
 
 	public void updateMimic()
 	{
+		if (this.justTransformed)
+			return;
+
 		this.updateTarget();
 		this.tryPossess();
 	}
@@ -2789,12 +2824,6 @@ public class TankAIControlled extends Tank
 									String[] r = new String[1];
 									TankAIControlled t2 = TankAIControlled.fromString(s, r);
 
-									if (ScreenPartyHost.isServer)
-									{
-										Tank.freeIDs.add(t2.networkID);
-										Tank.idMap.remove(t2.networkID);
-									}
-
 									s = r[0];
 									target = t2;
 									s = s.substring(s.indexOf("]") + 1);
@@ -2934,7 +2963,7 @@ public class TankAIControlled extends Tank
 						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
 						for (SpawnedTankEntry o: a1)
 						{
-							al.add(new SpawnedTankEntry(o.tank, o.weight));
+							al.add(new SpawnedTankEntry(o.tank, o.weight, true));
 						}
 
 						f.set(t, al);

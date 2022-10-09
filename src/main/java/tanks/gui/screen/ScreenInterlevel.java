@@ -83,6 +83,10 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	{
 		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
 		Level lev = new Level(Game.currentLevelString);
+
+		if (Crusade.crusadeMode)
+			lev.customTanks = Crusade.currentCrusade.customTanks;
+
 		lev.preview = true;
 		lev.loadLevel(sc);
 		Game.screen = sc;

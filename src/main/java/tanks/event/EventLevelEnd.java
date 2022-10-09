@@ -10,7 +10,7 @@ import tanks.network.NetworkUtils;
 public class EventLevelEnd extends PersonalEvent
 {	
 	public String winningTeam;
-	
+
 	public EventLevelEnd()
 	{
 		

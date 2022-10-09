@@ -783,11 +783,8 @@ public class LevelGeneratorRandom extends LevelGenerator
 		ArrayList<Integer> currentX = new ArrayList<>();
 		ArrayList<Integer> currentY = new ArrayList<>();
 
-		for (int i = 0; i < numPlayers; i++)
-		{
-			currentX.add(playerTankX[i]);
-			currentY.add(playerTankY[i]);
-		}
+		currentX.add(playerTankX[0]);
+		currentY.add(playerTankY[0]);
 
 		while (!currentX.isEmpty())
 		{
@@ -845,6 +842,14 @@ public class LevelGeneratorRandom extends LevelGenerator
 		for (int i = 0; i < numTanks; i++)
 		{
 			if (!solid[tankX[i]][tankY[i]])
+			{
+				return LevelGeneratorRandom.generateLevelString(seed);
+			}
+		}
+
+		for (int i = 1; i < numPlayers; i++)
+		{
+			if (!solid[playerTankX[i]][playerTankY[i]])
 			{
 				return LevelGeneratorRandom.generateLevelString(seed);
 			}

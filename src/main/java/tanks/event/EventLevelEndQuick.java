@@ -1,6 +1,7 @@
 package tanks.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenGame;
@@ -32,11 +33,13 @@ public class EventLevelEndQuick extends PersonalEvent
         {
             Panel.win = true;
             Panel.winlose = "Victory!";
+            Drawing.drawing.playSound("win.ogg", 1.0f, true);
         }
         else
         {
             Panel.win = false;
             Panel.winlose = "You were destroyed!";
+            Drawing.drawing.playSound("lose.ogg", 1.0f, true);
         }
 
         ScreenGame.finishedQuick = true;

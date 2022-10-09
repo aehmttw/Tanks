@@ -11,6 +11,7 @@ public class ScreenDebug extends Screen
     public String traceText = "Trace rays: ";
     public String firstPersonText = "First person: ";
     public String followingCamText = "Immersive camera: ";
+    public String tankIDsText = "Show tank IDs: ";
 
     public ScreenDebug()
     {
@@ -31,21 +32,26 @@ public class ScreenDebug extends Screen
             followingCam.setText(followingCamText, ScreenOptions.onText);
         else
             followingCam.setText(followingCamText, ScreenOptions.offText);
+
+        if (Game.showTankIDs)
+            tankIDs.setText(tankIDsText, ScreenOptions.onText);
+        else
+            tankIDs.setText(tankIDsText, ScreenOptions.offText);
     }
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
     );
 
-    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard()
+    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard()
     );
 
-    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Test text boxes", () -> Game.screen = new ScreenTestTextbox()
+    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + 0, this.objWidth, this.objHeight, "Test text boxes", () -> Game.screen = new ScreenTestTextbox()
     );
 
-    Button modelTest = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(Drawing.drawing.createModel("/models/tankcamoflauge/base/"))
+    Button modelTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(Drawing.drawing.createModel("/models/tankcamoflauge/base/"))
     );
 
-    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "", new Runnable()
+    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -59,7 +65,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "", new Runnable()
+    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -73,7 +79,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
+    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -87,6 +93,20 @@ public class ScreenDebug extends Screen
         }
     });
 
+    Button tankIDs = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.showTankIDs = !Game.showTankIDs;
+
+            if (Game.showTankIDs)
+                tankIDs.setText(tankIDsText, ScreenOptions.onText);
+            else
+                tankIDs.setText(tankIDsText, ScreenOptions.offText);
+        }
+    });
+
     @Override
     public void update()
     {
@@ -96,6 +116,7 @@ public class ScreenDebug extends Screen
         traceAllRays.update();
         followingCam.update();
         firstPerson.update();
+        tankIDs.update();
         back.update();
     }
 
@@ -113,6 +134,7 @@ public class ScreenDebug extends Screen
         keyboardTest.draw();
         textboxTest.draw();
         traceAllRays.draw();
+        tankIDs.draw();
         back.draw();
     }
 }

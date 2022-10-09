@@ -6,7 +6,6 @@ import io.netty.buffer.Unpooled;
 import tanks.Game;
 import tanks.event.INetworkEvent;
 import tanks.gui.screen.ScreenConnecting;
-import tanks.gui.screen.ScreenParty;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 
@@ -20,6 +19,7 @@ public class SteamNetworkHandler
 {
 	public boolean initialized = false;
 	protected SteamUtils clientUtils;
+	public int[] msgSize = new int[1];
 
 	protected HashMap<Integer, Long> toClose = new HashMap<>();
 
@@ -27,10 +27,7 @@ public class SteamNetworkHandler
 
 	protected SteamAPIWarningMessageHook clMessageHook = (severity, message) -> System.err.println("[client debug message] (" + severity + ") " + message);
 
-	protected SteamUtilsCallback clUtilsCallback = () ->
-    {
-
-    };
+	protected SteamUtilsCallback clUtilsCallback = new SteamUtilsCallback() {};
 
 	protected static final int defaultChannel = 1;
 
@@ -116,7 +113,7 @@ public class SteamNetworkHandler
 			SteamAPI.runCallbacks();
 			friends.updateFriends();
 
-			while (networking.isP2PPacketAvailable(defaultChannel) > 0)
+			while (networking.isP2PPacketAvailable(defaultChannel, msgSize))
 			{
 				SteamID steamIDSender = new SteamID();
 
@@ -302,7 +299,7 @@ public class SteamNetworkHandler
 		{
 			System.setProperty("com.codedisaster.steamworks.Debug", "true");
 
-			SteamAPI.loadLibraries();
+			SteamAPI.loadLibraries(new SteamLibraryLoaderLwjgl3());
 
 			if (!SteamAPI.init())
 				return false;

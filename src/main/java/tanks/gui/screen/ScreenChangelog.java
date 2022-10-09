@@ -416,6 +416,13 @@ public class ScreenChangelog extends Screen
                                     "Fixed a memory leak with custom tank music\n" +
                                     "Fixed a bug with spawning tanks in multiplayer\n"
                     });
+
+            new Changelog("v1.4.2a", new String[]
+                    {
+                            "*What's new in Tanks v1.4.1:\n\n" +
+                                    "Added mouse spotlight option (to see target in 3d)\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    });
         }
     }
 }

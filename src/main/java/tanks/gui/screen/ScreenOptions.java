@@ -139,6 +139,7 @@ public class ScreenOptions extends Screen
 			f.println("preview_crusades=" + Game.previewCrusades);
 			f.println("tank_textures=" + Game.tankTextures);
 			f.println("mouse_target=" + Panel.showMouseTarget);
+			f.println("mouse_target_height=" + Panel.showMouseTargetHeight);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
@@ -251,6 +252,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "mouse_target":
 						Panel.showMouseTarget = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "mouse_target_height":
+						Panel.showMouseTargetHeight = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "constrain_mouse":
 						Game.constrainMouse = Boolean.parseBoolean(optionLine[1]);

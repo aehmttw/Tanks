@@ -790,11 +790,13 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		/*
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setFontSize(30);
-		Drawing.drawing.drawText(this.posX, this.posY, 50, this.networkID + "");
-		*/
+		if (Game.showTankIDs)
+		{
+			Drawing.drawing.setColor(0, 0, 0);
+			Drawing.drawing.setFontSize(30);
+			Drawing.drawing.drawText(this.posX, this.posY, 50, this.networkID + "");
+		}
+
 
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
 	}

@@ -1462,7 +1462,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 							}
 						}
 						else if (o.enableGroupID)
-							o.setMetadata("" + mouseObstacleGroup);
+							o.setMetadata(mouseObstacleGroup + "");
 
 						mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(o.posX, o.posY);
 
@@ -1513,6 +1513,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					mouseObstacle = n;
 					mouseObstacleHeight = n.stackHeight;
 					mouseObstacleStartHeight = n.startHeight;
+					mouseObstacleGroup = n.groupID;
 
 					handlePlace(handled, true, false, true, false, true, true);
 				}
@@ -2763,6 +2764,39 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					a.redo();
 			}
 		}
+
+		static class ActionDeleteCustomTank extends Action
+		{
+			public ScreenLevelEditor screenLevelEditor;
+			public ArrayList<Action> actions;
+			public TankAIControlled tank;
+
+			public ActionDeleteCustomTank(ScreenLevelEditor s, ArrayList<Action> actions, TankAIControlled t)
+			{
+				this.screenLevelEditor = s;
+				this.actions = actions;
+				this.tank = t;
+			}
+
+			@Override
+			public void undo()
+			{
+				for (Action a: this.actions)
+					a.undo();
+
+				this.screenLevelEditor.level.customTanks.add(this.tank);
+			}
+
+			@Override
+			public void redo()
+			{
+				for (Action a: this.actions)
+					a.redo();
+
+				this.screenLevelEditor.level.customTanks.remove(this.tank);
+			}
+		}
+
 
 		static class ActionPaste extends Action
 		{

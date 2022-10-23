@@ -9,11 +9,10 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Game;
 import tanks.Player;
-import tanks.event.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.network.event.*;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter

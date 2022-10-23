@@ -5,7 +5,7 @@ import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
-import tanks.event.*;
+import tanks.network.event.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -15,6 +15,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;
+import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
@@ -96,6 +97,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
+
+	double speed = 1;
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
@@ -266,7 +269,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Game.silentCleanUp();
 
-		if (!(Game.currentLevel instanceof ModLevel))
+		if (!(Game.currentLevel instanceof Minigame))
 		{
 			Level level = new Level(Game.currentLevelString);
 			level.loadLevel();
@@ -360,8 +363,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Game.cleanUp();
 		System.gc();
 		Panel.panel.zoomTimer = 0;
-		Game.screen = new ScreenPlaySavedLevels();
+
+		if (ScreenInterlevel.fromModdedLevels)
+			Game.screen = new ScreenMinigames();
+		else
+			Game.screen = new ScreenPlaySavedLevels();
+
 		ScreenInterlevel.fromSavedLevels = false;
+		ScreenInterlevel.fromModdedLevels = false;
 
 		if (ScreenPartyHost.isServer)
 		{
@@ -560,11 +569,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Game.clouds.clear();
 
-		if (Game.currentLevel instanceof ModLevel)
+		if (Game.currentLevel instanceof Minigame)
 		{
 			ScreenInterlevel.fromModdedLevels = true;
 			ScreenInterlevel.fromSavedLevels = false;
-			back.text = "Back to modded levels";
+			back.setText("Back to minigames");
 		}
 		else
 		{
@@ -728,8 +737,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	@Override
 	public void update()
 	{
-		if (Game.currentLevel instanceof ModLevel)
-			((ModLevel) Game.currentLevel).update();
+		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_9))
+			speed -= Panel.frameFrequency / 1000.0;
+
+		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_0))
+			speed += Panel.frameFrequency / 1000.0;
+
+		Game.game.window.soundPlayer.setMusicSpeed((float) speed);
 
 		if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)
 			this.readyButton.function.run();
@@ -1317,6 +1331,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 		else
 		{
+			if (Game.currentLevel instanceof Minigame)
+				((Minigame) Game.currentLevel).update();
+
 			playing = true;
 
 			if (Game.followingCam)
@@ -1424,6 +1441,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				m.update();
 
+				if (m instanceof Crate)
+					m = ((Crate) m).tank;
+
 				if (m instanceof Tank && ((Tank)m).mandatoryKill)
 				{
 					Team t;
@@ -1508,7 +1528,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (Game.screen == this && fullyAliveTeams.size() <= 1)
+			boolean done = fullyAliveTeams.size() <= 1;
+
+			if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).customLevelEnd)
+				done = ((Minigame) Game.currentLevel).levelEnded();
+
+			if (Game.screen == this && done)
 			{
 				if (!ScreenGame.finishedQuick)
 				{
@@ -1533,7 +1558,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						if (!ScreenPartyLobby.isClient)
 						{
 							Drawing.drawing.playSound("lose.ogg", 1.0f, true);
-							Panel.win = false;
+
+							Panel.win = Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).noLose;
 						}
 					}
 
@@ -1550,7 +1576,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				TankPlayer.shootStickHidden = false;
 			}
 
-			if (aliveTeams.size() <= 1)
+			if (aliveTeams.size() <= 1 && done)
 			{
 				ScreenGame.finished = true;
 				Game.bulletLocked = true;
@@ -1627,11 +1653,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 										Panel.winlose = "You were destroyed!";
 
 									if (!ScreenPartyLobby.isClient)
-										Panel.win = false;
+										Panel.win = (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).noLose);
 								}
 
-								if (Game.currentLevel instanceof ModLevel)
-									((ModLevel) Game.currentLevel).onLevelEnd(Panel.win);
+								if (Game.currentLevel instanceof Minigame)
+									((Minigame) Game.currentLevel).onLevelEnd(Panel.win);
 							}
 							else if (!ScreenPartyLobby.isClient)
 								Panel.win = false;
@@ -2407,7 +2433,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			Game.player.hotbar.draw();
 
-			if (Game.showSpeedrunTimer && !(paused && screenshotMode))
+			if (Game.showSpeedrunTimer && !(paused && screenshotMode) && !(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).hideSpeedrunTimer))
 				SpeedrunTimer.draw();
 
 			minimap.draw();
@@ -2429,6 +2455,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Drawing.drawing.setInterfaceFontSize(24);
 			Drawing.drawing.drawInterfaceText(posX, posY, "Deterministic mode", true);
 		}
+
+		if (Game.currentLevel instanceof Minigame)
+			((Minigame) Game.currentLevel).draw();
 
 		if (paused && !screenshotMode)
 		{

@@ -1,7 +1,7 @@
 package tanks;
 
 import basewindow.*;
-import tanks.event.EventPlaySound;
+import tanks.network.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;

@@ -1,14 +1,15 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.event.*;
+import tanks.minigames.Arcade;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemBullet;
+import tanks.minigames.Minigame;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
@@ -225,11 +226,13 @@ public class Bullet extends Movable implements IDrawable
 				if (!this.heavy)
 					this.destroy = true;
 
-				if (Game.currentLevel instanceof ModLevel)
+				if (Game.currentLevel instanceof Minigame)
 				{
-					if (((ModLevel) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
+					((Minigame) Game.currentLevel).onKill(this.tank, t);
+
+					if (((Minigame) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
 					{
-						String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, true);
+						String message = ((Minigame) Game.currentLevel).generateKillMessage(t, this.tank, true);
 						ScreenPartyHost.chat.add(0, new ChatMessage(message));
 						Game.eventsOut.add(new EventChat(message));
 					}
@@ -252,8 +255,8 @@ public class Bullet extends Movable implements IDrawable
 
 				if (this.tank.equals(Game.playerTank))
 				{
-					if (Game.currentLevel instanceof ModLevel && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
-						Game.player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+					if (Game.currentLevel instanceof Minigame && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
+						Game.player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
 					else
 						Game.player.hotbar.coins += t.coinValue;
 				}
@@ -270,17 +273,17 @@ public class Bullet extends Movable implements IDrawable
 						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 					}
 				}
-				else if (Game.currentLevel instanceof ModLevel && ((ModLevel) Game.currentLevel).playerKillCoins > 0)
+				else if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).playerKillCoins > 0)
 				{
 					if (this.tank instanceof TankPlayer)
 					{
-						((TankPlayer) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+						((TankPlayer) this.tank).player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
 						Game.eventsOut.add(new EventUpdateCoins(((TankPlayer) this.tank).player));
 					}
 
 					else if (this.tank instanceof TankPlayerRemote)
 					{
-						((TankPlayerRemote) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+						((TankPlayerRemote) this.tank).player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
 						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 					}
 				}

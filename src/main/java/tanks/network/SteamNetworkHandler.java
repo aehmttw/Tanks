@@ -4,7 +4,7 @@ import com.codedisaster.steamworks.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import tanks.Game;
-import tanks.event.INetworkEvent;
+import tanks.network.event.INetworkEvent;
 import tanks.gui.screen.ScreenConnecting;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;

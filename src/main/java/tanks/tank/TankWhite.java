@@ -1,9 +1,7 @@
 package tanks.tank;
 
-import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
-import tanks.event.EventTankUpdateVisibility;
+import tanks.network.event.EventTankUpdateVisibility;
 
 /**
  * An invisible smart tank.

@@ -3,14 +3,13 @@ package tanks.gui.screen.leveleditor;
 import basewindow.BaseFile;
 import basewindow.InputPoint;
 import tanks.*;
-import tanks.event.EventCreatePlayer;
-import tanks.event.INetworkEvent;
+import tanks.network.event.EventCreatePlayer;
+import tanks.network.event.INetworkEvent;
 import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
-import tanks.registry.RegistryObstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
@@ -18,7 +17,6 @@ import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
@@ -58,11 +56,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public boolean changeCameraMode = false;
 	public boolean selectMode = false;
 	public boolean pasteMode = false;
+	public boolean symmetrySelectMode = false;
 
 	public double selectX1;
 	public double selectY1;
 	public double selectX2;
 	public double selectY2;
+
+	public enum SymmetryType {none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90};
+	public SymmetryType symmetryType = SymmetryType.none;
+	public double symmetryX1;
+	public double symmetryY1;
+	public double symmetryX2;
+	public double symmetryY2;
+
 	public boolean selectHeld = false;
 	public boolean selectInverted = false;
 	public boolean selection = false;
@@ -1167,6 +1174,54 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				selectSquareToggle.function.run();
 			}
 		}
+		else if (symmetrySelectMode && !pasteMode)
+		{
+			if (validLeft)
+			{
+				selectX1 = clampTileX(mouseObstacle.posX);
+				selectY1 = clampTileY(mouseObstacle.posY);
+				selectHeld = true;
+				handled[0] = true;
+				handled[1] = true;
+
+				Drawing.drawing.playVibration("selectionChanged");
+			}
+
+			if (left && selectHeld)
+			{
+				double prevSelectX2 = selectX2;
+				double prevSelectY2 = selectY2;
+
+				selectX2 = clampTileX(mouseObstacle.posX);
+				selectY2 = clampTileY(mouseObstacle.posY);
+
+				if (symmetryType == SymmetryType.flip8 || symmetryType == SymmetryType.rot90)
+				{
+					double size = Math.min(Math.abs(selectX2 - selectX1), Math.abs(selectY2 - selectY1));
+					selectX2 = Math.signum(selectX2 - selectX1) * size + selectX1;
+					selectY2 = Math.signum(selectY2 - selectY1) * size + selectY1;
+				}
+
+				if (prevSelectX2 != selectX2 || prevSelectY2 != selectY2)
+					Drawing.drawing.playVibration("selectionChanged");
+			}
+
+			if (!left && selectHeld)
+			{
+				Drawing.drawing.playVibration("click");
+				selectHeld = false;
+
+				double lowX = Math.min(selectX1, selectX2);
+				double highX = Math.max(selectX1, selectX2);
+				double lowY = Math.min(selectY1, selectY2);
+				double highY = Math.max(selectY1, selectY2);
+
+				this.symmetryX1 = lowX;
+				this.symmetryX2 = highX;
+				this.symmetryY1 = lowY;
+				this.symmetryY2 = highY;
+			}
+		}
 		else
 		{
 			if (currentPlaceable == Placeable.enemyTank)
@@ -1245,240 +1300,288 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public boolean[] handlePlace(boolean[] handled, boolean left, boolean right, boolean validLeft, boolean validRight, boolean batch, boolean paste)
 	{
-		if (mouseTank.posX > 0 && mouseTank.posY > 0 && mouseTank.posX < Game.tile_size * Game.currentSizeX && mouseTank.posY < Game.tile_size * Game.currentSizeY)
+		ArrayList<Double> posX = new ArrayList<>();
+		ArrayList<Double> posY = new ArrayList<>();
+		ArrayList<Double> orientations = new ArrayList<>();
+
+		posX.add(mouseTank.posX);
+		posY.add(mouseTank.posY);
+		orientations.add(mouseTank.orientation);
+
+		if (mouseTank.posX >= symmetryX1 && mouseTank.posX <= symmetryX2 && mouseTank.posY >= symmetryY1 && mouseTank.posY <= symmetryY2)
 		{
-			if (validLeft && pasteMode && !paste)
+			if (symmetryType == SymmetryType.flipHorizontal || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
 			{
-				paste();
-				return new boolean[]{true, true};
+				for (int i = 0; i < posX.size(); i++)
+				{
+					posY.add(symmetryY1 + (symmetryY2 - posY.get(i)));
+					posX.add(posX.get(i));
+
+					if (orientations.get(i) == 1 || orientations.get(i) == 3)
+						orientations.add((orientations.get(i) + 2) % 4);
+					else
+						orientations.add(orientations.get(i));
+				}
 			}
 
-			if (!pasteMode && (right || (eraseMode && left)))
+			if (symmetryType == SymmetryType.flipVertical || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
 			{
-				boolean skip = false;
-
-				if (validRight || (eraseMode && validLeft))
+				for (int i = 0; i < posX.size(); i++)
 				{
-					for (int i = 0; i < Game.movables.size(); i++)
+					posX.add(symmetryX1 + (symmetryX2 - posX.get(i)));
+					posY.add(posY.get(i));
+
+					if (orientations.get(i) == 0 || orientations.get(i) == 2)
+						orientations.add((orientations.get(i) + 2) % 4);
+					else
+						orientations.add(orientations.get(i));
+				}
+			}
+		}
+
+		for (int oi = 0; oi < orientations.size(); oi++)
+		{
+			mouseTank.posX = posX.get(oi);
+			mouseTank.posY = posY.get(oi);
+			mouseObstacle.posX = mouseTank.posX;
+			mouseObstacle.posY = mouseTank.posY;
+			mouseTank.orientation = orientations.get(oi);
+
+			if (mouseTank.posX > 0 && mouseTank.posY > 0 && mouseTank.posX < Game.tile_size * Game.currentSizeX && mouseTank.posY < Game.tile_size * Game.currentSizeY)
+			{
+				if (validLeft && pasteMode && !paste)
+				{
+					paste();
+					return new boolean[]{true, true};
+				}
+
+				if (!pasteMode && (right || (eraseMode && left)))
+				{
+					boolean skip = false;
+
+					if (validRight || (eraseMode && validLeft))
 					{
-						Movable m = Game.movables.get(i);
-						if (m.posX == mouseTank.posX && m.posY == mouseTank.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() <= 1))
+						for (int i = 0; i < Game.movables.size(); i++)
+						{
+							Movable m = Game.movables.get(i);
+							if (m.posX == mouseTank.posX && m.posY == mouseTank.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() <= 1))
+							{
+								skip = true;
+
+								if (m instanceof TankSpawnMarker)
+								{
+									this.spawns.remove(m);
+									this.actions.add(new Action.ActionPlayerSpawn(this, (TankSpawnMarker) m, false));
+								}
+								else
+									this.actions.add(new Action.ActionTank((Tank) m, false));
+
+								Game.removeMovables.add(m);
+
+								if (!batch)
+								{
+									Drawing.drawing.playVibration("click");
+
+									for (int z = 0; z < 100 * Game.effectMultiplier; z++)
+									{
+										Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
+										double var = 50;
+										e.colR = Math.min(255, Math.max(0, ((Tank) m).colorR + Math.random() * var - var / 2));
+										e.colG = Math.min(255, Math.max(0, ((Tank) m).colorG + Math.random() * var - var / 2));
+										e.colB = Math.min(255, Math.max(0, ((Tank) m).colorB + Math.random() * var - var / 2));
+
+										if (Game.enable3d)
+											e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * 2);
+										else
+											e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2);
+
+										e.maxAge /= 2;
+										Game.effects.add(e);
+									}
+								}
+
+								break;
+							}
+						}
+					}
+
+					for (int i = 0; i < Game.obstacles.size(); i++)
+					{
+						Obstacle m = Game.obstacles.get(i);
+						if (m.posX == mouseTank.posX && m.posY == mouseTank.posY)
 						{
 							skip = true;
-
-							if (m instanceof TankSpawnMarker)
-							{
-								this.spawns.remove(m);
-								this.actions.add(new Action.ActionPlayerSpawn(this, (TankSpawnMarker) m, false));
-							}
-							else
-								this.actions.add(new Action.ActionTank((Tank) m, false));
-
-							Game.removeMovables.add(m);
+							this.actions.add(new Action.ActionObstacle(m, false));
+							Game.removeObstacles.add(m);
 
 							if (!batch)
-							{
 								Drawing.drawing.playVibration("click");
 
-								for (int z = 0; z < 100 * Game.effectMultiplier; z++)
-								{
-									Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
-									double var = 50;
-									e.colR = Math.min(255, Math.max(0, ((Tank) m).colorR + Math.random() * var - var / 2));
-									e.colG = Math.min(255, Math.max(0, ((Tank) m).colorG + Math.random() * var - var / 2));
-									e.colB = Math.min(255, Math.max(0, ((Tank) m).colorB + Math.random() * var - var / 2));
-
-									if (Game.enable3d)
-										e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * 2);
-									else
-										e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2);
-
-									e.maxAge /= 2;
-									Game.effects.add(e);
-								}
-							}
-
 							break;
 						}
 					}
-				}
 
-				for (int i = 0; i < Game.obstacles.size(); i++)
-				{
-					Obstacle m = Game.obstacles.get(i);
-					if (m.posX == mouseTank.posX && m.posY == mouseTank.posY)
+					if (!batch && !Game.game.window.touchscreen && !skip && (currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank) && validRight)
 					{
-						skip = true;
-						this.actions.add(new Action.ActionObstacle(m, false));
-						Game.removeObstacles.add(m);
-
-						if (!batch)
-							Drawing.drawing.playVibration("click");
-
-						break;
+						this.mouseTankOrientation += 1;
+						this.mouseTankOrientation = this.mouseTankOrientation % 4;
 					}
+
+					if (Game.game.window.touchscreen)
+						handled[0] = true;
+
+					handled[1] = true;
 				}
 
-				if (!batch && !Game.game.window.touchscreen && !skip && (currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank) && validRight)
+				if (!eraseMode && clickCooldown <= 0 && (validLeft || (!pasteMode && left && currentPlaceable == Placeable.obstacle && this.mouseObstacle.draggable)))
 				{
-					this.mouseTankOrientation += 1;
-					this.mouseTankOrientation = this.mouseTankOrientation % 4;
-				}
+					boolean skip = false;
 
-				if (Game.game.window.touchscreen)
-					handled[0] = true;
+					double mx = mouseTank.posX;
+					double my = mouseTank.posY;
 
-				handled[1] = true;
-			}
-
-			if (!eraseMode && clickCooldown <= 0 && (validLeft || (!pasteMode && left && currentPlaceable == Placeable.obstacle && this.mouseObstacle.draggable)))
-			{
-				boolean skip = false;
-
-				double mx = mouseTank.posX;
-				double my = mouseTank.posY;
-
-				if (currentPlaceable == Placeable.obstacle)
-				{
-					mx = mouseObstacle.posX;
-					my = mouseObstacle.posY;
-				}
-
-				if (mouseObstacle.tankCollision || currentPlaceable != Placeable.obstacle)
-				{
-					for (int i = 0; i < Game.movables.size(); i++)
+					if (currentPlaceable == Placeable.obstacle)
 					{
-						Movable m = Game.movables.get(i);
-						if (m.posX == mx && m.posY == my)
-						{
-							skip = true;
-							break;
-						}
+						mx = mouseObstacle.posX;
+						my = mouseObstacle.posY;
 					}
-				}
 
-				for (int i = 0; i < Game.obstacles.size(); i++)
-				{
-					Obstacle m = Game.obstacles.get(i);
-					if (m.posX == mx && m.posY == my)
+					if (mouseObstacle.tankCollision || currentPlaceable != Placeable.obstacle)
 					{
-						if (!validRight)
+						for (int i = 0; i < Game.movables.size(); i++)
 						{
-							if (m.tankCollision || mouseObstacle.tankCollision || m.getClass() == mouseObstacle.getClass() || (mouseObstacle.isSurfaceTile && m.isSurfaceTile))
+							Movable m = Game.movables.get(i);
+							if (m.posX == mx && m.posY == my)
 							{
 								skip = true;
 								break;
 							}
 						}
-						else
-						{
-							this.actions.add(new Action.ActionObstacle(m, false));
-							Game.removeObstacles.add(m);
-						}
 					}
-				}
 
-				if (!skip)
-				{
-					if (currentPlaceable == Placeable.enemyTank)
+					for (int i = 0; i < Game.obstacles.size(); i++)
 					{
-						Tank t;
-
-						if (paste)
-							t = mouseTank;
-						else
+						Obstacle m = Game.obstacles.get(i);
+						if (m.posX == mx && m.posY == my)
 						{
-							if (tankNum < Game.registryTank.tankEntries.size())
-								t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+							if (!validRight)
+							{
+								if (m.tankCollision || mouseObstacle.tankCollision || m.getClass() == mouseObstacle.getClass() || (mouseObstacle.isSurfaceTile && m.isSurfaceTile))
+								{
+									skip = true;
+									break;
+								}
+							}
 							else
-								t = ((TankAIControlled) mouseTank).instantiate(mouseTank.name, mouseTank.posX, mouseTank.posY, mouseTank.angle);
-						}
-
-						t.team = mouseTank.team;
-						this.actions.add(new Action.ActionTank(t, true));
-						Game.movables.add(t);
-
-						if (!batch)
-							Drawing.drawing.playVibration("click");
-					}
-					else if (currentPlaceable == Placeable.playerTank)
-					{
-						ArrayList<TankSpawnMarker> spawnsClone = (ArrayList<TankSpawnMarker>) spawns.clone();
-						if (this.movePlayer && !paste)
-						{
-							for (int i = 0; i < Game.movables.size(); i++)
 							{
-								Movable m = Game.movables.get(i);
-
-								if (m instanceof TankSpawnMarker)
-									Game.removeMovables.add(m);
-							}
-
-							this.spawns.clear();
-						}
-
-						TankSpawnMarker t = new TankSpawnMarker("player", mouseTank.posX, mouseTank.posY, mouseTank.angle);
-						t.team = mouseTank.team;
-						this.spawns.add(t);
-
-						if (this.movePlayer && !paste)
-							this.actions.add(new Action.ActionMovePlayer(this, spawnsClone, t));
-						else
-							this.actions.add(new Action.ActionPlayerSpawn(this, t, true));
-
-						Game.movables.add(t);
-
-						if (!batch)
-							Drawing.drawing.playVibration("click");
-
-						if (this.movePlayer)
-							t.drawAge = 50;
-					}
-					else if (currentPlaceable == Placeable.obstacle)
-					{
-						Obstacle o;
-
-						if (paste)
-							o = mouseObstacle;
-						else
-							o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-
-						o.colorR = mouseObstacle.colorR;
-						o.colorG = mouseObstacle.colorG;
-						o.colorB = mouseObstacle.colorB;
-						o.posX = mouseObstacle.posX;
-						o.posY = mouseObstacle.posY;
-
-						if (o.enableStacking)
-						{
-							o.stackHeight = mouseObstacleHeight;
-							o.startHeight = mouseObstacleStartHeight;
-
-							if (this.stagger && !paste)
-							{
-								if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 1 && !this.oddStagger)
-										|| (((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0 && this.oddStagger))
-									o.stackHeight -= 0.5;
+								this.actions.add(new Action.ActionObstacle(m, false));
+								Game.removeObstacles.add(m);
 							}
 						}
-						else if (o.enableGroupID)
-							o.setMetadata(mouseObstacleGroup + "");
-
-						mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(o.posX, o.posY);
-
-						if (mouseObstacle.enableGroupID)
-							mouseObstacle.setMetadata(mouseObstacleGroup + "");
-
-						this.actions.add(new Action.ActionObstacle(o, true));
-						Game.obstacles.add(o);
-
-						if (!batch)
-							Drawing.drawing.playVibration("click");
 					}
+
+					if (!skip)
+					{
+						if (currentPlaceable == Placeable.enemyTank)
+						{
+							Tank t;
+
+							if (paste)
+								t = mouseTank;
+							else
+							{
+								if (tankNum < Game.registryTank.tankEntries.size())
+									t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+								else
+									t = ((TankAIControlled) mouseTank).instantiate(mouseTank.name, mouseTank.posX, mouseTank.posY, mouseTank.angle);
+							}
+
+							t.team = mouseTank.team;
+							this.actions.add(new Action.ActionTank(t, true));
+							Game.movables.add(t);
+
+							if (!batch)
+								Drawing.drawing.playVibration("click");
+						}
+						else if (currentPlaceable == Placeable.playerTank)
+						{
+							ArrayList<TankSpawnMarker> spawnsClone = (ArrayList<TankSpawnMarker>) spawns.clone();
+							if (this.movePlayer && !paste)
+							{
+								for (int i = 0; i < Game.movables.size(); i++)
+								{
+									Movable m = Game.movables.get(i);
+
+									if (m instanceof TankSpawnMarker)
+										Game.removeMovables.add(m);
+								}
+
+								this.spawns.clear();
+							}
+
+							TankSpawnMarker t = new TankSpawnMarker("player", mouseTank.posX, mouseTank.posY, mouseTank.angle);
+							t.team = mouseTank.team;
+							this.spawns.add(t);
+
+							if (this.movePlayer && !paste)
+								this.actions.add(new Action.ActionMovePlayer(this, spawnsClone, t));
+							else
+								this.actions.add(new Action.ActionPlayerSpawn(this, t, true));
+
+							Game.movables.add(t);
+
+							if (!batch)
+								Drawing.drawing.playVibration("click");
+
+							if (this.movePlayer)
+								t.drawAge = 50;
+						}
+						else if (currentPlaceable == Placeable.obstacle)
+						{
+							Obstacle o;
+
+							if (paste)
+								o = mouseObstacle;
+							else
+								o = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+
+							o.colorR = mouseObstacle.colorR;
+							o.colorG = mouseObstacle.colorG;
+							o.colorB = mouseObstacle.colorB;
+							o.posX = mouseObstacle.posX;
+							o.posY = mouseObstacle.posY;
+
+							if (o.enableStacking)
+							{
+								o.stackHeight = mouseObstacleHeight;
+								o.startHeight = mouseObstacleStartHeight;
+
+								if (this.stagger && !paste)
+								{
+									if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 1 && !this.oddStagger)
+											|| (((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0 && this.oddStagger))
+										o.stackHeight -= 0.5;
+								}
+							}
+							else if (o.enableGroupID)
+								o.setMetadata(mouseObstacleGroup + "");
+
+							mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(o.posX, o.posY);
+
+							if (mouseObstacle.enableGroupID)
+								mouseObstacle.setMetadata(mouseObstacleGroup + "");
+
+							this.actions.add(new Action.ActionObstacle(o, true));
+							Game.obstacles.add(o);
+
+							if (!batch)
+								Drawing.drawing.playVibration("click");
+						}
+					}
+
+					handled[0] = true;
+					handled[1] = true;
 				}
-
-				handled[0] = true;
-				handled[1] = true;
 			}
 		}
 
@@ -2017,7 +2120,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		if (selectMode && !changeCameraMode && !pasteMode && !this.paused)
+		if ((selectMode || symmetrySelectMode) && !changeCameraMode && !pasteMode && !this.paused)
 		{
 			if (!selectInverted)
 				Drawing.drawing.setColor(255, 255, 255, 127);
@@ -2043,6 +2146,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						Drawing.drawing.fillRect(x, y, Game.tile_size, Game.tile_size);
 					}
 				}
+
+				Drawing.drawing.setColor(255, 255, 255);
+
+				if (symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flipHorizontal || symmetryType == SymmetryType.rot180 || symmetryType == SymmetryType.rot90 || symmetryType == SymmetryType.flip8)
+					Drawing.drawing.fillRect((selectX2 + selectX1) / 2, (selectY2 + selectY1) / 2, (selectX2 - selectX1), 10);
+
+				if (symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flipVertical || symmetryType == SymmetryType.rot90 || symmetryType == SymmetryType.flip8)
+					Drawing.drawing.fillRect((selectX2 + selectX1) / 2, (selectY2 + selectY1) / 2, 10, (selectX2 - selectX1));
 			}
 		}
 

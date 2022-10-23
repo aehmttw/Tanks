@@ -2,7 +2,7 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.event.EventObstacleSnowMelt;
+import tanks.network.event.EventObstacleSnowMelt;
 import tanks.gui.screen.*;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;

@@ -1,7 +1,7 @@
 package tanksonline.screen;
 
 import tanks.Game;
-import tanks.event.online.*;
+import tanks.network.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.ScreenOnline;

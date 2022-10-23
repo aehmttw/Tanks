@@ -2,8 +2,8 @@ package tanks.network;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.event.*;
-import tanks.event.online.IOnlineServerEvent;
+import tanks.network.event.online.*;
+import tanks.network.event.*;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 

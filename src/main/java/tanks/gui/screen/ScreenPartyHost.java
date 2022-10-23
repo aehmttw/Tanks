@@ -1,7 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.event.EventPlayerChat;
+import tanks.network.event.EventPlayerChat;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;

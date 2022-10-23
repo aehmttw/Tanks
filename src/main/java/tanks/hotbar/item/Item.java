@@ -228,9 +228,11 @@ public abstract class Item implements IGameObject
 		return null;
 	}
 
-	public void updateCooldown()
+	public void updateCooldown(double reload)
 	{
-		this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency);
+		Tank t = this.getUser();
+
+		this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency * reload);
 	}
 
 	public Item clone()

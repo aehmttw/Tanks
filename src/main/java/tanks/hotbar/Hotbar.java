@@ -5,6 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
+import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
@@ -244,7 +245,7 @@ public class Hotbar
 			Drawing.drawing.drawInterfaceText(x - 17, y + 1, "" + count, true);
 		}
 
-		if (Game.currentLevel != null && Game.currentLevel.timed && Game.screen instanceof ScreenGame)
+		if (Game.currentLevel != null && (Game.currentLevel.timed && Game.screen instanceof ScreenGame))
 		{
 			int secondsTotal = (int) (((ScreenGame) Game.screen).timeRemaining / 100 + 0.5);
 			double secondsFrac = (((ScreenGame) Game.screen).timeRemaining / 100 + 0.5) - secondsTotal;

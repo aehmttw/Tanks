@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.event.EventTankTeleport;
+import tanks.network.event.EventTankTeleport;
 
 /**
  * The orb that transfers the player's tank which is fired from the teleporter.

@@ -1,9 +1,9 @@
 package tanks;
 
-import tanks.challenges.*;
-import tanks.event.*;
+import tanks.minigames.*;
 import tanks.gui.IFixedMenu;
-import tanks.network.NetworkEventMap;
+import tanks.network.event.*;
+import tanks.network.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
@@ -15,7 +15,6 @@ import java.util.Arrays;
 public class ModAPI
 {
     /** Stores registered mods */
-    public static ArrayList<Class<? extends ModLevel>> registeredCustomLevels = new ArrayList<>();
     public static ArrayList<IFixedMenu> menuGroup = new ArrayList<>();
     public static ArrayList<IFixedMenu> removeMenus = new ArrayList<>();
 
@@ -27,7 +26,7 @@ public class ModAPI
      * */
     public static void registerMods()
     {
-        registerMod(TeamDeathmatch.class);
+
     }
 
     public static void setUp()
@@ -47,10 +46,6 @@ public class ModAPI
         NetworkEventMap.register(EventDisplayTextGroup.class);
         NetworkEventMap.register(EventPurchaseNPCItem.class);
         NetworkEventMap.register(EventScoreboardUpdateScore.class);
-    }
-
-    public static void registerMod(Class<? extends ModLevel> modLevel) {
-        registeredCustomLevels.add(modLevel);
     }
 
     public static void addObject(Object o)

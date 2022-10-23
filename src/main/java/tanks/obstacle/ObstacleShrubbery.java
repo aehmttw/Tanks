@@ -4,7 +4,7 @@ import tanks.*;
 import tanks.bullet.BulletAir;
 import tanks.bullet.BulletFlame;
 import tanks.bullet.BulletInstant;
-import tanks.event.EventObstacleShrubberyBurn;
+import tanks.network.event.EventObstacleShrubberyBurn;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.IOverlayScreen;
 import tanks.gui.screen.ScreenGame;

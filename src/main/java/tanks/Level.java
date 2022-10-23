@@ -1,11 +1,11 @@
 package tanks;
 
-import tanks.event.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
+import tanks.network.event.*;
 import tanks.tank.*;
 
 import java.util.ArrayList;

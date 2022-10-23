@@ -3,7 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.event.EventKick;
+import tanks.network.event.EventKick;
 import tanks.gui.Button;
 import tanks.network.ServerHandler;
 

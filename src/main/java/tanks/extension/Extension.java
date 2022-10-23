@@ -2,7 +2,7 @@ package tanks.extension;
 
 import tanks.Game;
 import tanks.ModAPI;
-import tanks.ModLevel;
+import tanks.minigames.Minigame;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -89,24 +89,6 @@ public class Extension
         try
         {
             Game.game.window.soundPlayer.loadMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public void registerLevel(Class<? extends ModLevel> c)
-    {
-        ModAPI.registeredCustomLevels.add(c);
-    }
-
-    public void registerLevel(String name)
-    {
-        try
-        {
-            Class<? extends ModLevel> c = (Class<? extends ModLevel>) Class.forName(name);
-            ModAPI.registeredCustomLevels.add(c);
         }
         catch (Exception e)
         {

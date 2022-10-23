@@ -3,7 +3,7 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.event.*;
+import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.item.Item;
@@ -14,7 +14,6 @@ import tanks.registry.RegistryTank;
 
 import static tanks.tank.TankProperty.Category.*;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -586,8 +585,8 @@ public class TankAIControlled extends Tank
 		if (currentSpeed > maxSpeed * maxSpeedModifier)
 			this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 
-		this.bullet.updateCooldown();
-		this.mine.updateCooldown();
+		this.bullet.updateCooldown(1);
+		this.mine.updateCooldown(1);
 		this.updateVisibility();
 		super.update();
 	}
@@ -668,7 +667,17 @@ public class TankAIControlled extends Tank
 
 	public void charge()
 	{
-		this.cooldown -= Panel.frameFrequency;
+		double reload = 1;
+		for (int i = 0; i < this.attributes.size(); i++)
+		{
+			AttributeModifier a = this.attributes.get(i);
+			if (a.type.equals("reload"))
+			{
+				reload = a.getValue(reload);
+			}
+		}
+
+		this.cooldown -= Panel.frameFrequency * reload;
 		this.justCharged = true;
 
 		double frac = this.cooldown / this.lastCooldown;
@@ -775,14 +784,14 @@ public class TankAIControlled extends Tank
 		if (this.shotSound != null)
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
 
-		b.setPolarMotion(angle + offset + this.shotOffset, this.bullet.speed);
+		b.setPolarMotion(angle + offset + this.shotOffset, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 		b.speed = speed;
 
 		if (b instanceof BulletArc)
-			b.vZ = this.distance / this.bullet.speed * 0.5 * BulletArc.gravity;
+			b.vZ = this.distance / speed * 0.5 * BulletArc.gravity;
 		else
-			b.moveOut(50 / this.bullet.speed * this.size / Game.tile_size);
+			b.moveOut(50 / speed * this.size / Game.tile_size);
 
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
@@ -1341,7 +1350,19 @@ public class TankAIControlled extends Tank
 			this.pitch -= Movable.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
 
 		if (!this.chargeUp)
-			this.cooldown -= Panel.frameFrequency;
+		{
+			double reload = 1;
+			for (int i = 0; i < this.attributes.size(); i++)
+			{
+				AttributeModifier a = this.attributes.get(i);
+				if (a.type.equals("reload"))
+				{
+					reload = a.getValue(reload);
+				}
+			}
+
+			this.cooldown -= Panel.frameFrequency * reload;
+		}
 
 		this.cooldownIdleTime += Panel.frameFrequency;
 

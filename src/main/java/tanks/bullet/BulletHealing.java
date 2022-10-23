@@ -2,7 +2,7 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.AttributeModifier.Operation;
-import tanks.event.EventTankUpdateHealth;
+import tanks.network.event.EventTankUpdateHealth;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 

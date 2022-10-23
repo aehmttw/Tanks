@@ -2,11 +2,10 @@ package tanks.tank;
 
 import basewindow.InputPoint;
 import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.BulletElectric;
-import tanks.event.EventTankControllerUpdateC;
+import tanks.network.event.EventTankControllerUpdateC;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;

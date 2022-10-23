@@ -1,12 +1,11 @@
 package tanks.gui;
 
 import tanks.*;
-import tanks.event.EventAddScoreboard;
-import tanks.event.EventChangeScoreboardAttribute;
-import tanks.event.EventScoreboardUpdateScore;
+import tanks.network.event.EventAddScoreboard;
+import tanks.network.event.EventChangeScoreboardAttribute;
+import tanks.network.event.EventScoreboardUpdateScore;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Scoreboard implements IFixedMenu

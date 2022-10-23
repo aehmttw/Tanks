@@ -1,7 +1,6 @@
 package tanks;
 import basewindow.BaseFile;
-import tanks.event.*;
-import tanks.gui.screen.ScreenCrusadeLevels;
+import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;

@@ -5,8 +5,8 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletElectric;
-import tanks.event.EventLayMine;
-import tanks.event.EventShootBullet;
+import tanks.network.event.EventLayMine;
+import tanks.network.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -192,8 +192,18 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
 		}
 
-		this.bullet.updateCooldown();
-		this.mine.updateCooldown();
+		double reload = 1;
+		for (int i = 0; i < this.attributes.size(); i++)
+		{
+			AttributeModifier a = this.attributes.get(i);
+			if (a.type.equals("reload"))
+			{
+				reload = a.getValue(reload);
+			}
+		}
+
+		this.bullet.updateCooldown(reload);
+		this.mine.updateCooldown(reload);
 
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
@@ -202,7 +212,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 			{
 				if (i != null && !(i instanceof ItemEmpty))
 				{
-					i.updateCooldown();
+					i.updateCooldown(reload);
 				}
 			}
 		}

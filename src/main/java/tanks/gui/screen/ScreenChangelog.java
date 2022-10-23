@@ -419,9 +419,20 @@ public class ScreenChangelog extends Screen
 
             new Changelog("v1.4.2a", new String[]
                     {
-                            "*What's new in Tanks v1.4.1:\n\n" +
+                            "*What's new in Tanks v1.4.2a:\n\n" +
                                     "Added mouse spotlight option (to see target in 3d)\n" +
                                     "Bug fixes and other minor improvements\n"
+                    });
+
+            new Changelog("v1.5.a", new String[]
+                    {
+                            "*What's new in Tanks v1.5.a:\n\n" +
+                                    "New minigame mode: arcade mode, featuring:\n" +
+                                    "- Continuously spawning enemy tank waves\n" +
+                                    "- Respawn if you die\n" +
+                                    "- Time limit of 2 minutes\n" +
+                                    "- A rampage system for destroying tanks in a row\n" +
+                                    "- Frenzy mode: destroy all you can when time runs out!\n"
                     });
         }
     }

@@ -2,8 +2,10 @@ package tanks;
 
 import basewindow.*;
 import tanks.bullet.*;
-import tanks.event.*;
-import tanks.event.online.*;
+import tanks.minigames.Arcade;
+import tanks.minigames.Minigame;
+import tanks.network.event.*;
+import tanks.network.event.online.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -95,7 +97,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.4.2a";
+	public static final String version = "Tanks v1.5.a";
 	public static final int network_protocol = 47;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -189,6 +191,7 @@ public class Game
 	public static RegistryItem registryItem = new RegistryItem();
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
+	public static RegistryMinigame registryMinigame = new RegistryMinigame();
 
 	public static boolean enableExtensions = false;
 	public static boolean autoLoadExtensions = true;
@@ -403,6 +406,11 @@ public class Game
 		Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + dir));
 	}
 
+	public static void registerMinigame(Class<? extends Minigame> minigame, String name)
+	{
+		registryMinigame.minigames.put(name, minigame);
+	}
+
 	public static void initScript()
 	{
 		player = new Player(clientID, "");
@@ -480,6 +488,8 @@ public class Game
 		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
 		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
 		registerItem(ItemShield.class, ItemShield.item_name, "shield.png");
+
+		registerMinigame(Arcade.class, "Arcade mode");
 
 		TankPlayer.default_bullet = (ItemBullet) Item.parseItem(null, Translation.translate("Basic bullet") + ",bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
 		TankPlayer.default_mine = (ItemMine) Item.parseItem(null, Translation.translate("Basic mine") + ",mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");

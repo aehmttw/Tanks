@@ -47,6 +47,7 @@ public class SoundPlayer extends BaseSoundPlayer
     public int prevMusic = -1;
 
     public String musicID = null;
+    public float musicSpeed = 1;
 
     public long fadeBegin = 0;
     public long fadeEnd = 0;
@@ -194,6 +195,7 @@ public class SoundPlayer extends BaseSoundPlayer
         {
             alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(prevMusic, EXTOffset.AL_SEC_OFFSET));
             alSourcef(sourcePointer, AL_GAIN, 0);
+            alSourcef(sourcePointer, AL_PITCH, musicSpeed);
 
             fadeBegin = System.currentTimeMillis();
             fadeEnd = System.currentTimeMillis() + fadeTime;
@@ -203,6 +205,7 @@ public class SoundPlayer extends BaseSoundPlayer
             for (int i: this.syncedTracks.values())
                 stopMusicSource(i);
 
+            musicSpeed = 1;
             this.syncedTracks.clear();
             this.stoppingSyncedTracks.clear();
             this.syncedTrackMaxVolumes.clear();
@@ -242,6 +245,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcef(sourcePointer, AL_LOOPING, loop);
         alSourcef(sourcePointer, AL_GAIN, 0f);
+        alSourcef(sourcePointer, AL_PITCH, musicSpeed);
         alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET));
         this.syncedTracks.put(path, sourcePointer);
         this.syncedTrackCurrentVolumes.put(path, 0f);
@@ -269,6 +273,17 @@ public class SoundPlayer extends BaseSoundPlayer
     public void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime, boolean stoppable)
     {
         this.playMusic(path, volume, looped, continueID, fadeTime);
+    }
+
+    @Override
+    public void setMusicSpeed(float speed)
+    {
+        this.musicSpeed = speed;
+        alSourcef(this.currentMusic, AL_PITCH, speed);
+        alSourcef(this.prevMusic, AL_PITCH, speed);
+
+        for (int i: this.syncedTracks.values())
+            alSourcef(i, AL_PITCH, speed);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.event.online.EventUploadLevel;
+import tanks.network.event.online.EventUploadLevel;
 import tanks.gui.Button;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;

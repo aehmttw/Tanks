@@ -2,7 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.event.*;
+import tanks.network.event.*;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
@@ -12,8 +12,6 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemEmpty;
 import tanks.hotbar.item.ItemMine;
-
-import java.util.ArrayList;
 
 public class TankPlayerRemote extends Tank implements IServerPlayerTank
 {
@@ -78,8 +76,18 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     {
         super.update();
 
-        this.bullet.updateCooldown();
-        this.mine.updateCooldown();
+        double reload = 1;
+        for (int i = 0; i < this.attributes.size(); i++)
+        {
+            AttributeModifier a = this.attributes.get(i);
+            if (a.type.equals("reload"))
+            {
+                reload = a.getValue(reload);
+            }
+        }
+
+        this.bullet.updateCooldown(reload);
+        this.mine.updateCooldown(reload);
 
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
@@ -88,7 +96,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             {
                 if (i != null && !(i instanceof ItemEmpty))
                 {
-                    i.updateCooldown();
+                    i.updateCooldown(reload);
                 }
             }
         }

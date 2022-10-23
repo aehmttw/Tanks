@@ -1,7 +1,7 @@
 package tanks;
 
 import tanks.AttributeModifier.Operation;
-import tanks.event.EventCreateFreezeEffect;
+import tanks.network.event.EventCreateFreezeEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 

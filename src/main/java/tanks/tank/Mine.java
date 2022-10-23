@@ -1,12 +1,11 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.event.EventMineChangeTimer;
-import tanks.event.EventMineExplode;
+import tanks.network.event.EventMineChangeTimer;
+import tanks.network.event.EventMineExplode;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemMine;
 
 import java.util.ArrayList;

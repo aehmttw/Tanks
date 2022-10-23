@@ -2,9 +2,9 @@ package tanks.bullet;
 
 import tanks.Game;
 import tanks.Panel;
-import tanks.event.EventBulletDestroyed;
-import tanks.event.EventBulletInstantWaypoint;
-import tanks.event.EventShootBullet;
+import tanks.network.event.EventBulletDestroyed;
+import tanks.network.event.EventBulletInstantWaypoint;
+import tanks.network.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;

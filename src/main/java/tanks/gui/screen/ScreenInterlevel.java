@@ -138,6 +138,15 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
+	Button backMinigame = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to minigames", () ->
+	{
+		Game.cleanUp();
+		System.gc();
+		Game.screen = new ScreenMinigames();
+		fromModdedLevels = false;
+	}
+	);
+
 	Button exitTutorial = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Let's go!", () ->
 	{
 		tutorialInitial = false;
@@ -212,7 +221,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			skip = true;
 			replayModLevel.update();
-			back.update();
+			backMinigame.update();
 		}
 		else
 		{
@@ -379,7 +388,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		{
 			skip = true;
 			replayModLevel.draw();
-			back.draw();
+			backMinigame.draw();
 		}
 		else
 		{

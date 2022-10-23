@@ -2,7 +2,8 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.event.*;
+import tanks.minigames.Arcade;
+import tanks.network.event.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
@@ -10,6 +11,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
+import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
 
 public class Explosion extends Movable
@@ -86,8 +88,10 @@ public class Explosion extends Movable
 
                             if (kill)
                             {
-                                if (Game.currentLevel instanceof ModLevel)
+                                if (Game.currentLevel instanceof Minigame)
                                 {
+                                    ((Minigame) Game.currentLevel).onKill(this.tank, t);
+
                                     for (IFixedMenu menu : ModAPI.menuGroup)
                                     {
                                         if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
@@ -103,9 +107,9 @@ public class Explosion extends Movable
                                         }
                                     }
 
-                                    if (((ModLevel) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
+                                    if (((Minigame) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
                                     {
-                                        String message = ((ModLevel) Game.currentLevel).generateKillMessage(t, this.tank, false);
+                                        String message = ((Minigame) Game.currentLevel).generateKillMessage(t, this.tank, false);
                                         ScreenPartyHost.chat.add(0, new ChatMessage(message));
                                         Game.eventsOut.add(new EventChat(message));
                                     }
@@ -114,8 +118,8 @@ public class Explosion extends Movable
 
                                 if (this.tank.equals(Game.playerTank))
                                 {
-                                    if (Game.currentLevel instanceof ModLevel && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
-                                        Game.player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+                                    if (Game.currentLevel instanceof Minigame && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
+                                        Game.player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
                                     else
                                         Game.player.hotbar.coins += t.coinValue;
                                 }
@@ -123,8 +127,8 @@ public class Explosion extends Movable
                                 {
                                     if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
                                     {
-                                        if (Game.currentLevel instanceof ModLevel && ((ModLevel) Game.currentLevel).playerKillCoins > 0)
-                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += ((ModLevel) Game.currentLevel).playerKillCoins;
+                                        if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).playerKillCoins > 0)
+                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
                                         else
                                             ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
                                     }

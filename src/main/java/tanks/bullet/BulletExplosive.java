@@ -1,7 +1,6 @@
 package tanks.bullet;
 
-import tanks.Game;
-import tanks.event.EventLayMine;
+import tanks.network.event.EventLayMine;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Explosion;
 import tanks.tank.Mine;

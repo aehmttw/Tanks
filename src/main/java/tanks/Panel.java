@@ -3,10 +3,9 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
-import tanks.event.EventBeginLevelCountdown;
-import tanks.event.online.IOnlineServerEvent;
+import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
-import tanks.gui.Firework;
 import tanks.gui.IFixedMenu;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
@@ -221,6 +220,11 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/battle_timed_paused.ogg");
 
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+
+			for (int i = 1; i <= 5; i++)
+			{
+				Game.game.window.soundPlayer.loadMusic("/music/arcade/rampage" + i + ".ogg");
+			}
 		}
 
 		settingUp = false;

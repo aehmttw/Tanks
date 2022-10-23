@@ -1,8 +1,8 @@
 package tanks.hotbar;
 
 import tanks.*;
-import tanks.event.EventSetItem;
-import tanks.event.EventSetItemBarSlot;
+import tanks.network.event.EventSetItem;
+import tanks.network.event.EventSetItemBarSlot;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;

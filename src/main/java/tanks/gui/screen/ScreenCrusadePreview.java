@@ -2,7 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import tanks.*;
-import tanks.event.EventShareCrusade;
+import tanks.network.event.EventShareCrusade;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.TextBox;

@@ -1,13 +1,14 @@
 package tanks;
 
 import tanks.bullet.Bullet;
+import tanks.minigames.Arcade;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Turret;
 
 public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight, exclamation}
+    public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight, exclamation, chain}
 
     public enum State {live, removed, recycle}
 
@@ -172,6 +173,11 @@ public class Effect extends Movable implements IDrawableWithGlow
         }
         else if (type == EffectType.shield)
             this.maxAge = 50;
+        else if (type == EffectType.chain)
+        {
+            this.maxAge = 100;
+            this.size = Game.tile_size * 2;
+        }
         else if (type == EffectType.boostLight)
             this.maxAge = 0;
         else if (type == EffectType.exclamation)
@@ -539,6 +545,49 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.drawText(this.posX + 4, 5 + this.posY - this.size / 20, "!");
                 drawing.setColor(this.glowR, this.glowG, this.glowB, a, 1);
                 drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, "!");
+            }
+        }
+        else if (this.type == EffectType.chain)
+        {
+            double a = Math.min(50, this.maxAge - this.age) / 50 * 255;
+            drawing.setColor(255, 255, 255, a);
+
+            double c = 0.5 - Math.min(Arcade.max_power * 3, this.radius) / 30;
+            if (c < 0)
+                c += (int) (-c) + 1;
+
+            double[] col = Game.getRainbowColor(c);
+
+            if (Game.enable3d)
+            {
+                drawing.setFontSize(24 * this.size / Game.tile_size);
+                drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
+                drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, this.posZ + this.age, "" + (int) this.radius);
+                drawing.setColor(col[0], col[1], col[2], a, 0.5);
+                drawing.drawText(this.posX, this.posY - this.size / 20 - 7, this.posZ + this.age + 1, "" + (int) this.radius);
+
+                drawing.setFontSize(8 * this.size / Game.tile_size);
+                drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
+                drawing.drawText(this.posX + 2, this.posY - this.size / 20 + 22, this.posZ + this.age, "chain!");
+                drawing.setColor(col[0], col[1], col[2], a, 0.5);
+                drawing.drawText(this.posX, this.posY - this.size / 20 + 20, this.posZ + this.age + 1, "chain!");
+
+
+            }
+            else
+            {
+                drawing.setFontSize(24 * this.size / Game.tile_size);
+                drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
+                drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, "" + (int) this.radius);
+                drawing.setColor(col[0], col[1], col[2], a, 0.5);
+                drawing.drawText(this.posX, this.posY - this.size / 20 - 7, "" + (int) this.radius);
+
+                drawing.setFontSize(8 * this.size / Game.tile_size);
+                drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
+                drawing.drawText(this.posX + 2, this.posY - this.size / 20 + 22, "chain!");
+                drawing.setColor(col[0], col[1], col[2], a, 0.5);
+                drawing.drawText(this.posX, this.posY - this.size / 20 + 20, "chain!");
+
             }
         }
         else

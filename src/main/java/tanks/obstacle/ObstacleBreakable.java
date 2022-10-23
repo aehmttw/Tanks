@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
 import tanks.bullet.Bullet;
-import tanks.event.EventObstacleHit;
+import tanks.network.event.EventObstacleHit;
 
 public class ObstacleBreakable extends Obstacle
 {

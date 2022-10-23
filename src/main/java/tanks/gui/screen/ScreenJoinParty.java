@@ -5,7 +5,7 @@ import com.codedisaster.steamworks.SteamNetworking;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.event.EventSendClientDetails;
+import tanks.network.event.EventSendClientDetails;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;

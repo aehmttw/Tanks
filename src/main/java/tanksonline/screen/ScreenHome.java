@@ -1,6 +1,6 @@
 package tanksonline.screen;
 
-import tanks.event.online.EventSilentDisconnect;
+import tanks.network.event.online.EventSilentDisconnect;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
 import tanksonline.PlayerMap;

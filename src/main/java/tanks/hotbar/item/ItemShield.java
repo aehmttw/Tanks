@@ -1,7 +1,7 @@
 package tanks.hotbar.item;
 
 import tanks.*;
-import tanks.event.EventTankUpdateHealth;
+import tanks.network.event.EventTankUpdateHealth;
 import tanks.gui.property.*;
 import tanks.tank.Tank;
 

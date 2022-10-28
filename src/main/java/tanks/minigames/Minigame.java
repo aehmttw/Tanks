@@ -26,6 +26,7 @@ public abstract class Minigame extends Level
     public boolean customLevelEnd = false;
     public boolean hideSpeedrunTimer = false;
     public boolean noLose = false;
+    public boolean disableEndMusic = false;
 
     /**
      * If you used getLevelString(), make sure to switch it with the actual level string before publishing it!
@@ -77,6 +78,11 @@ public abstract class Minigame extends Level
     public void onLevelEnd(boolean levelWon)
     {
 
+    }
+
+    public void loadInterlevelScreen()
+    {
+        Game.screen = new ScreenInterlevel();
     }
 
     /**

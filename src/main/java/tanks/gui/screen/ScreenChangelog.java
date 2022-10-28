@@ -434,6 +434,18 @@ public class ScreenChangelog extends Screen
                                     "- A rampage system for destroying tanks in a row\n" +
                                     "- Frenzy mode: destroy all you can when time runs out!\n"
                     });
+
+            new Changelog("v1.5.b", new String[]
+                    {
+                            "*What's new in Tanks v1.5.b:\n\n" +
+                                    "Changes to arcade mode:\n" +
+                                    "- Changed tank crate appearance with indicator\n" +
+                                    "- Added bonuses at the end of the game!\n" +
+                                    "- Removed red and blue tanks from arcade mode\n" +
+                                    "- Tanks no longer drop close to the player\n" +
+                                    "- Limited the max number of tanks at once\n" +
+                                    "Changed fireworks appearance\n"
+                    });
         }
     }
 }

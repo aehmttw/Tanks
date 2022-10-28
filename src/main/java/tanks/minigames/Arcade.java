@@ -3,7 +3,9 @@ package tanks.minigames;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.IDarkScreen;
+import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenInterlevel;
 import tanks.network.event.EventAirdropTank;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
@@ -35,8 +37,11 @@ public class Arcade extends Minigame
 
     public int maxChain = 0;
     public int deathCount = 0;
+    public boolean survivedFrenzy = true;
     public int bulletsFired = 0;
+    public int kills = 0;
     public HashMap<String, Integer> destroyedTanks = new HashMap<>();
+    public HashMap<String, Integer> destroyedTanksValue = new HashMap<>();
 
     public Arcade()
     {
@@ -46,6 +51,14 @@ public class Arcade extends Minigame
         this.customLevelEnd = true;
         this.hideSpeedrunTimer = true;
         this.noLose = true;
+        this.disableEndMusic = true;
+    }
+
+    @Override
+    public void loadLevel()
+    {
+        super.loadLevel();
+        Game.playerTank.team = Game.playerTeamNoFF;
     }
 
     @Override
@@ -57,7 +70,7 @@ public class Arcade extends Minigame
     @Override
     public void onLevelEnd(boolean levelWon)
     {
-        Panel.winlose = Translation.translate("You scored %d points!", score);
+
     }
 
     @Override
@@ -72,12 +85,20 @@ public class Arcade extends Minigame
     @Override
     public void onKill(Tank attacker, Tank target)
     {
+        if (target instanceof TankPlayer && frenzy)
+            survivedFrenzy = false;
+
         if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IPlayerTank))
         {
             if (!destroyedTanks.containsKey(target.name))
                 destroyedTanks.put(target.name, 0);
 
+            if (!destroyedTanksValue.containsKey(target.name))
+                destroyedTanksValue.put(target.name, 0);
+
             destroyedTanks.put(target.name, destroyedTanks.get(target.name) + 1);
+            destroyedTanksValue.put(target.name, destroyedTanksValue.get(target.name) + target.coinValue);
+            kills++;
 
             score += target.coinValue;
             Drawing.drawing.playSound("hit_chain.ogg", (float) Math.pow(2, Math.min(max_power * 3 - 1, chain) / 12.0), 0.5f);
@@ -97,8 +118,10 @@ public class Arcade extends Minigame
                 score += power * 5;
                 if (chain / 3 <= 5)
                 {
-                    Drawing.drawing.addSyncedMusic("arcade/rampage" + power + ".ogg", 0.5f, true, 500);
+                    Drawing.drawing.addSyncedMusic("arcade/rampage" + power + ".ogg", Game.musicVolume, true, 500);
                 }
+
+                //Game.game.window.soundPlayer.setMusicSpeed((float) (1 + power * 0.2));
             }
 
             lastHit = age;
@@ -143,6 +166,8 @@ public class Arcade extends Minigame
         {
             Drawing.drawing.removeSyncedMusic("arcade/rampage" + i + ".ogg", 2000);
         }
+
+        //Game.game.window.soundPlayer.setMusicSpeed((float) (1));
     }
 
     @Override
@@ -158,7 +183,7 @@ public class Arcade extends Minigame
         if (frenzy)
             this.customLevelEnd = false;
 
-        if (this.spawnedTanks.size() <= (this.chain / 2) + 3 && Game.movables.contains(Game.playerTank) && timer > 0)
+        if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && Game.movables.contains(Game.playerTank) && timer > 0)
         {
             int count = (int) ((Math.random() * 2 + 2));
             for (int i = 0; i < count; i++)
@@ -187,9 +212,6 @@ public class Arcade extends Minigame
                     continue;
                 }
 
-                if (m instanceof Tank)
-                    ((Tank) m).health = 0;
-
                 stopRampage();
                 m.destroy = true;
                 spawnedTanks.clear();
@@ -199,6 +221,7 @@ public class Arcade extends Minigame
             {
                 deathCount++;
                 Game.playerTank = new TankPlayer(this.sizeX / 2.0 * Game.tile_size, this.sizeY / 2.0 * Game.tile_size, 0);
+                Game.playerTank.team = Game.playerTeamNoFF;
                 Game.movables.add(new Crate(Game.playerTank));
             }
         }
@@ -288,6 +311,12 @@ public class Arcade extends Minigame
         this.drawPoints();
     }
 
+    @Override
+    public void loadInterlevelScreen()
+    {
+        Game.screen = new ScreenArcadeBonuses(this);
+    }
+
     public void spawnTank()
     {
         double destX = 0;
@@ -316,7 +345,7 @@ public class Arcade extends Minigame
             else if (other)
                 y += Game.currentSizeY - 4;
 
-            if (!Game.game.solidGrid[x][y])
+            if (!Game.game.solidGrid[x][y] && (Game.playerTank == null || (Math.pow(Game.playerTank.posX - (x * Game.tile_size), 2) + Math.pow(Game.playerTank.posY - (y * Game.tile_size), 2) > Math.pow(Game.tile_size * 5, 2))))
             {
                 found = true;
                 destX = (x + 0.5) * Game.tile_size;
@@ -331,6 +360,9 @@ public class Arcade extends Minigame
             return;
 
         RegistryTank.TankEntry e = Game.registryTank.getRandomTank();
+
+        while (e.name.equals("blue") || e.name.equals("red"))
+            e = Game.registryTank.getRandomTank();
 
         while (!frenzy && e.weight < 1.0 / Math.max(1, chain - 2))
             e = Game.registryTank.getRandomTank();
@@ -370,7 +402,7 @@ public class Arcade extends Minigame
                     red = Math.max(0, secondsFrac * 2) * 255;
             }
             else if (secondsTotal == 59 || secondsTotal == 29)
-                sizeMul = 1.0 + Math.max((timer - secondsTotal), 0);
+                sizeMul = 1.0 + Math.max((timer / 100 - secondsTotal), 0);
         }
 
         String st = Translation.translate("Time: ");
@@ -403,7 +435,7 @@ public class Arcade extends Minigame
     public void drawPoints()
     {
         double frac = Math.max(0, (25 - (age - lastHit)) / 25);
-        double alpha = 127 + 128 * frac;
+        double alpha = (127 + 128 * frac) * Obstacle.draw_size / Game.tile_size;
 
         if (Level.isDark() || (Game.screen instanceof IDarkScreen && Panel.win && Game.effectsEnabled))
             Drawing.drawing.setColor(255, 255, 255, alpha);

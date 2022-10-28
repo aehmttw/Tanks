@@ -97,7 +97,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.a";
+	public static final String version = "Tanks v1.5.b";
 	public static final int network_protocol = 47;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -801,8 +801,16 @@ public class Game
 
 	public static void exitToInterlevel()
 	{
+		Minigame m = null;
+		if (Game.currentLevel instanceof Minigame)
+			m = (Minigame) Game.currentLevel;
+
 		silentCleanUp();
-		screen = new ScreenInterlevel();
+
+		if (m == null)
+			screen = new ScreenInterlevel();
+		else
+			m.loadInterlevelScreen();
 	}
 
 	public static void exitToEditor(String name)

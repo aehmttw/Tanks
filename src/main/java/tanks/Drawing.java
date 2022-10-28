@@ -815,6 +815,55 @@ public class Drawing
 		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
 	}
 
+	public void addInterfaceVertexRotated(double x, double y, double z, double ox, double oy, double rot)
+	{
+		Drawing.drawing.addInterfaceVertex(x + Math.cos(rot) * ox + Math.sin(rot) * oy, y - Math.sin(rot) * ox + Math.cos(rot) * oy, z);
+	}
+
+	public void fillInterfaceGlowSparkle(double x, double y, double z, double size, double angle)
+	{
+		double size2 = size * 0.05;
+		Game.game.window.shapeRenderer.setBatchMode(true, true, false, true);
+
+		double r = this.currentColorR;
+		double g = this.currentColorG;
+		double b = this.currentColorB;
+		double a = this.currentColorA;
+
+		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, size, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, size, angle);
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
+
+		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, -size, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, -size, angle);
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
+
+		angle += Math.PI / 2;
+		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, size, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, size, angle);
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
+
+		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, -size, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, -size, angle);
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
+		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
+
+		Game.game.window.shapeRenderer.setBatchMode(false, true, false, true);
+
+	}
+
+
 	public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade)
 	{
 		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);

@@ -18,6 +18,7 @@ public class Firework extends Movable
 	public double maxAge = (int) (Math.random() * 80 + 80);
 
 	public boolean exploded = false;
+	public double rotationMultiplier = Math.random() * 4 - 2;
 
 	public double size = 8;
 
@@ -264,7 +265,11 @@ public class Firework extends Movable
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 
 			if (Game.enable3d)
+			{
 				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 4, this.size * 4);
+				Drawing.drawing.setColor(this.colorR / 2, this.colorG / 2, this.colorB / 2);
+				Drawing.drawing.fillInterfaceGlowSparkle(posX, posY, posZ, this.size * 4, this.age / 100.0 * rotationMultiplier);
+			}
 			else
 				Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 4, this.size * 4);
 		}
@@ -284,7 +289,12 @@ public class Firework extends Movable
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity / 2.0);
 
 			if (Game.enable3d)
+			{
 				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 8, this.size * 8);
+				Drawing.drawing.setColor(this.colorR / 2, this.colorG / 2, this.colorB / 2);
+				double s = Math.max(0, this.size - (this.age * this.size / this.maxAge));
+				Drawing.drawing.fillInterfaceGlowSparkle(posX, posY, posZ, s * 4, this.age / 100.0 * rotationMultiplier);
+			}
 			else
 				Drawing.drawing.fillInterfaceGlow(posX, posY, this.size * 8, this.size * 8);
 		}

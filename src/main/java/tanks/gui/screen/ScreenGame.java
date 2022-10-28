@@ -98,8 +98,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
 
-	double speed = 1;
-
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
@@ -737,14 +735,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	@Override
 	public void update()
 	{
-		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_9))
-			speed -= Panel.frameFrequency / 1000.0;
-
-		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_0))
-			speed += Panel.frameFrequency / 1000.0;
-
-		Game.game.window.soundPlayer.setMusicSpeed((float) speed);
-
 		if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)
 			this.readyButton.function.run();
 
@@ -962,11 +952,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			this.musicID = null;
 
-			if (Panel.win && this.finishQuickTimer >= 75)
-				this.music = "waiting_win.ogg";
+			if (!(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).disableEndMusic))
+			{
+				if (Panel.win && this.finishQuickTimer >= 75)
+					this.music = "waiting_win.ogg";
 
-			if (!Panel.win && this.finishQuickTimer >= 150)
-				this.music = "waiting_lose.ogg";
+				if (!Panel.win && this.finishQuickTimer >= 150)
+					this.music = "waiting_lose.ogg";
+			}
 		}
 
 		if (Game.game.input.pause.isValid())

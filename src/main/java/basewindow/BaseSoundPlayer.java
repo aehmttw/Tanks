@@ -23,6 +23,8 @@ public abstract class BaseSoundPlayer
 
     public abstract void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime, boolean stoppable);
 
+    public abstract void setMusicVolume(float volume);
+
     public abstract void setMusicSpeed(float speed);
 
     public abstract void addSyncedMusic(String path, float volume, boolean looped, long fadeTime);

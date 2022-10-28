@@ -33,7 +33,7 @@ public class LevelGeneratorRandom extends LevelGenerator
 		int height = (int)(18 * size);
 		int width = (int)(28 * size);
 		double amountWalls = 12 * size * size;
-		double amountTanks = 24 * size * size;
+		double amountTanks = 8 * size * size;
 
 		int walls = (int) (randomNum * amountWalls + 4);
 

@@ -287,6 +287,17 @@ public class SoundPlayer extends BaseSoundPlayer
     }
 
     @Override
+    public void setMusicVolume(float volume)
+    {
+        this.currentVolume = volume;
+        alSourcef(this.currentMusic, AL_GAIN, volume);
+        alSourcef(this.prevMusic, AL_GAIN, volume);
+
+        for (int i: this.syncedTracks.values())
+            alSourcef(i, AL_GAIN, volume);
+    }
+
+    @Override
     public void stopMusic()
     {
         stopMusicSource(currentMusic);

@@ -4,10 +4,9 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.Button;
+import tanks.gui.Firework;
 import tanks.minigames.Arcade;
 import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -22,6 +21,16 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     public double interBonusTime = 100;
     public int bonusCount = 0;
     public int score;
+    public int originalScore;
+    public double lastPoints = -1000;
+    public boolean odd = false;
+    public int fireworksToSpawn = 0;
+    public double fireworkCooldown = 0;
+    public int pointsPerFirework = 10;
+
+    ArrayList<Firework> spawnedFireworks = new ArrayList<>();
+    ArrayList<Firework> fireworks1 = new ArrayList<>();
+    ArrayList<Firework> fireworks2 = new ArrayList<>();
 
     public ArrayList<Bonus> bonuses = new ArrayList<>();
 
@@ -48,6 +57,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     {
         this.music = "arcade/drumroll.ogg";
         this.score = a.score;
+        this.originalScore = a.score;
 
         ArrayList<Bonus> bonuses = new ArrayList<>();
         bonuses.add(new Bonus("Tank driver", 5, 255, 255, 40));
@@ -56,6 +66,14 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         if (a.survivedFrenzy)
             bonuses.add(new Bonus("Survived the frenzy!!!", 250, 255, 180, 0));
+        else if (a.frenzyTanksDestroyed >= 20)
+            bonuses.add(new Bonus("Frenzy god!!", 100, 255, 160, 0));
+        else if (a.frenzyTanksDestroyed >= 15)
+            bonuses.add(new Bonus("Frenzy maniac!", 60, 255, 127, 0));
+        else if (a.frenzyTanksDestroyed >= 10)
+            bonuses.add(new Bonus("Frenzy destroyer!", 40, 255, 40, 0));
+        else if (a.frenzyTanksDestroyed >= 5)
+            bonuses.add(new Bonus("Frenzy amateur", 20, 255, 40, 0));
 
         if (a.deathCount == 0)
             bonuses.add(new Bonus("No deaths!!!", 200, 40, 255, 255));
@@ -65,10 +83,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             bonuses.add(new Bonus("Extra careful defender!!", 50, 40, 255, 40));
         else if (a.deathCount <= 5)
             bonuses.add(new Bonus("Cautious defender!", 25, 160, 255, 40));
-        else if (a.deathCount <= 8)
+        else if (a.deathCount <= 7)
             bonuses.add(new Bonus("Wary defender", 10, 255, 255, 40));
-
-        else if (a.deathCount >= 12)
+        else if (a.deathCount >= 9)
             bonuses.add(new Bonus("Crash tester", 50, 255, 255, 40));
 
         if (a.maxChain > 5)
@@ -81,6 +98,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
             bonuses.add(new Bonus(a.maxChain + " kill chain!", a.maxChain / 3 * 5, col[0], col[1], col[2]));
         }
+
+        if (a.maxKillsPerFrame >= 2)
+            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", a.maxKillsPerFrame * 10, 255, 127, 0));
 
         if (a.score == 69)
             bonuses.add(new Bonus("Nice! ;)", 69, 255, 127, 0));
@@ -173,25 +193,36 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 bonusCount++;
                 Drawing.drawing.playSound("bonus" + (i + 1) + ".ogg", 1f);
-                for (int j = 0; j < 100; j++)
+                for (int j = 0; j < this.bonuses.get(2 - i).value; j++)
                 {
-                    Button.addEffect(this.centerX, this.centerY + (i - 1) * 40, this.objWidth, this.objHeight, Game.effects, 2, -1, 0.5);
+                    Drawing.drawing.setInterfaceFontSize(this.textSize);
+                    Bonus b = this.bonuses.get(2 - i);
+                    double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
+                    addEffect(this.centerX, this.centerY + (i - 1) * 40, size, this.objHeight, Game.effects, 1 + b.value / 25.0, -1, 0.5, b.red, b.green, b.blue);
                 }
-                Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * 0.25f + 0.25f * bonusCount);
+                Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
             }
         }
 
         if (age >= firstBonusTime + interBonusTime * 3 && bonusCount < 4)
         {
             Drawing.drawing.playSound("destroy.ogg");
+            Drawing.drawing.playSound("win.ogg", 1.0f, true);
             this.music = "waiting_win.ogg";
             Panel.forceRefreshMusic = true;
             bonusCount = 4;
+
+            if (!Game.effectsEnabled)
+            {
+                this.score += bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value;
+                this.lastPoints = this.age;
+            }
+
+            fireworksToSpawn = (pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
         }
 
-        if (age >= firstBonusTime + interBonusTime * 5)
+        if (age >= firstBonusTime + interBonusTime * 5 && this.getFireworkArray().size() == 0)
         {
-            this.score += bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value;
             Panel.winlose = Translation.translate("You scored %d points!", score);
             Game.screen = new ScreenInterlevel();
         }
@@ -236,5 +267,144 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + 120, "Total: " + (bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value));
         }
+
+        this.drawPoints();
+
+        if (Game.effectsEnabled && !Game.game.window.drawingShadow)
+        {
+            fireworkCooldown -= Panel.frameFrequency;
+            if (fireworksToSpawn > 0 && fireworkCooldown <= 0)
+            {
+                fireworksToSpawn--;
+                fireworkCooldown = Math.random() * 5 + 2.5;
+                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + 120, this.getFireworkArray());
+                f.setRandomColor();
+                f.setVelocity();
+                f.maxAge /= 2;
+                spawnedFireworks.add(f);
+            }
+
+            ArrayList<Firework> fireworks = getFireworkArray();
+            Panel.frameFrequency *= 2;
+            for (int i = 0; i < fireworks.size(); i++)
+            {
+                fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
+            }
+            Panel.frameFrequency /= 2;
+
+            if (Game.glowEnabled)
+            {
+                for (int i = 0; i < getFireworkArray().size(); i++)
+                {
+                    fireworks.get(i).drawGlow();
+                }
+            }
+
+            for (int i = 0; i < spawnedFireworks.size(); i++)
+            {
+                if (this.spawnedFireworks.get(i).age > this.spawnedFireworks.get(i).maxAge)
+                {
+                    this.spawnedFireworks.remove(i);
+                    i--;
+                    this.score = Math.min(this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value, this.score + this.pointsPerFirework);
+                    this.lastPoints = this.age;
+                }
+            }
+
+            fireworks.clear();
+
+            odd = !odd;
+        }
+    }
+
+    public void drawPoints()
+    {
+        double frac = Math.max(0, (25 - (age - lastPoints)) / 25);
+        double alpha = (127 + 128 * frac);
+
+        double heightFrac = Math.min(1, age / 25);
+
+        Drawing.drawing.setColor(heightFrac * 255, heightFrac * 255, heightFrac * 255, alpha);
+
+        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 175;
+        double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
+
+        posX = posX * (1 - heightFrac) + this.centerX * heightFrac;
+        posY = posY * (1 - heightFrac) + (this.objYSpace * 2) * heightFrac;
+
+        Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
+        String s = Translation.translate("Score: %d", score);
+        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
+    }
+
+    public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max, double r, double g, double b)
+    {
+        Effect e = Effect.createNewEffect(posX, posY, Effect.EffectType.interfacePieceSparkle);
+        e.radius = Math.random() * 10 - 5;
+
+        if (mul == -1)
+            mul = 2 * Math.max(0, (sizeY / 2 - 20) / sizeY);
+
+        double total = (sizeX - sizeY) * 2 + sizeY * Math.PI;
+        double rand = Math.random() * total;
+
+        if (rand < sizeX - sizeY)
+        {
+            e.posX = posX + rand - (sizeX - sizeY) / 2;
+            e.posY = posY + sizeY / 2 * mul;
+            e.vY = velocity;
+        }
+        else if (rand < (sizeX - sizeY) * 2)
+        {
+            e.posX = posX + rand - (sizeX - sizeY) * 3 / 2;
+            e.posY = posY - sizeY / 2 * mul;
+            e.vY = -velocity;
+        }
+        else if (rand < (sizeX - sizeY) * 2 + sizeY * Math.PI / 2)
+        {
+            double a = (rand - (sizeX - sizeY) * 2) / sizeY * 2 - Math.PI / 2;
+            e.posX = posX + (sizeX - sizeY) / 2;
+            e.posX += sizeY / 2 * Math.cos(a) * mul;
+            e.posY += sizeY / 2 * Math.sin(a) * mul;
+            e.setPolarMotion(a, velocity);
+        }
+        else
+        {
+            double a = (rand - (sizeX - sizeY) * 2 + sizeY * Math.PI / 2) / sizeY * 2 + Math.PI / 2;
+            e.posX = posX - (sizeX - sizeY) / 2;
+            e.posX += sizeY / 2 * Math.cos(a) * mul;
+            e.posY += sizeY / 2 * Math.sin(a) * mul;
+            e.setPolarMotion(a, velocity);
+        }
+
+        //e.size = 0.5;
+        e.colR = r;
+        e.colG = g;
+        e.colB = b;
+        e.glowR = r / 4;
+        e.glowG = g / 4;
+        e.glowB = b / 4;
+        double v = Math.random() * 0.5 + 0.25;
+        e.vX *= v;
+        e.vY *= v;
+        e.maxAge *= (Math.random() + 0.5) * max;
+        glowEffects.add(e);
+    }
+
+    public ArrayList<Firework> getFireworkArray()
+    {
+        if (odd)
+            return fireworks2;
+        else
+            return fireworks1;
+    }
+
+    public ArrayList<Firework> getOtherFireworkArray()
+    {
+        if (odd)
+            return fireworks1;
+        else
+            return fireworks2;
     }
 }

@@ -869,7 +869,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			if (this.playCounter == 0)
 			{
-				if (Game.currentLevel != null && Game.currentLevel.timed)
+				if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).customIntroMusic)
+					Drawing.drawing.playSound(((Minigame) Game.currentLevel).introMusic, 1f, true);
+				else if (Game.currentLevel != null && Game.currentLevel.timed)
 					Drawing.drawing.playSound("battle_timed_intro.ogg", 1f, true);
 				else if (Level.isDark())
 					Drawing.drawing.playSound("battle_night_intro.ogg", 1f, true);

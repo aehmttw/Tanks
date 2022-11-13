@@ -5,8 +5,11 @@ import tanks.bullet.Bullet;
 import tanks.gui.screen.IDarkScreen;
 import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenInterlevel;
+import tanks.hotbar.ItemBar;
+import tanks.hotbar.item.Item;
 import tanks.network.event.EventAirdropTank;
+import tanks.network.event.EventSetupHotbar;
+import tanks.network.event.EventUpdateCoins;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
@@ -30,6 +33,8 @@ public class Arcade extends Minigame
     public static String[] rampage_titles = new String[]{"Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!", "Ultimate rampage!!!", "Godlike rampage!!!"};
 
     public ArrayList<Tank> spawnedTanks = new ArrayList<>();
+    public ArrayList<Tank> spawnedFrenzyTanks = new ArrayList<>();
+
     public double timer = 12000;
     public double frenzyTime = -1000;
 
@@ -40,8 +45,17 @@ public class Arcade extends Minigame
     public boolean survivedFrenzy = true;
     public int bulletsFired = 0;
     public int kills = 0;
+    public int frenzyTanksDestroyed = 0;
+    public int killsThisFrame = 0;
+    public int maxKillsPerFrame = 0;
+
     public HashMap<String, Integer> destroyedTanks = new HashMap<>();
     public HashMap<String, Integer> destroyedTanksValue = new HashMap<>();
+
+    public HashMap<String, Item> itemsMap = new HashMap<>();
+    public HashMap<String, String> tankItemsMap = new HashMap<>();
+
+    public ArrayList<ItemDrop> drops = new ArrayList<>();
 
     public Arcade()
     {
@@ -52,6 +66,38 @@ public class Arcade extends Minigame
         this.hideSpeedrunTimer = true;
         this.noLose = true;
         this.disableEndMusic = true;
+        this.customIntroMusic = true;
+        this.introMusic = "arcade/battle_intro.ogg";
+
+        ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
+        for (String si: items)
+        {
+            Item i = Item.parseItem(null, si);
+
+            if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name))
+                continue;
+
+            itemsMap.put(i.name, i);
+            i.name = Translation.translate(i.name);
+        }
+
+        tankItemsMap.put("mint", "Fire bullet");
+        tankItemsMap.put("yellow", "Mega mine");
+        tankItemsMap.put("red", "Laser");
+        tankItemsMap.put("green", "Bouncy fire bullet");
+        tankItemsMap.put("blue", "Zap");
+        tankItemsMap.put("medic", "Shield");
+        tankItemsMap.put("cyan", "Freezing bullet");
+        tankItemsMap.put("orange", "Flamethrower");
+        tankItemsMap.put("maroon", "Mega bullet");
+        tankItemsMap.put("mustard", "Artillery shell");
+        tankItemsMap.put("orangered", "Explosive bullet");
+        tankItemsMap.put("darkgreen", "Mini bullet");
+        tankItemsMap.put("black", "Dark fire bullet");
+        tankItemsMap.put("salmon", "Homing bullet");
+        tankItemsMap.put("lightblue", "Air");
+        tankItemsMap.put("lightpink", "Laser");
+        tankItemsMap.put("Gold", "Zap");
     }
 
     @Override
@@ -59,6 +105,11 @@ public class Arcade extends Minigame
     {
         super.loadLevel();
         Game.playerTank.team = Game.playerTeamNoFF;
+
+        for (Player p: Game.players)
+        {
+            p.hotbar.enabledItemBar = true;
+        }
     }
 
     @Override
@@ -85,11 +136,24 @@ public class Arcade extends Minigame
     @Override
     public void onKill(Tank attacker, Tank target)
     {
+        if (tankItemsMap.get(target.name) != null)
+        {
+            Item i = Item.parseItem(Game.player, itemsMap.get(tankItemsMap.get(target.name)).toString());
+            i.stackSize *= target.coinValue / 2;
+            ItemDrop d = new ItemDrop(target.posX, target.posY, i);
+            drops.add(d);
+        }
+
+        killsThisFrame++;
+
         if (target instanceof TankPlayer && frenzy)
             survivedFrenzy = false;
 
         if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IPlayerTank))
         {
+            if (spawnedFrenzyTanks.contains(target))
+                frenzyTanksDestroyed++;
+
             if (!destroyedTanks.containsKey(target.name))
                 destroyedTanks.put(target.name, 0);
 
@@ -175,6 +239,9 @@ public class Arcade extends Minigame
     {
         age += Panel.frameFrequency;
 
+        Game.movables.addAll(drops);
+        drops.clear();
+
         if (age - lastHit > rampage_duration)
         {
             stopRampage();
@@ -182,6 +249,11 @@ public class Arcade extends Minigame
 
         if (frenzy)
             this.customLevelEnd = false;
+
+        if (killsThisFrame > maxKillsPerFrame)
+            maxKillsPerFrame = killsThisFrame;
+
+        this.killsThisFrame = 0;
 
         if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && Game.movables.contains(Game.playerTank) && timer > 0)
         {
@@ -246,7 +318,7 @@ public class Arcade extends Minigame
             if (seconds > newSeconds && (newSeconds == 10 || newSeconds == 30 || newSeconds == 60))
                 Drawing.drawing.playSound("timer.ogg");
         }
-        else if (!frenzy && Game.movables.contains(Game.playerTank))
+        else if (!frenzy && Game.movables.contains(Game.playerTank) && !Game.playerTank.destroy)
         {
             frenzy = true;
             frenzyTime = age;
@@ -361,16 +433,17 @@ public class Arcade extends Minigame
 
         RegistryTank.TankEntry e = Game.registryTank.getRandomTank();
 
-        while (e.name.equals("blue") || e.name.equals("red"))
-            e = Game.registryTank.getRandomTank();
-
-        while (!frenzy && e.weight < 1.0 / Math.max(1, chain - 2))
+        while (e.name.equals("blue") || e.name.equals("red") || (!frenzy && e.weight < 1.0 / Math.max(1, chain - 2)))
             e = Game.registryTank.getRandomTank();
 
         Tank t = e.getTank(destX, destY, (int)(Math.random() * 4));
         t.team = Game.enemyTeam;
         Game.eventsOut.add(new EventAirdropTank(t));
         this.spawnedTanks.add(t);
+
+        if (frenzy)
+            this.spawnedFrenzyTanks.add(t);
+
         Game.movables.add(new Crate(t));
     }
 
@@ -435,7 +508,12 @@ public class Arcade extends Minigame
     public void drawPoints()
     {
         double frac = Math.max(0, (25 - (age - lastHit)) / 25);
-        double alpha = (127 + 128 * frac) * Obstacle.draw_size / Game.tile_size;
+        double frac2 = Obstacle.draw_size / Game.tile_size;
+
+        if (ScreenGame.finishedQuick)
+            frac2 = 1;
+
+        double alpha = (127 + 128 * frac) * frac2;
 
         if (Level.isDark() || (Game.screen instanceof IDarkScreen && Panel.win && Game.effectsEnabled))
             Drawing.drawing.setColor(255, 255, 255, alpha);
@@ -446,7 +524,7 @@ public class Arcade extends Minigame
         double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
-        String s = Translation.translate("Points: %d", score);
+        String s = Translation.translate("Score: %d", score);
         double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
     }

@@ -3,7 +3,7 @@ Basic mine,mine.png,1,0,4,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true
 Fire bullet,bullet_fire.png,5,0,3,100,bullet,normal,fire,6.25,0,1.0,3,75.0,10.0,1.0,false
 Laser,bullet_laser.png,20,0,1,20,bullet,laser,none,3.125,0,1.0,0,100.0,10.0,1.5,false
 Bouncy fire bullet,bullet_fire_trail.png,10,0,1,20,bullet,normal,fire_and_smoke,6.25,2,1.0,3,50.0,10.0,1.0,false
-Mega mine,mine.png,25,0,5,50,mine,2000.0,50.0,250.0,4.0,1,100.0,60.0,true
+Mega mine,mine.png,25,0,5,50,mine,2000.0,50.0,250.0,4.0,4,100.0,60.0,true
 Zap,bullet_electric.png,15,0,5,50,bullet,electric,none,3.125,5,0.125,0,50.0,10.0,1.0,false
 Shield,shield.png,50,0,1,10,shield,1.0,5.0,50.0
 Freezing bullet,bullet_freeze.png,10,0,1,25,bullet,freezing,ice,3.125,0,0.25,1,50.0,10.0,1.0,false

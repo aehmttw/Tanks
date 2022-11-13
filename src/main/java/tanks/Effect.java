@@ -8,7 +8,7 @@ import tanks.tank.Turret;
 
 public class Effect extends Movable implements IDrawableWithGlow
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, snow, shield, boostLight, exclamation, chain}
+    public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain}
 
     public enum State {live, removed, recycle}
 
@@ -161,7 +161,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.maxAge = 0;
         else if (type == EffectType.teleporterPiece)
             this.maxAge = Math.random() * 100 + 50;
-        else if (type == EffectType.interfacePiece)
+        else if (type == EffectType.interfacePiece || type == EffectType.interfacePieceSparkle)
         {
             this.maxAge = Math.random() * 100 + 50;
             this.force = true;
@@ -328,7 +328,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             else
                 drawing.fillOval(this.posX, this.posY, size2, size2);
         }
-        else if (this.type == EffectType.interfacePiece)
+        else if (this.type == EffectType.interfacePiece || this.type == EffectType.interfacePieceSparkle)
         {
             double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
 
@@ -630,6 +630,18 @@ public class Effect extends Movable implements IDrawableWithGlow
             drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127, 1);
 
             drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
+        }
+        else if (this.type == EffectType.interfacePieceSparkle)
+        {
+            double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
+
+            if (this.size > 0)
+                size *= this.size;
+
+            drawing.setColor(this.colR - this.glowR, this.colG - this.glowG, this.colB - this.glowB, 127, 1);
+
+            drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
+            drawing.fillInterfaceGlowSparkle(this.posX, this.posY, 0, size * 4, this.age / 100.0 * this.radius);
         }
         else if (this.type == EffectType.charge)
         {

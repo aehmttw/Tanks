@@ -446,6 +446,15 @@ public class ScreenChangelog extends Screen
                                     "- Limited the max number of tanks at once\n" +
                                     "Changed fireworks appearance\n"
                     });
+
+            new Changelog("v1.5.c", new String[]
+                    {
+                            "*What's new in Tanks v1.5.c:\n\n" +
+                                    "Added item drops to arcade mode\n" +
+                                    "Improved arcade mode ending screen\n" +
+                                    "Added more arcade mode bonuses\n" +
+                                    "Changed fireworks appearance\n"
+                    });
         }
     }
 }

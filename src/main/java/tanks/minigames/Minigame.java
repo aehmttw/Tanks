@@ -27,6 +27,9 @@ public abstract class Minigame extends Level
     public boolean hideSpeedrunTimer = false;
     public boolean noLose = false;
     public boolean disableEndMusic = false;
+    public boolean customIntroMusic = false;
+
+    public String introMusic;
 
     /**
      * If you used getLevelString(), make sure to switch it with the actual level string before publishing it!

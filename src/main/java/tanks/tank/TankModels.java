@@ -4,6 +4,8 @@ import basewindow.Model;
 import tanks.Drawing;
 import tanks.Game;
 
+import java.util.HashMap;
+
 public class TankModels
 {
     public static FullTankModel tank;
@@ -16,6 +18,8 @@ public class TankModels
     public static FullTankModel arrow;
     public static FullTankModel camo;
     public static FullTankModel flames;
+
+    public static HashMap<String, FullTankModel> fullTankModels = new HashMap<>();
 
     public static class FullTankModel
     {
@@ -31,6 +35,7 @@ public class TankModels
             turretBase = Drawing.drawing.createModel("/models/" + name + "/turretbase/");
             turret = Drawing.drawing.createModel("/models/" + name + "/turret/");
             Game.registerTankModel("/models/" + name);
+            fullTankModels.put(name, this);
         }
     }
 

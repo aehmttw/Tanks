@@ -100,7 +100,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         }
 
         if (a.maxKillsPerFrame >= 2)
-            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", a.maxKillsPerFrame * 10, 255, 127, 0));
+            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int)(a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
 
         if (a.score == 69)
             bonuses.add(new Bonus("Nice! ;)", 69, 255, 127, 0));
@@ -186,6 +186,13 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             e.update();
 
         Game.effects.removeAll(Game.removeEffects);
+
+        if (!Game.game.window.validPressedKeys.isEmpty() || !Game.game.window.validPressedButtons.isEmpty())
+        {
+            Game.game.window.validPressedKeys.clear();
+            Game.game.window.validPressedButtons.clear();
+            age = Math.max(age, firstBonusTime + interBonusTime * (bonusCount));
+        }
 
         for (int i = 0; i < 3; i++)
         {
@@ -285,12 +292,19 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             }
 
             ArrayList<Firework> fireworks = getFireworkArray();
+
+            if (!Game.game.window.pressedKeys.isEmpty() || !Game.game.window.pressedButtons.isEmpty())
+                Panel.frameFrequency *= 4;
+
             Panel.frameFrequency *= 2;
             for (int i = 0; i < fireworks.size(); i++)
             {
                 fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
             }
             Panel.frameFrequency /= 2;
+
+            if (!Game.game.window.pressedKeys.isEmpty() || !Game.game.window.pressedButtons.isEmpty())
+                Panel.frameFrequency /= 4;
 
             if (Game.glowEnabled)
             {

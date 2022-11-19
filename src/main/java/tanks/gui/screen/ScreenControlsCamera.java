@@ -25,7 +25,7 @@ public class ScreenControlsCamera extends Screen
         zoomOut.update();
         zoomAuto.update();
 
-        ScreenOptionsInputDesktop.overlay.update();
+        ScreenOverlayControls.overlay.update();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ScreenControlsCamera extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Camera controls");
 
-        ScreenOptionsInputDesktop.overlay.draw();
+        ScreenOverlayControls.overlay.draw();
     }
 
 }

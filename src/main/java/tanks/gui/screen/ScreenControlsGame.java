@@ -28,7 +28,7 @@ public class ScreenControlsGame extends Screen
         hidePause.update();
         fullscreen.update();
 
-        ScreenOptionsInputDesktop.overlay.update();
+        ScreenOverlayControls.overlay.update();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ScreenControlsGame extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Game controls");
 
-        ScreenOptionsInputDesktop.overlay.draw();
+        ScreenOverlayControls.overlay.draw();
     }
 
 }

@@ -7,6 +7,7 @@ import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemShield;
 import tanks.network.event.EventAirdropTank;
 import tanks.network.event.EventSetupHotbar;
 import tanks.network.event.EventUpdateCoins;
@@ -26,6 +27,7 @@ public class Arcade extends Minigame
     public int chain = 0;
     public double lastRampage = 0;
     public boolean frenzy = false;
+    public double finishTimer = 0;
 
     public static final int rampage_duration = 500;
     public static final int rampage_exit_duration = 200;
@@ -35,7 +37,7 @@ public class Arcade extends Minigame
     public ArrayList<Tank> spawnedTanks = new ArrayList<>();
     public ArrayList<Tank> spawnedFrenzyTanks = new ArrayList<>();
 
-    public double timer = 12000;
+    public double timer = 13200;
     public double frenzyTime = -1000;
 
     public int score = 0;
@@ -97,7 +99,7 @@ public class Arcade extends Minigame
         tankItemsMap.put("salmon", "Homing bullet");
         tankItemsMap.put("lightblue", "Air");
         tankItemsMap.put("lightpink", "Laser");
-        tankItemsMap.put("Gold", "Zap");
+        tankItemsMap.put("gold", "Zap");
     }
 
     @Override
@@ -140,6 +142,10 @@ public class Arcade extends Minigame
         {
             Item i = Item.parseItem(Game.player, itemsMap.get(tankItemsMap.get(target.name)).toString());
             i.stackSize *= target.coinValue / 2;
+
+            if (i instanceof ItemShield)
+                i.stackSize /= 2;
+
             ItemDrop d = new ItemDrop(target.posX, target.posY, i);
             drops.add(d);
         }
@@ -219,6 +225,14 @@ public class Arcade extends Minigame
                         t.addUnduplicateAttribute(d);
                     }
                 }
+
+                if (m instanceof AreaEffect)
+                {
+                    AttributeModifier c = new AttributeModifier("rampage_speed", "speed", AttributeModifier.Operation.multiply, power / 5.0);
+                    c.duration = rampage_duration + rampage_exit_duration;
+                    c.deteriorationAge = rampage_exit_duration;
+                    m.addUnduplicateAttribute(c);
+                }
             }
         }
     }
@@ -242,7 +256,7 @@ public class Arcade extends Minigame
         Game.movables.addAll(drops);
         drops.clear();
 
-        if (age - lastHit > rampage_duration)
+        if (age - lastHit > rampage_duration && !frenzy)
         {
             stopRampage();
         }
@@ -346,11 +360,17 @@ public class Arcade extends Minigame
             double frac = (1 - Math.max(0, age - lastRampage - 100) / 100.0);
             double mul = (1 + (1 - Math.min(1, (age - lastRampage) / 25.0)));
 
+            String prefix = (chain / 3 - rampage_titles.length + 1) + "x ";
+
+            if (chain / 3 - 1 < rampage_titles.length)
+                prefix = "";
+
+            //TODO: translation friendly it
             Drawing.drawing.setInterfaceFontSize(50 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 5, Drawing.drawing.interfaceSizeY / 2 + 5, rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 5, Drawing.drawing.interfaceSizeY / 2 + 5, prefix + rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
             Drawing.drawing.setColor(col[0], col[1], col[2], frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, prefix + rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
 
             Drawing.drawing.setInterfaceFontSize(20 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
@@ -381,6 +401,29 @@ public class Arcade extends Minigame
 
         this.drawTimer();
         this.drawPoints();
+
+        if (ScreenGame.finishedQuick)
+        {
+            finishTimer += Panel.frameFrequency;
+            double alpha = Obstacle.draw_size / Game.tile_size;
+            double mul = (1 + (1 - Math.min(1, (finishTimer) / 25.0))) * alpha;
+            Drawing.drawing.setInterfaceFontSize(100 * mul);
+
+            if (!survivedFrenzy)
+            {
+                Drawing.drawing.setColor(100, 25, 25);
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 5 * mul, Drawing.drawing.interfaceSizeY / 2 + 5 * mul, "Game over!");
+                Drawing.drawing.setColor(200, 50, 50);
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Game over!");
+            }
+            else
+            {
+                Drawing.drawing.setColor(127, 90, 0);
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 5 * mul, Drawing.drawing.interfaceSizeY / 2 + 5 * mul, "Victory!");
+                Drawing.drawing.setColor(255, 180, 0);
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Victory!");
+            }
+        }
     }
 
     @Override
@@ -437,7 +480,7 @@ public class Arcade extends Minigame
             e = Game.registryTank.getRandomTank();
 
         Tank t = e.getTank(destX, destY, (int)(Math.random() * 4));
-        t.team = Game.enemyTeam;
+        t.team = Game.enemyTeamNoFF;
         Game.eventsOut.add(new EventAirdropTank(t));
         this.spawnedTanks.add(t);
 

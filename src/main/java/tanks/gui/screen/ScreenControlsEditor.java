@@ -133,7 +133,7 @@ public class ScreenControlsEditor extends Screen
         next.update();
         previous.update();
 
-        ScreenOptionsInputDesktop.overlay.update();
+        ScreenOverlayControls.overlay.update();
     }
 
     @Override
@@ -202,7 +202,7 @@ public class ScreenControlsEditor extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Editor controls");
 
-        ScreenOptionsInputDesktop.overlay.draw();
+        ScreenOverlayControls.overlay.draw();
     }
 
 }

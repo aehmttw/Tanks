@@ -1,6 +1,7 @@
 package tanks.hotbar;
 
 import tanks.*;
+import tanks.minigames.Arcade;
 import tanks.network.event.EventSetItem;
 import tanks.network.event.EventSetItemBarSlot;
 import tanks.gui.Button;
@@ -140,7 +141,11 @@ public class ItemBar
 		slots[selected].attemptUse();
 
 		if (slots[selected].destroy)
+		{
 			slots[selected] = new ItemEmpty();
+			if (Game.currentLevel instanceof Arcade)
+				selected = -1;
+		}
 
 		if (this.player != Game.player)
 			Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));

@@ -32,7 +32,7 @@ public class ScreenControlsHotbar extends Screen
         hotbar5.update();
         hotbarDeselect.update();
 
-        ScreenOptionsInputDesktop.overlay.update();
+        ScreenOverlayControls.overlay.update();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ScreenControlsHotbar extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 350, "Hotbar controls");
 
-        ScreenOptionsInputDesktop.overlay.draw();
+        ScreenOverlayControls.overlay.draw();
     }
 
 }

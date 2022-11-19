@@ -57,6 +57,13 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 		this.orientation = angle;
 		this.player.tank = this;
 
+		this.colorR = Game.player.colorR;
+		this.colorG = Game.player.colorG;
+		this.colorB = Game.player.colorB;
+		this.secondaryColorR = Game.player.turretColorR;
+		this.secondaryColorG = Game.player.turretColorG;
+		this.secondaryColorB = Game.player.turretColorB;
+
 		if (enableDestroyCheat)
 		{
 			this.showName = true;

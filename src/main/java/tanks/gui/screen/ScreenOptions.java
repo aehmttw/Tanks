@@ -18,6 +18,8 @@ public class ScreenOptions extends Screen
 	public static final String onText = "\u00A7000200000255on";
 	public static final String offText = "\u00A7200000000255off";
 
+	TankPlayer preview = new TankPlayer(0, 0, 0);
+
 	public ScreenOptions()
 	{
 		this.music = "menu_options.ogg";
@@ -52,9 +54,10 @@ public class ScreenOptions extends Screen
 		if (Game.game.window.touchscreen)
 			Game.screen = new ScreenOptionsInputTouchscreen();
 		else
-			Game.screen = new ScreenOptionsInputDesktop();
-	}
-	);
+			Game.screen = ScreenOverlayControls.lastControlsScreen;
+	});
+
+	Button personalize = new Button(this.centerX, this.centerY - this.objYSpace * 2.4, this.objWidth * 1.5, this.objHeight * 2, "");
 
 	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsInterface()
 	);
@@ -69,6 +72,7 @@ public class ScreenOptions extends Screen
 		graphicsOptions.update();
 		inputOptions.update();
 		multiplayerOptions.update();
+		//personalize.update();
 
 		back.update();
 	}
@@ -84,6 +88,7 @@ public class ScreenOptions extends Screen
 		interfaceOptions.draw();
 		gameOptions.draw();
 		soundOptions.draw();
+		//personalize.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);

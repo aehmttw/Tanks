@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenOverlayControls
@@ -13,25 +14,97 @@ public class ScreenOverlayControls
     public double objXSpace = 380;
     public double objYSpace = 60;
 
-    public Button game = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Game", () -> Game.screen = new ScreenControlsGame());
+    public Button game = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 330, this.objWidth, this.objHeight, "Game", () -> Game.screen = new ScreenControlsGame());
 
-    public Button camera = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 60, this.objWidth, this.objHeight, "Camera", () -> Game.screen = new ScreenControlsCamera());
+    public Button camera = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 270, this.objWidth, this.objHeight, "Camera", () -> Game.screen = new ScreenControlsCamera());
 
-    public Button tank = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Tank", () -> Game.screen = new ScreenControlsTank());
+    public Button tank = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 210, this.objWidth, this.objHeight, "Tank", () -> Game.screen = new ScreenControlsTank());
 
-    public Button hotbar = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Hotbar", () -> Game.screen = new ScreenControlsHotbar());
+    public Button hotbar = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Hotbar", () -> Game.screen = new ScreenControlsHotbar());
 
-    public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 120, this.objWidth, this.objHeight, "Editor", () -> Game.screen = new ScreenControlsEditor());
+    public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Editor", () -> Game.screen = new ScreenControlsEditor());
 
-    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 290, this.objWidth, this.objHeight, "Reset", () -> Game.screen = new ScreenResetControls()
+    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 10, this.objWidth, this.objHeight, "Reset controls", () -> Game.screen = new ScreenResetControls()
     );
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Back", () ->
+    public static final String mouseTargetText = "Mouse target: ";
+    public static final String mouseTargetHeightText = "Mouse spotlight: ";
+    public static final String constrainMouseText = "Constrain mouse: ";
+
+    public static ScreenOverlayControls overlay = new ScreenOverlayControls();
+
+    public ScreenOverlayControls()
     {
-        Game.game.input.save();
-        Game.screen = new ScreenOptionsInputDesktop();
+        if (Panel.showMouseTarget)
+            mouseTarget.setText(mouseTargetText, ScreenOptions.onText);
+        else
+            mouseTarget.setText(mouseTargetText, ScreenOptions.offText);
+
+        if (Panel.showMouseTargetHeight && Game.enable3d)
+            mouseTargetHeight.setText(mouseTargetHeightText, ScreenOptions.onText);
+        else
+            mouseTargetHeight.setText(mouseTargetHeightText, ScreenOptions.offText);
+
+        if (!Game.enable3d)
+            mouseTargetHeight.enabled = false;
+
+        if (Game.constrainMouse)
+            constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
+        else
+            constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
     }
+
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 360, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
+
+    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 135, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Panel.showMouseTarget = !Panel.showMouseTarget;
+
+            if (Panel.showMouseTarget)
+                mouseTarget.setText(mouseTargetText, ScreenOptions.onText);
+            else
+                mouseTarget.setText(mouseTargetText, ScreenOptions.offText);
+
+            Game.game.window.setShowCursor(!Panel.showMouseTarget);
+        }
+    },
+            "When enabled, your mouse pointer---will be replaced by a target");
+
+    Button mouseTargetHeight = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 195, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Panel.showMouseTargetHeight = !Panel.showMouseTargetHeight;
+
+            if (Panel.showMouseTargetHeight)
+                mouseTargetHeight.setText(mouseTargetHeightText, ScreenOptions.onText);
+            else
+                mouseTargetHeight.setText(mouseTargetHeightText, ScreenOptions.offText);
+
+            Game.game.window.setShowCursor(!Panel.showMouseTarget);
+        }
+    },
+            "When enabled, while ingame or in the editor,---a spotlight will appear on your mouse---to help you judge the height of objects.");
+
+    Button constrainMouse = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 255, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.constrainMouse = !Game.constrainMouse;
+
+            if (Game.constrainMouse)
+                constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
+            else
+                constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
+        }
+    },
+            "Disallows your mouse pointer from---leaving the window while playing");
 
     public void update()
     {
@@ -54,6 +127,10 @@ public class ScreenOverlayControls
         editor.update();
         reset.update();
         back.update();
+
+        mouseTarget.update();
+        mouseTargetHeight.update();
+        constrainMouse.update();
     }
 
     public void draw()
@@ -68,7 +145,8 @@ public class ScreenOverlayControls
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(Game.screen.titleSize);
-        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 350, "Controls");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 380, "Controls");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 85, "Input options");
 
         game.draw();
         camera.draw();
@@ -76,6 +154,11 @@ public class ScreenOverlayControls
         hotbar.draw();
         editor.draw();
         reset.draw();
+        back.draw();
+
+        constrainMouse.draw();
+        mouseTargetHeight.draw();
+        mouseTarget.draw();
         back.draw();
     }
 }

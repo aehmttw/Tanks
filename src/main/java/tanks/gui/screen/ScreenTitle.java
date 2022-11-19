@@ -188,19 +188,19 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		about.draw();
 
 
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
+		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR), Turret.calculateSecondaryColor(Game.player.colorG), Turret.calculateSecondaryColor(Game.player.colorB));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
 
-		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.turretColorR), Turret.calculateSecondaryColor(Game.player.turretColorG), Turret.calculateSecondaryColor(Game.player.turretColorB));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
-		Drawing.drawing.setColor(0, 150, 255);
+		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
 
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
+		Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 

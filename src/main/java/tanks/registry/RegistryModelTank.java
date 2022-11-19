@@ -2,8 +2,10 @@ package tanks.registry;
 
 import basewindow.IModel;
 import tanks.Drawing;
+import tanks.tank.TankModels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RegistryModelTank
 {

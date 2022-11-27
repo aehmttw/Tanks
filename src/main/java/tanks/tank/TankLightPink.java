@@ -36,7 +36,7 @@ public class TankLightPink extends TankAIControlled
             this.emblemB = this.secondaryColorB;
         }
 
-        this.setSightTransformTank(new TankLightPinkAngry(this.name, x, y, angle));
+        this.sightTransformTank = new TankLightPinkAngry(this.name, x, y, angle);
 
         this.description = "A tank which gets angry on line of sight";
     }

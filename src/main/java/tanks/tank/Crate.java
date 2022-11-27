@@ -6,7 +6,6 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
 import tanks.obstacle.Obstacle;
-import tanks.registry.RegistryModelTank;
 
 public class Crate extends Movable
 {
@@ -19,12 +18,12 @@ public class Crate extends Movable
         this.posZ = 1000;
         this.tank = tank;
         this.size = tank.size * 1.5;
+        this.drawLevel = 9;
     }
 
     @Override
     public void draw()
     {
-
         double size = this.size * Obstacle.draw_size / Game.tile_size;
 
         if (Game.enable3d)
@@ -32,26 +31,20 @@ public class Crate extends Movable
             Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB);
             Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
 
-            Model m = this.tank.baseModel;
-            Model m2 = this.tank.colorModel;
+            TankModels.FullTankModel model = TankModels.fullTankModels.get(this.tank.baseModel.file);
 
-            String[] s = m.file.split("/");
-            String[] s2 = m2.file.split("/");
-
-            if (s.length > 2 && s2.length > 2 && TankModels.fullTankModels.get(s[2]) == TankModels.tank)
-            {
-                m = TankModels.fullTankModels.get(s2[2]).base;
-            }
+            if (model == TankModels.tank)
+                model = TankModels.fullTankModels.get(this.tank.colorModel.file);
 
             Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB);
-            Drawing.drawing.drawModel(m, this.posX, this.posY,  this.posZ - 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, 0);
+            //Drawing.drawing.drawModel(m, this.posX, this.posY,  this.posZ - 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, 0);
             Drawing.drawing.setColor(this.tank.colorR * 0.6, this.tank.colorG * 0.6, this.tank.colorB * 0.6);
-            Drawing.drawing.drawModel(m, this.posX, this.posY + size * 0.5 + 1,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, Math.PI / 2);
+            //Drawing.drawing.drawModel(m, this.posX, this.posY + size * 0.5 + 1,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, Math.PI / 2);
             Drawing.drawing.setColor(this.tank.colorR * 0.8, this.tank.colorG * 0.8, this.tank.colorB * 0.8);
-            Drawing.drawing.drawModel(m, this.posX + size * 0.5 + 1, this.posY,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, Math.PI / 2, 0);
-            //Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size * 0.8, size + 2);
-            //Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size + 2, size * 0.8);
-            //Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size + 2, size * 0.8, size * 0.8);
+            //Drawing.drawing.drawModel(m, this.posX + size * 0.5 + 1, this.posY,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, Math.PI / 2, 0);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size * 0.8, size + 2, model.texture);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size * 0.8, size + 2, size * 0.8, model.texture);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size + 2, size * 0.8, size * 0.8, model.texture);
 
             if (this.tank.emblem != null)
             {
@@ -105,7 +98,15 @@ public class Crate extends Movable
         {
             this.destroy = true;
             Drawing.drawing.playSound("open.ogg");
-            Game.movables.add(tank);
+
+            if (!tank.isRemote)
+            {
+                if (tank instanceof TankPlayer)
+                    Game.addPlayerTank(((TankPlayer) tank).player, tank.posX, tank.posY, tank.angle, tank.team);
+                else
+                    Game.addTank(tank);
+            }
+
             tank.drawAge = 50;
         }
 

@@ -33,7 +33,7 @@ public class Mine extends Movable implements IAvoidObject
     public double cooldown = 0;
     public int lastBeep = Integer.MAX_VALUE;
 
-    public int networkID;
+    public int networkID = -1;
 
     public static int currentID = 0;
     public static ArrayList<Integer> freeIDs = new ArrayList<>();

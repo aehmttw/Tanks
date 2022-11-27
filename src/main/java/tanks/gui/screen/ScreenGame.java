@@ -627,20 +627,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				p.hotbar.enabledItemBar = false;
 				p.hotbar.enabledCoins = false;
 
-				if (startingItems || shop)
+				if (startingItems || shop || (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).enableItemBar))
+				{
+					p.hotbar.enabledItemBar = true;
 					p.hotbar.itemBar = new ItemBar(p);
+				}
 
 				if (startingItems)
 				{
-					p.hotbar.enabledItemBar = true;
-
 					for (Item i: Game.currentLevel.startingItems)
 						p.hotbar.itemBar.addItem(i);
 				}
 
 				if (shop)
 				{
-					p.hotbar.enabledItemBar = true;
 					p.hotbar.enabledCoins = true;
 					p.hotbar.coins = Game.currentLevel.startingCoins;
 					Game.eventsOut.add(new EventUpdateCoins(p));

@@ -9,9 +9,7 @@ import tanks.minigames.Arcade;
 import tanks.tank.Tank;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
 public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 {
@@ -102,11 +100,14 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         if (a.maxKillsPerFrame >= 2)
             bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int)(a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
 
-        if (a.score == 69)
+        if ((a.score + "").contains("69"))
             bonuses.add(new Bonus("Nice! ;)", 69, 255, 127, 0));
 
         if (a.score == 420)
             bonuses.add(new Bonus("MLG GAMER!!!", 100, 0, 180, 0));
+
+        if (a.score == 404)
+            bonuses.add(new Bonus("Bonus not found", Integer.MAX_VALUE - a.score, 0, 0, 255));
 
         String digits = (a.score + "");
 
@@ -126,18 +127,30 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (a.score % 10 == 0)
             bonuses.add(new Bonus("Multiple of 10!", 10, 0, 160, 255));
 
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        int days = 365;
+        boolean leap = (year % 4 == 0) && !(year % 100 == 0 && year % 400 != 0);
+        if (leap)
+            days++;
+
+        if (a.score == year)
+            bonuses.add(new Bonus("Up to date!", days, 40, 255, 40));
+
+        if (Math.sqrt(a.score) % 1.0 == 0)
+            bonuses.add(new Bonus("Perfect square!", (int) Math.sqrt(a.score), 40, 40, 255));
+
         if (a.kills >= a.bulletsFired)
             bonuses.add(new Bonus("Perfect aim!!!!", 200, 40, 255, 255));
         else if (a.kills >= a.bulletsFired * 0.8)
-            bonuses.add(new Bonus("Bullseye aim!!!", 50, 40, 40, 255));
+            bonuses.add(new Bonus("Bullseye aim!!!", 100, 40, 40, 255));
         else if (a.kills >= a.bulletsFired * 0.7)
-            bonuses.add(new Bonus("Amazing aim!!", 40, 80, 40, 255));
+            bonuses.add(new Bonus("Amazing aim!!", 80, 80, 40, 255));
         else if (a.kills >= a.bulletsFired * 0.6)
-            bonuses.add(new Bonus("Awesome aim!!", 30, 160, 40, 255));
+            bonuses.add(new Bonus("Awesome aim!!", 60, 160, 40, 255));
         else if (a.kills >= a.bulletsFired * 0.5)
-            bonuses.add(new Bonus("Great aim!!", 20, 255, 40, 255));
+            bonuses.add(new Bonus("Great aim!!", 40, 255, 40, 255));
         else if (a.kills >= a.bulletsFired * 0.4)
-            bonuses.add(new Bonus("Good aim!", 10, 255, 40, 160));
+            bonuses.add(new Bonus("Good aim!", 20, 255, 40, 160));
 
         String most = null;
         int value = 0;
@@ -179,7 +192,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         if (this.age == 0)
             Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * 0.25f);
 
-        Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+        if (Game.effectsEnabled)
+            Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+
         this.age += Panel.frameFrequency;
 
         for (Effect e: Game.effects)
@@ -200,14 +215,18 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 bonusCount++;
                 Drawing.drawing.playSound("bonus" + (i + 1) + ".ogg", 1f);
-                for (int j = 0; j < this.bonuses.get(2 - i).value; j++)
+
+                if (Game.effectsEnabled)
                 {
-                    Drawing.drawing.setInterfaceFontSize(this.textSize);
-                    Bonus b = this.bonuses.get(2 - i);
-                    double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
-                    addEffect(this.centerX, this.centerY + (i - 1) * 40, size, this.objHeight, Game.effects, 1 + b.value / 25.0, -1, 0.5, b.red, b.green, b.blue);
+                    for (int j = 0; j < Game.effectMultiplier * Math.min(1000, this.bonuses.get(2 - i).value); j++)
+                    {
+                        Drawing.drawing.setInterfaceFontSize(this.textSize);
+                        Bonus b = this.bonuses.get(2 - i);
+                        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
+                        addEffect(this.centerX, this.centerY + (i - 1) * 40, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
+                    }
+                    Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
                 }
-                Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
             }
         }
 
@@ -225,7 +244,14 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 this.lastPoints = this.age;
             }
 
-            fireworksToSpawn = (pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
+            long fireworks =  ( (long)pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
+            if (fireworks > 200)
+            {
+                pointsPerFirework *= Math.ceil(fireworks / 200.0);
+                fireworksToSpawn = 200;
+            }
+            else
+                fireworksToSpawn = (int) fireworks;
         }
 
         if (age >= firstBonusTime + interBonusTime * 5 && this.getFireworkArray().size() == 0)
@@ -279,6 +305,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         if (Game.effectsEnabled && !Game.game.window.drawingShadow)
         {
+            if (!Game.game.window.pressedKeys.isEmpty() || !Game.game.window.pressedButtons.isEmpty())
+                Panel.frameFrequency *= 4;
+
             fireworkCooldown -= Panel.frameFrequency;
             if (fireworksToSpawn > 0 && fireworkCooldown <= 0)
             {
@@ -292,9 +321,6 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             }
 
             ArrayList<Firework> fireworks = getFireworkArray();
-
-            if (!Game.game.window.pressedKeys.isEmpty() || !Game.game.window.pressedButtons.isEmpty())
-                Panel.frameFrequency *= 4;
 
             Panel.frameFrequency *= 2;
             for (int i = 0; i < fireworks.size(); i++)
@@ -320,7 +346,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 {
                     this.spawnedFireworks.remove(i);
                     i--;
-                    this.score = Math.min(this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value, this.score + this.pointsPerFirework);
+
+                    if (this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value > 0)
+                        this.score = Math.min(this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value, this.score + this.pointsPerFirework);
+                    else
+                        this.score = this.score + this.pointsPerFirework;
                     this.lastPoints = this.age;
                 }
             }
@@ -338,7 +368,10 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         double heightFrac = Math.min(1, age / 25);
 
-        Drawing.drawing.setColor(heightFrac * 255, heightFrac * 255, heightFrac * 255, alpha);
+        if (Game.effectsEnabled)
+            Drawing.drawing.setColor(heightFrac * 255, heightFrac * 255, heightFrac * 255, alpha);
+        else
+            Drawing.drawing.setColor(0, 0, 0, alpha);
 
         double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 175;
         double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;

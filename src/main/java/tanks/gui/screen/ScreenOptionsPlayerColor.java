@@ -2,14 +2,12 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
 import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 
-public class ScreenOptionsMultiplayerColor extends Screen
+public class ScreenOptionsPlayerColor extends Screen
 {
     TankPlayer preview = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 315 * Drawing.drawing.interfaceScaleZoom, 0);
 
@@ -23,7 +21,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
 
     public String secondaryColorText = "Second color: ";
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsMultiplayer()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsPersonalize()
     );
 
     Button enableSecondary = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
@@ -42,7 +40,7 @@ public class ScreenOptionsMultiplayerColor extends Screen
             "Allows you to pick---a custom secondary color");
 
 
-    public ScreenOptionsMultiplayerColor()
+    public ScreenOptionsPlayerColor()
     {
         if (Drawing.drawing.interfaceScaleZoom > 1)
             preview.posY += Game.tile_size;
@@ -306,6 +304,6 @@ public class ScreenOptionsMultiplayerColor extends Screen
         back.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Multiplayer tank color");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Tank color");
     }
 }

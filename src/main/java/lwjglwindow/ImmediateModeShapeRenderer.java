@@ -366,9 +366,9 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnd();
     }
 
-    public void fillBox(double x, double y, double z, double sX, double sY, double sZ)
+    public void fillBox(double x, double y, double z, double sX, double sY, double sZ, String texture)
     {
-        fillBox(x, y, z, sX, sY, sZ, (byte) 0);
+        fillBox(x, y, z, sX, sY, sZ, (byte) 0, texture);
     }
 
     /**
@@ -385,7 +385,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
      *
      * +64 draw on top
      * */
-    public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options)
+    public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options, String texture)
     {
         if (!this.window.batchMode)
         {
@@ -399,61 +399,165 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             else
                 glDepthFunc(GL_ALWAYS);
 
+            if (texture != null)
+            {
+                if (!this.window.textures.containsKey(texture))
+                    this.window.createImage(texture);
+
+                glMatrixMode(GL_MODELVIEW);
+                this.window.enableTexture();
+
+                glEnable(GL_BLEND);
+                this.window.setTransparentBlendFunc();
+
+                glBindTexture(GL_TEXTURE_2D, this.window.textures.get(texture));
+            }
+
             GL11.glBegin(GL11.GL_QUADS);
         }
 
         if (options % 2 == 0)
         {
             GL11.glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
-            GL11.glVertex3d(x + sX, y, z);
-            GL11.glVertex3d(x, y, z);
-            GL11.glVertex3d(x, y + sY, z);
-            GL11.glVertex3d(x + sX, y + sY, z);
+
+            if (texture != null)
+            {
+                glTexCoord2d(1, 0);
+                GL11.glVertex3d(x + sX, y, z);
+                glTexCoord2d(0, 0);
+                GL11.glVertex3d(x, y, z);
+                glTexCoord2d(0, 1);
+                GL11.glVertex3d(x, y + sY, z);
+                glTexCoord2d(1, 1);
+                GL11.glVertex3d(x + sX, y + sY, z);
+            }
+            else
+            {
+                GL11.glVertex3d(x + sX, y, z);
+                GL11.glVertex3d(x, y, z);
+                GL11.glVertex3d(x, y + sY, z);
+                GL11.glVertex3d(x + sX, y + sY, z);
+            }
         }
 
         if ((options >> 2) % 2 == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.8, this.window.colorG * 0.8, this.window.colorB * 0.8, this.window.colorA);
-            GL11.glVertex3d(x + sX, y + sY, z + sZ);
-            GL11.glVertex3d(x, y + sY, z + sZ);
-            GL11.glVertex3d(x, y + sY, z);
-            GL11.glVertex3d(x + sX, y + sY, z);
+
+            if (texture != null)
+            {
+                glTexCoord2d(1, 1);
+                GL11.glVertex3d(x + sX, y + sY, z + sZ);
+                glTexCoord2d(0, 1);
+                GL11.glVertex3d(x, y + sY, z + sZ);
+                glTexCoord2d(0, 0);
+                GL11.glVertex3d(x, y + sY, z);
+                glTexCoord2d(1, 0);
+                GL11.glVertex3d(x + sX, y + sY, z);
+            }
+            else
+            {
+                GL11.glVertex3d(x + sX, y + sY, z + sZ);
+                GL11.glVertex3d(x, y + sY, z + sZ);
+                GL11.glVertex3d(x, y + sY, z);
+                GL11.glVertex3d(x + sX, y + sY, z);
+            }
         }
 
         if ((options >> 3) % 2 == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.8, this.window.colorG * 0.8, this.window.colorB * 0.8, this.window.colorA);
-            GL11.glVertex3d(x + sX, y , z + sZ);
-            GL11.glVertex3d(x, y, z + sZ);
-            GL11.glVertex3d(x, y, z);
-            GL11.glVertex3d(x + sX, y, z);
+
+            if (texture != null)
+            {
+                glTexCoord2d(1, 1);
+                GL11.glVertex3d(x + sX, y, z + sZ);
+                glTexCoord2d(0, 1);
+                GL11.glVertex3d(x, y, z + sZ);
+                glTexCoord2d(0, 0);
+                GL11.glVertex3d(x, y, z);
+                glTexCoord2d(1, 0);
+                GL11.glVertex3d(x + sX, y, z);
+            }
+            else
+            {
+                GL11.glVertex3d(x + sX, y, z + sZ);
+                GL11.glVertex3d(x, y, z + sZ);
+                GL11.glVertex3d(x, y, z);
+                GL11.glVertex3d(x + sX, y, z);
+            }
         }
 
         if ((options >> 4) % 2 == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.6, this.window.colorG * 0.6, this.window.colorB * 0.6, this.window.colorA);
-            GL11.glVertex3d(x, y + sY, z + sZ);
-            GL11.glVertex3d(x, y + sY, z);
-            GL11.glVertex3d(x, y, z);
-            GL11.glVertex3d(x, y, z + sZ);
+
+            if (texture != null)
+            {
+                glTexCoord2d(1, 1);
+                GL11.glVertex3d(x, y + sY, z + sZ);
+                glTexCoord2d(1, 0);
+                GL11.glVertex3d(x, y + sY, z);
+                glTexCoord2d(0, 0);
+                GL11.glVertex3d(x, y, z);
+                glTexCoord2d(0, 1);
+                GL11.glVertex3d(x, y, z + sZ);
+            }
+            else
+            {
+                GL11.glVertex3d(x, y + sY, z + sZ);
+                GL11.glVertex3d(x, y + sY, z);
+                GL11.glVertex3d(x, y, z);
+                GL11.glVertex3d(x, y, z + sZ);
+            }
         }
 
         if ((options >> 5) % 2 == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.6, this.window.colorG * 0.6, this.window.colorB * 0.6, this.window.colorA);
-            GL11.glVertex3d(x + sX, y + sY, z);
-            GL11.glVertex3d(x + sX, y + sY, z + sZ);
-            GL11.glVertex3d(x + sX, y, z + sZ);
-            GL11.glVertex3d(x + sX, y, z);
+
+            if (texture != null)
+            {
+                glTexCoord2d(1, 0);
+                GL11.glVertex3d(x + sX, y + sY, z);
+                glTexCoord2d(1, 1);
+                GL11.glVertex3d(x + sX, y + sY, z + sZ);
+                glTexCoord2d(0, 1);
+                GL11.glVertex3d(x + sX, y, z + sZ);
+                glTexCoord2d(0, 0);
+                GL11.glVertex3d(x + sX, y, z);
+            }
+            else
+            {
+                GL11.glVertex3d(x + sX, y + sY, z);
+                GL11.glVertex3d(x + sX, y + sY, z + sZ);
+                GL11.glVertex3d(x + sX, y, z + sZ);
+                GL11.glVertex3d(x + sX, y, z);
+            }
         }
 
         if ((options >> 1) % 2 == 0)
         {
             GL11.glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
-            GL11.glVertex3d(x + sX, y + sY, z + sZ);
-            GL11.glVertex3d(x, y + sY, z + sZ);
-            GL11.glVertex3d(x, y, z + sZ);
-            GL11.glVertex3d(x + sX, y, z + sZ);
+
+            if (texture != null)
+            {
+                glTexCoord2d(1, 1);
+                GL11.glVertex3d(x + sX, y + sY, z + sZ);
+                glTexCoord2d(0, 1);
+                GL11.glVertex3d(x, y + sY, z + sZ);
+                glTexCoord2d(0, 0);
+                GL11.glVertex3d(x, y, z + sZ);
+                glTexCoord2d(1, 0);
+                GL11.glVertex3d(x + sX, y, z + sZ);
+            }
+            else
+            {
+                GL11.glVertex3d(x + sX, y + sY, z + sZ);
+                GL11.glVertex3d(x, y + sY, z + sZ);
+                GL11.glVertex3d(x, y, z + sZ);
+                GL11.glVertex3d(x + sX, y, z + sZ);
+            }
         }
 
         if (!this.window.batchMode)
@@ -461,6 +565,12 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             GL11.glEnd();
             this.window.disableDepthtest();
             glDepthMask(true);
+
+            if (texture != null)
+            {
+                glMatrixMode(GL_PROJECTION);
+                this.window.disableTexture();
+            }
         }
     }
 
@@ -643,9 +753,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glMatrixMode(GL_PROJECTION);
         this.window.disableTexture();
-
-        if (!this.window.drawingShadow)
-            GL20.glUniform1i(this.window.textureFlag, 0);
     }
 
     public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)

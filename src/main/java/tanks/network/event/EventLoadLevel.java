@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.minigames.Minigame;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankAIControlled;
 
@@ -41,6 +42,9 @@ public class EventLoadLevel extends PersonalEvent
 
 		this.startTime = l.startTime;
 		this.disableFriendlyFire = l.disableFriendlyFire;
+
+		if (l instanceof Minigame)
+			this.level = "minigame=" + ((Minigame) l).name;
 	}
 
 	@Override
@@ -57,7 +61,12 @@ public class EventLoadLevel extends PersonalEvent
 			ScreenPartyLobby.readyPlayers.clear();
 			ScreenPartyLobby.includedPlayers.clear();
 			Game.cleanUp();
-			Game.currentLevel = new Level(level);
+
+			if (level.startsWith("minigame="))
+				Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
+			else
+				Game.currentLevel = new Level(level);
+
 			Game.currentLevel.startTime = startTime;
 			Game.currentLevel.disableFriendlyFire = disableFriendlyFire;
 			Game.currentLevel.loadLevel(true);

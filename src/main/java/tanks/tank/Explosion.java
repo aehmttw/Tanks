@@ -163,7 +163,7 @@ public class Explosion extends Movable
                 {
                     o.onDestroy(this);
                     o.playDestroyAnimation(this.posX, this.posY, this.radius);
-                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, this.posX, this.posY, this.radius));
+                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius));
                 }
             }
         }

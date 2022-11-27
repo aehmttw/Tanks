@@ -31,11 +31,7 @@ public class EventRemoveTank extends PersonalEvent
 
         Game.removeMovables.add(t);
 
-        if (!Tank.freeIDs.contains(t.networkID))
-        {
-            Tank.freeIDs.add(t.networkID);
-            Tank.idMap.remove(t.networkID);
-        }
+        t.unregisterNetworkID();
     }
 
     @Override

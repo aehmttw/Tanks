@@ -679,7 +679,7 @@ public class Bullet extends Movable implements IDrawable
 
 			if (Game.bulletTrails)
 			{
-				while (this.ageFrac >= 1)
+				while (this.ageFrac >= 1 && Game.effectsEnabled)
 				{
 					this.ageFrac -= 1;
 

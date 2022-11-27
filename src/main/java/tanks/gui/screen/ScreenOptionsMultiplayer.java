@@ -14,21 +14,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	public static final String weakText = "\u00A7200100000255weak";
 	public static final String strongText = "\u00A7000200000255strong";
 
-	TextBox username = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Username", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.player.username = username.inputText;
-			username.inputText = Game.player.username + "";
-			
-			if (!Game.player.username.equals(Game.chatFilter.filterChat(Game.player.username)))
-				Game.screen = new ScreenUsernameWarning();
-		}
-	},
-			Game.player.username, "Pick a username that players---will see in multiplayer");
-
-	Button chatFilter = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+	Button chatFilter = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run() 
@@ -43,7 +29,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"Filters chat of potentially---inappropriate words");
 
-	Button autoReady = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+	Button autoReady = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -58,10 +44,7 @@ public class ScreenOptionsMultiplayer extends Screen
 	},
 			"When enabled, automatically presses---the ready button if there is no shop");
 
-	Button color = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Tank color", () -> Game.screen = new ScreenOptionsMultiplayerColor(),
-			"Personalize your tank---to stand out in multiplayer!");
-
-	Button hostOptions = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Party host options", () -> Game.screen = new ScreenOptionsPartyHost(), "Options for parties you host");
+	Button hostOptions = new Button(this.centerX, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Party host options", () -> Game.screen = new ScreenOptionsPartyHost(), "Options for parties you host");
 
 
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
@@ -71,9 +54,6 @@ public class ScreenOptionsMultiplayer extends Screen
 	{
 		this.music = "menu_options.ogg";
 		this.musicID = "menu";
-
-		username.enableCaps = true;
-		username.enableSpaces = false;
 
 		if (Game.enableChatFilter)
 			chatFilter.setText(chatFilterText, ScreenOptions.onText);
@@ -91,8 +71,6 @@ public class ScreenOptionsMultiplayer extends Screen
 	{
 		chatFilter.update();
 		back.update();
-		username.update();
-		color.update();
 		hostOptions.update();
 		autoReady.update();
 	}
@@ -105,8 +83,6 @@ public class ScreenOptionsMultiplayer extends Screen
 		autoReady.draw();
 		hostOptions.draw();
 		chatFilter.draw();
-		color.draw();
-		username.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);

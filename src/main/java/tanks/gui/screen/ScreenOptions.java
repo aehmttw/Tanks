@@ -57,7 +57,7 @@ public class ScreenOptions extends Screen
 			Game.screen = ScreenOverlayControls.lastControlsScreen;
 	});
 
-	Button personalize = new Button(this.centerX, this.centerY - this.objYSpace * 2.4, this.objWidth * 1.5, this.objHeight * 2, "");
+	Button personalize = new Button(this.centerX, this.centerY - this.objYSpace * 2.4, this.objWidth * 1.5, this.objHeight * 2, "", () -> Game.screen = new ScreenOptionsPersonalize());
 
 	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsInterface()
 	);
@@ -72,7 +72,7 @@ public class ScreenOptions extends Screen
 		graphicsOptions.update();
 		inputOptions.update();
 		multiplayerOptions.update();
-		//personalize.update();
+		personalize.update();
 
 		back.update();
 	}
@@ -88,11 +88,41 @@ public class ScreenOptions extends Screen
 		interfaceOptions.draw();
 		gameOptions.draw();
 		soundOptions.draw();
-		//personalize.draw();
+		personalize.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
+
+		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
+			Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
+
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
+
+		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && Game.player.username.length() >= 1)
+		{
+			Drawing.drawing.setColor(127, 127, 127);
+			double s = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale;
+			Drawing.drawing.fillInterfaceRect(personalize.posX, personalize.posY + personalize.sizeY * 0.1, s, 40);
+			Drawing.drawing.fillInterfaceOval(personalize.posX - (s) / 2, personalize.posY + personalize.sizeY * 0.1, 40, 40);
+			Drawing.drawing.fillInterfaceOval(personalize.posX + (s) / 2, personalize.posY + personalize.sizeY * 0.1, 40, 40);
+		}
+
+		preview.drawForInterface(personalize.posX - personalize.sizeX / 2 + personalize.sizeY * 0.7, personalize.posY, 1);
+
+		Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
+		Drawing.drawing.drawInterfaceText(personalize.posX + 2, personalize.posY + personalize.sizeY * 0.1 + 2, Game.player.username);
+		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+		Drawing.drawing.drawInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, Game.player.username);
+
+		if (Game.player.username.length() < 1)
+		{
+			Drawing.drawing.setColor(127, 127, 127);
+			Drawing.drawing.displayInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, "Pick a username...");
+		}
+
+		Drawing.drawing.setInterfaceFontSize(this.titleSize * 0.65);
+		Drawing.drawing.setColor(80, 80, 80);
+		Drawing.drawing.displayInterfaceText(personalize.posX, personalize.posY - personalize.sizeY * 0.3, "My profile");
 	}
 
 	public static void initOptions(String homedir)

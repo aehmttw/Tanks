@@ -151,7 +151,6 @@ public class Panel
 
 		Game.dummyTank = new TankDummy("dummy",0, 0, 0);
 		Game.dummyTank.team = null;
-		Game.dummyTank.networkID = -1;
 
 		for (Extension e : Game.extensionRegistry.extensions)
 			e.loadResources();

@@ -41,7 +41,7 @@ public class ScreenPartyHost extends Screen
     public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
     public SynchronizedList<SharedCrusade> sharedCrusades = new SynchronizedList<>();
 
-    Button newLevel = new Button(this.centerX + 190, this.centerY - 240, this.objWidth, this.objHeight, "Random level", () ->
+    Button newLevel = new Button(this.centerX + 190, this.centerY - 270, this.objWidth, this.objHeight, "Random co-op", () ->
     {
         Game.cleanUp();
         Game.loadRandomLevel();
@@ -57,7 +57,7 @@ public class ScreenPartyHost extends Screen
             300, 30, "Previous page", () -> usernamePage--
     );
 
-    Button versus = new Button(this.centerX + 190, this.centerY - 180, this.objWidth, this.objHeight, "Versus", () ->
+    Button versus = new Button(this.centerX + 190, this.centerY - 210, this.objWidth, this.objHeight, "Random versus", () ->
     {
         Game.cleanUp();
         String s = LevelGeneratorVersus.generateLevelString();
@@ -69,7 +69,7 @@ public class ScreenPartyHost extends Screen
     }
             , "Fight other players in this party---in a randomly generated level");
 
-    Button crusades = new Button(this.centerX + 190, this.centerY - 60, this.objWidth, this.objHeight, "Crusades", () ->
+    Button crusades = new Button(this.centerX + 190, this.centerY - 150, this.objWidth, this.objHeight, "Crusades", () ->
     {
         if (Crusade.currentCrusade == null)
             Game.screen = new ScreenPartyCrusades();
@@ -78,14 +78,20 @@ public class ScreenPartyHost extends Screen
     },
             "Fight battles in an order,---and see how long you can survive!");
 
-    Button myLevels = new Button(this.centerX + 190, this.centerY - 120, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenPlaySavedLevels(),
+    Button minigames = new Button(this.centerX + 190, this.centerY - 90, this.objWidth, this.objHeight, "Minigames", () ->
+    {
+        Game.screen = new ScreenMinigames();
+    },
+            "Play Tanks in new ways!");
+
+    Button myLevels = new Button(this.centerX + 190, this.centerY - 30, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenPlaySavedLevels(),
             "Play levels you have created");
 
-    Button share = new Button(this.centerX + 190, this.centerY + 40, this.objWidth, this.objHeight, "Upload", () -> Game.screen = new ScreenShareSelect());
+    Button share = new Button(this.centerX + 190, this.centerY + 70, this.objWidth, this.objHeight, "Upload", () -> Game.screen = new ScreenShareSelect());
 
-    Button shared = new Button(this.centerX + 190, this.centerY + 100, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
+    Button shared = new Button(this.centerX + 190, this.centerY + 130, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
 
-    Button partyOptions = new Button(this.centerX + 190, this.centerY + 180, this.objWidth, this.objHeight, "Party options", () -> Game.screen = new ScreenOptionsPartyHost());
+    Button partyOptions = new Button(this.centerX + 190, this.centerY + 210, this.objWidth, this.objHeight, "Party options", () -> Game.screen = new ScreenOptionsPartyHost());
 
     Button quit = new Button(this.centerX, this.centerY + 270, this.objWidth, this.objHeight, "End party", () -> Game.screen = new ScreenConfirmEndParty());
 
@@ -183,6 +189,7 @@ public class ScreenPartyHost extends Screen
         crusades.update();
         myLevels.update();
         versus.update();
+        minigames.update();
         share.update();
         shared.update();
         partyOptions.update();
@@ -214,8 +221,9 @@ public class ScreenPartyHost extends Screen
         this.drawDefaultBackground();
 
         partyOptions.draw();
-        crusades.draw();
         myLevels.draw();
+        minigames.draw();
+        crusades.draw();
         versus.draw();
         newLevel.draw();
         share.draw();
@@ -250,9 +258,9 @@ public class ScreenPartyHost extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 
-        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY - 280, "Play:");
+        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY - 310, "Play:");
 
-        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY + 0, "Level and crusade sharing:");
+        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY + 30, "Level and crusade sharing:");
 
         Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "Players in this party:");
 

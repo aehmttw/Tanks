@@ -572,7 +572,17 @@ public class Drawing
 
 	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ)
 	{
-		fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0);
+		fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0, null);
+	}
+
+	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, String texture)
+	{
+		fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0, texture);
+	}
+
+	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
+	{
+		fillBox(x, y, z, sizeX, sizeY, sizeZ, options, null);
 	}
 
 	/**
@@ -589,7 +599,7 @@ public class Drawing
 	 * <p>
 	 * +64 draw on top
 	 */
-	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
+	public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options, String texture)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
 		double drawY = gameToAbsoluteY(y, sizeY);
@@ -617,7 +627,7 @@ public class Drawing
 				options = (byte) (options | 4);
 		}
 
-		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
+		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options, texture);
 	}
 
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ)
@@ -668,7 +678,7 @@ public class Drawing
 		double drawSizeY = sizeY * scale;
 		double drawSizeZ = sizeZ * scale;
 
-		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options);
+		Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options, null);
 	}
 
 	public void drawModel(IModel m, double x, double y, double width, double height, double angle)
@@ -912,7 +922,7 @@ public class Drawing
 		double drawSizeY = (sizeY * interfaceScale);
 
 		Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, false);
-		Game.game.window.shapeRenderer.fillBox(drawX, drawY, 0, drawSizeX, drawSizeY, 0, (byte) 61);
+		Game.game.window.shapeRenderer.fillBox(drawX, drawY, 0, drawSizeX, drawSizeY, 0, (byte) 61, null);
 		Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, false);
 	}
 

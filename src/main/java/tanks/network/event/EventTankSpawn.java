@@ -8,7 +8,7 @@ import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankRemote;
 
-public class EventSpawnTank extends PersonalEvent
+public class EventTankSpawn extends PersonalEvent
 {
     public String type;
     public double posX;
@@ -18,12 +18,12 @@ public class EventSpawnTank extends PersonalEvent
     public int id;
     public int parent;
 
-    public EventSpawnTank()
+    public EventTankSpawn()
     {
 
     }
 
-    public EventSpawnTank(Tank t, Tank parent)
+    public EventTankSpawn(Tank t, Tank parent)
     {
         this.type = t.name;
         this.posX = t.posX;
@@ -70,8 +70,7 @@ public class EventSpawnTank extends PersonalEvent
             tm = Game.enemyTeam;
 
         t.team = tm;
-        t.networkID = this.id;
-        Tank.idMap.put(t.networkID, t);
+        t.setNetworkID(id);
 
         Game.movables.add(new TankRemote(t));
     }

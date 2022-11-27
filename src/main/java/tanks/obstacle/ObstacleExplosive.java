@@ -106,7 +106,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         e.explode();
 
         Game.removeObstacles.add(this);
-        Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY));
+        Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY, this.name));
     }
 
     @Override

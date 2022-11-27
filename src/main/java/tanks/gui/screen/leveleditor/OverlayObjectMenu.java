@@ -56,6 +56,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     {
         screenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.playerTank;
         screenLevelEditor.mouseTank = new TankPlayer(0, 0, 0);
+        ((TankPlayer) screenLevelEditor.mouseTank).setDefaultColor();
     }
     );
 
@@ -70,7 +71,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button editTank = new Button(0, 0, 40, 40, "", () -> Game.screen = new ScreenTankEditor(screenLevelEditor.level.customTanks.get(screenLevelEditor.tankNum - Game.registryTank.tankEntries.size()), this), "Edit custom tank");
 
-    public ButtonObject movePlayerButton = new ButtonObject(new TankPlayer(0, 0, 0), this.centerX - 50, this.centerY, 75, 75, () -> screenLevelEditor.movePlayer = true, "Move the player");
+    public ButtonObject movePlayerButton;
 
     public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75, () -> screenLevelEditor.movePlayer = false, "Add multiple player spawn points");
 
@@ -79,6 +80,10 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         super(previous, screenLevelEditor);
 
         this.musicInstruments = true;
+
+        TankPlayer tp = new TankPlayer(0, 0, 0);
+        tp.setDefaultColor();
+        movePlayerButton = new ButtonObject(tp, this.centerX - 50, this.centerY, 75, 75, () -> screenLevelEditor.movePlayer = true, "Move the player");
 
         rotateTankButton.imageXOffset = -155;
         rotateTankButton.imageSizeX = 30;

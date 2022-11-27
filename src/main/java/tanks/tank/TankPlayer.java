@@ -73,6 +73,22 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 
 			this.nameTag.name = "Destroy cheat enabled!!!";
 		}
+
+		if (Game.invulnerable)
+		{
+			this.resistExplosions = true;
+			this.resistBullets = true;
+		}
+	}
+
+	public void setDefaultColor()
+	{
+		this.colorR = 0;
+		this.colorG = 150;
+		this.colorB = 255;
+		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
+		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
+		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
 	}
 
 	@Override
@@ -441,7 +457,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 
 		if (b.itemSound != null)
 		{
-			Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / this.bullet.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
+			Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
 		}
 
 		b.setPolarMotion(this.angle + offset, speed);

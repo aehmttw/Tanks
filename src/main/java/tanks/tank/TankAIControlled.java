@@ -5,7 +5,6 @@ import tanks.*;
 import tanks.bullet.*;
 import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.obstacle.Obstacle;
@@ -222,24 +221,12 @@ public class TankAIControlled extends Tank
 		{
 			this.tank = t;
 			this.weight = weight;
-
-			if (ScreenPartyHost.isServer)
-			{
-				Tank.freeIDs.add(t.networkID);
-				Tank.idMap.remove(t.networkID);
-			}
 		}
 
 		public SpawnedTankEntry(TankAIControlled t, double weight, boolean noDelete)
 		{
 			this.tank = t;
 			this.weight = weight;
-
-			if (ScreenPartyHost.isServer && !noDelete)
-			{
-				Tank.freeIDs.add(t.networkID);
-				Tank.idMap.remove(t.networkID);
-			}
 		}
 
 		public String toString()
@@ -1005,12 +992,9 @@ public class TankAIControlled extends Tank
 			t.turretBaseModel = this.turretBaseModel;
 		}
 
-		Tank.idMap.remove(t.networkID);
-		Tank.freeIDs.add(t.networkID);
-
-		t.networkID = this.networkID;
 		t.crusadeID = this.crusadeID;
-		Tank.idMap.put(this.networkID, t);
+
+		t.setNetworkID(this.networkID);
 
 		Game.movables.add(t);
 		Game.removeMovables.add(this);
@@ -2143,10 +2127,9 @@ public class TankAIControlled extends Tank
 			t.crusadeID = this.crusadeID;
 			t.parent = this;
 
-			Game.eventsOut.add(new EventSpawnTank(t, this));
 			this.spawnedTanks.add(t);
 
-			Game.movables.add(t);
+			Game.spawnTank(t, this);
 		}
 		catch (Exception e)
 		{
@@ -2333,8 +2316,10 @@ public class TankAIControlled extends Tank
 			this.attributes = t.attributes;
 			this.targetEnemy = null;
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 1);
+
 			Game.movables.add(this);
 			Game.removeMovables.add(t);
+
 			this.skipNextUpdate = true;
 			Game.eventsOut.add(new EventTankMimicTransform(this, this));
 
@@ -2417,12 +2402,9 @@ public class TankAIControlled extends Tank
 			t.turretModel = this.turretModel;
 			t.turretBaseModel = this.turretBaseModel;
 
-			Tank.idMap.remove(t.networkID);
-			Tank.freeIDs.add(t.networkID);
-
-			t.networkID = this.networkID;
 			t.crusadeID = this.crusadeID;
-			Tank.idMap.put(this.networkID, t);
+
+			t.setNetworkID(this.networkID);
 
 			this.justTransformed = true;
 
@@ -2665,30 +2647,6 @@ public class TankAIControlled extends Tank
 		this.aY = accY;
 	}
 
-	public void setSightTransformTank(TankAIControlled t)
-	{
-		this.sightTransformTank = t;
-
-		if (ScreenPartyHost.isServer)
-		{
-			Tank.freeIDs.add(this.sightTransformTank.networkID);
-			Tank.idMap.remove(this.sightTransformTank.networkID);
-			this.sightTransformTank.networkID = this.networkID;
-		}
-	}
-
-	public void setHealthTransformTank(TankAIControlled t)
-	{
-		this.healthTransformTank = t;
-
-		if (ScreenPartyHost.isServer)
-		{
-			Tank.freeIDs.add(this.healthTransformTank.networkID);
-			Tank.idMap.remove(this.healthTransformTank.networkID);
-			this.healthTransformTank.networkID = this.networkID;
-		}
-	}
-
 	@Override
 	public void draw()
 	{
@@ -2891,12 +2849,6 @@ public class TankAIControlled extends Tank
 								String[] r = new String[1];
 								TankAIControlled t2 = TankAIControlled.fromString(s, r);
 
-								if (ScreenPartyHost.isServer)
-								{
-									Tank.freeIDs.add(t2.networkID);
-									Tank.idMap.remove(t2.networkID);
-								}
-
 								s = r[0];
 								target = t2;
 								s = s.substring(s.indexOf("]") + 1);
@@ -2963,12 +2915,6 @@ public class TankAIControlled extends Tank
 						if (t1 != null)
 						{
 							TankAIControlled t2 = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
-
-							if (ScreenPartyHost.isServer)
-							{
-								Tank.freeIDs.add(t2.networkID);
-								Tank.idMap.remove(t2.networkID);
-							}
 
 							if (t1 instanceof TankAIControlled)
 								((TankAIControlled) t1).cloneProperties(t2);

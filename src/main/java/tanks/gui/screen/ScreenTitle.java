@@ -167,6 +167,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.invulnerable = true;
 			this.logo.drawAge = 50;
 			this.logo.depthTest = false;
+			this.logo.networkID = 0;
 
 			if (Drawing.drawing.interfaceScaleZoom > 1)
 			{

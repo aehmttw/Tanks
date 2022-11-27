@@ -6,7 +6,7 @@ import tanks.tank.Crate;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
-public class EventAirdropTank extends EventCreateTank
+public class EventAirdropTank extends EventTankCreate
 {
     public EventAirdropTank()
     {

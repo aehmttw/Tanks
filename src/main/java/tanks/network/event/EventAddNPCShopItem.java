@@ -3,8 +3,6 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
-import tanks.network.event.EventAddShopItem;
-import tanks.network.event.EventPurchaseItem;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemRemote;

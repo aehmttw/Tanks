@@ -28,6 +28,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         this.logo.drawAge = 50;
         this.logo.depthTest = false;
         Game.movables.clear();
+        this.logo.networkID = 0;
         Game.movables.add(logo);
         ScreenGame.finished = false;
 

@@ -430,12 +430,15 @@ public class Button implements IDrawable, ITrigger
 
 	public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max)
 	{
+		if (!Game.effectsEnabled)
+			return;
+
 		Effect e = Effect.createNewEffect(posX, posY, Effect.EffectType.interfacePiece);
 
 		if (mul == -1)
 			mul = 2 * Math.max(0, (sizeY / 2 - 20) / sizeY);
 
-		double total = (sizeX - sizeY) * 2 + sizeY * Math.PI;
+		double total = (sizeX - sizeY) * 2 + sizeY * Math.PI * 2;
 		double rand = Math.random() * total;
 
 		if (rand < sizeX - sizeY)
@@ -450,9 +453,9 @@ public class Button implements IDrawable, ITrigger
 			e.posY = posY - sizeY / 2 * mul;
 			e.vY = -velocity;
 		}
-		else if (rand < (sizeX - sizeY) * 2 + sizeY * Math.PI / 2)
+		else if (rand < (sizeX - sizeY) * 2 + sizeY * Math.PI)
 		{
-			double a = (rand - (sizeX - sizeY) * 2) / sizeY * 2 - Math.PI / 2;
+			double a = (rand - (sizeX - sizeY) * 2) / sizeY - Math.PI / 2;
 			e.posX = posX + (sizeX - sizeY) / 2;
 			e.posX += sizeY / 2 * Math.cos(a) * mul;
 			e.posY += sizeY / 2 * Math.sin(a) * mul;
@@ -460,7 +463,7 @@ public class Button implements IDrawable, ITrigger
 		}
 		else
 		{
-			double a = (rand - (sizeX - sizeY) * 2 + sizeY * Math.PI / 2) / sizeY * 2 + Math.PI / 2;
+			double a = (rand - (sizeX - sizeY) * 2 + sizeY * Math.PI) / sizeY + Math.PI / 2;
 			e.posX = posX - (sizeX - sizeY) / 2;
 			e.posX += sizeY / 2 * Math.cos(a) * mul;
 			e.posY += sizeY / 2 * Math.sin(a) * mul;

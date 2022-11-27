@@ -2,15 +2,11 @@ package tanks.minigames;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.IDarkScreen;
-import tanks.gui.screen.ScreenArcadeBonuses;
-import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.ItemBar;
+import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemShield;
 import tanks.network.event.EventAirdropTank;
-import tanks.network.event.EventSetupHotbar;
-import tanks.network.event.EventUpdateCoins;
+import tanks.network.event.EventRemoveTank;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
@@ -69,37 +65,42 @@ public class Arcade extends Minigame
         this.noLose = true;
         this.disableEndMusic = true;
         this.customIntroMusic = true;
+        this.enableItemBar = true;
         this.introMusic = "arcade/battle_intro.ogg";
+        this.disableFriendlyFire = true;
 
-        ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
-        for (String si: items)
+        if (!ScreenPartyLobby.isClient)
         {
-            Item i = Item.parseItem(null, si);
+            ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
+            for (String si : items)
+            {
+                Item i = Item.parseItem(null, si);
 
-            if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name))
-                continue;
+                if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name))
+                    continue;
 
-            itemsMap.put(i.name, i);
-            i.name = Translation.translate(i.name);
+                itemsMap.put(i.name, i);
+                i.name = Translation.translate(i.name);
+            }
+
+            tankItemsMap.put("mint", "Fire bullet");
+            tankItemsMap.put("yellow", "Mega mine");
+            tankItemsMap.put("red", "Laser");
+            tankItemsMap.put("green", "Bouncy fire bullet");
+            tankItemsMap.put("blue", "Zap");
+            tankItemsMap.put("medic", "Shield");
+            tankItemsMap.put("cyan", "Freezing bullet");
+            tankItemsMap.put("orange", "Flamethrower");
+            tankItemsMap.put("maroon", "Mega bullet");
+            tankItemsMap.put("mustard", "Artillery shell");
+            tankItemsMap.put("orangered", "Explosive bullet");
+            tankItemsMap.put("darkgreen", "Mini bullet");
+            tankItemsMap.put("black", "Dark fire bullet");
+            tankItemsMap.put("salmon", "Homing bullet");
+            tankItemsMap.put("lightblue", "Air");
+            tankItemsMap.put("lightpink", "Laser");
+            tankItemsMap.put("gold", "Zap");
         }
-
-        tankItemsMap.put("mint", "Fire bullet");
-        tankItemsMap.put("yellow", "Mega mine");
-        tankItemsMap.put("red", "Laser");
-        tankItemsMap.put("green", "Bouncy fire bullet");
-        tankItemsMap.put("blue", "Zap");
-        tankItemsMap.put("medic", "Shield");
-        tankItemsMap.put("cyan", "Freezing bullet");
-        tankItemsMap.put("orange", "Flamethrower");
-        tankItemsMap.put("maroon", "Mega bullet");
-        tankItemsMap.put("mustard", "Artillery shell");
-        tankItemsMap.put("orangered", "Explosive bullet");
-        tankItemsMap.put("darkgreen", "Mini bullet");
-        tankItemsMap.put("black", "Dark fire bullet");
-        tankItemsMap.put("salmon", "Homing bullet");
-        tankItemsMap.put("lightblue", "Air");
-        tankItemsMap.put("lightpink", "Laser");
-        tankItemsMap.put("gold", "Zap");
     }
 
     @Override
@@ -107,11 +108,6 @@ public class Arcade extends Minigame
     {
         super.loadLevel();
         Game.playerTank.team = Game.playerTeamNoFF;
-
-        for (Player p: Game.players)
-        {
-            p.hotbar.enabledItemBar = true;
-        }
     }
 
     @Override
@@ -138,6 +134,9 @@ public class Arcade extends Minigame
     @Override
     public void onKill(Tank attacker, Tank target)
     {
+        if (ScreenPartyLobby.isClient)
+            return;
+
         if (tankItemsMap.get(target.name) != null)
         {
             Item i = Item.parseItem(Game.player, itemsMap.get(tankItemsMap.get(target.name)).toString());
@@ -183,15 +182,7 @@ public class Arcade extends Minigame
 
             if (chain % 3 == 0)
             {
-                lastRampage = age;
-                Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (power - 1) / 12.0));
-                score += power * 5;
-                if (chain / 3 <= 5)
-                {
-                    Drawing.drawing.addSyncedMusic("arcade/rampage" + power + ".ogg", Game.musicVolume, true, 500);
-                }
-
-                //Game.game.window.soundPlayer.setMusicSpeed((float) (1 + power * 0.2));
+                setRampage(chain / 3);
             }
 
             lastHit = age;
@@ -226,26 +217,40 @@ public class Arcade extends Minigame
                     }
                 }
 
-                if (m instanceof AreaEffect)
+                /*if (m instanceof AreaEffect)
                 {
                     AttributeModifier c = new AttributeModifier("rampage_speed", "speed", AttributeModifier.Operation.multiply, power / 5.0);
                     c.duration = rampage_duration + rampage_exit_duration;
                     c.deteriorationAge = rampage_exit_duration;
                     m.addUnduplicateAttribute(c);
-                }
+                }*/
             }
         }
     }
 
-    public void stopRampage()
+    public void setRampage(int value)
     {
-        chain = 0;
-        for (int i = 1; i <= 5; i++)
+        if (value <= 0)
         {
-            Drawing.drawing.removeSyncedMusic("arcade/rampage" + i + ".ogg", 2000);
+            chain = 0;
+            for (int i = 1; i <= 5; i++)
+            {
+                Drawing.drawing.removeSyncedMusic("arcade/rampage" + i + ".ogg", 2000);
+                //Game.game.window.soundPlayer.setMusicSpeed((float) (1));
+            }
         }
+        else
+        {
+            lastRampage = age;
+            Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (Math.min(max_power, value) - 1) / 12.0));
+            score += value * 5;
+            if (chain / 3 <= 5)
+            {
+                Drawing.drawing.addSyncedMusic("arcade/rampage" + value + ".ogg", Game.musicVolume, true, 500);
+            }
 
-        //Game.game.window.soundPlayer.setMusicSpeed((float) (1));
+            //Game.game.window.soundPlayer.setMusicSpeed((float) (1 + value * 0.2));
+        }
     }
 
     @Override
@@ -253,62 +258,100 @@ public class Arcade extends Minigame
     {
         age += Panel.frameFrequency;
 
-        Game.movables.addAll(drops);
-        drops.clear();
-
-        if (age - lastHit > rampage_duration && !frenzy)
+        if (!ScreenPartyLobby.isClient)
         {
-            stopRampage();
-        }
+            Game.movables.addAll(drops);
+            drops.clear();
 
-        if (frenzy)
-            this.customLevelEnd = false;
-
-        if (killsThisFrame > maxKillsPerFrame)
-            maxKillsPerFrame = killsThisFrame;
-
-        this.killsThisFrame = 0;
-
-        if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && Game.movables.contains(Game.playerTank) && timer > 0)
-        {
-            int count = (int) ((Math.random() * 2 + 2));
-            for (int i = 0; i < count; i++)
+            if (age - lastHit > rampage_duration && !frenzy)
             {
-                spawnTank();
+                setRampage(0);
             }
-        }
 
-        for (int i = 0; i < this.spawnedTanks.size(); i++)
-        {
-            if (this.spawnedTanks.get(i).destroy)
-            {
-                this.spawnedTanks.remove(i);
-                i--;
-            }
-        }
+            if (frenzy)
+                this.customLevelEnd = false;
 
-        if (!Game.movables.contains(Game.playerTank))
-        {
-            boolean foundPlayer = false;
-            for (Movable m: Game.movables)
+            if (killsThisFrame > maxKillsPerFrame)
+                maxKillsPerFrame = killsThisFrame;
+
+            this.killsThisFrame = 0;
+
+            ArrayList<Player> alivePlayers = new ArrayList<>();
+            ArrayList<Player> totalPlayers = new ArrayList<>();
+
+            for (Movable m : Game.movables)
             {
-                if (m instanceof Crate && ((Crate) m).tank == Game.playerTank || m == Game.playerTank)
+                if (m instanceof TankPlayer)
                 {
-                    foundPlayer = true;
-                    continue;
+                    totalPlayers.add(((TankPlayer) m).player);
+                    alivePlayers.add(((TankPlayer) m).player);
+                }
+                else if (m instanceof TankPlayerRemote)
+                {
+                    totalPlayers.add(((TankPlayerRemote) m).player);
+                    alivePlayers.add(((TankPlayerRemote) m).player);
                 }
 
-                stopRampage();
-                m.destroy = true;
-                spawnedTanks.clear();
+                if (m instanceof Crate)
+                {
+                    m = ((Crate) m).tank;
+                    if (m instanceof TankPlayer)
+                        totalPlayers.add(((TankPlayer) m).player);
+                    else if (m instanceof TankPlayerRemote)
+                        totalPlayers.add(((TankPlayerRemote) m).player);
+                }
+
             }
 
-            if (!foundPlayer && !frenzy)
+            if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && alivePlayers.size() > 0 && timer > 0)
             {
-                deathCount++;
-                Game.playerTank = new TankPlayer(this.sizeX / 2.0 * Game.tile_size, this.sizeY / 2.0 * Game.tile_size, 0);
-                Game.playerTank.team = Game.playerTeamNoFF;
-                Game.movables.add(new Crate(Game.playerTank));
+                int count = (int) ((Math.random() * 2 + 2));
+                for (int i = 0; i < count; i++)
+                {
+                    spawnTank();
+                }
+            }
+
+            for (int i = 0; i < this.spawnedTanks.size(); i++)
+            {
+                if (this.spawnedTanks.get(i).destroy)
+                {
+                    this.spawnedTanks.remove(i);
+                    i--;
+                }
+            }
+
+            if (alivePlayers.size() <= 0)
+            {
+                for (Movable m : Game.movables)
+                {
+                    if (m instanceof Crate && (((Crate) m).tank instanceof TankPlayer || ((Crate) m).tank instanceof TankPlayerRemote))
+                        continue;
+
+                    setRampage(0);
+
+                    if (m instanceof Tank && !m.destroy)
+                        Game.eventsOut.add(new EventRemoveTank((Tank) m));
+
+                    m.destroy = true;
+                    spawnedTanks.clear();
+                }
+
+                if (totalPlayers.size() <= 0 && !frenzy)
+                {
+                    deathCount++;
+
+                    for (Player p : this.includedPlayers)
+                    {
+                        int r = (int) (this.playerSpawnsX.size() * Math.random());
+
+                        TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
+                        t.team = Game.playerTeamNoFF;
+                        t.player = p;
+                        Game.movables.add(new Crate(t));
+                        Game.eventsOut.add(new EventAirdropTank(t));
+                    }
+                }
             }
         }
 
@@ -338,9 +381,12 @@ public class Arcade extends Minigame
             frenzyTime = age;
             Drawing.drawing.playSound("rampage.ogg");
 
-            for (int i = 0; i < 30; i++)
+            if (!ScreenPartyLobby.isClient)
             {
-                spawnTank();
+                for (int i = 0; i < 30; i++)
+                {
+                    spawnTank();
+                }
             }
         }
     }

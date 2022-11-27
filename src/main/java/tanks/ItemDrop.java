@@ -1,6 +1,7 @@
 package tanks;
 
 import tanks.hotbar.item.Item;
+import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
 public class ItemDrop extends Movable
@@ -10,6 +11,7 @@ public class ItemDrop extends Movable
     public double size = Game.tile_size * 1.5;
     public double destroyTime = 0;
     public double maxDestroyTime = 50;
+    public Tank pickup = null;
 
     public ItemDrop(double x, double y, Item item)
     {
@@ -17,6 +19,9 @@ public class ItemDrop extends Movable
 
         this.item = item;
         this.drawLevel = 2;
+
+        if (Game.enable3d)
+            this.drawLevel = 8;
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
@@ -35,7 +40,25 @@ public class ItemDrop extends Movable
     @Override
     public void draw()
     {
-        double size = this.size * (1 - this.destroyTime / this.maxDestroyTime);
+        double frac = (this.destroyTime / this.maxDestroyTime);
+        double size = this.size * (1 - frac);
+
+        double px = this.posX;
+        double py = this.posY + size / 8;
+        double pz = this.posZ + this.height + 9;
+        double s = this.size * Math.min(1, 2 - frac * 2);
+
+        if (this.pickup != null)
+        {
+            px = px * (1 - frac) + pickup.posX * frac;
+            py = py * (1 - frac) + pickup.posY * frac;
+
+            double startHeight = this.height + 9;
+            double endHeight = this.pickup.size / 2;
+            pz = startHeight * (1 - frac) + endHeight * frac + this.pickup.size * (1 - Math.pow(2 * (frac - 0.5), 2));
+        }
+        else
+            size = s;
 
         if (Game.enable3d)
         {
@@ -44,13 +67,14 @@ public class ItemDrop extends Movable
                 Drawing.drawing.setColor(255 * i / 8.0, 255 * i / 8.0, 255 * i / 8.0, 255, 0.5);
                 Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height + i, size, size);
             }
-            Drawing.drawing.drawImage(this.item.icon, this.posX, this.posY + size / 8, this.height + 9, size / 2, size / 2);
+
+            Drawing.drawing.drawImage(this.item.icon, px, py, pz, s / 2, s / 2);
         }
         else
         {
             Drawing.drawing.setColor(255, 255, 255, 255, 0.5);
             Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height, size, size);
-            Drawing.drawing.drawImage(this.item.icon, this.posX, this.posY + size / 8, size / 2, size / 2);
+            Drawing.drawing.drawImage(this.item.icon, px, py, s / 2, s / 2);
         }
     }
 
@@ -73,6 +97,7 @@ public class ItemDrop extends Movable
 
                     if (added)
                     {
+                        this.pickup = (Tank) m;
                         this.destroy = true;
                         Drawing.drawing.playSound("bullet_explode.ogg", 1.6f);
                     }

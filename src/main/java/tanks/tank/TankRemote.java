@@ -42,7 +42,7 @@ public class TankRemote extends Tank
 	
 	public TankRemote(Tank t)
 	{
-		super(t.name, t.posX, t.posY, t.size, t.colorR, t.colorG, t.colorB, false);
+		super(t.name, t.posX, t.posY, t.size, t.colorR, t.colorG, t.colorB);
 		this.angle = t.angle;
 		this.orientation = t.orientation;
 		this.team = t.team;
@@ -56,8 +56,8 @@ public class TankRemote extends Tank
 		this.copyTank(t);
 
 		this.invulnerable = true;
-		this.networkID = t.networkID;
-		Tank.idMap.put(this.networkID, this);
+
+		this.setNetworkID(t.networkID);
 	}
 
 	public void copyTank(Tank t)

@@ -2,6 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
 
 public class EventObstacleDestroy extends PersonalEvent
@@ -13,27 +14,30 @@ public class EventObstacleDestroy extends PersonalEvent
     public double effectX;
     public double effectY;
     public double radius;
+    public String name;
 
     public EventObstacleDestroy()
     {
 
     }
 
-    public EventObstacleDestroy(double x, double y)
+    public EventObstacleDestroy(double x, double y, String name)
     {
         this.posX = x;
         this.posY = y;
-        effect = false;
+        this.effect = false;
+        this.name = name;
     }
 
-    public EventObstacleDestroy(double x, double y, double ex, double ey, double rad)
+    public EventObstacleDestroy(double x, double y, String name, double ex, double ey, double rad)
     {
         this.posX = x;
         this.posY = y;
-        effect = true;
+        this.effect = true;
         this.effectX = ex;
         this.effectY = ey;
         this.radius = rad;
+        this.name = name;
     }
 
     @Override
@@ -45,6 +49,7 @@ public class EventObstacleDestroy extends PersonalEvent
         b.writeDouble(this.effectX);
         b.writeDouble(this.effectY);
         b.writeDouble(this.radius);
+        NetworkUtils.writeString(b, this.name);
     }
 
     @Override
@@ -56,6 +61,7 @@ public class EventObstacleDestroy extends PersonalEvent
         this.effectX = b.readDouble();
         this.effectY = b.readDouble();
         this.radius = b.readDouble();
+        this.name = NetworkUtils.readString(b);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class EventObstacleDestroy extends PersonalEvent
         {
             Obstacle o = Game.obstacles.get(i);
 
-            if (o.posX == this.posX && o.posY == this.posY)
+            if (o.posX == this.posX && o.posY == this.posY && o.name.equals(name))
             {
                 if (effect)
                     o.playDestroyAnimation(this.effectX, this.effectY, this.radius);

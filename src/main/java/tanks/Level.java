@@ -224,7 +224,7 @@ public class Level
 			customTanksMap.put(t.name, t);
 		}
 
-		ArrayList<EventCreatePlayer> playerEvents = new ArrayList<>();
+		ArrayList<EventTankPlayerCreate> playerEvents = new ArrayList<>();
 
 		Tank.currentID = 0;
 		Tank.freeIDs.clear();
@@ -475,9 +475,12 @@ public class Level
 
 				t.team = team;
 
+				// Don't do this in your code! We only want to dynamically generate tank IDs on level load!
+				t.networkID = Tank.nextFreeNetworkID();
+				Tank.idMap.put(t.networkID, t);
+
 				if (remote)
 				{
-					t.registerNetworkID();
 					TankRemote t1 = new TankRemote(t);
 					Game.movables.add(t1);
 				}
@@ -628,16 +631,13 @@ public class Level
 				Team team = this.playerSpawnsTeam.get(spawn);
 
 				if (ScreenPartyHost.isServer)
-				{
-					EventCreatePlayer e = new EventCreatePlayer(this.includedPlayers.get(i), x, y, angle, team);
-					playerEvents.add(e);
-					Game.eventsOut.add(e);
-				}
+					Game.addPlayerTank(this.includedPlayers.get(i), x, y, angle, team);
 				else if (!remote)
 				{
 					TankPlayer tank = new TankPlayer(x, y, angle);
 					Game.playerTank = tank;
 					tank.team = team;
+					tank.registerNetworkID();
 					Game.movables.add(tank);
 				}
 			}
@@ -658,7 +658,7 @@ public class Level
 				((ScreenLevelEditor) sc).movePlayer = (sc.getSpawns().size() <= 1);
 		}
 
-		for (EventCreatePlayer e: playerEvents)
+		for (EventTankPlayerCreate e: playerEvents)
 			e.execute();
 
 		if (Crusade.crusadeMode && Crusade.currentCrusade.retry)

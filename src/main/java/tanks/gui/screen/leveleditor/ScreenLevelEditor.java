@@ -3,7 +3,7 @@ package tanks.gui.screen.leveleditor;
 import basewindow.BaseFile;
 import basewindow.InputPoint;
 import tanks.*;
-import tanks.network.event.EventCreatePlayer;
+import tanks.network.event.EventTankPlayerCreate;
 import tanks.network.event.INetworkEvent;
 import tanks.gui.*;
 import tanks.gui.screen.*;
@@ -752,6 +752,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				{
 					currentPlaceable = Placeable.playerTank;
 					mouseTank = new TankPlayer(0, 0, 0);
+					((TankPlayer) mouseTank).setDefaultColor();
 				}
 				else if (currentPlaceable == Placeable.playerTank)
 				{
@@ -775,6 +776,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				{
 					currentPlaceable = Placeable.playerTank;
 					mouseTank = new TankPlayer(0, 0, 0);
+					((TankPlayer) mouseTank).setDefaultColor();
 				}
 			}
 
@@ -2331,6 +2333,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.currentLevel.timed = level.timer > 0;
 		Game.currentLevel.timer = level.timer;
 
+		Game.resetNetworkIDs();
+		for (Movable m: Game.movables)
+		{
+			if (m instanceof Tank)
+				((Tank) m).registerNetworkID();
+		}
+
 		Game.screen = new ScreenGame(this.name);
 		Game.player.hotbar.coins = this.level.startingCoins;
 	}
@@ -2363,9 +2372,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (ScreenPartyHost.isServer)
 			{
-				EventCreatePlayer e = new EventCreatePlayer(Game.players.get(i), x, y, angle, team);
-				playerEvents.add(e);
-				Game.eventsOut.add(e);
+				Game.addPlayerTank(Game.players.get(i), x, y, angle, team);
 			}
 			else if (!ScreenPartyLobby.isClient)
 			{

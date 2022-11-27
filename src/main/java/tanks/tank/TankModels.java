@@ -27,6 +27,7 @@ public class TankModels
         public Model color;
         public Model turretBase;
         public Model turret;
+        public String texture;
 
         public FullTankModel(String name)
         {
@@ -34,8 +35,13 @@ public class TankModels
             color = Drawing.drawing.createModel("/models/" + name + "/color/");
             turretBase = Drawing.drawing.createModel("/models/" + name + "/turretbase/");
             turret = Drawing.drawing.createModel("/models/" + name + "/turret/");
+            texture = "/models/" + name + "/texture.png";
             Game.registerTankModel("/models/" + name);
             fullTankModels.put(name, this);
+            fullTankModels.put("/models/" + name + "/base/", this);
+            fullTankModels.put("/models/" + name + "/color/", this);
+            fullTankModels.put("/models/" + name + "/turretbase/", this);
+            fullTankModels.put("/models/" + name + "/turret/", this);
         }
     }
 

@@ -12,7 +12,7 @@ public class ScreenUsernamePrompt extends Screen
 		this.musicID = "menu";
 	}
 
-	Button gotoOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer()
+	Button gotoOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "My profile", () -> Game.screen = new ScreenOptionsPersonalize(true)
 	);
 	
 	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
@@ -35,7 +35,7 @@ public class ScreenUsernamePrompt extends Screen
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "You must choose a username to play with others!");
 
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Would you like to go to multiplayer options and choose one now?");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Would you like to go to 'my profile' and choose one now?");
 	}
 
 }

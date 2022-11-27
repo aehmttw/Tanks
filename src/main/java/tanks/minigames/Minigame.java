@@ -28,6 +28,9 @@ public abstract class Minigame extends Level
     public boolean noLose = false;
     public boolean disableEndMusic = false;
     public boolean customIntroMusic = false;
+    public boolean enableItemBar = false;
+
+    public String name;
 
     public String introMusic;
 

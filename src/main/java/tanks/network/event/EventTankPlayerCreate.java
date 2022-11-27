@@ -11,7 +11,7 @@ import tanks.tank.*;
 
 import java.util.UUID;
 
-public class EventCreatePlayer extends PersonalEvent
+public class EventTankPlayerCreate extends PersonalEvent
 {
 	public Player player;
 
@@ -30,26 +30,31 @@ public class EventCreatePlayer extends PersonalEvent
 	public int colorG2;
 	public int colorB2;
 
-	public EventCreatePlayer()
+	public int networkID;
+
+	public EventTankPlayerCreate()
 	{
 	
 	}
 	
-	public EventCreatePlayer(Player p, double x, double y, double angle, Team t)
+	public EventTankPlayerCreate(Player p, double x, double y, double angle, Team t, int networkID)
 	{
 		this.player = p;
 		this.clientIdTarget = p.clientID;
 		this.posX = x;
 		this.posY = y;
 		this.angle = angle;
-		
+		this.networkID = networkID;
+
 		if (t == null)
 			this.team = "*";
 		else if (t == Game.playerTeam)
 			this.team = "**";
+		else if (t == Game.playerTeamNoFF)
+			this.team = "***";
 		else
 			this.team = t.name;
-		
+
 		this.username = p.username;
 
 		this.colorR = p.colorR;
@@ -71,28 +76,24 @@ public class EventCreatePlayer extends PersonalEvent
 
 		if (ScreenPartyHost.isServer)
 			ScreenPartyHost.includedPlayers.add(this.clientIdTarget);
-		else
+		else if (ScreenPartyLobby.isClient)
 			ScreenPartyLobby.includedPlayers.add(this.clientIdTarget);
 
 		if (clientIdTarget.equals(Game.clientID))
 		{
-			if (ScreenPartyHost.isServer)
+			if (!ScreenPartyLobby.isClient)
 				t = new TankPlayer(posX, posY, angle);
 			else
-			{
 				t = new TankPlayerController(posX, posY, angle, clientIdTarget);
-				t.registerNetworkID();
-			}
 
 			Game.playerTank = t;
 		}
 		else
 		{
-			if (!ScreenPartyHost.isServer)
+			if (ScreenPartyLobby.isClient)
 			{
 				TankPlayer t2 = new TankPlayer(posX, posY, angle);
 				t2.player = new Player(clientIdTarget, "");
-				t2.registerNetworkID();
 				t = new TankRemote(t2);
 			}
 			else
@@ -107,9 +108,11 @@ public class EventCreatePlayer extends PersonalEvent
 			if (Game.enableChatFilter)
 				t.nameTag.name = Game.chatFilter.filterChat(t.nameTag.name);
 		}
-		
+
 		if (team.equals("**"))
 			t.team = Game.playerTeam;
+		else if (team.equals("***"))
+			t.team = Game.playerTeamNoFF;
 		else if (team.equals("*"))
 			t.team = null;
 		else
@@ -128,6 +131,7 @@ public class EventCreatePlayer extends PersonalEvent
 		t.secondaryColorB = this.colorB2;
 		t.nameTag.colorB = this.colorB2;
 
+		t.setNetworkID(this.networkID);
 		Game.movables.add(t);
 	}
 
@@ -140,6 +144,7 @@ public class EventCreatePlayer extends PersonalEvent
 		b.writeDouble(this.posY);
 		b.writeDouble(this.angle);
 		NetworkUtils.writeString(b, this.team);
+		b.writeInt(this.networkID);
 
 		b.writeInt(this.colorR);
 		b.writeInt(this.colorG);
@@ -158,6 +163,7 @@ public class EventCreatePlayer extends PersonalEvent
 		this.posY = b.readDouble();
 		this.angle = b.readDouble();
 		this.team = NetworkUtils.readString(b);
+		this.networkID = b.readInt();
 
 		this.colorR = b.readInt();
 		this.colorG = b.readInt();

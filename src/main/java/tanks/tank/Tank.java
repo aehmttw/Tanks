@@ -78,7 +78,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankProperty(category = general, id = "resist_freezing", name = "Freezing immunity")
 	public boolean resistFreeze = false;
 
-	public int networkID;
+	public int networkID = -1;
 	public int crusadeID = -1;
 
 	@TankProperty(category = general, id = "description", name = "Tank description", miscType = TankProperty.MiscType.description)
@@ -213,7 +213,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public long lastFarthestInSightUpdate = 0;
 	public Tank lastFarthestInSight = null;
 
-	public Tank(String name, double x, double y, double size, double r, double g, double b, boolean countID) 
+	public Tank(String name, double x, double y, double size, double r, double g, double b)
 	{
 		super(x, y);
 		this.size = size;
@@ -226,31 +226,45 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.drawLevel = 4;
 
-		if (countID && ScreenPartyHost.isServer)
-			this.registerNetworkID();
-		else
-			this.networkID = -1;
-
 		this.bullet.unlimitedStack = true;
 		this.mine.unlimitedStack = true;
 	}
 
-	public void registerNetworkID()
+	public void unregisterNetworkID()
+	{
+		if (idMap.get(this.networkID) == this)
+			idMap.remove(this.networkID);
+
+		if (!freeIDs.contains(this.networkID))
+		{
+			freeIDs.add(this.networkID);
+		}
+	}
+
+	public static int nextFreeNetworkID()
 	{
 		if (freeIDs.size() > 0)
-			this.networkID = freeIDs.remove(0);
+			return freeIDs.remove(0);
 		else
 		{
-			this.networkID = currentID;
 			currentID++;
+			return currentID - 1;
 		}
+	}
 
+	public void registerNetworkID()
+	{
+		if (ScreenPartyLobby.isClient)
+			Game.exitToCrash(new RuntimeException("Do not automatically assign network IDs on client!"));
+
+		this.networkID = nextFreeNetworkID();
 		idMap.put(this.networkID, this);
 	}
 
-	public Tank(String name, double x, double y, double size, double r, double g, double b) 
+	public void setNetworkID(int id)
 	{
-		this(name, x, y, size, r, g, b, true);
+		this.networkID = id;
+		idMap.put(id, this);
 	}
 
 	public void fireBullet(Bullet b, double speed, double offset)
@@ -417,6 +431,12 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void update()
 	{
+		if (this.networkID < 0)
+		{
+			// If you get this crash, please make sure you call Game.addTank() to add them to movables, or use registerNetworkID()!
+			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank!"));
+		}
+
 		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 
 		if (this.enableTracks && this.treadAnimation > this.size * this.trackSpacing && !this.destroy)
@@ -436,18 +456,15 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (destroy)
 		{
+			if (this.destroyTimer <= 0)
+			{
+				Game.eventsOut.add(new EventTankUpdateHealth(this));
+				this.unregisterNetworkID();
+			}
+
 			if (this.destroyTimer <= 0 && this.health <= 0)
 			{
 				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
-
-				if (!freeIDs.contains(this.networkID))
-				{
-					if (!this.isRemote)
-						Game.eventsOut.add(new EventTankUpdateHealth(this));
-
-					freeIDs.add(this.networkID);
-					idMap.remove(this.networkID);
-				}
 
 				this.onDestroy();
 

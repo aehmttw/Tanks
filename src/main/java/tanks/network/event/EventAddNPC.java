@@ -4,12 +4,11 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.hotbar.item.Item;
 import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
 import tanks.tank.TankNPC;
 
 import java.util.ArrayList;
 
-public class EventAddNPC extends EventCreateCustomTank
+public class EventAddNPC extends EventTankCustomCreate
 {
     public String messages = "";
     public String tag;
@@ -41,11 +40,9 @@ public class EventAddNPC extends EventCreateCustomTank
             return;
 
         TankNPC npc = new TankNPC(name, posX, posY, angle, messages, tag, red, green, blue);
-        npc.networkID = this.id;
+        npc.setNetworkID(id);
         npc.team = null;
         npc.shopItems = this.shop;
-
-        Tank.idMap.put(npc.networkID, npc);
         Game.movables.add(npc);
     }
 

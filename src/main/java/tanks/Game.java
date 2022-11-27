@@ -97,8 +97,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.c";
-	public static final int network_protocol = 47;
+	public static final String version = "Tanks v1.5.d";
+	public static final int network_protocol = 48;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -144,6 +144,8 @@ public class Game
 
 	public static boolean deterministicMode = false;
 	public static int seed = 0;
+
+	public static boolean invulnerable = false;
 
 	public static boolean warnBeforeClosing = true;
 
@@ -296,10 +298,11 @@ public class Game
 		NetworkEventMap.register(EventTankControllerUpdateC.class);
 		NetworkEventMap.register(EventTankControllerUpdateAmmunition.class);
 		NetworkEventMap.register(EventTankControllerAddVelocity.class);
-		NetworkEventMap.register(EventCreatePlayer.class);
-		NetworkEventMap.register(EventCreateTank.class);
-		NetworkEventMap.register(EventCreateCustomTank.class);
-		NetworkEventMap.register(EventSpawnTank.class);
+		NetworkEventMap.register(EventTankPlayerCreate.class);
+		NetworkEventMap.register(EventTankCreate.class);
+		NetworkEventMap.register(EventTankCustomCreate.class);
+		NetworkEventMap.register(EventTankSpawn.class);
+		NetworkEventMap.register(EventAirdropTank.class);
 		NetworkEventMap.register(EventTankUpdateHealth.class);
 		NetworkEventMap.register(EventRemoveTank.class);
 		NetworkEventMap.register(EventShootBullet.class);
@@ -740,6 +743,48 @@ public class Game
 				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
 				new ModelPart.Point(innerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
 				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight), 1);
+	}
+
+	/**
+	 * Adds a tank to the game's movables list and generates/registers a network ID for it.
+	 * Use this if you want to add computer-controlled tanks if you are not connected to a server.
+	 *
+	 * @param tank the tank to add
+	 */
+	public static void addTank(Tank tank)
+	{
+		if (tank instanceof TankPlayer || tank instanceof TankPlayerController || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
+			Game.exitToCrash(new RuntimeException("Invalid tank added with Game.addTank(" + tank + ")"));
+
+		tank.registerNetworkID();
+		Game.movables.add(tank);
+		Game.eventsOut.add(new EventTankCreate(tank));
+	}
+
+	/**
+	 * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank.
+	 * Use this if you want to spawn computer-controlled tanks from another tank if you are not connected to a server.
+	 *
+	 * @param tank the tank to add
+	 * @param parent the tank that is spawning the tank
+	 */
+	public static void spawnTank(Tank tank, Tank parent)
+	{
+		tank.registerNetworkID();
+		Game.movables.add(tank);
+		Game.eventsOut.add(new EventTankSpawn(tank, parent));
+	}
+
+	/**
+	 * Adds a tank to the game's movables list and generates/registers a network ID for it.
+	 * Use this if you want to add computer-controlled tanks if you are not connected to a server.
+	 */
+	public static void addPlayerTank(Player player, double x, double y, double angle, Team t)
+	{
+		int id = Tank.nextFreeNetworkID();
+		EventTankPlayerCreate e = new EventTankPlayerCreate(player, x, y, angle, t, id);
+		Game.eventsOut.add(e);
+		e.execute();
 	}
 
 	public static boolean usernameInvalid(String username)

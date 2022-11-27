@@ -7,7 +7,7 @@ import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
-public class EventCreateTank extends PersonalEvent
+public class EventTankCreate extends PersonalEvent
 {
 	public String type;
 	public double posX;
@@ -16,12 +16,12 @@ public class EventCreateTank extends PersonalEvent
 	public String team;
 	public int id;
 	
-	public EventCreateTank()
+	public EventTankCreate()
 	{
 		
 	}
 	
-	public EventCreateTank(Tank t)
+	public EventTankCreate(Tank t)
 	{
 		this.type = t.name;
 		this.posX = t.posX;
@@ -51,8 +51,7 @@ public class EventCreateTank extends PersonalEvent
 			tm = Game.enemyTeam;
 		
 		t.team = tm;
-		t.networkID = this.id;
-		Tank.idMap.put(t.networkID, t);
+		t.setNetworkID(id);
 				
 		Game.movables.add(new TankRemote(t));
 	}

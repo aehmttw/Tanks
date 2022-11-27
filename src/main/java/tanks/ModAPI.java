@@ -1,6 +1,5 @@
 package tanks;
 
-import tanks.minigames.*;
 import tanks.gui.IFixedMenu;
 import tanks.network.event.*;
 import tanks.network.*;
@@ -58,7 +57,7 @@ public class ModAPI
             if (o instanceof TankNPC)
                 Game.eventsOut.add(new EventAddNPC((TankNPC) o));
             else if (o instanceof Tank)
-                Game.eventsOut.add(new EventCreateCustomTank(((Tank) o)));
+                Game.eventsOut.add(new EventTankCustomCreate(((Tank) o)));
         }
         else if (o instanceof Obstacle)
         {

@@ -79,6 +79,7 @@ Arkar Tan<br>
 Pythonmcpi<br>
 Cool TM<br>
 QazCetelic<br>
+Lancelot<br>
 
 ### Supporters:
 SapphireDrew<br>

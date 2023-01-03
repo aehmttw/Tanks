@@ -25,8 +25,16 @@ if(Test-Path "libs")
 {
     echo "FOUND!"
 }else{
-    echo "Dependencies are not present, please read BUILD.md!"
-    exit 1
+    echo "Fetching dependencies from maven..."
+    mvn dependency:copy-dependencies -DoutputDirectory=./libs
+    if(Test-Path "libs")
+    {
+        echo "DOWNLOADED!"
+    }
+    else
+    {
+        echo "DOWNLOAD FAILED"
+    }
 }
 
 #Actual Script

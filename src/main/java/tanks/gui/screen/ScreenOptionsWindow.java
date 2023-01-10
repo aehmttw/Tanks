@@ -69,6 +69,13 @@ public class ScreenOptionsWindow extends Screen
             maxFPS.setText("Max FPS: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
         else
             maxFPS.setText("Max FPS: \u00A7000100200255unlimited");
+
+        if (Game.deterministicMode)
+        {
+            maxFPS.setText("Max FPS: %s", (Object) ("\u00A7000200000255" + 60));
+            maxFPS.enabled = false;
+            maxFPS.setHoverText("Maximum framerate is locked to 60---because of deterministic mode");
+        }
     }
 
 

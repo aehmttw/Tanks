@@ -25,6 +25,8 @@ public class MessageReader
 	protected boolean reading = false;
 	protected int endpoint;
 
+	protected int lastID;
+
 	public boolean queueMessage(ByteBuf m, UUID clientID)
 	{
 		return this.queueMessage(null, m, clientID);
@@ -150,7 +152,9 @@ public class MessageReader
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
 
 		if (c == null)
-			throw new Exception("Invalid network event: " + i);
+			throw new Exception("Invalid network event: " + i + " (Previous event: " + NetworkEventMap.get(this.lastID) + ")");
+
+		this.lastID = i;
 
 		INetworkEvent e = c.getConstructor().newInstance();
 		e.read(m);

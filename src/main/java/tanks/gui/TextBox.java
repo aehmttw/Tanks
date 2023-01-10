@@ -196,7 +196,7 @@ public class TextBox implements IDrawable, ITrigger
 				drawing.setColor(0, 0, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				drawing.setColor(255, 255, 255);
-				drawing.drawInterfaceText(this.posX + 1 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 				drawing.drawTooltip(this.hoverText);
 			}
 			else
@@ -204,7 +204,7 @@ public class TextBox implements IDrawable, ITrigger
 				drawing.setColor(0, 150, 255);
 				drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 				drawing.setColor(255, 255, 255);
-				drawing.drawInterfaceText(this.posX + 1 + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
+				drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
 			}
 		}
 
@@ -238,7 +238,7 @@ public class TextBox implements IDrawable, ITrigger
 			drawing.setColor(255, 255, 255);
 
 			drawing.setInterfaceFontSize(this.sizeY * 0.6);
-			drawing.drawInterfaceText(this.posX + 2 - this.sizeX / 2 + this.sizeY / 2 - 1, this.posY - 1, "x");
+			drawing.drawInterfaceText(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY - 2.5, "x");
 		}
 
 		if (selected && Game.game.window.touchscreen)
@@ -249,7 +249,6 @@ public class TextBox implements IDrawable, ITrigger
 
 			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 			drawing.drawInterfaceImage("icons/copy.png", this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
-
 		}
 	}
 

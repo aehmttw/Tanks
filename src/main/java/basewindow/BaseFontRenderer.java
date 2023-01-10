@@ -2,6 +2,8 @@ package basewindow;
 
 public abstract class BaseFontRenderer
 {
+    public boolean drawBox = false;
+
     public BaseWindow window;
 
     public BaseFontRenderer(BaseWindow h)

@@ -4,8 +4,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.ModAPI;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenInterlevel;
+import tanks.gui.screen.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
@@ -29,6 +28,7 @@ public abstract class Minigame extends Level
     public boolean disableEndMusic = false;
     public boolean customIntroMusic = false;
     public boolean enableItemBar = false;
+    public boolean flashBackground = false;
 
     public String name;
 
@@ -40,18 +40,37 @@ public abstract class Minigame extends Level
     public Minigame(String levelString)
     {
         super(levelString);
+        for (String s: Game.registryMinigame.minigames.keySet())
+        {
+            if (Game.registryMinigame.minigames.get(s).equals(this.getClass()))
+                this.name = s;
+        }
     }
 
     @Override
     public void loadLevel()
     {
         ModAPI.menuGroup.clear();
-        ScreenInterlevel.fromModdedLevels = true;
+        ScreenInterlevel.fromMinigames = true;
 
         super.loadLevel();
         setUp();
 
         Game.screen = new ScreenGame();
+        Game.screen.splitTiles = flashBackground;
+
+        if (this.flashBackground)
+        {
+            Game.screen.tiles = new Screen.FlashingTile[Game.currentSizeX][Game.currentSizeY];
+
+            for (int i = 0; i < Game.screen.tiles.length; i++)
+            {
+                for (int j = 0; j < Game.screen.tiles[i].length; j++)
+                {
+                    Game.screen.tiles[i][j] = new Screen.FlashingTile(i, j);
+                }
+            }
+        }
     }
 
     /**
@@ -88,7 +107,10 @@ public abstract class Minigame extends Level
 
     public void loadInterlevelScreen()
     {
-        Game.screen = new ScreenInterlevel();
+        if (ScreenPartyHost.isServer)
+            Game.screen = new ScreenPartyInterlevel();
+        else
+            Game.screen = new ScreenInterlevel();
     }
 
     /**

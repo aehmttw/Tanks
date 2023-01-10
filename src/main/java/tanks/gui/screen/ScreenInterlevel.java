@@ -5,6 +5,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
+import tanks.tank.TankAIControlled;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,8 +14,10 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 {
 	public static boolean tutorialInitial = false;
 	public static boolean fromSavedLevels = false;
-	public static boolean fromModdedLevels = false;
+	public static boolean fromMinigames = false;
 	public static boolean tutorial = false;
+
+	public boolean showCrusadeResultsNow = false;
 
 	boolean odd = false;
 
@@ -39,9 +42,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayModLevel = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", () ->
+	Button replayMinigame = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Play again", () ->
 	{
-		fromModdedLevels = false;
+		fromMinigames = false;
 		try
 		{
 			assert Game.currentLevel != null;
@@ -81,11 +84,20 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
 	{
-		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
-		Level lev = new Level(Game.currentLevelString);
+		String ls = Game.currentLevelString;
 
-		if (Crusade.crusadeMode)
-			lev.customTanks = Crusade.currentCrusade.customTanks;
+		StringBuilder tanks = new StringBuilder("\ntanks\n");
+		if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
+		{
+			for (TankAIControlled t: Crusade.currentCrusade.customTanks)
+				tanks.append(t.toString()).append("\n");
+
+			ls = ls + tanks;
+		}
+
+		Level lev = new Level(ls);
+
+		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen);
 
 		lev.preview = true;
 		lev.loadLevel(sc);
@@ -143,7 +155,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		Game.cleanUp();
 		System.gc();
 		Game.screen = new ScreenMinigames();
-		fromModdedLevels = false;
+		fromMinigames = false;
 	}
 	);
 
@@ -194,6 +206,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				skip = true;
 
+		if (showCrusadeResultsNow)
+			this.quitCrusadeEnd.function.run();
+
 		if (tutorialInitial)
 		{
 			skip = true;
@@ -217,10 +232,10 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			replay.update();
 			back.update();
 		}
-		else if (fromModdedLevels)
+		else if (fromMinigames)
 		{
 			skip = true;
-			replayModLevel.update();
+			replayMinigame.update();
 			backMinigame.update();
 		}
 		else
@@ -311,6 +326,17 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
+		if (Crusade.crusadeMode)
+			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
+				this.allowClose = false;
+	}
+
+	@Override
+	public void onAttemptClose()
+	{
+		if (Crusade.crusadeMode)
+			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
+				this.showCrusadeResultsNow = true;
 	}
 
 	@Override
@@ -384,10 +410,10 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			replay.draw();
 			back.draw();
 		}
-		else if (fromModdedLevels)
+		else if (fromMinigames)
 		{
 			skip = true;
-			replayModLevel.draw();
+			replayMinigame.draw();
 			backMinigame.draw();
 		}
 		else

@@ -665,7 +665,7 @@ public class Level
 		{
 			for (Tank t: tanksToRemove)
 			{
-				INetworkEvent e = new EventRemoveTank(t);
+				INetworkEvent e = new EventTankRemove(t, false);
 				Game.removeMovables.add(t);
 				Game.eventsOut.add(e);
 			}
@@ -697,6 +697,7 @@ public class Level
 		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tilesDepth = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesFlash = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
 
 		for (int i = 0; i < Game.currentSizeX; i++)

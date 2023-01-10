@@ -134,23 +134,10 @@ public class Bullet extends Movable implements IDrawable
 		if (!this.tank.isRemote && this.affectsMaxLiveBullets)
 			this.item.liveBullets++;
 
-		for (AttributeModifier a: this.tank.attributes)
-		{
-			if (a.name.equals("bullet_boost"))
-			{
-				AttributeModifier c = new AttributeModifier("boost_speed", "velocity", AttributeModifier.Operation.multiply, a.value);
-				c.duration = a.duration;
-				c.deteriorationAge = a.deteriorationAge;
-				c.age = a.age;
-				this.addUnduplicateAttribute(c);
+		AttributeModifier a = this.tank.getAttribute(AttributeModifier.bullet_boost);
 
-				AttributeModifier b = new AttributeModifier("boost_glow", "glow", AttributeModifier.Operation.multiply, 1);
-				b.duration = a.duration;
-				b.deteriorationAge = a.deteriorationAge;
-				b.age = a.age;
-				this.addUnduplicateAttribute(b);
-			}
-		}
+		if (a != null)
+			this.addStatusEffect(StatusEffect.boost_bullet, a.age, 0, a.deteriorationAge, a.duration);
 
 		this.trails = (ArrayList<Trail>[])(new ArrayList[10]);
 
@@ -871,15 +858,7 @@ public class Bullet extends Movable implements IDrawable
 	@Override
 	public void draw()
 	{
-		double glow = 0.5;
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			AttributeModifier a = this.attributes.get(i);
-			if (a.type.equals("glow"))
-			{
-				glow = a.getValue(glow);
-			}
-		}
+		double glow = this.getAttributeValue(AttributeModifier.glow, 0.5);
 
 		if (Game.glowEnabled)
 		{

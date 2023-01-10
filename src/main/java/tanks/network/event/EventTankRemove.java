@@ -4,18 +4,20 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.tank.Tank;
 
-public class EventRemoveTank extends PersonalEvent
+public class EventTankRemove extends PersonalEvent
 {
     public int tank;
+    public boolean destroyAnimation;
 
-    public EventRemoveTank()
+    public EventTankRemove()
     {
 
     }
 
-    public EventRemoveTank(Tank t)
+    public EventTankRemove(Tank t, boolean destroyAnimation)
     {
         this.tank = t.networkID;
+        this.destroyAnimation = destroyAnimation;
     }
 
     @Override
@@ -29,7 +31,10 @@ public class EventRemoveTank extends PersonalEvent
         if (t == null)
             return;
 
-        Game.removeMovables.add(t);
+        if (destroyAnimation)
+            t.destroy = true;
+        else
+            Game.removeMovables.add(t);
 
         t.unregisterNetworkID();
     }
@@ -38,11 +43,13 @@ public class EventRemoveTank extends PersonalEvent
     public void write(ByteBuf b)
     {
         b.writeInt(this.tank);
+        b.writeBoolean(this.destroyAnimation);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.tank = b.readInt();
+        this.destroyAnimation = b.readBoolean();
     }
 }

@@ -5,8 +5,7 @@ import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemShield;
-import tanks.network.event.EventAirdropTank;
-import tanks.network.event.EventRemoveTank;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
@@ -14,11 +13,13 @@ import tanks.translation.Translation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Arcade extends Minigame
 {
     public double age = 0;
-    
+    //public double flashTimer = 0;
+
     public double lastHit = -1000;
     public int chain = 0;
     public double lastRampage = 0;
@@ -50,8 +51,14 @@ public class Arcade extends Minigame
     public HashMap<String, Integer> destroyedTanks = new HashMap<>();
     public HashMap<String, Integer> destroyedTanksValue = new HashMap<>();
 
+    public HashMap<Player, Double> playerDeathTimes = new HashMap<>();
+
     public HashMap<String, Item> itemsMap = new HashMap<>();
     public HashMap<String, String> tankItemsMap = new HashMap<>();
+
+    public double chainOpacity = 1;
+
+    public Random random;
 
     public ArrayList<ItemDrop> drops = new ArrayList<>();
 
@@ -60,6 +67,7 @@ public class Arcade extends Minigame
         super("{28,18,235,207,166,20,20,20,0,100,50|" +
                 "10-13-normal-2.5,11-13-normal-2.0,12-13-normal-2.5,15-4-normal-2.5,16-4-normal-2.0,17-4-normal-2.5,4-5-hard-2.5,4-6-hard-2.0,4-7-hard-2.5,4-8-hard-2.0,4-9-hard-2.5,4-10-hard-2.0,7-13-hard-2.0,8-13-hard-2.5,9-4-hard-2.5,9-13-hard-2.0,10-4-hard-2.0,11-4-hard-2.5,12-4-hard-2.0,13-4-hard-2.5,13-13-hard-2.0,14-4-hard-2.0,14-13-hard-2.5,15-13-hard-2.0,16-13-hard-2.5,17-13-hard-2.0,18-4-hard-2.0,18-13-hard-2.5,19-4-hard-2.5,20-4-hard-2.0,23-7-hard-2.0,23-8-hard-2.5,23-9-hard-2.0,23-10-hard-2.5,5...7-10-hole,7-11...12-hole,20-5...7-hole,21...22-7-hole" +
                 "|10-10-player-0,12-10-player-0,14-10-player-0,16-10-player-0,18-10-player-0,17-7-player-2,15-7-player-2,13-7-player-2,11-7-player-2,9-7-player-2}");
+        //this.flashBackground = true;
         this.customLevelEnd = true;
         this.hideSpeedrunTimer = true;
         this.noLose = true;
@@ -68,6 +76,11 @@ public class Arcade extends Minigame
         this.enableItemBar = true;
         this.introMusic = "arcade/battle_intro.ogg";
         this.disableFriendlyFire = true;
+
+        if (Game.deterministicMode)
+            this.random = new Random(0);
+        else
+            this.random = new Random();
 
         if (!ScreenPartyLobby.isClient)
         {
@@ -146,15 +159,33 @@ public class Arcade extends Minigame
                 i.stackSize /= 2;
 
             ItemDrop d = new ItemDrop(target.posX, target.posY, i);
+            d.registerNetworkID();
             drops.add(d);
+            Game.eventsOut.add(new EventItemDrop(d));
         }
 
         killsThisFrame++;
 
-        if (target instanceof TankPlayer && frenzy)
-            survivedFrenzy = false;
+        if (target instanceof IServerPlayerTank && !ScreenPartyLobby.isClient)
+        {
+            playerDeathTimes.put(((IServerPlayerTank) target).getPlayer(), this.age);
 
-        if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IPlayerTank))
+            if (frenzy)
+            {
+                survivedFrenzy = false;
+
+                for (Movable m: Game.movables)
+                {
+                    if (m instanceof IServerPlayerTank && !m.destroy)
+                    {
+                        survivedFrenzy = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IServerPlayerTank))
         {
             if (spawnedFrenzyTanks.contains(target))
                 frenzyTanksDestroyed++;
@@ -172,6 +203,7 @@ public class Arcade extends Minigame
             score += target.coinValue;
             Drawing.drawing.playSound("hit_chain.ogg", (float) Math.pow(2, Math.min(max_power * 3 - 1, chain) / 12.0), 0.5f);
             chain++;
+            Game.eventsOut.add(new EventArcadeHit(chain, target.posX, target.posY, target.size / 2, target.coinValue));
             maxChain = Math.max(chain, maxChain);
 
             int power = Math.min(max_power, chain / 3);
@@ -191,29 +223,20 @@ public class Arcade extends Minigame
             {
                 if (m instanceof Tank)
                 {
-                    Tank t = (Tank) m;
+                    //Tank t = (Tank) m;
 
                     if (chain / 3 > 0)
                     {
-                        AttributeModifier c = new AttributeModifier("rampage_speed", "velocity", AttributeModifier.Operation.multiply, power / 5.0);
-                        c.duration = rampage_duration + rampage_exit_duration;
-                        c.deteriorationAge = rampage_exit_duration;
-                        t.addUnduplicateAttribute(c);
+                        double duration = rampage_duration + rampage_exit_duration;
+                        double detAge = rampage_exit_duration;
 
-                        AttributeModifier a = new AttributeModifier("rampage_glow", "glow", AttributeModifier.Operation.multiply, power / 5.0);
-                        a.duration = rampage_duration + rampage_exit_duration;
-                        a.deteriorationAge = rampage_exit_duration;
-                        t.addUnduplicateAttribute(a);
+                        if (frenzy)
+                        {
+                            duration = 0;
+                            detAge = 0;
+                        }
 
-                        AttributeModifier b = new AttributeModifier("rampage_reload", "reload", AttributeModifier.Operation.multiply, power / 5.0);
-                        b.duration = rampage_duration + rampage_exit_duration;
-                        b.deteriorationAge = rampage_exit_duration;
-                        t.addUnduplicateAttribute(b);
-
-                        AttributeModifier d = new AttributeModifier("rampage_bullet_speed", "bullet_speed", AttributeModifier.Operation.multiply, power / 5.0);
-                        d.duration = rampage_duration + rampage_exit_duration;
-                        d.deteriorationAge = rampage_exit_duration;
-                        t.addUnduplicateAttribute(d);
+                        m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
                     }
                 }
 
@@ -230,26 +253,30 @@ public class Arcade extends Minigame
 
     public void setRampage(int value)
     {
+        if (!ScreenPartyLobby.isClient)
+            Game.eventsOut.add(new EventArcadeRampage(value));
+        else
+            this.chain = value * 3;
+
+        value = Math.min(max_power, value);
+
         if (value <= 0)
         {
             chain = 0;
             for (int i = 1; i <= 5; i++)
             {
                 Drawing.drawing.removeSyncedMusic("arcade/rampage" + i + ".ogg", 2000);
-                //Game.game.window.soundPlayer.setMusicSpeed((float) (1));
             }
         }
         else
         {
             lastRampage = age;
-            Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (Math.min(max_power, value) - 1) / 12.0));
+            Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (value - 1) / 12.0));
             score += value * 5;
             if (chain / 3 <= 5)
             {
                 Drawing.drawing.addSyncedMusic("arcade/rampage" + value + ".ogg", Game.musicVolume, true, 500);
             }
-
-            //Game.game.window.soundPlayer.setMusicSpeed((float) (1 + value * 0.2));
         }
     }
 
@@ -258,18 +285,32 @@ public class Arcade extends Minigame
     {
         age += Panel.frameFrequency;
 
+        if (chain > 0)
+            chainOpacity = Math.min(1, chainOpacity + Panel.frameFrequency / 20);
+        else
+            chainOpacity = Math.max(0, chainOpacity - Panel.frameFrequency / 20);
+
+        if (frenzy)
+            this.customLevelEnd = false;
+
         if (!ScreenPartyLobby.isClient)
         {
             Game.movables.addAll(drops);
             drops.clear();
 
+            for (int i = 0; i < this.includedPlayers.size(); i++)
+            {
+                if (!Game.players.contains(this.includedPlayers.get(i)))
+                {
+                    this.includedPlayers.remove(i);
+                    i--;
+                }
+            }
+
             if (age - lastHit > rampage_duration && !frenzy)
             {
                 setRampage(0);
             }
-
-            if (frenzy)
-                this.customLevelEnd = false;
 
             if (killsThisFrame > maxKillsPerFrame)
                 maxKillsPerFrame = killsThisFrame;
@@ -305,7 +346,7 @@ public class Arcade extends Minigame
 
             if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && alivePlayers.size() > 0 && timer > 0)
             {
-                int count = (int) ((Math.random() * 2 + 2));
+                int count = (int) ((this.random.nextDouble() * 2 + 2));
                 for (int i = 0; i < count; i++)
                 {
                     spawnTank();
@@ -321,7 +362,7 @@ public class Arcade extends Minigame
                 }
             }
 
-            if (alivePlayers.size() <= 0)
+            if (alivePlayers.size() <= 0 && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
             {
                 for (Movable m : Game.movables)
                 {
@@ -331,7 +372,7 @@ public class Arcade extends Minigame
                     setRampage(0);
 
                     if (m instanceof Tank && !m.destroy)
-                        Game.eventsOut.add(new EventRemoveTank((Tank) m));
+                        Game.eventsOut.add(new EventTankRemove((Tank) m, true));
 
                     m.destroy = true;
                     spawnedTanks.clear();
@@ -343,13 +384,43 @@ public class Arcade extends Minigame
 
                     for (Player p : this.includedPlayers)
                     {
-                        int r = (int) (this.playerSpawnsX.size() * Math.random());
+                        this.respawnPlayer(p);
+                    }
+                }
+            }
 
-                        TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
-                        t.team = Game.playerTeamNoFF;
-                        t.player = p;
-                        Game.movables.add(new Crate(t));
-                        Game.eventsOut.add(new EventAirdropTank(t));
+            if (timer <= 0 && !frenzy)
+            {
+                if (alivePlayers.size() >= this.includedPlayers.size())
+                {
+                    frenzy = true;
+                    frenzyTime = age;
+                    Drawing.drawing.playSound("rampage.ogg");
+                    Game.eventsOut.add(new EventArcadeFrenzy());
+
+                    for (int i = 0; i < 30; i++)
+                    {
+                        spawnTank();
+                    }
+                }
+                else
+                {
+                    for (Player p: this.includedPlayers)
+                    {
+                        if (!totalPlayers.contains(p))
+                        {
+                            respawnPlayer(p);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (Player p: this.includedPlayers)
+                {
+                    if (playerDeathTimes.get(p) != null && age - playerDeathTimes.get(p) >= 500)
+                    {
+                        respawnPlayer(p);
                     }
                 }
             }
@@ -375,25 +446,68 @@ public class Arcade extends Minigame
             if (seconds > newSeconds && (newSeconds == 10 || newSeconds == 30 || newSeconds == 60))
                 Drawing.drawing.playSound("timer.ogg");
         }
-        else if (!frenzy && Game.movables.contains(Game.playerTank) && !Game.playerTank.destroy)
-        {
-            frenzy = true;
-            frenzyTime = age;
-            Drawing.drawing.playSound("rampage.ogg");
+    }
 
-            if (!ScreenPartyLobby.isClient)
-            {
-                for (int i = 0; i < 30; i++)
-                {
-                    spawnTank();
-                }
-            }
-        }
+    public void respawnPlayer(Player p)
+    {
+        playerDeathTimes.remove(p);
+
+        int r = (int) (this.playerSpawnsX.size() * this.random.nextDouble());
+
+        TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
+        t.team = Game.playerTeamNoFF;
+        t.player = p;
+        Game.movables.add(new Crate(t));
+        Game.eventsOut.add(new EventAirdropTank(t));
+    }
+
+    public String getRampageTitle()
+    {
+        if (chain < 3)
+            return "";
+
+        String prefix = (chain / 3 - rampage_titles.length + 1) + "x ";
+
+        if (chain / 3 - 1 < rampage_titles.length)
+            prefix = "";
+
+        return prefix + Translation.translate(rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
     }
 
     @Override
     public void draw()
     {
+        if (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).screenshotMode)
+            return;
+
+        /*this.flashTimer -= Panel.frameFrequency;
+        if (flashTimer <= 0)
+        {
+            flashTimer += 37.5;
+
+            if (chain >= max_power * 3)
+                flashTimer /= 2;
+
+            for (int i = 0; i < Game.tilesFlash.length; i++)
+            {
+                for (int j = 0; j < Game.tilesFlash[i].length; j++)
+                {
+                    if (Math.random() < 0.01 * (chain / 3))
+                    {
+                        Game.tilesFlash[i][j] = 0.5;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < Game.tilesFlash.length; i++)
+        {
+            for (int j = 0; j < Game.tilesFlash[i].length; j++)
+            {
+                Game.tilesFlash[i][j] = Math.max(0, Game.tilesFlash[i][j] - 0.005 * Panel.frameFrequency);
+            }
+        }*/
+
         if (age - lastRampage < 200 && chain >= 3)
         {
             int power = Math.min(max_power, chain / 3);
@@ -406,17 +520,11 @@ public class Arcade extends Minigame
             double frac = (1 - Math.max(0, age - lastRampage - 100) / 100.0);
             double mul = (1 + (1 - Math.min(1, (age - lastRampage) / 25.0)));
 
-            String prefix = (chain / 3 - rampage_titles.length + 1) + "x ";
-
-            if (chain / 3 - 1 < rampage_titles.length)
-                prefix = "";
-
-            //TODO: translation friendly it
             Drawing.drawing.setInterfaceFontSize(50 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 5, Drawing.drawing.interfaceSizeY / 2 + 5, prefix + rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 5, Drawing.drawing.interfaceSizeY / 2 + 5, getRampageTitle());
             Drawing.drawing.setColor(col[0], col[1], col[2], frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, prefix + rampage_titles[Math.min(chain / 3 - 1, rampage_titles.length - 1)]);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, getRampageTitle());
 
             Drawing.drawing.setInterfaceFontSize(20 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
@@ -450,6 +558,9 @@ public class Arcade extends Minigame
 
         if (ScreenGame.finishedQuick)
         {
+            if (finishTimer <= 0)
+                Game.eventsOut.add(new EventArcadeEnd(survivedFrenzy));
+
             finishTimer += Panel.frameFrequency;
             double alpha = Obstacle.draw_size / Game.tile_size;
             double mul = (1 + (1 - Math.min(1, (finishTimer) / 25.0))) * alpha;
@@ -470,6 +581,8 @@ public class Arcade extends Minigame
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Victory!");
             }
         }
+
+        this.drawChainTimer();
     }
 
     @Override
@@ -485,8 +598,8 @@ public class Arcade extends Minigame
 
         boolean found = false;
 
-        boolean horizontal = Math.random() < 0.5;
-        boolean other = Math.random() < 0.5;
+        boolean horizontal = this.random.nextDouble() < 0.5;
+        boolean other = this.random.nextDouble() < 0.5;
 
         int xBound = Game.currentSizeX;
         int yBound = Game.currentSizeY;
@@ -498,8 +611,8 @@ public class Arcade extends Minigame
 
         for (int i = 0; i < 5; i++)
         {
-            int x = (int) (Math.random() * xBound);
-            int y = (int) (Math.random() * yBound);
+            int x = (int) (this.random.nextDouble() * xBound);
+            int y = (int) (this.random.nextDouble() * yBound);
 
             if (other && !horizontal)
                 x += Game.currentSizeX - 4;
@@ -520,12 +633,12 @@ public class Arcade extends Minigame
         if (!found)
             return;
 
-        RegistryTank.TankEntry e = Game.registryTank.getRandomTank();
+        RegistryTank.TankEntry e = Game.registryTank.getRandomTank(this.random);
 
         while (e.name.equals("blue") || e.name.equals("red") || (!frenzy && e.weight < 1.0 / Math.max(1, chain - 2)))
-            e = Game.registryTank.getRandomTank();
+            e = Game.registryTank.getRandomTank(this.random);
 
-        Tank t = e.getTank(destX, destY, (int)(Math.random() * 4));
+        Tank t = e.getTank(destX, destY, (int)(this.random.nextDouble() * 4));
         t.team = Game.enemyTeamNoFF;
         Game.eventsOut.add(new EventAirdropTank(t));
         this.spawnedTanks.add(t);
@@ -616,5 +729,68 @@ public class Arcade extends Minigame
         String s = Translation.translate("Score: %d", score);
         double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
+
+    }
+
+    public void drawChainTimer()
+    {
+        double pulse = 5 * (1 - Math.min(1, (age - lastHit) / 25));
+        if (chain < 2)
+            pulse = 1;
+
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255, 128 * (100 - Game.player.hotbar.percentHidden) / 100.0 * chainOpacity);
+        else
+            Drawing.drawing.setColor(0, 0, 0, 128 * (100 - Game.player.hotbar.percentHidden) / 100.0 * chainOpacity);
+
+        int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
+        int y = (int) (Drawing.drawing.interfaceSizeY - 100 + Game.player.hotbar.percentHidden - Game.player.hotbar.verticalOffset);
+
+        double c = 0.5 - Math.min(max_power * 3, chain) / 30.0;
+        if (c < 0)
+            c += (int) (-c) + 1;
+
+        double[] col = Game.getRainbowColor(c);
+
+        double lh = lastHit;
+
+        if (frenzy)
+            lh = age;
+
+        if (this.age <= 0)
+            chainOpacity = 0;
+
+        Drawing.drawing.fillInterfaceRect(x, y, 350 * chainOpacity + pulse, 5 + pulse);
+
+        if (chain > 0)
+        {
+            double xo = 350 * (1 - chainOpacity) / 2;
+            Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * (100 - Game.player.hotbar.percentHidden) * 2.55);
+            Drawing.drawing.fillInterfaceProgressRect(x, y, 350 * chainOpacity + pulse, 5 + pulse, Math.max(0, 1 - (this.age - lh) / rampage_duration));
+
+            Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+            Drawing.drawing.fillInterfaceOval(x + xo - 175 - pulse / 2, y, 18 + pulse, 18 + pulse);
+            Drawing.drawing.setInterfaceFontSize(12 + pulse);
+            Drawing.drawing.setColor(255, 255, 255, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+            Drawing.drawing.drawInterfaceText(x + xo - 175 - pulse / 2, y, chain + "");
+        }
+
+        if (frenzy)
+        {
+            double mul = (1 + 0.5 * (1 - Math.min(1, (age - frenzyTime) / 25.0)));
+
+            Drawing.drawing.setInterfaceFontSize(15 * mul);
+            Drawing.drawing.setColor(255 / 2.0, 180 / 2.0, 0, 2.55 * (100 - Game.player.hotbar.percentHidden));
+            Drawing.drawing.displayInterfaceText(x + 2, y + 2, "Tank frenzy!");
+            Drawing.drawing.setColor(255, 180, 0, 2.55 * (100 - Game.player.hotbar.percentHidden));
+            Drawing.drawing.displayInterfaceText(x, y, "Tank frenzy!");
+        }
+
+        double mul = (1 + 0.5 * (1 - Math.min(1, (age - lastRampage) / 25)));
+        Drawing.drawing.setInterfaceFontSize(24 * mul);
+        Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+        Drawing.drawing.drawInterfaceText(x + 2, y + 2 - 17, getRampageTitle());
+        Drawing.drawing.setColor(Math.min(255, col[0]), Math.min(255, col[1]), Math.min(255, col[2]), (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+        Drawing.drawing.drawInterfaceText(x, y - 17, getRampageTitle());
     }
 }

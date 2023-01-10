@@ -5,6 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
+import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
@@ -115,12 +116,18 @@ public class Hotbar
 
 			if (shields > 0)
 			{
-				Drawing.drawing.setColor(255, 0 , 0, (100 - this.percentHidden) * 2.55);
+				Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
 				Drawing.drawing.fillInterfaceOval(x - 175, y, 18, 18);
+				//Drawing.drawing.drawImage("shield.png", x - 175, y + 1, 14, 14);
 				Drawing.drawing.setInterfaceFontSize(12);
 				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
 				Drawing.drawing.drawInterfaceText(x - 175, y, shields + "");
 			}
+		/*	else
+			{
+				Drawing.drawing.setColor(0, 160, 0);
+				Drawing.drawing.drawImage("emblems/medic.png", x - 175, y, 14, 14);
+			}*/
 		}
 
 		if (this.enabledAmmunitionBar)
@@ -242,7 +249,7 @@ public class Hotbar
 
 			Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.setInterfaceFontSize(24);
-			Drawing.drawing.drawInterfaceText(x - 17, y + 1, "" + count, true);
+			Drawing.drawing.drawInterfaceText(x - 20, y, "" + count, true);
 		}
 
 		if (Game.currentLevel != null && (Game.currentLevel.timed && Game.screen instanceof ScreenGame))

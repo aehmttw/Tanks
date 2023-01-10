@@ -76,15 +76,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     {
         super.update();
 
-        double reload = 1;
-        for (int i = 0; i < this.attributes.size(); i++)
-        {
-            AttributeModifier a = this.attributes.get(i);
-            if (a.type.equals("reload"))
-            {
-                reload = a.getValue(reload);
-            }
-        }
+        double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
         this.bullet.updateCooldown(reload);
         this.mine.updateCooldown(reload);
@@ -218,17 +210,8 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                     vY *= maxSpeed / speed;
                 }
 
-                double vX2 = vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-                double vY2 = vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-
-                for (AttributeModifier a : this.attributes)
-                {
-                    if (a.type.equals("velocity"))
-                    {
-                        vX2 = a.getValue(vX2);
-                        vY2 = a.getValue(vY2);
-                    }
-                }
+                double vX2 = this.getAttributeValue(AttributeModifier.velocity, vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
+                double vY2 = this.getAttributeValue(AttributeModifier.velocity, vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
 
                 double maxDist = 1;
 

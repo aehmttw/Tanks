@@ -247,7 +247,7 @@ public class ChatBox extends TextBox
 
 			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 			drawing.setColor(255, 255, 255);
-			drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2 - 1, this.posY - 1, "x");
+			drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - 2.5, "x");
 		}
 		else if (this.persistent)
 		{

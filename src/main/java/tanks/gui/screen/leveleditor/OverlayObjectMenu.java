@@ -129,8 +129,6 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                     s.drawBehindScreen = true;
                     Game.screen = s;
                 }, "Create a new custom tank!");
-                b.textOffsetX = 1.5;
-                b.textOffsetY = 1.5;
                 this.tankButtons.add(b);
                 b.fullInfo = true;
 

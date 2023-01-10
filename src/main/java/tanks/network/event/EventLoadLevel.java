@@ -49,7 +49,7 @@ public class EventLoadLevel extends PersonalEvent
 
 	@Override
 	public void execute() 
-	{		
+	{
 		if (this.clientID != null)
 			return;
 

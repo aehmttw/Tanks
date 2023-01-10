@@ -53,7 +53,7 @@ public class AreaEffectFreeze extends AreaEffect
 
 				if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
 				{
-					AttributeModifier a = new AttributeModifier("freeze", "velocity", Operation.multiply, -1);
+					AttributeModifier a = new AttributeModifier("freeze", AttributeModifier.velocity, Operation.multiply, -1);
 					a.duration = 500;
 					a.warmupAge = 50;
 					a.deteriorationAge = 400;
@@ -90,20 +90,7 @@ public class AreaEffectFreeze extends AreaEffect
 
 			if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
 			{
-				AttributeModifier a = new AttributeModifier("ice_accel", "acceleration", Operation.multiply, -0.75);
-				a.duration = 10;
-				a.deteriorationAge = 5;
-				m.addUnduplicateAttribute(a);
-
-				AttributeModifier b = new AttributeModifier("ice_slip", "friction", Operation.multiply, -0.875);
-				b.duration = 10;
-				b.deteriorationAge = 5;
-				m.addUnduplicateAttribute(b);
-
-				AttributeModifier c = new AttributeModifier("ice_max_speed", "max_speed", Operation.multiply, 3);
-				c.duration = 10;
-				c.deteriorationAge = 5;
-				m.addUnduplicateAttribute(c);
+				m.addStatusEffect(StatusEffect.ice, 0, 5, 10);
 			}
 		}
 

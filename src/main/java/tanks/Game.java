@@ -1,11 +1,10 @@
 package tanks;
 
-import basewindow.*;
+import basewindow.BaseFile;
+import basewindow.BaseFileManager;
+import basewindow.BaseWindow;
+import basewindow.ModelPart;
 import tanks.bullet.*;
-import tanks.minigames.Arcade;
-import tanks.minigames.Minigame;
-import tanks.network.event.*;
-import tanks.network.event.online.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -19,17 +18,27 @@ import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.*;
+import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
+import tanks.hotbar.item.ItemShield;
+import tanks.minigames.Arcade;
+import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SteamNetworkHandler;
 import tanks.network.SynchronizedList;
+import tanks.network.event.*;
+import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
 import tanks.tank.*;
 import tanks.translation.Translation;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 public class Game
@@ -91,6 +100,7 @@ public class Game
 	public static double[][] tilesR = new double[28][18];
 	public static double[][] tilesG = new double[28][18];
 	public static double[][] tilesB = new double[28][18];
+	public static double[][] tilesFlash = new double[28][18];
 
 	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
 
@@ -304,7 +314,7 @@ public class Game
 		NetworkEventMap.register(EventTankSpawn.class);
 		NetworkEventMap.register(EventAirdropTank.class);
 		NetworkEventMap.register(EventTankUpdateHealth.class);
-		NetworkEventMap.register(EventRemoveTank.class);
+		NetworkEventMap.register(EventTankRemove.class);
 		NetworkEventMap.register(EventShootBullet.class);
 		NetworkEventMap.register(EventBulletBounce.class);
 		NetworkEventMap.register(EventBulletUpdate.class);
@@ -314,7 +324,7 @@ public class Game
 		NetworkEventMap.register(EventBulletElectricStunEffect.class);
 		NetworkEventMap.register(EventBulletUpdateTarget.class);
 		NetworkEventMap.register(EventLayMine.class);
-		NetworkEventMap.register(EventMineExplode.class);
+		NetworkEventMap.register(EventMineRemove.class);
 		NetworkEventMap.register(EventMineChangeTimer.class);
 		NetworkEventMap.register(EventExplosion.class);
 		NetworkEventMap.register(EventTankTeleport.class);
@@ -330,10 +340,22 @@ public class Game
 		NetworkEventMap.register(EventObstacleHit.class);
 		NetworkEventMap.register(EventObstacleShrubberyBurn.class);
 		NetworkEventMap.register(EventObstacleSnowMelt.class);
+		NetworkEventMap.register(EventObstacleBoostPanelEffect.class);
 		NetworkEventMap.register(EventPlaySound.class);
 		NetworkEventMap.register(EventSendTankColors.class);
 		NetworkEventMap.register(EventShareLevel.class);
 		NetworkEventMap.register(EventShareCrusade.class);
+		NetworkEventMap.register(EventItemDrop.class);
+		NetworkEventMap.register(EventItemPickup.class);
+		NetworkEventMap.register(EventItemDropDestroy.class);
+		NetworkEventMap.register(EventStatusEffectBegin.class);
+		NetworkEventMap.register(EventStatusEffectDeteriorate.class);
+		NetworkEventMap.register(EventStatusEffectEnd.class);
+		NetworkEventMap.register(EventArcadeHit.class);
+		NetworkEventMap.register(EventArcadeRampage.class);
+		NetworkEventMap.register(EventArcadeFrenzy.class);
+		NetworkEventMap.register(EventArcadeEnd.class);
+		NetworkEventMap.register(EventArcadeBonuses.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);
@@ -781,8 +803,13 @@ public class Game
 	 */
 	public static void addPlayerTank(Player player, double x, double y, double angle, Team t)
 	{
+		addPlayerTank(player, x, y, angle, t, 0);
+	}
+
+	public static void addPlayerTank(Player player, double x, double y, double angle, Team t, double drawAge)
+	{
 		int id = Tank.nextFreeNetworkID();
-		EventTankPlayerCreate e = new EventTankPlayerCreate(player, x, y, angle, t, id);
+		EventTankPlayerCreate e = new EventTankPlayerCreate(player, x, y, angle, t, id, drawAge);
 		Game.eventsOut.add(e);
 		e.execute();
 	}
@@ -853,7 +880,12 @@ public class Game
 		silentCleanUp();
 
 		if (m == null)
-			screen = new ScreenInterlevel();
+		{
+			if (ScreenPartyHost.isServer)
+				screen = new ScreenPartyInterlevel();
+			else
+				screen = new ScreenInterlevel();
+		}
 		else
 			m.loadInterlevelScreen();
 	}
@@ -966,6 +998,7 @@ public class Game
 		Game.tilesG = new double[28][18];
 		Game.tilesB = new double[28][18];
 		Game.tilesDepth = new double[28][18];
+		Game.tilesFlash = new double[28][18];
 		Game.game.heightGrid = new double[28][18];
 		Game.game.groundHeightGrid = new double[28][18];
 		Game.tileDrawables = new Obstacle[28][18];

@@ -33,12 +33,7 @@ public class ObstacleMud extends Obstacle
     public void onObjectEntry(Movable m)
     {
         if (m instanceof Tank)
-        {
-            AttributeModifier a = new AttributeModifier("mud", "velocity", AttributeModifier.Operation.multiply, -0.5);
-            a.duration = 30;
-            a.deteriorationAge = 20;
-            m.addUnduplicateAttribute(a);
-        }
+            m.addStatusEffect(StatusEffect.mud, 0, 20, 30);
 
         this.onObjectEntryLocal(m);
     }

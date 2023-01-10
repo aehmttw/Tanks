@@ -73,6 +73,8 @@ public class Crusade
 
 	public boolean respawnTanks = true;
 
+	public String description = null;
+
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
 		internal = true;

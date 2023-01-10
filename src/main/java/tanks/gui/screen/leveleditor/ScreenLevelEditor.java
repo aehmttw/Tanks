@@ -1306,6 +1306,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		ArrayList<Double> posY = new ArrayList<>();
 		ArrayList<Double> orientations = new ArrayList<>();
 
+		double originalX = mouseTank.posX;
+		double originalY = mouseTank.posY;
+		double originalOrientation = mouseTank.orientation;
+
 		posX.add(mouseTank.posX);
 		posY.add(mouseTank.posY);
 		orientations.add(mouseTank.orientation);
@@ -1354,6 +1358,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (validLeft && pasteMode && !paste)
 				{
 					paste();
+
+					mouseTank.posX = originalX;
+					mouseTank.posY = originalY;
+					mouseTank.orientation = originalOrientation;
+
+					mouseObstacle.posX = originalX;
+					mouseObstacle.posY = originalY;
+
 					return new boolean[]{true, true};
 				}
 
@@ -1603,6 +1615,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Obstacle prevMouseObstacle = mouseObstacle;
 		Placeable placeable = currentPlaceable;
 
+		double mx = prevMouseObstacle.posX;
+		double my = prevMouseObstacle.posY;
+
 		for (Object o : this.clipboard)
 		{
 			if (o instanceof Obstacle)
@@ -1619,6 +1634,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					mouseObstacleHeight = n.stackHeight;
 					mouseObstacleStartHeight = n.startHeight;
 					mouseObstacleGroup = n.groupID;
+					mouseTank.posX = mouseObstacle.posX;
+					mouseTank.posY = mouseObstacle.posY;
 
 					handlePlace(handled, true, false, true, false, true, true);
 				}
@@ -1659,6 +1676,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					Game.exitToCrash(e);
 				}
 			}
+
+			prevMouseObstacle.posX = mx;
+			prevMouseObstacle.posY = my;
+			prevMouseTank.posX = mx;
+			prevMouseTank.posY = my;
 		}
 
 		currentPlaceable = placeable;

@@ -1,7 +1,10 @@
 package tanks.hotbar;
 
 import tanks.*;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.minigames.Arcade;
+import tanks.network.Server;
+import tanks.network.ServerHandler;
 import tanks.network.event.EventSetItem;
 import tanks.network.event.EventSetItemBarSlot;
 import tanks.gui.Button;
@@ -35,8 +38,13 @@ public class ItemBar
 	public double selectedTimer = 0;
 
 	public int selected = -1;
-	
+
+	public double lastItemSwitch = -1000;
+	public double age;
+
 	public Player player;
+
+	protected ItemEmpty defaultItemEmpty = new ItemEmpty();
 
 	public ItemBar(Player p)
 	{
@@ -140,15 +148,30 @@ public class ItemBar
 
 		slots[selected].attemptUse();
 
+		boolean destroy = false;
 		if (slots[selected].destroy)
 		{
+			destroy = true;
 			slots[selected] = new ItemEmpty();
-			if (Game.currentLevel instanceof Arcade)
-				selected = -1;
+			this.lastItemSwitch = this.age;
 		}
 
 		if (this.player != Game.player)
 			Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
+
+		if (destroy && Game.currentLevel instanceof Arcade)
+		{
+			selected = -1;
+
+			if (ScreenPartyHost.isServer)
+			{
+				for (ServerHandler sh : ScreenPartyHost.server.connections)
+				{
+					if (sh.player.equals(this.player))
+						sh.events.add(new EventSetItemBarSlot(-1));
+				}
+			}
+		}
 
 		return true;
 	}
@@ -169,6 +192,7 @@ public class ItemBar
 
 	public void update()
 	{
+		this.age += Panel.frameFrequency;
 		checkKey(Game.game.input.hotbarDeselect, -1);
 		checkKey(Game.game.input.hotbar1, 0);
 		checkKey(Game.game.input.hotbar2, 1);
@@ -228,6 +252,7 @@ public class ItemBar
 
 		this.selected = (this.selected == index ? -1 : index);
 		this.selectedTimer = 300;
+		this.lastItemSwitch = this.age;
 
 		if (ScreenPartyLobby.isClient)
 			Game.eventsOut.add(new EventSetItemBarSlot(this.selected));
@@ -334,6 +359,31 @@ public class ItemBar
 
 					Drawing.drawing.drawInterfaceText(this.slotButtons[i].posX, this.slotButtons[i].posY, g.getInputs());
 				}
+			}
+		}
+
+		if (this.age - lastItemSwitch < 200)
+		{
+			Item i = defaultItemEmpty;
+			if (selected >= 0)
+				i = this.slots[this.selected];
+
+			if (Game.playerTank != null && !Game.playerTank.destroy)
+			{
+				Drawing.drawing.setColor(255, 255, 255, Math.min(1, 2 - (this.age - this.lastItemSwitch) / 100.0) * 255);
+
+				String icon = i.icon;
+
+				if (i.icon == null)
+				{
+					Drawing.drawing.setColor(255, 255, 255, Math.min(1, 2 - (this.age - this.lastItemSwitch) / 100.0) * 127);
+					icon = "noitem.png";
+				}
+
+				if (Game.enable3d)
+					Drawing.drawing.drawImage(icon, Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size, Game.tile_size, Game.tile_size);
+				else
+					Drawing.drawing.drawImage(icon, Game.playerTank.posX, Game.playerTank.posY, Game.tile_size, Game.tile_size);
 			}
 		}
 	}

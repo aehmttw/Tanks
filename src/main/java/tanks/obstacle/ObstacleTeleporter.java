@@ -57,7 +57,10 @@ public class ObstacleTeleporter extends Obstacle
 			}
 		}
 		else
+		{
+			Drawing.drawing.setColor(127, 127, 127, 255, 0.25);
 			Drawing.drawing.fillOval(this.posX, this.posY, draw_size, draw_size);
+		}
 
 		if (this.cooldown > 0)
 			this.brightness = Math.max(0, this.brightness - 0.01 * Panel.frameFrequency);

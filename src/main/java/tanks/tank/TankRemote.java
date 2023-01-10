@@ -52,6 +52,7 @@ public class TankRemote extends Tank
 		this.isCopy = false;
 		this.tank = t;
 		this.mandatoryKill = t.mandatoryKill;
+		this.drawAge = t.drawAge;
 
 		this.copyTank(t);
 

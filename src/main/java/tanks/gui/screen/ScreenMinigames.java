@@ -2,7 +2,6 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.ModAPI;
 import tanks.minigames.Minigame;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -53,9 +52,8 @@ public class ScreenMinigames extends Screen
 			{
 				try
 				{
-					ScreenInterlevel.fromModdedLevels = true;
+					ScreenInterlevel.fromMinigames = true;
 					Minigame m = Game.registryMinigame.getEntry(name).getConstructor().newInstance();
-					m.name = name;
 					m.loadLevel();
 				}
 				catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)

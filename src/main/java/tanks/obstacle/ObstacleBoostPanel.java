@@ -3,6 +3,8 @@ package tanks.obstacle;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.network.event.EventObstacleBoostPanelEffect;
 import tanks.tank.Tank;
 
 public class ObstacleBoostPanel extends Obstacle
@@ -39,14 +41,33 @@ public class ObstacleBoostPanel extends Obstacle
     {
         this.brightness = Math.min(this.brightness + Panel.frameFrequency * 8, 100);
 
-        boolean effect = true;
-        for (AttributeModifier am : m.attributes)
-        {
-            if (am.name.equals("boost_glow") && am.age < am.deteriorationAge)
-                effect = false;
-        }
+        if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.25)
+            this.addEffect(m.posX, m.posY, 0);
+    }
 
-        if (Game.playerTank != null && !Game.playerTank.destroy && effect && !(m instanceof Bullet && !((Bullet) m).playPopSound))
+    @Override
+    public void onObjectEntry(Movable m)
+    {
+        this.onObjectEntryLocal(m);
+
+        AttributeModifier am = m.getAttribute(AttributeModifier.glow);
+        boolean effect = am == null || (am.age >= am.deteriorationAge && am.deteriorationAge > 0);
+
+        if (effect)
+            addEntryEffect(m);
+
+        if (m instanceof Tank)
+            m.addStatusEffect(StatusEffect.boost_tank, 0, 10, 50);
+        else
+            m.addStatusEffect(StatusEffect.boost_bullet, 0, 10, 50);
+    }
+
+    public void addEntryEffect(Movable m)
+    {
+        if (ScreenPartyHost.isServer && (m instanceof Bullet || m instanceof Tank))
+            Game.eventsOut.add(new EventObstacleBoostPanelEffect(m, this));
+
+        if (Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof Bullet && !((Bullet) m).playPopSound))
         {
             double distsq = Math.pow(this.posX - Game.playerTank.posX, 2) + Math.pow(this.posY - Game.playerTank.posY, 2);
 
@@ -59,42 +80,11 @@ public class ObstacleBoostPanel extends Obstacle
 
         if (Game.effectsEnabled && !ScreenGame.finished && !(m instanceof Bullet && !((Bullet) m).playPopSound))
         {
-            if (effect)
+            for (int i = 0; i < 25 * Game.effectMultiplier; i++)
             {
-                for (int i = 0; i < 25 * Game.effectMultiplier; i++)
-                {
-                    this.addEffect(m.posX, m.posY, 0.5);
-                }
+                this.addEffect(m.posX, m.posY, 0.5);
             }
-            else if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.25)
-                this.addEffect(m.posX, m.posY, 0);
         }
-    }
-
-    @Override
-    public void onObjectEntry(Movable m)
-    {
-        this.onObjectEntryLocal(m);
-
-        double d = 1;
-
-        if (m instanceof Tank)
-            d = 3;
-
-        AttributeModifier c = new AttributeModifier("boost_speed", "velocity", AttributeModifier.Operation.multiply, d);
-        c.duration = 50;
-        c.deteriorationAge = 10;
-        m.addUnduplicateAttribute(c);
-
-        AttributeModifier a = new AttributeModifier("boost_glow", "glow", AttributeModifier.Operation.multiply, 1);
-        a.duration = 50;
-        a.deteriorationAge = 10;
-        m.addUnduplicateAttribute(a);
-
-        AttributeModifier b = new AttributeModifier("boost_slip", "friction", AttributeModifier.Operation.multiply, -0.75);
-        b.duration = 50;
-        b.deteriorationAge = 10;
-        m.addUnduplicateAttribute(b);
     }
 
     @Override

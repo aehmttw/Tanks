@@ -59,12 +59,6 @@ public class OverlayBlockGroupID extends ScreenLevelEditorOverlay
         groupID.minValue = 0;
         groupID.checkMaxValue = true;
         groupID.checkMinValue = true;
-
-        increaseID.textOffsetX = 1.5;
-        increaseID.textOffsetY = 1.5;
-
-        decreaseID.textOffsetX = 1.5;
-        decreaseID.textOffsetY = 1.5;
     }
 
     public void update()

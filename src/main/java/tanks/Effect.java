@@ -531,9 +531,9 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.setFontSize(32 * this.size / Game.tile_size);
 
                 drawing.setColor(r2, g2, b2, a, 0.5);
-                drawing.drawText(this.posX + 4, 5 + this.posY - this.size / 20, this.posZ + this.age + 1, "!");
+                drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, this.posZ + this.age + 1, "!");
                 drawing.setColor(this.glowR, this.glowG, this.glowB, a, 1);
-                drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, this.posZ + this.age + 2, "!");
+                drawing.drawText(this.posX + 0, 1 + this.posY - this.size / 20, this.posZ + this.age + 2, "!");
             }
             else
             {
@@ -542,9 +542,9 @@ public class Effect extends Movable implements IDrawableWithGlow
                 drawing.fillOval(this.posX, this.posY, this.posZ + this.age, this.size * 0.8, this.size * 0.8);
                 drawing.setFontSize(32 * this.size / Game.tile_size);
                 drawing.setColor(r2, g2, b2, a, 0.5);
-                drawing.drawText(this.posX + 4, 5 + this.posY - this.size / 20, "!");
-                drawing.setColor(this.glowR, this.glowG, this.glowB, a, 1);
                 drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, "!");
+                drawing.setColor(this.glowR, this.glowG, this.glowB, a, 1);
+                drawing.drawText(this.posX + 0, 1 + this.posY - this.size / 20, "!");
             }
         }
         else if (this.type == EffectType.chain)

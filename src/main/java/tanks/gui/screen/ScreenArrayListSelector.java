@@ -86,8 +86,7 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
             this.element2 = e2;
             this.screen = screen;
 
-            delete.textOffsetX = 1.5;
-            delete.textOffsetY = -1.5;
+            delete.textOffsetY = -2.5;
 
             delete.unselectedColR = 255;
             delete.unselectedColG = 0;
@@ -174,8 +173,6 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
         }
 
         this.create.posY = this.centerY + 90 * ((this.entries.size() % entriesPerPage) - (entriesPerPage - 1) / 2.0) - 15;
-        this.create.textOffsetX = 1.5;
-        this.create.textOffsetY = 1.5;
     }
 
     @Override

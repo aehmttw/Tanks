@@ -15,6 +15,7 @@ public class EventTankCreate extends PersonalEvent
 	public double angle;
 	public String team;
 	public int id;
+	public double drawAge;
 	
 	public EventTankCreate()
 	{
@@ -28,6 +29,7 @@ public class EventTankCreate extends PersonalEvent
 		this.posY = t.posY;
 		this.angle = t.angle;
 		this.id = t.networkID;
+		this.drawAge = t.drawAge;
 
 		if (t.team == null)
 			this.team = "*";
@@ -52,6 +54,7 @@ public class EventTankCreate extends PersonalEvent
 		
 		t.team = tm;
 		t.setNetworkID(id);
+		t.drawAge = drawAge;
 				
 		Game.movables.add(new TankRemote(t));
 	}
@@ -65,6 +68,7 @@ public class EventTankCreate extends PersonalEvent
 		b.writeDouble(this.angle);
 		NetworkUtils.writeString(b, this.team);
 		b.writeInt(this.id);
+		b.writeDouble(this.drawAge);
 	}
 
 	@Override
@@ -76,5 +80,6 @@ public class EventTankCreate extends PersonalEvent
 		this.angle = b.readDouble();
 		this.team = NetworkUtils.readString(b);
 		this.id = b.readInt();
+		this.drawAge = b.readDouble();
 	}
 }

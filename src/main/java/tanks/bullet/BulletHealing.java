@@ -77,7 +77,7 @@ public class BulletHealing extends BulletInstant
 
 		Game.eventsOut.add(new EventTankUpdateHealth(t));
 
-		t.addAttribute(new AttributeModifier("healray", "healray", Operation.add, 1.0));
+		t.addAttribute(new AttributeModifier("healray", AttributeModifier.healray, Operation.add, 1.0));
 
 		if (t.health > 6 && (int) (before) != (int) (t.health))
 		{

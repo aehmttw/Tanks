@@ -51,6 +51,16 @@ public class FontRenderer extends BaseFontRenderer
 		int col = (int) (i % size);
 		int row = (int) (i / size);
 		int width = charSizes[i];
+		//this.window.shapeRenderer.drawRect(x, y - sY * 16, sX * width * 4, sY * 64);
+
+		if (this.drawBox)
+		{
+			this.window.shapeRenderer.drawRect(x, y, sX * width * 2, sY * 32);
+			this.window.shapeRenderer.drawRect(x, y + sY * 16, sX * width * 2, sY * 16);
+			this.window.shapeRenderer.drawRect(x + sX * width * 2, y, sX * width * 2, sY * 32);
+			this.window.shapeRenderer.drawRect(x + sX * width * 2, y + sY * 16, sX * width * 2, sY * 16);
+		}
+
 		this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * size, sY * 32 * size,
 				col / size, (row * hSpace) / size,
 				(col + width / 8f) / size, (row * hSpace + 2) / size,
@@ -127,7 +137,7 @@ public class FontRenderer extends BaseFontRenderer
 				w += (charSizes[this.chars.indexOf(c[i])] + 1) * sX * 4;
 		}
 
-		return Math.max(w - 1, 0);
+		return Math.max(w - sX * 4, 0);
 	}
 
 	public double getStringSizeY(double sY, String s)

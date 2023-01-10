@@ -127,6 +127,11 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		if (this.controlPlayer)
 		{
+			for (int i = 0; i < Game.game.groundHeightGrid.length; i++)
+			{
+				System.arraycopy(Game.tilesDepth[i], 0, Game.game.groundHeightGrid[i], 0, Game.game.groundHeightGrid[i].length);
+			}
+
 			Obstacle.draw_size = Game.tile_size;
 			for (int i = 0; i < Game.tracks.size(); i++)
 			{

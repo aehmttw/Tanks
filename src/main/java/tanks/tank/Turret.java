@@ -23,17 +23,7 @@ public class Turret extends Movable
 
 	public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
 	{
-		double luminance = this.tank.luminance;
-
-		for (int i = 0; i < this.tank.attributes.size(); i++)
-		{
-			AttributeModifier a = this.tank.attributes.get(i);
-
-			if (a.type.equals("glow"))
-			{
-				luminance = a.getValue(luminance);
-			}
-		}
+		double luminance = this.tank.getAttributeValue(AttributeModifier.glow, this.tank.luminance);
 
 		if (this.tank.fullBrightness)
 			luminance = 1;

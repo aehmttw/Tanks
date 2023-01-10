@@ -58,6 +58,12 @@ public class Crate extends Movable
             Drawing.drawing.fillRect(this.posX, this.posY - this.posZ, size, size);
             Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB);
             Drawing.drawing.fillRect(this.posX, this.posY - this.posZ, size * 0.8, size * 0.8);
+
+            if (this.tank.emblem != null)
+            {
+                Drawing.drawing.setColor(this.tank.emblemR, this.tank.emblemG, this.tank.emblemB);
+                Drawing.drawing.drawImage(this.tank.emblem, this.posX, this.posY - this.posZ, size * 0.75, size * 0.75);
+            }
         }
 
         double frac = Math.max(0, (1000 - this.posZ) / 1000);
@@ -66,6 +72,10 @@ public class Crate extends Movable
         fillOutlineRect(this.posX, this.posY, this.size * (2 - frac));
         Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB, 255, 1);
         fillOutlineRect(this.posX, this.posY, this.size * (frac));
+
+        Drawing.drawing.setColor(this.tank.emblemR, this.tank.emblemG, this.tank.emblemB);
+        if (this.tank.emblem != null)
+            Drawing.drawing.drawInterfaceImage(this.tank.emblem, this.posX, this.posY, frac * this.size * 0.75, frac * this.size * 0.75);
 
         if (Game.glowEnabled)
         {
@@ -86,7 +96,6 @@ public class Crate extends Movable
         Drawing.drawing.fillInterfaceRect(x2, y, border, size - border * 2);
         Drawing.drawing.fillInterfaceRect(x, y1, size, border);
         Drawing.drawing.fillInterfaceRect(x, y2, size, border);
-
     }
 
     public void update()
@@ -99,6 +108,7 @@ public class Crate extends Movable
             this.destroy = true;
             Drawing.drawing.playSound("open.ogg");
 
+            tank.drawAge = 50;
             if (!tank.isRemote)
             {
                 if (tank instanceof TankPlayer)
@@ -106,8 +116,6 @@ public class Crate extends Movable
                 else
                     Game.addTank(tank);
             }
-
-            tank.drawAge = 50;
         }
 
         if (this.destroy)

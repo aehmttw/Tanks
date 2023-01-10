@@ -49,5 +49,10 @@ public class EventSetItemBarSlot extends PersonalEvent
                 }
             }
         }
+        else
+        {
+            if (Game.player != null && Game.player.hotbar != null && Game.player.hotbar.enabledItemBar)
+                Game.player.hotbar.itemBar.selected = this.slot;
+        }
     }
 }

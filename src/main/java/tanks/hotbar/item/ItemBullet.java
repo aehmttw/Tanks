@@ -88,18 +88,7 @@ public class ItemBullet extends Item
 
 			int q = (int) Math.min(this.shotCount, Math.ceil(remainingQty / useAmt));
 
-			double speedmul = 1;
-			if (m != null)
-			{
-				for (int i = 0; i < m.attributes.size(); i++)
-				{
-					AttributeModifier a = m.attributes.get(i);
-					if (a.type.equals("bullet_speed"))
-					{
-						speedmul = a.getValue(speedmul);
-					}
-				}
-			}
+			double speedmul = m.getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 			for (int i = 0; i < q; i++)
 			{

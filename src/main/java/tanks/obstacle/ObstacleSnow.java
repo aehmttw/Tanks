@@ -58,18 +58,8 @@ public class ObstacleSnow extends Obstacle
     {
         if (!ScreenPartyLobby.isClient && (m instanceof Tank || m instanceof Bullet))
         {
-            AttributeModifier a = new AttributeModifier("snow_velocity", "velocity", AttributeModifier.Operation.multiply, -0.25);
-            a.duration = 30;
-            a.deteriorationAge = 20;
-            m.addUnduplicateAttribute(a);
-
-            if (!(m instanceof TankAIControlled))
-            {
-                AttributeModifier b = new AttributeModifier("snow_friction", "friction", AttributeModifier.Operation.multiply, 4);
-                b.duration = 10;
-                b.deteriorationAge = 5;
-                m.addUnduplicateAttribute(b);
-            }
+            m.addStatusEffect(StatusEffect.snow_velocity, 0, 20, 30);
+            m.addStatusEffect(StatusEffect.snow_friction, 0, 5, 10);
 
             this.depth -= Panel.frameFrequency * 0.005;
 

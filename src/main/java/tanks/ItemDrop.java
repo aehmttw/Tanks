@@ -1,17 +1,30 @@
 package tanks;
 
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
+import tanks.network.event.EventItemDropDestroy;
+import tanks.network.event.EventItemPickup;
+import tanks.tank.IServerPlayerTank;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class ItemDrop extends Movable
 {
+    public static int currentID = 0;
+    public static ArrayList<Integer> freeIDs = new ArrayList<>();
+    public static HashMap<Integer, ItemDrop> idMap = new HashMap<>();
+
     public Item item;
     public double height;
     public double size = Game.tile_size * 1.5;
     public double destroyTime = 0;
     public double maxDestroyTime = 50;
     public Tank pickup = null;
+
+    public int networkID = -1;
 
     public ItemDrop(double x, double y, Item item)
     {
@@ -37,6 +50,43 @@ public class ItemDrop extends Movable
         }
     }
 
+    public static int nextFreeNetworkID()
+    {
+        if (freeIDs.size() > 0)
+            return freeIDs.remove(0);
+        else
+        {
+            currentID++;
+            return currentID - 1;
+        }
+    }
+
+    public void registerNetworkID()
+    {
+        if (ScreenPartyLobby.isClient)
+            Game.exitToCrash(new RuntimeException("Do not automatically assign network IDs on client!"));
+
+        this.networkID = nextFreeNetworkID();
+        idMap.put(this.networkID, this);
+    }
+
+    public void unregisterNetworkID()
+    {
+        if (idMap.get(this.networkID) == this)
+            idMap.remove(this.networkID);
+
+        if (!freeIDs.contains(this.networkID))
+        {
+            freeIDs.add(this.networkID);
+        }
+    }
+
+    public void setNetworkID(int id)
+    {
+        this.networkID = id;
+        idMap.put(id, this);
+    }
+
     @Override
     public void draw()
     {
@@ -44,9 +94,9 @@ public class ItemDrop extends Movable
         double size = this.size * (1 - frac);
 
         double px = this.posX;
-        double py = this.posY + size / 8;
         double pz = this.posZ + this.height + 9;
         double s = this.size * Math.min(1, 2 - frac * 2);
+        double py = this.posY + s / 8;
 
         if (this.pickup != null)
         {
@@ -76,6 +126,13 @@ public class ItemDrop extends Movable
             Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height, size, size);
             Drawing.drawing.drawImage(this.item.icon, px, py, s / 2, s / 2);
         }
+
+        if (Game.showTankIDs)
+        {
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setFontSize(30);
+            Drawing.drawing.drawText(this.posX, this.posY, 50, this.networkID + "");
+        }
     }
 
     @Override
@@ -83,6 +140,9 @@ public class ItemDrop extends Movable
     {
         if (this.destroy)
         {
+            if (this.destroyTime <= 0 && this.pickup == null)
+                Game.eventsOut.add(new EventItemDropDestroy(this));
+
             this.destroyTime += Panel.frameFrequency;
             if (this.destroyTime > this.maxDestroyTime)
                 Game.removeMovables.add(this);
@@ -91,14 +151,16 @@ public class ItemDrop extends Movable
         {
             for (Movable m: Game.movables)
             {
-                if (m instanceof TankPlayer && Movable.distanceBetween(this, m) < this.size)
+                if (m instanceof IServerPlayerTank && Movable.distanceBetween(this, m) < this.size)
                 {
-                    boolean added = ((TankPlayer) m).player.hotbar.itemBar.addItem(this.item);
+                    boolean added = ((IServerPlayerTank) m).getPlayer().hotbar.itemBar.addItem(this.item);
 
                     if (added)
                     {
                         this.pickup = (Tank) m;
                         this.destroy = true;
+                        Game.eventsOut.add(new EventItemPickup(this, this.pickup));
+                        this.unregisterNetworkID();
                         Drawing.drawing.playSound("bullet_explode.ogg", 1.6f);
                     }
                 }

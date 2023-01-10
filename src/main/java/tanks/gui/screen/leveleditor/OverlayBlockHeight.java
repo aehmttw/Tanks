@@ -40,12 +40,6 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
         staggering.imageSizeX = 40;
         staggering.imageSizeY = 40;
         staggering.fullInfo = true;
-
-        increaseHeight.textOffsetX = 1.5;
-        increaseHeight.textOffsetY = 1.5;
-
-        decreaseHeight.textOffsetX = 1.5;
-        decreaseHeight.textOffsetY = 1.5;
     }
 
     public void update()

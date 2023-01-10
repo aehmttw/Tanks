@@ -654,15 +654,7 @@ public class TankAIControlled extends Tank
 
 	public void charge()
 	{
-		double reload = 1;
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			AttributeModifier a = this.attributes.get(i);
-			if (a.type.equals("reload"))
-			{
-				reload = a.getValue(reload);
-			}
-		}
+		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
 		this.cooldown -= Panel.frameFrequency * reload;
 		this.justCharged = true;
@@ -976,6 +968,7 @@ public class TankAIControlled extends Tank
 		t.possessor = this;
 		t.skipNextUpdate = true;
 		t.attributes = this.attributes;
+		t.statusEffects = this.statusEffects;
 		t.coinValue = this.coinValue;
 		t.cooldown = this.cooldown;
 
@@ -1335,16 +1328,7 @@ public class TankAIControlled extends Tank
 
 		if (!this.chargeUp)
 		{
-			double reload = 1;
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				AttributeModifier a = this.attributes.get(i);
-				if (a.type.equals("reload"))
-				{
-					reload = a.getValue(reload);
-				}
-			}
-
+			double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 			this.cooldown -= Panel.frameFrequency * reload;
 		}
 
@@ -2246,6 +2230,7 @@ public class TankAIControlled extends Tank
 			this.pitch = this.sightTransformTank.pitch;
 			this.drawAge = this.sightTransformTank.drawAge;
 			this.attributes = this.sightTransformTank.attributes;
+			this.statusEffects = this.sightTransformTank.statusEffects;
 			this.possessingTank = null;
 			this.targetEnemy = null;
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
@@ -2314,6 +2299,7 @@ public class TankAIControlled extends Tank
 			this.orientation = t.orientation;
 			this.drawAge = t.drawAge;
 			this.attributes = t.attributes;
+			this.statusEffects = t.statusEffects;
 			this.targetEnemy = null;
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 1);
 
@@ -2396,6 +2382,7 @@ public class TankAIControlled extends Tank
 			t.possessor = this;
 			t.skipNextUpdate = true;
 			t.attributes = this.attributes;
+			t.statusEffects = this.statusEffects;
 			t.coinValue = this.coinValue;
 
 			t.baseModel = this.baseModel;

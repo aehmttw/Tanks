@@ -66,9 +66,15 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(255, 255, 255);
+
+        int diff = 300;
+
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+            diff = 390;
+
         for (int i = 0; i < text.length; i++)
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - 390, Drawing.drawing.interfaceSizeY / 2 + (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i], false);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - diff, Drawing.drawing.interfaceSizeY / 2 + (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i], false);
         }
 
         back.draw();

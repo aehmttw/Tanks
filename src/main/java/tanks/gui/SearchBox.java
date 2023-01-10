@@ -96,7 +96,7 @@ public class SearchBox extends TextBox
 			drawing.setColor(255, 255, 255);
 
 			drawing.setInterfaceFontSize(this.sizeY * 0.6);
-			drawing.drawInterfaceText(this.posX + 2 + this.sizeX / 2 - this.sizeY / 2 - 1, this.posY - 1, "x");
+			drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - 2.5, "x");
 		}
 	}
 

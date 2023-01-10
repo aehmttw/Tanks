@@ -34,27 +34,27 @@ public class BulletBoost extends Bullet
 
 		t.checkHit(this.tank, this);
 
-		AttributeModifier c = new AttributeModifier("boost_speed", "velocity", AttributeModifier.Operation.multiply, 3);
+		AttributeModifier c = new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3);
 		c.duration = 10 * this.size;
 		c.deteriorationAge = 5 * this.size;
 		t.addUnduplicateAttribute(c);
 
-		AttributeModifier e = new AttributeModifier("bullet_boost", "bullet_boost", AttributeModifier.Operation.multiply, 1);
+		AttributeModifier e = new AttributeModifier("bullet_boost", AttributeModifier.bullet_boost, AttributeModifier.Operation.multiply, 1);
 		e.duration = 10 * this.size;
 		e.deteriorationAge = 5 * this.size;
 		t.addUnduplicateAttribute(e);
 
-		AttributeModifier a = new AttributeModifier("boost_glow", "glow", AttributeModifier.Operation.multiply, 1);
+		AttributeModifier a = new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1);
 		a.duration = 10 * this.size;
 		a.deteriorationAge = 5 * this.size;
 		t.addUnduplicateAttribute(a);
 
-		AttributeModifier b = new AttributeModifier("boost_slip", "friction", AttributeModifier.Operation.multiply, -0.75);
+		AttributeModifier b = new AttributeModifier("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75);
 		b.duration = 10 * this.size;
 		b.deteriorationAge = 5 * this.size;
 		t.addUnduplicateAttribute(b);
 
-		AttributeModifier d = new AttributeModifier("boost_effect", "effect", AttributeModifier.Operation.add, 1);
+		AttributeModifier d = new AttributeModifier("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1);
 		d.duration = 10 * this.size;
 		d.deteriorationAge = 5 * this.size;
 		t.addUnduplicateAttribute(d);

@@ -1,5 +1,6 @@
 package tanks.bullet;
 
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.EventLayMine;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Explosion;
@@ -29,8 +30,11 @@ public class BulletExplosive extends Bullet
     @Override
     public void onDestroy()
     {
-        Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, this.damage, true, this.tank, this.item);
-        e.explode();
+        if (!ScreenPartyLobby.isClient)
+        {
+            Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, this.damage, true, this.tank, this.item);
+            e.explode();
+        }
     }
 
     @Override

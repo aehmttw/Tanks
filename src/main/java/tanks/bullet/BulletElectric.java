@@ -166,7 +166,7 @@ public class BulletElectric extends BulletInstant
 		this.posX = movable.posX;
 		this.posY = movable.posY;
 
-		AttributeModifier a = new AttributeModifier("velocity", Operation.multiply, -1);
+		AttributeModifier a = new AttributeModifier(AttributeModifier.velocity, Operation.multiply, -1);
 		a.duration = 100;
 		movable.addAttribute(a);
 

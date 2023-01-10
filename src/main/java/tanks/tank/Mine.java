@@ -2,7 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.network.event.EventMineChangeTimer;
-import tanks.network.event.EventMineExplode;
+import tanks.network.event.EventMineRemove;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -188,14 +188,14 @@ public class Mine extends Movable implements IAvoidObject
 
     public void explode()
     {
-        Game.eventsOut.add(new EventMineExplode(this));
+        Game.eventsOut.add(new EventMineRemove(this));
         Game.removeMovables.add(this);
-
-        freeIDs.add(this.networkID);
-        idMap.remove(this.networkID);
 
         if (!ScreenPartyLobby.isClient)
         {
+            freeIDs.add(this.networkID);
+            idMap.remove(this.networkID);
+
             Explosion e = new Explosion(this);
             e.explode();
 

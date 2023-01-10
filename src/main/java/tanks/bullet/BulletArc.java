@@ -59,16 +59,7 @@ public class BulletArc extends Bullet
     {
         super.update();
 
-        double gravMod = 1;
-        for (int i = 0; i < this.attributes.size(); i++)
-        {
-            AttributeModifier a = this.attributes.get(i);
-
-            if (a.type.equals("velocity"))
-            {
-                gravMod = a.getValue(gravMod);
-            }
-        }
+        double gravMod = this.getAttributeValue(AttributeModifier.velocity, 1);
 
         this.vZ -= gravity * Panel.frameFrequency * gravMod;
 

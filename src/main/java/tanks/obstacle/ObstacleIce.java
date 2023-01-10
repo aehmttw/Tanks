@@ -37,20 +37,7 @@ public class ObstacleIce extends Obstacle
     {
         if (m instanceof Tank)
         {
-            AttributeModifier a = new AttributeModifier("ice_accel", "acceleration", AttributeModifier.Operation.multiply, -0.75);
-            a.duration = 10;
-            a.deteriorationAge = 5;
-            m.addUnduplicateAttribute(a);
-
-            AttributeModifier b = new AttributeModifier("ice_slip", "friction", AttributeModifier.Operation.multiply, -0.875);
-            b.duration = 10;
-            b.deteriorationAge = 5;
-            m.addUnduplicateAttribute(b);
-
-            AttributeModifier c = new AttributeModifier("ice_max_speed", "max_speed", AttributeModifier.Operation.multiply, 3);
-            c.duration = 10;
-            c.deteriorationAge = 5;
-            m.addUnduplicateAttribute(c);
+            m.addStatusEffect(StatusEffect.ice, 0, 5, 10);
         }
     }
 

@@ -51,7 +51,7 @@ public class Tutorial
 
         this.brown = new TankBrown("brown", 32.5 * Game.tile_size, 2.5 * Game.tile_size, Math.PI / 2);
         this.brown.team = Game.enemyTeam;
-        Game.movables.add(this.brown);
+        Game.addTank(this.brown);
 
         arrow = Drawing.drawing.createModel();
         arrow.shapes = new ModelPart.Shape[2];
@@ -375,7 +375,7 @@ public class Tutorial
     {
         TankDummy t = new TankDummy("dummy", (x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, angle * Math.PI / 2);
         t.team = Game.enemyTeam;
-        Game.movables.add(t);
+        Game.addTank(t);
 
         return t;
     }

@@ -5,6 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
+import tanks.tank.TankAIControlled;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -115,8 +116,20 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
-        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
-        Level lev = new Level(Game.currentLevelString);
+        String ls = Game.currentLevelString;
+
+        StringBuilder tanks = new StringBuilder("\ntanks\n");
+        if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
+        {
+            for (TankAIControlled t: Crusade.currentCrusade.customTanks)
+                tanks.append(t.toString()).append("\n");
+
+            ls = ls + tanks;
+        }
+
+        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen);
+        Level lev = new Level(ls);
+
         lev.preview = true;
         lev.loadLevel(sc);
         Game.screen = sc;

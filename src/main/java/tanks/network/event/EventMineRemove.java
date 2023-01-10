@@ -4,16 +4,16 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.tank.Mine;
 
-public class EventMineExplode extends PersonalEvent
+public class EventMineRemove extends PersonalEvent
 {
     public int mine;
 
-    public EventMineExplode()
+    public EventMineRemove()
     {
 
     }
 
-    public EventMineExplode(Mine m)
+    public EventMineRemove(Mine m)
     {
         this.mine = m.networkID;
     }

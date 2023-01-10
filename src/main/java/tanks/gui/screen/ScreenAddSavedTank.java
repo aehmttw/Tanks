@@ -146,8 +146,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         this.previousTankPage.imageSizeY = 25;
         this.previousTankPage.imageXOffset = -145;
 
-        delete.textOffsetY = -1;
-        delete.textOffsetX = 1;
+        delete.textOffsetY = -2.5;
 
         delete.textColR = 255;
         delete.textColG = 255;

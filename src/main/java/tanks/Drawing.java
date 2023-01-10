@@ -1009,6 +1009,12 @@ public class Drawing
 		double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
 
 		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+
+		if (Game.game.window.fontRenderer.drawBox)
+		{
+			Drawing.drawing.setColor(0, 255, 0);
+			Game.game.window.shapeRenderer.drawRect(drawX, drawY, sizeX, sizeY);
+		}
 	}
 
 	public void drawInterfaceText(double x, double y, String text, boolean rightAligned)

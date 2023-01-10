@@ -14,7 +14,7 @@ import tanks.hotbar.item.ItemRemote;
 
 import java.util.UUID;
 
-public class TankPlayerController extends Tank implements IPlayerTank
+public class TankPlayerController extends Tank implements ILocalPlayerTank
 {
     public UUID clientID;
 

@@ -16,9 +16,9 @@ import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.*;
 
 /**
- * A tank that is controlled by the player.
+ * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
  */
-public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
+public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank
 {
 	public static ItemBullet default_bullet;
 	public static ItemMine default_mine;
@@ -31,7 +31,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 	public static boolean controlStickMobile = true;
 
 	public Player player = Game.player;
-	public boolean enableDestroyCheat = false;
+	public static boolean enableDestroyCheat = false;
 
 	public boolean drawTouchCircle = false;
 	public double touchCircleSize = 400;
@@ -215,15 +215,7 @@ public class TankPlayer extends Tank implements IPlayerTank, IServerPlayerTank
 				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
 		}
 
-		double reload = 1;
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			AttributeModifier a = this.attributes.get(i);
-			if (a.type.equals("reload"))
-			{
-				reload = a.getValue(reload);
-			}
-		}
+		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
 		this.bullet.updateCooldown(reload);
 		this.mine.updateCooldown(reload);

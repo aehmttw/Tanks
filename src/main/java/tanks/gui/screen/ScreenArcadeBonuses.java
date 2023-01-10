@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Firework;
 import tanks.minigames.Arcade;
+import tanks.network.event.EventArcadeBonuses;
 import tanks.tank.Tank;
 import tanks.translation.Translation;
 
@@ -101,7 +102,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int)(a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
 
         if ((a.score + "").contains("69"))
-            bonuses.add(new Bonus("Nice! ;)", 69, 255, 127, 0));
+            bonuses.add(new Bonus("Nice! ;)", 69, 230, 220, 190));
 
         if (a.score == 420)
             bonuses.add(new Bonus("MLG GAMER!!!", 100, 0, 180, 0));
@@ -116,7 +117,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (digits.length() == 2 && a.score % 11 == 0)
                 bonuses.add(new Bonus("Double digits!", 15, 160, 40, 255));
         else if (digits.length() == 3 && a.score % 111 == 0)
-                bonuses.add(new Bonus("Triple digits!!", 40, 255, 40, 255));
+                bonuses.add(new Bonus("Triple digits!!", 60, 255, 40, 255));
         else if (digits.length() == 4 && a.score % 1111 == 0)
                 bonuses.add(new Bonus("Quadruple digits!!", 125, 255, 40, 160));
 
@@ -152,24 +153,16 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (a.kills >= a.bulletsFired * 0.4)
             bonuses.add(new Bonus("Good aim!", 20, 255, 40, 160));
 
-        String most = null;
-        int value = 0;
-        for (String s: a.destroyedTanksValue.keySet())
-        {
-            if (a.destroyedTanksValue.get(s) > value)
-            {
-                value = a.destroyedTanksValue.get(s);
-                most = s;
-            }
-        }
-        Tank mostTank = Game.registryTank.getEntry(most).getTank(0, 0, 0);
-
-        if (value >= 60)
-            bonuses.add(new Bonus(Game.formatString(most) + " massacre!!!", 60, mostTank.secondaryColorR, mostTank.secondaryColorG, mostTank.secondaryColorB));
-        else if (value >= 40)
-            bonuses.add(new Bonus(Game.formatString(most) + " exterminator!!", 40, mostTank.secondaryColorR, mostTank.secondaryColorG, mostTank.secondaryColorB));
-        else if (value >= 20)
-            bonuses.add(new Bonus(Game.formatString(most) +  " destroyer!", 20, mostTank.secondaryColorR, mostTank.secondaryColorG, mostTank.secondaryColorB));
+        if (a.kills >= 120)
+            bonuses.add(new Bonus("Tank annihilator!!!!", 100, 255, 255, 80));
+        else if (a.kills >= 100)
+            bonuses.add(new Bonus("Tank obliterator!!!", 80, 255, 160, 80));
+        else if (a.kills >= 80)
+            bonuses.add(new Bonus("Tank massacre!!", 60, 255, 80, 80));
+        else if (a.kills >= 60)
+            bonuses.add(new Bonus("Tank exterminator!", 40, 255, 80, 160));
+        else if (a.kills >= 40)
+            bonuses.add(new Bonus("Tank destroyer", 20, 255, 80, 155));
 
         while (!bonuses.isEmpty())
         {
@@ -184,6 +177,21 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 return o2.value - o1.value;
             }
         });
+
+        Game.eventsOut.add(new EventArcadeBonuses(this.bonuses.get(0), this.bonuses.get(1), this.bonuses.get(2)));
+    }
+
+    public ScreenArcadeBonuses(Bonus b1, Bonus b2, Bonus b3)
+    {
+        this.bonuses.add(b1);
+        this.bonuses.add(b2);
+        this.bonuses.add(b3);
+
+        if (Game.currentLevel instanceof Arcade)
+        {
+            this.score = ((Arcade) Game.currentLevel).score;
+            this.originalScore = this.score;
+        }
     }
 
     @Override
@@ -214,7 +222,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             if (bonusCount == i && age >= firstBonusTime + interBonusTime * bonusCount)
             {
                 bonusCount++;
-                Drawing.drawing.playSound("bonus" + (i + 1) + ".ogg", 1f);
+
+                if (bonuses.get(2 - i).value > 2000000000)
+                    Drawing.drawing.playSound("leave.ogg");
+                else
+                    Drawing.drawing.playSound("bonus" + (i + 1) + ".ogg", 1f);
 
                 if (Game.effectsEnabled)
                 {
@@ -257,7 +269,12 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         if (age >= firstBonusTime + interBonusTime * 5 && this.getFireworkArray().size() == 0)
         {
             Panel.winlose = Translation.translate("You scored %d points!", score);
-            Game.screen = new ScreenInterlevel();
+            Panel.win = true;
+
+            if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+                Game.screen = new ScreenPartyInterlevel();
+            else
+                Game.screen = new ScreenInterlevel();
         }
     }
 
@@ -265,6 +282,42 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     public void draw()
     {
         this.drawDefaultBackground();
+
+        if (bonusCount >= 3 && bonuses.get(0).value > 2000000000)
+        {
+            Drawing drawing = Drawing.drawing;
+            drawing.setColor(0, 0, 255);
+            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+
+            drawing.setColor(255, 255, 255);
+            drawing.setInterfaceFontSize(100);
+
+            if (Drawing.drawing.interfaceScaleZoom > 1)
+                drawing.drawInterfaceText(50, 100, ":(");
+            else
+                drawing.drawInterfaceText(100, 100, ":(");
+
+            drawing.setInterfaceFontSize(48);
+            drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, "Oh noes! Tanks ran into a problem!");
+
+            drawing.setInterfaceFontSize(24);
+
+            drawing.displayInterfaceText(50, 200, false, "You may return to the game if you wish,");
+            drawing.displayInterfaceText(50, 230, false, "but be warned that things may become unstable.");
+            drawing.displayInterfaceText(50, 260, false, "If you see this screen again, restart the game.");
+            drawing.displayInterfaceText(50, 290, false, "Also, you may want to report this crash!");
+
+            drawing.displayInterfaceText(50, 350,  false, "Crash details:");
+            drawing.drawInterfaceText(50, 380, "Error 404: Bonus not found!", false);
+            drawing.drawInterfaceText(50, 410, "This isn't an actual crash lmao", false);
+
+            drawing.displayInterfaceText(50, 470,  false, "Check the crash report file for more information: ");
+            drawing.drawInterfaceText(50, 500, Game.homedir.replace("\\", "/") + Game.crashesPath + "lmaothisisnta.crash", false);
+
+            Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
+            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        }
+
         double heightFrac = Math.min(1, age / 25);
         double yPos = Drawing.drawing.interfaceSizeY * (1 - heightFrac / 2);
         Drawing.drawing.setColor(0, 0, 0, 127 * heightFrac);

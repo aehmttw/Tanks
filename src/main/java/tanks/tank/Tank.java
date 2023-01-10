@@ -518,15 +518,17 @@ public abstract class Tank extends Movable implements ISolidObject
 					i--;
 				}
 			}
-			else if (a.type.equals("acceleration"))
-				this.accelerationModifier = a.getValue(this.accelerationModifier);
-			else if (a.type.equals("friction"))
-				this.frictionModifier = a.getValue(this.frictionModifier);
-			else if (a.type.equals("max_speed"))
-				this.maxSpeedModifier = a.getValue(this.maxSpeedModifier);
-			else if (a.name.equals("boost_effect"))
-				boost = a.getValue(boost);
 		}
+
+
+		this.accelerationModifier = this.getAttributeValue(AttributeModifier.acceleration, this.accelerationModifier);
+
+		if (!(this instanceof TankAIControlled))
+			this.frictionModifier = this.getAttributeValue(AttributeModifier.friction, this.frictionModifier);
+
+		this.maxSpeedModifier = this.getAttributeValue(AttributeModifier.max_speed, this.maxSpeedModifier);
+
+		boost = this.getAttributeValue(AttributeModifier.ember_effect, boost);
 
 		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled)
 		{
@@ -647,8 +649,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawTank(boolean forInterface, boolean interface3d)
 	{
-		double luminance = this.luminance;
-		double glow = 1;
+		double luminance = this.getAttributeValue(AttributeModifier.glow, this.luminance);
+		double glow = this.getAttributeValue(AttributeModifier.glow, 1);
 
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
@@ -658,16 +660,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		Drawing drawing = Drawing.drawing;
 		double[] teamColor = Team.getObjectColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB, this);
-
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			AttributeModifier a = this.attributes.get(i);
-			if (a.type.equals("glow"))
-			{
-				luminance = a.getValue(luminance);
-				glow = a.getValue(glow);
-			}
-		}
 
 		Drawing.drawing.setColor(teamColor[0] * glow * this.glowIntensity, teamColor[1] * glow * this.glowIntensity, teamColor[2] * glow * this.glowIntensity, 255, 1);
 
@@ -957,7 +949,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		{
 			for (int i = 0; i < this.attributes.size(); i++)
 			{
-				if (this.attributes.get(i).type.equals("healray"))
+				if (this.attributes.get(i).type.name.equals("healray"))
 				{
 					this.attributes.remove(i);
 					i--;

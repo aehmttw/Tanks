@@ -98,6 +98,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
 
+	public boolean playedIntro = false;
+
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
 
@@ -293,40 +295,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	Button restartLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart this level", () ->
 	{
-		playing = false;
-		paused = false;
-
-		if (ScreenPartyHost.isServer)
-		{
-			ready = false;
-			readyButton.enabled = true;
-			cancelCountdown = true;
-			ScreenPartyHost.readyPlayers.clear();
-			ScreenPartyHost.includedPlayers.clear();
-		}
-
-		Game.silentCleanUp();
-
-		if (ScreenInterlevel.fromModdedLevels)
-		{
-			try
-			{
-				Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
-				Game.currentLevel.loadLevel();
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
-		}
-		else
-		{
-			Level level = new Level(Game.currentLevelString);
-			level.loadLevel();
-			ScreenGame s = new ScreenGame();
-			s.name = name;
-			Game.screen = s;
-		}
+		restart.function.run();
 	}
 	);
 
@@ -362,13 +331,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		System.gc();
 		Panel.panel.zoomTimer = 0;
 
-		if (ScreenInterlevel.fromModdedLevels)
+		if (ScreenInterlevel.fromMinigames)
 			Game.screen = new ScreenMinigames();
 		else
 			Game.screen = new ScreenPlaySavedLevels();
 
 		ScreenInterlevel.fromSavedLevels = false;
-		ScreenInterlevel.fromModdedLevels = false;
+		ScreenInterlevel.fromMinigames = false;
 
 		if (ScreenPartyHost.isServer)
 		{
@@ -569,13 +538,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (Game.currentLevel instanceof Minigame)
 		{
-			ScreenInterlevel.fromModdedLevels = true;
+			ScreenInterlevel.fromMinigames = true;
 			ScreenInterlevel.fromSavedLevels = false;
 			back.setText("Back to minigames");
 		}
 		else
 		{
-			ScreenInterlevel.fromModdedLevels = false;
+			ScreenInterlevel.fromMinigames = false;
 			ModAPI.menuGroup.clear();
 		}
 
@@ -867,8 +836,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (this.playCounter >= 0 && this.playing)
 		{
-			if (this.playCounter == 0)
+			if (!this.playedIntro)
 			{
+				this.playedIntro = true;
 				if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).customIntroMusic)
 					Drawing.drawing.playSound(((Minigame) Game.currentLevel).introMusic, 1f, true);
 				else if (Game.currentLevel != null && Game.currentLevel.timed)
@@ -1042,7 +1012,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					}
 					else if (ScreenPartyHost.isServer)
 					{
-						if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromModdedLevels)
+						if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames)
 						{
 							closeMenuLowerPos.update();
 							restartLowerPos.update();
@@ -1075,7 +1045,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							quitPartyGame.update();
 						}
 					}
-					else if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromModdedLevels)
+					else if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames)
 					{
 						resumeLowerPos.update();
 						restartLowerPos.update();
@@ -1690,7 +1660,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 									}
 								}
 								else
-									Game.screen = new ScreenPartyInterlevel();
+									Game.exitToInterlevel();
 
 								System.gc();
 							}
@@ -2058,15 +2028,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (i == 9 && (Game.playerTank instanceof IPlayerTank && ((IPlayerTank) Game.playerTank).showTouchCircle()))
+			if (i == 9 && (Game.playerTank instanceof ILocalPlayerTank && ((ILocalPlayerTank) Game.playerTank).showTouchCircle()))
 			{
 				Drawing.drawing.setColor(255, 127, 0, 63);
 				Drawing.drawing.fillInterfaceOval(Drawing.drawing.toInterfaceCoordsX(Game.playerTank.posX),
 						Drawing.drawing.toInterfaceCoordsY(Game.playerTank.posY),
-						((IPlayerTank) Game.playerTank).getTouchCircleSize(), ((IPlayerTank) Game.playerTank).getTouchCircleSize());
+						((ILocalPlayerTank) Game.playerTank).getTouchCircleSize(), ((ILocalPlayerTank) Game.playerTank).getTouchCircleSize());
 			}
 
-			if (i == 9 && (Game.playerTank instanceof IPlayerTank && ((IPlayerTank) Game.playerTank).getDrawRange() >= 0) && !Game.game.window.drawingShadow)
+			if (i == 9 && (Game.playerTank instanceof ILocalPlayerTank && ((ILocalPlayerTank) Game.playerTank).getDrawRange() >= 0) && !Game.game.window.drawingShadow)
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 50);
@@ -2075,12 +2045,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (Game.enable3d)
 					Drawing.drawing.fillForcedOval(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2,
-							((IPlayerTank) Game.playerTank).getDrawRange() * 2, ((IPlayerTank) Game.playerTank).getDrawRange() * 2, false, false);
+							((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2, ((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2, false, false);
 				else
 					Drawing.drawing.fillForcedOval(Game.playerTank.posX, Game.playerTank.posY,
-							((IPlayerTank) Game.playerTank).getDrawRange() * 2, ((IPlayerTank) Game.playerTank).getDrawRange() * 2);
+							((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2, ((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2);
 
-				((IPlayerTank) Game.playerTank).setDrawRange(-1);
+				((ILocalPlayerTank) Game.playerTank).setDrawRange(-1);
 			}
 
 			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy
@@ -2380,7 +2350,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						drawing.setColor(255, 127, 0);
 						drawing.fillInterfaceOval(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2, enterShop.posY, enterShop.sizeY * 3 / 4, enterShop.sizeY * 3 / 4);
 						drawing.setColor(255, 255, 255);
-						Drawing.drawing.drawInterfaceText(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2 + 1.5, enterShop.posY, "!");
+						Drawing.drawing.drawInterfaceText(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2 + 0.5, enterShop.posY, "!");
 					}
 				}
 
@@ -2481,7 +2451,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 			else if (ScreenPartyHost.isServer)
 			{
-				if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromModdedLevels)
+				if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames)
 				{
 					closeMenuLowerPos.draw();
 					restartLowerPos.draw();
@@ -2514,7 +2484,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					quitPartyGame.draw();
 				}
 			}
-			else if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromModdedLevels)
+			else if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames)
 			{
 				resumeLowerPos.draw();
 				restartLowerPos.draw();

@@ -32,12 +32,14 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 	public int networkID;
 
+	public double drawAge;
+
 	public EventTankPlayerCreate()
 	{
 	
 	}
 	
-	public EventTankPlayerCreate(Player p, double x, double y, double angle, Team t, int networkID)
+	public EventTankPlayerCreate(Player p, double x, double y, double angle, Team t, int networkID, double drawAge)
 	{
 		this.player = p;
 		this.clientIdTarget = p.clientID;
@@ -45,6 +47,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 		this.posY = y;
 		this.angle = angle;
 		this.networkID = networkID;
+		this.drawAge = drawAge;
 
 		if (t == null)
 			this.team = "*";
@@ -131,6 +134,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.secondaryColorB = this.colorB2;
 		t.nameTag.colorB = this.colorB2;
 
+		t.drawAge = this.drawAge;
+
 		t.setNetworkID(this.networkID);
 		Game.movables.add(t);
 	}
@@ -152,6 +157,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 		b.writeInt(this.colorR2);
 		b.writeInt(this.colorG2);
 		b.writeInt(this.colorB2);
+
+		b.writeDouble(this.drawAge);
 	}
 
 	@Override
@@ -171,5 +178,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 		this.colorR2 = b.readInt();
 		this.colorG2 = b.readInt();
 		this.colorB2 = b.readInt();
+
+		this.drawAge = b.readDouble();
 	}
 }

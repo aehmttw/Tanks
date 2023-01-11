@@ -2,12 +2,14 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenOptionsGame extends Screen
 {
     public static final String autostartText = "Autostart: ";
     public static final String fullStatsText = "Stats animations: ";
+    public static final String pauseText = "Pause on defocus: ";
 
     Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -39,7 +41,21 @@ public class ScreenOptionsGame extends Screen
     },
             "When off, skips directly to the summary tab---of the crusade end stats screen");
 
-    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
+    Button pauseOnDefocus = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Panel.pauseOnDefocus = !Panel.pauseOnDefocus;
+
+            if (Panel.pauseOnDefocus)
+                pauseOnDefocus.setText(pauseText, ScreenOptions.onText);
+            else
+                pauseOnDefocus.setText(pauseText, ScreenOptions.offText);
+        }
+    });
+
+    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
@@ -57,6 +73,11 @@ public class ScreenOptionsGame extends Screen
             fullStats.setText(fullStatsText, ScreenOptions.onText);
         else
             fullStats.setText(fullStatsText, ScreenOptions.offText);
+
+        if (Panel.pauseOnDefocus)
+            pauseOnDefocus.setText(pauseText, ScreenOptions.onText);
+        else
+            pauseOnDefocus.setText(pauseText, ScreenOptions.offText);
     }
 
     @Override
@@ -64,8 +85,9 @@ public class ScreenOptionsGame extends Screen
     {
         back.update();
         speedrunOptions.update();
-        autostart.update();
+        pauseOnDefocus.update();
         fullStats.update();
+        autostart.update();
     }
 
     @Override
@@ -75,6 +97,7 @@ public class ScreenOptionsGame extends Screen
 
         back.draw();
         speedrunOptions.draw();
+        pauseOnDefocus.draw();
         fullStats.draw();
         autostart.draw();
 

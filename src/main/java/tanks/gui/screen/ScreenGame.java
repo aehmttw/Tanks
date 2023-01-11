@@ -2549,6 +2549,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 	}
 
+	@Override
+	public void onFocusChange(boolean focused)
+	{
+		if (!focused && ((Game.autostart && !cancelCountdown) || playing) && !npcShopScreen)
+			paused = true;
+	}
+
 	public void saveRemainingTanks()
 	{
 		if (!savedRemainingTanks && Crusade.crusadeMode && Crusade.currentCrusade != null)

@@ -4,5 +4,7 @@
 .settings
 .DS_Store
 /.vscode
-Tanks.jar
-/libs
+/libs/
+/src/main/java/tanks/modlevels/GameMap.java
+/out/
+/.idea/

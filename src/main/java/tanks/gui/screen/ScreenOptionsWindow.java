@@ -13,14 +13,7 @@ public class ScreenOptionsWindow extends Screen
 
     Button fullscreen = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs());
 
-    Button maxFPS = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = new ScreenOptionsFramerate();
-        }
-    },
+    Button maxFPS = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsFramerate(),
             "Limiting your framerate may---decrease battery consumption");
 
     public static final String fullscreenText = "Fullscreen: ";

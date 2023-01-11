@@ -526,7 +526,7 @@ public class TextBox implements IDrawable, ITrigger
 			}
 		}
 
-		boolean caps = (this.enableCaps && (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)));
+		boolean caps = this.enableCaps && (Game.game.window.shift || Game.game.window.capsLock);
 
 		ArrayList<Integer> texts = Game.game.window.getRawTextKeys();
 

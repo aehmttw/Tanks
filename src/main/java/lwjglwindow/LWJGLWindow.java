@@ -8,15 +8,13 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 import tanks.Game;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -83,8 +81,6 @@ public class LWJGLWindow extends BaseWindow
 
 	protected int shadowMapBonesEnabledFlag;
 	protected int shadowMapBoneMatricesFlag;
-
-	protected boolean prevFocused = true;
 
 	public ShaderHandler shaderHandler;
 
@@ -185,10 +181,6 @@ public class LWJGLWindow extends BaseWindow
 				textPressedKeys.remove((Integer) key);
 				textValidPressedKeys.remove((Integer) key);
 			}
-
-			shift = (mods & GLFW_MOD_SHIFT) > 0;
-			capsLock = (mods & GLFW_MOD_CAPS_LOCK) > 0;
-			numLock = (mods & GLFW_MOD_NUM_LOCK) > 0;
 		});
 
 		glfwSetScrollCallback(window, (window, xoffset, yoffset) ->
@@ -371,7 +363,11 @@ public class LWJGLWindow extends BaseWindow
 		SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
 
 		if (soundPlayer != null)
+		{
 			soundPlayer.update();
+		}
+
+		this.updater.update();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -409,17 +405,7 @@ public class LWJGLWindow extends BaseWindow
 		else
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-		boolean focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
-
-		if (focused != prevFocused)
-		{
-			Game.screen.onFocusChange(focused);
-			prevFocused = focused;
-		}
-
 		glfwGetFramebufferSize(window, w, h);
-
-		this.updater.update();
 
 		if (shadowsEnabled)
 			this.shaderHandler.renderShadowMap();
@@ -438,7 +424,9 @@ public class LWJGLWindow extends BaseWindow
 			shouldClose = windowHandler.attemptCloseWindow();
 
 			if (!shouldClose)
+			{
 				glfwSetWindowShouldClose(window, false);
+			}
 		}
 
 		this.stopTiming();

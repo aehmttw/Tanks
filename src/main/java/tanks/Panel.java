@@ -40,6 +40,7 @@ public class Panel
 
 	public static boolean showMouseTarget = true;
 	public static boolean showMouseTargetHeight = false;
+	public static boolean pauseOnDefocus = true;
 
 	public static Panel panel;
 

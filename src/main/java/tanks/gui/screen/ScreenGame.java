@@ -2593,6 +2593,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		System.out.println((t1 - start) + " " + (t2 - t1) + " " + (t3 - t2) + " " + (t4 - t3) + " / " + (t1b - t1a));
 	}
 
+	@Override
+	public void onFocusChange(boolean focused)
+	{
+		if (!focused && ((Game.autostart && !cancelCountdown) || playing) && !npcShopScreen)
+			paused = true;
+	}
+
 	public void saveRemainingTanks()
 	{
 		if (!savedRemainingTanks && Crusade.crusadeMode && Crusade.currentCrusade != null)

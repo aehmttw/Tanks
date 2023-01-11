@@ -12,7 +12,7 @@ public class ScreenPlaySingleplayer extends Screen
         this.musicID = "menu";
     }
 
-    Button randomLevel = new Button(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Random level", () ->
+    Button randomLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Random level", () ->
     {
         Game.cleanUp();
         Game.loadRandomLevel();
@@ -20,19 +20,19 @@ public class ScreenPlaySingleplayer extends Screen
     }
             , "Generate a random level to play");
 
-    Button crusade = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Crusades", () -> Game.screen = new ScreenCrusades()
+    Button crusade = new Button(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Crusades", () -> Game.screen = new ScreenCrusades()
             , "Fight battles in an order,---and see how long you can survive!");
 
-    Button minigames = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Minigames", () -> Game.screen = new ScreenMinigames()
+    Button minigames = new Button(this.centerX, this.centerY + this.objYSpace * 0.25, this.objWidth, this.objHeight, "Minigames", () -> Game.screen = new ScreenMinigames()
             , "Play Tanks in new ways!");
 
-    Button create = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenSavedLevels()
+    Button create = new Button(this.centerX, this.centerY + this.objYSpace * 1.25, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenSavedLevels()
             , "Create and play your own levels!");
 
-    Button tutorial = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Tutorial", () -> new Tutorial().loadTutorial(false, Game.game.window.touchscreen), "Learn how to play Tanks!"
+    Button tutorial = new Button(this.centerX, this.centerY + this.objYSpace * 2.25, this.objWidth, this.objHeight, "Tutorial", () -> new Tutorial().loadTutorial(false, Game.game.window.touchscreen), "Learn how to play Tanks!"
     );
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
     );
 
     @Override

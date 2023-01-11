@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
 import basewindow.IBatchRenderableObject;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
+import tanks.Panel;
 import tanks.obstacle.Obstacle;
-
-import java.util.Arrays;
 
 public abstract class Screen implements IBatchRenderableObject
 {
@@ -70,6 +71,11 @@ public abstract class Screen implements IBatchRenderableObject
 	public abstract void draw();
 
 	public void drawPostMouse()
+	{
+
+	}
+
+	public void onFocusChange(boolean focused)
 	{
 
 	}

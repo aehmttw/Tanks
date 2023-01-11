@@ -11,12 +11,14 @@ import tanks.translation.Translation;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ScreenOptions extends Screen
 {
 	public static final String onText = "\u00A7000200000255on";
 	public static final String offText = "\u00A7200000000255off";
+	public static ArrayList<String> extraOptions = new ArrayList<>();
 
 	TankPlayer preview = new TankPlayer(0, 0, 0);
 
@@ -186,6 +188,7 @@ public class ScreenOptions extends Screen
 			f.println("tank_textures=" + Game.tankTextures);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("mouse_target_height=" + Panel.showMouseTargetHeight);
+			f.println("pause_on_lost_focus=" + Panel.pauseOnDefocus);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
@@ -224,6 +227,10 @@ public class ScreenOptions extends Screen
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
+
+			for (String s : extraOptions)
+				f.println(s);
+
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -302,6 +309,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "mouse_target_height":
 						Panel.showMouseTargetHeight = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "pause_on_lost_focus":
+						Panel.pauseOnDefocus = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "constrain_mouse":
 						Game.constrainMouse = Boolean.parseBoolean(optionLine[1]);
@@ -454,7 +464,9 @@ public class ScreenOptions extends Screen
 					case "auto_load_extensions":
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
 						break;
-
+					default:
+						extraOptions.add(line);
+						break;
 				}
 			}
 			f.stopReading();
@@ -472,7 +484,6 @@ public class ScreenOptions extends Screen
 
 			if (!Game.musicEnabled)
 				Game.musicVolume = 0;
-
 
 			if (TankPlayerRemote.weakTimeCheck)
 				TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatStrongTimeOffset;

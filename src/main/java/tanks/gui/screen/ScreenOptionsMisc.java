@@ -11,7 +11,7 @@ public class ScreenOptionsGame extends Screen
     public static final String fullStatsText = "Stats animations: ";
     public static final String pauseText = "Pause on defocus: ";
 
-    Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button autostart = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -26,7 +26,7 @@ public class ScreenOptionsGame extends Screen
     },
             "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
-    Button fullStats = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button fullStats = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -41,7 +41,7 @@ public class ScreenOptionsGame extends Screen
     },
             "When off, skips directly to the summary tab---of the crusade end stats screen");
 
-    Button pauseOnDefocus = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button pauseOnDefocus = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -55,7 +55,7 @@ public class ScreenOptionsGame extends Screen
         }
     });
 
-    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
+    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 

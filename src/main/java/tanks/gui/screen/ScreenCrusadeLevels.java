@@ -112,7 +112,8 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
         }
 
         if (Game.enable3d)
-            for (Obstacle o: Game.obstacles)
+        {
+            for (Obstacle o : Game.obstacles)
             {
                 if (o.replaceTiles)
                     o.postOverride();
@@ -126,6 +127,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
                     Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
                 }
             }
+        }
 
         this.drawDefaultBackground();
 

@@ -390,6 +390,11 @@ public class Drawing
 
 	public void fillRect(double x, double y, double sizeX, double sizeY)
 	{
+		fillRect(x, y, sizeX, sizeY, 0);
+	}
+
+	public void fillRect(double x, double y, double sizeX, double sizeY, double borderRadius)
+	{
 		double drawX = gameToAbsoluteX(x, sizeX);
 		double drawY = gameToAbsoluteY(y, sizeY);
 
@@ -399,7 +404,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY, borderRadius);
 	}
 
 	public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
@@ -770,8 +775,18 @@ public class Drawing
 
 	public void drawRect(double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = gameToAbsoluteX(x, sizeX);
-		double drawY = gameToAbsoluteY(y, sizeY);
+		drawRect(x, y, sizeX, sizeY, 1, 0);
+	}
+
+	public void drawRect(double x, double y, double sizeX, double sizeY, double borderWidth)
+	{
+		drawRect(x, y, sizeX, sizeY, borderWidth, 0);
+	}
+
+	public void drawRect(double x, double y, double sizeX, double sizeY, double borderWidth, double borderRadius)
+	{
+		double drawX = gameToAbsoluteX(x, sizeX + borderWidth);
+		double drawY = gameToAbsoluteY(y, sizeY + borderWidth);
 
 		if (isOutOfBounds(drawX, drawY))
 			return;
@@ -779,7 +794,7 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, borderWidth, borderRadius);
 	}
 
 	public void fillInterfaceOval(double x, double y, double sizeX, double sizeY)
@@ -1148,11 +1163,27 @@ public class Drawing
 
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
-		{
 			drawUncenteredInterfaceText(x + xPadding, y + 2 + yPadding * (2 * i + 1), text[i]);
-		}
 
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
+	}
+
+	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius)
+	{
+		drawPopup(x, y, sX, sY, borderWidth, borderRadius, 0, 0, 0, 150);
+	}
+
+	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius, double a)
+	{
+		drawPopup(x, y, sX, sY, borderWidth, borderRadius, 0, 0, 0, a);
+	}
+
+	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius, double r, double g, double b, double a)
+	{
+		Drawing.drawing.setColor(r, g, b, a);
+		fillRect(x, y, sX, sY, borderRadius);
+		Drawing.drawing.setColor(r, g, b, a / 2);
+		drawRect(x + borderWidth / 2, y + borderWidth / 2, sX, sY,  borderWidth, borderRadius);
 	}
 
 	public void playMusic(String sound, float volume, boolean looped, String id, long fadeTime)

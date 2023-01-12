@@ -86,7 +86,7 @@ public class ScreenCrusadeDetails extends Screen
         @Override
         public void run()
         {
-            Game.screen = new ScreenConfirmDeleteCrusade(((ScreenCrusadeDetails) Game.screen), crusade);
+            Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade);
         }
     });
 
@@ -106,9 +106,6 @@ public class ScreenCrusadeDetails extends Screen
             Game.screen = new ScreenCrusades();
     });
 
-    Button showRecordButton = new Button(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i", () ->
-            Game.screen = new ScreenCrusadeStats(crusade, this), "View best run");
-
 
     public ScreenCrusadeDetails(Crusade c)
     {
@@ -117,22 +114,10 @@ public class ScreenCrusadeDetails extends Screen
         this.music = "menu_5.ogg";
         this.musicID = "menu";
 
-        showRecordButton.fullInfo = true;
-        showRecordButton.unselectedColR = 0;
-        showRecordButton.unselectedColG = 127;
-        showRecordButton.unselectedColB = 255;
-        showRecordButton.selectedColR = 0;
-        showRecordButton.selectedColG = 0;
-        showRecordButton.selectedColB = 255;
-        showRecordButton.textColR = 255;
-        showRecordButton.textColG = 255;
-        showRecordButton.textColB = 255;
-        showRecordButton.fontSize = 22;
-
         if (Game.previewCrusades)
             this.forceInBounds = true;
 
-        if (c.levels.size() == 0)
+        if (c.levels.size() <= 0)
         {
             begin.enabled = false;
             begin.enableHover = true;
@@ -142,20 +127,25 @@ public class ScreenCrusadeDetails extends Screen
         if (crusade.description != null)
             this.levelsTextOffset += this.objYSpace;
 
+        if (crusade.started && crusade.description != null)
+        {
+            resume.posY += this.objYSpace;
+            startOver.posY += this.objYSpace;
+            edit.posY += this.objYSpace;
+            delete.posY += this.objYSpace;
+        }
+
         if (!c.internal)
         {
             if (!c.started)
             {
-                begin.posY -= this.objYSpace * 2;
-                edit.posY -= this.objYSpace;
+                begin.posY -= this.objYSpace;
                 delete.posY -= this.objYSpace;
                 back.posY -= this.objYSpace;
             }
             else
-                sizeY += 2;
+                sizeY++;
         }
-        else if (c.started)
-            sizeY++;
 
         if (!c.started)
             textOffset += 50;
@@ -165,28 +155,6 @@ public class ScreenCrusadeDetails extends Screen
 
         if (crusade.description != null)
             this.description = Drawing.drawing.wrapText(crusade.description.replaceAll("---", " "), 800, 24);
-
-        if (crusade.description != null)
-        {
-            double addY = this.objYSpace * (this.description.size() * 0.5 + 0.5) * 0.8;
-
-            this.textOffset -= addY / 3;
-
-            if (!crusade.internal)
-                begin.posY += addY;
-
-            resume.posY += addY;
-            startOver.posY += addY;
-            edit.posY += addY;
-            delete.posY += addY;
-            back.posY += addY;
-
-            levelsTextOffset = (int) (resume.posY - this.centerY + this.objYSpace / 2 + addY / 3);
-            sizeY += this.description.size() * 0.5;
-
-            if (crusade.started)
-                back2.posY = (crusade.internal ? startOver.posY : delete.posY) + this.objYSpace;
-        }
 
         if (crusade.internal)
         {
@@ -232,9 +200,6 @@ public class ScreenCrusadeDetails extends Screen
         }
         else
             back2.update();
-
-        if (this.bestTime >= 0 && !ScreenPartyHost.isServer)
-            this.showRecordButton.update();
     }
 
     @Override
@@ -267,14 +232,9 @@ public class ScreenCrusadeDetails extends Screen
             Drawing.drawing.setInterfaceFontSize(this.textSize * 0.75);
 
             if (Game.previewCrusades)
-            {
-                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * (sizeY / 2. - 0.5), true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
-                showRecordButton.posY = this.centerY + this.objYSpace * (sizeY / 2. - 0.5);
-            }
+                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 25, this.centerY + this.objYSpace * 4,  true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
             else
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.objYSpace * 4, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
-
-            this.showRecordButton.draw();
         }
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
@@ -317,7 +277,7 @@ public class ScreenCrusadeDetails extends Screen
             for (String s : this.description)
             {
                 Drawing.drawing.displayInterfaceText(this.centerX, pos + this.textOffset, s);
-                pos += this.objYSpace * 0.5;
+                pos += this.objYSpace * 0.4;
             }
         }
     }

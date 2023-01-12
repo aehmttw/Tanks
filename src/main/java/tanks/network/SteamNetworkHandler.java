@@ -27,7 +27,7 @@ public class SteamNetworkHandler
 
 	protected SteamAPIWarningMessageHook clMessageHook = (severity, message) -> System.err.println("[client debug message] (" + severity + ") " + message);
 
-	protected SteamUtilsCallback clUtilsCallback = new SteamUtilsCallback() {};
+//	protected SteamUtilsCallback clUtilsCallback = new SteamUtilsCallback() {};
 
 	protected static final int defaultChannel = 1;
 
@@ -113,7 +113,7 @@ public class SteamNetworkHandler
 			SteamAPI.runCallbacks();
 			friends.updateFriends();
 
-			while (networking.isP2PPacketAvailable(defaultChannel, msgSize))
+//			while (networking.isP2PPacketAvailable(defaultChannel, msgSize))
 			{
 				SteamID steamIDSender = new SteamID();
 
@@ -299,14 +299,14 @@ public class SteamNetworkHandler
 		{
 			System.setProperty("com.codedisaster.steamworks.Debug", "true");
 
-			SteamAPI.loadLibraries(new SteamLibraryLoaderLwjgl3());
+//			SteamAPI.loadLibraries(new SteamLibraryLoaderLwjgl3());
 
 			if (!SteamAPI.init())
 				return false;
 
 			registerInterfaces();
 
-			clientUtils = new SteamUtils(clUtilsCallback);
+//			clientUtils = new SteamUtils(clUtilsCallback);
 			clientUtils.setWarningMessageHook(clMessageHook);
 
 			// doesn't make much sense here, as normally you would call this before

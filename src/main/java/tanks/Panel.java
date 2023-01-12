@@ -1,10 +1,8 @@
 package tanks;
 
 import basewindow.BaseFile;
-import basewindow.IBatchRenderableObject;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
-import tanks.gui.TerrainRenderer;
 import tanks.network.event.EventBeginLevelCountdown;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
@@ -17,7 +15,6 @@ import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
 import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleLight;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -35,7 +32,7 @@ public class Panel
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
 
-	public final long splash_duration = 4000;
+	public final long splash_duration = 0;
 	public boolean playedTutorialIntroMusic = false;
 
 	public static boolean showMouseTarget = true;
@@ -100,8 +97,6 @@ public class Panel
 	public boolean started = false;
 	public boolean settingUp = true;
 
-	public ArrayList<double[]> lights = new ArrayList<>();
-
 	public static void initialize()
 	{
 		if (!initialized)
@@ -121,7 +116,6 @@ public class Panel
 		Drawing.drawing.terrainRenderer = Drawing.drawing.defaultRenderer.terrainRenderer;
 		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
 		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
-		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
 
 		ModAPI.setUp();
 
@@ -131,12 +125,6 @@ public class Panel
 			Game.game.window.setFullscreen(Game.game.fullscreen);
 
 		Game.game.window.setIcon("/images/icon64.png");
-
-		if (Game.game.window.soundPlayer == null)
-		{
-			Game.soundsEnabled = false;
-			Game.musicEnabled = false;
-		}
 
 		double scale = 1;
 		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
@@ -242,7 +230,6 @@ public class Panel
 		settingUp = false;
 	}
 
-	public boolean screenshot = false;
 	public void update()
 	{
 		if (firstFrame)
@@ -256,8 +243,7 @@ public class Panel
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
 			started = true;
-
-			//this.startTime = System.currentTimeMillis() + splash_duration;
+			this.startTime = System.currentTimeMillis() + splash_duration;
 			//Drawing.drawing.playSound("splash_jingle.ogg");
 		}
 
@@ -332,9 +318,9 @@ public class Panel
 		Panel.windowWidth = Game.game.window.absoluteWidth;
 		Panel.windowHeight = Game.game.window.absoluteHeight;
 
-		Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
-		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
+		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
 		if (Game.deterministicMode && Game.deterministic30Fps)
@@ -458,6 +444,17 @@ public class Panel
 			{
 				Drawing.drawing.playerX = ((ScreenGame) Game.screen).spectatingTank.posX;
 				Drawing.drawing.playerY = ((ScreenGame) Game.screen).spectatingTank.posY;
+
+				if (((ScreenGame) Game.screen).spectatingTank instanceof TankRemote)
+				{
+					Drawing.drawing.playerX = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
+					Drawing.drawing.playerY = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
+				}
+				else if (((ScreenGame) Game.screen).spectatingTank instanceof TankPlayerRemote)
+				{
+					Drawing.drawing.playerX = ((TankPlayerRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
+					Drawing.drawing.playerY = ((TankPlayerRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
+				}
 			}
 			else
 			{
@@ -671,25 +668,14 @@ public class Panel
 			double frac2 = Math.min(frac * 4, 1) * Math.min((1 - frac) * 4, 1);
 
 			double[] col = Game.getRainbowColor((System.currentTimeMillis() % (1000)) / 1000.0);
-
-			Drawing.drawing.scale = Math.min(Game.game.window.absoluteWidth / Game.currentSizeX, (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
-			Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
-			Drawing.drawing.scale = Game.screen.getScale();
-			Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Game.game.window.absoluteWidth / 28, (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
-			Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
-
-			Drawing.drawing.setColor(255, 255, 255, 255 * frac2);
-			Drawing.drawing.drawInterfaceImage( System.currentTimeMillis() / 2000.0,"opal.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 600 * (1 + (- frac + 0.5) * 2), 600 * (1 + (- frac + 0.5) * 2));
-
 			Drawing.drawing.setColor(1 * frac2 * col[0], 1 * frac2 * col[1], 1 * frac2 * col[2]);
 			Drawing.drawing.setInterfaceFontSize(100 * (1 + (- frac + 0.5) * 0.8));
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Opal Games :)");
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Opal Games");
 			return;
 		}
 
 		if (this.frameStartTime - startTime < introTime + introAnimationTime)
 		{
-			this.frameStartTime += 100000;
 			Drawing.drawing.forceRedrawTerrain();
 			double frac = ((this.frameStartTime - startTime - introTime) / introAnimationTime);
 
@@ -747,11 +733,6 @@ public class Panel
 			return;
 		}
 
-		if (Drawing.drawing.terrainRenderer2 == null)
-		{
-			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
-		}
-
 		if (!(Game.screen instanceof ScreenGame))
 		{
 			Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
@@ -778,12 +759,6 @@ public class Panel
 		}
 
 		Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
-
-		this.lights.clear();
-
-		Game.screen.setupLights();
-
-		Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
 		if (!Game.game.window.drawingShadow)
 		{
@@ -824,10 +799,6 @@ public class Panel
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
-		Drawing.drawing.setColor(255, 255, 255);
-		if (screenshot)
-			Game.game.window.shapeRenderer.drawImage(100, 100, 500, 500, "screenshot", false);
-
 		Drawing.drawing.setColor(0, 0, 0, 0);
 		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
 
@@ -835,9 +806,6 @@ public class Panel
 
 		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
 			this.age += Panel.frameFrequency;
-
-//		if (!Game.game.window.drawingShadow)
-//			Drawing.drawing.terrainRenderer2.draw();
 	}
 
 	public void drawMouseTarget()

@@ -86,7 +86,7 @@ public class ScreenCrusadeDetails extends Screen
         @Override
         public void run()
         {
-            Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade);
+            Game.screen = new ScreenConfirmDeleteCrusade(((ScreenCrusadeDetails) Game.screen), crusade);
         }
     });
 
@@ -106,6 +106,9 @@ public class ScreenCrusadeDetails extends Screen
             Game.screen = new ScreenCrusades();
     });
 
+    Button showRecordButton = new Button(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i", () ->
+            Game.screen = new ScreenCrusadeStats(crusade, this), "View best run");
+
 
     public ScreenCrusadeDetails(Crusade c)
     {
@@ -113,6 +116,18 @@ public class ScreenCrusadeDetails extends Screen
 
         this.music = "menu_5.ogg";
         this.musicID = "menu";
+
+        showRecordButton.fullInfo = true;
+        showRecordButton.unselectedColR = 0;
+        showRecordButton.unselectedColG = 127;
+        showRecordButton.unselectedColB = 255;
+        showRecordButton.selectedColR = 0;
+        showRecordButton.selectedColG = 0;
+        showRecordButton.selectedColB = 255;
+        showRecordButton.textColR = 255;
+        showRecordButton.textColG = 255;
+        showRecordButton.textColB = 255;
+        showRecordButton.fontSize = 22;
 
         if (Game.previewCrusades)
             this.forceInBounds = true;
@@ -217,6 +232,9 @@ public class ScreenCrusadeDetails extends Screen
         }
         else
             back2.update();
+
+        if (this.bestTime >= 0 && !ScreenPartyHost.isServer)
+            this.showRecordButton.update();
     }
 
     @Override
@@ -249,9 +267,14 @@ public class ScreenCrusadeDetails extends Screen
             Drawing.drawing.setInterfaceFontSize(this.textSize * 0.75);
 
             if (Game.previewCrusades)
-                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 25, this.centerY + this.objYSpace * (sizeY / 2. - 0.5),  true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+            {
+                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * (sizeY / 2. - 0.5), true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+                showRecordButton.posY = this.centerY + this.objYSpace * (sizeY / 2. - 0.5);
+            }
             else
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.objYSpace * 4, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+
+            this.showRecordButton.draw();
         }
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);

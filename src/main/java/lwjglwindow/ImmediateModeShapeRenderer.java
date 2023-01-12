@@ -1,9 +1,7 @@
 package lwjglwindow;
 
 import basewindow.BaseShapeRenderer;
-import basewindow.IBatchRenderableObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -398,6 +396,33 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnd();
     }
 
+    public void fillRect(double x, double y, double sX, double sY, double radius)
+    {
+        if (radius <= 0.2)
+        {
+            fillRect(x, y, sX, sY);
+            return;
+        }
+
+        glBegin(GL_TRIANGLE_FAN);
+
+        int sides = Math.max(4, (int) (radius / 4) + 5) / 2;
+
+        radius = Math.min(radius, sY / 2);
+
+        final double[] xs = {x + radius, x + sX - radius, x + sX - radius, x + radius};
+        final double[] ys = {y + radius, y + radius, y + sY - radius, y + sY - radius};
+        int[] order = {2, 3, 4, 1};
+
+        for (int i = 0; i < 4; i++)
+        {
+            for (double j = Math.PI * 2 * (order[i] / 4.); j < Math.PI * 2 * (order[i] + 1) / 4; j += Math.PI / 2 / sides)
+                glVertex2d(xs[i] + Math.cos(j) * radius, ys[i] + Math.sin(j) * radius);
+        }
+
+        glEnd();
+    }
+
     public void fillBox(double x, double y, double z, double sX, double sY, double sZ, String texture)
     {
         fillBox(x, y, z, sX, sY, sZ, (byte) 0, texture);
@@ -722,6 +747,82 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glVertex2d(x + sX, y);
         glVertex2d(x + sX, y + sY);
         glEnd();
+    }
+
+    public void drawRect(double x, double y, double sX, double sY, double width)
+    {
+        if (width == 1)
+        {
+            drawRect(x, y, sX, sY);
+            return;
+        }
+
+        glBegin(GL_QUADS);
+        glVertex2d(x, y);
+        glVertex2d(x + sX, y);
+        glVertex2d(x + sX, y + width);
+        glVertex2d(x, y + width);
+
+        glVertex2d(x, y);
+        glVertex2d(x, y + sY);
+        glVertex2d(x + width, y + sY);
+        glVertex2d(x + width, y);
+
+        glVertex2d(x, y + sY);
+        glVertex2d(x + sX + width, y + sY);
+        glVertex2d(x + sX + width, y + sY + width);
+        glVertex2d(x, y + sY + width);
+
+        glVertex2d(x + sX, y);
+        glVertex2d(x + sX, y + sY);
+        glVertex2d(x + sX + width, y + sY);
+        glVertex2d(x + sX + width, y);
+        glEnd();
+    }
+
+    public void drawRect(double x, double y, double sX, double sY, double width, double radius)
+    {
+        if (radius <= 0.2)
+        {
+            drawRect(x, y, sX, sY, width);
+            return;
+        }
+
+        width /= 2;
+        double innerRadius = radius / 2;
+        int sides = Math.max(4, (int) (radius / 4) + 5);
+
+        // Where the outer arc begins
+        final double[] xs = {x + radius, x + sX - radius, x + sX - radius, x + radius};
+        final double[] ys = {y + radius, y + radius, y + sY - radius, y + sY - radius};
+        int[] order = {2, 3, 4, 1};
+
+        final double[] xRadius = {0, radius, 0, -radius};
+        final double[] yRadius = {-radius, 0, radius, 0};
+        final double[] xWidth = {width, -width, -width, width};
+        final double[] yWidth = {width, width, -width, -width};
+
+        for (int i = 0; i < 4; i++)
+        {
+            glBegin(GL_TRIANGLE_FAN);
+            double change = Math.PI / 2 / sides;
+            double maxJ = Math.PI * 2 * (order[i] + 1) / 4;
+
+            for (double j = Math.PI * 2 * (order[i] / 4.); j <= maxJ - change * 2; j += change)
+                glVertex2d(xs[i] + Math.cos(j) * radius, ys[i] + Math.sin(j) * radius);
+
+            int nextI = (i + 1) % 4;
+            glVertex2d(xs[nextI] + xRadius[i], ys[nextI] + yRadius[i]);
+            glVertex2d(xs[nextI] + xWidth[nextI] + innerRadius * Math.cos(maxJ), ys[nextI] + yWidth[nextI] + innerRadius * Math.sin(maxJ));
+
+            if (innerRadius > 1)
+            {
+                for (double j = maxJ; j >= Math.PI * 2 * (order[i] / 4.); j -= change)
+                    glVertex2d(xs[i] + xWidth[i] + Math.cos(j) * innerRadius, ys[i] + yWidth[i] + Math.sin(j) * innerRadius);
+            }
+
+            glEnd();
+        }
     }
 
     public void drawImage(double x, double y, double sX, double sY, String image, boolean scaled)

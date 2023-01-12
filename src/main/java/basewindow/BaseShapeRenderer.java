@@ -38,6 +38,8 @@ public abstract class BaseShapeRenderer
 
     public abstract void fillRect(double x, double y, double sX, double sY);
 
+    public abstract void fillRect(double x, double y, double sX, double sY, double radius);
+
     public abstract void fillBox(double x, double y, double z, double sX, double sY, double sZ, String texture);
 
     public abstract void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options, String texture);
@@ -52,6 +54,10 @@ public abstract class BaseShapeRenderer
                                      byte options);
 
     public abstract void drawRect(double x, double y, double sX, double sY);
+
+    public abstract void drawRect(double x, double y, double sX, double sY, double borderWidth);
+
+    public abstract void drawRect(double x, double y, double sX, double sY, double borderWidth, double borderRadius);
 
     public abstract void drawImage(double x, double y, double sX, double sY, String image, boolean scaled);
 

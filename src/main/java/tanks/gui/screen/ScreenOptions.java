@@ -31,7 +31,7 @@ public class ScreenOptions extends Screen
 			soundOptions.enabled = false;
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Back", () ->
 	{
 		saveOptions(Game.homedir);
 		Game.screen = new ScreenTitle();
@@ -83,6 +83,7 @@ public class ScreenOptions extends Screen
 	public void draw()
 	{
 		this.drawDefaultBackground();
+
 		back.draw();
 		multiplayerOptions.draw();
 		inputOptions.draw();
@@ -98,7 +99,7 @@ public class ScreenOptions extends Screen
 		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
 			Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
 
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Options");
 
 		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && Game.player.username.length() >= 1)
 		{

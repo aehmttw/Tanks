@@ -5,12 +5,9 @@ import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
+import tanks.gui.*;
 import tanks.network.event.*;
 import tanks.generator.LevelGeneratorVersus;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.Minimap;
-import tanks.gui.SpeedrunTimer;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
@@ -1771,9 +1768,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		ModAPI.removeMenus.clear();
 
 		if (this.tutorial != null)
-		{
 			this.tutorial.update();
-		}
+
+		for (IFixedMenu menu : ModAPI.menuGroup)
+			menu.update();
 	}
 
 	public void updateMusic(String prevMusic)
@@ -2546,13 +2544,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (this.overlay != null)
 			this.overlay.draw();
 
+		for (IFixedMenu menu : ModAPI.menuGroup)
+			menu.draw();
+
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 	}
 
 	@Override
 	public void onFocusChange(boolean focused)
 	{
-		if (!focused && ((Game.autostart && !cancelCountdown) || playing) && !npcShopScreen)
+		if (!focused && (Game.autostart && !cancelCountdown) || playing)
 			paused = true;
 	}
 

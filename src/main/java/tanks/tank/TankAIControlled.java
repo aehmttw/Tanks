@@ -3,21 +3,21 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
-
-import static tanks.tank.TankProperty.Category.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
+
+import static tanks.tank.TankProperty.Category.*;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -2125,18 +2125,17 @@ public class TankAIControlled extends Tank
 	{
 		if (!this.suicidal)
 		{
-			boolean die = true;
-			for (int i = 0; i < Game.movables.size(); i++)
+			boolean suicide = true;
+			for (Movable m : Game.movables)
 			{
-				Movable m = Game.movables.get(i);
-				if (m != this && m.team == this.team && m.dealsDamage && !m.destroy)
+				if (m instanceof Tank && m != this && m.team == this.team && m.dealsDamage && !m.destroy)
 				{
-					die = false;
+					suicide = false;
 					break;
 				}
 			}
 
-			if (die)
+			if (suicide)
 			{
 				this.suicidal = true;
 				this.timeUntilDeath = this.random.nextDouble() * this.suicideTimerRandom + this.suicideTimerBase;
@@ -2283,7 +2282,7 @@ public class TankAIControlled extends Tank
 				c = this.targetEnemy.getClass();
 
 			if (c == TankPlayer.class || c == TankPlayerRemote.class)
-				c = TankPlayerMimic.class;
+				c = TankPurple.class;
 		}
 
 		if (this.targetEnemy == null || m != this.targetEnemy || this.targetEnemy.destroy || c != this.possessingTank.getClass() || Movable.distanceBetween(this, this.targetEnemy) > this.mimicRange)
@@ -2351,7 +2350,7 @@ public class TankAIControlled extends Tank
 
 			if (c.equals(TankPlayer.class) || c.equals(TankPlayerRemote.class))
 			{
-				c = TankPlayerMimic.class;
+				c = TankPurple.class;
 				player = true;
 			}
 

@@ -1,7 +1,6 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.minigames.Arcade;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
@@ -899,9 +898,7 @@ public class Bullet extends Movable implements IDrawable
 		for (ArrayList<Trail> trail : this.trails)
 		{
 			for (Trail t : trail)
-			{
 				t.draw();
-			}
 		}
 
 		if (this.destroyTimer < 60.0)

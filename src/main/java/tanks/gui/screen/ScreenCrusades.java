@@ -106,7 +106,7 @@ public class ScreenCrusades extends Screen
 
 
 		addCrusade("adventure_crusade", "Meet all the enemies in---the main crusade of Tanks!");
-		addCrusade("classic_crusade", "A retro crusade featuring---levels made long ago...");
+		addCrusade("classic_crusade", "A retro crusade featuring---levels made long, long ago...");
 		addCrusade("castle_crusade", "Invade, defend, and demolish---10 vast castles crawling with---some of the most difficult tanks!");
 		addCrusade("beginner_crusade", "An easy crusade serving as---good practice for beginners!");
 

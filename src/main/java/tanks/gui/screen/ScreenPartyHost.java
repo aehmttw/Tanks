@@ -91,9 +91,9 @@ public class ScreenPartyHost extends Screen
 
     Button shared = new Button(this.centerX + 190, this.centerY + 140, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
 
-    Button partyOptions = new Button(this.centerX + 190, this.centerY + 210, this.objWidth, this.objHeight, "Party options", () -> Game.screen = new ScreenOptionsPartyHost());
+    Button partyOptions = new Button(this.centerX + 190, this.centerY + 220, this.objWidth, this.objHeight, "Party options", () -> Game.screen = new ScreenOptionsPartyHost());
 
-    Button quit = new Button(this.centerX, this.centerY + 270, this.objWidth, this.objHeight, "End party", () -> Game.screen = new ScreenConfirmEndParty());
+    Button quit = new Button(this.centerX, this.centerY + 320, this.objWidth, this.objHeight, "End party", () -> Game.screen = new ScreenConfirmEndParty());
 
     Button toggleIP = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () -> Game.showIP = !Game.showIP, "Toggle showing IP address");
 

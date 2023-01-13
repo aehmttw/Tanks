@@ -11,7 +11,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
-import tanks.Game;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -83,8 +82,6 @@ public class LWJGLWindow extends BaseWindow
 
 	protected int shadowMapBonesEnabledFlag;
 	protected int shadowMapBoneMatricesFlag;
-
-	protected boolean prevFocused = true;
 
 	public ShaderHandler shaderHandler;
 
@@ -409,13 +406,7 @@ public class LWJGLWindow extends BaseWindow
 		else
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-		boolean focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
-
-		if (focused != prevFocused)
-		{
-			Game.screen.onFocusChange(focused);
-			prevFocused = focused;
-		}
+		focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
 
 		glfwGetFramebufferSize(window, w, h);
 

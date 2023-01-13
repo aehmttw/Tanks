@@ -106,6 +106,8 @@ public abstract class BaseWindow
 
     public ModelPart.ShapeDrawer shapeDrawer;
 
+    public boolean focused = true;
+
     // capsLock and numLock do not work on mac (glfw limitation) :(
     public boolean shift = false;
     public boolean capsLock = false;

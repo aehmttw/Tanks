@@ -77,6 +77,7 @@ public class Drawing
 
 	public static class LevelRenderer
 	{
+//		public BaseShapeBatchRenderer particleRenderer = Game.game.window.createShapeBatchRenderer();
 		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer();
 		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
 		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();

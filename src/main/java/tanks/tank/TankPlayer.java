@@ -224,6 +224,18 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		this.bullet.updateCooldown(reload);
 		this.mine.updateCooldown(reload);
 
+		if (Game.player.chromaaa)
+		{
+			this.colorR = rainbowColor(Game.player.colorR, 1);
+			this.colorG = rainbowColor(Game.player.colorG, 1.5);
+			this.colorB = rainbowColor(Game.player.colorB, 3);
+
+			this.secondaryColorR = rainbowColor(Game.player.turretColorR, 1);
+			this.secondaryColorG = rainbowColor(Game.player.turretColorG, 1.5);
+			this.secondaryColorB = rainbowColor(Game.player.turretColorB, 3);
+		}
+
+
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
 		{
@@ -397,6 +409,15 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		}
 
 		super.update();
+	}
+
+	public static double rainbowColor(double start, double speed)
+	{
+		double chromaStart = Math.max(0, start - 25);
+		if (chromaStart > 230)
+			chromaStart -= 25;
+
+		return Math.sin(System.currentTimeMillis() / 2e3 * speed) * 50 + chromaStart;
 	}
 
 	public Item getItem(boolean rightClick)

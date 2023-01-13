@@ -8,6 +8,7 @@ import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.SynchronizedList;
+import tanks.network.event.EventSendClientDetails;
 import tanks.translation.Translation;
 
 import java.net.Inet4Address;
@@ -139,6 +140,7 @@ public class ScreenPartyHost extends Screen
             kickButtons[i].fontSize = this.textSize;
         }
 
+        EventSendClientDetails.joinedNames.clear();
         activeScreen = this;
         isServer = true;
         serverThread = new Thread(() ->

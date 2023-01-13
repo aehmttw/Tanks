@@ -14,6 +14,8 @@ public class EventSendTankColors extends PersonalEvent
     public int colorG2;
     public int colorB2;
 
+    public boolean chroma;
+
     public EventSendTankColors()
     {
 
@@ -28,6 +30,8 @@ public class EventSendTankColors extends PersonalEvent
         this.colorR2 = p.turretColorR;
         this.colorG2 = p.turretColorG;
         this.colorB2 = p.turretColorB;
+
+        this.chroma = p.chromaaa;
     }
 
     @Override
@@ -39,6 +43,7 @@ public class EventSendTankColors extends PersonalEvent
         b.writeInt(this.colorR2);
         b.writeInt(this.colorG2);
         b.writeInt(this.colorB2);
+        b.writeBoolean(this.chroma);
     }
 
     @Override
@@ -50,6 +55,7 @@ public class EventSendTankColors extends PersonalEvent
         this.colorR2 = b.readInt();
         this.colorG2 = b.readInt();
         this.colorB2 = b.readInt();
+        this.chroma = b.readBoolean();
     }
 
     @Override
@@ -69,6 +75,7 @@ public class EventSendTankColors extends PersonalEvent
                         p.turretColorR = this.colorR2;
                         p.turretColorG = this.colorG2;
                         p.turretColorB = this.colorB2;
+                        p.chromaaa = this.chroma;
                     }
                 }
             }

@@ -228,6 +228,10 @@ public class ScreenOptions extends Screen
 			f.println("tank_red_2=" + Game.player.turretColorR);
 			f.println("tank_green_2=" + Game.player.turretColorG);
 			f.println("tank_blue_2=" + Game.player.turretColorB);
+
+			if (Game.player.chromaaa)
+				f.println("cHrOmA=true");
+
 			f.println("translation=" + (Translation.currentTranslation == null ? "null" : Translation.currentTranslation.fileName));
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
@@ -258,9 +262,7 @@ public class ScreenOptions extends Screen
 				String[] optionLine = line.split("=");
 
 				if (optionLine[0].charAt(0) == '#')
-				{
 					continue;
-				}
 
 				switch (optionLine[0].toLowerCase())
 				{
@@ -456,6 +458,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "tank_blue_2":
 						Game.player.turretColorB = Integer.parseInt(optionLine[1]);
+						break;
+					case "chroma":
+						Game.player.chromaaa = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "translation":
 						Translation.setCurrentTranslation(optionLine[1]);

@@ -1,12 +1,10 @@
 package tanks;
 
 import basewindow.BaseFile;
-import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 
 import java.util.ArrayList;
@@ -31,6 +29,7 @@ public class Player
     public int turretColorG = (int) Turret.calculateSecondaryColor(colorG);
     public int turretColorB = (int) Turret.calculateSecondaryColor(colorB);
 
+    public boolean chromaaa = false;
     public boolean enableSecondaryColor = false;
 
     public Player(UUID clientID, String username)

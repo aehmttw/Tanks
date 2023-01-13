@@ -12,6 +12,7 @@ import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 public class EventSendClientDetails extends PersonalEvent implements IServerThreadEvent
@@ -19,6 +20,8 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 	public int version;
 	public UUID clientID;
 	public String username;
+
+	public static final HashSet<String> joinedNames = new HashSet<>();
 	
 	public EventSendClientDetails()
 	{
@@ -72,9 +75,14 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		{
 			s.sendEventAndClose(new EventKick("Please wait for the current game to finish!"));
 
-			Game.eventsIn.add(new EventPlaySound("join.ogg", 0.75f, 1.0f));
-			ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
-			Game.eventsOut.add(new EventChat("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
+			if (!joinedNames.contains(this.username))
+			{
+				joinedNames.add(this.username);
+
+				Game.eventsIn.add(new EventPlaySound("join.ogg", 0.75f, 1.0f));
+				ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
+				Game.eventsOut.add(new EventChat("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
+			}
 			return;
 		}
 

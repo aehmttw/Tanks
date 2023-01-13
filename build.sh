@@ -34,8 +34,13 @@ echo "Searching for Dependencies..."
 if [ -d "libs" ]; then
     echo "FOUND!"
 else
-    echo "Dependencies are not present, please read BUILD.md!"
-    exit 1
+    echo "Fetching dependencies from maven..."
+    mvn dependency:copy-dependencies -DoutputDirectory=./libs
+    if [ -d "libs" ]; then
+        echo "DOWNLOADED!"
+    else
+        echo "DOWNLOAD FAILED"
+    fi
 fi
 
 #Actual Script

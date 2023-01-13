@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import basewindow.Model;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
@@ -75,7 +74,7 @@ public class Crate extends Movable
 
         Drawing.drawing.setColor(this.tank.emblemR, this.tank.emblemG, this.tank.emblemB);
         if (this.tank.emblem != null)
-            Drawing.drawing.drawInterfaceImage(this.tank.emblem, this.posX, this.posY, frac * this.size * 0.75, frac * this.size * 0.75);
+            Drawing.drawing.drawImage(this.tank.emblem, this.posX, this.posY, frac * this.size * 0.75, frac * this.size * 0.75);
 
         if (Game.glowEnabled)
         {
@@ -92,10 +91,10 @@ public class Crate extends Movable
         double x2 = x - size / 2 + border / 2;
         double y1 = y + size / 2 - border / 2;
         double y2 = y - size / 2 + border / 2;
-        Drawing.drawing.fillInterfaceRect(x1, y, border, size - border * 2);
-        Drawing.drawing.fillInterfaceRect(x2, y, border, size - border * 2);
-        Drawing.drawing.fillInterfaceRect(x, y1, size, border);
-        Drawing.drawing.fillInterfaceRect(x, y2, size, border);
+        Drawing.drawing.fillRect(x1, y, border, size - border * 2);
+        Drawing.drawing.fillRect(x2, y, border, size - border * 2);
+        Drawing.drawing.fillRect(x, y1, size, border);
+        Drawing.drawing.fillRect(x, y2, size, border);
     }
 
     public void update()

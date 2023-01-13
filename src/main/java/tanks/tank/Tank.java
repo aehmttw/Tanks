@@ -158,6 +158,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankProperty(category = mines, id = "mine", name = "Mine")
 	public ItemMine mine = (ItemMine) TankPlayer.default_mine.clone();
 
+	/** Age in frames*/
+	protected double age = 0;
 
 	public double drawAge = 0;
 	public double destroyTimer = 0;
@@ -436,6 +438,8 @@ public abstract class Tank extends Movable implements ISolidObject
 			// If you get this crash, please make sure you call Game.addTank() to add them to movables, or use registerNetworkID()!
 			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank!"));
 		}
+
+		this.age += Panel.frameFrequency;
 
 		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 

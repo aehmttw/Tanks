@@ -455,6 +455,30 @@ public class ScreenChangelog extends Screen
                                     "Added more arcade mode bonuses\n" +
                                     "Changed fireworks appearance\n"
                     });
+
+            new Changelog("v1.5.d", new String[]
+                    {
+                            "*What's new in Tanks v1.5.d:\n\n" +
+                                "*Arcade mode:\n\n" +
+                                    "Arcade mode now supports multiplayer\n" +
+                                    "Added item pick up animation\n" +
+                                    "Extended time limit by 12 seconds (to match song length)\n" +
+                                    "The hotbar now shows your chain timer\n" +
+                                    "Updated arcade mode bonuses\n\n" +
+                                "*Crusades:\n\n" +
+                                    "Font is now varied across statistics for readability\n" +
+                                    "Added crusade descriptions for built-in crusades\n" +
+                                    "Built-in crusades now track your best completion time\n" +
+                                    "Completed crusade runs can be compared to your best run\n\n",
+                                "*More:\n\n" +
+                                    "Updated menu music\n" +
+                                    "Added item switching indicator on tank\n" +
+                                    "Bullets now display through terrain\n" +
+                                    "Added new profile customization section to options\n" +
+                                    "You can now use a custom tank color in singleplayer\n" +
+                                    "A ton of bug fixes and other minor improvements\n"
+                    });
+
         }
     }
 }

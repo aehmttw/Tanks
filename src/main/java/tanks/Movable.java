@@ -376,7 +376,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		{
 			StatusEffect.Instance i = this.statusEffects.get(s);
 
-			if (i.age < i.deteriorationAge && i.age + Panel.frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer)
+			if (i.age < i.deteriorationAge && i.age + Panel.frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this instanceof Bullet || this instanceof Tank))
 			{
 				Game.eventsOut.add(new EventStatusEffectDeteriorate(this, s, i.duration - i.deteriorationAge));
 			}
@@ -386,7 +386,9 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 			else
 			{
 				this.removeStatusEffects.add(s);
-				Game.eventsOut.add(new EventStatusEffectEnd(this, s));
+
+				if (this instanceof Bullet || this instanceof Tank)
+					Game.eventsOut.add(new EventStatusEffectEnd(this, s));
 			}
 		}
 

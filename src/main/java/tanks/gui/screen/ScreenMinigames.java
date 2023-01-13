@@ -60,7 +60,7 @@ public class ScreenMinigames extends Screen
 				{
 					Game.exitToCrash(e.getCause());
 				}
-			}));
+			}, Game.registryMinigame.minigameDescriptions.get(name)));
 		}
 
 		fullModdedLevelsList = new ButtonList(buttons, page, 0, -30);

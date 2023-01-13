@@ -280,9 +280,6 @@ public class TankAIControlled extends Tank
 	/** If a direct line of sight to the target enemy exists, set to true*/
 	protected boolean seesTargetEnemy = false;
 
-	/** Age in frames*/
-	protected double age = 0;
-
 	/** Stores distances to obstacles or tanks in 8 directions*/
 	protected double[] distances = new double[8];
 
@@ -371,7 +368,7 @@ public class TankAIControlled extends Tank
 	protected boolean hasTarget = true;
 
 	/** If true, charges towards nearest enemy and explodes */
-	protected boolean suicidal = false;
+	public boolean suicidal = false;
 
 	/** Direction to strafe around target enemy, if set to strafe mode on sight*/
 	protected double strafeDirection = Math.PI / 2;
@@ -396,7 +393,7 @@ public class TankAIControlled extends Tank
 	protected ArrayList<Tank> spawnedTanks = new ArrayList<>();
 
 	/** Time until the tank will commit suicide */
-	protected double timeUntilDeath;
+	public double timeUntilDeath;
 
 	/** The random number generator the tank uses to make decisions*/
 	protected Random random;
@@ -522,8 +519,6 @@ public class TankAIControlled extends Tank
 
 		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
-
-		this.age += Panel.frameFrequency;
 
 		this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
 		this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);

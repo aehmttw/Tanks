@@ -431,9 +431,10 @@ public class Game
 		Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + dir));
 	}
 
-	public static void registerMinigame(Class<? extends Minigame> minigame, String name)
+	public static void registerMinigame(Class<? extends Minigame> minigame, String name, String desc)
 	{
 		registryMinigame.minigames.put(name, minigame);
+		registryMinigame.minigameDescriptions.put(name, desc);
 	}
 
 	public static void initScript()
@@ -514,7 +515,7 @@ public class Game
 		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
 		registerItem(ItemShield.class, ItemShield.item_name, "shield.png");
 
-		registerMinigame(Arcade.class, "Arcade mode");
+		registerMinigame(Arcade.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 
 		TankPlayer.default_bullet = (ItemBullet) Item.parseItem(null, Translation.translate("Basic bullet") + ",bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
 		TankPlayer.default_mine = (ItemMine) Item.parseItem(null, Translation.translate("Basic mine") + ",mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");

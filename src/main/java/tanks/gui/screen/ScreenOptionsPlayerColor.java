@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -21,6 +22,8 @@ public class ScreenOptionsPlayerColor extends Screen
 
     public String secondaryColorText = "Second color: ";
 
+    public boolean swag;
+
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsPersonalize()
     );
 
@@ -38,6 +41,16 @@ public class ScreenOptionsPlayerColor extends Screen
         }
     },
             "Allows you to pick---a custom secondary color");
+
+    Button chroma = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.player.chromaaa = !Game.player.chromaaa;
+            chroma.setText("Chroma: ", Game.player.chromaaa ? ScreenOptions.onText : ScreenOptions.offText);
+        }
+    });
 
 
     public ScreenOptionsPlayerColor()
@@ -146,6 +159,12 @@ public class ScreenOptionsPlayerColor extends Screen
         colorBlue2.checkMaxValue = true;
         colorBlue2.integer = true;
 
+        chroma.setText("Chroma: ", Game.player.chromaaa ? ScreenOptions.onText : ScreenOptions.offText);
+        this.swag = Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT);
+
+        if (swag)
+            enableSecondary.posX -= this.objXSpace / 2;
+
         this.preview.size *= 1.5 * Drawing.drawing.interfaceScaleZoom;
         this.preview.invulnerable = true;
         this.preview.drawAge = 50;
@@ -167,6 +186,7 @@ public class ScreenOptionsPlayerColor extends Screen
             this.colorGreen2.posY -= this.objYSpace / 2;
             this.colorBlue2.posY -= this.objYSpace / 2;
             this.enableSecondary.posY -= this.objYSpace / 2;
+            this.chroma.posY -= this.objYSpace / 2;
         }
 
         this.music = "menu_options.ogg";
@@ -202,6 +222,9 @@ public class ScreenOptionsPlayerColor extends Screen
             preview.secondaryColorG = colorGreen2.value;
             preview.secondaryColorB = colorBlue2.value;
         }
+
+        if (swag)
+            chroma.update();
     }
 
     public void setupButtons(boolean initial)
@@ -279,6 +302,7 @@ public class ScreenOptionsPlayerColor extends Screen
         colorBlue2.b1 = 0;
         colorBlue2.b2 = 255;
 
+
     }
 
     @Override
@@ -297,13 +321,18 @@ public class ScreenOptionsPlayerColor extends Screen
             colorRed2.draw();
         }
 
+        if (swag)
+            chroma.draw();
+
         enableSecondary.draw();
 
         preview.draw();
 
         back.draw();
 
+
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Tank color");
     }
 }

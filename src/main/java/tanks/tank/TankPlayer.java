@@ -5,6 +5,7 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletElectric;
+import tanks.gui.screen.ScreenTitle;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
 import tanks.gui.Button;
@@ -354,7 +355,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		if (mine && this.getItem(true).cooldown <= 0 && !this.disabled)
 			this.layMine();
 
-		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && Game.screen instanceof ScreenGame)
+		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && (Game.screen instanceof ScreenGame || Game.screen instanceof ScreenTitle))
 		{
 			double range = -1;
 

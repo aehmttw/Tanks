@@ -4,8 +4,8 @@ import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawable;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
+import tanks.minigames.Minigame;
 import tanks.tank.TankPlayer;
 
 public class Joystick implements IDrawable
@@ -55,7 +55,7 @@ public class Joystick implements IDrawable
         prevIntensity = rawIntensity;
         inputIntensity = 0;
 
-        if (!Game.game.window.touchPoints.containsKey(activeInput) || Game.playerTank == null || Game.playerTank.destroy)
+        if (!Game.game.window.touchPoints.containsKey(activeInput) || Game.playerTank == null || (Game.playerTank.destroy && !(Game.currentLevel instanceof Minigame)))
         {
             if (snap || this.domain > 0)
             {

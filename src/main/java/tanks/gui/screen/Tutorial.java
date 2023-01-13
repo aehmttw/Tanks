@@ -4,6 +4,8 @@ import basewindow.ModelPart;
 import tanks.*;
 import tanks.tank.*;
 
+import java.util.ArrayList;
+
 public class Tutorial
 {
     public int step = 0;
@@ -20,6 +22,12 @@ public class Tutorial
 
     public ModelPart arrow;
 
+    public int prevDummiesDestroyed = 0;
+
+    public boolean dummy1alive = true;
+    public boolean dummy2alive = true;
+    public boolean dummy3alive = true;
+    public boolean dummy4alive = true;
 
     public void loadTutorial(boolean initial, boolean touchscreen)
     {
@@ -66,6 +74,58 @@ public class Tutorial
 
         int prevStep = step;
 
+        int dummiesDestroyed = 0;
+
+        ArrayList<Tank> destroyedDummies = new ArrayList<>();
+        if (dummy1.destroy)
+        {
+            if (dummy1alive)
+                destroyedDummies.add(dummy1);
+
+            dummiesDestroyed++;
+            dummy1alive = false;
+        }
+
+        if (dummy2.destroy)
+        {
+            if (dummy2alive)
+                destroyedDummies.add(dummy2);
+
+            dummiesDestroyed++;
+            dummy2alive = false;
+        }
+
+        if (dummy3.destroy)
+        {
+            if (dummy3alive)
+                destroyedDummies.add(dummy3);
+
+            dummiesDestroyed++;
+            dummy3alive = false;
+        }
+
+        if (dummy4.destroy)
+        {
+            if (dummy4alive)
+                destroyedDummies.add(dummy4);
+
+            dummiesDestroyed++;
+            dummy4alive = false;
+        }
+
+        int i = this.prevDummiesDestroyed;
+
+        for (Tank t: destroyedDummies)
+        {
+            i++;
+            Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 2, Effect.EffectType.tutorialProgress);
+            e.radius = i;
+            Game.effects.add(e);
+            Drawing.drawing.playSound("hit_chain.ogg", (float) (Math.pow(2, (i - 1.0) / 12)));
+        }
+
+        this.prevDummiesDestroyed = dummiesDestroyed;
+
         if (step == 0 && !withinRange(5, 7, 4))
             step = 1;
         else if (step == 1 && withinRange(12, 15.5, 2))
@@ -96,7 +156,7 @@ public class Tutorial
             step = 8;
 
         if (prevStep < step)
-            Drawing.drawing.playSound("join.ogg");
+            Drawing.drawing.playSound("rampage.ogg", (float) (Math.pow(2, (prevStep * 1.0) / 12)));
         else if (prevStep > step)
             Drawing.drawing.playSound("leave.ogg");
     }
@@ -117,7 +177,7 @@ public class Tutorial
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(24);
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Welcome to Tanks!");
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "You can control the blue tank using " + input);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "You can control the tank in the circle using " + input);
 
             Drawing.drawing.setColor(0, 0, 0);
 

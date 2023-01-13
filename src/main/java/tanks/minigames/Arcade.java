@@ -414,7 +414,7 @@ public class Arcade extends Minigame
                     }
                 }
             }
-            else
+            else if (!frenzy)
             {
                 for (Player p: this.includedPlayers)
                 {
@@ -457,6 +457,12 @@ public class Arcade extends Minigame
         TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
         t.team = Game.playerTeamNoFF;
         t.player = p;
+        t.colorR = p.colorR;
+        t.colorG = p.colorG;
+        t.colorB = p.colorB;
+        t.secondaryColorR = p.turretColorR;
+        t.secondaryColorG = p.turretColorG;
+        t.secondaryColorB = p.turretColorB;
         Game.movables.add(new Crate(t));
         Game.eventsOut.add(new EventAirdropTank(t));
     }
@@ -619,14 +625,27 @@ public class Arcade extends Minigame
             else if (other)
                 y += Game.currentSizeY - 4;
 
-            if (!Game.game.solidGrid[x][y] && (Game.playerTank == null || (Math.pow(Game.playerTank.posX - (x * Game.tile_size), 2) + Math.pow(Game.playerTank.posY - (y * Game.tile_size), 2) > Math.pow(Game.tile_size * 5, 2))))
+            if (!Game.game.solidGrid[x][y])
             {
                 found = true;
-                destX = (x + 0.5) * Game.tile_size;
-                destY = (y + 0.5) * Game.tile_size;
 
-                Drawing.drawing.playGlobalSound("flame.ogg", 0.75f);
-                break;
+                for (Movable m: Game.movables)
+                {
+                    if ((m instanceof TankPlayer || m instanceof TankPlayerRemote) && (Math.pow(m.posX - (x * Game.tile_size), 2) + Math.pow(m.posY - (y * Game.tile_size), 2) <= Math.pow(Game.tile_size * 5, 2)))
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    destX = (x + 0.5) * Game.tile_size;
+                    destY = (y + 0.5) * Game.tile_size;
+
+                    Drawing.drawing.playGlobalSound("flame.ogg", 0.75f);
+                    break;
+                }
             }
         }
 

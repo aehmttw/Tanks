@@ -1,7 +1,6 @@
 package tanks;
 
 import basewindow.*;
-import tanks.gui.TerrainRenderer;
 import tanks.network.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
@@ -65,8 +64,6 @@ public class Drawing
 
 	public BaseShapeBatchRenderer currentTerrainRenderer;
 
-	public TerrainRenderer terrainRenderer2;
-
 	public BaseShapeBatchRenderer terrainRenderer;
 	public BaseShapeBatchRenderer terrainRendererTransparent;
 	public BaseShapeBatchRenderer terrainRendererShrubbery;
@@ -80,9 +77,9 @@ public class Drawing
 
 	public static class LevelRenderer
 	{
-		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer(true);
-		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer(true);
-		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer(true);
+		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer();
+		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
+		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
 
 		public void free()
 		{
@@ -276,11 +273,6 @@ public class Drawing
 		this.fillOval(x, y, z, sizeX, sizeY, true, true);
 	}
 
-	public void fillOval(double x, double y, double z, double sizeX, double sizeY, double oZ)
-	{
-		this.fillOval(x, y, z, sizeX, sizeY, oZ, true, true);
-	}
-
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
@@ -296,25 +288,6 @@ public class Drawing
 
 		if (Game.game.window.angled && facing)
 			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
-		else
-			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
-	}
-
-	public void fillOval(double x, double y, double z, double sizeX, double sizeY, double oZ, boolean depthTest, boolean facing)
-	{
-		double drawX = gameToAbsoluteX(x, sizeX);
-		double drawY = gameToAbsoluteY(y, sizeY);
-
-		if (isOutOfBounds(drawX, drawY))
-			return;
-
-		double drawSizeX = (sizeX * scale);
-		double drawSizeY = (sizeY * scale);
-
-		double dZ = z * scale;
-
-		if (Game.game.window.angled && facing)
-			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, oZ * scale, depthTest);
 		else
 			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
@@ -684,8 +657,7 @@ public class Drawing
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
 		if (this.terrainRendering)
-			this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
-			//this.currentTerrainRenderer.fillBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
+			this.currentTerrainRenderer.fillBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
 		else
 		{
 			double shrubMod = 1;
@@ -1652,9 +1624,8 @@ public class Drawing
 			return drawX - dist * scale > Panel.windowWidth || drawX + dist * scale < 0 || drawY - dist * scale > Panel.windowHeight || drawY + dist * scale < 0;
 		else
 		{
-//			return (drawX - gameToAbsoluteX(Game.playerTank.posX, 0)) * Math.cos(Game.playerTank.angle)
-//					+ (drawY - gameToAbsoluteY(Game.playerTank.posY, 0)) * Math.sin(Game.playerTank.angle) < -dist;
-			return false;
+			return (drawX - gameToAbsoluteX(Game.playerTank.posX, 0)) * Math.cos(Game.playerTank.angle)
+					+ (drawY - gameToAbsoluteY(Game.playerTank.posY, 0)) * Math.sin(Game.playerTank.angle) < -dist;
 		}
 	}
 

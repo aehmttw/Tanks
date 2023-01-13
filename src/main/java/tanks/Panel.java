@@ -97,6 +97,8 @@ public class Panel
 	public boolean started = false;
 	public boolean settingUp = true;
 
+	protected boolean prevFocused = true;
+
 	public static void initialize()
 	{
 		if (!initialized)
@@ -268,9 +270,7 @@ public class Panel
 		lastFrameNano = System.nanoTime();
 
 		if (System.currentTimeMillis() - this.startTime < 0)
-		{
 			return;
-		}
 
 		if (!splashFinished)
 		{
@@ -573,6 +573,12 @@ public class Panel
 
 		Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
 		Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+
+		if (Game.game.window.focused != prevFocused)
+		{
+			prevFocused = Game.game.window.focused;
+			Game.screen.onFocusChange(prevFocused);
+		}
 
 		if (!onlinePaused)
 			Game.screen.update();

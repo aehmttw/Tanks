@@ -2,8 +2,6 @@ package basewindow;
 
 public abstract class BaseShapeBatchRenderer
 {
-    public final boolean dynamic;
-
     public double posX = 0;
     public double posY = 0;
     public double posZ = 0;
@@ -17,11 +15,6 @@ public abstract class BaseShapeBatchRenderer
     public float offX;
     public float offY;
     public float offZ;
-
-    public BaseShapeBatchRenderer(boolean dynamic)
-    {
-        this.dynamic = dynamic;
-    }
 
     public abstract void fillRect(IBatchRenderableObject o, double x, double y, double sX, double sY);
 

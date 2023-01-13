@@ -16,6 +16,8 @@ public abstract class BaseShapeBatchRenderer
     public float offY;
     public float offZ;
 
+    public abstract void fillOval(IBatchRenderableObject o, double x, double y, double sX, double sY);
+
     public abstract void fillRect(IBatchRenderableObject o, double x, double y, double sX, double sY);
 
     public abstract void fillBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options);

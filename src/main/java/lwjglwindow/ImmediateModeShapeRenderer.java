@@ -23,10 +23,9 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
 
         glBegin(GL_TRIANGLE_FAN);
+
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-        {
             glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
-        }
 
         glEnd();
     }

@@ -369,6 +369,26 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
     }
 
     @Override
+    public void fillOval(IBatchRenderableObject o, double x, double y, double sX, double sY)
+    {
+        if (o.wasRedrawn())
+            return;
+
+        if (this.window.shadowsEnabled && !this.window.drawingShadow)
+            return;
+
+        x += sX / 2;
+        y += sY / 2;
+
+        int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
+
+        this.setWorkingColor((float) this.colorR, (float) this.colorG, (float) this.colorB, (float) this.colorA, (float) this.colorGlow);
+        for (float i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
+            this.addPoint(o, (float) (x + Math.cos(i) * sX / 2), (float) (y + Math.sin(i) * sY / 2), 0);
+        this.addPoint(o, (float) (x + sX / 2), (float) y, 0);
+    }
+
+    @Override
     public void fillRect(IBatchRenderableObject o, double x, double y, double sX, double sY)
     {
         if (o.wasRedrawn())

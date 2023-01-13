@@ -5,7 +5,6 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletElectric;
-import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenTitle;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
@@ -20,7 +19,7 @@ import tanks.hotbar.item.*;
 /**
  * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
  */
-public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank, IDrawableLightSource
+public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank
 {
 	public static ItemBullet default_bullet;
 	public static ItemMine default_mine;
@@ -69,13 +68,11 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		if (enableDestroyCheat)
 		{
 			this.showName = true;
-			this.nameTag.name = "Destroy cheat enabled!!!";
-		}
+			this.nameTag.colorR = 255;
+			this.nameTag.colorG = 0;
+			this.nameTag.colorB = 0;
 
-		if (Game.nameInMultiplayer && ScreenPartyHost.isServer)
-		{
-			this.nameTag.name = Game.player.username;
-			this.showName = true;
+			this.nameTag.name = "Destroy cheat enabled!!!";
 		}
 
 		if (Game.invulnerable)
@@ -223,18 +220,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		this.bullet.updateCooldown(reload);
 		this.mine.updateCooldown(reload);
-
-		if (Game.player.chromaaa)
-		{
-			this.colorR = rainbowColor(Game.player.colorR, 1);
-			this.colorG = rainbowColor(Game.player.colorG, 3);
-			this.colorB = rainbowColor(Game.player.colorB, 2);
-
-			this.secondaryColorR = rainbowColor(Game.player.turretColorR, 1);
-			this.secondaryColorG = rainbowColor(Game.player.turretColorG, 3);
-			this.secondaryColorB = rainbowColor(Game.player.turretColorB, 2);
-		}
-
 
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
@@ -411,15 +396,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		super.update();
 	}
 
-	public static double rainbowColor(double start, double speed)
-	{
-		double chromaStart = Math.max(0, start - 25);
-		if (chromaStart > 230)
-			chromaStart -= 25;
-
-		return Math.sin(System.currentTimeMillis() / 2e3 * speed) * 50 + chromaStart;
-	}
-
 	public Item getItem(boolean rightClick)
 	{
 		Item i;
@@ -479,14 +455,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = speed;
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
-
-		this.recoilSpeed = this.getSpeed();
-		if (this.recoilSpeed > this.maxSpeed * 1.01)
-		{
-			this.tookRecoil = true;
-			this.inControlOfMotion = false;
-		}
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
 
 		if (b.moveOut)
 			b.moveOut(50 / speed * this.size / Game.tile_size);
@@ -604,20 +573,5 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				}
 			}
 		}
-	}
-
-	@Override
-	public boolean lit()
-	{
-		return false;
-	}
-
-	double[] lightInfo = new double[]{0, 0, 0, 2, 255, 255, 255};
-
-	@Override
-	public double[] getLightInfo()
-	{
-		this.glowSize = 4;
-		return this.lightInfo;
 	}
 }

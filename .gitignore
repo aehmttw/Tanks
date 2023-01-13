@@ -6,5 +6,6 @@
 /.vscode
 /libs/
 /src/main/java/tanks/modlevels/GameMap.java
+/src/main/java/tanks/network/SteamNetworkHandler.java
 /out/
 /.idea/

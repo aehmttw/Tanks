@@ -227,12 +227,12 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		if (Game.player.chromaaa)
 		{
 			this.colorR = rainbowColor(Game.player.colorR, 1);
-			this.colorG = rainbowColor(Game.player.colorG, 1.5);
-			this.colorB = rainbowColor(Game.player.colorB, 3);
+			this.colorG = rainbowColor(Game.player.colorG, 3);
+			this.colorB = rainbowColor(Game.player.colorB, 2);
 
 			this.secondaryColorR = rainbowColor(Game.player.turretColorR, 1);
-			this.secondaryColorG = rainbowColor(Game.player.turretColorG, 1.5);
-			this.secondaryColorB = rainbowColor(Game.player.turretColorB, 3);
+			this.secondaryColorG = rainbowColor(Game.player.turretColorG, 3);
+			this.secondaryColorB = rainbowColor(Game.player.turretColorB, 2);
 		}
 
 

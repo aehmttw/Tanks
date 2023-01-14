@@ -3,10 +3,7 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
-import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
-import tanks.gui.IFixedMenu;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -14,6 +11,8 @@ import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
+import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
@@ -356,11 +355,6 @@ public class Panel
 		if (settingUp)
 			return;
 
-		if (Game.screen instanceof ScreenGame)
-		{
-			for (IFixedMenu menu : ModAPI.menuGroup)
-				menu.update();
-		}
 
 		synchronized (Game.eventsIn)
 		{
@@ -608,9 +602,10 @@ public class Panel
 					ScreenPartyHost.server.connections.get(j).reply();
 				}
 			}
-
-			Game.eventsOut.clear();
 		}
+
+		Game.eventsOut.clear();
+
 
 		if (prevScreen != Game.screen)
 		{
@@ -784,12 +779,6 @@ public class Panel
 			this.onlineOverlay.draw();
 		else
 			Game.screen.draw();
-
-		if (Game.screen instanceof ScreenGame)
-		{
-			for (IFixedMenu menu : ModAPI.menuGroup)
-				menu.draw();
-		}
 
 		for (Movable m : Game.movables)
 		{

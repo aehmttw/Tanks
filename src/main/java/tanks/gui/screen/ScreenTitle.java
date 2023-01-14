@@ -4,7 +4,6 @@ import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.minigames.Minigame;
-import tanks.network.event.EventArcadeHit;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -82,12 +81,14 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT))
 			{
-				Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (0) / 12.0));
+				Drawing.drawing.playSound("rampage.ogg");
 
 				chain = 0;
 				wave = 0;
 				Game.bulletLocked = false;
 				ScreenGame.finishTimer = ScreenGame.finishTimerMax;
+				logo.team = Game.playerTeamNoFF;
+				logo.invulnerable = false;
 				logo.depthTest = true;
 				controlPlayer = true;
 
@@ -170,6 +171,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.invulnerable = false;
 		}
 
+		if (!Game.game.window.focused)
+			return;
+
 		for (int i = 0; i < Game.game.groundHeightGrid.length; i++)
 		{
 			System.arraycopy(Game.tilesDepth[i], 0, Game.game.groundHeightGrid[i], 0, Game.game.groundHeightGrid[i].length);
@@ -192,13 +196,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
 			{
-				throw new RuntimeException("Movable with NaN position: " + m.toString() + " " + m.lastPosX + " " + m.lastPosY);
+				throw new RuntimeException("Movable with NaN position: " + m + " " + m.lastPosX + " " + m.lastPosY);
 			}
 
 			if (m instanceof ISolidObject && !(m instanceof Tank && !(((Tank) m).targetable || ((Tank) m).invulnerabilityTimer > 0)))
 			{
 				Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
-
 				Game.verticalFaces.addAll(Arrays.asList(((ISolidObject) m).getVerticalFaces()));
 			}
 		}
@@ -243,10 +246,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		}
 
 		Obstacle.draw_size = Game.tile_size;
-		for (int i = 0; i < Game.tracks.size(); i++)
-		{
-			Game.tracks.get(i).update();
-		}
+		for (Effect e : Game.tracks)
+			e.update();
 
 		int enemies = 0;
 		for (int i = 0; i < Game.movables.size(); i++)
@@ -304,6 +305,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 				int x = (int) (Math.random() * Game.tilesDepth.length);
 				int y = (int) (Math.random() * Game.tilesDepth[0].length);
 				Tank t = Game.registryTank.getRandomTank().getTank((x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, (int) (Math.random() * 4));
+
+				if (t instanceof TankRed)
+					continue;
+
 				t.team = Game.enemyTeam;
 				Game.movables.add(new Crate(t));
 			}
@@ -333,7 +338,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
 			this.logo.invulnerable = true;
 			this.logo.hidden = true;
-			this.logo.team = Game.playerTeam;
+			this.logo.team = Game.playerTeamNoFF;
 			this.logo.maxSpeed *= 1.5;
 			this.logo.bullet.speed *= 1.5;
 			Game.playerTank = logo;
@@ -402,10 +407,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
-		for (int i = 0; i < Game.tracks.size(); i++)
-		{
-			Game.tracks.get(i).draw();
-		}
+		for (Effect e : Game.tracks)
+			e.draw();
 
 		for (int i = Game.movables.size() - 1; i >= 0; i--)
 		{
@@ -415,15 +418,11 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 				((IDrawableWithGlow) Game.movables.get(i)).drawGlow();
 		}
 
-		for (int i = 0; i < Game.effects.size(); i++)
-		{
-			Game.effects.get(i).draw();
-		}
+		for (Effect e : Game.effects)
+			e.draw();
 
-		for (int i = 0; i < Game.effects.size(); i++)
-		{
-			Game.effects.get(i).drawGlow();
-		}
+		for (Effect e : Game.effects)
+			e.drawGlow();
 	}
 
 	@Override
@@ -438,9 +437,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	public void drawPostMouse()
 	{
 		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
-		{
 			this.logo.draw();
-		}
 	}
 
 	@Override

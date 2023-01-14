@@ -3,8 +3,6 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.tank.TankMimic;
-import tanks.tank.TankModels;
 
 public class ScreenDebug extends Screen
 {
@@ -45,22 +43,24 @@ public class ScreenDebug extends Screen
             invulnerable.setText(invulnerableText, ScreenOptions.offText);
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
+    Button back = new Button(this.centerX, this.centerY + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
     );
 
-    Button keyboardTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard()
+    Button keyboardTest = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard()
     );
 
-    Button textboxTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Test text boxes", () -> Game.screen = new ScreenTestTextbox()
+    Button textboxTest = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Test text boxes", () -> Game.screen = new ScreenTestTextbox()
     );
 
-    Button modelTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(Drawing.drawing.createModel("/models/tankcamoflauge/base/"))
+    Button modelTest = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(Drawing.drawing.createModel("/models/tankcamoflauge/base/"))
     );
 
-    Button fontTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Test fonts", () -> Game.screen = new ScreenTestFonts()
+    Button fontTest = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Test fonts", () -> Game.screen = new ScreenTestFonts()
     );
 
-    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * -2, this.objWidth, this.objHeight, "", new Runnable()
+    Button shapeTest = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test shapes", () -> Game.screen = new ScreenTestShapes());
+
+    Button traceAllRays = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -74,7 +74,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * -1, this.objWidth, this.objHeight, "", new Runnable()
+    Button firstPerson = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -88,7 +88,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0, this.objWidth, this.objHeight, "", new Runnable()
+    Button followingCam = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -102,7 +102,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button tankIDs = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+    Button tankIDs = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -116,7 +116,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button invulnerable = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button invulnerable = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -137,6 +137,7 @@ public class ScreenDebug extends Screen
         textboxTest.update();
         modelTest.update();
         fontTest.update();
+        shapeTest.update();
         traceAllRays.update();
         followingCam.update();
         firstPerson.update();
@@ -151,13 +152,14 @@ public class ScreenDebug extends Screen
         this.drawDefaultBackground();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Debug menu");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 210, "Debug menu");
 
         firstPerson.draw();
         followingCam.draw();
         modelTest.draw();
         keyboardTest.draw();
         textboxTest.draw();
+        shapeTest.draw();
         traceAllRays.draw();
         tankIDs.draw();
         invulnerable.draw();

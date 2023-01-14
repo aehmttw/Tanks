@@ -12,6 +12,7 @@ import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
 import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.EventPing;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
@@ -581,6 +582,20 @@ public class Panel
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
 
+		if (ScreenPartyLobby.isClient)
+		{
+			Client.handler.pingTimer -= Panel.frameFrequency;
+
+			if (Client.handler.pingTimer <= 0)
+			{
+				Game.eventsOut.add(new EventPing());
+				Client.handler.pingTimer = 150;
+				ClientHandler.lastLatencyTime = System.currentTimeMillis();
+			}
+
+			Client.handler.reply();
+		}
+
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.update();
 
@@ -602,18 +617,12 @@ public class Panel
 
 		Game.eventsOut.clear();
 
-
 		if (prevScreen != Game.screen)
 		{
 			Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
 			Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
 
 			Panel.selectedTextBox = null;
-		}
-
-		if (ScreenPartyLobby.isClient)
-		{
-			Client.handler.reply();
 		}
 
 		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
@@ -797,6 +806,42 @@ public class Panel
 
 		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
 			this.age += Panel.frameFrequency;
+
+		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
+		{
+			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_Q))
+			{
+				Game.game.window.constrainMouse = !Game.game.window.constrainMouse;
+				Game.game.window.pressedKeys.remove(InputCodes.KEY_Q);
+			}
+
+			int brightness = 0;
+			if (Game.currentLevel != null && Level.isDark())
+				brightness = 255;
+
+			Drawing.drawing.setColor(brightness, brightness, brightness);
+
+			String text;
+			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_P))
+				text = "(" + (int) Game.game.window.absoluteWidth + ", " + (int) Game.game.window.absoluteHeight + ")";
+
+			else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_S))
+				text = "(" + (int) Game.game.window.absoluteMouseX + ", " + (int) Game.game.window.absoluteMouseY + ")  " + Drawing.drawing.interfaceScale + ", " + Drawing.drawing.interfaceScaleZoom;
+
+			else {
+				int posX = (int) (((Math.round(Drawing.drawing.getMouseX() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
+				int posY = (int) (((Math.round(Drawing.drawing.getMouseY() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
+
+				if (Game.screen instanceof ScreenLevelEditor) {
+					posX = (int) (((ScreenLevelEditor) Game.screen).mouseObstacle.posX / Game.tile_size - 0.5);
+					posY = (int) (((ScreenLevelEditor) Game.screen).mouseObstacle.posY / Game.tile_size - 0.5);
+				}
+
+				text = "(" + posX + ", " + posY + ")";
+			}
+
+			Game.game.window.fontRenderer.drawString(Game.game.window.absoluteMouseX + 10, Game.game.window.absoluteMouseY + 10, Drawing.drawing.fontSize, Drawing.drawing.fontSize, text);
+		}
 	}
 
 	public void drawMouseTarget()
@@ -995,9 +1040,9 @@ public class Panel
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
-			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
+			double[] col = getLatencyColor(ClientHandler.latency);
 			Drawing.drawing.setColor(col[0], col[1], col[2]);
-			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
+			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.latency + "ms");
 		}
 
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)

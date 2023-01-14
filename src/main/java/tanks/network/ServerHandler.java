@@ -35,11 +35,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public long lastMessage = -1;
 	public long latency = 0;
 
-	public long latencySum = 0;
-	public int latencyCount = 1;
-	public long lastLatencyTime = 0;
-	public long lastLatencyAverage = 0;
-
 	public boolean closed = false;
 
 	public ServerHandler(Server s)
@@ -94,12 +89,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		boolean reply = this.reader.queueMessage(this, buffy, this.clientID);
+		int reply = this.reader.queueMessage(this, buffy, this.clientID);
 
 		if (steamID == null)
 			ReferenceCountUtil.release(msg);
 
-		if (reply)
+		if (reply >= 0)
 		{
 			if (lastMessage < 0)
 				lastMessage = System.currentTimeMillis();
@@ -108,19 +103,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			latency = time - lastMessage;
 			lastMessage = time;
 
-			latencyCount++;
-			latencySum += latency;
-
-			if (time / 1000 > lastLatencyTime)
-			{
-				lastLatencyTime = time / 1000;
-				lastLatencyAverage = latencySum / latencyCount;
-
-				latencySum = 0;
-				latencyCount = 0;
-			}
-
-			this.sendEvent(new EventPing());
+			this.sendEvent(new EventPing(reply));
 		}
 	}
 

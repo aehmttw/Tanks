@@ -156,7 +156,7 @@ public class Tutorial
             step = 8;
 
         if (prevStep < step)
-            Drawing.drawing.playSound("rampage.ogg", (float) (Math.pow(2, (prevStep * 1.0) / 12)));
+            Drawing.drawing.playSound("join.ogg");
         else if (prevStep > step)
             Drawing.drawing.playSound("leave.ogg");
     }

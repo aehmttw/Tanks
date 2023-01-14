@@ -61,9 +61,6 @@ Steamworks4j<br>
 
 You can all download these libraries in zip format from [here](https://1drv.ms/u/s!AnwBrt306BrJgdAzVSHeYse_cvCr-A?e=TnQrdM).
 
-Please note - Tanks uses a custom version of Steamworks4j compiled with Mac OS arm64 natives. 
-We recommend you use the libraries linked above, because they contain that modified Steamworks4j library. 
-
 ## Credits:
 
 ### Main Developer:

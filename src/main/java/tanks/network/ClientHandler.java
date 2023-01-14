@@ -28,13 +28,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	public ChannelHandlerContext ctx;
 	public SteamID steamID;
 
-	public static long lastMessage = -1;
+	public double pingTimer = 150;
+	public static long lastLatencyTime = -1;
 	public static long latency = 0;
-
-	public static long latencySum = 0;
-	public static int latencyCount = 1;
-	public static long lastLatencyTime = 0;
-	public static long lastLatencyAverage = 0;
 
 	public boolean online;
 
@@ -83,6 +79,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		ScreenPartyLobby.isClient = true;
 
 		this.sendEvent(new EventPing());
+		ClientHandler.lastLatencyTime = System.currentTimeMillis();
     }
 
     public void close()
@@ -180,31 +177,19 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     {
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		boolean reply = this.reader.queueMessage(buffy, null);
+		int reply = this.reader.queueMessage(buffy, null);
 		ReferenceCountUtil.release(msg);
 
-		if (reply)
+		if (reply >= 0)
 		{
-			if (lastMessage < 0)
-				lastMessage = System.currentTimeMillis();
+			if (lastLatencyTime < 0)
+				lastLatencyTime = System.currentTimeMillis();
 
 			long time = System.currentTimeMillis();
-			latency = time - lastMessage;
-			lastMessage = time;
+			latency = time - lastLatencyTime;
+			lastLatencyTime = time;
 
-			latencyCount++;
-			latencySum += latency;
-
-			if (time / 1000 > lastLatencyTime)
-			{
-				lastLatencyTime = time / 1000;
-				lastLatencyAverage = latencySum / latencyCount;
-
-				latencySum = 0;
-				latencyCount = 0;
-			}
-
-			this.sendEvent(new EventPing());
+			this.sendEvent(new EventPing(reply));
 		}
     }
 
@@ -212,9 +197,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (Game.eventsOut)
 		{
-			//EventKeepConnectionAlive k = new EventKeepConnectionAlive();
-			//Game.eventsOut.add(k);
-
 			for (int i = 0; i < Game.eventsOut.size(); i++)
 			{
 				INetworkEvent e = Game.eventsOut.get(i);
@@ -231,12 +213,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
     {
-		System.err.println("A network exception has occurred: " + e.toString());
-		Game.logger.println("A network exception has occurred: " + e.toString());
+		System.err.println("A network exception has occurred: " + e);
+		Game.logger.println("A network exception has occurred: " + e);
 		e.printStackTrace();
 		e.printStackTrace(Game.logger);
 
-		EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+		EventKick ev = new EventKick("A network exception has occurred: " + e);
 		ev.clientID = null;
 		Game.eventsIn.add(ev);
 

@@ -302,7 +302,7 @@ public class ScreenPartyHost extends Screen
                             Drawing.drawing.setColor(0, 0, 0);
                             Drawing.drawing.drawInterfaceText(this.centerX - 370,
                                     this.centerY + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset,
-                                    server.connections.get(i).lastLatencyAverage + "ms");
+                                    server.connections.get(i).latency + "ms");
                         }
                         catch (Exception e)
                         {

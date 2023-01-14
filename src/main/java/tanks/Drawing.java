@@ -786,8 +786,8 @@ public class Drawing
 
 	public void drawRect(double x, double y, double sizeX, double sizeY, double borderWidth, double borderRadius)
 	{
-		double drawX = gameToAbsoluteX(x, sizeX + borderWidth);
-		double drawY = gameToAbsoluteY(y, sizeY + borderWidth);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
 
 		if (isOutOfBounds(drawX, drawY))
 			return;
@@ -1181,10 +1181,9 @@ public class Drawing
 
 	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius, double r, double g, double b, double a)
 	{
-		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.setColor(r, g, b, a * 0.75);
 		fillRect(x, y, sX, sY, borderRadius);
-		Drawing.drawing.setColor(r, g, b, a / 2);
-		drawRect(x + borderWidth / 2, y + borderWidth / 2, sX, sY,  borderWidth, borderRadius);
+		drawRect(x, y, sX, sY, borderWidth, borderRadius);
 	}
 
 	public void playMusic(String sound, float volume, boolean looped, String id, long fadeTime)

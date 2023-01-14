@@ -27,14 +27,14 @@ public class MessageReader
 
 	protected int lastID;
 
-	public boolean queueMessage(ByteBuf m, UUID clientID)
+	public int queueMessage(ByteBuf m, UUID clientID)
 	{
 		return this.queueMessage(null, m, clientID);
 	}
 
-	public synchronized boolean queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
+	public synchronized int queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
 	{
-		boolean reply = false;
+		int reply = -1;
 		
 		try
 		{
@@ -70,7 +70,7 @@ public class MessageReader
 							ScreenPartyLobby.connections.clear();
 						}
 
-						return false;
+						return -1;
 					}
 				}
 				
@@ -78,7 +78,7 @@ public class MessageReader
 
 				while (queue.readableBytes() >= endpoint)
 				{
-					reply = this.readMessage(s, queue, clientID) || reply;
+					reply = this.readMessage(s, queue, clientID);
 					queue.discardReadBytes();
 					
 					reading = false;
@@ -103,7 +103,7 @@ public class MessageReader
 								ScreenPartyLobby.connections.clear();
 							}
 
-							return false;
+							return -1;
 						}
 
 						reading = true;
@@ -115,13 +115,13 @@ public class MessageReader
 		{
 			if (s != null)
 			{
-				System.err.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
-				Game.logger.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
+				System.err.println("A network exception has occurred: " + e + " (" + s.rawUsername + "/" + s.clientID + ")");
+				Game.logger.println("A network exception has occurred: " + e + " (" + s.rawUsername + "/" + s.clientID + ")");
 			}
 			else
 			{
-				System.err.println("A network exception has occurred: " + e.toString());
-				Game.logger.println("A network exception has occurred: " + e.toString());
+				System.err.println("A network exception has occurred: " + e);
+				Game.logger.println("A network exception has occurred: " + e);
 			}
 
 			e.printStackTrace();
@@ -129,12 +129,12 @@ public class MessageReader
 
 			if (ScreenPartyHost.isServer && s != null)
 			{
-				s.sendEventAndClose(new EventKick("A network exception has occurred: " + e.toString()));
+				s.sendEventAndClose(new EventKick("A network exception has occurred: " + e));
 				//Game.screen = new ScreenHostingEnded("A network exception has occurred: " + e.toString());
 			}
 			else if (ScreenPartyLobby.isClient)
 			{
-				EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+				EventKick ev = new EventKick("A network exception has occurred: " + e);
 				ev.clientID = null;
 				Game.eventsIn.add(ev);
 
@@ -146,7 +146,7 @@ public class MessageReader
 		return reply;
 	}
 
-	public synchronized boolean readMessage(ServerHandler s, ByteBuf m, UUID clientID) throws Exception
+	public synchronized int readMessage(ServerHandler s, ByteBuf m, UUID clientID) throws Exception
 	{
 		int i = m.readInt();
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
@@ -160,12 +160,10 @@ public class MessageReader
 		e.read(m);
 
 		if (e instanceof PersonalEvent)
-		{
 			((PersonalEvent) e).clientID = clientID;
-		}
 
-		if (e instanceof EventPing)
-			return true;
+		if (e instanceof EventPing && ((EventPing) e).iteration <= 2)
+			return ((EventPing) e).iteration;
 		else if (e instanceof IOnlineServerEvent)
 			s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));
 		else if (e instanceof IServerThreadEvent)
@@ -178,7 +176,7 @@ public class MessageReader
 			}
 		}
 
-		return false;
+		return -1;
 	}
 
 	public static void updateLastMessageTime()

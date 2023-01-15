@@ -198,6 +198,17 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.secondaryColorB = TankPlayer.rainbowColor(Game.player.turretColorB, 2);
         }
 
+        if (this.player.chromaaa)
+        {
+            this.colorR = TankPlayer.rainbowColor(Game.player.colorR, 1);
+            this.colorG = TankPlayer.rainbowColor(Game.player.colorG, 3);
+            this.colorB = TankPlayer.rainbowColor(Game.player.colorB, 2);
+
+            this.secondaryColorR = TankPlayer.rainbowColor(Game.player.turretColorR, 1);
+            this.secondaryColorG = TankPlayer.rainbowColor(Game.player.turretColorG, 3);
+            this.secondaryColorB = TankPlayer.rainbowColor(Game.player.turretColorB, 2);
+        }
+
         if (this.tookRecoil)
         {
             if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)

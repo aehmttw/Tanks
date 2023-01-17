@@ -4,10 +4,11 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 
-public class ScreenOptionsGame extends Screen
+public class ScreenOptionsMisc extends Screen
 {
     public static final String autostartText = "Autostart: ";
     public static final String fullStatsText = "Stats animations: ";
+    public static final String previewCrusadesText = "Crusade preview: ";
 
     Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -39,11 +40,24 @@ public class ScreenOptionsGame extends Screen
     },
             "When off, skips directly to the summary tab---of the crusade end stats screen");
 
-    Button speedrunOptions = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
+    Button previewCrusades = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.previewCrusades = !Game.previewCrusades;
+
+            if (Game.previewCrusades)
+                previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
+            else
+                previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
+        }
+    },
+            "When enabled, the backgrounds of---the crusade preview and stats---screens display an animation of all---the crusade levels scrolling by.");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
-    public ScreenOptionsGame()
+    public ScreenOptionsMisc()
     {
         this.music = "menu_options.ogg";
         this.musicID = "menu";
@@ -57,15 +71,20 @@ public class ScreenOptionsGame extends Screen
             fullStats.setText(fullStatsText, ScreenOptions.onText);
         else
             fullStats.setText(fullStatsText, ScreenOptions.offText);
+
+        if (Game.previewCrusades)
+            previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
+        else
+            previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
     }
 
     @Override
     public void update()
     {
         back.update();
-        speedrunOptions.update();
         autostart.update();
         fullStats.update();
+        previewCrusades.update();
     }
 
     @Override
@@ -74,12 +93,12 @@ public class ScreenOptionsGame extends Screen
         this.drawDefaultBackground();
 
         back.draw();
-        speedrunOptions.draw();
+        previewCrusades.draw();
         fullStats.draw();
         autostart.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Game options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Miscellaneous options");
     }
 }

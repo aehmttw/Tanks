@@ -94,6 +94,8 @@ public class TankRemote extends Tank
 		this.mine = t.mine;
 		this.musicTracks = t.musicTracks;
 		this.fromRegistry = t.fromRegistry;
+		this.trackSpacing = t.trackSpacing;
+		this.enableTracks = t.enableTracks;
 	}
 
 	@Override

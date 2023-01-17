@@ -228,6 +228,21 @@ public class Level
 			customTanksMap.put(t.name, t);
 		}
 
+		for (Player p: this.includedPlayers)
+		{
+			if (p.hotbar.enabledItemBar)
+			{
+				for (Item i: p.hotbar.itemBar.slots)
+				{
+					//System.out.println(i);
+					if (i instanceof ItemBullet)
+						((ItemBullet) i).liveBullets = 0;
+					else if (i instanceof ItemMine)
+						((ItemMine) i).liveMines = 0;
+				}
+			}
+		}
+
 		ArrayList<EventTankPlayerCreate> playerEvents = new ArrayList<>();
 
 		Tank.currentID = 0;

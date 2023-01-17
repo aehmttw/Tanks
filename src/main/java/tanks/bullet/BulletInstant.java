@@ -63,7 +63,9 @@ public abstract class BulletInstant extends Bullet
 				this.destroy = true;
 
 			super.update();
-			//this.addEffect();
+
+			if (Math.abs(this.lastFinalVX) < 0.01 && Math.abs(this.lastFinalVY) < 0.01)
+				this.destroy = true;
 		}
 
 		if (!this.tank.isRemote)

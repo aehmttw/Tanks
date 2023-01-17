@@ -641,6 +641,9 @@ public class Panel
 			Game.game.window.validPressedKeys.clear();
 			Game.exitToCrash(new Exception("Manually initiated crash"));
 		}
+
+		if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+			Game.eventsOut.clear();
 	}
 
 	public void playScreenMusic(long fadeTime)

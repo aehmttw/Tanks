@@ -93,6 +93,7 @@ public class Bullet extends Movable implements IDrawable
 	protected double lastTrailAngle = -1;
 
 	public double speed = 0;
+	public boolean justBounced = false;
 
 	public Bullet(double x, double y, int bounces, Tank t, ItemBullet item)
 	{
@@ -557,6 +558,8 @@ public class Bullet extends Movable implements IDrawable
 			else
 				this.bouncyBounces--;
 
+			this.justBounced = true;
+
 			if (this.bounces < 0 || this.bouncyBounces < 0 || !allowBounce)
 			{
 				if (this.playPopSound)
@@ -587,8 +590,10 @@ public class Bullet extends Movable implements IDrawable
 	@Override
 	public void update()
 	{
-		if (!this.isRemote && (this.vX != this.lastVX || this.vY != this.lastVY))
+		if (!this.isRemote && ScreenPartyHost.isServer && (this.vX != this.lastVX || this.vY != this.lastVY) && !justBounced)
 			Game.eventsOut.add(new EventBulletUpdate(this));
+
+		this.justBounced = false;
 
 		super.update();
 
@@ -596,6 +601,7 @@ public class Bullet extends Movable implements IDrawable
 		{
 			this.collisionX = this.posX;
 			this.collisionY = this.posY;
+
 			this.addTrail();
 		}
 
@@ -918,7 +924,8 @@ public class Bullet extends Movable implements IDrawable
 
 			if (Game.enable3d)
 			{
-				Drawing.drawing.fillOval(posX, posY, posZ - 0.5, size + sizeModifier, size + sizeModifier, false, true);
+				if (Game.xrayBullets)
+					Drawing.drawing.fillOval(posX, posY, posZ - 0.5, size + sizeModifier, size + sizeModifier, false, true);
 				Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
 			}
 			else

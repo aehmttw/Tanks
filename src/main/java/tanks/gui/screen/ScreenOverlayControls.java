@@ -24,12 +24,10 @@ public class ScreenOverlayControls
 
     public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Editor", () -> Game.screen = new ScreenControlsEditor());
 
-    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 10, this.objWidth, this.objHeight, "Reset controls", () -> Game.screen = new ScreenResetControls()
-    );
+    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Reset controls", () -> Game.screen = new ScreenResetControls(Game.screen));
 
     public static final String mouseTargetText = "Mouse target: ";
     public static final String mouseTargetHeightText = "Mouse spotlight: ";
-    public static final String constrainMouseText = "Constrain mouse: ";
 
     public static ScreenOverlayControls overlay = new ScreenOverlayControls();
 
@@ -47,17 +45,12 @@ public class ScreenOverlayControls
 
         if (!Game.enable3d)
             mouseTargetHeight.enabled = false;
-
-        if (Game.constrainMouse)
-            constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
-        else
-            constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
     }
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 360, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
 
-    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 135, this.objWidth, this.objHeight, "", new Runnable()
+    Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -74,7 +67,7 @@ public class ScreenOverlayControls
     },
             "When enabled, your mouse pointer---will be replaced by a target");
 
-    Button mouseTargetHeight = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 195, this.objWidth, this.objHeight, "", new Runnable()
+    Button mouseTargetHeight = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -90,21 +83,6 @@ public class ScreenOverlayControls
         }
     },
             "When enabled, while ingame or in the editor,---a spotlight will appear on your mouse---to help you judge the height of objects.");
-
-    Button constrainMouse = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 255, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.constrainMouse = !Game.constrainMouse;
-
-            if (Game.constrainMouse)
-                constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
-            else
-                constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
-        }
-    },
-            "Disallows your mouse pointer from---leaving the window while playing");
 
     public void update()
     {
@@ -130,7 +108,6 @@ public class ScreenOverlayControls
 
         mouseTarget.update();
         mouseTargetHeight.update();
-        constrainMouse.update();
     }
 
     public void draw()
@@ -146,7 +123,7 @@ public class ScreenOverlayControls
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(Game.screen.titleSize);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 380, "Controls");
-        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 85, "Input options");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 90, "Input options");
 
         game.draw();
         camera.draw();
@@ -156,7 +133,6 @@ public class ScreenOverlayControls
         reset.draw();
         back.draw();
 
-        constrainMouse.draw();
         mouseTargetHeight.draw();
         mouseTarget.draw();
         back.draw();

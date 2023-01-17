@@ -966,6 +966,7 @@ public class TankAIControlled extends Tank
 		t.statusEffects = this.statusEffects;
 		t.coinValue = this.coinValue;
 		t.cooldown = this.cooldown;
+		t.currentlyVisible = true;
 
 		Tank p = this;
 		if (this.getTopLevelPossessor() != null)
@@ -2226,6 +2227,7 @@ public class TankAIControlled extends Tank
 			this.attributes = this.sightTransformTank.attributes;
 			this.statusEffects = this.sightTransformTank.statusEffects;
 			this.possessingTank = null;
+			this.currentlyVisible = true;
 			this.targetEnemy = null;
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
 			Game.eventsOut.add(new EventTankTransform(this, this, EventTankTransform.no_effect));

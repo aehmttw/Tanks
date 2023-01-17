@@ -3,7 +3,6 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 
 public class ScreenOptionsSpeedrun extends Screen
 {
@@ -41,7 +40,7 @@ public class ScreenOptionsSpeedrun extends Screen
             "Deterministic mode changes the random number---generation to be fixed based on a seed, and---the game speed to be locked and independent---of framerate." +
                     "------This is useful for fair speedruns but may---provide for a less smooth experience.");
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGame()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
     );
 
     public ScreenOptionsSpeedrun()

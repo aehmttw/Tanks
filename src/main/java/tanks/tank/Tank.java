@@ -534,7 +534,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		boost = this.getAttributeValue(AttributeModifier.ember_effect, boost);
 
-		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled)
+		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
 			double var = 50;

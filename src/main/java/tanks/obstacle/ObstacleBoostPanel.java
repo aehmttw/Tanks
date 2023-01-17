@@ -39,6 +39,9 @@ public class ObstacleBoostPanel extends Obstacle
     @Override
     public void onObjectEntryLocal(Movable m)
     {
+        if (ScreenGame.finishedQuick)
+            return;
+
         this.brightness = Math.min(this.brightness + Panel.frameFrequency * 8, 100);
 
         if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.25)
@@ -48,6 +51,9 @@ public class ObstacleBoostPanel extends Obstacle
     @Override
     public void onObjectEntry(Movable m)
     {
+        if (ScreenGame.finishedQuick)
+            return;
+
         this.onObjectEntryLocal(m);
 
         AttributeModifier am = m.getAttribute(AttributeModifier.glow);

@@ -4,6 +4,8 @@ import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
 import tanks.obstacle.Obstacle;
 import tanks.network.event.*;
 import tanks.tank.*;
@@ -58,6 +60,8 @@ public class Level
 	public int colorVarR = 20;
 	public int colorVarG = 20;
 	public int colorVarB = 20;
+
+	public int tilesRandomSeed = 0;
 
 	public double light = 1.0;
 	public double shadow = 0.5;
@@ -222,6 +226,21 @@ public class Level
 		for (TankAIControlled t: this.customTanks)
 		{
 			customTanksMap.put(t.name, t);
+		}
+
+		for (Player p: this.includedPlayers)
+		{
+			if (p.hotbar.enabledItemBar)
+			{
+				for (Item i: p.hotbar.itemBar.slots)
+				{
+					//System.out.println(i);
+					if (i instanceof ItemBullet)
+						((ItemBullet) i).liveBullets = 0;
+					else if (i instanceof ItemMine)
+						((ItemMine) i).liveMines = 0;
+				}
+			}
 		}
 
 		ArrayList<EventTankPlayerCreate> playerEvents = new ArrayList<>();
@@ -700,16 +719,17 @@ public class Level
 		Game.tilesFlash = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
 
+		Random tilesRandom = new Random(this.tilesRandomSeed);
 		for (int i = 0; i < Game.currentSizeX; i++)
 		{
 			for (int j = 0; j < Game.currentSizeY; j++)
 			{
 				if (Game.fancyTerrain)
 				{
-					Game.tilesR[i][j] = (colorR + Math.random() * colorVarR);
-					Game.tilesG[i][j] = (colorG + Math.random() * colorVarG);
-					Game.tilesB[i][j] = (colorB + Math.random() * colorVarB);
-					Game.tilesDepth[i][j] = Math.random() * 10;
+					Game.tilesR[i][j] = (colorR + tilesRandom.nextDouble() * colorVarR);
+					Game.tilesG[i][j] = (colorG + tilesRandom.nextDouble() * colorVarG);
+					Game.tilesB[i][j] = (colorB + tilesRandom.nextDouble() * colorVarB);
+					Game.tilesDepth[i][j] = tilesRandom.nextDouble() * 10;
 				}
 				else
 				{

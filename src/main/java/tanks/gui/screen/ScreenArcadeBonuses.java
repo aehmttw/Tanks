@@ -115,21 +115,18 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         if (a.score == 666)
             bonuses.add(new Bonus("Unholy score!", 100, 255, 0, 0));
         else if (digits.length() == 2 && a.score % 11 == 0)
-            bonuses.add(new Bonus("Double digits!", 15, 160, 40, 255));
+                bonuses.add(new Bonus("Double digits!", 15, 160, 40, 255));
         else if (digits.length() == 3 && a.score % 111 == 0)
-            bonuses.add(new Bonus("Triple digits!!", 111, 255, 40, 255));
+                bonuses.add(new Bonus("Triple digits!!", 60, 255, 40, 255));
         else if (digits.length() == 4 && a.score % 1111 == 0)
-            bonuses.add(new Bonus("Quadruple digits!!", 250, 255, 40, 160));
+                bonuses.add(new Bonus("Quadruple digits!!", 125, 255, 40, 160));
 
-        if (a.score > 0)
-        {
-            if (a.score % 1000 == 0)
-                bonuses.add(new Bonus("Right on a thousand!!!", 250, 0, 255, 160));
-            else if (a.score % 100 == 0)
-                bonuses.add(new Bonus("Right on a hundred!!", 100, 0, 255, 255));
-            else if (a.score % 10 == 0)
-                bonuses.add(new Bonus("Multiple of 10!", 10, 0, 160, 255));
-        }
+        if (a.score % 1000 == 0)
+            bonuses.add(new Bonus("Right on a thousand!!!", 100, 0, 255, 160));
+        else if (a.score % 100 == 0)
+            bonuses.add(new Bonus("Right on a hundred!!", 30, 0, 255, 255));
+        else if (a.score % 10 == 0)
+            bonuses.add(new Bonus("Multiple of 10!", 10, 0, 160, 255));
 
         int year = Calendar.getInstance().get(Calendar.YEAR);
         int days = 365;
@@ -141,23 +138,20 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             bonuses.add(new Bonus("Up to date!", days, 40, 255, 40));
 
         if (Math.sqrt(a.score) % 1.0 == 0)
-            bonuses.add(new Bonus("Perfect square!", (int) Math.sqrt(a.score) * 5, 40, 40, 255));
+            bonuses.add(new Bonus("Perfect square!", (int) Math.sqrt(a.score), 40, 40, 255));
 
-        if (a.kills > 0)
-        {
-            if (a.kills >= a.bulletsFired)
-                bonuses.add(new Bonus("Perfect aim!!!!", 200, 40, 255, 255));
-            else if (a.kills >= a.bulletsFired * 0.8)
-                bonuses.add(new Bonus("Bullseye aim!!!", 100, 40, 40, 255));
-            else if (a.kills >= a.bulletsFired * 0.7)
-                bonuses.add(new Bonus("Amazing aim!!", 80, 80, 40, 255));
-            else if (a.kills >= a.bulletsFired * 0.6)
-                bonuses.add(new Bonus("Awesome aim!!", 60, 160, 40, 255));
-            else if (a.kills >= a.bulletsFired * 0.5)
-                bonuses.add(new Bonus("Great aim!!", 40, 255, 40, 255));
-            else if (a.kills >= a.bulletsFired * 0.4)
-                bonuses.add(new Bonus("Good aim!", 20, 255, 40, 160));
-        }
+        if (a.kills >= a.bulletsFired)
+            bonuses.add(new Bonus("Perfect aim!!!!", 200, 40, 255, 255));
+        else if (a.kills >= a.bulletsFired * 0.8)
+            bonuses.add(new Bonus("Bullseye aim!!!", 100, 40, 40, 255));
+        else if (a.kills >= a.bulletsFired * 0.7)
+            bonuses.add(new Bonus("Amazing aim!!", 80, 80, 40, 255));
+        else if (a.kills >= a.bulletsFired * 0.6)
+            bonuses.add(new Bonus("Awesome aim!!", 60, 160, 40, 255));
+        else if (a.kills >= a.bulletsFired * 0.5)
+            bonuses.add(new Bonus("Great aim!!", 40, 255, 40, 255));
+        else if (a.kills >= a.bulletsFired * 0.4)
+            bonuses.add(new Bonus("Good aim!", 20, 255, 40, 160));
 
         if (a.kills >= 120)
             bonuses.add(new Bonus("Tank annihilator!!!!", 100, 255, 255, 80));
@@ -189,9 +183,6 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
     public ScreenArcadeBonuses(Bonus b1, Bonus b2, Bonus b3)
     {
-        this.music = "arcade/drumroll.ogg";
-        Panel.forceRefreshMusic = true;
-
         this.bonuses.add(b1);
         this.bonuses.add(b2);
         this.bonuses.add(b3);
@@ -206,7 +197,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     @Override
     public void update()
     {
-        if (this.age <= 50)
+        if (this.age == 0)
             Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * 0.25f);
 
         if (Game.effectsEnabled)
@@ -219,7 +210,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         Game.effects.removeAll(Game.removeEffects);
 
-        if (this.age > 50 && (!Game.game.window.validPressedKeys.isEmpty() || !Game.game.window.validPressedButtons.isEmpty()))
+        if (!Game.game.window.validPressedKeys.isEmpty() || !Game.game.window.validPressedButtons.isEmpty())
         {
             Game.game.window.validPressedKeys.clear();
             Game.game.window.validPressedButtons.clear();
@@ -234,8 +225,6 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
                 if (bonuses.get(2 - i).value > 2000000000)
                     Drawing.drawing.playSound("leave.ogg");
-                else if (bonuses.get(2 - i).value == 69)
-                    Drawing.drawing.playSound("nice.ogg");
                 else
                     Drawing.drawing.playSound("bonus" + (i + 1) + ".ogg", 1f);
 
@@ -246,7 +235,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                         Drawing.drawing.setInterfaceFontSize(this.textSize);
                         Bonus b = this.bonuses.get(2 - i);
                         double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
-                        addEffect(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
+                        addEffect(this.centerX, this.centerY + (i - 1) * 40, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
                     }
                     Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
                 }
@@ -337,7 +326,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         Drawing.drawing.setColor(255, 255, 255, 255 * heightFrac);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, yPos - this.objYSpace * 2, "Bonus points");
+        Drawing.drawing.displayInterfaceText(this.centerX, yPos - 120, "Bonus points");
 
         for (Effect e: Game.effects)
             e.draw();
@@ -353,8 +342,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 int j = 2 - i;
                 Drawing.drawing.setColor(bonuses.get(j).red, bonuses.get(j).green, bonuses.get(j).blue, 255);
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).name);
-                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).value + "");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * 40, bonuses.get(j).name);
+                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * 40, bonuses.get(j).value + "");
             }
         }
 
@@ -362,7 +351,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         {
             Drawing.drawing.setColor(255, 255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Total: " + (bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + 120, "Total: " + (bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value));
         }
 
         this.drawPoints();
@@ -377,7 +366,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 fireworksToSpawn--;
                 fireworkCooldown = Math.random() * 5 + 2.5;
-                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 5, this.getFireworkArray());
+                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + 120, this.getFireworkArray());
                 f.setRandomColor();
                 f.setVelocity();
                 f.maxAge /= 2;

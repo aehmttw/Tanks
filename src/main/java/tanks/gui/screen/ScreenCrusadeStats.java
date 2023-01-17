@@ -100,33 +100,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public HashMap<String, TankAIControlled> customTanks = new HashMap<>();
 
-    public boolean onlyRecord = false;
-    public Screen prev;
-
-    public ScreenCrusadeStats(Crusade crusade, ScreenCrusadeDetails screen)
-    {
-        this(crusade, null, false, screen);
-    }
-
-    public CrusadePlayer setupOnlyRecords(ScreenCrusadeDetails screenCrusadeStats)
-    {
-        CrusadePlayer cp = new CrusadePlayer(Game.player);
-        crusade.crusadePlayers.put(Game.player, cp);
-        Crusade.currentCrusade = crusade;
-        this.view = ScreenCrusadeStats.View.levels;
-        this.onlyRecord = true;
-        this.showRecord = true;
-        this.prev = screenCrusadeStats;
-        this.recordDisplayFrac = 1;
-        return cp;
-    }
-
     public ScreenCrusadeStats(Crusade crusade, CrusadePlayer p, boolean intro)
-    {
-        this(crusade, p, intro, null);
-    }
-
-    public ScreenCrusadeStats(Crusade crusade, CrusadePlayer p, boolean intro, ScreenCrusadeDetails screen)
     {
         super(350, 40, 250, 60);
 
@@ -134,19 +108,10 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             page_size = 9;
 
         if (Game.previewCrusades)
-        {
-            if (screen == null)
-                this.background = new ScreenCrusadeLevels(crusade);
-            else
-                this.background = screen.background;
-        }
-
-        this.crusade = crusade;
-
-        if (screen != null)
-            p = setupOnlyRecords(screen);
+            this.background = new ScreenCrusadeLevels(crusade);
 
         this.player = p;
+        this.crusade = crusade;
         this.forceInBounds = Game.previewCrusades;
 
         Obstacle.draw_size = Game.tile_size;
@@ -168,16 +133,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         }
         else
         {
-            if (onlyRecord)
-            {
-                this.music = this.prev.music;
-                this.musicID = this.prev.musicID;
-            }
-            else
-            {
-                this.music = "results.ogg";
-                this.musicStarted = true;
-            }
+            this.music = "results.ogg";
+            this.musicStarted = true;
 
             this.tankEntriesShown = this.tanks.size() + 1;
             this.levelEntriesShown = this.levels.size() + 1;
@@ -213,7 +170,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             playerNames[i] = pl.player.username;
             playerObjects[i] = pl;
 
-            if (pl.player.clientID.equals(this.player.player.clientID))
+            if (pl.player.clientID.equals(p.player.clientID))
                 us = i;
 
             i++;
@@ -228,6 +185,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         changePlayer.selectedOption = us;
 
         changePlayer.quick = true;
+
+        if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
+            exit.setText("Back to party");
     }
 
     public void addTanks()
@@ -282,39 +242,26 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).kills - ((TankEntry) o1).kills), (entry, rank) -> ((TankEntry) entry).killRank = rank);
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).deaths - ((TankEntry) o1).deaths), (entry, rank) -> ((TankEntry) entry).deathRank = rank);
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).coins * ((TankEntry) o2).kills - ((TankEntry) o1).coins * ((TankEntry) o1).kills), (entry, rank) -> ((TankEntry) entry).coinRank = rank);
+
+        if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+            exit.setText("Back to party");
     }
 
     public void addLevels()
     {
-        if (onlyRecord)
+        for (Crusade.LevelPerformance l: crusade.performances)
         {
-            for (int i = 0; i < crusade.levels.size(); i++)
-            {
-                Crusade.CrusadeLevel l = crusade.levels.get(i);
-                String name = "Battle " + (i + 1);
+            String name = "Battle " + (l.index + 1);
 
-                if (crusade.showNames)
-                    name = ((i + 1) + ". " + crusade.levels.get(i).levelName.replace("_", " "));
+            if (crusade.showNames)
+                name = (l.index + 1 + ". " + crusade.levels.get(l.index).levelName.replace("_", " "));
 
-                this.levels.add(new LevelEntry(name, null, crusade.respawnTanks, this));
-            }
-        }
-        else
-        {
-            for (Crusade.LevelPerformance l : crusade.performances)
-            {
-                String name = "Battle " + (l.index + 1);
+            this.levels.add(new LevelEntry(name, l, crusade.respawnTanks, this));
 
-                if (crusade.showNames)
-                    name = (l.index + 1 + ". " + crusade.levels.get(l.index).levelName.replace("_", " "));
+            this.totalAttempts += l.attempts;
 
-                this.levels.add(new LevelEntry(name, l, crusade.respawnTanks, this));
-
-                this.totalAttempts += l.attempts;
-
-                if (l.bestTime < Double.MAX_VALUE)
-                    this.totalBestTimes += l.bestTime;
-            }
+            if (l.bestTime < Double.MAX_VALUE)
+                this.totalBestTimes += l.bestTime;
         }
 
         if (crusade.internal && crusade.crusadePlayers.get(Game.player).player.remainingLives > 0 && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
@@ -341,9 +288,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                         {
                             LevelEntry l = ((LevelEntry) (this.levels.get(i)));
                             l.bestTime = t;
-
-                            if (!onlyRecord)
-                                l.timeDiff = l.level.totalTime - l.bestTime;
+                            l.timeDiff = l.level.totalTime - l.bestTime;
                         }
 
                         bestTime += t;
@@ -353,7 +298,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                     f.stopReading();
                 }
 
-                if (crusade.timePassed <= bestTime && !Game.invulnerable && !TankPlayer.enableDestroyCheat && !onlyRecord)
+                if (crusade.timePassed <= bestTime && !Game.invulnerable && !TankPlayer.enableDestroyCheat)
                 {
                     if (!f.exists())
                         f.create();
@@ -373,13 +318,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         }
 
         ArrayList<Entry> copy = new ArrayList<>(this.levels);
-
-        if (!onlyRecord)
-        {
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.totalTime - ((LevelEntry) o1).level.totalTime), (entry, rank) -> ((LevelEntry) entry).timeRank = rank);
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.bestTime - ((LevelEntry) o1).level.bestTime), (entry, rank) -> ((LevelEntry) entry).clearRank = rank);
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.attempts - ((LevelEntry) o1).level.attempts), (entry, rank) -> ((LevelEntry) entry).triesRank = rank);
-        }
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.totalTime - ((LevelEntry) o1).level.totalTime), (entry, rank) -> ((LevelEntry) entry).timeRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.bestTime - ((LevelEntry) o1).level.bestTime), (entry, rank) -> ((LevelEntry) entry).clearRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.attempts - ((LevelEntry) o1).level.attempts), (entry, rank) -> ((LevelEntry) entry).triesRank = rank);
 
         if (recordExists)
         {
@@ -469,7 +410,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         }
     }
 
-    Button exit = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Exit", () ->
+    Button exit = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Return to title", () ->
     {
         Crusade.crusadeMode = false;
         Crusade.currentCrusade = null;
@@ -479,20 +420,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         else if (ScreenPartyHost.isServer)
             Game.screen = ScreenPartyHost.activeScreen;
         else
-        {
-            Game.cleanUp();
-            Panel.panel.zoomTimer = 0;
-            Game.screen = new ScreenPlaySingleplayer();
-        }
-    }
-    );
-
-    Button exit2 = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 60, this.objWidth, this.objHeight, "Back", () ->
-    {
-        Crusade.crusadeMode = false;
-        Crusade.currentCrusade = null;
-
-        Game.screen = prev;
+            Game.exitToTitle();
     }
     );
 
@@ -598,10 +526,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
         Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
 
-        if (onlyRecord)
-            Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 3, 191);
-
-        if (!musicStarted && !onlyRecord)
+        if (!musicStarted)
         {
             this.age += Panel.frameFrequency;
 
@@ -649,15 +574,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 this.showRecordButton.fullInfo = true;
 
                 if (this.showRecord)
-                    this.showRecordButton.image = "icons/nostar.png";
+                    this.showRecordButton.image = "/icons/nostar.png";
                 else
-                    this.showRecordButton.image = "icons/star.png";
+                    this.showRecordButton.image = "/icons/star.png";
 
                 this.showRecordButton.imageSizeX = 25;
                 this.showRecordButton.imageSizeY = 25;
 
-                if (!onlyRecord)
-                    this.showRecordButton.update();
+                this.showRecordButton.update();
             }
         }
         else if (this.view == View.items)
@@ -737,68 +661,63 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             this.rollingTanks.removeAll(removeTanks);
         }
 
-        if (onlyRecord)
-            exit2.update();
-        else if (!wizardFinished)
+        if (!wizardFinished)
             next.update();
         else
             exit.update();
 
-        if (!onlyRecord)
+        if (!wizardFinished)
         {
-            if (!wizardFinished)
+            if (Game.game.input.moveRight.isValid() && next.enabled)
             {
-                if (Game.game.input.moveRight.isValid() && next.enabled)
-                {
-                    next.function.run();
-                    Game.game.input.moveRight.invalidate();
-                }
+                next.function.run();
+                Game.game.input.moveRight.invalidate();
             }
-            else
+        }
+        else
+        {
+            if (Game.game.input.moveRight.isValid())
             {
-                if (Game.game.input.moveRight.isValid())
-                {
-                    if (view == View.tanks)
-                        view = View.levels;
-                    else if (view == View.levels)
-                        view = View.items;
-                    else if (view == View.items)
-                        view = View.misc;
-                    else
-                        view = View.tanks;
+                if (view == View.tanks)
+                    view = View.levels;
+                else if (view == View.levels)
+                    view = View.items;
+                else if (view == View.items)
+                    view = View.misc;
+                else
+                    view = View.tanks;
 
-                    Drawing.drawing.playSound("boost.ogg", 2f);
-                    Game.game.input.moveRight.invalidate();
-                }
-
-                if (Game.game.input.moveLeft.isValid())
-                {
-                    if (view == View.tanks)
-                        view = View.misc;
-                    else if (view == View.levels)
-                        view = View.tanks;
-                    else if (view == View.items)
-                        view = View.levels;
-                    else
-                        view = View.items;
-
-                    Drawing.drawing.playSound("boost.ogg", 2f);
-                    Game.game.input.moveLeft.invalidate();
-                }
+                Drawing.drawing.playSound("boost.ogg", 2f);
+                Game.game.input.moveRight.invalidate();
             }
 
-            if (wizardFinished)
+            if (Game.game.input.moveLeft.isValid())
             {
-                viewTanks.enabled = view != View.tanks;
-                viewLevels.enabled = view != View.levels;
-                viewItems.enabled = view != View.items;
-                viewMisc.enabled = view != View.misc;
+                if (view == View.tanks)
+                    view = View.misc;
+                else if (view == View.levels)
+                    view = View.tanks;
+                else if (view == View.items)
+                    view = View.levels;
+                else
+                    view = View.items;
 
-                viewTanks.update();
-                viewLevels.update();
-                viewItems.update();
-                viewMisc.update();
+                Drawing.drawing.playSound("boost.ogg", 2f);
+                Game.game.input.moveLeft.invalidate();
             }
+        }
+
+        if (wizardFinished)
+        {
+            viewTanks.enabled = view != View.tanks;
+            viewLevels.enabled = view != View.levels;
+            viewItems.enabled = view != View.items;
+            viewMisc.enabled = view != View.misc;
+
+            viewTanks.update();
+            viewLevels.update();
+            viewItems.update();
+            viewMisc.update();
         }
     }
 
@@ -911,12 +830,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.previousPage.imageXOffset = -225;
 
         if (this.age > 12 || this.wizardFinished)
-        {
-            if (onlyRecord)
-                Drawing.drawing.displayInterfaceText(this.centerX + offset, 80, "best run");
-            else
-                Drawing.drawing.displayInterfaceText(this.centerX + offset, 80, "statistics");
-        }
+            Drawing.drawing.displayInterfaceText(this.centerX + offset, 80, "statistics");
 
         if ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && this.wizardFinished)
         {
@@ -1004,9 +918,6 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 double f = topBarTimer / maxBarTime;
                 double o = -50 * (1 - topBarTimer / maxBarTime);
 
-                if (onlyRecord)
-                    o += 267;
-
                 drawBar(aboveY, 50 * f, 127 * f);
                 Drawing.drawing.setColor(255, 255, 255, 255 * f);
                 Drawing.drawing.setInterfaceFontSize(24);
@@ -1023,16 +934,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                     }
 
                     Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l1, aboveY, "Battle");
-
-                    if (!onlyRecord)
-                        Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l4, aboveY, "Time this run");
+                    Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l4, aboveY, "Time this run");
 
                     double o2 = (1 - this.recordDisplayFrac) * -50;
                     Drawing.drawing.setColor(255, 255, 255, 255 * f * this.recordDisplayFrac);
                     Drawing.drawing.displayInterfaceText(o + o2 + Game.screen.centerX + levels_2, aboveY, "Best time");
-
-                    if (!onlyRecord)
-                        Drawing.drawing.displayInterfaceText(o + o2 + Game.screen.centerX + levels_3, aboveY, "Difference");
+                    Drawing.drawing.displayInterfaceText(o + o2 + Game.screen.centerX + levels_3, aboveY, "Difference");
                 }
                 else if (crusade.respawnTanks)
                 {
@@ -1066,9 +973,6 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 double f = bottomBarTimer / maxBarTime;
                 double o = -50 * (1 - bottomBarTimer / maxBarTime);
 
-                if (onlyRecord)
-                    o += 267;
-
                 drawBar(belowY, 50 * f, 127 * f);
                 Drawing.drawing.setColor(255, 255, 255, 255 * f);
                 Drawing.drawing.setInterfaceFontSize(32);
@@ -1085,36 +989,32 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                     }
 
                     double diff = crusade.timePassed - this.previousBest;
-                    Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l1, belowY, "Total");
 
-                    if (!onlyRecord)
-                        Drawing.drawing.drawInterfaceText(o + Game.screen.centerX + l4, belowY, SpeedrunTimer.getTime(crusade.timePassed));
+                    Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l1, belowY, "Total");
+                    Drawing.drawing.drawInterfaceText(o + Game.screen.centerX + l4, belowY, SpeedrunTimer.getTime(crusade.timePassed));
 
                     double o2 = (1 - this.recordDisplayFrac) * -50;
                     double a = 255 * f * this.recordDisplayFrac;
                     Drawing.drawing.setColor(255, 255, 255, a);
                     Drawing.drawing.drawInterfaceText(o + o2 + Game.screen.centerX + levels_2, belowY, SpeedrunTimer.getTime(this.previousBest));
 
-                    if (!onlyRecord)
+                    String s;
+                    if (Math.round(diff) == 0)
                     {
-                        String s;
-                        if (Math.round(diff) == 0)
-                        {
-                            Drawing.drawing.setColor(255, 255, 127, a);
-                            s = SpeedrunTimer.getTime(0);
-                        }
-                        else if (Math.round(diff) > 0)
-                        {
-                            Drawing.drawing.setColor(255, 127, 127, a);
-                            s = "+" + SpeedrunTimer.getTime(diff);
-                        }
-                        else
-                        {
-                            Drawing.drawing.setColor(127, 255, 127, a);
-                            s = "-" + SpeedrunTimer.getTime(-diff);
-                        }
-                        Drawing.drawing.drawInterfaceText(o + o2 + Game.screen.centerX + levels_3, belowY, s);
+                        Drawing.drawing.setColor(255, 255, 127, a);
+                        s = SpeedrunTimer.getTime(0);
                     }
+                    else if (Math.round(diff) > 0)
+                    {
+                        Drawing.drawing.setColor(255, 127, 127, a);
+                        s = "+" + SpeedrunTimer.getTime(diff);
+                    }
+                    else
+                    {
+                        Drawing.drawing.setColor(127, 255, 127, a);
+                        s = "-" + SpeedrunTimer.getTime(-diff);
+                    }
+                    Drawing.drawing.drawInterfaceText(o + o2 + Game.screen.centerX + levels_3, belowY, s);
                 }
                 else if (crusade.respawnTanks)
                 {
@@ -1141,23 +1041,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                     Drawing.drawing.drawInterfaceText(o + o2 + Game.screen.centerX + levels_2r, belowY, this.totalAttempts + "");
                 }
 
-                if (!onlyRecord)
-                {
-                    this.showRecordButton.draw();
-
-                    double l4 = levels_4;
-
-                    if (!crusade.respawnTanks)
-                        l4 = levels_4 * (recordDisplayFrac) + levels_3r * (1 - recordDisplayFrac);
-
-                    if (this.previousBest > crusade.timePassed && recordExists)
-                    {
-                        Drawing.drawing.setColor(255, 255, 127, 255 * f);
-                        Drawing.drawing.setInterfaceFontSize(14);
-                        Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l4 + 145 - 5, belowY - 8, "New");
-                        Drawing.drawing.displayInterfaceText(o + Game.screen.centerX + l4 + 145, belowY + 8, "best!");
-                    }
-                }
+                this.showRecordButton.draw();
             }
 
             this.drawPageEntries(this.levelEntriesShown, this.levels.size(), this.levelPage, this.levels);
@@ -1220,9 +1104,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             }
         }
 
-        if (onlyRecord)
-            exit2.draw();
-        else if (!wizardFinished)
+        if (!wizardFinished)
             next.draw();
         else
             exit.draw();
@@ -1233,31 +1115,28 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         int o = 90;
         double s = 250;
 
-        if (!onlyRecord)
+        if (wizardFinished || !Game.fullStats)
         {
-            if (wizardFinished || !Game.fullStats)
-            {
-                viewTanks.draw();
-                viewLevels.draw();
-                viewItems.draw();
-                viewMisc.draw();
-            }
-            else
-            {
-                setWizardStyle(this.view == View.tanks);
-                Drawing.drawing.displayInterfaceText(this.centerX - s * 1.5, Drawing.drawing.interfaceSizeY - o, "Tanks");
-                setWizardStyle(this.view == View.levels);
-                Drawing.drawing.displayInterfaceText(this.centerX - s * 0.5, Drawing.drawing.interfaceSizeY - o, "Battles");
-                setWizardStyle(this.view == View.items);
-                Drawing.drawing.displayInterfaceText(this.centerX + s * 0.5, Drawing.drawing.interfaceSizeY - o, "Items");
-                setWizardStyle(this.view == View.misc);
-                Drawing.drawing.displayInterfaceText(this.centerX + s * 1.5, Drawing.drawing.interfaceSizeY - o, "Summary");
+            viewTanks.draw();
+            viewLevels.draw();
+            viewItems.draw();
+            viewMisc.draw();
+        }
+        else
+        {
+            setWizardStyle(this.view == View.tanks);
+            Drawing.drawing.displayInterfaceText(this.centerX - s * 1.5, Drawing.drawing.interfaceSizeY - o, "Tanks");
+            setWizardStyle(this.view == View.levels);
+            Drawing.drawing.displayInterfaceText(this.centerX - s * 0.5, Drawing.drawing.interfaceSizeY - o, "Battles");
+            setWizardStyle(this.view == View.items);
+            Drawing.drawing.displayInterfaceText(this.centerX + s * 0.5, Drawing.drawing.interfaceSizeY - o, "Items");
+            setWizardStyle(this.view == View.misc);
+            Drawing.drawing.displayInterfaceText(this.centerX + s * 1.5, Drawing.drawing.interfaceSizeY - o, "Summary");
 
-                setWizardStyle(false);
-                Drawing.drawing.drawInterfaceText(this.centerX - s * 1, Drawing.drawing.interfaceSizeY - o, ">");
-                Drawing.drawing.drawInterfaceText(this.centerX - s * 0, Drawing.drawing.interfaceSizeY - o, ">");
-                Drawing.drawing.drawInterfaceText(this.centerX + s * 1, Drawing.drawing.interfaceSizeY - o, ">");
-            }
+            setWizardStyle(false);
+            Drawing.drawing.drawInterfaceText(this.centerX - s * 1, Drawing.drawing.interfaceSizeY - o, ">");
+            Drawing.drawing.drawInterfaceText(this.centerX - s * 0, Drawing.drawing.interfaceSizeY - o, ">");
+            Drawing.drawing.drawInterfaceText(this.centerX + s * 1, Drawing.drawing.interfaceSizeY - o, ">");
         }
     }
 
@@ -1389,7 +1268,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         }
         else
         {
-            Drawing.drawing.setColor(r / 2, g / 2, b / 2, Math.pow(a / 255, 4) * 255);
+            Drawing.drawing.setColor(r / 2, g / 2, b / 2, Math.pow(a / 255, 9) * 255);
 
             double diff = (rank - 0.5) * 6;
 
@@ -1406,7 +1285,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(x - diff, y - diff, text, true);
                 Drawing.drawing.drawInterfaceText(x + diff, y - diff, text, true);
 
-                Drawing.drawing.setColor(r, g, b, Math.pow(a / 255, 4) * 255);
+                Drawing.drawing.setColor(r, g, b, Math.pow(a / 255, 9) * 255);
                 Drawing.drawing.drawInterfaceText(x, y, text, true);
             }
             else
@@ -1422,7 +1301,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(x - diff, y - diff, text);
                 Drawing.drawing.drawInterfaceText(x + diff, y - diff, text);
 
-                Drawing.drawing.setColor(r, g, b, Math.pow(a / 255, 4) * 255);
+                Drawing.drawing.setColor(r, g, b, Math.pow(a / 255, 9) * 255);
                 Drawing.drawing.drawInterfaceText(x, y, text);
             }
         }
@@ -1574,7 +1453,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             if (!this.screen.showRecord)
                 a2 = 1 - a2;
 
-            if (!screen.showRecord && this.level.attempts == 1 && level.bestTime < Double.MAX_VALUE)
+            if (this.level.attempts == 1 && level.bestTime < Double.MAX_VALUE && !screen.showRecord)
             {
                 r = 127;
                 b = 127;
@@ -1586,29 +1465,26 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
                 drawStatistic(this.getXOffset() + Game.screen.centerX + l2 + 52 + o2, this.yPos, SpeedrunTimer.getTime(this.bestTime) + "", 1 - bestTimeRank, 255, 255, 255, a * a2, 24, true);
 
-                if (!screen.onlyRecord)
+                String s;
+                if (Math.round(this.timeDiff) == 0)
                 {
-                    String s;
-                    if (Math.round(this.timeDiff) == 0)
-                    {
-                        b = 127;
-                        s = SpeedrunTimer.getTime(0);
-                    }
-                    else if (Math.round(this.timeDiff) > 0)
-                    {
-                        g = 127;
-                        b = 127;
-                        s = "+" + SpeedrunTimer.getTime(this.timeDiff);
-                    }
-                    else
-                    {
-                        r = 127;
-                        b = 127;
-                        s = "-" + SpeedrunTimer.getTime(-this.timeDiff);
-                    }
-
-                    drawStatistic(this.getXOffset() + Game.screen.centerX + l3 + 52 + o2, this.yPos, s, 1 - timeDiffRank, r, g, b, a * a2, 24, true);
+                    b = 127;
+                    s = SpeedrunTimer.getTime(0);
                 }
+                else if (Math.round(this.timeDiff) > 0)
+                {
+                    g = 127;
+                    b = 127;
+                    s = "+" + SpeedrunTimer.getTime(this.timeDiff);
+                }
+                else
+                {
+                    r = 127;
+                    b = 127;
+                    s = "-" + SpeedrunTimer.getTime(-this.timeDiff);
+                }
+
+                drawStatistic(this.getXOffset() + Game.screen.centerX + l3 + 52 + o2, this.yPos, s, 1 - timeDiffRank, r, g, b, a * a2, 24, true);
             }
             else
             {
@@ -1628,19 +1504,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 }
             }
 
-            if (!screen.onlyRecord)
-            {
-                drawStatistic(this.getXOffset() + Game.screen.centerX + l4 + 52, this.yPos, SpeedrunTimer.getTime(this.level.totalTime), 1 - timeRank, 255, 255, 255, a, 24, true);
-                Drawing.drawing.setInterfaceFontSize(24);
-            }
-        }
-
-        public double getXOffset()
-        {
-            if (screen.onlyRecord)
-                return super.getXOffset() + 267;
-            else
-                return super.getXOffset();
+            drawStatistic( this.getXOffset() + Game.screen.centerX + l4 + 52, this.yPos, SpeedrunTimer.getTime(this.level.totalTime), 1 - timeRank, 255, 255, 255, a, 24,true);
+            Drawing.drawing.setInterfaceFontSize(24);
         }
     }
 

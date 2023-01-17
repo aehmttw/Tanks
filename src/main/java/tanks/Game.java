@@ -5,7 +5,6 @@ import basewindow.BaseFileManager;
 import basewindow.BaseWindow;
 import basewindow.ModelPart;
 import tanks.bullet.*;
-import tanks.bullet.legacy.BulletAir;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -80,7 +79,6 @@ public class Game
 	public static ArrayList<Effect> removeTracks = new ArrayList<>();
 	public static ArrayList<Cloud> removeClouds = new ArrayList<>();
 
-	public static ArrayList<Effect> addEffects = new ArrayList<>();
 	public static Queue<Effect> recycleEffects = new LinkedList<>();
 
 	public static final SynchronizedList<INetworkEvent> eventsOut = new SynchronizedList<>();
@@ -109,8 +107,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.1";
-	public static final int network_protocol = 51;
+	public static final String version = "Tanks v1.5.d";
+	public static final int network_protocol = 48;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -132,12 +130,10 @@ public class Game
 
 	public static boolean vsync = true;
 	public static int maxFPS = 0;
-	public static int networkRate = 60;
 
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
-	public static boolean xrayBullets = true;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -153,12 +149,10 @@ public class Game
 
 	public static boolean enableChatFilter = true;
 	public static boolean showSpeedrunTimer = false;
-	public static boolean nameInMultiplayer = true;
 
 	public static boolean previewCrusades = true;
 
 	public static boolean deterministicMode = false;
-	public static boolean deterministic30Fps = false;
 	public static int seed = 0;
 
 	public static boolean invulnerable = false;
@@ -327,7 +321,7 @@ public class Game
 		NetworkEventMap.register(EventBulletDestroyed.class);
 		NetworkEventMap.register(EventBulletInstantWaypoint.class);
 		NetworkEventMap.register(EventBulletAddAttributeModifier.class);
-		NetworkEventMap.register(EventBulletStunEffect.class);
+		NetworkEventMap.register(EventBulletElectricStunEffect.class);
 		NetworkEventMap.register(EventBulletUpdateTarget.class);
 		NetworkEventMap.register(EventLayMine.class);
 		NetworkEventMap.register(EventMineRemove.class);
@@ -359,7 +353,6 @@ public class Game
 		NetworkEventMap.register(EventStatusEffectEnd.class);
 		NetworkEventMap.register(EventArcadeHit.class);
 		NetworkEventMap.register(EventArcadeRampage.class);
-		NetworkEventMap.register(EventArcadeClearMovables.class);
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);
@@ -475,7 +468,6 @@ public class Game
 		registerObstacle(ObstacleMud.class, "mud");
 		registerObstacle(ObstacleIce.class, "ice");
 		registerObstacle(ObstacleSnow.class, "snow");
-		registerObstacle(ObstacleLava.class, "lava");
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 
@@ -508,7 +500,7 @@ public class Game
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
-		registerBullet(BulletFlame2.class, BulletFlame2.bullet_name, "bullet_flame.png");
+		registerBullet(BulletFlame.class, BulletFlame.bullet_name, "bullet_flame.png");
 		registerBullet(BulletLaser.class, BulletLaser.bullet_name, "bullet_laser.png");
 		registerBullet(BulletFreeze.class, BulletFreeze.bullet_name, "bullet_freeze.png");
 		registerBullet(BulletElectric.class, BulletElectric.bullet_name, "bullet_electric.png");
@@ -516,7 +508,7 @@ public class Game
 		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
 		registerBullet(BulletExplosive.class, BulletExplosive.bullet_name, "bullet_explosive.png");
 		registerBullet(BulletBoost.class, BulletBoost.bullet_name, "bullet_boost.png");
-		registerBullet(BulletAir2.class, BulletAir2.bullet_name, "bullet_air.png");
+		registerBullet(BulletAir.class, BulletAir.bullet_name, "bullet_air.png");
 		registerBullet(BulletHoming.class, BulletHoming.bullet_name, "bullet_homing.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
@@ -1017,15 +1009,14 @@ public class Game
 		if (Game.fancyTerrain)
 			var = 20;
 
-		Random tilesRandom = new Random(0);
 		for (int i = 0; i < 28; i++)
 		{
 			for (int j = 0; j < 18; j++)
 			{
-				Game.tilesR[i][j] = (235 + tilesRandom.nextDouble() * var);
-				Game.tilesG[i][j] = (207 + tilesRandom.nextDouble() * var);
-				Game.tilesB[i][j] = (166 + tilesRandom.nextDouble() * var);
-				Game.tilesDepth[i][j] = tilesRandom.nextDouble() * var / 2;
+				Game.tilesR[i][j] = (235 + Math.random() * var);
+				Game.tilesG[i][j] = (207 + Math.random() * var);
+				Game.tilesB[i][j] = (166 + Math.random() * var);
+				Game.tilesDepth[i][j] = Math.random() * var / 2;
 			}
 		}
 
@@ -1105,9 +1096,6 @@ public class Game
 
 	public static void loadTankMusic()
 	{
-		if (!Game.game.window.soundsEnabled)
-			return;
-
 		ArrayList<String> music = Game.game.fileManager.getInternalFileContents("/music/tank/tank_music.txt");
 
 		HashSet<String> loadedMusics = new HashSet<>();

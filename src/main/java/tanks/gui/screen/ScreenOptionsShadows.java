@@ -7,7 +7,7 @@ import tanks.gui.TextBoxSlider;
 
 public class ScreenOptionsShadows extends Screen
 {
-    public static final String shadowsText = "Fancy lighting: ";
+    public static final String shadowsText = "Shadows: ";
 
     Button shadows = new Button(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -22,7 +22,7 @@ public class ScreenOptionsShadows extends Screen
                 shadows.setText(shadowsText + ScreenOptions.offText);
         }
     },
-            "Fancy lighting enables shadows and---allows for custom lighting in levels------Fancy lighting is quite graphically intense---and may significantly reduce framerate");
+            "Shadows are quite graphically intense---and may significantly reduce framerate");
 
 
     TextBoxSlider shadowQuality = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Shadow quality", new Runnable()
@@ -81,6 +81,6 @@ public class ScreenOptionsShadows extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Lighting options");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Shadow options");
     }
 }

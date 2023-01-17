@@ -85,6 +85,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
         Game.cleanUp();
 
         l.level = new Level(l.levelString);
+        l.level.tilesRandomSeed = (int) (Math.random() * 1000);
         l.level.customTanks = l.tanks;
 
         if (!l.isTransition)

@@ -41,6 +41,11 @@ public class EventShowCrusadeStats extends PersonalEvent
         players.addAll(Crusade.currentCrusade.crusadePlayers.values());
         players.addAll(Crusade.currentCrusade.disconnectedPlayers);
 
+        int levelExtra = 0;
+
+        if (Crusade.currentCrusade.win)
+            levelExtra = 1;
+
         for (CrusadePlayer cp: players)
         {
             if (cp != null)
@@ -48,7 +53,7 @@ public class EventShowCrusadeStats extends PersonalEvent
                 s.append(cp.player.clientID).append("/").append(cp.player.username).append(":")
                         .append(cp.tankKills.toString()).append("/").append(cp.tankDeaths.toString()).append("/")
                         .append(cp.itemUses.toString()).append("/").append(cp.itemHits.toString()).append("/")
-                        .append(cp.coins).append("/").append(cp.player.remainingLives).append("/").append(Crusade.currentCrusade.currentLevel).append("/").append(Crusade.currentCrusade.timePassed).append("\n");
+                        .append(cp.coins).append("/").append(cp.player.remainingLives).append("/").append(Crusade.currentCrusade.currentLevel + levelExtra).append("/").append(Crusade.currentCrusade.timePassed).append("\n");
             }
         }
 

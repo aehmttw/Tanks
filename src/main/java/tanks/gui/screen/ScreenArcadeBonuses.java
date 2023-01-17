@@ -366,7 +366,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 fireworksToSpawn--;
                 fireworkCooldown = Math.random() * 5 + 2.5;
-                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + 120, this.getFireworkArray());
+                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + 125, this.getFireworkArray());
                 f.setRandomColor();
                 f.setVelocity();
                 f.maxAge /= 2;

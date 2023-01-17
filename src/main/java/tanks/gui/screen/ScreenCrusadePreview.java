@@ -172,7 +172,9 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
                 String level = crusade.levels.get(j).levelString;
 
                 ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, j, Game.screen);
-                new Level(level).loadLevel(s);
+                Level l = new Level(level);
+                l.customTanks = crusade.customTanks;
+                l.loadLevel(s);
                 Game.screen = s;
             }));
         }

@@ -55,9 +55,10 @@ public class ScreenCrashed extends Screen
 		drawing.displayInterfaceText(50, 350,  false, "Crash details:");
 		drawing.drawInterfaceText(50, 380, Game.crashMessage, false);
 		drawing.drawInterfaceText(50, 410, Game.crashLine, false);
+		drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version);
 
-		drawing.displayInterfaceText(50, 470,  false, "Check the crash report file for more information: ");
-		drawing.drawInterfaceText(50, 500, Game.homedir.replace("\\", "/") + Game.crashesPath + Game.crashTime + ".crash", false);
+		drawing.displayInterfaceText(50, 500,  false, "Check the crash report file for more information: ");
+		drawing.drawInterfaceText(50, 530, Game.homedir.replace("\\", "/") + Game.crashesPath + Game.crashTime + ".crash", false);
 
 		this.quit.draw();
 		this.exit.draw();

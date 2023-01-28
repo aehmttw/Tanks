@@ -83,7 +83,7 @@ public class ScreenOptionsFramerate extends Screen
             "Set a manual framerate limit");
 
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsWindow());
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics());
 
     @Override
     public void update()

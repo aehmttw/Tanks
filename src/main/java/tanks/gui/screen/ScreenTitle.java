@@ -98,6 +98,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 				Game.currentSizeY = 18;
 				Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 				Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+				ScreenGame.finishedQuick = false;
 			}
 		}
 	}

@@ -317,10 +317,9 @@ public class Panel
 		Panel.windowHeight = Game.game.window.absoluteHeight;
 
 		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
 		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
-
-		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
 
 		if (Game.deterministicMode)
 			Panel.frameFrequency = 100.0 / 60;
@@ -738,6 +737,14 @@ public class Panel
 				this.frameStartTime = System.currentTimeMillis();
 
 			return;
+		}
+
+		if (!(Game.screen instanceof ScreenGame))
+		{
+			Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+			Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
+			Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+			Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 		}
 
 		if (!this.introFinished)

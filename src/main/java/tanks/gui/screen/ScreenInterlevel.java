@@ -64,10 +64,12 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	Button replayTutorial2 = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Try again", () -> new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen)
 	);
 
-	Button quitTutorial = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to title", () ->
+	Button quitTutorial = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Exit", () ->
 	{
 		tutorial = false;
-		Game.exitToTitle();
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
 	}
 	);
 
@@ -138,7 +140,12 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Quit to title", Game::exitToTitle
+	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Quit", () ->
+	{
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
+	}
 	);
 
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Back to my levels", () ->
@@ -183,7 +190,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button quitCrusade = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Quit to title", () ->
+	Button quitCrusade = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Quit", () ->
 	{
 		if (Panel.win)
 		{
@@ -194,7 +201,10 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 		Crusade.crusadeMode = false;
 		Crusade.currentCrusade = null;
-		Game.exitToTitle();
+
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
 	}
 			, "Your crusade progress will be saved.");
 

@@ -185,9 +185,6 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         changePlayer.selectedOption = us;
 
         changePlayer.quick = true;
-
-        if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
-            exit.setText("Back to party");
     }
 
     public void addTanks()
@@ -242,9 +239,6 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).kills - ((TankEntry) o1).kills), (entry, rank) -> ((TankEntry) entry).killRank = rank);
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).deaths - ((TankEntry) o1).deaths), (entry, rank) -> ((TankEntry) entry).deathRank = rank);
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).coins * ((TankEntry) o2).kills - ((TankEntry) o1).coins * ((TankEntry) o1).kills), (entry, rank) -> ((TankEntry) entry).coinRank = rank);
-
-        if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
-            exit.setText("Back to party");
     }
 
     public void addLevels()
@@ -410,7 +404,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         }
     }
 
-    Button exit = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Return to title", () ->
+    Button exit = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Exit", () ->
     {
         Crusade.crusadeMode = false;
         Crusade.currentCrusade = null;
@@ -420,7 +414,11 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         else if (ScreenPartyHost.isServer)
             Game.screen = ScreenPartyHost.activeScreen;
         else
-            Game.exitToTitle();
+        {
+            Game.cleanUp();
+            Panel.panel.zoomTimer = 0;
+            Game.screen = new ScreenPlaySingleplayer();
+        }
     }
     );
 

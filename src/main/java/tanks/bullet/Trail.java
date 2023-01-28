@@ -250,4 +250,110 @@ public class Trail implements IDrawable
             Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
         }
     }
+
+    public void drawTube(double frontX, double frontY, double frontWidth, double frontR, double frontG, double frontB, double frontA, double backX, double backY, double backWidth, double backR, double backG, double backB, double backA)
+    {
+        Game.game.window.shapeRenderer.setBatchMode(true, true, Game.enable3d, this.glow, false);
+
+        int polyCount = 20;
+        for (int i = 0; i < polyCount - 1; i++)
+        {
+            double angle1 = Math.PI * 2 * i / polyCount;
+            double angle2 = Math.PI * 2 * (i + 1) / polyCount;
+            double vert1 = Math.sin(angle1);
+            double vert2 = Math.sin(angle2);
+            double hor1 = Math.cos(angle1);
+            double hor2 = Math.cos(angle2);
+            double z1 = vert1 + this.movable.posZ;
+            double z2 = vert2 + this.movable.posZ;
+            double oxFront = frontWidth * Math.cos(this.angle + this.frontAngleOffset + Math.PI / 2);
+            double oyFront = frontWidth * Math.sin(this.angle + this.frontAngleOffset + Math.PI / 2);
+            double oxBack = backWidth * Math.cos(this.angle + this.backAngleOffset + Math.PI / 2);
+            double oyBack = backWidth * Math.sin(this.angle + this.backAngleOffset + Math.PI / 2);
+            double frontX1 = frontX + oxFront * hor1;
+            double frontX2 = frontX + oxFront * hor2;
+            double frontY1 = frontY + oyFront * hor1;
+            double frontY2 = frontY + oyFront * hor2;
+            double backX1 = backX + oxBack * hor1;
+            double backX2 = backX + oxBack * hor2;
+            double backY1 = backY + oyBack * hor1;
+            double backY2 = backY + oyBack * hor2;
+
+            Drawing.drawing.setColor(frontR, frontG, frontB, frontA);
+            Game.game.window.addVertex(frontX1, frontY1, z1);
+            Drawing.drawing.setColor(backR, backG, backB, backA);
+            Game.game.window.addVertex(backX1, backY1, z1);
+            Game.game.window.addVertex(backX2, backY2, z2);
+            Drawing.drawing.setColor(frontR, frontG, frontB, frontA);
+            Game.game.window.addVertex(frontX2, frontY2, z2);
+        }
+
+        Game.game.window.shapeRenderer.setBatchMode(false, true, Game.enable3d, this.glow, false);
+    }
+
+    public void drawCap(double frontX, double frontY, double frontWidth, double angleOffset)
+    {
+        Game.game.window.shapeRenderer.setBatchMode(true, false, Game.enable3d, this.glow, false);
+
+        int outerPolyCount = 20;
+
+        for (int o = 0; o < outerPolyCount; o++)
+        {
+            int polyCount = (int) Math.ceil(20 * (1.0 - (1.0 * o / outerPolyCount)));
+            int polyCount2 = (int) Math.ceil(20 * (1.0 - (1.0 * (o + 1) / outerPolyCount)));
+
+            for (int i = 0; i < polyCount - 1; i++)
+            {
+                double angle1out = Math.PI * 2 * i / polyCount;
+                double angle2out = Math.PI * 2 * (i + 1) / polyCount;
+
+                int iIn = (int) (polyCount2 * (i * 1.0 / polyCount));
+                int i2In = (int) (polyCount2 * ((i + 1.0) / polyCount));
+
+                double angle1in = Math.PI * 2 * iIn / polyCount;
+                double angle2in = Math.PI * 2 * i2In / polyCount;
+
+                double vert1o = Math.sin(angle1out);
+                double vert2o = Math.sin(angle2out);
+                double hor1o = Math.cos(angle1out);
+                double hor2o = Math.cos(angle2out);
+
+                double vert1i = Math.sin(angle1in);
+                double vert2i = Math.sin(angle2in);
+                double hor1i = Math.cos(angle1in);
+                double hor2i = Math.cos(angle2in);
+
+                double z1o = vert1o + this.movable.posZ;
+                double z2o = vert2o + this.movable.posZ;
+                double z1i = vert1i + this.movable.posZ;
+                double z2i = vert2i + this.movable.posZ;
+
+                double ox = frontWidth * Math.cos(this.angle + angleOffset + Math.PI / 2);
+                double oy = frontWidth * Math.sin(this.angle + angleOffset + Math.PI / 2);
+
+                double outX1 = frontX + ox * hor1o;
+                double outX2 = frontX + ox * hor2o;
+                double outY1 = frontY + oy * hor1o;
+                double outY2 = frontY + oy * hor2o;
+
+                double inX1 = frontX + ox * hor1i;
+                double inX2 = frontX + ox * hor2i;
+                double inY1 = frontY + oy * hor1i;
+                double inY2 = frontY + oy * hor2i;
+
+                Game.game.window.addVertex(outX1, outY1, z1o);
+                Game.game.window.addVertex(outX2, outY2, z2o);
+                Game.game.window.addVertex(inX1, inY1, z1i);
+
+                if (iIn != i2In)
+                {
+                    Game.game.window.addVertex(inX1, inY1, z1i);
+                    Game.game.window.addVertex(inX2, inY2, z2i);
+                    Game.game.window.addVertex(outX2, outY2, z2o);
+                }
+            }
+        }
+
+        Game.game.window.shapeRenderer.setBatchMode(false, false, Game.enable3d, this.glow, false);
+    }
 }

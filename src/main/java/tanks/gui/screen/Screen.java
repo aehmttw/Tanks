@@ -35,13 +35,10 @@ public abstract class Screen implements IBatchRenderableObject
 	public int minBgWidth = 0;
 	public int minBgHeight = 0;
 
-	public boolean drawBgRect = true;
-
 	public double interfaceScaleZoomOverride = -1;
 
 	protected boolean redrawn = false;
 	public boolean splitTiles = false;
-	public boolean drawn = false;
 
 	public IBatchRenderableObject[][] tiles;
 
@@ -88,12 +85,6 @@ public abstract class Screen implements IBatchRenderableObject
 
 	public void drawDefaultBackground(double size)
 	{
-		if (!drawn)
-		{
-			Drawing.drawing.terrainRenderer2.reset();
-			this.drawn = true;
-		}
-
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
@@ -118,7 +109,7 @@ public abstract class Screen implements IBatchRenderableObject
 		if (this.forceInBounds)
 			frac = 0;
 
-		if (drawBgRect && (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d))))
+		if (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d)))
 		{
 			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG, 16 * frac + (1 - frac) * Level.currentColorB);
 
@@ -135,178 +126,174 @@ public abstract class Screen implements IBatchRenderableObject
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 
-		Drawing.drawing.terrainRendering = true;
-		Drawing.drawing.terrainRenderer2.draw();
-		Drawing.drawing.terrainRendering = false;
+		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
+		{
+			if (Game.game.window.shapeRenderer.supportsBatching)
+				Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, true);
+		}
+		else if (Game.game.window.shapeRenderer.supportsBatching)
+			Drawing.drawing.beginTerrainRenderers();
 
-//		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
-//		{
-//			if (Game.game.window.shapeRenderer.supportsBatching)
-//				Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, true);
-//		}
-//		else if (Game.game.window.shapeRenderer.supportsBatching)
-//			Drawing.drawing.beginTerrainRenderers();
-//
-//		if (Game.currentSizeX != Game.tilesR.length || Game.currentSizeY != Game.tilesR[0].length)
-//			Game.resetTiles();
-//
-//		int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
-//		int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
-//
-//		int iStart = (Game.currentSizeX - width) / 2 - 1;
-//		int iEnd = width + 2 + iStart;
-//
-//		if (this.forceInBounds)
-//		{
-//			iStart = 0;
-//			iEnd = Game.currentSizeX;
-//		}
-//
-//		if (this.minBgWidth > (iEnd - iStart))
-//		{
-//			int m = (this.minBgWidth - (iEnd - iStart)) / 2;
-//			iStart -= m;
-//			iEnd += m;
-//		}
-//
-//		for (int i1 = iStart; i1 < iEnd; i1++)
-//		{
-//			int i = i1;
-//			while (i < 0)
-//				i += Game.currentSizeX;
-//
-//			i = i % Game.currentSizeX;
-//
-//			int jStart = (Game.currentSizeY - height) / 2 - 1;
-//			int jEnd = height + 2 + jStart;
-//
-//			if (this.forceInBounds)
-//			{
-//				jStart = 0;
-//				jEnd = Game.currentSizeY;
-//			}
-//
-//			if (this.minBgHeight > (jEnd - jStart))
-//			{
-//				jStart -= (this.minBgHeight - (jEnd - jStart)) / 2;
-//				jEnd += (this.minBgHeight - (jEnd - jStart)) / 2;
-//			}
-//
-//			for (int j1 = jStart; j1 < jEnd; j1++)
-//			{
-//				boolean inBounds = true;
-//
-//				int j = j1;
-//				while (j < 0)
-//					j += Game.currentSizeY;
-//
-//				j = j % Game.currentSizeY;
-//
-//				IBatchRenderableObject bo = this;
-//
-//				double frac2 = 0;
-//				if (i1 >= 0 && i1 < Game.currentSizeX && j1 >= 0 && j1 < Game.currentSizeY)
-//				{
-//					if (this.splitTiles)
-//						bo = this.tiles[i][j];
-//
-//					if (Game.fancyTerrain)
-//						Drawing.drawing.setColor(getFlashCol(Game.tilesR[i][j], i, j), getFlashCol(Game.tilesG[i][j], i, j), getFlashCol(Game.tilesB[i][j], i, j));
-//					else
-//						Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
-//				}
-//				else
-//				{
-//					inBounds = false;
-//					frac2 = frac;
-//
-//					if (frac >= 1)
-//						continue;
-//
-//					if (this.splitTiles)
-//						bo = this.tiles[i][j];
-//
-//					Drawing.drawing.setColor(174 * frac + (1 - frac) * getFlashCol(Game.tilesR[i][j], i, j), 92 * frac + (1 - frac) * getFlashCol(Game.tilesG[i][j], i, j), 16 * frac + (1 - frac) * getFlashCol(Game.tilesB[i][j], i, j));
-//				}
-//
-//				if (Game.enable3d)
-//				{
-//					double z1 = 0;
-//
-//					byte o = 61;
-//
-//					if (Game.enable3dBg && Game.fancyTerrain && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && !Game.game.window.shapeRenderer.supportsBatching))
-//					{
-//						z1 = Game.tilesDepth[i][j];
-//						o = 1;
-//					}
-//
-//					double extra = 0;
-//
-//					if (i > 0)
-//						extra = Math.max(extra, -Game.game.heightGrid[i - 1][j]);
-//
-//					if (j > 0)
-//						extra = Math.max(extra, -Game.game.heightGrid[i][j - 1]);
-//
-//					if (i < Game.currentSizeX - 1)
-//						extra = Math.max(extra, -Game.game.heightGrid[i + 1][j]);
-//
-//					if (j < Game.currentSizeY - 1)
-//						extra = Math.max(extra, -Game.game.heightGrid[i][j + 1]);
-//
-//
-//					if (Game.tileDrawables[i][j] != null && inBounds)
-//					{
-//						Game.tileDrawables[i][j].drawTile(this, getFlashCol(Game.tilesR[i][j], i, j), getFlashCol(Game.tilesG[i][j], i, j), getFlashCol(Game.tilesB[i][j], i, j), z1, extra);
-//
-//						if (!Game.game.window.drawingShadow)
-//							Game.tileDrawables[i][j] = null;
-//					}
-//					else
-//					{
-//						if (extra != 0)
-//							o = 1;
-//
-//						if (size < 1)
-//							Drawing.drawing.fillBox(bo,
-//									(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-//									(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-//									Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Game.tile_size + z1,
-//									Game.tile_size / Game.bgResMultiplier,
-//									Game.tile_size / Game.bgResMultiplier,
-//									Game.tile_size);
-//						else
-//						{
-//							Drawing.drawing.fillBox(bo,
-//									(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-//									(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-//									-extra,
-//									Game.tile_size / Game.bgResMultiplier,
-//									Game.tile_size / Game.bgResMultiplier,
-//									extra + z1 * (1 - frac2), o);
-//						}
-//					}
-//				}
-//				else
-//					Drawing.drawing.fillRect(bo,
-//							(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-//							(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
-//							Game.tile_size * size / Game.bgResMultiplier,
-//							Game.tile_size * size / Game.bgResMultiplier);
-//			}
-//		}
-//
-//		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
-//		{
-//			if (Game.game.window.shapeRenderer.supportsBatching)
-//				Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, true);
-//		}
-//		else if (Game.game.window.shapeRenderer.supportsBatching && drawBgRect)
-//			Drawing.drawing.drawTerrainRenderers();
+		if (Game.currentSizeX != Game.tilesR.length || Game.currentSizeY != Game.tilesR[0].length)
+			Game.resetTiles();
+
+		int width = (int) (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
+		int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
+
+		int iStart = (Game.currentSizeX - width) / 2 - 1;
+		int iEnd = width + 1;
+
+		if (this.forceInBounds)
+		{
+			iStart = 0;
+			iEnd = Game.currentSizeX;
+		}
+
+		if (this.minBgWidth > (iEnd - iStart))
+		{
+			int m = (this.minBgWidth - (iEnd - iStart)) / 2;
+			iStart -= m;
+			iEnd += m;
+		}
+
+		for (int i1 = iStart; i1 < iEnd; i1++)
+		{
+			int i = i1;
+			while (i < 0)
+				i += Game.currentSizeX;
+
+			i = i % Game.currentSizeX;
+
+			int jStart = (Game.currentSizeY - height) / 2 - 1;
+			int jEnd = height + 1;
+
+			if (this.forceInBounds)
+			{
+				jStart = 0;
+				jEnd = Game.currentSizeY;
+			}
+
+			if (this.minBgHeight > (jEnd - jStart))
+			{
+				jStart -= (this.minBgHeight - (jEnd - jStart)) / 2;
+				jEnd += (this.minBgHeight - (jEnd - jStart)) / 2;
+			}
+
+			for (int j1 = jStart; j1 < jEnd; j1++)
+			{
+				boolean inBounds = true;
+
+				int j = j1;
+				while (j < 0)
+					j += Game.currentSizeY;
+
+				j = j % Game.currentSizeY;
+
+				IBatchRenderableObject bo = this;
+
+				double frac2 = 0;
+				if (i1 >= 0 && i1 < Game.currentSizeX && j1 >= 0 && j1 < Game.currentSizeY)
+				{
+					if (this.splitTiles)
+						bo = this.tiles[i][j];
+
+					if (Game.fancyTerrain)
+						Drawing.drawing.setColor(getFlashCol(Game.tilesR[i][j], i, j), getFlashCol(Game.tilesG[i][j], i, j), getFlashCol(Game.tilesB[i][j], i, j));
+					else
+						Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
+				}
+				else
+				{
+					inBounds = false;
+					frac2 = frac;
+
+					if (frac >= 1)
+						continue;
+
+					if (this.splitTiles)
+						bo = this.tiles[i][j];
+
+					Drawing.drawing.setColor(174 * frac + (1 - frac) * getFlashCol(Game.tilesR[i][j], i, j), 92 * frac + (1 - frac) * getFlashCol(Game.tilesG[i][j], i, j), 16 * frac + (1 - frac) * getFlashCol(Game.tilesB[i][j], i, j));
+				}
+
+				if (Game.enable3d)
+				{
+					double z1 = 0;
+
+					byte o = 61;
+
+					if (Game.enable3dBg && Game.fancyTerrain && !(Drawing.drawing.scale <= 0.25 * Drawing.drawing.interfaceScale && !Game.game.window.shapeRenderer.supportsBatching))
+					{
+						z1 = Game.tilesDepth[i][j];
+						o = 1;
+					}
+
+					double extra = 0;
+
+					if (i > 0)
+						extra = Math.max(extra, -Game.game.heightGrid[i - 1][j]);
+
+					if (j > 0)
+						extra = Math.max(extra, -Game.game.heightGrid[i][j - 1]);
+
+					if (i < Game.currentSizeX - 1)
+						extra = Math.max(extra, -Game.game.heightGrid[i + 1][j]);
+
+					if (j < Game.currentSizeY - 1)
+						extra = Math.max(extra, -Game.game.heightGrid[i][j + 1]);
 
 
-		if (this.drawDarkness && drawBgRect)
+					if (Game.tileDrawables[i][j] != null && inBounds)
+					{
+						Game.tileDrawables[i][j].drawTile(getFlashCol(Game.tilesR[i][j], i, j), getFlashCol(Game.tilesG[i][j], i, j), getFlashCol(Game.tilesB[i][j], i, j), z1, extra);
+
+						if (!Game.game.window.drawingShadow)
+							Game.tileDrawables[i][j] = null;
+					}
+					else
+					{
+						if (extra != 0)
+							o = 1;
+
+						if (size < 1)
+							Drawing.drawing.fillBox(bo,
+									(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+									(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+									Math.max(0, 2000 - size * 2000 * (1 + Game.tilesDepth[i][j] / 10)) - Game.tile_size + z1,
+									Game.tile_size / Game.bgResMultiplier,
+									Game.tile_size / Game.bgResMultiplier,
+									Game.tile_size);
+						else
+						{
+							Drawing.drawing.fillBox(bo,
+									(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+									(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+									-extra,
+									Game.tile_size / Game.bgResMultiplier,
+									Game.tile_size / Game.bgResMultiplier,
+									extra + z1 * (1 - frac2), o);
+						}
+					}
+				}
+				else
+					Drawing.drawing.fillRect(bo,
+							(i1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+							(j1 + 0.5) / Game.bgResMultiplier * Game.tile_size,
+							Game.tile_size * size / Game.bgResMultiplier,
+							Game.tile_size * size / Game.bgResMultiplier);
+			}
+		}
+
+		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
+		{
+			if (Game.game.window.shapeRenderer.supportsBatching)
+				Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, true);
+		}
+		else if (Game.game.window.shapeRenderer.supportsBatching)
+			Drawing.drawing.drawTerrainRenderers();
+
+
+		if (this.drawDarkness)
 		{
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
@@ -345,6 +332,45 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
+	public boolean positionChanged()
+	{
+		boolean r = false;
+
+		if (Game.prevObstacles.size() != Game.obstacles.size())
+			r = true;
+		else
+		{
+			for (Obstacle o: Game.obstacles)
+			{
+				if (!Game.prevObstacles.contains(o))
+				{
+					r = true;
+					break;
+				}
+			}
+		}
+
+		Game.prevObstacles.clear();
+		Game.prevObstacles.addAll(Game.obstacles);
+
+		return r || lastObsSize != Obstacle.draw_size;
+	}
+
+	public boolean colorChanged()
+	{
+		return false;
+	}
+
+	public boolean wasRedrawn()
+	{
+		return this.redrawn;
+	}
+
+	public void setRedrawn(boolean b)
+	{
+		this.redrawn = b;
+	}
+
 	public static class FlashingTile implements IBatchRenderableObject
 	{
 		public boolean redrawn = false;
@@ -358,11 +384,39 @@ public abstract class Screen implements IBatchRenderableObject
 			this.posX = x;
 			this.posY = y;
 		}
-	}
 
-	/** Setup all light info in Panel.lights to be sent to the shader */
-	public void setupLights()
-	{
+		@Override
+		public boolean positionChanged()
+		{
+			return false;
+		}
 
+		@Override
+		public boolean colorChanged()
+		{
+			double flash = Game.tilesFlash[this.posX][this.posY];
+
+			if (flash != this.flash)
+			{
+				this.flash = flash;
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean wasRedrawn()
+		{
+			boolean r = this.redrawn;
+			this.redrawn = false;
+			return r;
+		}
+
+		@Override
+		public void setRedrawn(boolean b)
+		{
+			this.redrawn = b;
+		}
 	}
 }

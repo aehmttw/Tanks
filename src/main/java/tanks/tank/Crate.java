@@ -10,6 +10,7 @@ public class Crate extends Movable
 {
     public Tank tank;
     public double size;
+    public double age = 0;
 
     public Crate(Tank tank)
     {
@@ -23,7 +24,8 @@ public class Crate extends Movable
     @Override
     public void draw()
     {
-        double size = this.size * Obstacle.draw_size / Game.tile_size;
+        this.age += Panel.frameFrequency;
+        double size = this.size * Obstacle.draw_size / Game.tile_size * Math.min(1, this.age / (Game.tile_size * 1.5));
 
         if (Game.enable3d)
         {

@@ -1,5 +1,7 @@
 package tanks;
 import basewindow.BaseFile;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
 import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
@@ -304,6 +306,19 @@ public class Crusade
 					Game.eventsOut.add(new EventSetItem(player, in, player.hotbar.itemBar.slots[in]));
 
 				Game.eventsOut.add(new EventLoadItemBarSlot(player.clientID, player.hotbar.itemBar.selected));
+			}
+
+			if (player.hotbar.enabledItemBar)
+			{
+				for (Item item: player.hotbar.itemBar.slots)
+				{
+					item.cooldown = 0;
+
+					if (item instanceof ItemBullet)
+						((ItemBullet) item).liveBullets = 0;
+					else if (item instanceof ItemMine)
+						((ItemMine) item).liveMines = 0;
+				}
 			}
 		}
 

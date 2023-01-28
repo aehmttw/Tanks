@@ -42,8 +42,9 @@ public class TankOrangeRed extends TankAIControlled
             this.emblemR = 159;
             this.emblemG = 67;
             this.emblemB = 32;
-            this.coinValue = 4;
         }
+
+        this.coinValue = 4;
 
         this.description = "A tank which shoots explosive bullets";
     }

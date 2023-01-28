@@ -188,14 +188,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Panel.zoomTarget = -1;
 	});
 
-	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Continue playing", () ->
+	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Resume", () ->
 	{
 		paused = false;
 		Game.playerTank.setBufferCooldown(20);
 	}
 	);
 
-	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Continue playing", () ->
+	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Resume", () ->
 	{
 		paused = false;
 		Game.playerTank.setBufferCooldown(20);
@@ -315,12 +315,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	}
 	);
 
-	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Quit to title", Game::exitToTitle
+	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Quit", () ->
+	{
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
+	}
 	);
 
-	Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit to title", () ->
+	Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit", () ->
 	{
-		Game.exitToTitle();
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
 		ScreenInterlevel.tutorial = false;
 	}
 	);
@@ -376,17 +383,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	}
 	);
 
-	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit to title", () ->
+	Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit", () ->
 	{
 		Crusade.currentCrusade.quit();
-		Game.exitToTitle();
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------Your crusade progress will be saved.");
 
-	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit to title", () ->
+	Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit", () ->
 	{
 		Crusade.currentCrusade.quit();
-		Game.exitToTitle();
+		Game.cleanUp();
+		Panel.panel.zoomTimer = 0;
+		Game.screen = new ScreenPlaySingleplayer();
 	}
 			, "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 

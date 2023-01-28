@@ -367,8 +367,6 @@ public class LWJGLWindow extends BaseWindow
 			soundPlayer.update();
 		}
 
-		this.updater.update();
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glfwGetWindowSize(window, w, h);
@@ -406,6 +404,8 @@ public class LWJGLWindow extends BaseWindow
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwGetFramebufferSize(window, w, h);
+
+		this.updater.update();
 
 		if (shadowsEnabled)
 			this.shaderHandler.renderShadowMap();

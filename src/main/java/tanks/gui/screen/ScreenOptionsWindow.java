@@ -11,7 +11,7 @@ public class ScreenOptionsWindow extends Screen
     public static final String warnText = "Warn before exit: ";
     public static final String constrainMouseText = "Constrain mouse: ";
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
     Button fullscreen = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "", () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), "Can also be toggled at any time---by pressing " + Game.game.input.fullscreen.getInputs());
 

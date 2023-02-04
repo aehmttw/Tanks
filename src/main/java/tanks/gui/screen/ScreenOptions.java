@@ -31,7 +31,7 @@ public class ScreenOptions extends Screen
 			soundOptions.enabled = false;
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Back", () ->
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
 	{
 		saveOptions(Game.homedir);
 		Game.screen = new ScreenTitle();

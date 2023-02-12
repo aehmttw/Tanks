@@ -62,18 +62,6 @@ public class Effect extends Movable implements IDrawableWithGlow
         return e;
     }
 
-    public static Effect createNewEffect(double x, double y, EffectType type, double age)
-    {
-        return Effect.createNewEffect(x, y, 0, type, age);
-    }
-
-    public static Effect createNewEffect(double x, double y, double z, EffectType type, double age)
-    {
-        Effect e = Effect.createNewEffect(x, y, z, type);
-        e.age = age;
-        return e;
-    }
-
     public static Effect createNewEffect(double x, double y, EffectType type)
     {
         return Effect.createNewEffect(x, y, 0, type);
@@ -228,7 +216,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             return;
 
         if (this.age < 0)
-            Game.exitToCrash(new RuntimeException("Effect with negative age"));
+            this.age = 0;
 
         double opacityMultiplier = ScreenGame.finishTimer / ScreenGame.finishTimerMax;
         Drawing drawing = Drawing.drawing;
@@ -632,7 +620,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             return;
 
         if (this.age < 0)
-            Game.exitToCrash(new RuntimeException("Effect with negative age"));
+            this.age = 0;
 
         Drawing drawing = Drawing.drawing;
 

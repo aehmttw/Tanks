@@ -2072,31 +2072,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				if (cancelCountdown)
 					s = 400;
 
-				double fade = Math.max(0, Math.sin(Math.min(s, 50) / 100 * Math.PI));
+				Game.playerTank.drawSpinny(s);
+			}
 
-				double frac = (System.currentTimeMillis() % 2000) / 2000.0;
-				double size = Math.max(800 * (0.5 - frac), 0) * fade;
-				Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
-
-				if (Game.enable3d)
-					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, size, size, false, false);
-				else
-					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, size, size);
-
-				double frac2 = ((250 + System.currentTimeMillis()) % 2000) / 2000.0;
-				double size2 = Math.max(800 * (0.5 - frac2), 0) * fade;
-
-				Drawing.drawing.setColor(Game.playerTank.secondaryColorR, Game.playerTank.secondaryColorG, Game.playerTank.secondaryColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
-
-				if (Game.enable3d)
-					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, size2, size2, false, false);
-				else
-					Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, size2, size2);
-
-				Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB);
-				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 200, 4, 0.3, 75 * fade, 0.5 * fade, false);
-				Drawing.drawing.setColor(Game.playerTank.secondaryColorR, Game.playerTank.secondaryColorG, Game.playerTank.secondaryColorB);
-				this.drawSpinny(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size / 2, 198, 3, 0.5, 60 * fade, 0.375 * fade, false);
+			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy
+					&& Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing && Game.movables.contains(Game.playerTank) && Game.playerTank.invulnerabilityTimer > 0)
+			{
+				Game.playerTank.drawSpinny(Game.playerTank.invulnerabilityTimer);
 			}
 
 			drawables[i].clear();
@@ -2592,25 +2574,4 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		return Drawing.drawing.scale * (1 - Panel.panel.zoomTimer) + Drawing.drawing.interfaceScale * Panel.panel.zoomTimer;
 	}
 
-	public void drawSpinny(double x, double y, double z, int max, int parts, double speed, double size, double dotSize, boolean invert)
-	{
-		for (int i = 0; i < max; i++)
-		{
-			double frac = (System.currentTimeMillis() / 1000.0 * speed + i * 1.0 / max) % 1;
-			double s = Math.max(Math.abs((i % (max * 1.0 / parts)) / 10.0 * parts), 0);
-
-			if (invert)
-			{
-				frac = -frac;
-			}
-
-			double v = size * Math.cos(frac * Math.PI * 2);
-			double v1 = size * Math.sin(frac * Math.PI * 2);
-
-			if (Game.enable3d)
-				Drawing.drawing.fillOval(x + v, y + v1, z, s * dotSize, s * dotSize, false, false);
-			else
-				Drawing.drawing.fillOval(x + v, y + v1, s * dotSize, s * dotSize);
-		}
-	}
 }

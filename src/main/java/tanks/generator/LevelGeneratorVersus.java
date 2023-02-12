@@ -111,7 +111,7 @@ public class LevelGeneratorVersus extends LevelGenerator
 		{
 			Item i = Item.parseItem(null, si);
 
-			if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name))
+			if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name) || i.name.equals("Laser"))
 				continue;
 
 			i.name = Translation.translate(i.name);

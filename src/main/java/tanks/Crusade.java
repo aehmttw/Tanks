@@ -250,6 +250,17 @@ public class Crusade
 		Game.player.hotbar.enabledItemBar = true;
 		Game.player.hotbar.enabledCoins = true;
 
+		int playersTotal = 0;
+		int livesTotal = 0;
+		for (Player player : Game.players)
+		{
+			if (crusadePlayers.get(player) != null)
+			{
+				livesTotal += player.remainingLives;
+				playersTotal++;
+			}
+		}
+
 		for (Player player : Game.players)
 		{
 			if (crusadePlayers.get(player) == null)
@@ -276,7 +287,11 @@ public class Crusade
 				}
 
 				if (!found)
+				{
 					crusadePlayers.put(player, new CrusadePlayer(player));
+					if (playersTotal > 0)
+						player.remainingLives = livesTotal / playersTotal;
+				}
 			}
 
 			if (player.remainingLives > 0)

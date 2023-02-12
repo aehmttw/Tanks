@@ -67,7 +67,6 @@ public abstract class BaseWindow
     public double keyboardFraction = 1;
 
     public ArrayList<Long> framesList = new ArrayList<>();
-    public ArrayList<Double> frameFrequencies = new ArrayList<>();
     public long lastFrame = System.currentTimeMillis();
     public double frameFrequency = 1;
 
@@ -129,7 +128,7 @@ public abstract class BaseWindow
     {
         long milliTime = System.currentTimeMillis();
 
-        this.framesList.add(milliTime);
+        this.framesList.add(System.nanoTime());
 
         ArrayList<Long> removeList = new ArrayList<>();
 
@@ -147,27 +146,11 @@ public abstract class BaseWindow
 
     public void stopTiming()
     {
-        long time = System.currentTimeMillis();
+        long time = System.nanoTime();
         long lastFrameTime = lastFrame;
         lastFrame = time;
 
-        double freq =  (time - lastFrameTime) / 10.0;
-        frameFrequencies.add(freq);
-
-        if (frameFrequencies.size() > 5)
-        {
-            frameFrequencies.remove(0);
-        }
-
-        double totalFrequency = 0;
-
-        for (Double frequency : frameFrequencies)
-        {
-            totalFrequency += frequency;
-        }
-
-        //frameFrequency = Math.max(0, totalFrequency / frameFrequencies.size());
-        frameFrequency = freq;
+        frameFrequency = Math.max(0, (time - lastFrameTime) / 10000000.0);
     }
 
     public abstract void run();

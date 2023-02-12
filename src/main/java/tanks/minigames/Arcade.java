@@ -378,13 +378,14 @@ public class Arcade extends Minigame
                     spawnedTanks.clear();
                 }
 
-                if (totalPlayers.size() <= 0 && !frenzy)
+                if (totalPlayers.size() < this.includedPlayers.size() && !frenzy)
                 {
                     deathCount++;
 
                     for (Player p : this.includedPlayers)
                     {
-                        this.respawnPlayer(p);
+                        if (!totalPlayers.contains(p))
+                            this.respawnPlayer(p);
                     }
                 }
             }

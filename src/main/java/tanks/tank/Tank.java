@@ -48,6 +48,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean invulnerable = false;
 	public boolean targetable = true;
+	public double invulnerabilityTimer = 0;
 
 	public boolean disabled = false;
 	public boolean inControlOfMotion = true;
@@ -440,6 +441,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		this.age += Panel.frameFrequency;
+		this.invulnerabilityTimer = Math.max(0, this.invulnerabilityTimer - Panel.frameFrequency);
 
 		this.treadAnimation += Math.sqrt(this.lastFinalVX * this.lastFinalVX + this.lastFinalVY * this.lastFinalVY) * Panel.frameFrequency;
 
@@ -898,7 +900,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void onDestroy()
 	{
-		if (this.explodeOnDestroy)
+		if (this.explodeOnDestroy && this.age >= 250)
 		{
 			Explosion e = new Explosion(this.posX, this.posY, Mine.mine_radius, 2, true, this);
 			e.explode();
@@ -1027,7 +1029,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double getDamageMultiplier(IGameObject source)
 	{
-		if (this.invulnerable || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
+		if ((this.invulnerable || this.invulnerabilityTimer > 0) || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
 			return 0;
 
 		return 1;
@@ -1144,5 +1146,56 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		return p;
+	}
+
+	public void drawSpinny(double s)
+	{
+		double fade = Math.max(0, Math.sin(Math.min(s, 50) / 100 * Math.PI));
+
+		double frac = (System.currentTimeMillis() % 2000) / 2000.0;
+		double size = Math.max(800 * (0.5 - frac), 0) * fade;
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
+
+		if (Game.enable3d)
+			Drawing.drawing.fillOval(this.posX, this.posY, this.size / 2, size, size, false, false);
+		else
+			Drawing.drawing.fillOval(this.posX, this.posY, size, size);
+
+		double frac2 = ((250 + System.currentTimeMillis()) % 2000) / 2000.0;
+		double size2 = Math.max(800 * (0.5 - frac2), 0) * fade;
+
+		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
+
+		if (Game.enable3d)
+			Drawing.drawing.fillOval(this.posX, this.posY, this.size / 2, size2, size2, false, false);
+		else
+			Drawing.drawing.fillOval(this.posX, this.posY, size2, size2);
+
+		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+		this.drawSpinny(this.posX, this.posY, this.size / 2, 200, 4, 0.3, 75 * fade, 0.5 * fade, false);
+		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
+		this.drawSpinny(this.posX, this.posY, this.size / 2, 198, 3, 0.5, 60 * fade, 0.375 * fade, false);
+	}
+
+	public void drawSpinny(double x, double y, double z, int max, int parts, double speed, double size, double dotSize, boolean invert)
+	{
+		for (int i = 0; i < max; i++)
+		{
+			double frac = (System.currentTimeMillis() / 1000.0 * speed + i * 1.0 / max) % 1;
+			double s = Math.max(Math.abs((i % (max * 1.0 / parts)) / 10.0 * parts), 0);
+
+			if (invert)
+			{
+				frac = -frac;
+			}
+
+			double v = size * Math.cos(frac * Math.PI * 2);
+			double v1 = size * Math.sin(frac * Math.PI * 2);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillOval(x + v, y + v1, z, s * dotSize, s * dotSize, false, false);
+			else
+				Drawing.drawing.fillOval(x + v, y + v1, s * dotSize, s * dotSize);
+		}
 	}
 }

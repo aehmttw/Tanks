@@ -4,8 +4,11 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.Team;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.minigames.Arcade;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
 
@@ -137,6 +140,10 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.drawAge = this.drawAge;
 
 		t.setNetworkID(this.networkID);
+
+		if (Game.currentLevel instanceof Arcade && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
+			t.invulnerabilityTimer = 250;
+
 		Game.movables.add(t);
 	}
 

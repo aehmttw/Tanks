@@ -34,13 +34,19 @@ echo "Searching for Dependencies..."
 if [ -d "libs" ]; then
     echo "FOUND!"
 else
-    echo "Fetching dependencies from maven..."
-    mvn dependency:copy-dependencies -DoutputDirectory=./libs
-    if [ -d "libs" ]; then
-        echo "DOWNLOADED!"
-    else
-        echo "DOWNLOAD FAILED"
-    fi
+	if type -p mvn; then
+    	echo "Fetching dependencies from maven..."
+    	mvn dependency:copy-dependencies -DoutputDirectory=./libs
+    	if [ -d "libs" ]; then
+        	echo "DOWNLOADED!"
+    	else
+        	echo "DOWNLOAD FAILED"
+			exit 1
+    	fi
+	else
+		echo "mvn not found"
+		exit 1
+	fi
 fi
 
 #Actual Script

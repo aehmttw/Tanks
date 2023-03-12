@@ -183,6 +183,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
     public ScreenArcadeBonuses(Bonus b1, Bonus b2, Bonus b3)
     {
+        this.music = "arcade/drumroll.ogg";
+        Panel.forceRefreshMusic = true;
+
         this.bonuses.add(b1);
         this.bonuses.add(b2);
         this.bonuses.add(b3);
@@ -197,7 +200,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     @Override
     public void update()
     {
-        if (this.age == 0)
+        if (this.age <= 50)
             Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * 0.25f);
 
         if (Game.effectsEnabled)
@@ -210,7 +213,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         Game.effects.removeAll(Game.removeEffects);
 
-        if (!Game.game.window.validPressedKeys.isEmpty() || !Game.game.window.validPressedButtons.isEmpty())
+        if (this.age > 50 && (!Game.game.window.validPressedKeys.isEmpty() || !Game.game.window.validPressedButtons.isEmpty()))
         {
             Game.game.window.validPressedKeys.clear();
             Game.game.window.validPressedButtons.clear();

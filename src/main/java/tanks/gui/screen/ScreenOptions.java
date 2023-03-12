@@ -200,6 +200,7 @@ public class ScreenOptions extends Screen
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
 			f.println("deterministic=" + Game.deterministicMode);
+			f.println("deterministic_30fps=" + Game.deterministic30Fps);
 			f.println("warn_before_closing=" + Game.warnBeforeClosing);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
@@ -340,6 +341,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "deterministic":
 						Game.deterministicMode = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "deterministic_30fps":
+						Game.deterministic30Fps = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "info_bar":
 						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));

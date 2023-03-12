@@ -587,21 +587,32 @@ public class Effect extends Movable implements IDrawableWithGlow
 
             double[] col = Game.getRainbowColor(c);
 
+            String text = (int) this.radius + "/4";
+
+            if (this.radius == 5)
+                text = "Nice shot!";
+
+            if (this.radius == 6)
+                text = "Great!";
+
+            if (this.radius == 7)
+                text = "Got it!";
+
             if (Game.enable3d)
             {
                 drawing.setFontSize(24 * this.size / Game.tile_size);
                 drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
-                drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, this.posZ + this.age, (int) this.radius + "/4");
+                drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, this.posZ + this.age, text);
                 drawing.setColor(col[0], col[1], col[2], a, 0.5);
-                drawing.drawText(this.posX, this.posY - this.size / 20 - 7, this.posZ + this.age + 1, (int) this.radius + "/4");
+                drawing.drawText(this.posX, this.posY - this.size / 20 - 7, this.posZ + this.age + 1, text);
             }
             else
             {
                 drawing.setFontSize(24 * this.size / Game.tile_size);
                 drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
-                drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, (int) this.radius + "/4");
+                drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, text);
                 drawing.setColor(col[0], col[1], col[2], a, 0.5);
-                drawing.drawText(this.posX, this.posY - this.size / 20 - 7, (int) this.radius + "/4");
+                drawing.drawText(this.posX, this.posY - this.size / 20 - 7, text);
 
             }
         }

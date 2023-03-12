@@ -154,6 +154,7 @@ public class Game
 	public static boolean previewCrusades = true;
 
 	public static boolean deterministicMode = false;
+	public static boolean deterministic30Fps = false;
 	public static int seed = 0;
 
 	public static boolean invulnerable = false;
@@ -354,6 +355,7 @@ public class Game
 		NetworkEventMap.register(EventStatusEffectEnd.class);
 		NetworkEventMap.register(EventArcadeHit.class);
 		NetworkEventMap.register(EventArcadeRampage.class);
+		NetworkEventMap.register(EventArcadeClearMovables.class);
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);

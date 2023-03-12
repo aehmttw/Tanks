@@ -299,7 +299,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	}
 	);
 
-	Button restartTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart this level", () ->
+	Button restartTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart tutorial", () ->
 	{
 		Game.silentCleanUp();
 		new Tutorial().loadTutorial(ScreenInterlevel.tutorialInitial, Game.game.window.touchscreen);
@@ -547,7 +547,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Game.clouds.clear();
 
-		if (Game.currentLevel instanceof Minigame)
+		if (Game.currentLevel instanceof Minigame && !(Game.currentLevel instanceof Tutorial))
 		{
 			ScreenInterlevel.fromMinigames = true;
 			ScreenInterlevel.fromSavedLevels = false;
@@ -2021,7 +2021,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (i == 9 && this.tutorial != null)
 			{
-				this.tutorial.draw();
+				this.tutorial.drawTutorial();
 			}
 
 			for (IDrawable d: this.drawables[i])
@@ -2411,7 +2411,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				posX -= 50;
 
 			Drawing.drawing.setInterfaceFontSize(24);
-			Drawing.drawing.drawInterfaceText(posX, posY, "Deterministic mode", true);
+
+			if (Game.deterministic30Fps)
+				Drawing.drawing.drawInterfaceText(posX, posY, "Deterministic mode (30 FPS)", true);
+			else
+				Drawing.drawing.drawInterfaceText(posX, posY, "Deterministic mode (60 FPS)", true);
 		}
 
 		if (Game.currentLevel instanceof Minigame)

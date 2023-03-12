@@ -176,12 +176,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     }
 	
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg)
-    {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws InterruptedException
+	{
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
 		boolean reply = this.reader.queueMessage(buffy, null);
 		ReferenceCountUtil.release(msg);
+
+		//Thread.sleep(150);
 
 		if (reply)
 		{

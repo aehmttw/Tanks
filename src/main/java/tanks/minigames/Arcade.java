@@ -364,15 +364,14 @@ public class Arcade extends Minigame
 
             if (alivePlayers.size() <= 0 && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
             {
+                Game.eventsOut.add(new EventArcadeClearMovables());
+
                 for (Movable m : Game.movables)
                 {
                     if (m instanceof Crate && (((Crate) m).tank instanceof TankPlayer || ((Crate) m).tank instanceof TankPlayerRemote))
                         continue;
 
                     setRampage(0);
-
-                    if (m instanceof Tank && !m.destroy)
-                        Game.eventsOut.add(new EventTankRemove((Tank) m, true));
 
                     m.destroy = true;
                     spawnedTanks.clear();

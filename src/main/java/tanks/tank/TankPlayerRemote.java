@@ -29,7 +29,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
 
-    public boolean forceMotion = false;
+    public boolean forceMotion = true;
     public boolean recoil = false;
 
     public Player player;
@@ -393,8 +393,8 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);
 
-        if (b.recoil != 0)
-            this.forceMotion = true;
+//        if (b.recoil != 0)
+//            this.forceMotion = true;
 
         if (!this.hasCollided)
             this.recoil = true;

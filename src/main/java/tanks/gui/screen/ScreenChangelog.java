@@ -494,6 +494,41 @@ public class ScreenChangelog extends Screen
                                     "A ton of bug fixes and other minor improvements\n"
                     });
 
+            new Changelog("v1.5.0", new String[]
+                    {
+                            "*What's new in Tanks v1.5.0:\n\n" +
+                            "*New arcade mode minigame:\n\n" +
+                                    "Point system based on tank kills\n" +
+                                    "Continuously spawning enemy tank waves\n" +
+                                    "Respawn if you die\n" +
+                                    "Time limit of 2 minutes and 12 seconds\n" +
+                                    "A rampage system for destroying tanks in a row\n" +
+                                    "Tanks drop items that you can use to your advantage\n" +
+                                    "Frenzy mode: destroy all you can when time runs out!\n" +
+                                    "Point bonuses judging your performance at the end\n\n",
+                            "*Crusades:\n\n" +
+                                    "Font is now varied across statistics for readability\n" +
+                                    "Added crusade descriptions for built-in crusades\n" +
+                                    "Built-in crusades now track your best completion time,\n" +
+                                    "which you can see directly from the crusade screen\n" +
+                                    "Completed crusade runs can be compared to your best run\n\n" +
+                            "*Options:\n\n" +
+                                    "Reorganized options screens\n" +
+                                    "Added new profile customization section to options\n" +
+                                    "You can now use a custom tank color in singleplayer\n" +
+                                    "Added option to show bullets under terrain\n" +
+                                    "Added 30 FPS deterministic mode\n\n",
+                            "*More:\n\n" +
+                                    "Updated menu music\n" +
+                                    "Added item switching indicator on tank\n" +
+                                    "Updated tutorial to be more exciting\n" +
+                                    "Removed laser from versus mode\n" +
+                                    "Tanks will not explode on death if killed right after spawning\n" +
+                                    "Changed fireworks appearance\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+                    );
+
         }
     }
 }

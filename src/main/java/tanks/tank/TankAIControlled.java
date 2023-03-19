@@ -1071,82 +1071,7 @@ public class TankAIControlled extends Tank
 
 		if (!this.currentlySeeking && this.enablePathfinding && this.random.nextDouble() < this.seekChance * Panel.frameFrequency && this.posX > 0 && this.posX < Game.currentSizeX * Game.tile_size && this.posY > 0 && this.posY < Game.currentSizeY * Game.tile_size)
 		{
-			Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
-
-			for (int i = 0; i < tiles.length; i++)
-			{
-				for (int j = 0; j < tiles[i].length; j++)
-				{
-					tiles[i][j] = new Tile(this.random, i, j);
-				}
-			}
-
-			for (Obstacle o: Game.obstacles)
-			{
-				if (o.posX >= 0 && o.posY >= 0 && o.posX <= Game.currentSizeX * Game.tile_size && o.posY <= Game.currentSizeY * Game.tile_size)
-				{
-					Tile.Type t = Tile.Type.solid;
-
-					if (!o.tankCollision && !(o instanceof ObstacleTeleporter))
-						t = Tile.Type.empty;
-					else if (o.destructible && this.enableMineLaying)
-						t = Tile.Type.destructible;
-
-					int x = (int) (o.posX / Game.tile_size);
-					int y = (int) (o.posY / Game.tile_size);
-					Tile tile = tiles[x][y];
-					tile.type = t;
-					tile.unfavorability = Math.min(tile.unfavorability, 10);
-
-					for (int i = -1; i <= 1; i++)
-					{
-						for (int j = -1; j <= 1; j++)
-						{
-							if (x + i > 0 && x + i < tiles.length && y + j > 0 && y + j < tiles[0].length)
-								tiles[x + i][y + j].unfavorability = Math.max(tile.unfavorability, 1);
-						}
-					}
-				}
-			}
-
-			for (Movable m: Game.movables)
-			{
-				if (this.isInterestingPathTarget(m))
-					tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
-			}
-
-			ArrayList<Tile> queue = new ArrayList<>();
-
-			Tile t = tiles[(int)(this.posX / Game.tile_size)][(int)(this.posY / Game.tile_size)];
-			t.explored = true;
-			queue.add(t);
-
-			Tile current = null;
-			boolean found = false;
-
-			while (!queue.isEmpty())
-			{
-				current = queue.remove(0);
-
-				if (current.search(queue, tiles))
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (found)
-			{
-				this.seekTimer = this.seekTimerBase;
-				this.currentlySeeking = true;
-				this.path = new ArrayList<>();
-
-				while (current.parent != null)
-				{
-					this.path.add(0, current);
-					current = current.parent;
-				}
-			}
+			this.pathfind();
 		}
 
 		this.seekPause = Math.max(0, this.seekPause - Panel.frameFrequency);
@@ -1157,6 +1082,86 @@ public class TankAIControlled extends Tank
 			{
 				this.overrideDirection = true;
 				this.setAccelerationInDirection(this.parent.posX, this.parent.posY, this.acceleration);
+			}
+		}
+	}
+
+	public void pathfind()
+	{
+		Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
+
+		for (int i = 0; i < tiles.length; i++)
+		{
+			for (int j = 0; j < tiles[i].length; j++)
+			{
+				tiles[i][j] = new Tile(this.random, i, j);
+			}
+		}
+
+		for (Obstacle o: Game.obstacles)
+		{
+			if (o.posX >= 0 && o.posY >= 0 && o.posX <= Game.currentSizeX * Game.tile_size && o.posY <= Game.currentSizeY * Game.tile_size)
+			{
+				Tile.Type t = Tile.Type.solid;
+
+				if (!o.tankCollision && !(o instanceof ObstacleTeleporter))
+					t = Tile.Type.empty;
+				else if (o.destructible && this.enableMineLaying)
+					t = Tile.Type.destructible;
+
+				int x = (int) (o.posX / Game.tile_size);
+				int y = (int) (o.posY / Game.tile_size);
+				Tile tile = tiles[x][y];
+				tile.type = t;
+				tile.unfavorability = Math.min(tile.unfavorability, 10);
+
+				for (int i = -1; i <= 1; i++)
+				{
+					for (int j = -1; j <= 1; j++)
+					{
+						if (x + i > 0 && x + i < tiles.length && y + j > 0 && y + j < tiles[0].length)
+							tiles[x + i][y + j].unfavorability = Math.max(tile.unfavorability, 1);
+					}
+				}
+			}
+		}
+
+		for (Movable m: Game.movables)
+		{
+			if (this.isInterestingPathTarget(m))
+				tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
+		}
+
+		ArrayList<Tile> queue = new ArrayList<>();
+
+		Tile t = tiles[(int)(this.posX / Game.tile_size)][(int)(this.posY / Game.tile_size)];
+		t.explored = true;
+		queue.add(t);
+
+		Tile current = null;
+		boolean found = false;
+
+		while (!queue.isEmpty())
+		{
+			current = queue.remove(0);
+
+			if (current.search(queue, tiles))
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (found)
+		{
+			this.seekTimer = this.seekTimerBase;
+			this.currentlySeeking = true;
+			this.path = new ArrayList<>();
+
+			while (current.parent != null)
+			{
+				this.path.add(0, current);
+				current = current.parent;
 			}
 		}
 	}

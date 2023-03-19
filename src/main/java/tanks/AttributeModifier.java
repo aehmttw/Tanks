@@ -51,6 +51,8 @@ public class AttributeModifier
 	public static final Type bullet_speed = new Type("bullet_speed");
 	/** When applied to a tank, its cooldown will change accordingly */
 	public static final Type reload = new Type("reload");
+	/** When applied to a tank, its bullet recoil will change accordingly */
+	public static final Type recoil = new Type("recoil");
 	/** When applied to a tank, its will show a green shield indicating health was added via a heal ray */
 	public static final Type healray = new Type("healray");
 

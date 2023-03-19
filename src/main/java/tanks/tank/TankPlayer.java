@@ -455,7 +455,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = speed;
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		if (b.moveOut)
 			b.moveOut(50 / speed * this.size / Game.tile_size);

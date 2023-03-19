@@ -220,7 +220,7 @@ public class Panel
 
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
 
-			for (int i = 1; i <= 5; i++)
+			for (int i = 1; i <= 8; i++)
 			{
 				Game.game.window.soundPlayer.loadMusic("/music/arcade/rampage" + i + ".ogg");
 			}
@@ -734,9 +734,10 @@ public class Panel
 
 		if (!(Game.screen instanceof ScreenGame))
 		{
-			Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+			Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
 			Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
-			Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+			Drawing.drawing.scale = Game.screen.getScale();
+			Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 			Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 		}
 

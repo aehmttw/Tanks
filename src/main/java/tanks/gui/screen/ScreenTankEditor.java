@@ -602,6 +602,92 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             super(screen, parent, name, category);
             this.colorIndex = colorIndex;
 
+            colorRed = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Red", () ->
+            {
+                if (colorRed.inputText.length() <= 0)
+                    colorRed.inputText = colorRed.previousInputText;
+
+                int red = Integer.parseInt(colorRed.inputText);
+
+                if (colorIndex == 1)
+                    this.screen.tank.colorR = red;
+                else if (colorIndex == 2)
+                    this.screen.tank.secondaryColorR = red;
+                else if (colorIndex == 3)
+                    this.screen.tank.tertiaryColorR = red;
+                else if (colorIndex == 4)
+                    this.screen.tank.emblemR = red;
+            }
+                    , 0, 0, 255, 1);
+
+            colorRed.allowLetters = false;
+            colorRed.allowSpaces = false;
+            colorRed.maxChars = 3;
+            colorRed.maxValue = 255;
+            colorRed.checkMaxValue = true;
+            colorRed.integer = true;
+
+            colorGreen = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight,"Green", () ->
+            {
+                if (colorGreen.inputText.length() <= 0)
+                    colorGreen.inputText = colorGreen.previousInputText;
+
+                int green = Integer.parseInt(colorGreen.inputText);
+
+                if (colorIndex == 1)
+                    this.screen.tank.colorG = green;
+                else if (colorIndex == 2)
+                    this.screen.tank.secondaryColorG = green;
+                else if (colorIndex == 3)
+                    this.screen.tank.tertiaryColorG = green;
+                else if (colorIndex == 4)
+                    this.screen.tank.emblemG = green;
+            }
+                    , 0, 0, 255, 1);
+
+            colorGreen.allowLetters = false;
+            colorGreen.allowSpaces = false;
+            colorGreen.maxChars = 3;
+            colorGreen.maxValue = 255;
+            colorGreen.checkMaxValue = true;
+            colorGreen.integer = true;
+
+            colorBlue = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Blue", () ->
+            {
+                if (colorBlue.inputText.length() <= 0)
+                    colorBlue.inputText = colorBlue.previousInputText;
+
+                int blue = Integer.parseInt(colorBlue.inputText);
+
+                if (colorIndex == 1)
+                    this.screen.tank.colorB = blue;
+                else if (colorIndex == 2)
+                    this.screen.tank.secondaryColorB = blue;
+                else if (colorIndex == 3)
+                    this.screen.tank.tertiaryColorB = blue;
+                else if (colorIndex == 4)
+                    this.screen.tank.emblemB = blue;
+            }
+                    , 0, 0, 255, 1);
+
+            colorBlue.allowLetters = false;
+            colorBlue.allowSpaces = false;
+            colorBlue.maxChars = 3;
+            colorBlue.maxValue = 255;
+            colorBlue.checkMaxValue = true;
+            colorBlue.integer = true;
+        }
+
+        public TabPartPicker(ScreenTankEditor screen, String name, TankProperty.Category category, int colorIndex)
+        {
+            this(screen, null, name, category, colorIndex);
+        }
+
+        @Override
+        public void set()
+        {
+            super.set();
+
             int r = (int) this.screen.tank.colorR;
             int g = (int) this.screen.tank.colorG;
             int b = (int) this.screen.tank.colorB;
@@ -630,85 +716,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             else if (colorIndex == 3)
                 this.setColorText(this.screen.tank.enableTertiaryColor);
 
-            colorRed = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Red", () ->
-            {
-                if (colorRed.inputText.length() <= 0)
-                    colorRed.inputText = colorRed.previousInputText;
+            this.colorRed.value = r;
+            this.colorGreen.value = g;
+            this.colorBlue.value = b;
 
-                int red = Integer.parseInt(colorRed.inputText);
-
-                if (colorIndex == 1)
-                    this.screen.tank.colorR = red;
-                else if (colorIndex == 2)
-                    this.screen.tank.secondaryColorR = red;
-                else if (colorIndex == 3)
-                    this.screen.tank.tertiaryColorR = red;
-                else if (colorIndex == 4)
-                    this.screen.tank.emblemR = red;
-            }
-                    , r, 0, 255, 1);
-
-            colorRed.allowLetters = false;
-            colorRed.allowSpaces = false;
-            colorRed.maxChars = 3;
-            colorRed.maxValue = 255;
-            colorRed.checkMaxValue = true;
-            colorRed.integer = true;
-
-            colorGreen = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight,"Green", () ->
-            {
-                if (colorGreen.inputText.length() <= 0)
-                    colorGreen.inputText = colorGreen.previousInputText;
-
-                int green = Integer.parseInt(colorGreen.inputText);
-
-                if (colorIndex == 1)
-                    this.screen.tank.colorG = green;
-                else if (colorIndex == 2)
-                    this.screen.tank.secondaryColorG = green;
-                else if (colorIndex == 3)
-                    this.screen.tank.tertiaryColorG = green;
-                else if (colorIndex == 4)
-                    this.screen.tank.emblemG = green;
-            }
-                    , g, 0, 255, 1);
-
-            colorGreen.allowLetters = false;
-            colorGreen.allowSpaces = false;
-            colorGreen.maxChars = 3;
-            colorGreen.maxValue = 255;
-            colorGreen.checkMaxValue = true;
-            colorGreen.integer = true;
-
-            colorBlue = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Blue", () ->
-            {
-                if (colorBlue.inputText.length() <= 0)
-                    colorBlue.inputText = colorBlue.previousInputText;
-
-                int blue = Integer.parseInt(colorBlue.inputText);
-
-                if (colorIndex == 1)
-                    this.screen.tank.colorB = blue;
-                else if (colorIndex == 2)
-                    this.screen.tank.secondaryColorB = blue;
-                else if (colorIndex == 3)
-                    this.screen.tank.tertiaryColorB = blue;
-                else if (colorIndex == 4)
-                    this.screen.tank.emblemB = blue;
-            }
-                    , b, 0, 255, 1);
-
-            colorBlue.allowLetters = false;
-            colorBlue.allowSpaces = false;
-            colorBlue.maxChars = 3;
-            colorBlue.maxValue = 255;
-            colorBlue.checkMaxValue = true;
-            colorBlue.integer = true;
-        }
-
-        public TabPartPicker(ScreenTankEditor screen, String name, TankProperty.Category category, int colorIndex)
-        {
-            this(screen, null, name, category, colorIndex);
+            this.colorRed.inputText = r + "";
+            this.colorGreen.inputText = g + "";
+            this.colorBlue.inputText = b + "";
         }
 
         @Override

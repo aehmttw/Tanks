@@ -479,6 +479,21 @@ public class ScreenChangelog extends Screen
                                     "A ton of bug fixes and other minor improvements\n"
                     });
 
+            new Changelog("v1.5.e", new String[]
+                    {
+                            "*What's new in Tanks v1.5.e:\n\n" +
+                                    "Updated tutorial to be more exciting\n" +
+                                    "Added descriptions for minigames\n" +
+                                    "You can now see your records directly from the crusade screen\n" +
+                                    "Reorganized options screens\n" +
+                                    "Added 30 FPS deterministic mode\n" +
+                                    "Added short invulnerability on respawning in arcade mode\n" +
+                                    "Removed laser from versus mode\n" +
+                                    "Tanks will not explode on death if killed right after spawning\n" +
+                                    "A secret easter egg is more interesting now...\n" +
+                                    "A ton of bug fixes and other minor improvements\n"
+                    });
+
         }
     }
 }

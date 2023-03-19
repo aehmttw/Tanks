@@ -26,7 +26,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	public static double firework_frequency = 0.08;
 
-	Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", () ->
+	Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
 	{
 		Level level = new Level(Game.currentLevelString);
 		level.loadLevel();
@@ -73,7 +73,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", () ->
+	Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
 	{
 		Crusade.currentCrusade.loadLevel();
 		Crusade.currentCrusade.replay = true;
@@ -112,7 +112,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	}
 	);
 
-	Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Generate a new level", () ->
+	Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace * 1, this.objWidth, this.objHeight, "Generate new level", () ->
 	{
 		Game.cleanUp();
 		Game.loadRandomLevel();

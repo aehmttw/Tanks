@@ -15,7 +15,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     ArrayList<Firework> fireworks1 = new ArrayList<>();
     ArrayList<Firework> fireworks2 = new ArrayList<>();
 
-    Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate a new level", () ->
+    Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate new level", () ->
     {
         if (ScreenGame.versus)
         {
@@ -32,7 +32,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     }
     );
 
-    Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", () ->
+    Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
     {
         Level level = new Level(Game.currentLevelString);
         level.loadLevel();
@@ -50,7 +50,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     }
     );
 
-    Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay the level", () ->
+    Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay level", () ->
     {
         Level level = new Level(Game.currentLevelString);
         level.loadLevel();

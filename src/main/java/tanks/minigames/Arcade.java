@@ -263,7 +263,7 @@ public class Arcade extends Minigame
         if (value <= 0)
         {
             chain = 0;
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= 8; i++)
             {
                 Drawing.drawing.removeSyncedMusic("arcade/rampage" + i + ".ogg", 2000);
             }
@@ -273,7 +273,7 @@ public class Arcade extends Minigame
             lastRampage = age;
             Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (value - 1) / 12.0));
             score += value * 5;
-            if (chain / 3 <= 5)
+            if (chain / 3 <= 8)
             {
                 Drawing.drawing.addSyncedMusic("arcade/rampage" + value + ".ogg", Game.musicVolume, true, 500);
             }
@@ -360,6 +360,12 @@ public class Arcade extends Minigame
                     this.spawnedTanks.remove(i);
                     i--;
                 }
+            }
+
+            this.availablePlayerSpawns.clear();
+            for (int i = 0; i < this.playerSpawnsX.size(); i++)
+            {
+                this.availablePlayerSpawns.add(i);
             }
 
             if (alivePlayers.size() <= 0 && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
@@ -452,7 +458,11 @@ public class Arcade extends Minigame
     {
         playerDeathTimes.remove(p);
 
-        int r = (int) (this.playerSpawnsX.size() * this.random.nextDouble());
+        int r;
+        if (this.availablePlayerSpawns.size() > 0)
+            r = this.availablePlayerSpawns.remove((int) (this.random.nextDouble() * this.availablePlayerSpawns.size()));
+        else
+            r = (int) (this.playerSpawnsX.size() * this.random.nextDouble());
 
         TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
         t.team = Game.playerTeamNoFF;

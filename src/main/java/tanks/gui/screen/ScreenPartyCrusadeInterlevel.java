@@ -31,7 +31,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     }
     );
 
-    Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay the level", () ->
+    Button replayCrusadeWin = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
     {
         if (checkCrusadeEnd())
         {

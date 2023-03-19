@@ -64,6 +64,7 @@ public class StatusEffect
                             new AttributeModifier("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
                             new AttributeModifier("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
                             new AttributeModifier("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                            new AttributeModifier("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
                             new AttributeModifier("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
                     });
         }

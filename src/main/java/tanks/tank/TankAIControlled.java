@@ -759,7 +759,7 @@ public class TankAIControlled extends Tank
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
 
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * b.frameDamageMultipler);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 		b.speed = speed;
 
 		if (b instanceof BulletArc)
@@ -1758,7 +1758,7 @@ public class TankAIControlled extends Tank
 				this.straightShoot = false;
 		}
 
-		if (this.sightTransformTank != null && seesTargetEnemy)
+		if (this.sightTransformTank != null && seesTargetEnemy && this.inControlOfMotion)
 			this.handleSightTransformation();
 	}
 

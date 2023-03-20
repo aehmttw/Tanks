@@ -269,9 +269,7 @@ public class Panel
 			this.startTime = System.currentTimeMillis();
 
 		int maxFps = Game.maxFPS;
-		if (Game.deterministicMode && Game.deterministic30Fps)
-			maxFps = 30;
-		else if (Game.deterministicMode)
+		if (Game.deterministicMode)
 			maxFps = 60;
 
 		if (maxFps > 0)
@@ -341,9 +339,7 @@ public class Panel
 		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
-		if (Game.deterministicMode && Game.deterministic30Fps)
-			Panel.frameFrequency = 100.0 / 30;
-		else if (Game.deterministicMode)
+		if (Game.deterministicMode)
 			Panel.frameFrequency = 100.0 / 60;
 		else
 			Panel.frameFrequency = Game.game.window.frameFrequency;

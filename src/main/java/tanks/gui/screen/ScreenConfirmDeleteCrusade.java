@@ -7,7 +7,7 @@ import tanks.gui.Button;
 
 public class ScreenConfirmDeleteCrusade extends Screen
 {
-    public Screen previous;
+    public ScreenCrusadeDetails previous;
     public Crusade crusade;
 
     public Button cancelDelete = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "No", new Runnable()
@@ -31,7 +31,7 @@ public class ScreenConfirmDeleteCrusade extends Screen
     }
     );
 
-    public ScreenConfirmDeleteCrusade(Screen previous, Crusade crusade)
+    public ScreenConfirmDeleteCrusade(ScreenCrusadeDetails previous, Crusade crusade)
     {
         this.previous = previous;
         this.crusade = crusade;
@@ -50,11 +50,17 @@ public class ScreenConfirmDeleteCrusade extends Screen
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
+        if (previous.background != null)
+            previous.background.draw();
+        else
+            this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to delete the crusade?");
+
+        if (previous.background != null)
+            Drawing.drawing.drawPopup(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7, this.objYSpace * 9, 20, 10);
 
         confirmDelete.draw();
         cancelDelete.draw();

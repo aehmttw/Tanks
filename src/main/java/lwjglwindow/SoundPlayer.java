@@ -55,6 +55,9 @@ public class SoundPlayer extends BaseSoundPlayer
     public float prevVolume;
     public float currentVolume;
 
+    public static final int total_sounds = 255;
+    public static final int max_music = 50;
+
     protected void playMusicSource(int i)
     {
         alSourcePlay(i);
@@ -69,7 +72,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
     protected int newMusicSource()
     {
-        if (musicSources.size() >= 25)
+        if (musicSources.size() >= max_music)
         {
             for (int i = 0; i < musicSources.size(); i++)
             {
@@ -147,7 +150,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
     public void playSound(String path, float pitch, float volume)
     {
-        if (sources.size() >= 230)
+        if (sources.size() >= total_sounds - max_music)
             alDeleteSources(sources.remove(0));
 
         if (this.buffers.get(path) == null)

@@ -232,11 +232,15 @@ public class Tutorial extends Minigame
                 Drawing.drawing.addSyncedMusic("arcade/rampage3.ogg", Game.musicVolume, true, 500);
             }
             else if (step == 6)
+            {
                 Drawing.drawing.addSyncedMusic("arcade/rampage4.ogg", Game.musicVolume, true, 500);
+                Drawing.drawing.addSyncedMusic("arcade/rampage5.ogg", Game.musicVolume, true, 500);
+            }
             else if (step == 8)
             {
                 Game.movables.add(new Crate(this.gray));
-                Drawing.drawing.addSyncedMusic("arcade/rampage5.ogg", Game.musicVolume, true, 500);
+                Drawing.drawing.addSyncedMusic("arcade/rampage6.ogg", Game.musicVolume, true, 500);
+                Drawing.drawing.addSyncedMusic("arcade/rampage7.ogg", Game.musicVolume, true, 500);
             }
 
             stepAnimation = 0;

@@ -47,7 +47,11 @@ public class ScreenOverlayControls
             mouseTargetHeight.enabled = false;
     }
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 360, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 360, this.objWidth, this.objHeight, "Back", () ->
+    {
+        Game.screen = new ScreenOptions();
+        Game.game.input.save();
+    }
     );
 
     Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "", new Runnable()

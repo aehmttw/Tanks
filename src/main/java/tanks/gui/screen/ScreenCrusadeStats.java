@@ -649,9 +649,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 this.showRecordButton.fullInfo = true;
 
                 if (this.showRecord)
-                    this.showRecordButton.image = "/icons/nostar.png";
+                    this.showRecordButton.image = "icons/nostar.png";
                 else
-                    this.showRecordButton.image = "/icons/star.png";
+                    this.showRecordButton.image = "icons/star.png";
 
                 this.showRecordButton.imageSizeX = 25;
                 this.showRecordButton.imageSizeY = 25;

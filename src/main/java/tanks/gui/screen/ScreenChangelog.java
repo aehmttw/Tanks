@@ -529,6 +529,13 @@ public class ScreenChangelog extends Screen
                     }
                     );
 
+            new Changelog("v1.5.1", new String[]
+                    {
+                            "*What's new in Tanks v1.5.1:\n\n" +
+                                    "Bug fixes\n"
+                    }
+            );
+
         }
     }
 }

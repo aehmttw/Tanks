@@ -369,6 +369,7 @@ public class LWJGLWindow extends BaseWindow
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
 		glfwGetWindowSize(window, w, h);
 
 		if (w[0] > 0 || h[0] > 0)

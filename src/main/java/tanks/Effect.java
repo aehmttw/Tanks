@@ -163,6 +163,7 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.maxAge = 50;
         else if (type == EffectType.chain || type == EffectType.tutorialProgress)
         {
+            this.drawLayer = 9;
             this.maxAge = 100;
             this.size = Game.tile_size * 2;
         }

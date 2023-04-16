@@ -1,8 +1,9 @@
 name: Deploy
 env:
   itchio_project: aehmttw/Tanks
-  itchio_channel: UniversalJAR
+  itchio_channel: Universal_JAR
 on:
+  workflow_dispatch:
   push:
     tags:
       - v*

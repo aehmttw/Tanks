@@ -1,0 +1,35 @@
+name: Deploy
+env:
+  itchio_project: aehmttw/Tanks
+  itchio_channel: Universal_JAR
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v*
+jobs:
+  itch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      - name: JDK17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Build
+        run: ./build.sh
+      - name: Version
+        run: |
+          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      - name: Upload
+        uses: robpc/itchio-upload-action@v1
+        with:
+          path: Tanks.jar
+          project: ${{ env.itchio_project }}
+          channel: ${{ env.itchio_channel }}
+          version: ${{ env.version }}
+          api-key: ${{ secrets.ITCHIO_API_KEY }}

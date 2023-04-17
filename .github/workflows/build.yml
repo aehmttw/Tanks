@@ -1,0 +1,23 @@
+name: Build
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      - name: JDK17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Build
+        run: ./build.sh
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          path: Tanks.jar

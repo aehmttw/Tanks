@@ -28,3 +28,11 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+  codacy:
+    name: Codacy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Analyze
+        uses: codacy/codacy-analysis-cli-action@master

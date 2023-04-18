@@ -1,8 +1,9 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Game;
+import tanks.*;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
+import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
@@ -67,6 +68,13 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
             screenLevelEditor.paused = false;
         }
     }
+
+    @Override
+    public void setupLights()
+    {
+        this.screenLevelEditor.setupLights();
+    }
+
 
     @Override
     public void draw()

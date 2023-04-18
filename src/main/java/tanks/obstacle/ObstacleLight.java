@@ -2,12 +2,17 @@ package tanks.obstacle;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.IDrawableLightSource;
 
-public class ObstacleLight extends Obstacle
+public class ObstacleLight extends Obstacle implements IDrawableLightSource
 {
+	public double[] lightInfo;
+
 	public ObstacleLight(String name, double posX, double posY)
 	{
 		super(name, posX, posY);
+
+		this.lightInfo = new double[]{0, 0, 0, 0, 255, 250, 235};
 
 		this.draggable = false;
 		this.destructible = false;
@@ -45,25 +50,25 @@ public class ObstacleLight extends Obstacle
 		double frac = Obstacle.draw_size / Game.tile_size;
 		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
 
-		double s = this.stackHeight * Game.tile_size * 4;
-		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s * 3, s * 3, false, false, false, true);
+		//double s = this.stackHeight * Game.tile_size * 4;
+		//Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s * 3, s * 3, false, false, false, true);
 
 	}
 
-	@Override
-	public void drawGlow()
-	{
-		double s = this.stackHeight * Game.tile_size * 4;
-		double frac = Obstacle.draw_size / Game.tile_size * 0.75;
-		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
-		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
-	}
-
-	@Override
-	public boolean isGlowEnabled()
-	{
-		return true;
-	}
+//	@Override
+//	public void drawGlow()
+//	{
+//		double s = this.stackHeight * Game.tile_size * 4;
+//		double frac = Obstacle.draw_size / Game.tile_size * 0.75;
+//		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
+//		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
+//	}
+//
+//	@Override
+//	public boolean isGlowEnabled()
+//	{
+//		return true;
+//	}
 
 	@Override
 	public void drawForInterface(double x, double y)
@@ -77,4 +82,16 @@ public class ObstacleLight extends Obstacle
 		return 0;
 	}
 
+	@Override
+	public boolean lit()
+	{
+		return true;
+	}
+
+	@Override
+	public double[] getLightInfo()
+	{
+		this.lightInfo[3] = Math.pow(this.stackHeight, 3) / 4 * Obstacle.draw_size / Game.tile_size;
+		return this.lightInfo;
+	}
 }

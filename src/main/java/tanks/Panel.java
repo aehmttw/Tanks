@@ -15,6 +15,7 @@ import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleLight;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -95,6 +96,8 @@ public class Panel
 
 	public boolean started = false;
 	public boolean settingUp = true;
+
+	public ArrayList<double[]> lights = new ArrayList<>();
 
 	public static void initialize()
 	{
@@ -317,9 +320,9 @@ public class Panel
 		Panel.windowWidth = Game.game.window.absoluteWidth;
 		Panel.windowHeight = Game.game.window.absoluteHeight;
 
-		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+		Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
-		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
 		if (Game.deterministicMode && Game.deterministic30Fps)
@@ -758,6 +761,12 @@ public class Panel
 		}
 
 		Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
+
+		this.lights.clear();
+
+		Game.screen.setupLights();
+
+		Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
 		if (!Game.game.window.drawingShadow)
 		{

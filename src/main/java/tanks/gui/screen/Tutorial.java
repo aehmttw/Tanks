@@ -183,7 +183,7 @@ public class Tutorial
 
             if (touchscreen)
             {
-                Drawing.drawing.drawInterfaceText(TankPlayer.controlStick.posX + TankPlayer.controlStick.size * 0.6, TankPlayer.controlStick.posY, "Use this stick to move the blue tank!", false);
+                Drawing.drawing.drawInterfaceText(TankPlayer.controlStick.posX + TankPlayer.controlStick.size * 0.6, TankPlayer.controlStick.posY, "Use this stick to move your tank!", false);
             }
             else
             {
@@ -305,7 +305,7 @@ public class Tutorial
                 if (TankPlayer.shootStickEnabled)
                     Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press the \u00A7255255000255yellow button\u00A7255255255255 to lay a mine!");
                 else
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Double-tap the \u00A7000150255255blue tank\u00A7255255255255 to lay a mine!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Double-tap \u00A7000150255255your tank\u00A7255255255255 to lay a mine!");
             }
             else
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press \u00A7255127000255" + Game.game.input.mine.getInputs() + "\u00A7255255255255 to lay a mine!");

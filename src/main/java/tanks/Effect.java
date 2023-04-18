@@ -908,4 +908,20 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         this.lightInfo[6] = 160;
         return this.lightInfo;
     }
+
+    @Override
+    public boolean lit()
+    {
+        return this.type == EffectType.explosion;
+    }
+
+    @Override
+    public double[] getLightInfo()
+    {
+        this.lightInfo[3] = 4 * (1 - this.age / this.maxAge);
+        this.lightInfo[4] = 255;
+        this.lightInfo[5] = 200;
+        this.lightInfo[6] = 160;
+        return this.lightInfo;
+    }
 }

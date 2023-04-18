@@ -15,7 +15,7 @@ import tanks.tank.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Bullet extends Movable implements IDrawable
+public class Bullet extends Movable implements IDrawableLightSource
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -94,6 +94,8 @@ public class Bullet extends Movable implements IDrawable
 
 	public double speed = 0;
 	public boolean justBounced = false;
+
+	public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
 	public Bullet(double x, double y, int bounces, Tank t, ItemBullet item)
 	{
@@ -934,7 +936,7 @@ public class Bullet extends Movable implements IDrawable
 			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, opacity * opacity * opacity * 255.0, glow);
 
 			if (Game.enable3d)
-				Drawing.drawing.fillOval(posX, posY, posZ + 1, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
+				Drawing.drawing.fillOval(posX, posY, posZ, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6, 1);
 			else
 				Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
@@ -986,4 +988,21 @@ public class Bullet extends Movable implements IDrawable
 			Game.effects.add(e);
 		}
 	}
+
+	@Override
+	public boolean lit()
+	{
+		return true;
+	}
+
+	@Override
+	public double[] getLightInfo()
+	{
+		this.lightInfo[3] = Math.max(0, 1 - this.destroyTimer / this.maxDestroyTimer);
+		this.lightInfo[4] = this.outlineColorR;
+		this.lightInfo[5] = this.outlineColorG;
+		this.lightInfo[6] = this.outlineColorB;
+		return this.lightInfo;
+	}
+
 }

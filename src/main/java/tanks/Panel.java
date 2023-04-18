@@ -3,7 +3,10 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
+import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
+import tanks.gui.IFixedMenu;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -11,10 +14,8 @@ import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
-import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.EventPing;
-import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleLight;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class Panel
 
 	public static boolean showMouseTarget = true;
 	public static boolean showMouseTargetHeight = false;
-	public static boolean pauseOnDefocus = true;
 
 	public static Panel panel;
 
@@ -97,7 +97,7 @@ public class Panel
 	public boolean started = false;
 	public boolean settingUp = true;
 
-	protected boolean prevFocused = true;
+	public ArrayList<double[]> lights = new ArrayList<>();
 
 	public static void initialize()
 	{
@@ -270,7 +270,9 @@ public class Panel
 		lastFrameNano = System.nanoTime();
 
 		if (System.currentTimeMillis() - this.startTime < 0)
+		{
 			return;
+		}
 
 		if (!splashFinished)
 		{
@@ -318,9 +320,9 @@ public class Panel
 		Panel.windowWidth = Game.game.window.absoluteWidth;
 		Panel.windowHeight = Game.game.window.absoluteHeight;
 
-		Drawing.drawing.scale = Math.min(Panel.windowWidth * 1.0 / Game.currentSizeX, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+		Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
 		Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
-		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth * 1.0 / 28, (Panel.windowHeight * 1.0 - Drawing.drawing.statsHeight) / 18) / 50.0;
+		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
 		if (Game.deterministicMode && Game.deterministic30Fps)
@@ -356,6 +358,11 @@ public class Panel
 		if (settingUp)
 			return;
 
+		if (Game.screen instanceof ScreenGame)
+		{
+			for (IFixedMenu menu : ModAPI.menuGroup)
+				menu.update();
+		}
 
 		synchronized (Game.eventsIn)
 		{
@@ -569,12 +576,6 @@ public class Panel
 		Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
 		Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
 
-		if (Game.game.window.focused != prevFocused)
-		{
-			prevFocused = Game.game.window.focused;
-			Game.screen.onFocusChange(prevFocused);
-		}
-
 		if (!onlinePaused)
 			Game.screen.update();
 		else
@@ -584,20 +585,6 @@ public class Panel
 		{
 			Game.game.input.fullscreen.invalidate();
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
-		}
-
-		if (ScreenPartyLobby.isClient)
-		{
-			Client.handler.pingTimer -= Panel.frameFrequency;
-
-			if (Client.handler.pingTimer <= 0)
-			{
-				Game.eventsOut.add(new EventPing());
-				Client.handler.pingTimer = 150;
-				ClientHandler.lastLatencyTime = System.currentTimeMillis();
-			}
-
-			Client.handler.reply();
 		}
 
 		if (Game.steamNetworkHandler.initialized)
@@ -617,9 +604,9 @@ public class Panel
 					ScreenPartyHost.server.connections.get(j).reply();
 				}
 			}
-		}
 
-		Game.eventsOut.clear();
+			Game.eventsOut.clear();
+		}
 
 		if (prevScreen != Game.screen)
 		{
@@ -627,6 +614,11 @@ public class Panel
 			Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
 
 			Panel.selectedTextBox = null;
+		}
+
+		if (ScreenPartyLobby.isClient)
+		{
+			Client.handler.reply();
 		}
 
 		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
@@ -776,6 +768,12 @@ public class Panel
 
 		Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
 
+		this.lights.clear();
+
+		Game.screen.setupLights();
+
+		Game.game.window.createLights(this.lights, Drawing.drawing.scale);
+
 		if (!Game.game.window.drawingShadow)
 		{
 			long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
@@ -794,6 +792,12 @@ public class Panel
 			this.onlineOverlay.draw();
 		else
 			Game.screen.draw();
+
+		if (Game.screen instanceof ScreenGame)
+		{
+			for (IFixedMenu menu : ModAPI.menuGroup)
+				menu.draw();
+		}
 
 		for (Movable m : Game.movables)
 		{
@@ -816,42 +820,6 @@ public class Panel
 
 		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
 			this.age += Panel.frameFrequency;
-
-		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
-		{
-			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_Q))
-			{
-				Game.game.window.constrainMouse = !Game.game.window.constrainMouse;
-				Game.game.window.pressedKeys.remove(InputCodes.KEY_Q);
-			}
-
-			int brightness = 0;
-			if (Game.currentLevel != null && Level.isDark())
-				brightness = 255;
-
-			Drawing.drawing.setColor(brightness, brightness, brightness);
-
-			String text;
-			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_P))
-				text = "(" + (int) Game.game.window.absoluteWidth + ", " + (int) Game.game.window.absoluteHeight + ")";
-
-			else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_S))
-				text = "(" + (int) Game.game.window.absoluteMouseX + ", " + (int) Game.game.window.absoluteMouseY + ")  " + Drawing.drawing.interfaceScale + ", " + Drawing.drawing.interfaceScaleZoom;
-
-			else {
-				int posX = (int) (((Math.round(Drawing.drawing.getMouseX() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
-				int posY = (int) (((Math.round(Drawing.drawing.getMouseY() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
-
-				if (Game.screen instanceof ScreenLevelEditor) {
-					posX = (int) (((ScreenLevelEditor) Game.screen).mouseObstacle.posX / Game.tile_size - 0.5);
-					posY = (int) (((ScreenLevelEditor) Game.screen).mouseObstacle.posY / Game.tile_size - 0.5);
-				}
-
-				text = "(" + posX + ", " + posY + ")";
-			}
-
-			Game.game.window.fontRenderer.drawString(Game.game.window.absoluteMouseX + 10, Game.game.window.absoluteMouseY + 10, Drawing.drawing.fontSize, Drawing.drawing.fontSize, text);
-		}
 	}
 
 	public void drawMouseTarget()
@@ -1050,9 +1018,9 @@ public class Panel
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
-			double[] col = getLatencyColor(ClientHandler.latency);
+			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
 			Drawing.drawing.setColor(col[0], col[1], col[2]);
-			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.latency + "ms");
+			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
 		}
 
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)

@@ -225,6 +225,8 @@ public abstract class BaseWindow
 
     public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
 
+    public abstract void createLights(ArrayList<double[]> lights, double scale);
+
     public abstract void addMatrix();
 
     public abstract void removeMatrix();

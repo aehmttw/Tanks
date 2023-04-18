@@ -82,6 +82,14 @@ public class LWJGLWindow extends BaseWindow
 	protected int shadowMapBonesEnabledFlag;
 	protected int shadowMapBoneMatricesFlag;
 
+	protected int sizeXFlag;
+	protected int sizeYFlag;
+	protected int sizeZFlag;
+	protected int scaleFlag;
+
+	protected int lightsFlag;
+	protected int lightsCountFlag;
+
 	public ShaderHandler shaderHandler;
 
 	double bbx1 = 1;
@@ -96,7 +104,11 @@ public class LWJGLWindow extends BaseWindow
 
 	public String currentTexture = null;
 
+	protected int lightTex;
+
 	public double lastDrawTime = Double.MIN_VALUE;
+
+	ArrayList<double[]> scaledLights = new ArrayList<>();
 
 	public LWJGLWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
 	{
@@ -329,6 +341,8 @@ public class LWJGLWindow extends BaseWindow
 
 		this.shaderHandler = new ShaderHandler(this);
 		this.shapeRenderer = new ImmediateModeShapeRenderer(this);
+		this.lightTex = glGenTextures();
+		this.textures.put("lights", this.lightTex);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -412,6 +426,9 @@ public class LWJGLWindow extends BaseWindow
 			this.shaderHandler.renderShadowMap();
 
 		this.shaderHandler.renderNormal();
+
+		//this.setColor(255, 255, 255);
+		//this.shapeRenderer.drawImage(100, 100, 100, 100, "lights", false);
 
 		glfwSwapBuffers(window);
 
@@ -587,6 +604,85 @@ public class LWJGLWindow extends BaseWindow
 			System.err.println("Failed to load: " + image);
 			e.printStackTrace();
 		}
+	}
+
+	public double scaleLight(double in)
+	{
+		double scale = 32;
+		double lower = -scale / 2 + 0.5;
+		double upper = scale / 2 + 0.5;
+
+		if (in < lower || in > upper)
+			return -1;
+		else
+			return (in - lower) / scale;
+	}
+
+	public void createLights(ArrayList<double[]> lights, double scale)
+	{
+		this.scaledLights.clear();
+
+		for (double[] d: lights)
+		{
+			double x = scaleLight(d[0] / absoluteWidth) * 256;
+			double y = scaleLight(d[1] / absoluteHeight) * 256;
+			double z = scaleLight(d[2] / absoluteDepth) * 256;
+
+			if (x >= 0 && y >= 0 && z >= 0)
+			{
+				d[0] = x;
+				d[1] = y;
+				d[2] = z;
+				this.scaledLights.add(d);
+			}
+		}
+
+		ByteBuffer buf = ByteBuffer.allocateDirect(16 * this.scaledLights.size());
+
+		for (double[] l : this.scaledLights)
+		{
+			double x = l[0];
+			double y = l[1];
+			double z = l[2];
+			double b = l[3];
+
+			buf.put((byte) x);
+			buf.put((byte) y);
+			buf.put((byte) z);
+			buf.put((byte) b);
+
+			buf.put((byte) ((x % 1.0) * 256));
+			buf.put((byte) ((y % 1.0) * 256));
+			buf.put((byte) ((z % 1.0) * 256));
+			buf.put((byte) ((b % 1.0) * 256));
+
+			buf.put((byte) (((x / 256) % 1.0) * 65536));
+			buf.put((byte) (((y / 256) % 1.0) * 65536));
+			buf.put((byte) (((z / 256) % 1.0) * 65536));
+			buf.put((byte) (((b / 256) % 1.0) * 65536));
+
+			buf.put((byte) l[4]);
+			buf.put((byte) l[5]);
+			buf.put((byte) l[6]);
+			buf.put((byte) 0);
+		}
+
+		buf.flip();
+
+		glUniform1i(this.lightsCountFlag, lights.size());
+		glUniform1f(this.scaleFlag, (float) scale);
+		glUniform1i(this.lightsFlag,2);
+
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, this.lightTex);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lights.size() * 4, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+		glActiveTexture(GL_TEXTURE0);
 	}
 
 	public void setIcon(String icon)

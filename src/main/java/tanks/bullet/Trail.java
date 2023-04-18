@@ -45,7 +45,7 @@ public class Trail implements IDrawable
     public boolean showOutsideFront = true;
     public boolean showOutsideBack = true;
 
-    public boolean trail3d = false;
+    public boolean trail3d = Game.followingCam;
 
     public double speed;
 

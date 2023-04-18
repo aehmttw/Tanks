@@ -12,6 +12,7 @@ public class TankYellow extends TankAIControlled
 		super(name, x, y, Game.tile_size, 235, 200, 0, angle, ShootAI.reflect);
 
 		this.bullet.maxLiveBullets = 1;
+		this.mine.maxLiveMines = 4;
 		this.mineTimerBase = 200;
 		this.mineTimerRandom = 400;
 		this.mineTimer = this.mineTimerBase + this.mineTimerRandom * this.random.nextDouble();

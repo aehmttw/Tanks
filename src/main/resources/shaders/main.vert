@@ -17,11 +17,21 @@ uniform float glowShade;
 
 uniform int shadowres;
 varying vec4 vertexColor;
+varying vec4 position;
 
 uniform bool shadow;
 
 uniform bool vbo;
 uniform vec4 originalColor;
+
+uniform float width;
+uniform float height;
+uniform float depth;
+uniform float scale;
+
+uniform int lightsCount;
+uniform sampler2D lights;
+
 
 //uniform bool bonesEnabled;
 //uniform mat4 boneMatrices[128];
@@ -32,7 +42,6 @@ void main(void)
     vertexColor = vec4(gl_Color.r, gl_Color.g, gl_Color.b, gl_Color.a);
 
     vec4 pos;
-
     #ifdef BONES
     if (bonesEnabled)
     {
@@ -53,6 +62,7 @@ void main(void)
 
     gl_Position = gl_ModelViewProjectionMatrix * pos;
     lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1.0);
+    position = gl_ModelViewMatrix * pos;
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
     gl_TexCoord[1] = gl_MultiTexCoord1;

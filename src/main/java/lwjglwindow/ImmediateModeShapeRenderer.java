@@ -235,6 +235,38 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         }
     }
 
+    public void fillFacingOval(double x, double y, double z, double sX, double sY, double oZ, boolean depthTest)
+    {
+        if (depthTest)
+        {
+            this.window.enableDepthtest();
+
+            if (this.window.colorA < 1)
+                glDepthMask(false);
+        }
+
+        x += sX / 2;
+        y += sY / 2;
+
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
+
+        glBegin(GL_TRIANGLE_FAN);
+        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
+        {
+            double ox = Math.cos(i) * sX / 2;
+            double oy = Math.sin(i) * sY / 2;
+            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2 + oZ * this.window.bbx3, y + ox * this.window.bby1 + oy * this.window.bby2 + oZ * this.window.bby3, z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
+        }
+
+        glEnd();
+
+        if (depthTest)
+        {
+            glDepthMask(true);
+            this.window.disableDepthtest();
+        }
+    }
+
     @Override
     public void fillGlow(double x, double y, double sX, double sY)
     {

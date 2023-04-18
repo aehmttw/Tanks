@@ -273,6 +273,11 @@ public class Drawing
 		this.fillOval(x, y, z, sizeX, sizeY, true, true);
 	}
 
+	public void fillOval(double x, double y, double z, double sizeX, double sizeY, double oZ)
+	{
+		this.fillOval(x, y, z, sizeX, sizeY, oZ, true, true);
+	}
+
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
@@ -288,6 +293,25 @@ public class Drawing
 
 		if (Game.game.window.angled && facing)
 			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+		else
+			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+	}
+
+	public void fillOval(double x, double y, double z, double sizeX, double sizeY, double oZ, boolean depthTest, boolean facing)
+	{
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
+
+		if (isOutOfBounds(drawX, drawY))
+			return;
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		double dZ = z * scale;
+
+		if (Game.game.window.angled && facing)
+			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, oZ * scale, depthTest);
 		else
 			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 	}
@@ -1593,8 +1617,9 @@ public class Drawing
 			return drawX - dist * scale > Panel.windowWidth || drawX + dist * scale < 0 || drawY - dist * scale > Panel.windowHeight || drawY + dist * scale < 0;
 		else
 		{
-			return (drawX - gameToAbsoluteX(Game.playerTank.posX, 0)) * Math.cos(Game.playerTank.angle)
-					+ (drawY - gameToAbsoluteY(Game.playerTank.posY, 0)) * Math.sin(Game.playerTank.angle) < -dist;
+//			return (drawX - gameToAbsoluteX(Game.playerTank.posX, 0)) * Math.cos(Game.playerTank.angle)
+//					+ (drawY - gameToAbsoluteY(Game.playerTank.posY, 0)) * Math.sin(Game.playerTank.angle) < -dist;
+			return false;
 		}
 	}
 

@@ -6,7 +6,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Turret;
 
-public class Effect extends Movable implements IDrawableWithGlow
+public class Effect extends Movable implements IDrawableWithGlow, IDrawableLightSource
 {
     public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
 
@@ -35,6 +35,8 @@ public class Effect extends Movable implements IDrawableWithGlow
 
     public int initialGridX;
     public int initialGridY;
+
+    public double[] lightInfo = new double[7];
 
     //Effects that have this set to true are removed faster when the level has ended
     public boolean fastRemoveOnExit = false;
@@ -852,5 +854,21 @@ public class Effect extends Movable implements IDrawableWithGlow
             this.prevGridX = (int) (this.posX / Game.tile_size);
             this.prevGridY = (int) (this.posY / Game.tile_size);
         }
+    }
+
+    @Override
+    public boolean lit()
+    {
+        return this.type == EffectType.explosion;
+    }
+
+    @Override
+    public double[] getLightInfo()
+    {
+        this.lightInfo[3] = 4 * (1 - this.age / this.maxAge);
+        this.lightInfo[4] = 255;
+        this.lightInfo[5] = 200;
+        this.lightInfo[6] = 160;
+        return this.lightInfo;
     }
 }

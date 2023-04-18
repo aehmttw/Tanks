@@ -115,11 +115,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         if (a.score == 666)
             bonuses.add(new Bonus("Unholy score!", 100, 255, 0, 0));
         else if (digits.length() == 2 && a.score % 11 == 0)
-                bonuses.add(new Bonus("Double digits!", 15, 160, 40, 255));
+            bonuses.add(new Bonus("Double digits!", 15, 160, 40, 255));
         else if (digits.length() == 3 && a.score % 111 == 0)
-                bonuses.add(new Bonus("Triple digits!!", 111, 255, 40, 255));
+            bonuses.add(new Bonus("Triple digits!!", 111, 255, 40, 255));
         else if (digits.length() == 4 && a.score % 1111 == 0)
-                bonuses.add(new Bonus("Quadruple digits!!", 250, 255, 40, 160));
+            bonuses.add(new Bonus("Quadruple digits!!", 250, 255, 40, 160));
 
         if (a.score > 0)
         {
@@ -246,7 +246,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                         Drawing.drawing.setInterfaceFontSize(this.textSize);
                         Bonus b = this.bonuses.get(2 - i);
                         double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
-                        addEffect(this.centerX, this.centerY + (i - 1) * 40, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
+                        addEffect(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
                     }
                     Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
                 }
@@ -337,7 +337,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         Drawing.drawing.setColor(255, 255, 255, 255 * heightFrac);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, yPos - 120, "Bonus points");
+        Drawing.drawing.displayInterfaceText(this.centerX, yPos - this.objYSpace * 2, "Bonus points");
 
         for (Effect e: Game.effects)
             e.draw();
@@ -353,8 +353,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 int j = 2 - i;
                 Drawing.drawing.setColor(bonuses.get(j).red, bonuses.get(j).green, bonuses.get(j).blue, 255);
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * 40, bonuses.get(j).name);
-                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * 40, bonuses.get(j).value + "");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).name);
+                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).value + "");
             }
         }
 
@@ -362,7 +362,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         {
             Drawing.drawing.setColor(255, 255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + 120, "Total: " + (bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Total: " + (bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value));
         }
 
         this.drawPoints();
@@ -377,7 +377,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 fireworksToSpawn--;
                 fireworkCooldown = Math.random() * 5 + 2.5;
-                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + 125, this.getFireworkArray());
+                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 5, this.getFireworkArray());
                 f.setRandomColor();
                 f.setVelocity();
                 f.maxAge /= 2;

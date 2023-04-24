@@ -1,4 +1,4 @@
-name: Deploy
+name: Game
 env:
   itchio_project: aehmttw/Tanks
   itchio_channel: Universal_JAR
@@ -8,7 +8,8 @@ on:
     tags:
       - v*
 jobs:
-  itch:
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,10 +19,28 @@ jobs:
       - name: JDK17
         uses: actions/setup-java@v3
         with:
-          java-version: "17"
-          distribution: "temurin"
+          java-version: 17
+          distribution: temurin
       - name: Build
         run: ./build.sh
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: Tanks.jar
+  itch:
+    name: Itch
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      - name: Download
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
       - name: Version
         run: |
           echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV

@@ -33,7 +33,7 @@ public class Panel
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
 
-	public final long splash_duration = 0;
+	public final long splash_duration = 4000;
 	public boolean playedTutorialIntroMusic = false;
 
 	public static boolean showMouseTarget = true;
@@ -246,7 +246,7 @@ public class Panel
 		{
 			started = true;
 			this.startTime = System.currentTimeMillis() + splash_duration;
-			//Drawing.drawing.playSound("splash_jingle.ogg");
+			Drawing.drawing.playSound("splash_jingle.ogg");
 		}
 
 		if (!started)
@@ -670,9 +670,13 @@ public class Panel
 			double frac2 = Math.min(frac * 4, 1) * Math.min((1 - frac) * 4, 1);
 
 			double[] col = Game.getRainbowColor((System.currentTimeMillis() % (1000)) / 1000.0);
+
+			Drawing.drawing.setColor(255, 255, 255, 255 * frac2);
+			Drawing.drawing.drawInterfaceImage( System.currentTimeMillis() / 2000.0,"opal.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 600 * (1 + (- frac + 0.5) * 2), 600 * (1 + (- frac + 0.5) * 2));
+
 			Drawing.drawing.setColor(1 * frac2 * col[0], 1 * frac2 * col[1], 1 * frac2 * col[2]);
 			Drawing.drawing.setInterfaceFontSize(100 * (1 + (- frac + 0.5) * 0.8));
-			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Opal Games");
+			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Opal Games :)");
 			return;
 		}
 

@@ -859,7 +859,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
     @Override
     public boolean lit()
     {
-        return this.type == EffectType.explosion;
+        return false;
     }
 
     @Override

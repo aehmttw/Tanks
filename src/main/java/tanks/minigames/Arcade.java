@@ -659,9 +659,6 @@ public class Arcade extends Minigame
             }
         }
 
-        if (!found)
-            return;
-
         RegistryTank.TankEntry e = Game.registryTank.getRandomTank(this.random);
 
         while (e.name.equals("blue") || e.name.equals("red") || (!frenzy && e.weight < 1.0 / Math.max(1, chain - 2)))

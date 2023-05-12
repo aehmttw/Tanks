@@ -117,7 +117,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankProperty(category = appearanceGlow, id = "light_size", name = "Light size")
 	public double lightSize = 0;
 	@TankProperty(category = appearanceGlow, id = "luminance", name = "Tank luminance", desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
-	public double luminance = 0.5;
+	public double luminance = 0;
 
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
 	@TankProperty(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = TankProperty.MiscType.color)

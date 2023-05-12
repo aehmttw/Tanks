@@ -91,19 +91,21 @@ void main(void)
             vec4 light = texture2D(lights, vec2((float(i * c)) / float(lightsCount * c), 0.0)) - sub;
             light += (texture2D(lights, vec2((float(i * c + 1)) / float(lightsCount * c), 0.0)) - sub) / 256.0;
             light += (texture2D(lights, vec2((float(i * c + 2)) / float(lightsCount * c), 0.0)) - sub) / 65536.0;
-            float l = max(0.0, pow((light.w * 100000.0) / (pow((rescale(light.x) * width - position.x) / scale, 2.0) + pow((rescale(light.y) * height - position.y) / scale, 2.0) + pow((rescale(light.z) * depth - position.z) / scale, 2.0)), 0.5));
+            float l = max(0.0, (light.w * 100000.0) / (pow((rescale(light.x) * width - position.x) / scale, 2.0) + pow((rescale(light.y) * height - position.y) / scale, 2.0) + pow((rescale(light.z) * depth - position.z) / scale, 2.0)));
             extraLight += l * (texture2D(lights, vec2((float(i * c + 3)) / float(lightsCount * c), 0.0)));
         }
+
+        vec4 extraLightSqrt = vec4(sqrt(extraLight.x), sqrt(extraLight.y), sqrt(extraLight.z), 0.0);
 
         if (lit)
         {
             float col = light * (1.0 - glow3) + glowLight * glow3;
-            gl_FragColor *= vec4(col, col, col, 1.0) + extraLight;
+            gl_FragColor *= vec4(col, col, col, 1.0) + extraLightSqrt;
         }
         else
         {
             float col = shade * (1.0 - glow3) + glowShade * glow3;
-            gl_FragColor *= vec4(col, col, col, 1.0) + extraLight;
+            gl_FragColor *= vec4(col, col, col, 1.0) + extraLightSqrt;
         }
 
         //float fogFrac = pow(max(0.0, min(1.0, (position.w / depth - 0.2) / 0.8)), 5.0);

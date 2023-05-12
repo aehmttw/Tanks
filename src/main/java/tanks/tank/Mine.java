@@ -157,7 +157,7 @@ public class Mine extends Movable implements IAvoidObject
         int beepTime = ((int)this.timer / 10);
         if (this.timer <= 150 && beepTime % 2 == 1 && this.lastBeep != beepTime && this.tank == Game.playerTank)
         {
-            Drawing.drawing.playSound("beep.ogg", 1f, 0.25f);
+            Drawing.drawing.playSound("beep.ogg", 1.5f);
             this.lastBeep = beepTime;
         }
 

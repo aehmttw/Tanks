@@ -19,7 +19,7 @@ import tanks.hotbar.item.*;
 /**
  * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
  */
-public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank
+public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank, IDrawableLightSource
 {
 	public static ItemBullet default_bullet;
 	public static ItemMine default_mine;
@@ -573,5 +573,20 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean lit()
+	{
+		return false;
+	}
+
+	double[] lightInfo = new double[]{0, 0, 0, 2, 255, 255, 255};
+
+	@Override
+	public double[] getLightInfo()
+	{
+		this.glowSize = 4;
+		return this.lightInfo;
 	}
 }

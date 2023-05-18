@@ -86,6 +86,8 @@ public class MessageReader
 					if (queue.readableBytes() >= 4)
 					{
 						endpoint = queue.readInt();
+						downstreamBytes += endpoint + 4;
+						updateLastMessageTime();
 
 						if (endpoint > MessageReader.max_event_size)
 						{

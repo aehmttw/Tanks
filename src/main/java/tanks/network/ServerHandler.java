@@ -13,6 +13,7 @@ import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.*;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter
@@ -34,6 +35,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public long lastMessage = -1;
 	public long latency = 0;
+
+	public long latencySum = 0;
+	public int latencyCount = 1;
+	public long lastLatencyTime = 0;
+	public long lastLatencyAverage = 0;
 
 	public boolean closed = false;
 
@@ -79,6 +85,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		}
 
 		//System.out.println(eventFrequencies);
+
+		for (String s: eventFrequencies.keySet())
+		{
+			System.out.println(s + ": " + eventFrequencies.get(s));
+		}
 	}
 
 	@Override
@@ -89,12 +100,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		int reply = this.reader.queueMessage(this, buffy, this.clientID);
+		boolean reply = this.reader.queueMessage(this, buffy, this.clientID);
 
 		if (steamID == null)
 			ReferenceCountUtil.release(msg);
 
-		if (reply >= 0)
+		if (reply)
 		{
 			if (lastMessage < 0)
 				lastMessage = System.currentTimeMillis();
@@ -103,7 +114,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			latency = time - lastMessage;
 			lastMessage = time;
 
-			this.sendEvent(new EventPing(reply));
+			latencyCount++;
+			latencySum += latency;
+
+			if (time / 1000 > lastLatencyTime)
+			{
+				lastLatencyTime = time / 1000;
+				lastLatencyAverage = latencySum / latencyCount;
+
+				latencySum = 0;
+				latencyCount = 0;
+			}
+
+			//this.sendEvent(new EventPing());
 		}
 	}
 
@@ -129,12 +152,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		this.sendEvent(e, true);
 	}
 
-	//public HashMap<String, Integer> eventFrequencies = new HashMap<>();
+	public HashMap<String, Integer> eventFrequencies = new HashMap<>();
 
 	public synchronized void sendEvent(INetworkEvent e, boolean flush)
 	{
-		//eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
-		//eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
+		eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
+		eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
 
 		if (steamID != null)
 		{

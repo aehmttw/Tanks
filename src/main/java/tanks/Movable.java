@@ -39,6 +39,10 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 	public double lastVY;
 	public double lastVZ;
 
+	public double lastOriginalVX;
+	public double lastOriginalVY;
+	public double lastOriginalVZ;
+
 	public boolean destroy = false;
 	public boolean dealsDamage = true;
 
@@ -72,6 +76,10 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		this.lastVX = (this.posX - this.lastPosX) / Panel.frameFrequency;
 		this.lastVY = (this.posY - this.lastPosY) / Panel.frameFrequency;
 		this.lastVZ = (this.posZ - this.lastPosZ) / Panel.frameFrequency;
+
+		this.lastOriginalVX = this.vX;
+		this.lastOriginalVY = this.vY;
+		this.lastOriginalVZ = this.vZ;
 
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;

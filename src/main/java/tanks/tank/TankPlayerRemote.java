@@ -56,6 +56,11 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public double interpolatedPosX = this.posX;
     public double interpolatedPosY = this.posY;
 
+    public int lastLiveBullets;
+    public int lastMaxLiveBullets;
+    public int lastLiveMines;
+    public int lastMaxLiveMines;
+
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
         super("player", x, y, Game.tile_size, 0, 150, 255);
@@ -141,7 +146,13 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 im = (ItemMine) b.slots[b.selected];
         }
 
-        Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxLiveBullets, im.liveMines, im.maxLiveMines));
+        if (lastLiveBullets != ib.liveBullets || ib.maxLiveBullets != lastMaxLiveBullets || im.liveMines != lastLiveMines || im.maxLiveMines != lastMaxLiveMines)
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxLiveBullets, im.liveMines, im.maxLiveMines));
+
+        lastLiveBullets = ib.liveBullets;
+        lastLiveMines = im.liveMines;
+        lastMaxLiveBullets = ib.maxLiveBullets;
+        lastMaxLiveMines = im.maxLiveMines;
     }
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)

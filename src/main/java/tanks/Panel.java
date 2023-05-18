@@ -245,7 +245,12 @@ public class Panel
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
 			started = true;
+<<<<<<< HEAD
 			this.startTime = System.currentTimeMillis() + splash_duration;
+=======
+
+			//this.startTime = System.currentTimeMillis() + splash_duration;
+>>>>>>> 6058165 (more changes to net optimization and such)
 			//Drawing.drawing.playSound("splash_jingle.ogg");
 		}
 
@@ -670,6 +675,19 @@ public class Panel
 			double frac2 = Math.min(frac * 4, 1) * Math.min((1 - frac) * 4, 1);
 
 			double[] col = Game.getRainbowColor((System.currentTimeMillis() % (1000)) / 1000.0);
+<<<<<<< HEAD
+=======
+
+			Drawing.drawing.scale = Math.min(Game.game.window.absoluteWidth / Game.currentSizeX, (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
+			Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
+			Drawing.drawing.scale = Game.screen.getScale();
+			Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Game.game.window.absoluteWidth / 28, (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
+			Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
+
+			Drawing.drawing.setColor(255, 255, 255, 255 * frac2);
+			Drawing.drawing.drawInterfaceImage( System.currentTimeMillis() / 2000.0,"opal.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 600 * (1 + (- frac + 0.5) * 2), 600 * (1 + (- frac + 0.5) * 2));
+
+>>>>>>> 6058165 (more changes to net optimization and such)
 			Drawing.drawing.setColor(1 * frac2 * col[0], 1 * frac2 * col[1], 1 * frac2 * col[2]);
 			Drawing.drawing.setInterfaceFontSize(100 * (1 + (- frac + 0.5) * 0.8));
 			Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Opal Games");

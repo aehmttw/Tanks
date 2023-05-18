@@ -63,6 +63,10 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public Tank tank;
 	public double damage = 1;
+	public double hitKnockback = 0;
+	public Explosion hitExplosion = null;
+	public double hitStun = 0;
+	public AreaEffect hitAreaEffect = null;
 	public BulletEffect effect = BulletEffect.none;
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
@@ -592,7 +596,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 	@Override
 	public void update()
 	{
-		if (!this.isRemote && ScreenPartyHost.isServer && (this.vX != this.lastVX || this.vY != this.lastVY) && !justBounced)
+		if (!this.isRemote && ScreenPartyHost.isServer && (this.vX != this.lastOriginalVX || this.vY != this.lastOriginalVY) && !justBounced)
 			Game.eventsOut.add(new EventBulletUpdate(this));
 
 		this.justBounced = false;

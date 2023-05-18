@@ -76,6 +76,11 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public long lastUpdate;
     public double localAge;
 
+    public int lastLiveBullets;
+    public int lastMaxLiveBullets;
+    public int lastLiveMines;
+    public int lastMaxLiveMines;
+
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
         super("player", x, y, Game.tile_size, 0, 150, 255);

@@ -1,14 +1,28 @@
 package tanks.bullet;
 
+<<<<<<< HEAD
 import tanks.*;
+=======
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Movable;
+import tanks.Panel;
+>>>>>>> 6058165 (more changes to net optimization and such)
 import tanks.network.event.EventBulletUpdate;
 import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 
+<<<<<<< HEAD
 public abstract class BulletGas extends Bullet implements IDrawableWithGlow
 {
+=======
+public abstract class BulletGas extends Bullet
+{
+    public double life = 200;
+    public double age = 0;
+>>>>>>> 6058165 (more changes to net optimization and such)
     public double startSize;
     public double endSize;
 
@@ -19,6 +33,7 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
     public double endG;
     public double endB;
 
+<<<<<<< HEAD
     public double noiseR;
     public double noiseG;
     public double noiseB;
@@ -29,6 +44,8 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
 
     public double opacity = 1;
 
+=======
+>>>>>>> 6058165 (more changes to net optimization and such)
     public BulletGas(double x, double y, int bounces, Tank t, ItemBullet ib)
     {
         this(x, y, bounces, t, false, ib);
@@ -42,8 +59,11 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
         this.playBounceSound = false;
         this.effect = BulletEffect.none;
         this.externalBulletCollision = false;
+<<<<<<< HEAD
         this.destroyBullets = false;
         this.canMultiDamage = true;
+=======
+>>>>>>> 6058165 (more changes to net optimization and such)
     }
 
     @Override
@@ -52,6 +72,7 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
         if (this.age <= 0)
         {
             this.startSize = this.size;
+<<<<<<< HEAD
             double colorRandom = Math.random();
             this.startR = this.baseColorR + colorRandom * this.noiseR;
             this.startG = this.baseColorG + colorRandom * this.noiseG;
@@ -81,11 +102,26 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
             Game.removeMovables.add(this);
 
         super.update();
+=======
+            this.startR = this.baseColorR;
+            this.startG = this.baseColorG;
+            this.startB = this.baseColorB;
+        }
+
+        this.age += Panel.frameFrequency;
+        this.size = this.startSize * (1 - this.age / this.life) + this.endSize * (this.age / this.life);
+
+        super.update();
+
+        if (this.age > life)
+            Game.removeMovables.add(this);
+>>>>>>> 6058165 (more changes to net optimization and such)
     }
 
     @Override
     public void draw()
     {
+<<<<<<< HEAD
         double rawOpacity = (1.0 - (this.age) / life);
         rawOpacity *= rawOpacity * this.frameDamageMultipler;
         double opacity = Math.min(rawOpacity * 255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
@@ -95,6 +131,14 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
             frac = Math.max(0, 1 - this.age / this.life);
 
         Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, this.luminance);
+=======
+        double rawOpacity = (1.0 - (this.age)/life);
+        rawOpacity *= rawOpacity * this.frameDamageMultipler;
+        double opacity = Math.min(rawOpacity * 255 / 6, 255);
+        double frac = this.age / this.life;
+
+        Drawing.drawing.setColor(this.startR * (1 - frac) + this.endR * frac, this.startG * (1 - frac) + this.endG * frac, this.startB * (1 - frac) + this.endB * frac, opacity, 0.5 /* TODO: glow*/);
+>>>>>>> 6058165 (more changes to net optimization and such)
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -103,6 +147,7 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
     }
 
     @Override
+<<<<<<< HEAD
     public void drawGlow()
     {
         double rawOpacity = (1.0 - (this.age) / life);
@@ -172,6 +217,8 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
     }
 
     @Override
+=======
+>>>>>>> 6058165 (more changes to net optimization and such)
     public void addDestroyEffect()
     {
 

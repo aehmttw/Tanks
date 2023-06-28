@@ -1,9 +1,10 @@
-package tanks.bullet;
+package tanks.bullet.legacy;
 
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawableWithGlow;
 import tanks.Panel;
+import tanks.bullet.Bullet;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
@@ -39,6 +40,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		{
 			this.sizeMul = this.size / Bullet.bullet_size;
 			this.life *= this.sizeMul;
+			System.out.println(this.frameDamageMultipler);
 		}
 
 		this.age += Panel.frameFrequency;
@@ -55,7 +57,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 	@Override
 	public void draw()
 	{
-		double rawOpacity = (1.0 - (this.age)/life);
+		double rawOpacity = (1.0 - (this.age) / life);
 		rawOpacity *= rawOpacity;
 		double opacity = rawOpacity * 255;
 		

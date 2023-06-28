@@ -129,13 +129,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.colorB = this.colorB;
 
 		t.secondaryColorR = this.colorR2;
-		t.nameTag.colorR = this.colorR2;
-
 		t.secondaryColorG = this.colorG2;
-		t.nameTag.colorG = this.colorG2;
-
 		t.secondaryColorB = this.colorB2;
-		t.nameTag.colorB = this.colorB2;
 
 		t.drawAge = this.drawAge;
 

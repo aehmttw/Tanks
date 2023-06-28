@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.BaseFile;
+import basewindow.IBatchRenderableObject;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
 import tanks.network.event.EventBeginLevelCountdown;
@@ -128,6 +129,12 @@ public class Panel
 
 		Game.game.window.setIcon("/images/icon64.png");
 
+		if (Game.game.window.soundPlayer == null)
+		{
+			Game.soundsEnabled = false;
+			Game.musicEnabled = false;
+		}
+
 		double scale = 1;
 		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
 		{
@@ -232,6 +239,7 @@ public class Panel
 		settingUp = false;
 	}
 
+	public boolean screenshot = false;
 	public void update()
 	{
 		if (firstFrame)
@@ -447,17 +455,6 @@ public class Panel
 			{
 				Drawing.drawing.playerX = ((ScreenGame) Game.screen).spectatingTank.posX;
 				Drawing.drawing.playerY = ((ScreenGame) Game.screen).spectatingTank.posY;
-
-				if (((ScreenGame) Game.screen).spectatingTank instanceof TankRemote)
-				{
-					Drawing.drawing.playerX = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
-					Drawing.drawing.playerY = ((TankRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
-				}
-				else if (((ScreenGame) Game.screen).spectatingTank instanceof TankPlayerRemote)
-				{
-					Drawing.drawing.playerX = ((TankPlayerRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosX;
-					Drawing.drawing.playerY = ((TankPlayerRemote) ((ScreenGame) Game.screen).spectatingTank).interpolatedPosY;
-				}
 			}
 			else
 			{
@@ -746,6 +743,21 @@ public class Panel
 			return;
 		}
 
+		if (Drawing.drawing.terrainRenderer2 == null)
+		{
+			Drawing.drawing.terrainRenderer2 = Game.game.window.createShapeBatchRenderer(false);
+			Drawing.drawing.terrainRenderer2.begin(true);
+			Drawing.drawing.terrainRenderer2.setColor(255, 255, 0, 255, 0);
+			Drawing.drawing.terrainRenderer2.fillBox(new Obstacle("", 0, 0), 200, 200, 100, 100, 100, 100, (byte) 0);
+			Drawing.drawing.terrainRenderer2.stage();
+		}
+
+		if (Math.random() < Panel.frameFrequency * 0.5)
+		{
+			Drawing.drawing.terrainRenderer2.setColor(Math.random() * 255, Math.random() * 255, Math.random() * 255, 255, 0);
+			Drawing.drawing.terrainRenderer2.fillBox(new Obstacle("", 0, 0), Math.random() * 1400, Math.random() * 900, Math.random() * 500, 100, 100, 100, (byte) 0);
+		}
+
 		if (!(Game.screen instanceof ScreenGame))
 		{
 			Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
@@ -818,6 +830,10 @@ public class Panel
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
+		Drawing.drawing.setColor(255, 255, 255);
+		if (screenshot)
+			Game.game.window.shapeRenderer.drawImage(100, 100, 500, 500, "screenshot", false);
+
 		Drawing.drawing.setColor(0, 0, 0, 0);
 		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
 
@@ -825,6 +841,9 @@ public class Panel
 
 		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
 			this.age += Panel.frameFrequency;
+
+//		if (!Game.game.window.drawingShadow)
+//			Drawing.drawing.terrainRenderer2.draw();
 	}
 
 	public void drawMouseTarget()

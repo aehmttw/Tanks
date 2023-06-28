@@ -2,7 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletAir;
+import tanks.bullet.BulletAir2;
 
 /**
  * A tank which blows strong air currents
@@ -26,7 +26,7 @@ public class TankLightBlue extends TankAIControlled
 		this.enableBulletAvoidance = false;
 
 		this.bullet.maxLiveBullets = 0;
-		this.bullet.bulletClass = BulletAir.class;
+		this.bullet.bulletClass = BulletAir2.class;
 		this.bullet.cooldownBase = 0;
 		this.bullet.speed = 6.25;
 		this.bullet.accuracy = 20;
@@ -36,6 +36,8 @@ public class TankLightBlue extends TankAIControlled
 		this.bullet.bounces = 0;
 		this.bullet.effect = Bullet.BulletEffect.none;
 		this.bullet.name = "Air";
+		this.bullet.damage = 0;
+		this.bullet.heavy = true;
 
 		this.coinValue = 8;
 

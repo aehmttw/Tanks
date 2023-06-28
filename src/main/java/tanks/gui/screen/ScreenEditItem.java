@@ -137,6 +137,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                 t.maxChars = 9;
                 t.allowLetters = false;
                 t.allowSpaces = false;
+                t.allowNegatives = true;
 
                 properties.add(t);
             }
@@ -162,6 +163,7 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                 t.allowDoubles = true;
                 t.allowLetters = false;
                 t.allowSpaces = false;
+                t.allowNegatives = true;
 
                 properties.add(t);
             }

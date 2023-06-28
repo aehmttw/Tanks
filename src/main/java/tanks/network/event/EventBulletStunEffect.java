@@ -4,19 +4,19 @@ import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
 
-public class EventBulletElectricStunEffect extends PersonalEvent
+public class EventBulletStunEffect extends PersonalEvent
 {
     public double posX;
     public double posY;
     public double posZ;
     public double length;
 
-    public EventBulletElectricStunEffect()
+    public EventBulletStunEffect()
     {
 
     }
 
-    public EventBulletElectricStunEffect(double x, double y, double z, double length)
+    public EventBulletStunEffect(double x, double y, double z, double length)
     {
         this.posX = x;
         this.posY = y;

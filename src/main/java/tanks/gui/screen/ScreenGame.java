@@ -755,7 +755,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)
 			this.readyButton.function.run();
 
-
 		if (Game.game.input.zoom.isValid())
 		{
 			zoomScrolled = false;
@@ -1801,6 +1800,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 		}
 
+		Game.effects.addAll(Game.addEffects);
+		Game.addEffects.clear();
+
 		for (Effect e: Game.removeTracks)
 		{
 			if (e.state == Effect.State.removed)
@@ -2092,12 +2094,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				else
 					Drawing.drawing.setColor(0, 0, 0, 50);
 
-				if (Game.enable3d)
-					Drawing.drawing.fillForcedOval(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2,
-							((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2, ((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2, false, false);
-				else
-					Drawing.drawing.fillForcedOval(Game.playerTank.posX, Game.playerTank.posY,
-							((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2, ((ILocalPlayerTank) Game.playerTank).getDrawRange() * 2);
+				Mine.drawRange2D(Game.playerTank.posX, Game.playerTank.posY,
+						((ILocalPlayerTank) Game.playerTank).getDrawRange());
 
 				((ILocalPlayerTank) Game.playerTank).setDrawRange(-1);
 			}

@@ -6,7 +6,7 @@ import tanks.Movable;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
 
-public class EventTankMimicLaser extends PersonalEvent
+public class EventTankMimicLaser extends PersonalEvent implements IStackableEvent
 {
     public int tank;
     public int tank2;
@@ -66,5 +66,11 @@ public class EventTankMimicLaser extends PersonalEvent
         this.tank = b.readInt();
         this.tank2 = b.readInt();
         this.range = b.readDouble();
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return this.tank;
     }
 }

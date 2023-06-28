@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -28,7 +29,9 @@ import java.util.Scanner;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -63,33 +66,9 @@ public class LWJGLWindow extends BaseWindow
 
 	protected boolean shadowsEnabled = false;
 
-	protected int textureFlag;
-	protected int depthFlag;
-	protected int glowFlag;
+	protected boolean upscaleImages = false;
 
-	protected int lightFlag;
-	protected int glowLightFlag;
-	protected int shadeFlag;
-	protected int glowShadeFlag;
-
-	protected int vboFlag;
-	protected int vboColorFlag;
-
-	protected int bonesEnabledFlag;
-	protected int boneMatricesFlag;
-
-	protected int shadowFlag;
-
-	protected int shadowMapBonesEnabledFlag;
-	protected int shadowMapBoneMatricesFlag;
-
-	protected int sizeXFlag;
-	protected int sizeYFlag;
-	protected int sizeZFlag;
-	protected int scaleFlag;
-
-	protected int lightsFlag;
-	protected int lightsCountFlag;
+	protected int lightTex;
 
 	public ShaderHandler shaderHandler;
 
@@ -104,10 +83,6 @@ public class LWJGLWindow extends BaseWindow
 	double bbz3 = 1;
 
 	public String currentTexture = null;
-
-	protected int lightTex;
-
-	public double lastDrawTime = Double.MIN_VALUE;
 
 	ArrayList<double[]> scaledLights = new ArrayList<>();
 
@@ -195,9 +170,13 @@ public class LWJGLWindow extends BaseWindow
 				textValidPressedKeys.remove((Integer) key);
 			}
 
-			shift = (mods & GLFW_MOD_SHIFT) > 0;
-			capsLock = (mods & GLFW_MOD_CAPS_LOCK) > 0;
-			numLock = (mods & GLFW_MOD_NUM_LOCK) > 0;
+			if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+				this.inputCodepoints.add('\b');
+		});
+
+		glfwSetCharCallback(window, (window, codepoint) ->
+		{
+			this.inputCodepoints.add((char) codepoint);
 		});
 
 		glfwSetScrollCallback(window, (window, xoffset, yoffset) ->
@@ -241,31 +220,6 @@ public class LWJGLWindow extends BaseWindow
 			GLFW.glfwSwapInterval(0);
 
 		glfwShowWindow(window);
-	}
-
-	protected int createShader(String filename, int shaderType) throws Exception
-	{
-		int shader = 0;
-		try
-		{
-			shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType);
-
-			if (shader == 0)
-				return 0;
-
-			ARBShaderObjects.glShaderSourceARB(shader, readFileAsString(filename));
-			ARBShaderObjects.glCompileShaderARB(shader);
-
-			if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
-				throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
-
-			return shader;
-		}
-		catch (Exception exc)
-		{
-			ARBShaderObjects.glDeleteObjectARB(shader);
-			throw exc;
-		}
 	}
 
 	protected static String getLogInfo(int obj)
@@ -340,9 +294,28 @@ public class LWJGLWindow extends BaseWindow
 		return source.toString();
 	}
 
+	protected void setUpShaders()
+	{
+		try
+		{
+			this.shaderShadowMap = new ShaderShadowMap(this);
+			this.shaderShadowMap.initialize();
+
+			this.shaderBase = new ShaderBase(this);
+			this.shaderBase.initialize();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
+
 	protected void loop()
 	{
 		GL.createCapabilities();
+
+		this.setUpShaders();
 
 		this.shaderHandler = new ShaderHandler(this);
 		this.shapeRenderer = new ImmediateModeShapeRenderer(this);
@@ -382,10 +355,11 @@ public class LWJGLWindow extends BaseWindow
 		SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
 
 		if (soundPlayer != null)
+		{
 			soundPlayer.update();
+		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 		glfwGetWindowSize(window, w, h);
 
@@ -421,8 +395,6 @@ public class LWJGLWindow extends BaseWindow
 		else
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-		focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
-
 		glfwGetFramebufferSize(window, w, h);
 
 		this.updater.update();
@@ -431,9 +403,6 @@ public class LWJGLWindow extends BaseWindow
 			this.shaderHandler.renderShadowMap();
 
 		this.shaderHandler.renderNormal();
-
-		//this.setColor(255, 255, 255);
-		//this.shapeRenderer.drawImage(100, 100, 100, 100, "lights", false);
 
 		glfwSwapBuffers(window);
 
@@ -447,7 +416,9 @@ public class LWJGLWindow extends BaseWindow
 			shouldClose = windowHandler.attemptCloseWindow();
 
 			if (!shouldClose)
+			{
 				glfwSetWindowShouldClose(window, false);
+			}
 		}
 
 		this.stopTiming();
@@ -522,7 +493,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (!drawingShadow)
-			GL20.glUniform1f(glowFlag, (float) glow);
+			this.currentBaseShader.glow.set((float) glow);
 	}
 
 	public void setColor(double r, double g, double b, double a)
@@ -535,7 +506,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (!drawingShadow)
-			GL20.glUniform1f(glowFlag, 0);
+			this.currentBaseShader.glow.set(0);
 	}
 
 	public void setColor(double r, double g, double b)
@@ -548,7 +519,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor3d(this.colorR, this.colorG, this.colorB);
 
 		if (!drawingShadow)
-			GL20.glUniform1f(glowFlag, 0);
+			this.currentBaseShader.glow.set(0);
 	}
 
 	protected void createImage(String image)
@@ -607,6 +578,12 @@ public class LWJGLWindow extends BaseWindow
 			System.err.println("Failed to load: " + image);
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void setUpscaleImages(boolean upscale)
+	{
+		this.upscaleImages = upscale;
 	}
 
 	public double scaleLight(double in)
@@ -672,9 +649,9 @@ public class LWJGLWindow extends BaseWindow
 
 		buf.flip();
 
-		glUniform1i(this.lightsCountFlag, lights.size());
-		glUniform1f(this.scaleFlag, (float) scale);
-		glUniform1i(this.lightsFlag,2);
+//		glUniform1i(this.lightsCountFlag, lights.size());
+//		glUniform1f(this.scaleFlag, (float) scale);
+//		glUniform1i(this.lightsFlag,2);
 
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE2);
@@ -812,7 +789,7 @@ public class LWJGLWindow extends BaseWindow
 				float[] projMatrix = new float[16];
 				glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
 
-				glUniformMatrix4fv(this.shaderHandler.normalProgramVPUniform, false, projMatrix);
+				//glUniformMatrix4fv(this.shaderHandler.normalProgramVPUniform, false, projMatrix);
 			}
 		}
 	}
@@ -849,9 +826,9 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public ArrayList<Integer> getRawTextKeys()
+	public ArrayList<Character> getRawTextKeys()
 	{
-		return this.textValidPressedKeys;
+		return this.inputCodepoints;
 	}
 
 	@Override
@@ -1081,10 +1058,50 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public void setLighting(double light, double glowLight, double shadow, double glowShadow)
 	{
-		GL20.glUniform1f(this.lightFlag, (float) light);
-		GL20.glUniform1f(this.glowLightFlag, (float) glowLight);
-		GL20.glUniform1f(this.shadeFlag, (float) shadow);
-		GL20.glUniform1f(this.glowShadeFlag, (float) glowShadow);
+		this.currentBaseShader.light.set((float) light);
+		this.currentBaseShader.glowLight.set((float) glowLight);
+		this.currentBaseShader.shade.set((float) shadow);
+		this.currentBaseShader.glowShade.set((float) glowShadow);
+	}
+
+	@Override
+	public void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess)
+	{
+		this.setMaterialLights(ambient, diffuse, specular, shininess, -1, 1, true);
+	}
+
+	@Override
+	public void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess, double minBound, double maxBound, boolean negative)
+	{
+		if (this.drawingShadow)
+			return;
+
+		/*this.currentBaseShader.customLight.set(true);
+		this.currentBaseShader.lightAmbient.set(ambient[0], ambient[1], ambient[2]);
+		this.currentBaseShader.lightDiffuse.set(diffuse[0], diffuse[1], diffuse[2]);
+		this.currentBaseShader.lightSpecular.set(specular[0], specular[1], specular[2]);
+		this.currentBaseShader.shininess.set((float) shininess);
+		this.currentBaseShader.minBrightness.set((float) minBound);
+		this.currentBaseShader.maxBrightness.set((float) maxBound);
+		this.currentBaseShader.negativeBrightness.set(negative);*/
+	}
+
+	@Override
+	public void setCelShadingSections(float sections)
+	{
+		if (this.drawingShadow)
+			return;
+
+		//this.currentBaseShader.celsections.set(sections);
+	}
+
+	@Override
+	public void disableMaterialLights()
+	{
+		if (this.drawingShadow)
+			return;
+
+		//this.currentBaseShader.customLight.set(false);
 	}
 
 	@Override
@@ -1134,10 +1151,11 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_TEXTURE_2D);
 
 		if (!drawingShadow)
-		{
-			GL20.glUniform1i(textureFlag, 1);
-			GL20.glActiveTexture(GL13.GL_TEXTURE0);
-		}
+			this.currentBaseShader.texture.set(true);
+		else
+			this.currentShadowMapShader.texture.set(true);
+
+		GL20.glActiveTexture(GL13.GL_TEXTURE0);
 	}
 
 	public void disableTexture()
@@ -1146,13 +1164,13 @@ public class LWJGLWindow extends BaseWindow
 		glDisable(GL_TEXTURE_2D);
 
 		if (!drawingShadow)
-		{
-			GL20.glUniform1i(textureFlag, 0);
+			this.currentBaseShader.texture.set(false);
+		else
+			this.currentShadowMapShader.texture.set(false);
 
-			glEnable(GL_TEXTURE_2D);
-			GL20.glActiveTexture(GL13.GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, this.shaderHandler.depthTexture);
-		}
+		glEnable(GL_TEXTURE_2D);
+		GL20.glActiveTexture(GL13.GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, this.shaderHandler.depthTexture);
 	}
 
 	public void enableDepthtest()
@@ -1160,7 +1178,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_DEPTH_TEST);
 
 		if (!drawingShadow)
-			GL20.glUniform1i(depthFlag, 1);
+			this.currentBaseShader.depthtest.set(true);
 	}
 
 	public void disableDepthtest()
@@ -1168,7 +1186,17 @@ public class LWJGLWindow extends BaseWindow
 		glDisable(GL_DEPTH_TEST);
 
 		if (!drawingShadow)
-			GL20.glUniform1i(depthFlag, 0);
+			this.currentBaseShader.depthtest.set(false);
+	}
+
+	public void enableDepthmask()
+	{
+		glDepthMask(true);
+	}
+
+	public void disableDepthmask()
+	{
+		glDepthMask(false);
 	}
 
 	public void setGlowBlendFunc()
@@ -1196,116 +1224,72 @@ public class LWJGLWindow extends BaseWindow
 		GL15.glDeleteBuffers(i);
 	}
 
-	public void vertexBufferData(int id, FloatBuffer buffer)
+	public void vertexBufferData(int id, Buffer buffer)
 	{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+
+		if (buffer instanceof IntBuffer)
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, (IntBuffer) buffer, GL15.GL_STATIC_DRAW);
+		else if (buffer instanceof FloatBuffer)
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, (FloatBuffer) buffer, GL15.GL_STATIC_DRAW);
 	}
 
-	public void vertexBufferDataDynamic(int id, FloatBuffer buffer)
+	public void vertexBufferDataDynamic(int id, Buffer buffer)
 	{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_DYNAMIC_DRAW);
-	}
 
-	public void renderVBO(int vertexBufferID, int colorBufferID, int texBufferID, int numberIndices)
-	{
-		if (!this.drawingShadow)
-		{
-			glUniform1i(this.vboFlag, 1);
-			glUniform4f(this.vboColorFlag, (float) this.colorR, (float) this.colorG, (float) this.colorB, (float) this.colorA);
-		}
-
-		GL11.glEnableClientState(GL_COLOR_ARRAY);
-		GL11.glEnableClientState(GL_VERTEX_ARRAY);
-
-		if (texBufferID != 0)
-			GL11.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferID);
-		GL11.glVertexPointer(3, GL_FLOAT, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferID);
-		GL11.glColorPointer(4, GL_FLOAT, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-
-		if (texBufferID != 0)
-		{
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferID);
-			GL11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		}
-
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, numberIndices);
-
-		GL11.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		GL11.glDisableClientState(GL_VERTEX_ARRAY);
-		GL11.glDisableClientState(GL_COLOR_ARRAY);
-
-		if (!this.drawingShadow)
-		{
-			glUniform1i(this.vboFlag, 0);
-		}
-	}
-
-	public void renderPosedVBO(int vertexBufferID, int colorBufferID, int texBufferID, int boneBufferID, int numberIndices)
-	{
-		if (!this.drawingShadow)
-		{
-			glUniform1i(this.vboFlag, 1);
-			glUniform1i(this.bonesEnabledFlag, 1);
-			glUniform4f(this.vboColorFlag, (float) this.colorR, (float) this.colorG, (float) this.colorB, (float) this.colorA);
-		}
-		else
-			glUniform1i(this.shadowMapBonesEnabledFlag, 1);
-
-		GL11.glEnableClientState(GL_COLOR_ARRAY);
-		GL11.glEnableClientState(GL_VERTEX_ARRAY);
-
-		if (texBufferID != 0)
-			GL11.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferID);
-		GL11.glVertexPointer(3, GL_FLOAT, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferID);
-		GL11.glColorPointer(4, GL_FLOAT, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, boneBufferID);
-		glEnableVertexAttribArray(6);
-		GL20.glVertexAttribPointer(6, 4, GL_FLOAT, false, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-
-		if (texBufferID != 0)
-		{
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferID);
-			GL11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		}
-
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, numberIndices);
-
-		GL11.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		GL11.glDisableClientState(GL_VERTEX_ARRAY);
-		GL11.glDisableClientState(GL_COLOR_ARRAY);
-
-		if (!this.drawingShadow)
-		{
-			glUniform1i(this.vboFlag, 0);
-			glUniform1i(this.bonesEnabledFlag, 0);
-		}
-		else
-			glUniform1i(this.shadowMapBonesEnabledFlag, 0);
-
-		glDisableVertexAttribArray(6);
+		if (buffer instanceof IntBuffer)
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, (IntBuffer) buffer, GL15.GL_DYNAMIC_DRAW);
+		else if (buffer instanceof FloatBuffer)
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, (FloatBuffer) buffer, GL15.GL_DYNAMIC_DRAW);
 	}
 
 	@Override
-	public BaseShapeBatchRenderer createShapeBatchRenderer()
+	public BaseShapeBatchRenderer createShapeBatchRenderer(boolean dynamic)
 	{
-		return new VBOShapeBatchRenderer(this);
+		return new VBOShapeBatchRenderer(this, dynamic);
+	}
+
+	@Override
+	public BaseShapeBatchRenderer2 createShapeBatchRenderer2()
+	{
+		return new VBOShapeBatchRenderer2(this);
+	}
+
+
+	@Override
+	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices)
+	{
+		return new VBOStaticBatchRenderer(this, shader, color, texture, normal, vertices);
+	}
+
+	@Override
+	public BaseShaderUtil getShaderUtil(ShaderProgram p)
+	{
+		return new ShaderUtil(this, p);
+	}
+
+	@Override
+	public void setShader(ShaderBase s)
+	{
+		ShaderBase old = this.currentBaseShader;
+		this.currentBaseShader = s;
+		this.currentShader = s;
+		s.set();
+
+		if (old != null)
+			s.copyUniformsFrom(old, ShaderBase.class);
+	}
+
+	@Override
+	public void setShader(ShaderShadowMap s)
+	{
+		ShaderShadowMap old = this.currentShadowMapShader;
+		this.currentShadowMapShader = s;
+		this.currentShader = s;
+		s.set();
+
+		if (old != null)
+			s.copyUniformsFrom(old, ShaderShadowMap.class);
 	}
 }

@@ -1,8 +1,8 @@
 package tanks.obstacle;
 
 import tanks.*;
-import tanks.bullet.BulletAir;
-import tanks.bullet.BulletFlame;
+import tanks.bullet.Bullet;
+import tanks.bullet.legacy.BulletAir;
 import tanks.bullet.BulletInstant;
 import tanks.network.event.EventObstacleShrubberyBurn;
 import tanks.gui.screen.ILevelPreviewScreen;
@@ -126,7 +126,7 @@ public class ObstacleShrubbery extends Obstacle
 		//m.hiddenTimer = Math.min(100, m.hiddenTimer + (this.opacity - 127) / 255);
 		//m.canHide = true;
 
-		if (m instanceof BulletFlame)
+		if (m instanceof Bullet && ((Bullet) m).burnsBushes)
 		{
 			Game.removeObstacles.add(this);
 
@@ -153,9 +153,9 @@ public class ObstacleShrubbery extends Obstacle
 	@Override
 	public void onObjectEntryLocal(Movable m)
 	{
-		if (m instanceof BulletAir)
+		if (m instanceof Bullet && !((Bullet) m).lowersBushes)
 		{
-			if (Math.random() < Panel.frameFrequency / Math.pow(((BulletAir) m).size, 2) * 20 * Game.effectMultiplier)
+			if (Math.random() < Panel.frameFrequency / Math.pow(((Bullet) m).size, 2) * 20 * Game.effectMultiplier)
 			{
 				Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size, this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
 				e.vX = m.vX * (Math.random() * 0.5 + 0.5);

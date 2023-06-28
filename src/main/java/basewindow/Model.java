@@ -88,6 +88,115 @@ public class Model implements IModel
                 }
             }
 
+            if (s.startsWith("Ka "))
+            {
+                if (current != null)
+                {
+                    String[] parts = s.split(" ");
+
+                    current.customLight = true;
+                    current.ambient = new float[]{(float) Double.parseDouble(parts[1]), (float) Double.parseDouble(parts[2]), (float) Double.parseDouble(parts[3])};
+                }
+            }
+
+            if (s.startsWith("Kd "))
+            {
+                if (current != null)
+                {
+                    String[] parts = s.split(" ");
+
+                    current.customLight = true;
+                    current.diffuse = new float[]{(float) Double.parseDouble(parts[1]), (float) Double.parseDouble(parts[2]), (float) Double.parseDouble(parts[3])};
+                }
+            }
+
+            if (s.startsWith("Km "))
+            {
+                if (current != null)
+                {
+                    String[] parts = s.split(" ");
+
+                    current.customLight = true;
+
+                    float minR = (float) Double.parseDouble(parts[1]);
+                    float minG = (float) Double.parseDouble(parts[2]);
+                    float minB = (float) Double.parseDouble(parts[3]);
+
+                    float maxR = (float) Double.parseDouble(parts[4]);
+                    float maxG = (float) Double.parseDouble(parts[5]);
+                    float maxB = (float) Double.parseDouble(parts[6]);
+
+                    current.ambient = new float[]{(minR + maxR) / 2, (minG + maxG) / 2, (minB + maxB) / 2};
+                    current.diffuse = new float[]{(maxR - minR) / 2, (maxG - minG) / 2, (maxB - minB) / 2};
+                }
+            }
+
+            if (s.startsWith("Kmm "))
+            {
+                if (current != null)
+                {
+                    String[] parts = s.split(" ");
+
+                    current.customLight = true;
+
+                    float minR = (float) Double.parseDouble(parts[1]);
+                    float minG = (float) Double.parseDouble(parts[2]);
+                    float minB = (float) Double.parseDouble(parts[3]);
+
+                    float maxR = (float) Double.parseDouble(parts[4]);
+                    float maxG = (float) Double.parseDouble(parts[5]);
+                    float maxB = (float) Double.parseDouble(parts[6]);
+
+                    current.ambient = new float[]{minR, minG, minB};
+                    current.diffuse = new float[]{(maxR - minR) / 2, (maxG - minG) / 2, (maxB - minB) / 2};
+                }
+            }
+
+            if (s.startsWith("Ks "))
+            {
+                if (current != null)
+                {
+                    String[] parts = s.split(" ");
+
+                    current.customLight = true;
+                    current.specular = new float[]{(float) Double.parseDouble(parts[1]), (float) Double.parseDouble(parts[2]), (float) Double.parseDouble(parts[3])};
+                }
+            }
+
+            if (s.startsWith("Ns "))
+            {
+                if (current != null)
+                {
+                    current.shininess = (float) Double.parseDouble(s.split(" ")[1]);
+                }
+            }
+
+            if (s.startsWith("Kb "))
+            {
+                if (current != null)
+                {
+                    String[] parts = s.split(" ");
+
+                    current.customLight = true;
+
+                    float min = (float) Double.parseDouble(parts[1]);
+                    float max = (float) Double.parseDouble(parts[2]);
+                    boolean neg = Boolean.parseBoolean(parts[3]);
+
+                    current.minBrightness = min;
+                    current.maxBrightness = max;
+                    current.negativeBrightness = neg;
+                }
+            }
+
+            if (s.startsWith("cel "))
+            {
+                if (current != null)
+                {
+                    current.celSections = (float) Double.parseDouble(s.split(" ")[1]);
+                }
+            }
+
             if (s.startsWith("glow "))
             {
                 if (current != null)
@@ -299,11 +408,23 @@ public class Model implements IModel
         public boolean depthMask = true;
         public boolean useDefaultDepthMask = true;
         public boolean glow = false;
+        public boolean useNormals = false;
 
         public double colorR = 1;
         public double colorG = 1;
         public double colorB = 1;
         public double colorA = 1;
+
+        public boolean customLight = false;
+        public float[] ambient = new float[3];
+        public float[] diffuse = new float[3];
+        public float[] specular = new float[3];
+        public float shininess = 1;
+        public float celSections = 0;
+
+        public double minBrightness = -1;
+        public double maxBrightness = 1;
+        public boolean negativeBrightness = true;
 
         public Material(String name)
         {

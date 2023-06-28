@@ -225,7 +225,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.colorB = b;
 		turret = new Turret(this);
 		this.name = name;
-		this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, this.name, r, g, b);
+		this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, this.name);
 
 		this.drawLevel = 4;
 
@@ -293,7 +293,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			if (m.skipNextUpdate)
 				continue;
 
-			if (this != m && m instanceof Tank && ((Tank)m).size > 0)
+			if (this != m && m instanceof Tank && ((Tank)m).size > 0 && !m.destroy)
 			{
 				Tank t = (Tank) m;
 				double distSq = Math.pow(this.posX - m.posX, 2) + Math.pow(this.posY - m.posY, 2);
@@ -558,19 +558,22 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.health <= 0)
 			this.destroy = true;
 
-		this.checkCollision();
-
-		this.orientation = (this.orientation + Math.PI * 2) % (Math.PI * 2);
-
-		if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
+		if (this.managedMotion)
 		{
-			double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
+			this.checkCollision();
 
-			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
-			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-				this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
-			else
-				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+			this.orientation = (this.orientation + Math.PI * 2) % (Math.PI * 2);
+
+			if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
+			{
+				double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
+
+				double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
+				if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
+					this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+				else
+					this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+			}
 		}
 
 		if (!this.isRemote && this.standardUpdateEvent && ScreenPartyHost.isServer)
@@ -598,8 +601,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.hasCollided)
 		{
-			this.tookRecoil = false;
-			this.inControlOfMotion = true;
+			this.recoilSpeed *= 0.5;
 		}
 
 		if (this.possessor != null)
@@ -608,7 +610,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawTread()
 	{
-		double a = this.getPolarDirection();
+		double a = this.orientation;
 		Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
 		Effect e2 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.tread);
 		e1.setPolarMotion(a - Math.PI / 2, this.size * 0.25);
@@ -949,7 +951,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean damage(double amount, IGameObject source)
 	{
-		this.health -= amount * this.getDamageMultiplier(source);
+		double finalAmount = amount * this.getDamageMultiplier(source);
+		this.health -= finalAmount;
 
 		if (this.health <= 1)
 		{
@@ -975,7 +978,10 @@ public abstract class Tank extends Movable implements ISolidObject
 			owner = (Tank) source;
 
 		if (this.health > 0)
-			this.flashAnimation = 1;
+		{
+			if (finalAmount > 0)
+				this.flashAnimation = 1;
+		}
 		else
 			this.destroy = true;
 
@@ -1111,7 +1117,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double getAutoZoom()
 	{
-		double dist = Math.min(3, Math.max(1, getAutoZoomRaw()));
+		double dist = Math.min(4, Math.max(1, getAutoZoomRaw()));
 		return 1 / dist;
 	}
 

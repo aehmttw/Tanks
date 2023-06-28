@@ -241,9 +241,9 @@ public class ChatBox extends TextBox
 
 
 			if (!clearSelected || Game.game.window.touchscreen)
-				drawing.setColor(255, 0, 0);
+				drawing.setColor(160, 160, 160);
 			else
-				drawing.setColor(255, 127, 127);
+				drawing.setColor(255, 0, 0);
 
 			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 			drawing.setColor(255, 255, 255);

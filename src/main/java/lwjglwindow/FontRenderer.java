@@ -41,6 +41,11 @@ public class FontRenderer extends BaseFontRenderer
 		this.image = fontFile;
 	}
 
+	public boolean supportsChar(char c)
+	{
+		return this.chars.indexOf(c) >= 0;
+	}
+
 	protected int drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
 	{
 		int i = this.chars.indexOf(c);

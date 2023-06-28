@@ -3,7 +3,7 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
 
-public class EventTankUpdateColor extends PersonalEvent
+public class EventTankUpdateColor extends PersonalEvent implements IStackableEvent
 {
     public int tank;
 
@@ -95,5 +95,11 @@ public class EventTankUpdateColor extends PersonalEvent
         this.red3 = b.readDouble();
         this.green3 = b.readDouble();
         this.blue3 = b.readDouble();
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return this.tank;
     }
 }

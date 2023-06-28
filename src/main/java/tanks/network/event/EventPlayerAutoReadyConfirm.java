@@ -24,7 +24,7 @@ public class EventPlayerAutoReadyConfirm extends PersonalEvent
     @Override
     public void execute()
     {
-        if (this.clientID == null)
+        if (this.clientID == null && Game.clientID.equals(playerID))
         {
             if (Game.screen instanceof ScreenGame)
                 ((ScreenGame) Game.screen).ready = true;

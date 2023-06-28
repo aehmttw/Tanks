@@ -112,6 +112,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         else if (type == EffectType.obstaclePiece3d)
         {
             this.maxAge = Math.random() * 150 + 75;
+            this.size = Game.tile_size / 4;
             this.force = true;
         }
         else if (type.equals(EffectType.charge))
@@ -338,7 +339,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
         else if (this.type == EffectType.obstaclePiece3d)
         {
-            double size = 1 + (12.5 * (1 - this.age / this.maxAge));
+            double size = 1 + (this.size * (1 - this.age / this.maxAge));
             drawing.setColor(this.colR, this.colG, this.colB);
 
             drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
@@ -853,6 +854,42 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
             this.prevGridX = (int) (this.posX / Game.tile_size);
             this.prevGridY = (int) (this.posY / Game.tile_size);
+        }
+        else if (this.type == EffectType.bushBurn && Game.effectsEnabled)
+        {
+            if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1)
+            {
+                if (Game.enable3d)
+                {
+                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, this.posZ, EffectType.piece);
+                    e.colR = 255;
+                    e.colG = Math.random() * 255;
+                    e.colB = 0;
+                    e.vZ = Math.random() + 1;
+                    Game.addEffects.add(e);
+                }
+                else
+                {
+                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, EffectType.piece);
+                    e.colR = 255;
+                    e.colG = Math.random() * 255;
+                    e.colB = 0;
+                    Game.addEffects.add(e);
+                }
+            }
+
+            if (Game.enable3d && Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1 * (2 - this.posZ / Game.tile_size))
+            {
+                Effect e2 = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, this.posZ - Game.tile_size / 4, EffectType.obstaclePiece3d);
+                e2.addPolarMotion(Math.random() * 2 * Math.PI, Math.random());
+                e2.colR = (this.colR + this.colG + this.colB) / 3;
+                e2.colG = e2.colR;
+                e2.colB = e2.colR;
+                e2.size *= this.posZ / Game.tile_size;
+                e2.maxAge *= 2;
+                e2.vZ = Math.random();
+                Game.addEffects.add(e2);
+            }
         }
     }
 

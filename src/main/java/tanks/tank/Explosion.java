@@ -18,10 +18,15 @@ public class Explosion extends Movable
 {
     public double damage;
     public boolean destroysObstacles;
+    public boolean destroysBullets = true;
 
     public double radius;
     public Tank tank;
     public Item item;
+
+    public double knockbackRadius;
+    public double bulletKnockback;
+    public double tankKnockback;
 
     public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item item)
     {
@@ -44,6 +49,10 @@ public class Explosion extends Movable
     public Explosion(Mine m)
     {
         this(m.posX, m.posY, m.radius, m.damage, m.destroysObstacles, m.tank, m.item);
+        this.knockbackRadius = m.knockbackRadius;
+        this.bulletKnockback = m.bulletKnockback;
+        this.tankKnockback = m.tankKnockback;
+        this.destroysBullets = m.destroysBullets;
     }
 
     public void explode()
@@ -77,7 +86,41 @@ public class Explosion extends Movable
 
             for (Movable m: Game.movables)
             {
-                if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(radius, 2))
+                double size = 0;
+                if (m instanceof Tank)
+                    size = ((Tank) m).size;
+                else if (m instanceof Mine)
+                    size = ((Mine) m).size;
+                else if (m instanceof Bullet)
+                    size = ((Bullet) m).size;
+
+                double distSq = Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2);
+                if (distSq < Math.pow(knockbackRadius + size / 2, 2))
+                {
+                    double power = (1 - distSq / Math.pow(knockbackRadius + size / 2, 2));
+                    if (m instanceof Bullet)
+                    {
+                        double angle = this.getAngleInDirection(m.posX, m.posY);
+                        m.addPolarMotion(angle, power * this.bulletKnockback * Math.pow(Bullet.bullet_size, 2) / Math.pow(((Bullet) m).size, 2));
+                        ((Bullet) m).collisionX = m.posX;
+                        ((Bullet) m).collisionY = m.posY;
+                        ((Bullet) m).addTrail();
+                    }
+                    else if (m instanceof Tank)
+                    {
+                        double angle = this.getAngleInDirection(m.posX, m.posY);
+                        m.addPolarMotion(angle, power * this.tankKnockback * Math.pow(Game.tile_size, 2) / Math.pow(((Tank) m).size, 2));
+                        Tank t = (Tank) m;
+                        t.recoilSpeed = m.getSpeed();
+                        if (t.recoilSpeed > t.maxSpeed)
+                        {
+                            t.inControlOfMotion = false;
+                            t.tookRecoil = true;
+                        }
+                    }
+                }
+
+                if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(radius + size / 2, 2))
                 {
                     if (m instanceof Tank && !m.destroy && ((Tank) m).getDamageMultiplier(this) > 0)
                     {
@@ -115,7 +158,6 @@ public class Explosion extends Movable
                                     }
                                 }
 
-
                                 if (this.tank.equals(Game.playerTank))
                                 {
                                     if (Game.currentLevel instanceof Minigame && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
@@ -147,7 +189,7 @@ public class Explosion extends Movable
                             Game.eventsOut.add(new EventMineChangeTimer((Mine) m));
                         }
                     }
-                    else if (m instanceof Bullet && !m.destroy)
+                    else if (m instanceof Bullet && !m.destroy && this.destroysBullets)
                     {
                         m.destroy = true;
                     }
@@ -159,17 +201,17 @@ public class Explosion extends Movable
         {
             for (Obstacle o: Game.obstacles)
             {
-                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius, 2) && o.destructible && !Game.removeObstacles.contains(o))
+                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius + Game.tile_size / 2, 2) && o.destructible && !Game.removeObstacles.contains(o))
                 {
                     o.onDestroy(this);
                     o.playDestroyAnimation(this.posX, this.posY, this.radius);
-                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius));
+                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius + Game.tile_size / 2));
                 }
             }
         }
 
         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
-        e.radius = Math.max(this.radius - Game.tile_size * 0.5, 0);
+        e.radius = Math.max(this.radius, 0);
         Game.effects.add(e);
     }
 

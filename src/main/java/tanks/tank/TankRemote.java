@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.gui.screen.ScreenGame;
 
 public class TankRemote extends Tank
 {
@@ -16,12 +17,24 @@ public class TankRemote extends Tank
 
 	public double interpolationTime = 1;
 
-	public double interpolatedOffX = 0;
-	public double interpolatedOffY = 0;
-	public double interpolatedProgress = interpolationTime;
+	public double prevKnownPosX;
+	public double prevKnownPosY;
+	public double prevKnownVX;
+	public double prevKnownVY;
+	public double prevKnownVXFinal;
+	public double prevKnownVYFinal;
 
-	public double interpolatedPosX = this.posX;
-	public double interpolatedPosY = this.posY;
+	public double currentKnownPosX;
+	public double currentKnownPosY;
+	public double currentKnownVX;
+	public double currentKnownVY;
+
+	public double lastAngle;
+	public double lastPitch;
+	public double currentAngle;
+	public double currentPitch;
+
+	public double timeSinceRefresh = 0;
 
 	public TankRemote(String name, double x, double y, double angle, Team team, double size, double ts, double tl, double r, double g, double b, double lives, double baselives)
 	{
@@ -37,6 +50,8 @@ public class TankRemote extends Tank
 		this.turretSize = ts;
 		this.turretLength = tl;
 		this.invulnerable = true;
+		this.managedMotion = false;
+
 		this.description = "A tank controlled by the server";
 	}
 	
@@ -53,6 +68,7 @@ public class TankRemote extends Tank
 		this.tank = t;
 		this.mandatoryKill = t.mandatoryKill;
 		this.drawAge = t.drawAge;
+		this.managedMotion = false;
 
 		this.copyTank(t);
 
@@ -101,30 +117,69 @@ public class TankRemote extends Tank
 	@Override
 	public void update()
 	{
-		this.interpolatedProgress = Math.min(this.interpolatedProgress + Panel.frameFrequency, this.interpolationTime);
+		if (this.localAge <= 0)
+		{
+			this.currentKnownPosX = this.posX;
+			this.currentKnownPosY = this.posY;
+			this.prevKnownPosX = this.posX;
+			this.prevKnownPosY = this.posY;
+		}
 
-		this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
-		this.posY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
-
+		this.timeSinceRefresh += Panel.frameFrequency;
 		this.localAge += Panel.frameFrequency;
+
 		super.update();
 
-		this.interpolatedPosX = this.posX;
-		this.interpolatedPosY = this.posY;
+		double pvx = this.prevKnownVXFinal;
+		double pvy = this.prevKnownVYFinal;
+		double cvx = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+		double cvy = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
-		this.posX = this.posX + this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
-		this.posY = this.posY + this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
+		this.posX = cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
+		this.posY = cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
+		double frac = Math.min(1, this.timeSinceRefresh / this.interpolationTime);
+		this.vX = (1 - frac) * this.prevKnownVX + frac * this.currentKnownVX;
+		this.vY = (1 - frac) * this.prevKnownVY + frac * this.currentKnownVY;
+
+		this.lastFinalVX = (this.posX - this.lastPosX) / Panel.frameFrequency;
+		this.lastFinalVY = (this.posY - this.lastPosY) / Panel.frameFrequency;
+
+		double angDiff = Movable.angleBetween(this.lastAngle, this.currentAngle);
+		this.angle = this.lastAngle - frac * angDiff;
+		this.pitch = (1 - frac) * this.lastPitch + frac * this.currentPitch;
+
+		this.checkCollision();
+
+		if (this.hasCollided)
+		{
+			this.prevKnownPosX = this.posX;
+			this.prevKnownPosY = this.posY;
+			this.prevKnownVX = this.vX;
+			this.prevKnownVY = this.vY;
+			this.prevKnownVXFinal = this.lastFinalVX;
+			this.prevKnownVYFinal = this.lastFinalVY;
+			this.lastAngle = this.angle;
+			this.interpolationTime -= this.timeSinceRefresh;
+			this.timeSinceRefresh = 0;
+		}
+
+		this.orientation = (this.orientation + Math.PI * 2) % (Math.PI * 2);
+
+		if (!(Math.abs(this.posX - this.lastPosX) < 0.01 && Math.abs(this.posY - this.lastPosY) < 0.01) && !this.destroy && !ScreenGame.finished)
+		{
+			double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
+
+			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
+			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
+				this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+			else
+				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+		}
 	}
 
 	@Override
 	public void draw()
 	{
-		double realX = this.posX;
-		double realY = this.posY;
-
-		this.posX = this.interpolatedPosX;
-		this.posY = this.interpolatedPosY;
-
 		if (!this.invisible || this.localAge <= 0 || this.destroy)
 			super.draw();
 		else
@@ -160,8 +215,37 @@ public class TankRemote extends Tank
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
+	}
 
-		this.posX = realX;
-		this.posY = realY;
+	public static double cubicInterpolationVelocity(double startPos, double startVel, double endPos, double endVel, double curTime, double totalTime)
+	{
+		double targetPos = endPos + endVel * totalTime;
+		double frac = curTime / totalTime;
+
+		if (frac > 1)
+			return endPos + endVel * curTime;
+
+		//return cubicInterpolation(startPos - startVel * totalTime, startPos, targetPos, targetPos + endVel * totalTime, frac);
+		return cubicInterpolation2(startPos, startVel * totalTime, targetPos, endVel * totalTime, frac);
+	}
+
+	public static double cubicInterpolation(double v1, double v2, double v3, double v4, double frac)
+	{
+		double r = 0;
+		r += v1 * (-0.5 * Math.pow(frac, 3) + Math.pow(frac, 2) - 0.5 * frac);
+		r += v2 * (1.5 * Math.pow(frac, 3) - 2.5 * Math.pow(frac, 2) + 1);
+		r += v3 * (-1.5 * Math.pow(frac, 3) + 2 * Math.pow(frac, 2) + 0.5 * frac);
+		r += v4 * (0.5 * Math.pow(frac, 3) - 0.5 * Math.pow(frac, 2));
+		return r;
+	}
+
+	public static double cubicInterpolation2(double p1, double v1, double p2, double v2, double frac)
+	{
+		double r = 0;
+		r += (2 * Math.pow(frac, 3) - 3 * Math.pow(frac, 2) + 1) * p1;
+		r += (Math.pow(frac, 3) - 2 * Math.pow(frac, 2) + frac) * v1;
+		r += (-2 * Math.pow(frac, 3) + 3 * Math.pow(frac, 2)) * p2;
+		r += (Math.pow(frac, 3) - Math.pow(frac, 2)) * v2;
+		return r;
 	}
 }

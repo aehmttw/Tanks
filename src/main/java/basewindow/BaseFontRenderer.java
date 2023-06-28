@@ -11,6 +11,8 @@ public abstract class BaseFontRenderer
         this.window = h;
     }
 
+    public abstract boolean supportsChar(char c);
+
     public abstract void drawString(double x, double y, double z, double sX, double sY, String s);
 
     public abstract void drawString(double x, double y, double sX, double sY, String s);

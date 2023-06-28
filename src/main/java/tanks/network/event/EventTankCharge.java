@@ -5,7 +5,7 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.tank.Tank;
 
-public class EventTankCharge extends PersonalEvent
+public class EventTankCharge extends PersonalEvent implements IStackableEvent
 {
 	public int tank;
 	public double charge;
@@ -58,5 +58,11 @@ public class EventTankCharge extends PersonalEvent
 	{
 		this.tank = b.readInt();
 		this.charge = b.readDouble();
+	}
+
+	@Override
+	public int getIdentifier()
+	{
+		return this.tank;
 	}
 }

@@ -26,7 +26,11 @@ public class ScreenOptions extends Screen
 		this.musicID = "menu";
 
 		if (!Game.game.window.soundsEnabled)
+		{
 			soundOptions.enabled = false;
+			soundOptions.setHoverText("Sound is disabled because there---are no sound devices connected------To use sound, connect a sound---device and restart the game");
+			soundOptions.enableHover = true;
+		}
 	}
 
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->

@@ -7,7 +7,7 @@ import tanks.Movable;
 
 public class NameTag implements IDrawable
 {
-    public Movable movable;
+    public Tank tank;
     public double ox;
     public double oy;
     public double oz;
@@ -15,37 +15,32 @@ public class NameTag implements IDrawable
     public String name;
     public int drawLevel = 9;
 
-    public double colorR;
-    public double colorG;
-    public double colorB;
-
-    public NameTag(Movable m, double ox, double oy, double oz, String name, double r, double g, double b)
+    public NameTag(Tank m, double ox, double oy, double oz, String name)
     {
-        this.movable = m;
+        this.tank = m;
         this.ox = ox;
         this.oy = oy;
         this.oz = oz;
         this.name = name;
-
-        this.colorR = r;
-        this.colorG = g;
-        this.colorB = b;
     }
 
     @Override
     public void draw()
     {
-        if (this.movable instanceof TankPlayerRemote)
-            ((TankPlayerRemote) this.movable).drawName();
-        else
-        {
-            Drawing.drawing.setFontSize(size);
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+        Drawing.drawing.setFontSize(size * ((Game.tile_size - this.tank.destroyTimer) / Game.tile_size) * Math.min(this.tank.drawAge / Game.tile_size, 1));
 
-            if (Game.enable3d)
-                Drawing.drawing.drawText(movable.posX + ox, movable.posY + oy, movable.posZ + oz, name);
-            else
-                Drawing.drawing.drawText(movable.posX + ox, movable.posY + oy, name);
-        }
+        Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, 0);
+
+        if (Game.enable3d)
+            Drawing.drawing.drawText(tank.posX + ox + 2, tank.posY + oy + 2, tank.posZ + oz + 2, name);
+        else
+            Drawing.drawing.drawText(tank.posX + ox + 2, tank.posY + oy + 2, name);
+
+        Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB, 255, 0.5);
+
+        if (Game.enable3d)
+            Drawing.drawing.drawText(tank.posX + ox, tank.posY + oy, tank.posZ + oz, name);
+        else
+            Drawing.drawing.drawText(tank.posX + ox, tank.posY + oy, name);
     }
 }

@@ -988,6 +988,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
                 t.maxChars = 9;
+                t.allowNegatives = true;
                 t.allowLetters = false;
                 t.allowSpaces = false;
 
@@ -1007,13 +1008,21 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                     }
                     catch (Exception e)
                     {
-                        Game.exitToCrash(e);
+                        try
+                        {
+                            t.inputText = f.get(tank) + "";
+                        }
+                        catch (IllegalAccessException ex)
+                        {
+                            Game.exitToCrash(ex);
+                        }
                     }
                 };
 
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
                 t.allowDoubles = true;
+                t.allowNegatives = true;
                 t.allowLetters = false;
                 t.allowSpaces = false;
 

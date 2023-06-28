@@ -152,13 +152,13 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         delete.textColG = 255;
         delete.textColB = 255;
 
-        delete.unselectedColR = 255;
-        delete.unselectedColG = 0;
-        delete.unselectedColB = 0;
+        delete.unselectedColR = 160;
+        delete.unselectedColG = 160;
+        delete.unselectedColB = 160;
 
         delete.selectedColR = 255;
-        delete.selectedColG = 127;
-        delete.selectedColB = 127;
+        delete.selectedColG = 0;
+        delete.selectedColB = 0;
 
         delete.fontSize = this.textSize;
 

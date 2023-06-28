@@ -20,6 +20,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 {
 	public MessageReader reader = new MessageReader();
 	public SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
+	protected HashMap<Integer, IStackableEvent> stackedEvents = new HashMap<>();
+	protected long lastStackedEventSend = 0;
 
 	public ChannelHandlerContext ctx;
 	public SteamID steamID;
@@ -42,6 +44,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public long lastLatencyAverage = 0;
 
 	public boolean closed = false;
+	public boolean canPing = true;
 
 	public ServerHandler(Server s)
 	{
@@ -100,12 +103,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		boolean reply = this.reader.queueMessage(this, buffy, this.clientID);
+		boolean wasPing = this.reader.queueMessage(this, buffy, this.clientID);
 
 		if (steamID == null)
 			ReferenceCountUtil.release(msg);
 
-		if (reply)
+		if (wasPing)
 		{
 			if (lastMessage < 0)
 				lastMessage = System.currentTimeMillis();
@@ -134,11 +137,40 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	{
 		synchronized (this.events)
 		{
+			INetworkEvent prev = null;
 			for (int i = 0; i < this.events.size(); i++)
 			{
 				INetworkEvent e = this.events.get(i);
-				this.sendEvent(e, i >= this.events.size() - 1);
+
+				if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
+					this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+				else
+				{
+					if (prev != null)
+						this.sendEvent(prev,false);
+
+					prev = e;
+				}
 			}
+
+			long time = System.currentTimeMillis() * Game.networkRate / 1000;
+			if (time != lastStackedEventSend)
+			{
+				lastStackedEventSend = time;
+				int size = this.stackedEvents.values().size();
+
+				if (prev != null)
+					this.sendEvent(prev, size == 0);
+
+				for (IStackableEvent e: this.stackedEvents.values())
+				{
+					size--;
+					this.sendEvent(e, size <= 0);
+				}
+				this.stackedEvents.clear();
+			}
+			else if (prev != null)
+				this.sendEvent(prev, true);
 
 			if (steamID == null)
 				this.ctx.flush();

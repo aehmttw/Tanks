@@ -64,15 +64,11 @@ public class UUIDTextBox extends TextBox
             }
         }
 
-        ArrayList<Integer> texts = Game.game.window.getRawTextKeys();
+        ArrayList<Character> texts = Game.game.window.getRawTextKeys();
 
-        for (int key : texts)
+        for (char key : texts)
         {
-            String text = Game.game.window.getTextKeyText(key);
-
-            if (text == null && key == InputCodes.KEY_SPACE)
-                text = " ";
-
+            String text = Character.toString(key);
             inputKey(Game.game.window.translateTextKey(key), text);
         }
 

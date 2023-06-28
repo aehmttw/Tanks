@@ -1,8 +1,6 @@
 package lwjglwindow;
 
-import basewindow.BaseWindow;
-import basewindow.Model;
-import basewindow.ModelPart;
+import basewindow.*;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
@@ -21,14 +19,22 @@ public class VBOModelPart extends ModelPart
 
     protected int vertexVBO;
     protected int texVBO;
+    protected int normalVBO;
 
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
+        IBaseShader shader = (IBaseShader) this.window.currentShader;
+
         if (this.material.useDefaultDepthMask)
             window.setDrawOptions(depthTest, this.material.glow, this.window.colorA >= 1.0);
         else
             window.setDrawOptions(depthTest, this.material.glow, this.material.depthMask);
+
+        if (this.material.customLight)
+            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
+
+        window.setCelShadingSections(this.material.celSections);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -39,17 +45,22 @@ public class VBOModelPart extends ModelPart
         if (this.material.texture != null)
             window.setTexture(this.material.texture, false);
 
-        window.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.shapes.length * 3);
+        shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
 
         glPopMatrix();
 
         window.disableDepthtest();
+
+        if (this.material.customLight)
+            window.disableMaterialLights();
     }
 
     @Override
     public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
     {
+        IBaseShader shader = (IBaseShader) this.window.currentShader;
+
         if (this.material.useDefaultDepthMask)
             window.setDrawOptions(false, this.material.glow, this.window.colorA >= 1.0);
         else
@@ -66,7 +77,7 @@ public class VBOModelPart extends ModelPart
         if (this.material.texture != null)
             window.setTexture(this.material.texture, false);
 
-        window.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.shapes.length * 3);
+        shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
 
         glPopMatrix();
@@ -75,10 +86,17 @@ public class VBOModelPart extends ModelPart
     @Override
     public void draw(double posX, double posY, double sX, double sY, double angle)
     {
+        IBaseShader shader = (IBaseShader) this.window.currentShader;
+
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(false, this.material.glow, this.window.colorA >= 1.0);
+            window.setDrawOptions(false, this.material.glow);
         else
             window.setDrawOptions(false, this.material.glow, this.material.depthMask);
+
+        if (this.material.customLight)
+            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
+
+        window.setCelShadingSections(this.material.celSections);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -89,10 +107,13 @@ public class VBOModelPart extends ModelPart
         if (this.material.texture != null)
             window.setTexture(this.material.texture, false);
 
-        window.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.shapes.length * 3);
+        shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
 
         glPopMatrix();
+
+        if (this.material.customLight)
+            window.disableMaterialLights();
     }
 
     @Override
@@ -101,6 +122,7 @@ public class VBOModelPart extends ModelPart
         FloatBuffer vert = BufferUtils.createFloatBuffer(this.shapes.length * 9);
         FloatBuffer color = BufferUtils.createFloatBuffer(this.shapes.length * 12);
         FloatBuffer tex = BufferUtils.createFloatBuffer(this.shapes.length * 6);
+        FloatBuffer normals = BufferUtils.createFloatBuffer(this.shapes.length * 9);
 
         for (Shape s : this.shapes)
         {
@@ -117,6 +139,13 @@ public class VBOModelPart extends ModelPart
                 tex.put((float) p.y);
             }
 
+            for (Point p : s.normals)
+            {
+                normals.put((float) p.x);
+                normals.put((float) p.y);
+                normals.put((float) p.z);
+            }
+
             for (double[] p : s.colors)
             {
                 color.put((float) (p[0] * this.material.colorR));
@@ -128,6 +157,7 @@ public class VBOModelPart extends ModelPart
 
         vert.flip();
         color.flip();
+        normals.flip();
         tex.flip();
 
         this.vertexVBO = window.createVBO();
@@ -140,6 +170,12 @@ public class VBOModelPart extends ModelPart
         {
             this.texVBO = window.createVBO();
             window.vertexBufferData(this.texVBO, tex);
+        }
+
+        if (this.material.useNormals)
+        {
+            this.normalVBO = window.createVBO();
+            window.vertexBufferData(this.normalVBO, normals);
         }
     }
 

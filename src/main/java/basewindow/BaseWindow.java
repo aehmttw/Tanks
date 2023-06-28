@@ -52,6 +52,8 @@ public abstract class BaseWindow
     public ArrayList<Integer> pressedButtons = new ArrayList<>();
     public ArrayList<Integer> validPressedButtons = new ArrayList<>();
 
+    public ArrayList<Character> inputCodepoints = new ArrayList<>();
+
     public boolean validScrollUp;
     public boolean validScrollDown;
 
@@ -88,6 +90,7 @@ public abstract class BaseWindow
 
     public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1)};
     public Transformation[] lightBaseTransformation = new Transformation[]{new ScaleAboutPoint(this, 0.8, 0.8, 0.8, 0.5, 0.5, 0.5), new Shear(this, 0, 0, 0, 0, 0.5, 0.5)};
+    public double[] lightVec = new double[]{-0.66666666, 0.66666666, -0.33333333};
 
     public BaseSoundPlayer soundPlayer;
     public boolean soundsEnabled = false;
@@ -105,6 +108,17 @@ public abstract class BaseWindow
     public BasePlatformHandler platformHandler;
 
     public ModelPart.ShapeDrawer shapeDrawer;
+
+    public ShaderBase shaderBase;
+    public ShaderShadowMap shaderShadowMap;
+
+    public ShaderBones shaderBaseBones;
+    public ShaderShadowMapBones shaderShadowMapBones;
+
+    public ShaderBase currentBaseShader;
+    public ShaderShadowMap currentShadowMapShader;
+
+    public ShaderProgram currentShader;
 
     public BaseWindow(String name, int x, int y, int z, IUpdater u, IDrawer d, IWindowHandler w, boolean vsync, boolean showMouse)
     {
@@ -187,7 +201,7 @@ public abstract class BaseWindow
 
     public abstract void setVsync(boolean enable);
 
-    public abstract ArrayList<Integer> getRawTextKeys();
+    public abstract ArrayList<Character> getRawTextKeys();
 
     public abstract String getKeyText(int key);
 
@@ -204,6 +218,8 @@ public abstract class BaseWindow
     public abstract double getEdgeBounds();
 
     public abstract void createImage(String image, InputStream in);
+
+    public abstract void setUpscaleImages(boolean upscaleImages);
 
     public abstract void setTextureCoords(double u, double v);
 
@@ -225,6 +241,14 @@ public abstract class BaseWindow
 
     public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
 
+    public abstract void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess);
+
+    public abstract void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess, double minBound, double maxBound, boolean enableNegative);
+
+    public abstract void disableMaterialLights();
+
+    public abstract void setCelShadingSections(float sections);
+
     public abstract void createLights(ArrayList<double[]> lights, double scale);
 
     public abstract void addMatrix();
@@ -241,7 +265,17 @@ public abstract class BaseWindow
 
     public abstract PosedModel createPosedModel(Model m);
 
-    public abstract BaseShapeBatchRenderer createShapeBatchRenderer();
+    public abstract BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices);
+
+    public abstract BaseShapeBatchRenderer createShapeBatchRenderer(boolean dynamic);
+
+    public abstract BaseShapeBatchRenderer2 createShapeBatchRenderer2();
+
+    public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
+
+    public abstract void setShader(ShaderBase s);
+
+    public abstract void setShader(ShaderShadowMap s);
 
     public void setupKeyCodes()
     {

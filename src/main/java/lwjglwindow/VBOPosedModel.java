@@ -1,13 +1,10 @@
 package lwjglwindow;
 
-import basewindow.Model;
-import basewindow.ModelPart;
-import basewindow.PosedModel;
+import basewindow.*;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL20;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -55,6 +52,13 @@ public class VBOPosedModel extends PosedModel
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
+        if (!this.model.window.drawingShadow)
+            this.model.window.setShader(this.model.window.shaderBaseBones);
+        else
+            this.model.window.setShader(this.model.window.shaderShadowMapBones);
+
+        IBoneShader shader = (IBoneShader) this.model.window.currentShader;
+
         for (PoseBone b: this.bones)
         {
             b.computeMatrix();
@@ -71,10 +75,7 @@ public class VBOPosedModel extends PosedModel
             }
         }
 
-        if (!this.model.window.drawingShadow)
-            GL20.glUniformMatrix4fv(((LWJGLWindow)this.model.window).boneMatricesFlag, false, this.matrices);
-        else
-            GL20.glUniformMatrix4fv(((LWJGLWindow)this.model.window).shadowMapBoneMatricesFlag, false, this.matrices);
+        shader.setBoneMatrices(this.matrices, false);
 
         for (ModelPart mo: this.model.models)
         {
@@ -86,6 +87,11 @@ public class VBOPosedModel extends PosedModel
             else
                 window.setDrawOptions(depthTest, m.material.glow, m.material.depthMask);
 
+            if (m.material.customLight)
+                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+
+            window.setCelShadingSections(m.material.celSections);
+
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
             Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
@@ -95,18 +101,33 @@ public class VBOPosedModel extends PosedModel
             if (m.material.texture != null)
                 window.setTexture(m.material.texture, false);
 
-            window.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
+            shader.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, m.normalVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
             window.disableTexture();
+
+            if (m.material.customLight)
+                window.disableMaterialLights();
 
             glPopMatrix();
         }
 
         ((LWJGLWindow)this.model.window).setDrawOptions(false, false, true);
+
+        if (!this.model.window.drawingShadow)
+            this.model.window.setShader(this.model.window.shaderBase);
+        else
+            this.model.window.setShader(this.model.window.shaderShadowMap);
     }
 
     @Override
     public void draw(double posX, double posY, double sX, double sY, double yaw)
     {
+        if (!this.model.window.drawingShadow)
+            this.model.window.setShader(this.model.window.shaderBaseBones);
+        else
+            this.model.window.setShader(this.model.window.shaderShadowMapBones);
+
+        IBoneShader shader = (IBoneShader) this.model.window.currentShader;
+
         for (ModelPart mo: this.model.models)
         {
             VBOModelPart m = (VBOModelPart) mo;
@@ -117,6 +138,11 @@ public class VBOPosedModel extends PosedModel
             else
                 window.setDrawOptions(false, m.material.glow, m.material.depthMask);
 
+            if (m.material.customLight)
+                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+
+            window.setCelShadingSections(m.material.celSections);
+
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
             Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, 0);
@@ -126,11 +152,19 @@ public class VBOPosedModel extends PosedModel
             if (m.material.texture != null)
                 window.setTexture(m.material.texture, false);
 
-            window.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
+            shader.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, m.normalVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
             window.disableTexture();
+
+            if (m.material.customLight)
+                window.disableMaterialLights();
 
             glPopMatrix();
         }
+
+        if (!this.model.window.drawingShadow)
+            this.model.window.setShader(this.model.window.shaderBase);
+        else
+            this.model.window.setShader(this.model.window.shaderShadowMap);
     }
 
     @Override

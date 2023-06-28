@@ -520,22 +520,38 @@ public class TankAIControlled extends Tank
 		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
-		this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
-		this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
-
 		if (!this.destroy)
 		{
 			this.updateTarget();
 
-			if (this.enableMovement)
-				this.updateMotionAI();
-			else
+			if (this.tookRecoil)
 			{
-				this.vX *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
-				this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+				if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)
+				{
+					this.tookRecoil = false;
+					this.inControlOfMotion = true;
+				}
+				else
+				{
+					this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
+					this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
+				}
+			}
+			else if (this.inControlOfMotion)
+			{
+				this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
 
-				if (this.enableDefensiveFiring)
-					this.checkForBulletThreats();
+				if (this.enableMovement)
+					this.updateMotionAI();
+				else
+				{
+					this.vX *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+					this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+
+					if (this.enableDefensiveFiring)
+						this.checkForBulletThreats();
+				}
 			}
 
 			if (!ScreenGame.finished)
@@ -559,13 +575,16 @@ public class TankAIControlled extends Tank
 			this.postUpdate();
 		}
 
-		this.vX += this.aX * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
-		this.vY += this.aY * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
+		if (!this.tookRecoil)
+		{
+			this.vX += this.aX * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
+			this.vY += this.aY * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
 
-		double currentSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+			double currentSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 
-		if (currentSpeed > maxSpeed * maxSpeedModifier)
-			this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
+			if (currentSpeed > maxSpeed * maxSpeedModifier)
+				this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
+		}
 
 		this.bullet.updateCooldown(1);
 		this.mine.updateCooldown(1);
@@ -1104,7 +1123,7 @@ public class TankAIControlled extends Tank
 			{
 				Tile.Type t = Tile.Type.solid;
 
-				if (!o.tankCollision && !(o instanceof ObstacleTeleporter))
+				if (!o.tankCollision && !(o instanceof ObstacleTeleporter) && !(o instanceof IAvoidObject))
 					t = Tile.Type.empty;
 				else if (o.destructible && this.enableMineLaying)
 					t = Tile.Type.destructible;
@@ -1859,8 +1878,7 @@ public class TankAIControlled extends Tank
 
 	public void updateMineAI()
 	{
-		double nearestDist = Double.MAX_VALUE;
-		double nearestTimer = Double.MAX_VALUE;
+		double worstSeverity = Double.MAX_VALUE;
 
 		if (this.mineTimer == -1)
 			this.mineTimer = (this.random.nextDouble() * mineTimerRandom + mineTimerBase);
@@ -1894,12 +1912,11 @@ public class TankAIControlled extends Tank
 
 				if (distSq <= Math.pow(o.getRadius() * this.mineAvoidSensitivity, 2))
 				{
-					double d = Math.sqrt(distSq);
-					nearestDist = d;
+					double d = o.getSeverity(this.posX, this.posY);
 
-					if (nearestTimer > d)
+					if (d < worstSeverity)
 					{
-						nearestTimer = d;
+						worstSeverity = d;
 						nearest = o;
 					}
 				}
@@ -1954,7 +1971,7 @@ public class TankAIControlled extends Tank
 				this.mineTimer = Math.max(0, this.mineTimer - Panel.frameFrequency);
 		}
 
-		if (nearestDist <= 1 && this.mineFleeTimer <= 0 && this.enableMovement)
+		if (worstSeverity <= 1 && this.mineFleeTimer <= 0 && this.enableMovement)
 		{
 			this.overrideDirection = true;
 			this.setPolarAcceleration(this.random.nextDouble() * 2 * Math.PI, acceleration);

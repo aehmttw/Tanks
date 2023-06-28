@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.Player;
 import tanks.tank.TankPlayerRemote;
 
-public class EventSetItemBarSlot extends PersonalEvent
+public class EventSetItemBarSlot extends PersonalEvent implements IStackableEvent
 {
     public int slot;
 
@@ -54,5 +54,11 @@ public class EventSetItemBarSlot extends PersonalEvent
             if (Game.player != null && Game.player.hotbar != null && Game.player.hotbar.enabledItemBar)
                 Game.player.hotbar.itemBar.selected = this.slot;
         }
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return slot;
     }
 }

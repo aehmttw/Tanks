@@ -1,9 +1,10 @@
-package tanks.bullet;
+package tanks.bullet.legacy;
 
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
+import tanks.bullet.Bullet;
 import tanks.network.event.EventBulletUpdate;
 import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.hotbar.item.ItemBullet;
@@ -37,6 +38,7 @@ public class BulletAir extends Bullet
         this.itemSound = "wind.ogg";
         this.damage = 0;
         this.pitchVariation = 1;
+        this.canMultiDamage = true;
     }
 
     @Override
@@ -71,6 +73,9 @@ public class BulletAir extends Bullet
             mul *= Game.tile_size * Game.tile_size / Math.pow(((Tank) o).size, 2);
 
         double f = Math.pow(this.frameDamageMultipler, 2);
+
+        System.out.println(f + " " + mul / (size * size));
+
         double x = this.vX * f * mul / (size * size);
         double y = this.vY * f * mul / (size * size);
 
@@ -78,7 +83,7 @@ public class BulletAir extends Bullet
         o.vY += y;
 
         if (o instanceof TankPlayerRemote)
-            Game.eventsOut.add(new EventTankControllerAddVelocity((Tank) o, x, y));
+            Game.eventsOut.add(new EventTankControllerAddVelocity((Tank) o, x, y, false));
     }
 
     public void collidedWithTank(Tank t)

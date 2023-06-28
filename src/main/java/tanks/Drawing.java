@@ -64,6 +64,8 @@ public class Drawing
 
 	public BaseShapeBatchRenderer currentTerrainRenderer;
 
+	public BaseShapeBatchRenderer terrainRenderer2;
+
 	public BaseShapeBatchRenderer terrainRenderer;
 	public BaseShapeBatchRenderer terrainRendererTransparent;
 	public BaseShapeBatchRenderer terrainRendererShrubbery;
@@ -77,9 +79,9 @@ public class Drawing
 
 	public static class LevelRenderer
 	{
-		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer();
-		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer();
-		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer();
+		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer(true);
+		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer(true);
+		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer(true);
 
 		public void free()
 		{

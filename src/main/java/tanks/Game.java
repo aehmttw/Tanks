@@ -107,8 +107,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.d";
-	public static final int network_protocol = 48;
+	public static final String version = "Tanks v1.5.1";
+	public static final int network_protocol = 50;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -134,6 +134,7 @@ public class Game
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
+	public static boolean xrayBullets = true;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -153,6 +154,7 @@ public class Game
 	public static boolean previewCrusades = true;
 
 	public static boolean deterministicMode = false;
+	public static boolean deterministic30Fps = false;
 	public static int seed = 0;
 
 	public static boolean invulnerable = false;
@@ -353,6 +355,7 @@ public class Game
 		NetworkEventMap.register(EventStatusEffectEnd.class);
 		NetworkEventMap.register(EventArcadeHit.class);
 		NetworkEventMap.register(EventArcadeRampage.class);
+		NetworkEventMap.register(EventArcadeClearMovables.class);
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);
@@ -1009,14 +1012,15 @@ public class Game
 		if (Game.fancyTerrain)
 			var = 20;
 
+		Random tilesRandom = new Random(0);
 		for (int i = 0; i < 28; i++)
 		{
 			for (int j = 0; j < 18; j++)
 			{
-				Game.tilesR[i][j] = (235 + Math.random() * var);
-				Game.tilesG[i][j] = (207 + Math.random() * var);
-				Game.tilesB[i][j] = (166 + Math.random() * var);
-				Game.tilesDepth[i][j] = Math.random() * var / 2;
+				Game.tilesR[i][j] = (235 + tilesRandom.nextDouble() * var);
+				Game.tilesG[i][j] = (207 + tilesRandom.nextDouble() * var);
+				Game.tilesB[i][j] = (166 + tilesRandom.nextDouble() * var);
+				Game.tilesDepth[i][j] = tilesRandom.nextDouble() * var / 2;
 			}
 		}
 

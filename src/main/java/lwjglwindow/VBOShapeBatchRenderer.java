@@ -1,6 +1,7 @@
 package lwjglwindow;
 
 import basewindow.BaseShapeBatchRenderer;
+import basewindow.IBaseShader;
 import basewindow.IBatchRenderableObject;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
@@ -61,8 +62,9 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
     public boolean glow = false;
     public boolean depthMask = false;
 
-    public VBOShapeBatchRenderer(LWJGLWindow window)
+    public VBOShapeBatchRenderer(LWJGLWindow window, boolean dynamic)
     {
+        super(dynamic);
         this.window = window;
         this.initializeVBO();
     }
@@ -79,6 +81,9 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public void begin(boolean depth, boolean glow, boolean depthMask)
     {
+        if (!dynamic && initialized)
+            return;
+
         this.batching = true;
         this.depth = depth;
         this.glow = glow;
@@ -89,6 +94,9 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public void end()
     {
+        if (!dynamic)
+            return;
+
         this.stage();
 
         this.draw();
@@ -536,7 +544,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         FloatBuffer col = BufferUtils.createFloatBuffer(pointsCount * 4);
 
         int i = 0;
-        for (IBatchRenderableObject o: points.keySet())
+        for (IBatchRenderableObject o : points.keySet())
         {
             PointQueue p = points.get(o);
             objBufferPos.put(o, i);
@@ -565,14 +573,23 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         vert.flip();
         col.flip();
 
-        this.window.vertexBufferDataDynamic(vertVBO, vert);
-        this.window.vertexBufferDataDynamic(colVBO, col);
+        if (this.dynamic)
+        {
+            this.window.vertexBufferDataDynamic(vertVBO, vert);
+            this.window.vertexBufferDataDynamic(colVBO, col);
+        }
+        else
+        {
+            this.window.vertexBufferData(vertVBO, vert);
+            this.window.vertexBufferData(colVBO, col);
+        }
     }
 
     public void batchDraw()
     {
+        IBaseShader shader = (IBaseShader) this.window.currentShader;
         this.window.setColor(255, 255, 255, 255);
-        this.window.renderVBO(vertVBO, colVBO, 0, this.pointsCount);
+        shader.renderVBO(vertVBO, colVBO,  0,0, this.pointsCount);
     }
 
     public void reset()
@@ -647,6 +664,14 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
     {
         if (this.window.shadowsEnabled && !this.window.drawingShadow)
             return;
+
+        if (!dynamic)
+        {
+            if (!initialized)
+                this.initializeBuffers();
+
+            return;
+        }
 
         if (!initialized || !points.keySet().equals(lastPoints.keySet()))
         {

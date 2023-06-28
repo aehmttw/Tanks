@@ -65,6 +65,7 @@ public class ShaderHandler
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (ByteBuffer) null);
         glBindTexture(GL_TEXTURE_2D, 0);
+        this.window.textures.put("depth", depthTexture);
     }
 
     public void createFbo()
@@ -170,6 +171,15 @@ public class ShaderHandler
         this.window.bonesEnabledFlag = GL20.glGetUniformLocation(normalProgram, "bonesEnabled");
         this.window.boneMatricesFlag = GL20.glGetUniformLocation(normalProgram, "boneMatrices");
 
+        this.window.sizeXFlag = GL20.glGetUniformLocation(normalProgram, "width");
+        this.window.sizeYFlag = GL20.glGetUniformLocation(normalProgram, "height");
+        this.window.sizeZFlag = GL20.glGetUniformLocation(normalProgram, "depth");
+        this.window.scaleFlag = GL20.glGetUniformLocation(normalProgram, "scale");
+
+        this.window.lightsFlag = GL20.glGetUniformLocation(normalProgram, "lights");
+        this.window.lightsCountFlag = GL20.glGetUniformLocation(normalProgram, "lightsCount");
+        glUniform1i(this.window.lightsFlag, 2);
+
         glUseProgram(0);
     }
 
@@ -212,6 +222,10 @@ public class ShaderHandler
             glUniform1i(this.window.shadowFlag, 1);
         else
             glUniform1i(this.window.shadowFlag, 0);
+
+        glUniform1f(this.window.sizeXFlag, (float) (this.window.absoluteWidth));
+        glUniform1f(this.window.sizeYFlag, (float) (this.window.absoluteHeight));
+        glUniform1f(this.window.sizeZFlag, (float) (this.window.absoluteDepth));
 
         if (!this.initialized)
         {

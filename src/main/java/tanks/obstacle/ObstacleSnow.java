@@ -61,12 +61,15 @@ public class ObstacleSnow extends Obstacle
             m.addStatusEffect(StatusEffect.snow_velocity, 0, 20, 30);
             m.addStatusEffect(StatusEffect.snow_friction, 0, 5, 10);
 
+            int amt = 5;
+            int lastDepth = (int) Math.ceil(this.depth * amt);
             this.depth -= Panel.frameFrequency * 0.005;
 
             if (this.depth <= 0)
                 Game.removeObstacles.add(this);
 
-            Game.eventsOut.add(new EventObstacleSnowMelt(this.posX, this.posY, this.depth));
+            if (lastDepth > Math.ceil(this.depth * amt))
+                Game.eventsOut.add(new EventObstacleSnowMelt(this.posX, this.posY, this.depth));
         }
 
         this.onObjectEntryLocal(m);
@@ -77,6 +80,9 @@ public class ObstacleSnow extends Obstacle
     {
         if (Game.effectsEnabled && !ScreenGame.finished)
         {
+            if (ScreenPartyLobby.isClient)
+                this.depth = Math.max(0.05, this.depth - Panel.frameFrequency * 0.005);
+
             double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 
             double mul = 0.0625 / 4;

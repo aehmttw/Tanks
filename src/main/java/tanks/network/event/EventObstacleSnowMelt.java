@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleSnow;
 
-public class EventObstacleSnowMelt extends PersonalEvent
+public class EventObstacleSnowMelt extends PersonalEvent implements IStackableEvent
 {
     public double posX;
     public double posY;
@@ -56,5 +56,11 @@ public class EventObstacleSnowMelt extends PersonalEvent
                     Game.removeObstacles.add(o);
             }
         }
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return IStackableEvent.f((int) (this.posX + IStackableEvent.f((int) this.posY)));
     }
 }

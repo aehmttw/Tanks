@@ -6,7 +6,7 @@ import tanks.tank.Tank;
 import tanks.tank.TankPlayerController;
 import tanks.tank.TankPlayerRemote;
 
-public class EventTankControllerUpdateC extends PersonalEvent
+public class EventTankControllerUpdateC extends PersonalEvent implements IStackableEvent
 {
     public int tank;
     public double posX;
@@ -82,5 +82,17 @@ public class EventTankControllerUpdateC extends PersonalEvent
         {
             ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.time, this.sysTime);
         }
+    }
+
+    @Override
+    public boolean isStackable()
+    {
+        return !(action1 || action2);
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return tank;
     }
 }

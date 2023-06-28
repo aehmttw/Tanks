@@ -53,6 +53,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 
 	public int drawLevel = 3;
 	public boolean isRemote = false;
+	public boolean managedMotion = true;
 
 	public ArrayList<AttributeModifier> attributes = new ArrayList<>();
 	public HashMap<StatusEffect, StatusEffect.Instance> statusEffects = new HashMap<>();
@@ -113,17 +114,20 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 
 			this.updateStatusEffects();
 
-			vX2 = this.getAttributeValue(AttributeModifier.velocity, vX2);
-			vY2 = this.getAttributeValue(AttributeModifier.velocity, vY2);
-			vZ2 = this.getAttributeValue(AttributeModifier.velocity, vZ2);
+			if (this.managedMotion)
+			{
+				vX2 = this.getAttributeValue(AttributeModifier.velocity, vX2);
+				vY2 = this.getAttributeValue(AttributeModifier.velocity, vY2);
+				vZ2 = this.getAttributeValue(AttributeModifier.velocity, vZ2);
 
-			this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-			this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-			this.lastFinalVZ = vZ2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+				this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+				this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+				this.lastFinalVZ = vZ2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
-			this.posX += this.lastFinalVX * Panel.frameFrequency;
-			this.posY += this.lastFinalVY * Panel.frameFrequency;
-			this.posZ += this.lastFinalVZ * Panel.frameFrequency;
+				this.posX += this.lastFinalVX * Panel.frameFrequency;
+				this.posY += this.lastFinalVY * Panel.frameFrequency;
+				this.posZ += this.lastFinalVZ * Panel.frameFrequency;
+			}
 		}
 	}
 
@@ -293,6 +297,12 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		this.posY += amount * y;
 	}
 
+	public void moveInAngle(double a, double amount)
+	{
+		this.posX += amount * Math.cos(a);
+		this.posY += amount * Math.sin(a);
+	}
+
 	public double getSpeed()
 	{
 		return Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2));
@@ -368,7 +378,7 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		if (warmup <= age && this.statusEffects.get(s) != null)
 		{
 			StatusEffect.Instance i = this.statusEffects.get(s);
-			if (i.age > i.warmupAge && i.age < i.deteriorationAge)
+			if (i.age >= i.warmupAge && i.age < i.deteriorationAge)
 				dontAdd = true;
 		}
 

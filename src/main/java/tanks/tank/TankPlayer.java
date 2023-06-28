@@ -5,6 +5,7 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletElectric;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenTitle;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
@@ -68,11 +69,13 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		if (enableDestroyCheat)
 		{
 			this.showName = true;
-			this.nameTag.colorR = 255;
-			this.nameTag.colorG = 0;
-			this.nameTag.colorB = 0;
-
 			this.nameTag.name = "Destroy cheat enabled!!!";
+		}
+
+		if (Game.nameInMultiplayer && ScreenPartyHost.isServer)
+		{
+			this.nameTag.name = Game.player.username;
+			this.showName = true;
 		}
 
 		if (Game.invulnerable)
@@ -456,6 +459,13 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = speed;
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+
+		this.recoilSpeed = this.getSpeed();
+		if (this.recoilSpeed > this.maxSpeed * 1.01)
+		{
+			this.tookRecoil = true;
+			this.inControlOfMotion = false;
+		}
 
 		if (b.moveOut)
 			b.moveOut(50 / speed * this.size / Game.tile_size);

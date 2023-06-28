@@ -49,6 +49,12 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
         this.isRemote = true;
         this.angle = angle;
         this.orientation = angle;
+
+        if (Game.nameInMultiplayer)
+        {
+            this.nameTag.name = Game.player.username;
+            this.showName = true;
+        }
     }
 
     @Override

@@ -87,9 +87,9 @@ public class SearchBox extends TextBox
 			}
 
 			if (!clearSelected || Game.game.window.touchscreen)
-				drawing.setColor(255, 0, 0);
+				drawing.setColor(160, 160, 160);
 			else
-				drawing.setColor(255, 127, 127);
+				drawing.setColor(255, 0, 0);
 
 			drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
 
@@ -181,9 +181,9 @@ public class SearchBox extends TextBox
 
 	}
 
-	public void inputKey(int key, String text, boolean caps)
+	public void inputKey(char key)
 	{
-		super.inputKey(key, text, caps);
+		super.inputKey(key);
 		this.performValueCheck();
 		function.run();
 	}
@@ -205,5 +205,16 @@ public class SearchBox extends TextBox
 		{
 			this.submitEffect();
 		}
+	}
+
+	@Override
+	public void revert()
+	{
+		selected = false;
+		Panel.selectedTextBox = null;
+		this.inputText = "";
+		function.run();
+		Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
+		Game.game.window.showKeyboard = false;
 	}
 }

@@ -159,7 +159,7 @@ public class ObstacleBreakable extends Obstacle
 
     public boolean positionChanged()
     {
-        return this.fallAnimation != this.lastFallAnimation || super.positionChanged();
+        return this.fallAnimation != this.lastFallAnimation;
     }
 
     public void drawTile(double r, double g, double b, double d, double extra)

@@ -40,7 +40,6 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		{
 			this.sizeMul = this.size / Bullet.bullet_size;
 			this.life *= this.sizeMul;
-			System.out.println(this.frameDamageMultipler);
 		}
 
 		this.age += Panel.frameFrequency;

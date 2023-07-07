@@ -89,10 +89,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		//System.out.println(eventFrequencies);
 
-		for (String s: eventFrequencies.keySet())
-		{
-			System.out.println(s + ": " + eventFrequencies.get(s));
-		}
+//		for (String s: eventFrequencies.keySet())
+//		{
+//			System.out.println(s + ": " + eventFrequencies.get(s));
+//		}
 	}
 
 	@Override

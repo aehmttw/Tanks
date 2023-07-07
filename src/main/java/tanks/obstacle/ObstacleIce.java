@@ -1,5 +1,6 @@
 package tanks.obstacle;
 
+import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.tank.Tank;
 
@@ -55,12 +56,12 @@ public class ObstacleIce extends Obstacle
     }
 
     @Override
-    public void drawTile(double r, double g, double b, double d, double extra)
+    public void drawTile(IBatchRenderableObject o, double r, double g, double b, double d, double extra)
     {
         double frac = Obstacle.draw_size / Game.tile_size;
 
         Drawing.drawing.setColor(r, g, b);
-        Drawing.drawing.fillBox(this, this.posX, this.posY, -frac * 15 - extra, Game.tile_size, Game.tile_size, d + extra);
+        Drawing.drawing.fillBox(o, this.posX, this.posY, -frac * 15 - extra, Game.tile_size, Game.tile_size, d + extra);
     }
 
     public double getTileHeight()

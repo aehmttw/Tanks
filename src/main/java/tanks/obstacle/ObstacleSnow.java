@@ -193,6 +193,6 @@ public class ObstacleSnow extends Obstacle
         boolean r = this.previousFinalHeight != this.finalHeight;
         this.previousFinalHeight = this.finalHeight;
 
-        return r || super.positionChanged();
+        return r;
     }
 }

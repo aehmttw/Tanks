@@ -206,6 +206,6 @@ public class ObstacleShrubbery extends Obstacle
 
 	public boolean positionChanged()
 	{
-		return this.previousFinalHeight != this.finalHeight || super.positionChanged();
+		return this.previousFinalHeight != this.finalHeight;
 	}
 }

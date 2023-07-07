@@ -4,6 +4,7 @@ import basewindow.BaseFile;
 import basewindow.IBatchRenderableObject;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
+import tanks.gui.TerrainRenderer;
 import tanks.network.event.EventBeginLevelCountdown;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
@@ -119,6 +120,7 @@ public class Panel
 		Drawing.drawing.terrainRenderer = Drawing.drawing.defaultRenderer.terrainRenderer;
 		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
 		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
+		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
 
 		ModAPI.setUp();
 
@@ -693,6 +695,7 @@ public class Panel
 
 		if (this.frameStartTime - startTime < introTime + introAnimationTime)
 		{
+			this.frameStartTime += 100000;
 			Drawing.drawing.forceRedrawTerrain();
 			double frac = ((this.frameStartTime - startTime - introTime) / introAnimationTime);
 
@@ -752,17 +755,7 @@ public class Panel
 
 		if (Drawing.drawing.terrainRenderer2 == null)
 		{
-			Drawing.drawing.terrainRenderer2 = Game.game.window.createShapeBatchRenderer(false);
-			Drawing.drawing.terrainRenderer2.begin(true);
-			Drawing.drawing.terrainRenderer2.setColor(255, 255, 0, 255, 0);
-			Drawing.drawing.terrainRenderer2.fillBox(new Obstacle("", 0, 0), 200, 200, 100, 100, 100, 100, (byte) 0);
-			Drawing.drawing.terrainRenderer2.stage();
-		}
-
-		if (Math.random() < Panel.frameFrequency * 0.5)
-		{
-			Drawing.drawing.terrainRenderer2.setColor(Math.random() * 255, Math.random() * 255, Math.random() * 255, 255, 0);
-			Drawing.drawing.terrainRenderer2.fillBox(new Obstacle("", 0, 0), Math.random() * 1400, Math.random() * 900, Math.random() * 500, 100, 100, 100, (byte) 0);
+			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
 		}
 
 		if (!(Game.screen instanceof ScreenGame))

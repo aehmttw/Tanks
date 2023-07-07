@@ -35,6 +35,8 @@ public abstract class Screen implements IBatchRenderableObject
 	public int minBgWidth = 0;
 	public int minBgHeight = 0;
 
+	public boolean drawBgRect = true;
+
 	public double interfaceScaleZoomOverride = -1;
 
 	protected boolean redrawn = false;
@@ -109,7 +111,7 @@ public abstract class Screen implements IBatchRenderableObject
 		if (this.forceInBounds)
 			frac = 0;
 
-		if (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d)))
+		if (drawBgRect && (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d))))
 		{
 			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG, 16 * frac + (1 - frac) * Level.currentColorB);
 
@@ -141,7 +143,7 @@ public abstract class Screen implements IBatchRenderableObject
 		int height = (int) ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
 
 		int iStart = (Game.currentSizeX - width) / 2 - 1;
-		int iEnd = width + 1;
+		int iEnd = width + 2 + iStart;
 
 		if (this.forceInBounds)
 		{
@@ -165,7 +167,7 @@ public abstract class Screen implements IBatchRenderableObject
 			i = i % Game.currentSizeX;
 
 			int jStart = (Game.currentSizeY - height) / 2 - 1;
-			int jEnd = height + 1;
+			int jEnd = height + 2 + jStart;
 
 			if (this.forceInBounds)
 			{
@@ -289,11 +291,11 @@ public abstract class Screen implements IBatchRenderableObject
 			if (Game.game.window.shapeRenderer.supportsBatching)
 				Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, true);
 		}
-		else if (Game.game.window.shapeRenderer.supportsBatching)
+		else if (Game.game.window.shapeRenderer.supportsBatching && drawBgRect)
 			Drawing.drawing.drawTerrainRenderers();
 
 
-		if (this.drawDarkness)
+		if (this.drawDarkness && drawBgRect)
 		{
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);

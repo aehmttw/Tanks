@@ -51,11 +51,7 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
     public boolean depthMask = false;
 
     public IBatchRenderableObject modifying = null;
-<<<<<<< HEAD
-    public int modifyingSize = -1;
-=======
     public int modifyingSize = 0;
->>>>>>> 8b3cd24 (pre-rendering changes for obstacles)
     public int modifyingWritten = 0;
 
     public VBOShapeBatchRenderer2(LWJGLWindow window)
@@ -131,10 +127,6 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
     @Override
     public void free()
     {
-<<<<<<< HEAD
-        System.out.println(" x " + this.colVBO + " " + this.vertVBO);
-=======
->>>>>>> 8b3cd24 (pre-rendering changes for obstacles)
         this.window.freeVBO(this.colVBO);
         this.window.freeVBO(this.vertVBO);
     }
@@ -470,12 +462,6 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
 
     public void delete(IBatchRenderableObject o)
     {
-<<<<<<< HEAD
-        if (!this.bufferStartPoints.containsKey(o))
-            return;
-
-=======
->>>>>>> 8b3cd24 (pre-rendering changes for obstacles)
         int pos = this.bufferStartPoints.remove(o);
         int size = this.bufferSizes.remove(o);
 
@@ -554,12 +540,6 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
 
         this.vertVBO = this.window.createVBO();
         this.colVBO = this.window.createVBO();
-<<<<<<< HEAD
-
-        System.out.println(" + " + this.colVBO + " " + this.vertVBO);
-
-=======
->>>>>>> 8b3cd24 (pre-rendering changes for obstacles)
         this.initSize = this.size;
         this.vertBuffer.flip();
         this.colBuffer.flip();

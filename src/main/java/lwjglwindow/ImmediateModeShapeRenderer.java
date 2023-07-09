@@ -751,46 +751,63 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void drawRect(double x, double y, double sX, double sY, double width)
     {
-        if (width == 1)
+        width = Math.min(Math.min(width, sX), sY);
+
+        if (width <= 1)
         {
             drawRect(x, y, sX, sY);
             return;
         }
 
+        if (width > Math.min(sX, sY) / 2)
+        {
+            fillRect(x, y, sX, sY);
+            return;
+        }
+
         glBegin(GL_QUADS);
         glVertex2d(x, y);
-        glVertex2d(x + sX, y);
-        glVertex2d(x + sX, y + width);
+        glVertex2d(x + sX - width, y);
+        glVertex2d(x + sX - width, y + width);
         glVertex2d(x, y + width);
 
-        glVertex2d(x, y);
-        glVertex2d(x, y + sY);
-        glVertex2d(x + width, y + sY);
-        glVertex2d(x + width, y);
+        glVertex2d(x, y + width);
+        glVertex2d(x, y + sY - width);
+        glVertex2d(x + width, y + sY - width);
+        glVertex2d(x + width, y + width);
 
-        glVertex2d(x, y + sY);
-        glVertex2d(x + sX + width, y + sY);
-        glVertex2d(x + sX + width, y + sY + width);
-        glVertex2d(x, y + sY + width);
-
-        glVertex2d(x + sX, y);
+        glVertex2d(x, y + sY - width);
+        glVertex2d(x + sX, y + sY - width);
         glVertex2d(x + sX, y + sY);
-        glVertex2d(x + sX + width, y + sY);
-        glVertex2d(x + sX + width, y);
+        glVertex2d( x, y + sY);
+
+        glVertex2d(x + sX - width, y);
+        glVertex2d(x + sX - width, y + sY - width);
+        glVertex2d(x + sX, y + sY - width);
+        glVertex2d(x + sX, y);
         glEnd();
     }
 
     public void drawRect(double x, double y, double sX, double sY, double width, double radius)
     {
-        if (radius <= 0.2)
+        if (radius < Math.min(width / 6, Math.min(sX, sY) / 18))
         {
             drawRect(x, y, sX, sY, width);
             return;
         }
 
+        if (width >= Math.min(sX, sY) * 0.9 || radius >= Math.min(sX, sY) * 0.9)
+        {
+            fillRect(x, y, sX, sY, radius);
+            return;
+        }
+
+        radius = Math.min(radius, Math.min(width, (Math.min(sX, sY) - width) / 2));
+
         width /= 2;
         double innerRadius = radius / 2;
         int sides = Math.max(4, (int) (radius / 4) + 5);
+        double change = Math.PI / 2 / sides;
 
         // Where the outer arc begins
         final double[] xs = {x + radius, x + sX - radius, x + sX - radius, x + radius};
@@ -805,10 +822,9 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         for (int i = 0; i < 4; i++)
         {
             glBegin(GL_TRIANGLE_FAN);
-            double change = Math.PI / 2 / sides;
             double maxJ = Math.PI * 2 * (order[i] + 1) / 4;
 
-            for (double j = Math.PI * 2 * (order[i] / 4.); j <= maxJ - change * 2; j += change)
+            for (double j = Math.PI * 2 * (order[i] / 4.); j <= maxJ + change / 2; j += change)
                 glVertex2d(xs[i] + Math.cos(j) * radius, ys[i] + Math.sin(j) * radius);
 
             int nextI = (i + 1) % 4;
@@ -817,7 +833,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
             if (innerRadius > 1)
             {
-                for (double j = maxJ; j >= Math.PI * 2 * (order[i] / 4.); j -= change)
+                for (double j = maxJ; j >= Math.PI * 2 * (order[i] / 4.) - change / 2; j -= change)
                     glVertex2d(xs[i] + xWidth[i] + Math.cos(j) * innerRadius, ys[i] + yWidth[i] + Math.sin(j) * innerRadius);
             }
 

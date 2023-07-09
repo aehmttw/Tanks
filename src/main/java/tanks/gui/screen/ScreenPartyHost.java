@@ -129,11 +129,11 @@ public class ScreenPartyHost extends Screen
             kickButtons[i].textColG = 255;
             kickButtons[i].textColB = 255;
 
-            kickButtons[i].unselectedColR = 160;
-            kickButtons[i].unselectedColG = 160;
-            kickButtons[i].unselectedColB = 160;
+            kickButtons[i].unselectedColR = 255;
+            kickButtons[i].unselectedColG = 0;
+            kickButtons[i].unselectedColB = 0;
 
-            kickButtons[i].selectedColR = 255;
+            kickButtons[i].selectedColR = 160;
             kickButtons[i].selectedColG = 0;
             kickButtons[i].selectedColB = 0;
 

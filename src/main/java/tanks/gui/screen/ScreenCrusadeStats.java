@@ -113,7 +113,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         CrusadePlayer cp = new CrusadePlayer(Game.player);
         crusade.crusadePlayers.put(Game.player, cp);
         Crusade.currentCrusade = crusade;
-        this.view = ScreenCrusadeStats.View.levels;
+        this.view = View.levels;
         this.onlyRecord = true;
         this.showRecord = true;
         this.prev = screenCrusadeStats;

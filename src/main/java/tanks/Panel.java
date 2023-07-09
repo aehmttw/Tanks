@@ -1,14 +1,11 @@
 package tanks;
 
 import basewindow.BaseFile;
-import basewindow.IBatchRenderableObject;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
-import tanks.gui.TerrainRenderer;
-import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
 import tanks.gui.IFixedMenu;
+import tanks.gui.TerrainRenderer;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -16,8 +13,10 @@ import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
+import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.EventPing;
+import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleLight;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -26,6 +25,9 @@ import java.util.Arrays;
 public class Panel
 {
 	public static boolean onlinePaused;
+	public static boolean focused;
+
+	public boolean screenshot = false;
 
 	public double zoomTimer = 0;
 	public static double zoomTarget = -1;
@@ -242,7 +244,6 @@ public class Panel
 		settingUp = false;
 	}
 
-	public boolean screenshot = false;
 	public void update()
 	{
 		if (firstFrame)
@@ -250,6 +251,7 @@ public class Panel
 
 		firstFrame = false;
 
+		Panel.focused = Game.game.window.focused;
 		Game.prevScreen = Game.screen;
 		Obstacle.lastDrawSize = Obstacle.draw_size;
 
@@ -588,6 +590,20 @@ public class Panel
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
 
+		if (ScreenPartyLobby.isClient)
+		{
+			Client.handler.pingTimer -= Panel.frameFrequency;
+
+			if (Client.handler.pingTimer <= 0)
+			{
+				Game.eventsOut.add(new EventPing());
+				Client.handler.pingTimer = 150;
+				ClientHandler.lastLatencyTime = System.currentTimeMillis();
+			}
+
+			Client.handler.reply();
+		}
+
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.update();
 
@@ -664,7 +680,7 @@ public class Panel
 		if (Game.cinematic)
 			introAnimationTime = 4000;
 
-		if (System.currentTimeMillis() - startTime < 0)
+		if (System.currentTimeMillis() - startTime < 1)
 		{
 			double frac = (startTime - System.currentTimeMillis() * 1.0) / splash_duration;
 
@@ -748,9 +764,7 @@ public class Panel
 		}
 
 		if (Drawing.drawing.terrainRenderer2 == null)
-		{
 			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
-		}
 
 		if (!(Game.screen instanceof ScreenGame))
 		{
@@ -826,7 +840,7 @@ public class Panel
 
 		Drawing.drawing.setColor(255, 255, 255);
 		if (screenshot)
-			Game.game.window.shapeRenderer.drawImage(100, 100, 500, 500, "screenshot", false);
+			Game.game.window.shapeRenderer.drawImage(100, 100, 500, 500, "screenshot.png", false);
 
 		Drawing.drawing.setColor(0, 0, 0, 0);
 		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
@@ -1036,9 +1050,9 @@ public class Panel
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
-			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
+			double[] col = getLatencyColor(ClientHandler.latency);
 			Drawing.drawing.setColor(col[0], col[1], col[2]);
-			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
+			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.latency + "ms");
 		}
 
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)

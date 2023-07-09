@@ -171,7 +171,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.invulnerable = false;
 		}
 
-		if (!Game.game.window.focused)
+		if (!Panel.focused)
 			return;
 
 		for (int i = 0; i < Game.game.groundHeightGrid.length; i++)

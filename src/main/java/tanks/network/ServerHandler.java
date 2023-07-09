@@ -103,12 +103,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		boolean wasPing = this.reader.queueMessage(this, buffy, this.clientID);
+		int pingCnt = this.reader.queueMessage(this, buffy, this.clientID);
 
 		if (steamID == null)
 			ReferenceCountUtil.release(msg);
 
-		if (wasPing)
+		if (pingCnt > 0)
 		{
 			if (lastMessage < 0)
 				lastMessage = System.currentTimeMillis();
@@ -129,7 +129,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 				latencyCount = 0;
 			}
 
-			//this.sendEvent(new EventPing());
+			this.sendEvent(new EventPing(pingCnt));
 		}
 	}
 
@@ -138,16 +138,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		synchronized (this.events)
 		{
 			INetworkEvent prev = null;
-			for (int i = 0; i < this.events.size(); i++)
+			for (INetworkEvent e : this.events)
 			{
-				INetworkEvent e = this.events.get(i);
-
 				if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
 					this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
 				else
 				{
 					if (prev != null)
-						this.sendEvent(prev,false);
+						this.sendEvent(prev, false);
 
 					prev = e;
 				}

@@ -180,11 +180,11 @@ public class ScreenAddSavedItem extends Screen implements IConditionalOverlayScr
         delete.textColG = 255;
         delete.textColB = 255;
 
-        delete.unselectedColR = 160;
-        delete.unselectedColG = 160;
-        delete.unselectedColB = 160;
+        delete.unselectedColR = 255;
+        delete.unselectedColG = 0;
+        delete.unselectedColB = 0;
 
-        delete.selectedColR = 255;
+        delete.selectedColR = 160;
         delete.selectedColG = 0;
         delete.selectedColB = 0;
 

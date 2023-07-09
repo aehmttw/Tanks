@@ -151,11 +151,11 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
                 b.fullInfo = true;
                 b.textOffsetY = -2.5;
 
-                b.unselectedColR = 160;
-                b.unselectedColG = 160;
-                b.unselectedColB = 160;
+                b.unselectedColR = 255;
+                b.unselectedColG = 0;
+                b.unselectedColB = 0;
 
-                b.selectedColR = 255;
+                b.selectedColR = 160;
                 b.selectedColG = 0;
                 b.selectedColB = 0;
 

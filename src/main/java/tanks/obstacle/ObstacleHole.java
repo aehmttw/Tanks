@@ -60,17 +60,17 @@ public class ObstacleHole extends Obstacle
 
 			Drawing.drawing.fillBox(o, this.posX, this.posY, -draw_size / 2 + d, Game.tile_size, Game.tile_size, draw_size / 2, (byte) 3);
 			
-			Drawing.drawing.fillBox(o, this.posX - Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 17);
-			Drawing.drawing.fillBox(o, this.posX + Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 33);
+			Drawing.drawing.fillBox(o, this.posX - Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2 + d, (byte) 17);
+			Drawing.drawing.fillBox(o, this.posX + Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2 + d, (byte) 33);
 
-			Drawing.drawing.fillBox(o, this.posX, this.posY - Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 9);
-			Drawing.drawing.fillBox(o, this.posX, this.posY + Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 5);
+			Drawing.drawing.fillBox(o, this.posX, this.posY - Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2 + d, (byte) 9);
+			Drawing.drawing.fillBox(o, this.posX, this.posY + Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2 + d, (byte) 5);
 
-			Drawing.drawing.fillBox(o, this.posX - Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d + 0.2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 61);
-			Drawing.drawing.fillBox(o, this.posX + Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + d + 0.2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2, (byte) 61);
+			Drawing.drawing.fillBox(o, this.posX - Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + 0.2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2 + d, (byte) 61);
+			Drawing.drawing.fillBox(o, this.posX + Game.tile_size * (0.5 - (1 - s) / 4), this.posY, -Game.tile_size / 2 + 0.2, Game.tile_size / 2 * (1 - s), Game.tile_size, Game.tile_size / 2 + d, (byte) 61);
 
-			Drawing.drawing.fillBox(o, this.posX, this.posY - Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 61);
-			Drawing.drawing.fillBox(o, this.posX, this.posY + Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + d + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2, (byte) 61);
+			Drawing.drawing.fillBox(o, this.posX, this.posY - Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2 + d, (byte) 61);
+			Drawing.drawing.fillBox(o, this.posX, this.posY + Game.tile_size * (0.5 - (1 - s) / 4), -Game.tile_size / 2 + 0.2, Game.tile_size, Game.tile_size / 2 * (1 - s), Game.tile_size / 2 + d, (byte) 61);
 		}
 		else
 		{

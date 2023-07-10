@@ -45,6 +45,7 @@ public class ObstacleIce extends Obstacle
     @Override
     public void draw()
     {
+        System.out.println("drawing time");
         double h = this.baseGroundHeight;
 
         Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA * (h - Obstacle.draw_size / Game.tile_size * 15) / (h - 15));

@@ -1425,7 +1425,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 			catch (Exception e)
 			{
-				System.out.println(Game.horizontalFaces);
+				System.err.println(Game.horizontalFaces);
 				Game.exitToCrash(e);
 			}
 
@@ -1435,7 +1435,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 			catch (Exception e)
 			{
-				System.out.println(Game.verticalFaces);
+				System.err.println(Game.verticalFaces);
 				Game.exitToCrash(e);
 			}
 
@@ -2014,7 +2014,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 
 		long t1a = System.nanoTime();
-		if (Game.enable3d && (Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size) && Game.game.window.shapeRenderer.supportsBatching)
+		if (Game.enable3d && /*(Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size) && */Game.game.window.shapeRenderer.supportsBatching)
 		{
 			for (int i = 0; i < drawables.length; i++)
 			{
@@ -2590,7 +2590,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 		long t4 = System.nanoTime();
-		System.out.println((t1 - start) + " " + (t2 - t1) + " " + (t3 - t2) + " " + (t4 - t3) + " / " + (t1b - t1a));
+		//System.out.println((t1 - start) + " " + (t2 - t1) + " " + (t3 - t2) + " " + (t4 - t3) + " / " + (t1b - t1a));
 	}
 
 	public void saveRemainingTanks()

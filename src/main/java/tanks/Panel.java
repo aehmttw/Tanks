@@ -313,7 +313,7 @@ public class Panel
 				Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
 		}
 
-		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused) || Game.screen instanceof ScreenLevelEditor);
+		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
 
 		if (!Game.shadowsEnabled)
 			Game.game.window.setShadowQuality(0);

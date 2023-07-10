@@ -15,18 +15,14 @@ public class BulletArc extends Bullet
     public static String bullet_name = "arc";
 
     public double maxAge;
-
     public double angle;
-
     public static final double gravity = 0.1;
 
     public ArrayList<Double> pastPosX = new ArrayList<>();
-
     public ArrayList<Double> pastPosY = new ArrayList<>();
-
     public ArrayList<Double> pastPosZ = new ArrayList<>();
-
     public ArrayList<Double> pastTime = new ArrayList<>();
+    public double lastAddedAge = -1000;
 
     public BulletArc(double x, double y, Tank t, int bounces, boolean affectsMaxLiveBullets, ItemBullet ib)
     {
@@ -100,15 +96,33 @@ public class BulletArc extends Bullet
         if (!this.destroy)
             this.angle = this.getPolarDirection();
 
-        this.pastPosX.add(this.posX);
+        if (this.age - this.lastAddedAge > 10)
+        {
+            int count = 1;
+            if (this.pastPosX.isEmpty())
+                count = 2;
 
-        if (Game.enable3d)
-            this.pastPosY.add(this.posY);
+            for (int i = 0; i < count; i++)
+            {
+                this.pastPosX.add(this.posX);
+
+                if (Game.enable3d)
+                    this.pastPosY.add(this.posY);
+                else
+                    this.pastPosY.add(this.posY - this.posZ + 25);
+
+                this.pastPosZ.add(this.posZ);
+                this.pastTime.add(this.age);
+
+                this.lastAddedAge = this.age;
+            }
+        }
         else
-            this.pastPosY.add(this.posY - this.posZ + 25);
-
-        this.pastPosZ.add(this.posZ);
-        this.pastTime.add(this.age);
+        {
+            this.pastPosX.set(this.pastPosX.size() - 1, this.posX);
+            this.pastPosY.set(this.pastPosY.size() - 1, this.posY);
+            this.pastPosZ.set(this.pastPosZ.size() - 1, this.posZ);
+        }
     }
 
     public void draw()

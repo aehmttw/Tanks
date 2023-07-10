@@ -1282,6 +1282,11 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
                 Collections.sort(musics, (o1, o2) -> o1.compareTo(o2));
 
+                for (int i = 1; i <= 8; i++)
+                {
+                    musics.add("arcade/rampage" + i + ".ogg");
+                }
+
                 String[] musicsArray = new String[musics.size()];
                 boolean[] selectedMusicsArray = new boolean[musics.size()];
                 for (int i = 0; i < musics.size(); i++)

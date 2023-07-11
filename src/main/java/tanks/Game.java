@@ -211,6 +211,7 @@ public class Game
 	public static boolean autoLoadExtensions = true;
 	public static ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
+	public static ArrayList<Extension> brokenExtensions = new ArrayList<>();
 	public static Extension[] extraExtensions;
 	public static int[] extraExtensionOrder;
 
@@ -649,8 +650,18 @@ public class Game
 			}
 		}
 
-		for (Extension e: extensionRegistry.extensions)
-			e.setUp();
+		for (Extension e : extensionRegistry.extensions)
+		{
+			try
+			{
+				e.setUp();
+			}
+			catch (Throwable ex)
+			{
+				ex.printStackTrace();
+				brokenExtensions.add(e);
+			}
+		}
 
 		for (RegistryTank.TankEntry e: registryTank.tankEntries)
 			e.initialize();

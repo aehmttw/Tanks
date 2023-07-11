@@ -33,6 +33,9 @@ public class InputBindings
     public InputBindingGroup chat = new InputBindingGroup("game.chat", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_T));
     public InputBindingGroup hidePause = new InputBindingGroup("game.hidePauseMenu", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F1));
     public InputBindingGroup fullscreen = new InputBindingGroup("game.fullscreen", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F11), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F10));
+    public InputBindingGroup perspective = new InputBindingGroup("game.perspective", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F5));
+    public InputBindingGroup tilt = new InputBindingGroup("game.pitch", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_5));
+    public InputBindingGroup fcZoom = new InputBindingGroup("game.fcZoom", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_C));
 
     public InputBindingGroup editorPause = new InputBindingGroup("editor.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup editorObjectMenu = new InputBindingGroup("editor.objects", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_SPACE));

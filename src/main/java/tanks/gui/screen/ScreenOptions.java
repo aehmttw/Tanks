@@ -43,17 +43,11 @@ public class ScreenOptions extends Screen
 	);
 
 
-	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer()
-	);
+	Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer());
 
-	Button gameOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Game options", () -> Game.screen = new ScreenOptionsGame()
-	);
+	Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options", () -> Game.screen = new ScreenOptionsGraphics());
 
-	Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options", () -> Game.screen = new ScreenOptionsGraphics()
-	);
-
-	Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options", () -> Game.screen = new ScreenOptionsSound()
-	);
+	Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options", () -> Game.screen = new ScreenOptionsSound());
 
 	Button inputOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Input options", () ->
 	{
@@ -65,20 +59,31 @@ public class ScreenOptions extends Screen
 
 	Button personalize = new Button(this.centerX, this.centerY - this.objYSpace * 2.4, this.objWidth * 1.5, this.objHeight * 2, "", () -> Game.screen = new ScreenOptionsPersonalize());
 
-	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsInterface()
-	);
+	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
+	Button interfaceOptionsMobile = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsWindowMobile());
+
+	Button speedrunOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
+
+	Button miscOptions = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
 
 	@Override
 	public void update()
 	{
 		soundOptions.update();
-		gameOptions.update();
-		interfaceOptions.update();
+
+		if (Game.framework == Game.Framework.libgdx)
+			interfaceOptionsMobile.update();
+		else
+			interfaceOptions.update();
+
+		speedrunOptions.update();
 
 		graphicsOptions.update();
 		inputOptions.update();
 		multiplayerOptions.update();
 		personalize.update();
+
+		miscOptions.update();
 
 		back.update();
 	}
@@ -89,11 +94,17 @@ public class ScreenOptions extends Screen
 		this.drawDefaultBackground();
 
 		back.draw();
+		miscOptions.draw();
 		multiplayerOptions.draw();
 		inputOptions.draw();
 		graphicsOptions.draw();
-		interfaceOptions.draw();
-		gameOptions.draw();
+		speedrunOptions.draw();
+
+		if (Game.framework == Game.Framework.libgdx)
+			interfaceOptionsMobile.draw();
+		else
+			interfaceOptions.draw();
+
 		soundOptions.draw();
 		personalize.draw();
 
@@ -197,6 +208,7 @@ public class ScreenOptions extends Screen
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
 			f.println("deterministic=" + Game.deterministicMode);
+			f.println("deterministic_30fps=" + Game.deterministic30Fps);
 			f.println("warn_before_closing=" + Game.warnBeforeClosing);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
@@ -346,6 +358,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "deterministic":
 						Game.deterministicMode = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "deterministic_30fps":
+						Game.deterministic30Fps = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "info_bar":
 						Drawing.drawing.showStats(Boolean.parseBoolean(optionLine[1]));

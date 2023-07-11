@@ -21,7 +21,7 @@ public class TerrainRenderer
         return 1664525 * i + 1013904223;
     }
 
-    public class RegionRenderer
+    public static class RegionRenderer
     {
         public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2();
         public int posX;

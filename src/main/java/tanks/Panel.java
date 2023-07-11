@@ -26,6 +26,7 @@ public class Panel
 {
 	public static boolean onlinePaused;
 	public static boolean focused;
+	public static boolean prevFocused;
 
 	public boolean screenshot = false;
 
@@ -87,6 +88,7 @@ public class Panel
 	public boolean firstDraw = true;
 	public boolean introFinished = false;
 	public boolean splashFinished = false;
+	public boolean popupFinished = false;
 
 	public boolean startMusicPlayed = false;
 
@@ -255,6 +257,11 @@ public class Panel
 		Game.prevScreen = Game.screen;
 		Obstacle.lastDrawSize = Obstacle.draw_size;
 
+		if (Panel.focused != Panel.prevFocused)
+			Game.screen.onFocusChange(Panel.focused);
+
+		Panel.prevFocused = Panel.focused;
+
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
 			started = true;
@@ -284,9 +291,7 @@ public class Panel
 		lastFrameNano = System.nanoTime();
 
 		if (System.currentTimeMillis() - this.startTime < 0)
-		{
 			return;
-		}
 
 		if (!splashFinished)
 		{
@@ -852,6 +857,25 @@ public class Panel
 
 //		if (!Game.game.window.drawingShadow)
 //			Drawing.drawing.terrainRenderer2.draw();
+
+		if (!popupFinished)
+			popupFinished = Game.brokenExtensions.isEmpty() || System.currentTimeMillis() - introMusicEnd > 3000;
+
+		if (!popupFinished && introFinished)
+		{
+			double x = Game.game.window.absoluteWidth - 130;
+			double y = Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 50;
+
+			Drawing.drawing.drawPopup(x, y, 240, 70, 8, 3);
+
+			Drawing.drawing.setFontSize(14);
+			Drawing.drawing.setColor(255, 255, 255);
+			Drawing.drawing.displayUncenteredInterfaceText(x - 102, y - 20, "%d " + (Game.brokenExtensions.size() > 0 ? "extension" : "extensions") + " failed to load", Game.brokenExtensions.size());
+
+			Drawing.drawing.setFontSize(12);
+			Drawing.drawing.setColor(200, 200, 200);
+			Drawing.drawing.displayUncenteredInterfaceText(x - 102, y, "Check console for details.");
+		}
 	}
 
 	public void drawMouseTarget()

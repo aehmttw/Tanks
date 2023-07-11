@@ -4,12 +4,12 @@ import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.IAvoidObject;
-import tanks.tank.Mine;
 import tanks.tank.Tank;
 
 public class ObstacleLava extends Obstacle implements IAvoidObject
 {
     public double particles = 0;
+    public long lastParticleTime;
 
     public ObstacleLava(String name, double posX, double posY)
     {
@@ -25,9 +25,13 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
 
         this.isSurfaceTile = true;
 
-        this.colorR = 200;
-        this.colorG = 20;
+        this.colorR = 255;
+        this.colorG = 84;
         this.colorB = 0;
+        this.glow = 1;
+
+        if (Game.enable3d)
+            this.colorR -= Math.random() * 10;
 
         this.replaceTiles = true;
         this.update = true;
@@ -39,37 +43,37 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
     public void onObjectEntry(Movable m)
     {
         if (m instanceof Tank && ((Tank) m).flashAnimation < 1 && !ScreenGame.finished)
-        {
-            ((Tank) m).flashAnimation = 1;
             ((Tank) m).damage(0.005 * Panel.frameFrequency, m);
-        }
 
         this.onObjectEntryLocal(m);
     }
 
     public void addEffect()
     {
+        lastParticleTime = System.currentTimeMillis();
+
         if (Game.effectsEnabled && !ScreenGame.finished)
         {
-            if (Math.random() < Game.effectMultiplier * 0.01)
+            if (Math.random() < Game.effectMultiplier * 0.003)
             {
+                Effect e;
                 if (Game.enable3d)
                 {
-                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, 0, Effect.EffectType.piece);
+                    e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, 0, Effect.EffectType.piece);
                     e.colR = 255;
-                    e.colG = Math.random() * 255;
+                    e.colG = Math.random() * 128 + 64;
                     e.colB = 0;
+                    e.setPolarMotion(Math.random() * Math.PI * 2, 0.5);
                     e.vZ = Math.random() + 1;
-                    Game.addEffects.add(e);
                 }
                 else
                 {
-                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, Effect.EffectType.piece);
+                    e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, Effect.EffectType.piece);
                     e.colR = 255;
-                    e.colG = Math.random() * 255;
+                    e.colG = Math.random() * 128 + 64;
                     e.colB = 0;
-                    Game.addEffects.add(e);
                 }
+                Game.addEffects.add(e);
             }
         }
     }
@@ -87,9 +91,7 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
 
                 double radius = 250000;
                 if (distsq <= radius && !Game.playerTank.destroy)
-                {
-                    Drawing.drawing.playSound("hiss.ogg", (float) (Math.random() * 0.2 + 1), (float) (0.05 * (radius - distsq) / radius));
-                }
+                    Drawing.drawing.playSound("hiss.ogg", (float) (Math.random() * 0.2 + 1), (float) (0.2 * (radius - distsq) / radius));
             }
         }
     }
@@ -107,6 +109,15 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
     @Override
     public void update()
     {
+        double prog = System.currentTimeMillis() - lastParticleTime;
+
+        if (prog < 500)
+        {
+            double frac = Math.sin(prog / 500 * Math.PI) * 50;
+            this.colorG = 84 + frac;
+            this.colorB = frac;
+        }
+
         this.particles += Math.random() * Panel.frameFrequency;
 
         while (this.particles > 0)
@@ -142,6 +153,8 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
     {
         return 0;
     }
+
+
 
     @Override
     public double getRadius()

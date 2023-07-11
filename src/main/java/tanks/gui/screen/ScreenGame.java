@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
+import basewindow.transformation.ScaleAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.gui.*;
@@ -26,6 +27,9 @@ import java.util.HashSet;
 
 public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGameScreen
 {
+	public static float fcSensitivity = 1f;
+	public static int viewNum;
+
 	public boolean playing = false;
 	public boolean paused = false;
 	public boolean savedRemainingTanks = false;
@@ -94,6 +98,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
+
+	public static boolean fcZoomPressed = false;
+	public double fcZoomLastTap = 0;
+	public double fcZoom = 0;
+	public double fcTargetZoom = 0;
+	public double fcPitch = 0;
 
 	public boolean playedIntro = false;
 
@@ -803,6 +813,86 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Panel.zoomTarget = spectatingTank.getAutoZoom();
 		}
 
+		if (Game.game.input.perspective.isValid())
+		{
+			if (Game.game.window.shift)
+				viewNum = (viewNum + 3) % 4;
+			else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_CONTROL))
+				viewNum = 0;
+			else
+				viewNum = (viewNum + 1) % 4;
+
+			switch (viewNum)
+			{
+				case 0:
+					Game.angledView = false;
+					Game.followingCam = false;
+					Game.firstPerson = false;
+					break;
+				case 1:
+					Game.angledView = true;
+					Game.followingCam = false;
+					Game.firstPerson = false;
+					break;
+				case 2:
+					Game.angledView = false;
+					Game.followingCam = true;
+					Game.firstPerson = false;
+					break;
+				case 3:
+					Game.angledView = false;
+					Game.followingCam = true;
+					Game.firstPerson = true;
+					break;
+			}
+
+			if (Game.followingCam)
+			{
+				Drawing.drawing.movingCamera = true;
+				Panel.autoZoom = false;
+				Panel.zoomTarget = -1;
+			}
+
+			this.enableMargins = !Game.followingCam;
+			Game.game.input.perspective.invalidate();
+		}
+
+		if (Game.game.input.tilt.isPressed())
+			fcPitch += (Drawing.drawing.getInterfaceMouseY() - this.prevCursorY) / (fcSensitivity * 500);
+
+		fcPitch = Math.max(0, Math.min(0.5, fcPitch));
+
+		fcZoomPressed = Game.game.input.fcZoom.isPressed();
+
+		if (fcZoomPressed)
+		{
+			if (Game.game.input.fcZoom.isValid())
+			{
+				if (System.currentTimeMillis() - fcZoomLastTap < 500)
+					fcTargetZoom = 0;
+
+				fcZoomLastTap = System.currentTimeMillis();
+				Game.game.input.fcZoom.invalidate();
+			}
+
+			if (Game.game.window.validScrollUp && fcTargetZoom < 0.9)
+			{
+				fcTargetZoom += 0.05;
+				Game.game.window.validScrollUp = false;
+			}
+
+			if (Game.game.window.validScrollDown && fcTargetZoom > 0)
+			{
+				fcTargetZoom -= 0.05;
+				Game.game.window.validScrollDown = false;
+			}
+		}
+
+		if (Math.abs(fcTargetZoom - fcZoom) < 0.05)
+			fcZoom = fcTargetZoom;
+		else
+			fcZoom += (fcTargetZoom - fcZoom) / 10;
+
 		if (Game.game.input.zoom.isPressed() && playing)
 		{
 			if (Panel.autoZoom)
@@ -1353,7 +1443,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 100;
 				Game.game.window.setCursorLocked(true);
 				this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
-				this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
+				this.prevCursorY = Drawing.drawing.getInterfaceMouseY();
 			}
 
 			Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size);
@@ -1929,17 +2019,23 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (!Game.firstPerson)
 			{
-				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
+				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, (frac * ((focusedTank().angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI)), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
 				Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
-				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac, 0, 0, 0, -1));
+				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac + fcPitch, 0, fcPitch * 3, fcPitch * 3, -1));
 				Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0, 0.5 * frac));
+
+				if (fcZoom > 0)
+					Game.game.window.transformations.add(new ScaleAboutPoint(Game.game.window, 1, 1, fcZoom + 1, 0, 0, 0));
 			}
 			else
 			{
-				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
+				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((focusedTank().angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
 				Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
 				Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.5 * frac, 0, 0, 0, -1));
 				Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.0575 * frac, 0.9 * frac));
+
+				if (fcZoom > 0)
+					Game.game.window.transformations.add(new ScaleAboutPoint(Game.game.window, 1, 1, 1 - fcZoom, 0, 0, 0));
 			}
 
 			Game.game.window.loadPerspective();
@@ -2594,6 +2690,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		System.out.println((t1 - start) + " " + (t2 - t1) + " " + (t3 - t2) + " " + (t4 - t3) + " / " + (t1b - t1a));
 	}
 
+	/** The tank that the camera is following */
+	public static Tank focusedTank()
+	{
+		if (!(Game.screen instanceof ScreenGame) || Game.playerTank == null)
+			return Game.playerTank;
+
+		if (Game.playerTank.destroy && ((ScreenGame) Game.screen).spectatingTank != null)
+			return ((ScreenGame) Game.screen).spectatingTank;
+
+		return Game.playerTank;
+	}
+
 	@Override
 	public void onFocusChange(boolean focused)
 	{
@@ -2632,5 +2740,4 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		return Drawing.drawing.scale * (1 - Panel.panel.zoomTimer) + Drawing.drawing.interfaceScale * Panel.panel.zoomTimer;
 	}
-
 }

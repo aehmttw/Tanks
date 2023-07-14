@@ -2600,174 +2600,180 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (!this.clipboard.isEmpty())
 			this.pasteMode = true;
 	}
-	/**
-	 * Converts the arraylist clipboard to a 2D array, flips it
-     	 * horizontally and then converts the 2D array back to an arraylist.
-     	 */
-	public void flip() {
-        	this.clipboard = array2DToList(flip2DArray(listToArray2D(this.clipboard)));
-    	}
 
 	/**
-     	 * Converts the arraylist clipboard to a 2D array, rotates it by 90 degrees
-     	 * clockwise and then converts the 2D array back to an arraylist.
-     	 */
+	 * Converts the arraylist clipboard to a 2D array, flips it
+	 * horizontally and then converts the 2D array back to an arraylist.
+	 */
+	public void flip() {
+		this.clipboard = array2DToList(flip2DArray(listToArray2D(this.clipboard)));
+	}
+
+	/**
+	 * Converts the arraylist clipboard to a 2D array, rotates it by 90 degrees
+	 * clockwise and then converts the 2D array back to an arraylist.
+	 */
 	public void rotate() {
 		this.clipboard = array2DToList(rotate2DArrayClockwise(listToArray2D(this.clipboard)));
 	}
 
 	/**
-     	 * Flips a two-dimensional array horizontally.
-     	 * The elements within each row are reversed in order.
-     	 * Rotates any tank that is facing left or right by 180 degrees.
-    	 *
-     	 * @param array2D the two-dimensional array to be flipped
-     	 * @return the flipped two-dimensional array
-     	 */
+	 * Flips a two-dimensional array horizontally.
+	 * The elements within each row are reversed in order.
+	 * Rotates any tank that is facing left or right by 180 degrees.
+	 *
+	 * @param array2D the two-dimensional array to be flipped
+	 * @return the flipped two-dimensional array
+	 */
 	public static Object[][] flip2DArray(Object[][] array2D) {
-	        int rows = array2D.length;
-	        int columns = array2D[0].length;
-	
-	        // The reason this is not in place flipping is that
-	        // then the rotating of tanks won't work.
-	        Object[][] flippedArray = new Object[rows][columns];
-	
-	        for (int i = 0; i < rows; i++) {
-	            for (int j = 0; j < columns; j++) {
-	                flippedArray[i][j] = array2D[i][columns - 1 - j];
-	
-	                if (flippedArray[i][j] instanceof Tank) {
-	                    // Only flip the angle if the tank is facing left or right (since this is a horizontal flip)
-	                    double tankAngle = ((Tank) flippedArray[i][j]).angle;
-	
-	                    // Redundant, but it ensures that the tank angle is always between 0 and 2 PI
-	                    tankAngle = tankAngle % (2 * Math.PI);
-	
-	                    if (tankAngle == 0 || tankAngle == Math.PI) {
-	                        // Rotate by PI
-	                        // The % operator keeps the tank angle between 0 and 2 PI
-	                        ((Tank) flippedArray[i][j]).angle = (tankAngle + Math.PI) % (2 * Math.PI);
-	                    }
-	                }
-	            }
-	        }
+		int rows = array2D.length;
+		int columns = array2D[0].length;
+
+		// The reason this is not in place flipping is that
+		// then the rotating of tanks won't work.
+		Object[][] flippedArray = new Object[rows][columns];
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				flippedArray[i][j] = array2D[i][columns - 1 - j];
+
+				if (flippedArray[i][j] instanceof Tank) {
+					// Only flip the angle if the tank is facing left or right (since this is a horizontal flip)
+					double tankAngle = ((Tank) flippedArray[i][j]).angle;
+
+					// Ensures that the tank angle is always between 0 and 2 PI
+					tankAngle = tankAngle % (2 * Math.PI);
+
+					if (tankAngle == 0 || tankAngle == Math.PI) {
+						// Rotate by PI
+						// The % operator keeps the tank angle between 0 and 2 PI
+						((Tank) flippedArray[i][j]).angle = (tankAngle + Math.PI) % (2 * Math.PI);
+					}
+				}
+			}
+		}
 		return flippedArray;
 	}
 
 	/**
-     	 * Rotates a two-dimensional array clockwise by 90 degrees.
-     	 * The rows become columns, and the columns become rows.
-    	 * Rotates tanks by 90 degrees.
-     	 *
-     	 * @param array2D the two-dimensional array to be rotated
-     	 * @return the rotated two-dimensional array
-     	*/
+	 * Rotates a two-dimensional array clockwise by 90 degrees.
+	 * The rows become columns, and the columns become rows.
+	 * Rotates tanks by 90 degrees.
+	 *
+	 * @param array2D the two-dimensional array to be rotated
+	 * @return the rotated two-dimensional array
+	 */
 	public static Object[][] rotate2DArrayClockwise(Object[][] array2D) {
-	        int rows = array2D.length;
-	        int columns = array2D[0].length;
-	
-	        Object[][] rotatedArray = new Object[columns][rows];
-	
-	        for (int i = 0; i < rows; i++) {
-	            for (int j = 0; j < columns; j++) {
-	                if (array2D[i][j] instanceof Tank) {
-	                    // Rotate by PI / 2
-	                    // The % operator keeps the tank angle between 0 and 2 PI
-	                    ((Tank) array2D[i][j]).angle = (((Tank) array2D[i][j]).angle + (Math.PI / 2)) % (2 * Math.PI);
-	                }
-	                rotatedArray[j][rows - 1 - i] = array2D[i][j];
-	            }
-	        }
-	        return rotatedArray;
+		int rows = array2D.length;
+		int columns = array2D[0].length;
+
+		Object[][] rotatedArray = new Object[columns][rows];
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				if (array2D[i][j] instanceof Tank) {
+					// Rotate by PI / 2
+					// The % operator keeps the tank angle between 0 and 2 PI
+					((Tank) array2D[i][j]).angle = (((Tank) array2D[i][j]).angle + (Math.PI / 2)) % (2 * Math.PI);
+				}
+				rotatedArray[j][rows - 1 - i] = array2D[i][j];
+			}
+		}
+		return rotatedArray;
 	}
 
 	/**
-     	 * Converts an ArrayList of objects into a 2D array.
-     	 * The objects are positioned in the array based on their x and y coordinates.
-     	 *
-     	 * @param list the ArrayList of objects to convert
-     	 * @return a 2D array containing the objects positioned according to their coordinates
-     	 */
+	 * Converts an ArrayList of objects into a 2D array.
+	 * The objects are positioned in the array based on their x and y coordinates.
+	 *
+	 * @param list the ArrayList of objects to convert
+	 * @return a 2D array containing the objects positioned according to their coordinates
+	 */
 	public static Object[][] listToArray2D(ArrayList<Object> list) {
-	        // Get the largest x and y, to determine the array size.
-	        int maxX = Integer.MIN_VALUE;
-	        int maxY = Integer.MIN_VALUE;
-	        for (Object o : list) {
-	            if (o instanceof Obstacle) {
-	                int posX = (int) (((Obstacle) o).posX / Game.tile_size);
-	                int posY = (int) (((Obstacle) o).posY / Game.tile_size);
-	
-	                if (posX > maxX) {
-	                    maxX = posX;
-	                }
-	                if (posY > maxY) {
-	                    maxY = posY;
-	                }
-	            } else if (o instanceof Tank) {
-	                int posX = (int) (((Tank) o).posX / Game.tile_size);
-	                int posY = (int) (((Tank) o).posY / Game.tile_size);
-	
-	                if (posX > maxX) {
-	                    maxX = posX;
-	                }
-	                if (posY > maxY) {
-	                    maxY = posY;
-	                }
-	            }
-	        }
-	
-	        Object[][] array2D = new Object[maxY + 1][maxX + 1];
-	
-	        // Put all the contents into their corresponding indexes
-	        for (Object o : list) {
-	            int posX = 0;
-	            int posY = 0;
-	            if (o instanceof Obstacle) {
-	                posX = (int) (((Obstacle) o).posX / Game.tile_size);
-	                posY = (int) (((Obstacle) o).posY / Game.tile_size);
-	            } else if (o instanceof Tank) {
-	                posX = (int) (((Tank) o).posX / Game.tile_size);
-	                posY = (int) (((Tank) o).posY / Game.tile_size);
-	            }
-	
-	            array2D[posY][posX] = o;
-	        }
-	        return array2D;
-    	}
+		// Get the largest x and y, to determine the array size.
+		int maxX = Integer.MIN_VALUE;
+		int maxY = Integer.MIN_VALUE;
+		for (Object o : list) {
+			if (o instanceof Obstacle) {
+				int posX = (int) (((Obstacle) o).posX / Game.tile_size);
+				int posY = (int) (((Obstacle) o).posY / Game.tile_size);
+
+				if (posX > maxX) {
+					maxX = posX;
+				}
+				if (posY > maxY) {
+					maxY = posY;
+				}
+			} else if (o instanceof Tank) {
+				int posX = (int) (((Tank) o).posX / Game.tile_size);
+				int posY = (int) (((Tank) o).posY / Game.tile_size);
+
+				if (posX > maxX) {
+					maxX = posX;
+				}
+				if (posY > maxY) {
+					maxY = posY;
+				}
+			}
+		}
+
+		// Ensures that empty lists don't make negative sized arrays
+		if (maxX < 1 || maxY < 1) {
+			return new Object[1][1];
+		}
+
+		Object[][] array2D = new Object[maxY + 1][maxX + 1];
+
+		// Put all the contents into their corresponding indexes
+		for (Object o : list) {
+			int posX = 0;
+			int posY = 0;
+			if (o instanceof Obstacle) {
+				posX = (int) (((Obstacle) o).posX / Game.tile_size);
+				posY = (int) (((Obstacle) o).posY / Game.tile_size);
+			} else if (o instanceof Tank) {
+				posX = (int) (((Tank) o).posX / Game.tile_size);
+				posY = (int) (((Tank) o).posY / Game.tile_size);
+			}
+
+			array2D[posY][posX] = o;
+		}
+		return array2D;
+	}
 
 	/**
-     	 * Converts a two-dimensional array into an ArrayList of objects.
-     	 * The objects can be obstacles or tanks.
-    	 *
-     	 * @param array2D the two-dimensional array to be converted
-     	 * @return an ArrayList containing the objects from the array
-     	 */
+	 * Converts a two-dimensional array into an ArrayList of objects.
+	 * The objects can be obstacles or tanks.
+	 *
+	 * @param array2D the two-dimensional array to be converted
+	 * @return an ArrayList containing the objects from the array
+	 */
 	public static ArrayList<Object> array2DToList(Object[][] array2D) {
-	        ArrayList<Object> list = new ArrayList<>();
-	        ArrayList<Object> blockList = new ArrayList<>();
-	        ArrayList<Object> tankList = new ArrayList<>();
-	
-	        // Add all the objects in the array to their respective lists
-	        for (int i = 0; i < array2D.length; i++) {
-	            for (int j = 0; j < array2D[0].length; j++) {
-	                if (array2D[i][j] != null) {
-	                    Object o = array2D[i][j];
-	                    if (o instanceof Obstacle) {
-	                        ((Obstacle) o).posX = j * Game.tile_size;
-	                        ((Obstacle) o).posY = i * Game.tile_size;
-	                        blockList.add(o);
-	                    } else if (o instanceof Tank) {
-	                        ((Tank) o).posX = j * Game.tile_size;
-	                        ((Tank) o).posY = i * Game.tile_size;
-	                        tankList.add(o);
-	                    }
-	                }
-	            }
-	        }
-	        // The order of adding is important.
-	        // Tanks have to be added AFTER the blocks, otherwise the paste breaks.
-	        list.addAll(blockList);
-	        list.addAll(tankList);
+		ArrayList<Object> list = new ArrayList<>();
+		ArrayList<Object> blockList = new ArrayList<>();
+		ArrayList<Object> tankList = new ArrayList<>();
+
+		// Add all the objects in the array to their respective lists
+		for (int i = 0; i < array2D.length; i++) {
+			for (int j = 0; j < array2D[0].length; j++) {
+				if (array2D[i][j] != null) {
+					Object o = array2D[i][j];
+					if (o instanceof Obstacle) {
+						((Obstacle) o).posX = j * Game.tile_size;
+						((Obstacle) o).posY = i * Game.tile_size;
+						blockList.add(o);
+					} else if (o instanceof Tank) {
+						((Tank) o).posX = j * Game.tile_size;
+						((Tank) o).posY = i * Game.tile_size;
+						tankList.add(o);
+					}
+				}
+			}
+		}
+		// The order of adding is important.
+		// Tanks have to be added AFTER the blocks, otherwise the paste breaks.
+		list.addAll(blockList);
+		list.addAll(tankList);
 		return list;
 	}
 

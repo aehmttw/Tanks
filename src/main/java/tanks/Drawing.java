@@ -2,6 +2,7 @@ package tanks;
 
 import basewindow.*;
 import tanks.gui.TerrainRenderer;
+import tanks.gui.TrackRenderer;
 import tanks.network.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
@@ -66,6 +67,7 @@ public class Drawing
 	public BaseShapeBatchRenderer currentTerrainRenderer;
 
 	public TerrainRenderer terrainRenderer2;
+	public TrackRenderer trackRenderer;
 
 	public BaseShapeBatchRenderer terrainRenderer;
 	public BaseShapeBatchRenderer terrainRendererTransparent;

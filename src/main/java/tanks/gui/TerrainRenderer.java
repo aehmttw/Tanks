@@ -23,7 +23,7 @@ public class TerrainRenderer
         return 1664525 * i + 1013904223;
     }
 
-    public class RegionRenderer
+    public static class RegionRenderer
     {
         public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2();
         public int posX;
@@ -64,15 +64,132 @@ public class TerrainRenderer
     public void addRect(IBatchRenderableObject o, double x, double y, double sX, double sY, boolean out)
     {
         BaseShapeBatchRenderer2 s = this.getRenderer(o, x, y, out).renderer;
-        s.setColor(Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB, Drawing.drawing.currentColorA, Drawing.drawing.currentGlow);
-        s.fillRect(o, x, y, sX, sY);
+        s.beginAdd(o);
+
+        float x0 = (float) x;
+        float y0 = (float) y;
+
+        float x1 = (float) (x + sX);
+        float y1 = (float) (y + sY);
+
+        float r1 = (float) Drawing.drawing.currentColorR;
+        float g1 = (float) Drawing.drawing.currentColorG;
+        float b1 = (float) Drawing.drawing.currentColorB;
+        float a = (float) Drawing.drawing.currentColorA;
+        float g = (float) Drawing.drawing.currentGlow;
+
+        s.setColor(r1, g1, b1, a, g);
+        s.addPoint(o, x1, y0, 0);
+        s.addPoint(o, x0, y0, 0);
+        s.addPoint(o, x0, y1, 0);
+
+        s.addPoint(o, x1, y0, 0);
+        s.addPoint(o, x1, y1, 0);
+        s.addPoint(o, x0, y1, 0);
+
+        s.endAdd();
     }
 
     public void addBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean out)
     {
         BaseShapeBatchRenderer2 s = this.getRenderer(o, x, y, out).renderer;
-        s.setColor(Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB, Drawing.drawing.currentColorA, Drawing.drawing.currentGlow);
-        s.fillBox(o, x, y, z, sX, sY, sZ, options);
+        s.beginAdd(o);
+
+        float x0 = (float) x;
+        float y0 = (float) y;
+        float z0 = (float) z;
+
+        float x1 = (float) (x + sX);
+        float y1 = (float) (y + sY);
+        float z1 = (float) (z + sZ);
+
+        float r1 = (float) Drawing.drawing.currentColorR;
+        float g1 = (float) Drawing.drawing.currentColorG;
+        float b1 = (float) Drawing.drawing.currentColorB;
+        float a = (float) Drawing.drawing.currentColorA;
+        float g = (float) Drawing.drawing.currentGlow;
+
+        float r2 = r1 * 0.8f;
+        float g2 = g1 * 0.8f;
+        float b2 = b1 * 0.8f;
+
+        float r3 = r1 * 0.6f;
+        float g3 = g1 * 0.6f;
+        float b3 = b1 * 0.6f;
+
+        if (options % 2 == 0)
+        {
+            s.setColor(r1, g1, b1, a, g);
+            s.addPoint(o, x1, y0, z0);
+            s.addPoint(o, x0, y0, z0);
+            s.addPoint(o, x0, y1, z0);
+
+            s.addPoint(o, x1, y0, z0);
+            s.addPoint(o, x1, y1, z0);
+            s.addPoint(o, x0, y1, z0);
+        }
+
+        if ((options >> 2) % 2 == 0)
+        {
+            s.setColor(r2, g2, b2, a, g);
+            s.addPoint(o, x1, y1, z1);
+            s.addPoint(o, x0, y1, z1);
+            s.addPoint(o, x0, y1, z0);
+
+            s.addPoint(o, x1, y1, z1);
+            s.addPoint(o, x1, y1, z0);
+            s.addPoint(o, x0, y1, z0);
+        }
+
+        if ((options >> 3) % 2 == 0)
+        {
+            s.setColor(r2, g2, b2, a, g);
+            s.addPoint(o, x1, y0, z1);
+            s.addPoint(o, x0, y0, z1);
+            s.addPoint(o, x0, y0, z0);
+
+            s.addPoint(o, x1, y0, z1);
+            s.addPoint(o, x1, y0, z0);
+            s.addPoint(o, x0, y0, z0);
+        }
+
+        if ((options >> 4) % 2 == 0)
+        {
+            s.setColor(r3, g3, b3, a, g);
+            s.addPoint(o, x0, y1, z1);
+            s.addPoint(o, x0, y1, z0);
+            s.addPoint(o, x0, y0, z0);
+
+            s.addPoint(o, x0, y1, z1);
+            s.addPoint(o, x0, y0, z1);
+            s.addPoint(o, x0, y0, z0);
+        }
+
+        if ((options >> 5) % 2 == 0)
+        {
+            s.setColor(r3, g3, b3, a, g);
+            s.addPoint(o, x1, y1, z0);
+            s.addPoint(o, x1, y1, z1);
+            s.addPoint(o, x1, y0, z1);
+
+            s.addPoint(o, x1, y1, z0);
+            s.addPoint(o, x1, y0, z0);
+            s.addPoint(o, x1, y0, z1);
+        }
+
+        if ((options >> 1) % 2 == 0)
+        {
+            s.setColor(r1, g1, b1, a, g);
+            s.addPoint(o, x1, y1, z1);
+            s.addPoint(o, x0, y1, z1);
+            s.addPoint(o, x0, y0, z1);
+
+            s.addPoint(o, x1, y1, z1);
+            s.addPoint(o, x1, y0, z1);
+            s.addPoint(o, x0, y0, z1);
+        }
+
+        s.endAdd();
     }
 
     public void remove(IBatchRenderableObject o)
@@ -132,7 +249,7 @@ public class TerrainRenderer
 
             if (in)
             {
-                s.renderer.settings(true);
+                s.renderer.settings(true, false, true);
                 s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
                 s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
                 s.renderer.draw();

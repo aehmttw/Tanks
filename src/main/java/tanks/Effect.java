@@ -1,12 +1,13 @@
 package tanks;
 
+import basewindow.IBatchRenderableObject;
 import tanks.bullet.Bullet;
 import tanks.minigames.Arcade;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Turret;
 
-public class Effect extends Movable implements IDrawableWithGlow, IDrawableLightSource
+public class Effect extends Movable implements IDrawableWithGlow, IDrawableLightSource, IBatchRenderableObject
 {
     public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
 
@@ -35,6 +36,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
     public int initialGridX;
     public int initialGridY;
+
+    public boolean firstDraw = true;
 
     public double[] lightInfo = new double[7];
 
@@ -202,6 +205,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         this.state = State.live;
         this.force = false;
         this.fastRemoveOnExit = false;
+        this.firstDraw = true;
     }
 
     @Override
@@ -356,7 +360,13 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
         else if (this.type == EffectType.tread)
         {
-            double opacityFactor = 2;
+            if (firstDraw)
+            {
+                Drawing.drawing.setColor(0, 0, 0, 64);
+                Drawing.drawing.trackRenderer.addRect(this, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, angle);
+            }
+
+            /*double opacityFactor = 2;
 
             if (Game.effectsEnabled)
             {
@@ -365,7 +375,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
             double opacity = (255 - this.age / opacityFactor) / 4;
             drawing.setColor(0, 0, 0, opacity);
-            drawing.drawModel(Drawing.rotatedRect, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, 1, angle, 0, 0);
+            drawing.drawModel(Drawing.rotatedRect, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, 1, angle, 0, 0);*/
         }
         else if (this.type == EffectType.darkFire)
         {
@@ -624,6 +634,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         {
             Game.exitToCrash(new RuntimeException("Invalid effect type!"));
         }
+
+        this.firstDraw = false;
     }
 
     public void drawGlow()
@@ -773,7 +785,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
             if (Game.effects.contains(this) && !Game.removeEffects.contains(this))
                 Game.removeEffects.add(this);
             else if (Game.tracks.contains(this) && !Game.removeTracks.contains(this))
+            {
+                Drawing.drawing.trackRenderer.remove(this);
                 Game.removeTracks.add(this);
+            }
         }
 
         if (this.type == EffectType.obstaclePiece3d)
@@ -783,7 +798,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
             boolean collidedX = false;
             boolean collidedY = false;
-            boolean collided = false;
+            boolean collided;
 
             if (x < 0 || x >= Game.currentSizeX)
                 collidedX = true;

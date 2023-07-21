@@ -160,7 +160,6 @@ public class Ray
 
 	public Movable getTarget()
 	{
-		System.out.println(Game.horizontalFaces.size());
 		double remainder = 0;
 
 		if (isInsideObstacle(this.posX - size / 2, this.posY - size / 2) ||

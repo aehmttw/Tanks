@@ -328,8 +328,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public boolean[] getValidHorizontalFaces(boolean unbreakable)
 	{
-		this.validFaces[0] = !this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1;
-		this.validFaces[1] = !this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1;
+		this.validFaces[0] = (!this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+		this.validFaces[1] = (!this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
 		return this.validFaces;
 	}
 
@@ -349,8 +349,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public boolean[] getValidVerticalFaces(boolean unbreakable)
 	{
-		this.validFaces[0] = !this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1;
-		this.validFaces[1] = !this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1;
+		this.validFaces[0] = (!this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+		this.validFaces[1] = (!this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
 		return this.validFaces;
 	}
 

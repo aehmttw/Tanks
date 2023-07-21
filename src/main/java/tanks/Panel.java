@@ -5,6 +5,7 @@ import basewindow.IBatchRenderableObject;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
 import tanks.gui.TerrainRenderer;
+import tanks.gui.TrackRenderer;
 import tanks.network.event.EventBeginLevelCountdown;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
@@ -121,6 +122,7 @@ public class Panel
 		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
 		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
 		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		Drawing.drawing.trackRenderer = new TrackRenderer();
 
 		ModAPI.setUp();
 
@@ -747,9 +749,10 @@ public class Panel
 		}
 
 		if (Drawing.drawing.terrainRenderer2 == null)
-		{
 			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
-		}
+
+		if (Drawing.drawing.trackRenderer == null)
+			Drawing.drawing.trackRenderer = new TrackRenderer();
 
 		if (!(Game.screen instanceof ScreenGame))
 		{

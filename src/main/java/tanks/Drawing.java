@@ -2,6 +2,7 @@ package tanks;
 
 import basewindow.*;
 import tanks.gui.TerrainRenderer;
+import tanks.gui.TrackRenderer;
 import tanks.network.event.EventPlaySound;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
@@ -66,6 +67,7 @@ public class Drawing
 	public BaseShapeBatchRenderer currentTerrainRenderer;
 
 	public TerrainRenderer terrainRenderer2;
+	public TrackRenderer trackRenderer;
 
 	public BaseShapeBatchRenderer terrainRenderer;
 	public BaseShapeBatchRenderer terrainRendererTransparent;
@@ -417,7 +419,16 @@ public class Drawing
 
 	public void fillRect(double x, double y, double sizeX, double sizeY)
 	{
-		fillRect(x, y, sizeX, sizeY, 0);
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
+
+		if (isOutOfBounds(drawX, drawY))
+			return;
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
 	public void fillRect(double x, double y, double sizeX, double sizeY, double borderRadius)
@@ -684,10 +695,8 @@ public class Drawing
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
 		if (this.terrainRendering)
-		{
-			this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
+			this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);
 			//this.currentTerrainRenderer.fillBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
-		}
 		else
 		{
 			double shrubMod = 1;
@@ -1193,26 +1202,18 @@ public class Drawing
 
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
+		{
 			drawUncenteredInterfaceText(x + xPadding, y + 2 + yPadding * (2 * i + 1), text[i]);
+		}
 
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
 	}
 
 	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius)
 	{
-		drawPopup(x, y, sX, sY, borderWidth, borderRadius, 0, 0, 0, 150);
-	}
-
-	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius, double a)
-	{
-		drawPopup(x, y, sX, sY, borderWidth, borderRadius, 0, 0, 0, a);
-	}
-
-	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius, double r, double g, double b, double a)
-	{
-		Drawing.drawing.setColor(r, g, b, a * 0.75);
 		fillRect(x, y, sX, sY, borderRadius);
 		drawRect(x, y, sX, sY, borderWidth, borderRadius);
+		Drawing.drawing.setColor(255, 255, 255);
 	}
 
 	public void playMusic(String sound, float volume, boolean looped, String id, long fadeTime)

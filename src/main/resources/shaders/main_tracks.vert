@@ -1,4 +1,5 @@
 #version 120
+attribute int age;
 
 void getVertVecs(out vec4 pos, out vec3 normal)
 {

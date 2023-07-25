@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class MessageReader 
 {
-	public static final int max_event_size = 1048576;
+	public static final int max_event_size = 104857600;
 
 	public static int downstreamBytes;
 	public static int upstreamBytes;

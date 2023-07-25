@@ -76,11 +76,6 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
-	public void onFocusChange(boolean focused)
-	{
-
-	}
-
 	public void drawDefaultBackground()
 	{
 		this.drawDefaultBackground(1);
@@ -90,6 +85,7 @@ public abstract class Screen implements IBatchRenderableObject
 	{
 		if (!drawn)
 		{
+			Drawing.drawing.trackRenderer.reset();
 			Drawing.drawing.terrainRenderer2.reset();
 			this.drawn = true;
 		}
@@ -137,6 +133,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 		Drawing.drawing.terrainRendering = true;
 		Drawing.drawing.terrainRenderer2.draw();
+		Drawing.drawing.trackRenderer.draw();
 		Drawing.drawing.terrainRendering = false;
 
 //		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
@@ -336,6 +333,11 @@ public abstract class Screen implements IBatchRenderableObject
 	}
 
 	public void setupLayoutParameters()
+	{
+
+	}
+
+	public void onFocusChange(boolean focused)
 	{
 
 	}

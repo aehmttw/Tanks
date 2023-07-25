@@ -7,6 +7,7 @@ import tanks.extension.Extension;
 import tanks.gui.IFixedMenu;
 import tanks.gui.TerrainRenderer;
 import tanks.gui.TextBox;
+import tanks.gui.TrackRenderer;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
@@ -14,7 +15,6 @@ import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
 import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.EventPing;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
@@ -24,11 +24,10 @@ import java.util.Arrays;
 
 public class Panel
 {
+	public static boolean pauseOnDefocus = true;
+	public static boolean focused = true;
+	public static boolean prevFocused = true;
 	public static boolean onlinePaused;
-	public static boolean focused;
-	public static boolean prevFocused;
-
-	public boolean screenshot = false;
 
 	public double zoomTimer = 0;
 	public static double zoomTarget = -1;
@@ -43,7 +42,6 @@ public class Panel
 
 	public static boolean showMouseTarget = true;
 	public static boolean showMouseTargetHeight = false;
-	public static boolean pauseOnDefocus = true;
 
 	public static Panel panel;
 
@@ -59,7 +57,7 @@ public class Panel
 
 	public Translation zoomTranslation = new Translation(Game.game.window, 0, 0, 0);
 
-	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
+	/** Centiseconds since the last frame - important value used in calculating game speed. */
 	public static double frameFrequency = 1;
 
 	//ArrayList<Double> frameFrequencies = new ArrayList<Double>();
@@ -88,7 +86,6 @@ public class Panel
 	public boolean firstDraw = true;
 	public boolean introFinished = false;
 	public boolean splashFinished = false;
-	public boolean popupFinished = false;
 
 	public boolean startMusicPlayed = false;
 
@@ -126,6 +123,7 @@ public class Panel
 		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
 		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
 		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		Drawing.drawing.trackRenderer = new TrackRenderer();
 
 		ModAPI.setUp();
 
@@ -246,6 +244,7 @@ public class Panel
 		settingUp = false;
 	}
 
+	public boolean screenshot = false;
 	public void update()
 	{
 		if (firstFrame)
@@ -253,14 +252,8 @@ public class Panel
 
 		firstFrame = false;
 
-		Panel.focused = Game.game.window.focused;
 		Game.prevScreen = Game.screen;
 		Obstacle.lastDrawSize = Obstacle.draw_size;
-
-		if (Panel.focused != Panel.prevFocused)
-			Game.screen.onFocusChange(Panel.focused);
-
-		Panel.prevFocused = Panel.focused;
 
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
@@ -269,6 +262,13 @@ public class Panel
 			//this.startTime = System.currentTimeMillis() + splash_duration;
 			//Drawing.drawing.playSound("splash_jingle.ogg");
 		}
+
+		focused = Game.game.window.focused;
+
+		if (focused != prevFocused)
+			Game.screen.onFocusChange(focused);
+
+		prevFocused = focused;
 
 		if (!started)
 			this.startTime = System.currentTimeMillis();
@@ -291,7 +291,9 @@ public class Panel
 		lastFrameNano = System.nanoTime();
 
 		if (System.currentTimeMillis() - this.startTime < 0)
+		{
 			return;
+		}
 
 		if (!splashFinished)
 		{
@@ -595,20 +597,6 @@ public class Panel
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
 
-		if (ScreenPartyLobby.isClient)
-		{
-			Client.handler.pingTimer -= Panel.frameFrequency;
-
-			if (Client.handler.pingTimer <= 0)
-			{
-				Game.eventsOut.add(new EventPing());
-				Client.handler.pingTimer = 150;
-				ClientHandler.lastLatencyTime = System.currentTimeMillis();
-			}
-
-			Client.handler.reply();
-		}
-
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.update();
 
@@ -685,7 +673,7 @@ public class Panel
 		if (Game.cinematic)
 			introAnimationTime = 4000;
 
-		if (System.currentTimeMillis() - startTime < 1)
+		if (System.currentTimeMillis() - startTime < 0)
 		{
 			double frac = (startTime - System.currentTimeMillis() * 1.0) / splash_duration;
 
@@ -765,11 +753,16 @@ public class Panel
 			if (!Game.game.window.drawingShadow)
 				this.frameStartTime = System.currentTimeMillis();
 
+			if (Drawing.drawing.trackRenderer == null)
+				Drawing.drawing.trackRenderer = new TrackRenderer();
+
 			return;
 		}
 
 		if (Drawing.drawing.terrainRenderer2 == null)
+		{
 			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		}
 
 		if (!(Game.screen instanceof ScreenGame))
 		{
@@ -845,7 +838,7 @@ public class Panel
 
 		Drawing.drawing.setColor(255, 255, 255);
 		if (screenshot)
-			Game.game.window.shapeRenderer.drawImage(100, 100, 500, 500, "screenshot.png", false);
+			Game.game.window.shapeRenderer.drawImage(100, 100, 500, 500, "screenshot", false);
 
 		Drawing.drawing.setColor(0, 0, 0, 0);
 		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
@@ -857,25 +850,6 @@ public class Panel
 
 //		if (!Game.game.window.drawingShadow)
 //			Drawing.drawing.terrainRenderer2.draw();
-
-		if (!popupFinished)
-			popupFinished = Game.brokenExtensions.isEmpty() || System.currentTimeMillis() - introMusicEnd > 1000;
-
-		if (!popupFinished && introFinished)
-		{
-			double x = Game.game.window.absoluteWidth - 130;
-			double y = Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 50;
-
-			Drawing.drawing.drawPopup(x, y, 240, 70, 8, 3);
-
-			Drawing.drawing.setFontSize(14);
-			Drawing.drawing.setColor(255, 255, 255);
-			Drawing.drawing.displayUncenteredInterfaceText(x - 102, y - 20, "%d " + (Game.brokenExtensions.size() > 0 ? "extension" : "extensions") + " failed to load", Game.brokenExtensions.size());
-
-			Drawing.drawing.setFontSize(12);
-			Drawing.drawing.setColor(200, 200, 200);
-			Drawing.drawing.displayUncenteredInterfaceText(x - 102, y, "Check console for details.");
-		}
 	}
 
 	public void drawMouseTarget()

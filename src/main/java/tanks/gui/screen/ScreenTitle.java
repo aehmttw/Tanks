@@ -175,9 +175,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			return;
 
 		for (int i = 0; i < Game.game.groundHeightGrid.length; i++)
-		{
 			System.arraycopy(Game.tilesDepth[i], 0, Game.game.groundHeightGrid[i], 0, Game.game.groundHeightGrid[i].length);
-		}
 
 		Game.horizontalFaces.clear();
 		Game.verticalFaces.clear();

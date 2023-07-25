@@ -64,7 +64,10 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
         for (int i = 0; i < selector.options.length; i++)
         {
             String n = selector.options[i];
-            n = n.substring(n.indexOf("tank/") + "tank/".length(), n.indexOf(".ogg"));
+            if (n.contains("tank/"))
+                n = n.substring(n.indexOf("tank/") + "tank/".length(), n.indexOf(".ogg"));
+            else if (n.contains("arcade/"))
+                n = n.substring(n.indexOf("arcade/") + "arcade/".length(), n.indexOf(".ogg"));
 
             if (selector.format)
                 n = Game.formatString(n);

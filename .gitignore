@@ -5,4 +5,5 @@
 .DS_Store
 /.vscode
 Tanks.jar
-/libs
+steam_app_id.txt
+dependency-reduced-pom.xml

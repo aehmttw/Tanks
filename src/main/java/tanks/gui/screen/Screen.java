@@ -26,6 +26,8 @@ public abstract class Screen implements IBatchRenderableObject
 	public double objXSpace = Drawing.drawing.objXSpace;
 	public double objYSpace = Drawing.drawing.objYSpace;
 
+	public double screenAge = 0;
+
 	public double centerX = Drawing.drawing.interfaceSizeX / 2;
 	public double centerY = Drawing.drawing.interfaceSizeY / 2;
 
@@ -84,8 +86,8 @@ public abstract class Screen implements IBatchRenderableObject
 	{
 		if (!drawn)
 		{
-			Drawing.drawing.trackRenderer.reset();
-			Drawing.drawing.terrainRenderer2.reset();
+//			Drawing.drawing.trackRenderer.reset();
+//			Drawing.drawing.terrainRenderer2.reset();
 			this.drawn = true;
 		}
 

@@ -4,6 +4,8 @@ import org.lwjgl.BufferUtils;
 
 public abstract class BaseShapeBatchRenderer2
 {
+    public boolean hidden = false;
+
     public final boolean dynamic;
 
     public double posX = 0;
@@ -56,11 +58,9 @@ public abstract class BaseShapeBatchRenderer2
 
     public abstract void setColor(float r, float g, float b, float a, float glow);
 
-    public abstract void addAttribute(ShaderProgram.Attribute attribute);
+    public abstract void addAttribute(ShaderGroup.Attribute attribute);
 
-    public abstract void setAttribute(ShaderProgram.Attribute a, int... ints);
-
-    public abstract void setAttribute(ShaderProgram.Attribute a, float... floats);
+    public abstract void setAttribute(ShaderGroup.Attribute a, float... floats);
 
     public abstract void settings(boolean depth);
 

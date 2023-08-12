@@ -4,6 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
@@ -208,7 +209,6 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
                 , level.levelName.replace("_", " "));
 
-        levelName.maxChars = 18;
         levelName.enableCaps = true;
 
         this.updateSaveButton();

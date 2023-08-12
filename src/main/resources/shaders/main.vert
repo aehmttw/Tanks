@@ -57,12 +57,12 @@ uniform sampler2D lights;
 
 void main(void)
 {
-    vertexColor = vec4(gl_Color.r, gl_Color.g, gl_Color.b, gl_Color.a);
+    vertexColor = getColor(gl_Color);
 
     vec4 pos;
+    vec3 normal;
 
-//    getVertVecs(pos, normal);
-    pos = gl_Vertex;
+    getVertVecs(pos, normal);
 
     gl_Position = gl_ModelViewProjectionMatrix * pos;
     lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1.0);

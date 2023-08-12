@@ -13,11 +13,11 @@ public class ShaderBones extends ShaderBase implements IBaseShader, IBoneShader
         super(window);
     }
 
-    @Override
-    public void initialize() throws Exception
-    {
-        this.setUp("/shaders/main.vert", new String[]{"/shaders/main_bones.vert"}, "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
-    }
+//    @Override
+//    public void initialize() throws Exception
+//    {
+//        this.setUp("/shaders/main.vert", new String[]{"/shaders/main_bones.vert"}, "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
+//    }
 
     @Override
     public void initializeUniforms()
@@ -25,11 +25,11 @@ public class ShaderBones extends ShaderBase implements IBaseShader, IBoneShader
         this.depthTexture.set(1);
     }
 
-    @Override
-    public void initializeAttributeParameters()
-    {
-        this.bones.setDataType(FLOAT, 4);
-    }
+//    @Override
+//    public void initializeAttributeParameters()
+//    {
+//        this.bones.setDataType(FLOAT, 4);
+//    }
 
     @Override
     public void setBoneMatrices(float[] matrices, boolean transpose)
@@ -48,7 +48,7 @@ public class ShaderBones extends ShaderBase implements IBaseShader, IBoneShader
         this.util.setColorBuffer(colorBufferID);
         this.util.setTexCoordBuffer(texBufferID);
         this.util.setNormalBuffer(normalBufferID);
-        this.util.setCustomBuffer(bones, boneBufferID, 4, FLOAT);
+        this.util.setCustomBuffer(bones, boneBufferID, 4);
         this.util.drawVBO(numberIndices);
 
         this.vbo.set(false);

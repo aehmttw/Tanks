@@ -5,6 +5,7 @@ import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
+import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
@@ -59,7 +60,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public double lastNewReadyName = readyNameSpacing;
 	public int readyNamesCount = 0;
 	public int prevReadyNames = 0;
-	public ArrayList<String> readyPlayers = new ArrayList<>();
+	public ArrayList<ConnectedPlayer> readyPlayers = new ArrayList<>();
 
 	public static boolean versus = false;
 	public String title = "";
@@ -1785,10 +1786,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && o.bulletCollision)
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
-				Game.game.solidGrid[x][y] = false;
-				Game.game.unbreakableGrid[x][y] = false;
+				Game.redrawGroundTiles.add(new int[]{x, y});
+
+				if (o.bulletCollision)
+				{
+					Game.game.solidGrid[x][y] = false;
+					Game.game.unbreakableGrid[x][y] = false;
+				}
 			}
 
 			Game.obstacles.remove(o);
@@ -2003,7 +2009,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Drawing drawing = Drawing.drawing;
 
-		drawables[0].addAll(Game.tracks);
+		//drawables[0].addAll(Game.tracks);
 
 		for (Movable m: Game.movables)
 		{
@@ -2268,7 +2274,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						readyPlayers.clear();
 
 						for (Player p : ScreenPartyHost.readyPlayers)
-							readyPlayers.add(p.username);
+							readyPlayers.add(p.getConnectedPlayer());
 					}
 					else
 						readyPlayers = ScreenPartyLobby.readyPlayers;
@@ -2288,9 +2294,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					double c = readyPanelCounter - 35;
 
+					double opacity = Math.max(Math.min(s / 25, 1) * 255, 0);
 					if (c > 0)
 					{
-						Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(s / 25, 1) * 255, 0));
+						Drawing.drawing.setColor(255, 255, 255, opacity);
 						Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
 						Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 50, "Ready players:");
@@ -2303,17 +2310,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					else if (ScreenPartyLobby.isClient)
 						includedPlayers = ScreenPartyLobby.includedPlayers.size();
 
-					double spacing = readyNameSpacing;
-
-					if (includedPlayers > 15)
-						spacing = spacing / 2;
-
-					if (includedPlayers > 30)
-						spacing = spacing / 2;
-
-					if (includedPlayers > 60)
-						spacing = spacing / 2;
-
+					double spacing = Math.min(readyNameSpacing, Game.currentLevel.startTime / (includedPlayers + 1));
 
 					if (readyPlayers.size() > readyNamesCount && c > lastNewReadyName + spacing)
 					{
@@ -2334,15 +2331,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					{
 						if (i < readyNamesCount)
 						{
-							Drawing.drawing.setColor(255, 255, 255, Math.max(Math.min(s / 25, 1) * 255, 0));
-							Drawing.drawing.setInterfaceFontSize(this.textSize);
+							Drawing.drawing.setColor(255, 255, 255, opacity);
 
 							if (i >= base)
 							{
+								ConnectedPlayer cp = readyPlayers.get(i);
+
+								String name;
 								if (Game.enableChatFilter)
-									Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, Game.chatFilter.filterChat(readyPlayers.get(i)));
+									name = Game.chatFilter.filterChat(cp.username);
 								else
-									Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, readyPlayers.get(i));
+									name = cp.username;
+
+								Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, name);
+								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, name);
+								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, opacity / 255 * 25);
 							}
 						}
 					}

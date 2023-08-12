@@ -11,6 +11,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
+import tanks.Game;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -298,11 +299,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		try
 		{
-			this.shaderShadowMap = new ShaderShadowMap(this);
-			this.shaderShadowMap.initialize();
-
-			this.shaderBase = new ShaderBase(this);
-			this.shaderBase.initialize();
+			this.shaderDefault = new ShaderGroup(this);
 		}
 		catch (Exception e)
 		{
@@ -506,7 +503,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (!drawingShadow)
-			this.currentBaseShader.glow.set(0);
+			this.currentBaseShader.glow.set(0f);
 	}
 
 	public void setColor(double r, double g, double b)
@@ -519,7 +516,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor3d(this.colorR, this.colorG, this.colorB);
 
 		if (!drawingShadow)
-			this.currentBaseShader.glow.set(0);
+			this.currentBaseShader.glow.set(0f);
 	}
 
 	protected void createImage(String image)
@@ -1256,6 +1253,11 @@ public class LWJGLWindow extends BaseWindow
 		return new VBOShapeBatchRenderer2(this);
 	}
 
+	@Override
+	public BaseShapeBatchRenderer2 createShapeBatchRenderer2(ShaderGroup shader)
+	{
+		return new VBOShapeBatchRenderer2(this, shader);
+	}
 
 	@Override
 	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices)

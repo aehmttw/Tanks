@@ -113,9 +113,9 @@ public class VBOPosedModel extends PosedModel
         ((LWJGLWindow)this.model.window).setDrawOptions(false, false, true);
 
         if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderBase);
+            this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
         else
-            this.model.window.setShader(this.model.window.shaderShadowMap);
+            this.model.window.setShader(this.model.window.shaderDefault.shaderShadowMap);
     }
 
     @Override
@@ -162,9 +162,9 @@ public class VBOPosedModel extends PosedModel
         }
 
         if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderBase);
+            this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
         else
-            this.model.window.setShader(this.model.window.shaderShadowMap);
+            this.model.window.setShader(this.model.window.shaderDefault.shaderShadowMap);
     }
 
     @Override

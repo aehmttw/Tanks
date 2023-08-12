@@ -64,6 +64,7 @@ public class ObstacleSnow extends Obstacle
             int amt = 5;
             int lastDepth = (int) Math.ceil(this.depth * amt);
             this.depth -= Panel.frameFrequency * 0.005;
+            Game.redrawObstacles.add(this);
 
             if (this.depth <= 0)
                 Game.removeObstacles.add(this);
@@ -81,7 +82,10 @@ public class ObstacleSnow extends Obstacle
         if (Game.effectsEnabled && !ScreenGame.finished)
         {
             if (ScreenPartyLobby.isClient)
+            {
                 this.depth = Math.max(0.05, this.depth - Panel.frameFrequency * 0.005);
+                Game.redrawObstacles.add(this);
+            }
 
             double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 
@@ -186,13 +190,5 @@ public class ObstacleSnow extends Obstacle
             shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 
         return shrubScale * (this.finalHeight + this.baseGroundHeight);
-    }
-
-    public boolean positionChanged()
-    {
-        boolean r = this.previousFinalHeight != this.finalHeight;
-        this.previousFinalHeight = this.finalHeight;
-
-        return r;
     }
 }

@@ -5,6 +5,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
+import tanks.network.ConnectedPlayer;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
@@ -33,10 +34,13 @@ public class Player
 
     public boolean enableSecondaryColor = false;
 
+    protected ConnectedPlayer connectedPlayer;
+
     public Player(UUID clientID, String username)
     {
         this.clientID = clientID;
         this.username = username;
+        this.connectedPlayer = new ConnectedPlayer(clientID, username);
     }
 
     public String toString()
@@ -190,5 +194,19 @@ public class Player
             l.totalTime = Double.parseDouble(sec[3]);
             performances.add(l);
         }
+    }
+
+    public ConnectedPlayer getConnectedPlayer()
+    {
+        if (this == Game.player)
+            this.connectedPlayer = new ConnectedPlayer(Game.player.clientID, Game.player.username);
+
+        this.connectedPlayer.colorR = this.colorR;
+        this.connectedPlayer.colorG = this.colorG;
+        this.connectedPlayer.colorB = this.colorB;
+        this.connectedPlayer.colorR2 = this.turretColorR;
+        this.connectedPlayer.colorG2 = this.turretColorG;
+        this.connectedPlayer.colorB2 = this.turretColorB;
+        return this.connectedPlayer;
     }
 }

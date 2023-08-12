@@ -4,6 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
@@ -77,7 +78,6 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
                 , name.replace("_", " "));
 
         levelName.enableCaps = true;
-        levelName.maxChars = 18;
 
         this.updateDownloadButton();
     }

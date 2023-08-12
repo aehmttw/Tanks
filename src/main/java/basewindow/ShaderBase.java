@@ -38,12 +38,12 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
         this.window = window;
     }
 
-    @Override
-    public void initialize() throws Exception
-    {
-        this.setUp("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
-                "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
-    }
+//    @Override
+//    public void initialize() throws Exception
+//    {
+//        this.setUp("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
+//                "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
+//    }
 
     @Override
     public void initializeUniforms()

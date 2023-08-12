@@ -76,7 +76,7 @@ public class ShaderHandler
             this.createFbo();
         }
 
-        this.window.setShader(this.window.shaderShadowMap);
+        this.window.setShader(this.window.shaderDefault.shaderShadowMap);
 
         this.window.loadPerspective();
 
@@ -96,10 +96,10 @@ public class ShaderHandler
         float[] projMatrixShadow = new float[16];
         glGetFloatv(GL_PROJECTION_MATRIX, projMatrixShadow);
 
-        this.window.setShader(this.window.shaderBase);
-        this.window.shaderBase.shadowres.set(this.size);
-        this.window.shaderBase.lightVec.set((float) this.window.lightVec[0], (float) this.window.lightVec[1], (float) this.window.lightVec[2]);
-        this.window.shaderBase.shadow.set(this.window.shadowsEnabled);
+        this.window.setShader(this.window.shaderDefault.shaderBase);
+        this.window.shaderDefault.shaderBase.shadowres.set(this.size);
+        this.window.shaderDefault.shaderBase.lightVec.set((float) this.window.lightVec[0], (float) this.window.lightVec[1], (float) this.window.lightVec[2]);
+        this.window.shaderDefault.shaderBase.shadow.set(this.window.shadowsEnabled);
 
         if (!this.initialized)
         {
@@ -114,8 +114,8 @@ public class ShaderHandler
         float[] projMatrix = new float[16];
         glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
 
-        this.window.shaderBase.lightViewProjectionMatrix.set(projMatrixShadow, false);
-        this.window.shaderBase.biasMatrix.set(biasMatrix, false);
+        this.window.shaderDefault.shaderBase.lightViewProjectionMatrix.set(projMatrixShadow, false);
+        this.window.shaderDefault.shaderBase.biasMatrix.set(biasMatrix, false);
 
         glViewport(0, 0, this.window.w[0], this.window.h[0]);
 

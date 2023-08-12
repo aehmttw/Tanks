@@ -12,7 +12,7 @@ public class ScreenUsernameWarning extends Screen
 		this.musicID = "menu";
 	}
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", () -> Game.screen = new ScreenOptionsMultiplayer()
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Ok", () -> Game.screen = new ScreenOptionsPersonalize()
 	);
 	
 	@Override

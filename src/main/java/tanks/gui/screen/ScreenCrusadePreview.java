@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import tanks.*;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.network.event.EventShareCrusade;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -155,7 +156,6 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
                 , crusade.name.replace("_", " "));
 
         crusadeName.enableCaps = true;
-        crusadeName.maxChars = 18;
 
         this.updateDownloadButton();
     }

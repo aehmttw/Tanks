@@ -4,12 +4,16 @@ import basewindow.BaseShapeBatchRenderer2;
 import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.obstacle.Obstacle;
 
 import java.util.HashMap;
 
 public class TrackRenderer
 {
     public static final int section_size = 400;
+
+    public ShaderTracks shader = new ShaderTracks(Game.game.window);
+
     protected final HashMap<Integer, RegionRenderer> renderers = new HashMap<>();
     protected final HashMap<IBatchRenderableObject, RegionRenderer> renderersByObj = new HashMap<>();
     public IBatchRenderableObject[][] tiles;
@@ -19,14 +23,28 @@ public class TrackRenderer
         return 1664525 * i + 1013904223;
     }
 
+    public TrackRenderer()
+    {
+        try
+        {
+            this.shader.initialize();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Game.exitToCrash(e);
+        }
+    }
+
     public class RegionRenderer
     {
-        public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2();
+        public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2(shader);
         public int posX;
         public int posY;
 
         public RegionRenderer(int x, int y)
         {
+//            renderer.hidden = true;
             this.posX = x;
             this.posY = y;
         }
@@ -60,6 +78,8 @@ public class TrackRenderer
         float g = (float) Drawing.drawing.currentGlow;
 
         s.setColor(r1, g1, b1, a, g);
+        s.setAttribute(shader.addTime, (float) Game.screen.screenAge);
+
         s.addPoint(o, (float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
         s.addPoint(o, (float) s.rotateX(width / 2, -height / 2, x, rotation), (float) s.rotateY(width / 2, -height / 2, y, rotation), (float) z);
         s.addPoint(o, (float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
@@ -124,6 +144,23 @@ public class TrackRenderer
 
     public void draw()
     {
+        this.shader.set();
+
+        float max = (float) getMaxTrackAge();
+        shader.time.set((float) (Game.screen.screenAge + max * (1 - Obstacle.draw_size / Game.tile_size)));
+        shader.maxAge.set(max);
+
         this.drawMap(this.renderers, 0, 0);
+
+        Game.game.window.shaderDefault.set();
+    }
+
+    public static double getMaxTrackAge()
+    {
+        double maxAge = 2.5;
+        if (Game.effectsEnabled)
+            maxAge += Game.effectMultiplier * 47.5;
+
+        return maxAge * 100;
     }
 }

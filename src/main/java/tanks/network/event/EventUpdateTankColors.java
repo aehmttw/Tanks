@@ -3,9 +3,16 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
+import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.ConnectedPlayer;
+import tanks.network.NetworkUtils;
 
-public class EventSendTankColors extends PersonalEvent
+import java.util.UUID;
+
+public class EventUpdateTankColors extends PersonalEvent
 {
+    public UUID player;
+
     public int colorR;
     public int colorG;
     public int colorB;
@@ -14,13 +21,15 @@ public class EventSendTankColors extends PersonalEvent
     public int colorG2;
     public int colorB2;
 
-    public EventSendTankColors()
+    public EventUpdateTankColors()
     {
 
     }
 
-    public EventSendTankColors(Player p)
+    public EventUpdateTankColors(Player p)
     {
+        this.player = p.clientID;
+
         this.colorR = p.colorR;
         this.colorG = p.colorG;
         this.colorB = p.colorB;
@@ -33,6 +42,7 @@ public class EventSendTankColors extends PersonalEvent
     @Override
     public void write(ByteBuf b)
     {
+        NetworkUtils.writeString(b, this.player.toString());
         b.writeInt(this.colorR);
         b.writeInt(this.colorG);
         b.writeInt(this.colorB);
@@ -44,6 +54,7 @@ public class EventSendTankColors extends PersonalEvent
     @Override
     public void read(ByteBuf b)
     {
+        this.player = UUID.fromString(NetworkUtils.readString(b));
         this.colorR = b.readInt();
         this.colorG = b.readInt();
         this.colorB = b.readInt();
@@ -55,22 +66,20 @@ public class EventSendTankColors extends PersonalEvent
     @Override
     public void execute()
     {
-        if (this.clientID != null)
+        if (this.clientID == null)
         {
-            synchronized (Game.players)
+            synchronized (ScreenPartyLobby.connections)
             {
-                for (Player p: Game.players)
+                for (ConnectedPlayer p: ScreenPartyLobby.connections)
                 {
-                    if (p.clientID.equals(this.clientID))
+                    if (p.clientId.equals(this.player))
                     {
                         p.colorR = this.colorR;
                         p.colorG = this.colorG;
                         p.colorB = this.colorB;
-                        p.turretColorR = this.colorR2;
-                        p.turretColorG = this.colorG2;
-                        p.turretColorB = this.colorB2;
-
-                        Game.eventsOut.add(new EventUpdateTankColors(p));
+                        p.colorR2 = this.colorR2;
+                        p.colorG2 = this.colorG2;
+                        p.colorB2 = this.colorB2;
                     }
                 }
             }

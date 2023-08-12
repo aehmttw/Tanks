@@ -1084,6 +1084,37 @@ public class Drawing
 		drawUncenteredInterfaceText(x, y, Translation.translate(text, objects));
 	}
 
+	public double getStringWidth(String s)
+	{
+		return Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+	}
+
+	public double getStringHeight(String s)
+	{
+		return Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+	}
+
+	public void setFontSize(double size)
+	{
+		this.fontSize = size / 36.0 * scale;
+	}
+
+	public void setInterfaceFontSize(double size)
+	{
+		this.fontSize = size / 36.0 * interfaceScale;
+	}
+
+	public void setBoundedInterfaceFontSize(double maxFontSize, double width, String text)
+	{
+		this.setInterfaceFontSize(maxFontSize);
+
+		if (width > 0)
+		{
+			double sizeRaw = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / Drawing.drawing.interfaceScale;
+			this.setInterfaceFontSize(maxFontSize * Math.min(1, width / sizeRaw));
+		}
+	}
+
 	public void addVertex(double x, double y, double z)
 	{
 		double drawX = gameToAbsoluteX(x, 0);
@@ -1131,16 +1162,6 @@ public class Drawing
 	public void setLighting(double light, double shadow)
 	{
 		Game.game.window.setLighting(light, Math.max(1, light), shadow, Math.max(1, shadow));
-	}
-
-	public void setFontSize(double size)
-	{
-		this.fontSize = size / 36.0 * scale;
-	}
-
-	public void setInterfaceFontSize(double size)
-	{
-		this.fontSize = size / 36.0 * interfaceScale;
 	}
 
 	public void drawTooltip(String[] text)

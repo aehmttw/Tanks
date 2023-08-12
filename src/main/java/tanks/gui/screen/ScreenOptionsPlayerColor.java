@@ -4,6 +4,8 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBoxSlider;
+import tanks.network.event.EventSendTankColors;
+import tanks.network.event.EventUpdateTankColors;
 import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 
@@ -21,7 +23,13 @@ public class ScreenOptionsPlayerColor extends Screen
 
     public String secondaryColorText = "Second color: ";
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsPersonalize()
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
+    {
+        if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+            Game.screen = new ScreenOptions();
+        else
+            Game.screen = new ScreenOptionsPersonalize();
+    }
     );
 
     Button enableSecondary = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
@@ -40,6 +48,14 @@ public class ScreenOptionsPlayerColor extends Screen
             "Allows you to pick---a custom secondary color");
 
 
+    public void updateColorParty()
+    {
+        if (ScreenPartyHost.isServer)
+            Game.eventsOut.add(new EventUpdateTankColors(Game.player));
+        else if (ScreenPartyLobby.isClient)
+            Game.eventsOut.add(new EventSendTankColors(Game.player));
+    }
+
     public ScreenOptionsPlayerColor()
     {
         if (Drawing.drawing.interfaceScaleZoom > 1)
@@ -56,6 +72,7 @@ public class ScreenOptionsPlayerColor extends Screen
                 colorRed.inputText = colorRed.previousInputText;
 
             Game.player.colorR = Integer.parseInt(colorRed.inputText);
+            updateColorParty();
         }
                 , Game.player.colorR, 0, 255, 1);
 
@@ -72,6 +89,7 @@ public class ScreenOptionsPlayerColor extends Screen
                 colorGreen.inputText = colorGreen.previousInputText;
 
             Game.player.colorG = Integer.parseInt(colorGreen.inputText);
+            updateColorParty();
         }
                 , Game.player.colorG, 0, 255, 1);
 
@@ -88,6 +106,7 @@ public class ScreenOptionsPlayerColor extends Screen
                 colorBlue.inputText = colorBlue.previousInputText;
 
             Game.player.colorB = Integer.parseInt(colorBlue.inputText);
+            updateColorParty();
         }
                 , Game.player.colorB, 0, 255, 1);
 
@@ -104,6 +123,7 @@ public class ScreenOptionsPlayerColor extends Screen
                 colorRed2.inputText = colorRed2.previousInputText;
 
             Game.player.turretColorR = Integer.parseInt(colorRed2.inputText);
+            updateColorParty();
         }
                 , Game.player.turretColorR, 0, 255, 1);
 
@@ -120,6 +140,7 @@ public class ScreenOptionsPlayerColor extends Screen
                 colorGreen2.inputText = colorGreen2.previousInputText;
 
             Game.player.turretColorG = Integer.parseInt(colorGreen2.inputText);
+            updateColorParty();
         }
                 , Game.player.turretColorG, 0, 255, 1);
 
@@ -136,6 +157,7 @@ public class ScreenOptionsPlayerColor extends Screen
                 colorBlue2.inputText = colorBlue2.previousInputText;
 
             Game.player.turretColorB = Integer.parseInt(colorBlue2.inputText);
+            updateColorParty();
         }
                 , Game.player.turretColorB, 0, 255, 1);
 
@@ -278,7 +300,6 @@ public class ScreenOptionsPlayerColor extends Screen
         colorBlue2.g2 = colorGreen2.value;
         colorBlue2.b1 = 0;
         colorBlue2.b2 = 255;
-
     }
 
     @Override

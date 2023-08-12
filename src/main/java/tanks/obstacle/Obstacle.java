@@ -58,9 +58,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public static double lastDrawSize = 0;
 
 	public boolean removed = false;
-	protected boolean redrawn = false;
-
-	public boolean requiresRedraw = false;
 
 	public String name;
 	public String description;
@@ -376,6 +373,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public byte getOptionsByte(double h)
 	{
+		/* TODO: maybe re-implement pruning hidden obstacle faces, especially if adding obstacle grid
+
 		byte o = 0;
 
 		if (Obstacle.draw_size < Game.tile_size)
@@ -393,7 +392,9 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
 			o += 32;
 
-		return o;
+		return o;*/
+
+		return 0;
 	}
 
 	public void onDestroy(Movable source)

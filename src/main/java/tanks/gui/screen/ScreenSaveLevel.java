@@ -104,7 +104,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 , name.replace("_", " "));
 
         levelName.enableCaps = true;
-        levelName.maxChars = 18;
 
         this.updateDownloadButton();
 

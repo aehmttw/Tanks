@@ -100,6 +100,8 @@ public class Panel
 	public boolean started = false;
 	public boolean settingUp = true;
 
+	protected Screen lastDrawnScreen = null;
+
 	public ArrayList<double[]> lights = new ArrayList<>();
 
 	public static void initialize()
@@ -754,6 +756,13 @@ public class Panel
 		if (Drawing.drawing.trackRenderer == null)
 			Drawing.drawing.trackRenderer = new TrackRenderer();
 
+		if (lastDrawnScreen != Game.screen)
+		{
+			lastDrawnScreen = Game.screen;
+			Drawing.drawing.trackRenderer.reset();
+			Drawing.drawing.terrainRenderer2.reset();
+		}
+
 		if (!(Game.screen instanceof ScreenGame))
 		{
 			Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
@@ -799,6 +808,7 @@ public class Panel
 			lastFrameSec = time;
 			frames++;
 			ageFrames++;
+			Game.screen.screenAge += Panel.frameFrequency;
 		}
 
 		if (onlinePaused)

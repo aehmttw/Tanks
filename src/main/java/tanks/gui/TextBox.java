@@ -49,7 +49,7 @@ public class TextBox implements IDrawable, ITrigger
 	public boolean lowerCase = false;
 	public boolean enableCaps = false;
 
-	public int maxChars = 20;
+	public int maxChars = 40;
 	public double maxValue = Integer.MAX_VALUE;
 	public double minValue = Integer.MIN_VALUE;
 

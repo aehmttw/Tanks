@@ -6,6 +6,7 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.TextBox;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.item.Item;
 import tanks.registry.RegistryItem;
 import tanks.tank.TankAIControlled;
@@ -232,7 +233,6 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
                 , crusade.name.split("\\.")[0].replace("_", " "));
 
         crusadeName.enableCaps = true;
-        crusadeName.maxChars = 18;
 
         startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", () ->
         {

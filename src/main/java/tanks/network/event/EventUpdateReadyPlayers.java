@@ -3,6 +3,7 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 
 import java.util.ArrayList;
@@ -21,19 +22,31 @@ public class EventUpdateReadyPlayers extends PersonalEvent
 	{
 		StringBuilder s = new StringBuilder();
 		for (Player p: players)
-			s.append(p.username).append(",");
+			s.append(p.clientID).append(",");
 
 		if (players.size() == 0)
 			readyPlayers = "";
 		else
-			readyPlayers = s.toString().substring(0, s.length() - 1);
+			readyPlayers = s.substring(0, s.length() - 1);
 	}
 
 	@Override
-	public void execute() 
+	public void execute()
 	{
 		if (this.clientID == null)
-			ScreenPartyLobby.readyPlayers = new ArrayList<>(Arrays.asList(readyPlayers.split(",")));
+		{
+			ScreenPartyLobby.readyPlayers.clear();
+
+			String[] players = readyPlayers.split(",");
+			for (String p: players)
+			{
+				for (ConnectedPlayer c: ScreenPartyLobby.connections)
+				{
+					if (c.clientId.toString().equals(p))
+						ScreenPartyLobby.readyPlayers.add(c);
+				}
+			}
+		}
 	}
 
 	@Override

@@ -50,11 +50,7 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         for (ShaderProgram.Attribute a : shader.attributes)
         {
             attributeVBOs.put(a, window.createVBO());
-
-            if (a.dataType == FLOAT)
-                attributeBuffers.put(a, BufferUtils.createFloatBuffer(vertices * a.count));
-            else if (a.dataType == INT)
-                attributeBuffers.put(a, BufferUtils.createIntBuffer(vertices * a.count));
+            attributeBuffers.put(a, BufferUtils.createFloatBuffer(vertices * a.count));
         }
 
         if (color)
@@ -179,7 +175,7 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         this.shader.util.setNormalBuffer(normVBO);
 
         for (ShaderProgram.Attribute a: this.shader.attributes)
-            this.shader.util.setCustomBuffer(a, this.attributeVBOs.get(a), a.count, a.dataType);
+            this.shader.util.setCustomBuffer(a, this.attributeVBOs.get(a), a.count);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();

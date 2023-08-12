@@ -18,14 +18,29 @@ public class TerrainRenderer
     public IBatchRenderableObject[][] tiles;
     public boolean staged = false;
 
+    public ShaderObstacle shader = new ShaderObstacle(Game.game.window);
+
     public static int f(int i)
     {
         return 1664525 * i + 1013904223;
     }
 
-    public static class RegionRenderer
+    public TerrainRenderer()
     {
-        public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2();
+        try
+        {
+            this.shader.initialize();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Game.exitToCrash(e);
+        }
+    }
+
+    public class RegionRenderer
+    {
+        public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2(shader);
         public int posX;
         public int posY;
 
@@ -61,35 +76,6 @@ public class TerrainRenderer
         return s;
     }
 
-    public void addRect(IBatchRenderableObject o, double x, double y, double sX, double sY, boolean out)
-    {
-        BaseShapeBatchRenderer2 s = this.getRenderer(o, x, y, out).renderer;
-        s.beginAdd(o);
-
-        float x0 = (float) x;
-        float y0 = (float) y;
-
-        float x1 = (float) (x + sX);
-        float y1 = (float) (y + sY);
-
-        float r1 = (float) Drawing.drawing.currentColorR;
-        float g1 = (float) Drawing.drawing.currentColorG;
-        float b1 = (float) Drawing.drawing.currentColorB;
-        float a = (float) Drawing.drawing.currentColorA;
-        float g = (float) Drawing.drawing.currentGlow;
-
-        s.setColor(r1, g1, b1, a, g);
-        s.addPoint(o, x1, y0, 0);
-        s.addPoint(o, x0, y0, 0);
-        s.addPoint(o, x0, y1, 0);
-
-        s.addPoint(o, x1, y0, 0);
-        s.addPoint(o, x1, y1, 0);
-        s.addPoint(o, x0, y1, 0);
-
-        s.endAdd();
-    }
-
     public void addBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean out)
     {
         BaseShapeBatchRenderer2 s = this.getRenderer(o, x, y, out).renderer;
@@ -120,72 +106,108 @@ public class TerrainRenderer
         if (options % 2 == 0)
         {
             s.setColor(r1, g1, b1, a, g);
+            s.setAttribute(shader.vertexCoord, 1f);
             s.addPoint(o, x1, y0, z0);
+            s.setAttribute(shader.vertexCoord, 0f);
             s.addPoint(o, x0, y0, z0);
+            s.setAttribute(shader.vertexCoord, 2f);
             s.addPoint(o, x0, y1, z0);
 
+            s.setAttribute(shader.vertexCoord, 1f);
             s.addPoint(o, x1, y0, z0);
+            s.setAttribute(shader.vertexCoord, 3f);
             s.addPoint(o, x1, y1, z0);
+            s.setAttribute(shader.vertexCoord, 2f);
             s.addPoint(o, x0, y1, z0);
         }
 
         if ((options >> 2) % 2 == 0)
         {
             s.setColor(r2, g2, b2, a, g);
+            s.setAttribute(shader.vertexCoord, 7f);
             s.addPoint(o, x1, y1, z1);
+            s.setAttribute(shader.vertexCoord, 6f);
             s.addPoint(o, x0, y1, z1);
+            s.setAttribute(shader.vertexCoord, 2f);
             s.addPoint(o, x0, y1, z0);
 
+            s.setAttribute(shader.vertexCoord, 7f);
             s.addPoint(o, x1, y1, z1);
+            s.setAttribute(shader.vertexCoord, 3f);
             s.addPoint(o, x1, y1, z0);
+            s.setAttribute(shader.vertexCoord, 2f);
             s.addPoint(o, x0, y1, z0);
         }
 
         if ((options >> 3) % 2 == 0)
         {
             s.setColor(r2, g2, b2, a, g);
+            s.setAttribute(shader.vertexCoord, 5f);
             s.addPoint(o, x1, y0, z1);
+            s.setAttribute(shader.vertexCoord, 4f);
             s.addPoint(o, x0, y0, z1);
+            s.setAttribute(shader.vertexCoord, 0f);
             s.addPoint(o, x0, y0, z0);
 
+            s.setAttribute(shader.vertexCoord, 5f);
             s.addPoint(o, x1, y0, z1);
+            s.setAttribute(shader.vertexCoord, 1f);
             s.addPoint(o, x1, y0, z0);
+            s.setAttribute(shader.vertexCoord, 0f);
             s.addPoint(o, x0, y0, z0);
         }
 
         if ((options >> 4) % 2 == 0)
         {
             s.setColor(r3, g3, b3, a, g);
+            s.setAttribute(shader.vertexCoord, 6f);
             s.addPoint(o, x0, y1, z1);
+            s.setAttribute(shader.vertexCoord, 2f);
             s.addPoint(o, x0, y1, z0);
+            s.setAttribute(shader.vertexCoord, 0f);
             s.addPoint(o, x0, y0, z0);
 
+            s.setAttribute(shader.vertexCoord, 6f);
             s.addPoint(o, x0, y1, z1);
+            s.setAttribute(shader.vertexCoord, 4f);
             s.addPoint(o, x0, y0, z1);
+            s.setAttribute(shader.vertexCoord, 0f);
             s.addPoint(o, x0, y0, z0);
         }
 
         if ((options >> 5) % 2 == 0)
         {
             s.setColor(r3, g3, b3, a, g);
+            s.setAttribute(shader.vertexCoord, 3f);
             s.addPoint(o, x1, y1, z0);
+            s.setAttribute(shader.vertexCoord, 7f);
             s.addPoint(o, x1, y1, z1);
+            s.setAttribute(shader.vertexCoord, 5f);
             s.addPoint(o, x1, y0, z1);
 
+            s.setAttribute(shader.vertexCoord, 3f);
             s.addPoint(o, x1, y1, z0);
+            s.setAttribute(shader.vertexCoord, 1f);
             s.addPoint(o, x1, y0, z0);
+            s.setAttribute(shader.vertexCoord, 5f);
             s.addPoint(o, x1, y0, z1);
         }
 
         if ((options >> 1) % 2 == 0)
         {
             s.setColor(r1, g1, b1, a, g);
+            s.setAttribute(shader.vertexCoord, 7f);
             s.addPoint(o, x1, y1, z1);
+            s.setAttribute(shader.vertexCoord, 6f);
             s.addPoint(o, x0, y1, z1);
+            s.setAttribute(shader.vertexCoord, 4f);
             s.addPoint(o, x0, y0, z1);
 
+            s.setAttribute(shader.vertexCoord, 7f);
             s.addPoint(o, x1, y1, z1);
+            s.setAttribute(shader.vertexCoord, 5f);
             s.addPoint(o, x1, y0, z1);
+            s.setAttribute(shader.vertexCoord, 4f);
             s.addPoint(o, x0, y0, z1);
         }
 
@@ -216,9 +238,15 @@ public class TerrainRenderer
             r.renderer.free();
         }
 
+        for (RegionRenderer r: this.outOfBoundsRenderers.values())
+        {
+            r.renderer.free();
+        }
+
         this.tiles = null;
         this.renderers.clear();
         this.renderersByObj.clear();
+        this.outOfBoundsRenderers.clear();
         this.staged = false;
     }
 
@@ -265,6 +293,25 @@ public class TerrainRenderer
             this.stageObstacles();
             this.staged = true;
         }
+        else
+        {
+            for (Obstacle o : Game.redrawObstacles)
+            {
+                if (o.batchDraw && !o.removed)
+                    o.draw();
+            }
+
+            for (int[] t : Game.redrawGroundTiles)
+            {
+                this.drawTile(t[0], t[1]);
+            }
+
+            Game.redrawObstacles.clear();
+            Game.redrawGroundTiles.clear();
+        }
+
+        shader.set();
+        shader.obstacleSizeFrac.set((float) (Obstacle.draw_size / Game.tile_size));
 
         this.drawMap(this.renderers, 0, 0);
 
@@ -292,6 +339,35 @@ public class TerrainRenderer
                     }
                 }
             }
+
+        Game.game.window.shaderDefault.set();
+    }
+
+    public void drawTile(int i, int j)
+    {
+        double r = Game.tilesR[i][j];
+        double g = Game.tilesG[i][j];
+        double b = Game.tilesB[i][j];
+        double depth = Game.tilesDepth[i][j];
+
+        if (Game.tileDrawables[i][j] != null && !Game.tileDrawables[i][j].removed)
+            Game.tileDrawables[i][j].drawTile(this.tiles[i][j], r, g, b, depth, Game.tile_size);
+        else
+        {
+            Drawing.drawing.setColor(r, g, b);
+            this.addBox(this.tiles[i][j],
+                    i * Game.tile_size,
+                    j * Game.tile_size,
+                    -Game.tile_size, Game.tile_size, Game.tile_size,
+                    Game.tile_size + depth, (byte) 1, false);
+        }
+
+        if (!this.staged)
+            this.addBox(this.tiles[i][j],
+                i * Game.tile_size,
+                j * Game.tile_size,
+                -Game.tile_size, Game.tile_size, Game.tile_size,
+                Game.tile_size + depth, (byte) 1, true);
     }
 
     public void stageBackground()
@@ -318,28 +394,7 @@ public class TerrainRenderer
         {
             for (int j = 0; j < this.tiles[i].length; j++)
             {
-                double r = Game.tilesR[i][j];
-                double g = Game.tilesG[i][j];
-                double b = Game.tilesB[i][j];
-                double depth = Game.tilesDepth[i][j];
-
-                if (Game.tileDrawables[i][j] != null)
-                    Game.tileDrawables[i][j].drawTile(this.tiles[i][j], r, g, b, depth, Game.tile_size);
-                else
-                {
-                    Drawing.drawing.setColor(r, g, b);
-                    this.addBox(this.tiles[i][j],
-                            i * Game.tile_size,
-                            j * Game.tile_size,
-                            -Game.tile_size, Game.tile_size, Game.tile_size,
-                            Game.tile_size + depth, (byte) 1, false);
-                }
-
-                this.addBox(this.tiles[i][j],
-                        i * Game.tile_size,
-                        j * Game.tile_size,
-                        -Game.tile_size, Game.tile_size, Game.tile_size,
-                        Game.tile_size + depth, (byte) 1, true);
+                this.drawTile(i, j);
             }
         }
         Obstacle.draw_size = s;

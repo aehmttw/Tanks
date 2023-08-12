@@ -70,6 +70,17 @@ public class Game
 	public static ArrayList<Effect> tracks = new ArrayList<>();
 	public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
+
+	/**
+	 * Obstacles that need to change how they look next frame
+	 */
+	public static HashSet<Obstacle> redrawObstacles = new HashSet<>();
+
+	/**
+	 * Ground tiles that need to be redrawn due to obstacles being added/removed over them
+	 */
+	public static HashSet<int[]> redrawGroundTiles = new HashSet<>();
+
 	public static Player player;
 
 	public static HashSet<Obstacle> prevObstacles = new HashSet<>();
@@ -110,7 +121,7 @@ public class Game
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	public static final String version = "Tanks v1.5.1";
-	public static final int network_protocol = 51;
+	public static final int network_protocol = 52;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -349,6 +360,7 @@ public class Game
 		NetworkEventMap.register(EventObstacleBoostPanelEffect.class);
 		NetworkEventMap.register(EventPlaySound.class);
 		NetworkEventMap.register(EventSendTankColors.class);
+		NetworkEventMap.register(EventUpdateTankColors.class);
 		NetworkEventMap.register(EventShareLevel.class);
 		NetworkEventMap.register(EventShareCrusade.class);
 		NetworkEventMap.register(EventItemDrop.class);
@@ -1218,6 +1230,7 @@ public class Game
 		removeEffects.clear();
 		removeTracks.clear();
 		removeClouds.clear();
+		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
 
 		resetNetworkIDs();
 

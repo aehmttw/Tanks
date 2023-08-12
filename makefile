@@ -1,5 +1,7 @@
 all: package run
 
+first: init package
+
 run:
 	java -jar target/Tanks.jar
 

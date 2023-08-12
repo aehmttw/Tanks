@@ -22,7 +22,7 @@ jobs:
           java-version: 17
           distribution: temurin
       - name: Build
-        run: ./build.sh
+        run: make first
       - name: Upload
         uses: actions/upload-artifact@v3
         with:

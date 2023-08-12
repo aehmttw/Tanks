@@ -21,9 +21,11 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-      - name: Build
+      - name: init-steamworks4j
         run: mvn install:install-file    -Dfile=libs/steamworks4j-1.10 0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
+      - name: init-steamworks4j-lwjgl
         run: mvn install:install-file    -Dfile=libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j-lwjgl3    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
+      - name: Build
         run: mvn package
       - name: Upload
         uses: actions/upload-artifact@v3

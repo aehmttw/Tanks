@@ -36,7 +36,13 @@ public class ScreenOptions extends Screen
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
 	{
 		saveOptions(Game.homedir);
-		Game.screen = new ScreenTitle();
+
+		if (ScreenPartyHost.isServer)
+			Game.screen = ScreenPartyHost.activeScreen;
+		else if (ScreenPartyLobby.isClient)
+			Game.screen = new ScreenPartyLobby();
+		else
+			Game.screen = new ScreenTitle();
 	}
 	);
 
@@ -55,7 +61,13 @@ public class ScreenOptions extends Screen
 			Game.screen = ScreenOverlayControls.lastControlsScreen;
 	});
 
-	Button personalize = new Button(this.centerX, this.centerY - this.objYSpace * 2.4, this.objWidth * 1.5, this.objHeight * 2, "", () -> Game.screen = new ScreenOptionsPersonalize());
+	Button personalize = new Button(this.centerX, this.centerY - this.objYSpace * 2.4, this.objWidth * 1.5, this.objHeight * 2, "", () ->
+	{
+		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			Game.screen = new ScreenOptionsPlayerColor();
+		else
+			Game.screen = new ScreenOptionsPersonalize();
+	});
 
 	Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
 	Button interfaceOptionsMobile = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsWindowMobile());
@@ -107,11 +119,10 @@ public class ScreenOptions extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
 
 		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
 			Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
-
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
 
 		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && Game.player.username.length() >= 1)
 		{

@@ -62,6 +62,9 @@ public class ObstacleShrubbery extends Obstacle
 		}
 
 		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+
+		if (this.finalHeight != this.previousFinalHeight)
+			Game.redrawObstacles.add(this);
 	}
 
 	@Override
@@ -202,10 +205,5 @@ public class ObstacleShrubbery extends Obstacle
 	public byte getOptionsByte(double h)
 	{
 		return 0;
-	}
-
-	public boolean positionChanged()
-	{
-		return this.previousFinalHeight != this.finalHeight;
 	}
 }

@@ -23,7 +23,7 @@ public abstract class BaseShaderUtil
 
     public abstract void setNormalBuffer(int id);
 
-    public abstract void setCustomBuffer(ShaderProgram.Attribute attribute, int bufferID, int size, int type);
+    public abstract void setCustomBuffer(ShaderProgram.Attribute attribute, int bufferID, int size);
 
     public abstract void drawVBO(int numberIndices);
 }

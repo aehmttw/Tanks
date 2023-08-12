@@ -152,7 +152,12 @@ public class Button implements IDrawable, ITrigger
 		Drawing drawing = Drawing.drawing;
 
 		if (this.fontSize < 0)
-			drawing.setInterfaceFontSize(this.sizeY * 0.6);
+		{
+			if (this.enableHover)
+				drawing.setBoundedInterfaceFontSize(this.sizeY * 0.6, this.sizeX - 80, this.text);
+			else
+				drawing.setBoundedInterfaceFontSize(this.sizeY * 0.6, this.sizeX - 40, this.text);
+		}
 		else
 			drawing.setInterfaceFontSize(this.fontSize);
 
@@ -220,6 +225,11 @@ public class Button implements IDrawable, ITrigger
 			Drawing.drawing.setColor(127, 180, 255);
 			drawing.drawInterfaceModel2D(model, this.posX + this.imageXOffset, this.posY + this.imageYOffset, 0,this.imageSizeX * 0.75, this.imageSizeY * 0.75, this.imageSizeY * 0.75);
 		}
+
+		if (this.fontSize < 0)
+			Drawing.drawing.setInterfaceFontSize(this.sizeY * 0.6);
+		else
+			Drawing.drawing.setInterfaceFontSize(this.fontSize);
 
 		if (enableHover)
 		{

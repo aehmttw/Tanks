@@ -68,7 +68,6 @@ public class ChatFilter
 		registerBadWord("ebno");
 		registerBadWord("bttipmf");
 		registerBadWord("tfy");
-		registerBadWord("dpoepn");
 		registerBadWord("qfojt");
 		registerBadWord("wbhjob");
 		registerBadWord("gbhhpu");

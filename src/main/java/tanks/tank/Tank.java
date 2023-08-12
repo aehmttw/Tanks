@@ -627,6 +627,8 @@ public abstract class Tank extends Movable implements ISolidObject
 		e2.setPolarMotion(0, 0);
 		this.setEffectHeight(e1);
 		this.setEffectHeight(e2);
+		e1.firstDraw();
+		e2.firstDraw();
 		Game.tracks.add(e1);
 		Game.tracks.add(e2);
 	}
@@ -1203,5 +1205,26 @@ public abstract class Tank extends Movable implements ISolidObject
 			else
 				Drawing.drawing.fillOval(x + v, y + v1, s * dotSize, s * dotSize);
 		}
+	}
+
+	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)
+	{
+		drawTank(x, y, r1, g1, b1, r2, g2, b2, Game.tile_size / 2);
+	}
+
+	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double size)
+	{
+		Drawing.drawing.setColor(r2, g2, b2);
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, size, size, 0);
+
+		Drawing.drawing.setColor(r1, g1, b1);
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.color, x, y, size, size, 0);
+
+		Drawing.drawing.setColor(r2, g2, b2);
+
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, size, size, 0);
+
+		Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
 	}
 }

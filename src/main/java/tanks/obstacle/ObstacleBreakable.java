@@ -94,6 +94,9 @@ public class ObstacleBreakable extends Obstacle
     {
         this.lastFallAnimation = this.fallAnimation;
         this.fallAnimation = Math.max(0, this.fallAnimation - Panel.frameFrequency * 2);
+
+        if (this.fallAnimation != this.lastFallAnimation)
+            Game.redrawObstacles.add(this);
         //this.allowBounce = this.fallAnimation <= 0;
     }
 
@@ -155,11 +158,6 @@ public class ObstacleBreakable extends Obstacle
             return 0;
 
         return this.stackHeight * Game.tile_size - Math.pow(this.fallAnimation / 100, 2) * Game.tile_size;
-    }
-
-    public boolean positionChanged()
-    {
-        return this.fallAnimation != this.lastFallAnimation;
     }
 
     public void drawTile(double r, double g, double b, double d, double extra)

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public abstract class ShaderProgram
 {
+    public ShaderGroup group;
     public BaseShaderUtil util;
     public ArrayList<Attribute> attributes = new ArrayList<>();
 
@@ -13,7 +14,7 @@ public abstract class ShaderProgram
         this.util = w.getShaderUtil(this);
     }
 
-    public abstract void initialize() throws Exception;
+    //public abstract void initialize() throws Exception;
 
     public void initializeUniforms()
     {
@@ -65,93 +66,138 @@ public abstract class ShaderProgram
         public String name;
         public int id;
 
-        public int dataType;
         public int count;
 
-        public void setDataType(int type, int count)
+        public void setCount(int count)
         {
-            this.dataType = type;
             this.count = count;
         }
 
         public abstract void bind();
     }
 
-    public static abstract class Uniform
+    public static abstract class Uniform implements IUniform
     {
         protected int flag;
         protected String name;
         protected int programID;
-
-        public abstract void bind();
     }
 
-    public interface IUniform {}
-
-    public interface Uniform1b extends IUniform
+    public interface IUniform
     {
-        void set(boolean b);
-
-        boolean get();
+        void bind();
     }
 
-    public interface Uniform1i extends IUniform
+    public interface IPrimitiveUniform<T> extends IUniform
     {
-        void set(int i);
+        void set(T t);
 
-        int get();
+        T get();
     }
 
-    public interface Uniform2i extends IUniform
+    public interface IMatrixUniform extends IUniform
+    {
+        void set(float[] floats, boolean transpose);
+
+        float[] getMatrix();
+
+        boolean getTranspose();
+    }
+
+    public interface Uniform1b extends IPrimitiveUniform<Boolean>
+    {
+        void set(Boolean b);
+
+        Boolean get();
+    }
+
+    public interface Uniform1i extends IPrimitiveUniform<Integer>
+    {
+        void set(Integer i);
+
+        Integer get();
+    }
+
+    public interface Uniform2i extends IPrimitiveUniform<int[]>
     {
         void set(int i1, int i2);
 
+        default void set(int[] ints)
+        {
+            set(ints[0], ints[1]);
+        }
+
         int[] get();
     }
 
-    public interface Uniform3i extends IUniform
+    public interface Uniform3i extends IPrimitiveUniform<int[]>
     {
         void set(int i1, int i2, int i3);
 
+        default void set(int[] ints)
+        {
+            set(ints[0], ints[1], ints[2]);
+        }
+
         int[] get();
     }
 
-    public interface Uniform4i extends IUniform
+    public interface Uniform4i extends IPrimitiveUniform<int[]>
     {
         void set(int i1, int i2, int i3, int i4);
 
+        default void set(int[] ints)
+        {
+            set(ints[0], ints[1], ints[2], ints[3]);
+        }
+
         int[] get();
     }
 
-    public interface Uniform1f extends IUniform
+    public interface Uniform1f extends IPrimitiveUniform<Float>
     {
-        void set(float i);
+        void set(Float i);
 
-        float get();
+        Float get();
     }
 
-    public interface Uniform2f extends IUniform
+    public interface Uniform2f extends IPrimitiveUniform<float[]>
     {
         void set(float i1, float i2);
 
+        default void set(float[] floats)
+        {
+            set(floats[0], floats[1]);
+        }
+
         float[] get();
     }
 
-    public interface Uniform3f extends IUniform
+    public interface Uniform3f extends IPrimitiveUniform<float[]>
     {
         void set(float i1, float i2, float i3);
 
+        default void set(float[] floats)
+        {
+            set(floats[0], floats[1], floats[2]);
+        }
+
         float[] get();
     }
 
-    public interface Uniform4f extends IUniform
+    public interface Uniform4f extends IPrimitiveUniform<float[]>
     {
         void set(float i1, float i2, float i3, float i4);
 
+        default void set(float[] floats)
+        {
+            set(floats[0], floats[1], floats[2], floats[3]);
+        }
+
         float[] get();
     }
 
-    public interface UniformMatrix2 extends IUniform
+    public interface UniformMatrix2 extends IMatrixUniform
     {
         void set(float[] floats, boolean transpose);
 
@@ -160,7 +206,7 @@ public abstract class ShaderProgram
         boolean getTranspose();
     }
 
-    public interface UniformMatrix3 extends IUniform
+    public interface UniformMatrix3 extends IMatrixUniform
     {
         void set(float[] floats, boolean transpose);
 
@@ -169,7 +215,7 @@ public abstract class ShaderProgram
         boolean getTranspose();
     }
 
-    public interface UniformMatrix4 extends IUniform
+    public interface UniformMatrix4 extends IMatrixUniform
     {
         void set(float[] floats, boolean transpose);
 
@@ -190,8 +236,8 @@ public abstract class ShaderProgram
             {
                 if (IUniform.class.isAssignableFrom(f.getType()))
                 {
-                    Uniform oldU = (Uniform) f.get(s);
-                    Uniform newU = (Uniform) f.get(this);
+                    IUniform oldU = (IUniform) f.get(s);
+                    IUniform newU = (IUniform) f.get(this);
 
                     if (oldU instanceof Uniform1b)
                         ((Uniform1b) newU).set(((Uniform1b) oldU).get());

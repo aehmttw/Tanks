@@ -1,5 +1,8 @@
 #version 120
-attribute int age;
+
+uniform float time;
+uniform float maxAge;
+attribute float addTime;
 
 void getVertVecs(out vec4 pos, out vec3 normal)
 {
@@ -24,5 +27,6 @@ mat4 getTransform()
 
 vec4 getColor(vec4 colorIn)
 {
-    return colorIn;
+    float a = 1.0 - max(0.0, min(1.0, (time - addTime) / maxAge));
+    return vec4(colorIn.rgb, colorIn.a * a);
 }

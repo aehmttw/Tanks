@@ -12,7 +12,7 @@ public class EventAnnounceConnection extends PersonalEvent
 	public String name;
 	public UUID clientIdTarget;
 	public boolean joined;
-	
+
 	public EventAnnounceConnection()
 	{
 		

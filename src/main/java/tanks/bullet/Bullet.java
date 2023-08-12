@@ -293,8 +293,10 @@ public class Bullet extends Movable implements IDrawableLightSource
 	{
 		if (!heavy)
 		{
+			boolean pop = this.playPopSound;
 			this.playPopSound = false;
 			this.pop();
+			this.playPopSound = pop;
 		}
 
 		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)

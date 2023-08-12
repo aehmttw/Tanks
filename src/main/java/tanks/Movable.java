@@ -203,6 +203,14 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		this.vY = velY;
 	}
 
+	static double pi_over_4 = Math.PI / 4;
+	static double fastAtan(double a)
+	{
+		if (a < -1 || a > 1)
+			return Math.atan(a);
+
+		return pi_over_4 * a - a * (Math.abs(a) - 1) * (0.2447 + 0.0663 * Math.abs(a));
+	}
 
 	public double getAngleInDirection(double x, double y)
 	{
@@ -211,9 +219,9 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 
 		double angle = 0;
 		if (x > 0)
-			angle = Math.atan(y/x);
+			angle = fastAtan(y/x);
 		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
+			angle = fastAtan(y/x) + Math.PI;
 		else
 		{
 			if (y > 0)

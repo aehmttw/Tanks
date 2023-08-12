@@ -43,6 +43,7 @@ public class ScreenOptionsPersonalize extends Screen
 
 		username.enableCaps = true;
 		username.enableSpaces = false;
+		username.maxChars = 20;
 	}
 
 	public ScreenOptionsPersonalize(boolean fromMultiplayer)

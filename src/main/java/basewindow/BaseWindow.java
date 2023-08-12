@@ -69,7 +69,7 @@ public abstract class BaseWindow
     public double keyboardFraction = 1;
 
     public ArrayList<Long> framesList = new ArrayList<>();
-    public long lastFrame = System.currentTimeMillis();
+    public long lastFrame = System.nanoTime();
     public double frameFrequency = 1;
 
     public String name;
@@ -109,8 +109,7 @@ public abstract class BaseWindow
 
     public ModelPart.ShapeDrawer shapeDrawer;
 
-    public ShaderBase shaderBase;
-    public ShaderShadowMap shaderShadowMap;
+    public ShaderGroup shaderDefault;
 
     public ShaderBones shaderBaseBones;
     public ShaderShadowMapBones shaderShadowMapBones;
@@ -270,6 +269,8 @@ public abstract class BaseWindow
     public abstract BaseShapeBatchRenderer createShapeBatchRenderer(boolean dynamic);
 
     public abstract BaseShapeBatchRenderer2 createShapeBatchRenderer2();
+
+    public abstract BaseShapeBatchRenderer2 createShapeBatchRenderer2(ShaderGroup shader);
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 

@@ -119,7 +119,16 @@ public class ShaderUtil extends BaseShaderUtil
     {
         glUseProgram(programID);
 
-        for (Field f: program.getClass().getFields())
+        Field[] programFields = program.getClass().getFields();
+        Field[] groupFields = new Field[0];
+        if (program.group != null)
+            groupFields = program.group.getClass().getFields();
+
+        Field[] fields = new Field[programFields.length + groupFields.length];
+        System.arraycopy(programFields, 0, fields, 0, programFields.length);
+        System.arraycopy(groupFields, 0, fields, programFields.length, groupFields.length);
+
+        for (Field f: fields)
         {
             if (ShaderProgram.IUniform.class.isAssignableFrom(f.getType()))
             {
@@ -213,11 +222,11 @@ public class ShaderUtil extends BaseShaderUtil
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
 
-    public void setCustomBuffer(ShaderProgram.Attribute attribute, int bufferID, int size, int type)
+    public void setCustomBuffer(ShaderProgram.Attribute attribute, int bufferID, int size)
     {
         GL15.glBindBuffer(GL_ARRAY_BUFFER, bufferID);
         GL20.glEnableVertexAttribArray(attribute.id);
-        GL20.glVertexAttribPointer(attribute.id, size, type, false, 0, 0);
+        GL20.glVertexAttribPointer(attribute.id, size, GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
 
@@ -238,7 +247,7 @@ public class ShaderUtil extends BaseShaderUtil
         this.enabledAttributes.clear();
     }
 
-    public static abstract class LWJGLUniform extends ShaderProgram.Uniform
+    public static abstract class LWJGLUniform implements ShaderProgram.IUniform
     {
         protected int flag;
         protected String name;
@@ -254,13 +263,13 @@ public class ShaderUtil extends BaseShaderUtil
     {
         private boolean value = false;
 
-        public void set(boolean b)
+        public void set(Boolean b)
         {
             value = b;
             GL20.glUniform1i(flag, b ? 1 : 0);
         }
 
-        public boolean get()
+        public Boolean get()
         {
             return value;
         }
@@ -270,13 +279,13 @@ public class ShaderUtil extends BaseShaderUtil
     {
         private int value = 0;
 
-        public void set(int i)
+        public void set(Integer i)
         {
             value = i;
             GL20.glUniform1i(flag, i);
         }
 
-        public int get()
+        public Integer get()
         {
             return value;
         }
@@ -340,13 +349,13 @@ public class ShaderUtil extends BaseShaderUtil
     {
         private float value;
 
-        public void set(float i)
+        public void set(Float i)
         {
             this.value = i;
             GL20.glUniform1f(flag, i);
         }
 
-        public float get()
+        public Float get()
         {
             return value;
         }

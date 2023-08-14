@@ -21,13 +21,18 @@ public class ShaderGroup
     public ArrayList<Attribute> attributes = new ArrayList<>();
     public BaseWindow window;
 
-    public ShaderGroup(BaseWindow w)
+    public Uniform1b texture;
+
+    public String name;
+
+    public ShaderGroup(BaseWindow w, String name)
     {
         this.window = w;
         this.shaderBase = new ShaderBase(w);
         this.shaderBase.group = this;
         this.shaderShadowMap = new ShaderShadowMap(w);
         this.shaderShadowMap.group = this;
+        this.name = name;
     }
 
     public void initialize() throws Exception
@@ -98,9 +103,6 @@ public class ShaderGroup
 
     public abstract static class Attribute
     {
-        public String name;
-        public int id;
-
         public int count;
 
         public ShaderProgram.Attribute normalAttribute;
@@ -146,7 +148,7 @@ public class ShaderGroup
 
     public interface IGroupUniform
     {
-        void setMode(boolean shadow);
+        void setWindow(BaseWindow window);
 
         void bind(boolean shadow);
     }
@@ -156,22 +158,19 @@ public class ShaderGroup
         protected U baseUniform;
         protected U shadowMapUniform;
 
-        protected U current;
-
-        public void setMode(boolean shadow)
-        {
-            U old = current;
-            if (shadow)
-                current = shadowMapUniform;
-            else
-                current = baseUniform;
-
-            current.set(old.get());
-        }
+        protected BaseWindow window;
 
         public void set(T t)
         {
-            current.set(t);
+            if (!window.drawingShadow)
+                baseUniform.set(t);
+            else
+                shadowMapUniform.set(t);
+        }
+
+        public void setWindow(BaseWindow w)
+        {
+            this.window = w;
         }
 
         public void bind(boolean shadow)
@@ -187,23 +186,19 @@ public class ShaderGroup
     {
         protected T baseUniform;
         protected T shadowMapUniform;
-
-        protected T current;
-
-        public void setMode(boolean shadow)
-        {
-            T old = current;
-            if (shadow)
-                current = shadowMapUniform;
-            else
-                current = baseUniform;
-
-            current.set(old.getMatrix(), old.getTranspose());
-        }
+        protected BaseWindow window;
 
         public void set(float[] f, boolean transpose)
         {
-            current.set(f, transpose);
+            if (!window.drawingShadow)
+                baseUniform.set(f, transpose);
+            else
+                shadowMapUniform.set(f, transpose);
+        }
+
+        public void setWindow(BaseWindow w)
+        {
+            this.window = w;
         }
 
         public void bind(boolean shadow)

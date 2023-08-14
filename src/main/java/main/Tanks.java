@@ -110,6 +110,29 @@ public class Tanks
 
     public static void fail(Throwable e)
     {
+        StringWriter s = new StringWriter();
+        PrintWriter p = new PrintWriter(s);
+        e.printStackTrace(p);
+
+        StringBuilder props = new StringBuilder();
+        Properties pr = System.getProperties();
+        for (Object sr: pr.keySet())
+            props.append(sr).append(": ").append(pr.get(sr)).append("\n");
+
+        String errorMsg = "Oh noes!\n" +
+                "Tanks ran into a problem and was unable to start :(\n\n" +
+                "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
+                "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
+                "https://discord.gg/aWPaJD3\n\n" +
+                "Crash details:\n" +
+                s.toString() + "\n";
+
+        Game.logger.println(errorMsg + "System properties:\n" + props + "\n");
+        System.err.println(errorMsg);
+
+        if (props.toString().contains("Mac OS X"))
+            System.exit(0);
+
         JFrame jFrame = new JFrame();
         jFrame.getRootPane().setWindowDecorationStyle(JRootPane.ERROR_DIALOG);
         jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -120,24 +143,7 @@ public class Tanks
 
         jd.setBounds(500, 300, 400, 300);
 
-        StringWriter s = new StringWriter();
-        PrintWriter p = new PrintWriter(s);
-        e.printStackTrace(p);
-
-        StringBuilder props = new StringBuilder();
-        Properties pr = System.getProperties();
-        for (Object sr: pr.keySet())
-            props.append(sr).append(": ").append(pr.get(sr)).append("\n");
-
-        JTextArea jLabel = new JTextArea("Oh noes!\n" +
-                "Tanks ran into a problem and was unable to start :(\n\n" +
-                "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
-                "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
-                "https://discord.gg/aWPaJD3\n\n" +
-                "Crash details:\n" +
-                s.toString() + "\n" +
-                "System properties:\n" + props +
-                "\n", 40, 80);
+        JTextArea jLabel = new JTextArea(errorMsg + "System properties:\n" + props + "\n", 40, 80);
 
         jLabel.setEditable(false);
         jLabel.setLineWrap(true);

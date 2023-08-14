@@ -6,7 +6,6 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
     public Uniform3f lightVec;
-    public Uniform1b texture;
     public Uniform1b depthtest;
     public Uniform1f glow;
     public Uniform1i shadowres;
@@ -65,5 +64,11 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
 
         this.vbo.set(false);
         //this.useNormal.set(false);
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.group.name + "/base";
     }
 }

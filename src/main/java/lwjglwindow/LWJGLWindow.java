@@ -299,7 +299,8 @@ public class LWJGLWindow extends BaseWindow
 	{
 		try
 		{
-			this.shaderDefault = new ShaderGroup(this);
+			this.shaderDefault = new ShaderGroup(this, "default");
+			this.shaderDefault.initialize();
 		}
 		catch (Exception e)
 		{
@@ -490,7 +491,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (!drawingShadow)
-			this.currentBaseShader.glow.set((float) glow);
+			this.currentShaderGroup.shaderBase.glow.set((float) glow);
 	}
 
 	public void setColor(double r, double g, double b, double a)
@@ -503,7 +504,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
 		if (!drawingShadow)
-			this.currentBaseShader.glow.set(0f);
+			this.currentShaderGroup.shaderBase.glow.set(0f);
 	}
 
 	public void setColor(double r, double g, double b)
@@ -516,7 +517,7 @@ public class LWJGLWindow extends BaseWindow
 		glColor3d(this.colorR, this.colorG, this.colorB);
 
 		if (!drawingShadow)
-			this.currentBaseShader.glow.set(0f);
+			this.currentShaderGroup.shaderBase.glow.set(0f);
 	}
 
 	protected void createImage(String image)
@@ -1055,10 +1056,10 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public void setLighting(double light, double glowLight, double shadow, double glowShadow)
 	{
-		this.currentBaseShader.light.set((float) light);
-		this.currentBaseShader.glowLight.set((float) glowLight);
-		this.currentBaseShader.shade.set((float) shadow);
-		this.currentBaseShader.glowShade.set((float) glowShadow);
+		this.currentShaderGroup.shaderBase.light.set((float) light);
+		this.currentShaderGroup.shaderBase.glowLight.set((float) glowLight);
+		this.currentShaderGroup.shaderBase.shade.set((float) shadow);
+		this.currentShaderGroup.shaderBase.glowShade.set((float) glowShadow);
 	}
 
 	@Override
@@ -1148,9 +1149,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_TEXTURE_2D);
 
 		if (!drawingShadow)
-			this.currentBaseShader.texture.set(true);
-		else
-			this.currentShadowMapShader.texture.set(true);
+			this.currentShaderGroup.texture.set(true);
 
 		GL20.glActiveTexture(GL13.GL_TEXTURE0);
 	}
@@ -1161,9 +1160,7 @@ public class LWJGLWindow extends BaseWindow
 		glDisable(GL_TEXTURE_2D);
 
 		if (!drawingShadow)
-			this.currentBaseShader.texture.set(false);
-		else
-			this.currentShadowMapShader.texture.set(false);
+			this.currentShaderGroup.texture.set(false);
 
 		glEnable(GL_TEXTURE_2D);
 		GL20.glActiveTexture(GL13.GL_TEXTURE1);
@@ -1175,7 +1172,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_DEPTH_TEST);
 
 		if (!drawingShadow)
-			this.currentBaseShader.depthtest.set(true);
+			this.currentShaderGroup.shaderBase.depthtest.set(true);
 	}
 
 	public void disableDepthtest()
@@ -1183,7 +1180,7 @@ public class LWJGLWindow extends BaseWindow
 		glDisable(GL_DEPTH_TEST);
 
 		if (!drawingShadow)
-			this.currentBaseShader.depthtest.set(false);
+			this.currentShaderGroup.shaderBase.depthtest.set(false);
 	}
 
 	public void enableDepthmask()
@@ -1274,8 +1271,11 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public void setShader(ShaderBase s)
 	{
-		ShaderBase old = this.currentBaseShader;
-		this.currentBaseShader = s;
+		ShaderBase old = null;
+		if (this.currentShaderGroup != null)
+			old = this.currentShaderGroup.shaderBase;
+
+		this.currentShaderGroup = s.group;
 		this.currentShader = s;
 		s.set();
 
@@ -1286,8 +1286,11 @@ public class LWJGLWindow extends BaseWindow
 	@Override
 	public void setShader(ShaderShadowMap s)
 	{
-		ShaderShadowMap old = this.currentShadowMapShader;
-		this.currentShadowMapShader = s;
+		ShaderShadowMap old = null;
+		if (this.currentShaderGroup != null)
+			old = this.currentShaderGroup.shaderShadowMap;
+
+		this.currentShaderGroup = s.group;
 		this.currentShader = s;
 		s.set();
 

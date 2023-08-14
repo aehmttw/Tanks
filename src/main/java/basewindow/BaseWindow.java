@@ -114,8 +114,7 @@ public abstract class BaseWindow
     public ShaderBones shaderBaseBones;
     public ShaderShadowMapBones shaderShadowMapBones;
 
-    public ShaderBase currentBaseShader;
-    public ShaderShadowMap currentShadowMapShader;
+    public ShaderGroup currentShaderGroup;
 
     public ShaderProgram currentShader;
 

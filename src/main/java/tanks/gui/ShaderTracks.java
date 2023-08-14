@@ -11,7 +11,7 @@ public class ShaderTracks extends ShaderGroup
 
     public ShaderTracks(BaseWindow w)
     {
-        super(w);
+        super(w, "tracks");
     }
 
     @Override

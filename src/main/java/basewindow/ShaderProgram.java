@@ -8,10 +8,12 @@ public abstract class ShaderProgram
     public ShaderGroup group;
     public BaseShaderUtil util;
     public ArrayList<Attribute> attributes = new ArrayList<>();
+    public BaseWindow window;
 
     public ShaderProgram(BaseWindow w)
     {
         this.util = w.getShaderUtil(this);
+        this.window = w;
     }
 
     //public abstract void initialize() throws Exception;
@@ -26,7 +28,7 @@ public abstract class ShaderProgram
 
     }
 
-    public void bindAttributes() throws IllegalAccessException
+    public void bindAttributes() throws IllegalAccessException, InstantiationException
     {
         for (Field f: this.getClass().getFields())
         {
@@ -37,6 +39,33 @@ public abstract class ShaderProgram
                 a.bind();
                 f.set(this, a);
                 this.attributes.add(a);
+            }
+        }
+
+        for (Field f: this.group.getClass().getFields())
+        {
+            if (ShaderGroup.Attribute.class.isAssignableFrom(f.getType()))
+            {
+                ShaderGroup.Attribute a = (ShaderGroup.Attribute) f.get(this.group);
+                if (a == null)
+                {
+                    a = (ShaderGroup.Attribute) f.getType().newInstance();
+                    Attribute a1 = this.util.getAttribute();
+                    Attribute a2 = this.util.getAttribute();
+                    a.normalAttribute = a1;
+                    a.shadowMapAttribute = a2;
+
+                    a1.name = f.getName();
+                    a2.name = f.getName();
+                    f.set(this.group, a);
+
+                    this.group.attributes.add(a);
+                }
+
+                if (this.window.drawingShadow)
+                    a.shadowMapAttribute.bind();
+                else
+                    a.normalAttribute.bind();
             }
         }
     }

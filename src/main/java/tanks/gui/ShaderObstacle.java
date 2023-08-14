@@ -12,7 +12,7 @@ public class ShaderObstacle extends ShaderGroup
 
     public ShaderObstacle(BaseWindow w)
     {
-        super(w);
+        super(w, "obstacles");
     }
 
     @Override

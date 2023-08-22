@@ -714,7 +714,8 @@ public class Level
 					Game.tilesR[i][j] = (colorR + tilesRandom.nextDouble() * colorVarR);
 					Game.tilesG[i][j] = (colorG + tilesRandom.nextDouble() * colorVarG);
 					Game.tilesB[i][j] = (colorB + tilesRandom.nextDouble() * colorVarB);
-					Game.tilesDepth[i][j] = tilesRandom.nextDouble() * 10;
+					double rand = tilesRandom.nextDouble() * 10;
+					Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
 				}
 				else
 				{

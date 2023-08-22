@@ -1,7 +1,10 @@
 package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
+import basewindow.ShaderGroup;
 import tanks.*;
+import tanks.rendering.ShaderGroundObstacle;
+import tanks.rendering.ShaderObstacle;
 
 public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IGameObject, IBatchRenderableObject
 {
@@ -40,6 +43,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	 * If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles.
 	 */
 	public boolean batchDraw = true;
+	public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
+	public Class<? extends ShaderGroup> tileRenderer = ShaderGroundObstacle.class;
 
 	public double posX;
 	public double posY;
@@ -122,11 +127,11 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 				if (Obstacle.draw_size >= Game.tile_size)
 				{
-					if (i > 0)
-						option += 1;
+//					if (i > 0)
+//						option += 1;
 
-					if (i < Math.min(this.stackHeight, default_max_height) - 1)
-						option += 2;
+//					if (i < Math.min(this.stackHeight, default_max_height) - 1)
+//						option += 2;
 				}
 
 				double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
@@ -266,11 +271,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	 */
 	public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
 	{
-		if (Obstacle.draw_size < Game.tile_size || extra != 0)
-		{
-			Drawing.drawing.setColor(r, g, b);
-			Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d * (1 - Obstacle.draw_size / Game.tile_size));
-		}
+		Drawing.drawing.setColor(r, g, b);
+		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d);
 	}
 
 	public void postOverride()
@@ -478,5 +480,10 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 				}
 			}
 		}
+	}
+
+	public Effect getCompanionEffect()
+	{
+		return null;
 	}
 }

@@ -120,7 +120,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.1";
+	public static final String version = "Tanks v1.5.2b";
 	public static final int network_protocol = 52;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -487,7 +487,7 @@ public class Game
 		registerObstacle(ObstacleMud.class, "mud");
 		registerObstacle(ObstacleIce.class, "ice");
 		registerObstacle(ObstacleSnow.class, "snow");
-		registerObstacle(ObstacleLava.class, "lava");
+		//registerObstacle(ObstacleLava.class, "lava");
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 
@@ -1037,7 +1037,8 @@ public class Game
 				Game.tilesR[i][j] = (235 + tilesRandom.nextDouble() * var);
 				Game.tilesG[i][j] = (207 + tilesRandom.nextDouble() * var);
 				Game.tilesB[i][j] = (166 + tilesRandom.nextDouble() * var);
-				Game.tilesDepth[i][j] = tilesRandom.nextDouble() * var / 2;
+				double rand = tilesRandom.nextDouble() * var / 2;
+				Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
 			}
 		}
 

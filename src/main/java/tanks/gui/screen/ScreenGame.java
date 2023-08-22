@@ -1974,6 +1974,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
 					Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
 				}
+
+				if (!Game.game.window.drawingShadow)
+				{
+					Effect e = o.getCompanionEffect();
+					if (e != null)
+					{
+						this.drawables[9].add(e);
+					}
+				}
 			}
 
 		if (Game.game.lastHeightGrid == null || Game.game.heightGrid.length != Game.game.lastHeightGrid.length || Game.game.heightGrid[0].length != Game.game.lastHeightGrid[0].length)

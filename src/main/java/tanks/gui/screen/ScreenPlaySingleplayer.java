@@ -26,7 +26,7 @@ public class ScreenPlaySingleplayer extends Screen
     Button minigames = new Button(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Minigames", () -> Game.screen = new ScreenMinigames()
             , "Play Tanks in new ways!");
 
-    Button create = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenSavedLevels()
+    Button create = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenPlaySavedLevels()
             , "Create and play your own levels!");
 
     Button tutorial = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Tutorial", () -> new Tutorial().loadTutorial(false, Game.game.window.touchscreen), "Learn how to play Tanks!"

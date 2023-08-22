@@ -1,11 +1,8 @@
-package tanks.gui;
+package tanks.rendering;
 
-import basewindow.BaseShaderUtil;
 import basewindow.BaseWindow;
-import basewindow.ShaderBase;
-import basewindow.ShaderGroup;
 
-public class ShaderObstacle extends ShaderGroup
+public class ShaderObstacle extends RendererShader implements IObstacleSizeShader, IObstacleVertexCoordShader
 {
     public Uniform1f obstacleSizeFrac;
     public Attribute1f vertexCoord;
@@ -20,5 +17,17 @@ public class ShaderObstacle extends ShaderGroup
     {
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_obstacles.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_obstacles.vert"}, "/shaders/shadow_map.frag", null);
+    }
+
+    @Override
+    public void setSize(float size)
+    {
+        this.obstacleSizeFrac.set(size);
+    }
+
+    @Override
+    public Attribute1f getVertexCoord()
+    {
+        return this.vertexCoord;
     }
 }

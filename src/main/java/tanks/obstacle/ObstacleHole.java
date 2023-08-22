@@ -3,6 +3,7 @@ package tanks.obstacle;
 import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.rendering.ShaderHole;
 
 public class ObstacleHole extends Obstacle
 {
@@ -25,6 +26,8 @@ public class ObstacleHole extends Obstacle
 		this.colorA = 127;
 
 		this.description = "A hole which only bullets can pass over";
+
+		this.tileRenderer = ShaderHole.class;
 	}
 
 	@Override

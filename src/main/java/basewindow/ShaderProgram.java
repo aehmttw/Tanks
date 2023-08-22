@@ -48,24 +48,30 @@ public abstract class ShaderProgram
             {
                 ShaderGroup.Attribute a = (ShaderGroup.Attribute) f.get(this.group);
                 if (a == null)
-                {
                     a = (ShaderGroup.Attribute) f.getType().newInstance();
-                    Attribute a1 = this.util.getAttribute();
+
+                if (this == group.shaderShadowMap)
+                {
                     Attribute a2 = this.util.getAttribute();
-                    a.normalAttribute = a1;
                     a.shadowMapAttribute = a2;
 
-                    a1.name = f.getName();
                     a2.name = f.getName();
                     f.set(this.group, a);
 
                     this.group.attributes.add(a);
-                }
-
-                if (this.window.drawingShadow)
                     a.shadowMapAttribute.bind();
+                }
                 else
+                {
+                    Attribute a1 = this.util.getAttribute();
+                    a.normalAttribute = a1;
+
+                    a1.name = f.getName();
+                    f.set(this.group, a);
+
+                    this.group.attributes.add(a);
                     a.normalAttribute.bind();
+                }
             }
         }
     }

@@ -1,8 +1,9 @@
-package tanks.gui;
+package tanks.rendering;
 
 import basewindow.BaseShapeBatchRenderer2;
 import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
+import tanks.Effect;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 
 public class TrackRenderer
 {
-    public static final int section_size = 400;
+    public static final int section_size = 2000;
 
     public ShaderTracks shader = new ShaderTracks(Game.game.window);
 
@@ -44,7 +45,6 @@ public class TrackRenderer
 
         public RegionRenderer(int x, int y)
         {
-//            renderer.hidden = true;
             this.posX = x;
             this.posY = y;
         }
@@ -56,7 +56,7 @@ public class TrackRenderer
 
         if (s == null)
         {
-            int key = f((int) (f((int) (x / section_size)) + y / section_size));
+            int key = (f((int) (f((int) (x / section_size)) + y / section_size)));
             if (renderers.get(key) == null)
                 renderers.put(key, new RegionRenderer((int) (x / section_size), (int) (y / section_size)));
             s = renderers.get(key);
@@ -112,12 +112,13 @@ public class TrackRenderer
             double sc = 1;
 
             boolean in = false;
-            outer: for (int i = 0; i < 3; i++)
+            int c = 3;
+            outer: for (int i = 0; i < c; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < c; j++)
                 {
-                    double x1 = Drawing.drawing.gameToAbsoluteX(x + (s.posX + i / 2.0) * section_size, 0);
-                    double y1 = Drawing.drawing.gameToAbsoluteY(y + (s.posY + j / 2.0) * section_size, 0);
+                    double x1 = Drawing.drawing.gameToAbsoluteX(x + (s.posX + i / (c - 1.0)) * section_size, 0);
+                    double y1 = Drawing.drawing.gameToAbsoluteY(y + (s.posY + j / (c - 1.0)) * section_size, 0);
 
                     if (!Drawing.drawing.isOutOfBounds(x1, y1))
                     {
@@ -127,19 +128,18 @@ public class TrackRenderer
                 }
             }
 
-            if (in)
-            {
-                s.renderer.settings(true, false, false);
-                s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
-                s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
-                s.renderer.draw();
-            }
+            s.renderer.hidden = !in;
+            s.renderer.settings(true, false, false);
+            s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
+            s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
+            s.renderer.draw();
         }
     }
 
     public void remove(IBatchRenderableObject o)
     {
         this.getRenderer(o, 0, 0).renderer.delete(o);
+        this.renderersByObj.remove(o);
     }
 
     public void draw()

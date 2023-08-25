@@ -117,10 +117,6 @@ public class Panel
 
 	public void setUp()
 	{
-		Drawing.drawing.defaultRenderer = new Drawing.LevelRenderer();
-		Drawing.drawing.terrainRenderer = Drawing.drawing.defaultRenderer.terrainRenderer;
-		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
-		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
 		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
 		Drawing.drawing.trackRenderer = new TrackRenderer();
 
@@ -691,7 +687,6 @@ public class Panel
 		if (this.frameStartTime - startTime < introTime + introAnimationTime)
 		{
 			this.frameStartTime += 100000;
-			Drawing.drawing.forceRedrawTerrain();
 			double frac = ((this.frameStartTime - startTime - introTime) / introAnimationTime);
 
 			if (Game.enable3d && Game.fancyTerrain)
@@ -771,10 +766,7 @@ public class Panel
 		}
 
 		if (!this.introFinished)
-		{
-			Drawing.drawing.forceRedrawTerrain();
 			this.introFinished = true;
-		}
 
 		if (!(Game.screen instanceof ScreenExit))
 		{

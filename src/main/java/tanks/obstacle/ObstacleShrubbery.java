@@ -88,7 +88,6 @@ public class ObstacleShrubbery extends Obstacle
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.setShrubberyMode();
 			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
 		}
 		else

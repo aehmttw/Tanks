@@ -57,7 +57,6 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     @Override
     public void draw()
     {
-        Drawing.drawing.forceRedrawTerrain();
         super.draw();
 
         Drawing.drawing.setColor(255, 127, 0, this.opacity);

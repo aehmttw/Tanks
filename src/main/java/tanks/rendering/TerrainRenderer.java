@@ -375,7 +375,6 @@ public class TerrainRenderer
 
     public void draw()
     {
-        Drawing.drawing.terrainRendering = true;
         if (!staged)
         {
             this.stageBackground();
@@ -479,7 +478,6 @@ public class TerrainRenderer
         }
 
         Game.game.window.shaderDefault.set();
-        Drawing.drawing.terrainRendering = false;
     }
 
     public void drawTile(int i, int j)

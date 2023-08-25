@@ -686,16 +686,8 @@ public class Game
 	public static void createModels()
 	{
 		Tank.health_model = Drawing.drawing.createModel();
-		Drawing.rotatedRect = Drawing.drawing.createModel();
 
 		TankModels.initialize();
-
-		Drawing.rotatedRect.shapes = new ModelPart.Shape[1];
-		Drawing.rotatedRect.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-0.5, -0.5, 0),
-				new ModelPart.Point(0.5, -0.5, 0),
-				new ModelPart.Point(0.5, 0.5, 0),
-				new ModelPart.Point(-0.5, 0.5, 0), 1);
 
 		double innerHealthEdge = 0.55;
 		double outerHealthEdge = 0.575;

@@ -1239,12 +1239,6 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public BaseShapeBatchRenderer createShapeBatchRenderer(boolean dynamic)
-	{
-		return new DummyShapeBatchRenderer(true);
-	}
-
-	@Override
 	public BaseShapeBatchRenderer2 createShapeBatchRenderer2()
 	{
 		return new VBOShapeBatchRenderer2(this);

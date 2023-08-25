@@ -190,7 +190,6 @@ public class ScreenOptionsGraphics extends Screen
             update3dGroundButton();
 
             Game.resetTiles();
-            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
@@ -252,7 +251,6 @@ public class ScreenOptionsGraphics extends Screen
             update3dGroundButton();
 
             Game.resetTiles();
-            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "3D graphics may impact performance");
@@ -270,7 +268,6 @@ public class ScreenOptionsGraphics extends Screen
                 ground3d.setText(ground3dText, ScreenOptions.offText);
 
             Game.resetTiles();
-            Drawing.drawing.forceRedrawTerrain();
         }
     },
             "Enabling 3D ground may impact---performance in large levels");

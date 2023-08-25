@@ -197,7 +197,6 @@ public class ShaderUtil extends BaseShaderUtil
         {
             this.id = GL20.glGetAttribLocation(programID, name);
             GL20.glBindAttribLocation(programID, id, name);
-            System.out.println(name + " " + id);
         }
     }
 

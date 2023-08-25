@@ -1053,9 +1053,27 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.removeMovables.clear();
 
 		for (Obstacle o: Game.removeObstacles)
+		{
 			o.removed = true;
+			Drawing.drawing.terrainRenderer2.remove(o);
 
-		Game.obstacles.removeAll(Game.removeObstacles);
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			{
+				Game.redrawGroundTiles.add(new int[]{x, y});
+
+				if (o.bulletCollision)
+				{
+					Game.game.solidGrid[x][y] = false;
+					Game.game.unbreakableGrid[x][y] = false;
+				}
+			}
+
+			Game.obstacles.remove(o);
+		}
+
 		Game.removeObstacles.clear();
 	}
 
@@ -1586,7 +1604,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 								mouseObstacle.setMetadata(mouseObstacleGroup + "");
 
 							this.actions.add(new Action.ActionObstacle(o, true));
-							Game.obstacles.add(o);
+							Game.addObstacle(o);
 
 							if (!batch)
 								Drawing.drawing.playVibration("click");
@@ -1987,9 +2005,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		this.drawDefaultBackground();
 
-//		for (Effect e: Game.tracks)
-//			drawables[0].add(e);
-
 		for (Movable m: Game.movables)
 			drawables[m.drawLevel].add(m);
 
@@ -1997,12 +2012,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			for (Obstacle o : Game.obstacles)
 			{
-				if (o.drawLevel == i)
+				if (o.drawLevel == i && !o.batchDraw)
 				{
-					if (o.batchDraw && Game.enable3d)
-						o.draw();
-					else
-						drawables[i].add(o);
+					drawables[i].add(o);
 				}
 			}
 		}
@@ -2716,7 +2728,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (add)
 					Game.removeObstacles.add(this.obstacle);
 				else
-					Game.obstacles.add(this.obstacle);
+					Game.addObstacle(this.obstacle);
 			}
 
 			@Override
@@ -2725,7 +2737,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (!add)
 					Game.removeObstacles.add(this.obstacle);
 				else
-					Game.obstacles.add(this.obstacle);
+					Game.addObstacle(this.obstacle);
 			}
 		}
 
@@ -2980,7 +2992,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			@Override
 			public void undo()
 			{
-				Game.obstacles.addAll(this.obstacles);
+				for (Obstacle o: this.obstacles)
+				{
+					Game.addObstacle(o);
+				}
+
 				Game.movables.addAll(this.tanks);
 				this.deselect.undo();
 			}
@@ -2990,11 +3006,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				for (int i = 0; i < Game.obstacles.size(); i++)
 				{
-					for (Obstacle o : this.obstacles)
-					{
-						if (Game.obstacles.get(i).equals(o))
-							Game.obstacles.remove(i);
-					}
+					Game.removeObstacles.addAll(this.obstacles);
 				}
 
 				for (int i = 0; i < Game.movables.size(); i++)

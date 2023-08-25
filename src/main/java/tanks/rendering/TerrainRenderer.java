@@ -4,6 +4,7 @@ import basewindow.*;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 
@@ -16,11 +17,8 @@ public class TerrainRenderer
     public static final int section_size = 2000;
 
     protected final HashMap<Class<? extends ShaderGroup>, HashMap<Integer, RegionRenderer>> renderers = new HashMap<>();
-
     protected final HashMap<IBatchRenderableObject, RegionRenderer> renderersByObj = new HashMap<>();
-
     protected final HashMap<Integer, RegionRenderer> outOfBoundsRenderers = new HashMap<>();
-
     protected final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
 
     public Tile[][] tiles;
@@ -29,6 +27,8 @@ public class TerrainRenderer
 
     protected float[] currentColor = new float[3];
     protected double currentDepth;
+
+    protected ShaderGroundOutOfBounds outsideShader;
 
     public static int f(int i)
     {
@@ -42,6 +42,9 @@ public class TerrainRenderer
             ShaderGroup ds = Game.game.window.shaderDefault;
             ds.initialize();
             this.shaderInstances.put(ds.getClass(), ds);
+
+            this.outsideShader = new ShaderGroundOutOfBounds(Game.game.window);
+            this.outsideShader.initialize();
         }
         catch (Exception e)
         {
@@ -181,111 +184,109 @@ public class TerrainRenderer
         {
             s.setColor(r1, g1, b1, a, g);
             addVertexCoord(s, shader, h + 1f);
-            s.addPoint(o, x1, y0, z0);
+            s.addPoint(x1, y0, z0);
             addVertexCoord(s, shader, h + 0f);
-            s.addPoint(o, x0, y0, z0);
+            s.addPoint(x0, y0, z0);
             addVertexCoord(s, shader, h + 2f);
-            s.addPoint(o, x0, y1, z0);
+            s.addPoint(x0, y1, z0);
 
             addVertexCoord(s, shader, h + 1f);
-            s.addPoint(o, x1, y0, z0);
+            s.addPoint(x1, y0, z0);
             addVertexCoord(s, shader, h + 3f);
-            s.addPoint(o, x1, y1, z0);
+            s.addPoint(x1, y1, z0);
             addVertexCoord(s, shader, h + 2f);
-            s.addPoint(o, x0, y1, z0);
+            s.addPoint(x0, y1, z0);
         }
 
         if ((options >> 2) % 2 == 0)
         {
             s.setColor(r2, g2, b2, a, g);
             addVertexCoord(s, shader, h + 7f);
-            s.addPoint(o, x1, y1, z1);
+            s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 6f);
-            s.addPoint(o, x0, y1, z1);
+            s.addPoint(x0, y1, z1);
             addVertexCoord(s, shader, h + 2f);
-            s.addPoint(o, x0, y1, z0);
+            s.addPoint(x0, y1, z0);
 
             addVertexCoord(s, shader, h + 7f);
-            s.addPoint(o, x1, y1, z1);
+            s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 3f);
-            s.addPoint(o, x1, y1, z0);
+            s.addPoint(x1, y1, z0);
             addVertexCoord(s, shader, h + 2f);
-            s.addPoint(o, x0, y1, z0);
+            s.addPoint(x0, y1, z0);
         }
 
         if ((options >> 3) % 2 == 0)
         {
             s.setColor(r2, g2, b2, a, g);
             addVertexCoord(s, shader, h + 5f);
-            s.addPoint(o, x1, y0, z1);
+            s.addPoint(x1, y0, z1);
             addVertexCoord(s, shader, h + 4f);
-            s.addPoint(o, x0, y0, z1);
+            s.addPoint(x0, y0, z1);
             addVertexCoord(s, shader, h + 0f);
-            s.addPoint(o, x0, y0, z0);
+            s.addPoint(x0, y0, z0);
 
             addVertexCoord(s, shader, h + 5f);
-            s.addPoint(o, x1, y0, z1);
+            s.addPoint(x1, y0, z1);
             addVertexCoord(s, shader, h + 1f);
-            s.addPoint(o, x1, y0, z0);
+            s.addPoint(x1, y0, z0);
             addVertexCoord(s, shader, h + 0f);
-            s.addPoint(o, x0, y0, z0);
+            s.addPoint(x0, y0, z0);
         }
 
         if ((options >> 4) % 2 == 0)
         {
             s.setColor(r3, g3, b3, a, g);
             addVertexCoord(s, shader, h + 6f);
-            s.addPoint(o, x0, y1, z1);
+            s.addPoint(x0, y1, z1);
             addVertexCoord(s, shader, h + 2f);
-            s.addPoint(o, x0, y1, z0);
+            s.addPoint(x0, y1, z0);
             addVertexCoord(s, shader, h + 0f);
-            s.addPoint(o, x0, y0, z0);
+            s.addPoint(x0, y0, z0);
 
             addVertexCoord(s, shader, h + 6f);
-            s.addPoint(o, x0, y1, z1);
+            s.addPoint(x0, y1, z1);
             addVertexCoord(s, shader, h + 4f);
-            s.addPoint(o, x0, y0, z1);
+            s.addPoint(x0, y0, z1);
             addVertexCoord(s, shader, h + 0f);
-            s.addPoint(o, x0, y0, z0);
+            s.addPoint(x0, y0, z0);
         }
 
         if ((options >> 5) % 2 == 0)
         {
             s.setColor(r3, g3, b3, a, g);
             addVertexCoord(s, shader, h + 3f);
-            s.addPoint(o, x1, y1, z0);
+            s.addPoint(x1, y1, z0);
             addVertexCoord(s, shader, h + 7f);
-            s.addPoint(o, x1, y1, z1);
+            s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 5f);
-            s.addPoint(o, x1, y0, z1);
+            s.addPoint(x1, y0, z1);
 
             addVertexCoord(s, shader, h + 3f);
-            s.addPoint(o, x1, y1, z0);
+            s.addPoint(x1, y1, z0);
             addVertexCoord(s, shader, h + 1f);
-            s.addPoint(o, x1, y0, z0);
+            s.addPoint(x1, y0, z0);
             addVertexCoord(s, shader, h + 5f);
-            s.addPoint(o, x1, y0, z1);
+            s.addPoint(x1, y0, z1);
         }
 
         if ((options >> 1) % 2 == 0)
         {
             s.setColor(r1, g1, b1, a, g);
             addVertexCoord(s, shader, h + 7f);
-            s.addPoint(o, x1, y1, z1);
+            s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 6f);
-            s.addPoint(o, x0, y1, z1);
+            s.addPoint(x0, y1, z1);
             addVertexCoord(s, shader, h + 4f);
-            s.addPoint(o, x0, y0, z1);
+            s.addPoint(x0, y0, z1);
 
             addVertexCoord(s, shader, h + 7f);
-            s.addPoint(o, x1, y1, z1);
+            s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 5f);
-            s.addPoint(o, x1, y0, z1);
+            s.addPoint(x1, y0, z1);
             addVertexCoord(s, shader, h + 4f);
-            s.addPoint(o, x0, y0, z1);
+            s.addPoint(x0, y0, z1);
         }
-
-        s.endAdd();
     }
 
     public void remove(IBatchRenderableObject o)
@@ -374,6 +375,7 @@ public class TerrainRenderer
 
     public void draw()
     {
+        Drawing.drawing.terrainRendering = true;
         if (!staged)
         {
             this.stageBackground();
@@ -423,7 +425,7 @@ public class TerrainRenderer
                             ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
 
                         if (so instanceof IObstacleTimeShader)
-                            ((IObstacleTimeShader) so).setTime((int) System.currentTimeMillis());
+                            ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
 
                         if (so instanceof IShrubHeightShader)
                             ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
@@ -451,19 +453,33 @@ public class TerrainRenderer
         int xEnd = (int) Math.floor(iEnd - 0.00001);
         int yEnd = (int) Math.floor(jEnd - 0.00001);
 
-        if (!(Game.screen instanceof ScreenGame))
-            for (int x = xStart; x <= xEnd; x++)
+        if (!(Game.screen instanceof ILevelPreviewScreen))
+        {
+            this.outsideShader.set();
+
+            float size = (float) (Obstacle.draw_size / Game.tile_size);
+            if (!(Game.screen instanceof ScreenGame))
+                size = 0;
+
+            this.outsideShader.setSize(size);
+
+            if (size >= 0)
             {
-                for (int y = yStart; y <= yEnd; y++)
+                for (int x = xStart; x <= xEnd; x++)
                 {
-                    if (x != 0 || y != 0)
+                    for (int y = yStart; y <= yEnd; y++)
                     {
-                        this.drawMap(this.outOfBoundsRenderers, x, y);
+                        if (x != 0 || y != 0)
+                        {
+                            this.drawMap(this.outOfBoundsRenderers, x, y);
+                        }
                     }
                 }
             }
+        }
 
         Game.game.window.shaderDefault.set();
+        Drawing.drawing.terrainRendering = false;
     }
 
     public void drawTile(int i, int j)
@@ -477,7 +493,7 @@ public class TerrainRenderer
         currentColor[1] = (float) (g / 255.0);
         currentColor[2] = (float) (b / 255.0);
 
-        this.renderersByObj.remove(this.tiles[i][j]);
+        this.remove(this.tiles[i][j]);
 
         if (Game.tileDrawables[i][j] != null && !Game.tileDrawables[i][j].removed)
         {

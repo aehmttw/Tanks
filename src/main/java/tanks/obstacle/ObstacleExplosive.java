@@ -7,6 +7,7 @@ import tanks.bullet.Bullet;
 import tanks.network.event.EventObstacleDestroy;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
+import tanks.rendering.ShaderExplosive;
 import tanks.tank.*;
 
 public class ObstacleExplosive extends Obstacle implements IAvoidObject
@@ -24,7 +25,6 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         this.colorR = 255;
         this.colorG = Math.random() * 40 + 80;
         this.colorB = 0;
-        this.glow = 0.5;
 
         if (!Game.fancyTerrain)
             this.colorG = 100;
@@ -43,6 +43,8 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         this.checkForObjects = true;
         this.shouldShootThrough = true;
         this.description = "A block which explodes upon contact";
+
+        this.renderer = ShaderExplosive.class;
     }
 
     @Override

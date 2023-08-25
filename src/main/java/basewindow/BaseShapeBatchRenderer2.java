@@ -50,9 +50,7 @@ public abstract class BaseShapeBatchRenderer2
 
     public abstract void beginAdd(IBatchRenderableObject o);
 
-    public abstract void endAdd();
-
-    public abstract void addPoint(IBatchRenderableObject o, float x, float y, float z);
+    public abstract void addPoint(float x, float y, float z);
 
     public abstract void setColor(float r, float g, float b, float a);
 

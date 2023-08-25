@@ -681,15 +681,17 @@ public class Drawing
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
 		if (this.terrainRendering)
+		{
 			this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);
 			//this.currentTerrainRenderer.fillBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
+		}
 		else
 		{
 			double shrubMod = 1;
 
 			if (shrubberyMode)
 			{
-				shrubMod = 0.5;
+				shrubMod = 0.25;
 				if (Game.screen instanceof ScreenGame)
 					shrubMod = ((ScreenGame) Game.screen).shrubberyScale;
 			}

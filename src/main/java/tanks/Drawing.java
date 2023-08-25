@@ -62,7 +62,7 @@ public class Drawing
 
 	public boolean disableFaceRemoval = true;
 
-	public TerrainRenderer terrainRenderer2;
+	public TerrainRenderer terrainRenderer;
 	public TrackRenderer trackRenderer;
 
 	public static ModelPart rotatedRect;
@@ -586,7 +586,7 @@ public class Drawing
 	 */
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
-		this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);
+		this.terrainRenderer.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);
 	}
 
 	public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)

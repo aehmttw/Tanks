@@ -9,13 +9,12 @@ import org.lwjgl.opengl.GL15;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
+public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 {
     public int vertVBO = -1;
     public int colVBO = -1;
@@ -57,14 +56,14 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
     protected IBatchRenderableObject adding = null;
     protected boolean justExpanded = false;
 
-    public VBOShapeBatchRenderer2(LWJGLWindow window)
+    public VBOShapeBatchRenderer(LWJGLWindow window)
     {
         super(true);
         this.window = window;
         this.shader = window.currentShader.group;
     }
 
-    public VBOShapeBatchRenderer2(LWJGLWindow window, ShaderGroup s)
+    public VBOShapeBatchRenderer(LWJGLWindow window, ShaderGroup s)
     {
         this(window);
         this.shader = s;

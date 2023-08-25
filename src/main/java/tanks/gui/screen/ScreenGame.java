@@ -1781,7 +1781,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		for (Obstacle o: Game.removeObstacles)
 		{
 			o.removed = true;
-			Drawing.drawing.terrainRenderer2.remove(o);
+			Drawing.drawing.terrainRenderer.remove(o);
 
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);

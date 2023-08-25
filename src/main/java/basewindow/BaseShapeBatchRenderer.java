@@ -1,6 +1,6 @@
 package basewindow;
 
-public abstract class BaseShapeBatchRenderer2
+public abstract class BaseShapeBatchRenderer
 {
     public boolean hidden = false;
 
@@ -20,7 +20,7 @@ public abstract class BaseShapeBatchRenderer2
     public float offY;
     public float offZ;
 
-    public BaseShapeBatchRenderer2(boolean dynamic)
+    public BaseShapeBatchRenderer(boolean dynamic)
     {
         this.dynamic = dynamic;
     }

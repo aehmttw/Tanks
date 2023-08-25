@@ -11,7 +11,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
-import tanks.Game;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -31,8 +30,6 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -1239,15 +1236,15 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public BaseShapeBatchRenderer2 createShapeBatchRenderer2()
+	public BaseShapeBatchRenderer createShapeBatchRenderer2()
 	{
-		return new VBOShapeBatchRenderer2(this);
+		return new VBOShapeBatchRenderer(this);
 	}
 
 	@Override
-	public BaseShapeBatchRenderer2 createShapeBatchRenderer2(ShaderGroup shader)
+	public BaseShapeBatchRenderer createShapeBatchRenderer2(ShaderGroup shader)
 	{
-		return new VBOShapeBatchRenderer2(this, shader);
+		return new VBOShapeBatchRenderer(this, shader);
 	}
 
 	@Override

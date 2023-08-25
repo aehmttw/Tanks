@@ -3,7 +3,6 @@ package tanks.gui.screen.leveleditor;
 import basewindow.BaseFile;
 import basewindow.InputPoint;
 import tanks.*;
-import tanks.network.event.EventTankPlayerCreate;
 import tanks.network.event.INetworkEvent;
 import tanks.gui.*;
 import tanks.gui.screen.*;
@@ -1055,7 +1054,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		for (Obstacle o: Game.removeObstacles)
 		{
 			o.removed = true;
-			Drawing.drawing.terrainRenderer2.remove(o);
+			Drawing.drawing.terrainRenderer.remove(o);
 
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);

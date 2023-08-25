@@ -117,7 +117,7 @@ public class Panel
 
 	public void setUp()
 	{
-		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		Drawing.drawing.terrainRenderer = new TerrainRenderer();
 		Drawing.drawing.trackRenderer = new TrackRenderer();
 
 		ModAPI.setUp();
@@ -743,8 +743,8 @@ public class Panel
 			return;
 		}
 
-		if (Drawing.drawing.terrainRenderer2 == null)
-			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		if (Drawing.drawing.terrainRenderer == null)
+			Drawing.drawing.terrainRenderer = new TerrainRenderer();
 
 		if (Drawing.drawing.trackRenderer == null)
 			Drawing.drawing.trackRenderer = new TrackRenderer();
@@ -753,7 +753,7 @@ public class Panel
 		{
 			lastDrawnScreen = Game.screen;
 			Drawing.drawing.trackRenderer.reset();
-			Drawing.drawing.terrainRenderer2.reset();
+			Drawing.drawing.terrainRenderer.reset();
 		}
 
 		if (!(Game.screen instanceof ScreenGame))

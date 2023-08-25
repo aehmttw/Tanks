@@ -1,9 +1,8 @@
 package tanks.rendering;
 
-import basewindow.BaseShapeBatchRenderer2;
+import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 
@@ -39,7 +38,7 @@ public class TrackRenderer
 
     public class RegionRenderer
     {
-        public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2(shader);
+        public BaseShapeBatchRenderer renderer = Game.game.window.createShapeBatchRenderer2(shader);
         public int posX;
         public int posY;
 
@@ -68,7 +67,7 @@ public class TrackRenderer
 
     public void addRect(IBatchRenderableObject o, double x, double y, double z, double width, double height, double rotation)
     {
-        BaseShapeBatchRenderer2 s = this.getRenderer(o, x, y).renderer;
+        BaseShapeBatchRenderer s = this.getRenderer(o, x, y).renderer;
         s.beginAdd(o);
 
         float r1 = (float) Drawing.drawing.currentColorR;

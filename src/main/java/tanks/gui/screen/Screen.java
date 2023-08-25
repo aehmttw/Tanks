@@ -4,8 +4,6 @@ import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 
-import java.util.Arrays;
-
 public abstract class Screen implements IBatchRenderableObject
 {
 	public String music = null;
@@ -129,7 +127,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 
-		Drawing.drawing.terrainRenderer2.draw();
+		Drawing.drawing.terrainRenderer.draw();
 		Drawing.drawing.trackRenderer.draw();
 
 //		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))

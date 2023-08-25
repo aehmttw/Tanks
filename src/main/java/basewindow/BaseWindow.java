@@ -265,9 +265,9 @@ public abstract class BaseWindow
 
     public abstract BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices);
 
-    public abstract BaseShapeBatchRenderer2 createShapeBatchRenderer2();
+    public abstract BaseShapeBatchRenderer createShapeBatchRenderer2();
 
-    public abstract BaseShapeBatchRenderer2 createShapeBatchRenderer2(ShaderGroup shader);
+    public abstract BaseShapeBatchRenderer createShapeBatchRenderer2(ShaderGroup shader);
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 

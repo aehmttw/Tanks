@@ -3,13 +3,10 @@ package tanks.rendering;
 import basewindow.*;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TerrainRenderer
@@ -85,7 +82,7 @@ public class TerrainRenderer
 
     public static class RegionRenderer
     {
-        public BaseShapeBatchRenderer2 renderer;
+        public BaseShapeBatchRenderer renderer;
 
         public int posX;
 
@@ -137,7 +134,7 @@ public class TerrainRenderer
         return s;
     }
 
-    public void addVertexCoord(BaseShapeBatchRenderer2 s, ShaderGroup shader, float f)
+    public void addVertexCoord(BaseShapeBatchRenderer s, ShaderGroup shader, float f)
     {
         if (shader instanceof IObstacleVertexCoordShader)
             s.setAttribute(((IObstacleVertexCoordShader) shader).getVertexCoord(), f);
@@ -146,7 +143,7 @@ public class TerrainRenderer
     public void addBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean out)
     {
         RegionRenderer r = this.getRenderer(o, x, y, out);
-        BaseShapeBatchRenderer2 s = r.renderer;
+        BaseShapeBatchRenderer s = r.renderer;
         s.beginAdd(o);
         ShaderGroup shader = r.shader;
 
@@ -519,7 +516,7 @@ public class TerrainRenderer
 
     public float getShrubHeight()
     {
-        float shrubMod = 0.5f;
+        float shrubMod = 0.25f;
         if (Game.screen instanceof ScreenGame)
             shrubMod = (float) ((ScreenGame) Game.screen).shrubberyScale;
 

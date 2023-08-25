@@ -85,11 +85,11 @@ public class Game
 
 	public static HashSet<Obstacle> prevObstacles = new HashSet<>();
 
-	public static ArrayList<Movable> removeMovables = new ArrayList<>();
-	public static ArrayList<Obstacle> removeObstacles = new ArrayList<>();
-	public static ArrayList<Effect> removeEffects = new ArrayList<>();
-	public static ArrayList<Effect> removeTracks = new ArrayList<>();
-	public static ArrayList<Cloud> removeClouds = new ArrayList<>();
+	public static HashSet<Movable> removeMovables = new HashSet<>();
+	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
+	public static HashSet<Effect> removeEffects = new HashSet<>();
+	public static HashSet<Effect> removeTracks = new HashSet<>();
+	public static HashSet<Cloud> removeClouds = new HashSet<>();
 
 	public static ArrayList<Effect> addEffects = new ArrayList<>();
 	public static Queue<Effect> recycleEffects = new LinkedList<>();

@@ -2000,9 +2000,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
 				mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-		if (Game.enable3d)
-			Drawing.drawing.beginTerrainRenderers();
-
 		this.drawDefaultBackground();
 
 		for (Movable m: Game.movables)
@@ -2021,9 +2018,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (Effect e: Game.effects)
 			drawables[7].add(e);
-
-		if (Game.enable3d)
-			Drawing.drawing.drawTerrainRenderers();
 
 		for (int i = 0; i < this.drawables.length; i++)
 		{

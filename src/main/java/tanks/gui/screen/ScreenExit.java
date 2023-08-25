@@ -39,8 +39,6 @@ public class ScreenExit extends Screen
     @Override
     public void draw()
     {
-        Drawing.drawing.forceRedrawTerrain();
-
         if (System.currentTimeMillis() - startTime < outroTime + outroAnimationTime)
         {
             double frac = ((System.currentTimeMillis() - startTime) / outroAnimationTime);

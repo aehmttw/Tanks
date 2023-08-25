@@ -44,8 +44,6 @@ public class Drawing
 	public boolean movingCamera = true;
 
 	public static Drawing drawing;
-	public LevelRenderer defaultRenderer;
-
 	public double textSize = 24;
 	public double titleSize = 30;
 
@@ -64,35 +62,12 @@ public class Drawing
 
 	public boolean disableFaceRemoval = true;
 
-	public BaseShapeBatchRenderer currentTerrainRenderer;
-
 	public TerrainRenderer terrainRenderer2;
 	public TrackRenderer trackRenderer;
-
-	public BaseShapeBatchRenderer terrainRenderer;
-	public BaseShapeBatchRenderer terrainRendererTransparent;
-	public BaseShapeBatchRenderer terrainRendererShrubbery;
-
-	public boolean terrainRendering = false;
-	public boolean shrubberyMode = false;
 
 	public static ModelPart rotatedRect;
 
 	public HashMap<String, Model> modelsByDir = new HashMap<>();
-
-	public static class LevelRenderer
-	{
-		public BaseShapeBatchRenderer terrainRenderer = Game.game.window.createShapeBatchRenderer(true);
-		public BaseShapeBatchRenderer terrainRendererTransparent = Game.game.window.createShapeBatchRenderer(true);
-		public BaseShapeBatchRenderer terrainRendererShrubbery = Game.game.window.createShapeBatchRenderer(true);
-
-		public void free()
-		{
-			this.terrainRenderer.free();
-			this.terrainRendererTransparent.free();
-			this.terrainRendererShrubbery.free();
-		}
-	}
 
 	private Drawing()
 	{
@@ -104,20 +79,6 @@ public class Drawing
 			drawing = new Drawing();
 
 		initialized = true;
-	}
-
-	public void setRenderer(LevelRenderer r)
-	{
-		this.terrainRenderer = r.terrainRenderer;
-		this.terrainRendererTransparent = r.terrainRendererTransparent;
-		this.terrainRendererShrubbery = r.terrainRendererShrubbery;
-	}
-
-	public void stageRenderers()
-	{
-		this.terrainRenderer.stage();
-		this.terrainRendererTransparent.stage();
-		this.terrainRendererShrubbery.stage();
 	}
 
 	public void showStats(boolean stats)
@@ -155,14 +116,7 @@ public class Drawing
 
 	public void setColor(double r, double g, double b)
 	{
-		this.shrubberyMode = false;
-
-		if (!terrainRendering)
-			Game.game.window.setColor(r, g, b);
-		else
-			this.terrainRenderer.setColor(r, g, b, 255, 0);
-
-		this.currentTerrainRenderer = terrainRenderer;
+		Game.game.window.setColor(r, g, b);
 
 		this.currentColorR = r;
 		this.currentColorG = g;
@@ -173,23 +127,7 @@ public class Drawing
 
 	public void setColor(double r, double g, double b, double a)
 	{
-		this.shrubberyMode = false;
-
-		if (!terrainRendering)
-			Game.game.window.setColor(r, g, b, a);
-		else
-		{
-			if (a < 255)
-			{
-				this.terrainRendererTransparent.setColor(r, g, b, a, 0);
-				this.currentTerrainRenderer = terrainRendererTransparent;
-			}
-			else
-			{
-				this.terrainRenderer.setColor(r, g, b, 255, 0);
-				this.currentTerrainRenderer = terrainRenderer;
-			}
-		}
+		Game.game.window.setColor(r, g, b, a);
 
 		this.currentColorR = r;
 		this.currentColorG = g;
@@ -200,39 +138,13 @@ public class Drawing
 
 	public void setColor(double r, double g, double b, double a, double glow)
 	{
-		this.shrubberyMode = false;
-
-		if (!terrainRendering)
-			Game.game.window.setColor(r, g, b, a, glow);
-		else
-		{
-			if (a < 255)
-			{
-				this.terrainRendererTransparent.setColor(r, g, b, a, glow);
-				this.currentTerrainRenderer = terrainRendererTransparent;
-			}
-			else
-			{
-				this.terrainRenderer.setColor(r, g, b, 255, glow);
-				this.currentTerrainRenderer = terrainRenderer;
-			}
-		}
+		Game.game.window.setColor(r, g, b, a, glow);
 
 		this.currentColorR = r;
 		this.currentColorG = g;
 		this.currentColorB = b;
 		this.currentColorA = a;
 		this.currentGlow = glow;
-	}
-
-	public void setShrubberyMode()
-	{
-		if (!Game.game.window.shapeRenderer.supportsBatching)
-			return;
-
-		this.shrubberyMode = true;
-		this.currentTerrainRenderer = terrainRendererShrubbery;
-		this.currentTerrainRenderer.setColor(this.currentColorR, this.currentColorG, this.currentColorB, this.currentColorA, this.currentGlow);
 	}
 
 	public void fillOval(double x, double y, double sizeX, double sizeY)
@@ -433,18 +345,12 @@ public class Drawing
 
 	public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
-		if (this.terrainRendering)
-			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
-		else
-			this.fillBackgroundRect(x, y, sizeX, sizeY);
+		this.fillBackgroundRect(x, y, sizeX, sizeY);
 	}
 
 	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
-		if (this.terrainRendering)
-			this.currentTerrainRenderer.fillRect(o, x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
-		else
-			this.fillRect(x, y, sizeX, sizeY);
+		this.fillRect(x, y, sizeX, sizeY);
 	}
 
 	public void drawImage(String img, double x, double y, double sizeX, double sizeY)
@@ -680,24 +586,7 @@ public class Drawing
 	 */
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
-		if (this.terrainRendering)
-		{
-			this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);
-			//this.currentTerrainRenderer.fillBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options);
-		}
-		else
-		{
-			double shrubMod = 1;
-
-			if (shrubberyMode)
-			{
-				shrubMod = 0.25;
-				if (Game.screen instanceof ScreenGame)
-					shrubMod = ((ScreenGame) Game.screen).shrubberyScale;
-			}
-
-			this.fillBox(x, y, z * shrubMod, sizeX, sizeY, sizeZ * shrubMod, options);
-		}
+		this.terrainRenderer2.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);
 	}
 
 	public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
@@ -1517,67 +1406,6 @@ public class Drawing
 	public double getVerticalMargin()
 	{
 		return (Game.game.window.absoluteHeight - statsHeight - sizeY / scale) / 2;
-	}
-
-	public void forceRedrawTerrain()
-	{
-		if (!Game.game.window.shapeRenderer.supportsBatching)
-			return;
-
-		this.terrainRenderer.forceRedraw();
-		this.terrainRendererShrubbery.forceRedraw();
-		this.terrainRendererTransparent.forceRedraw();
-	}
-
-	public void beginTerrainRenderers()
-	{
-		if (!Game.game.window.shapeRenderer.supportsBatching)
-			return;
-
-		this.terrainRendering = true;
-
-		this.terrainRenderer.begin(true);
-		this.terrainRendererTransparent.begin(true, false, false);
-		this.terrainRendererShrubbery.begin(true);
-	}
-
-	public void drawTerrainRenderers()
-	{
-		this.drawTerrainRenderers(true, 0, 0, 0, 1);
-	}
-
-	public void drawTerrainRenderers(boolean stage, double x, double y, double z, double s)
-	{
-		if (!Game.game.window.shapeRenderer.supportsBatching)
-			return;
-
-		this.terrainRendering = false;
-
-		this.terrainRenderer.setPosition(gameToAbsoluteX(x, 0), gameToAbsoluteY(y, 0), z * scale);
-		this.terrainRenderer.setScale(scale * s, scale * s, scale * s);
-
-		double shrubScale = 0.25;
-		if (Game.screen instanceof ScreenGame)
-			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
-
-		this.terrainRendererShrubbery.setPosition(gameToAbsoluteX(x, 0), gameToAbsoluteY(y, 0), z * scale);
-		this.terrainRendererShrubbery.setScale(scale * s, scale * s, scale * s * shrubScale);
-
-		this.terrainRendererTransparent.setPosition(gameToAbsoluteX(x, 0), gameToAbsoluteY(y, 0), z * scale);
-		this.terrainRendererTransparent.setScale(scale * s, scale * s, scale * s);
-
-		if (stage)
-		{
-			this.terrainRenderer.end();
-			this.terrainRendererShrubbery.end();
-			this.terrainRendererTransparent.end();
-		}
-		else
-		{
-			this.terrainRenderer.draw();
-			this.terrainRendererShrubbery.draw();
-			this.terrainRendererTransparent.draw();
-		}
 	}
 
 	public double gameToAbsoluteX(double x, double sizeX)

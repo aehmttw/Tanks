@@ -94,9 +94,6 @@ public abstract class Screen implements IBatchRenderableObject
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
-		if (Game.screen != Game.prevScreen || Game.game.window.hasResized)
-			Drawing.drawing.forceRedrawTerrain();
-
 		for (int i = 0; i < Game.currentSizeX; i++)
 		{
 			for (int j = 0; j < Game.currentSizeY; j++)
@@ -132,10 +129,8 @@ public abstract class Screen implements IBatchRenderableObject
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 
-		Drawing.drawing.terrainRendering = true;
 		Drawing.drawing.terrainRenderer2.draw();
 		Drawing.drawing.trackRenderer.draw();
-		Drawing.drawing.terrainRendering = false;
 
 //		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
 //		{

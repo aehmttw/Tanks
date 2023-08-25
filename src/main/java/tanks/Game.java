@@ -835,6 +835,19 @@ public class Game
 		e.execute();
 	}
 
+	public static void addObstacle(Obstacle o)
+	{
+		o.removed = false;
+		Game.obstacles.add(o);
+		Game.redrawObstacles.add(o);
+
+		int x = (int) (o.posX / Game.tile_size);
+		int y = (int) (o.posY / Game.tile_size);
+
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY)
+			Game.redrawGroundTiles.add(new int[]{x, y});
+	}
+
 	public static boolean usernameInvalid(String username)
 	{
 		if (username.length() > 20)

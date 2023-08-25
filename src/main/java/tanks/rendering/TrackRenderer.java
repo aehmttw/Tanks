@@ -80,15 +80,13 @@ public class TrackRenderer
         s.setColor(r1, g1, b1, a, g);
         s.setAttribute(shader.addTime, (float) Game.screen.screenAge);
 
-        s.addPoint(o, (float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(width / 2, -height / 2, x, rotation), (float) s.rotateY(width / 2, -height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(width / 2, -height / 2, x, rotation), (float) s.rotateY(width / 2, -height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
 
-        s.addPoint(o, (float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(-width / 2, height / 2, x, rotation), (float) s.rotateY(-width / 2, height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
-
-        s.endAdd();
+        s.addPoint((float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(-width / 2, height / 2, x, rotation), (float) s.rotateY(-width / 2, height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
     }
 
     public void reset()

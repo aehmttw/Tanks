@@ -129,10 +129,10 @@ public class ShaderHandler
         glActiveTexture(GL13.GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        /*glBindTexture(GL_TEXTURE_2D, depthTexture);
-        this.window.textures.put("depth", depthTexture);
-        this.window.setColor(255, 255, 255);
-        this.window.shapeRenderer.drawImage(100, 200, 500, 500, "depth", false);*/
+//        glBindTexture(GL_TEXTURE_2D, depthTexture);
+//        this.window.textures.put("depth", depthTexture);
+//        this.window.setColor(255, 255, 255);
+//        this.window.shapeRenderer.drawImage(100, 200, 500, 500, "depth", false);
 
         glUseProgram(0);
     }

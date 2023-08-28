@@ -1,7 +1,5 @@
 package basewindow;
 
-import org.lwjgl.BufferUtils;
-
 public abstract class BaseShapeBatchRenderer2
 {
     public boolean hidden = false;
@@ -56,7 +54,15 @@ public abstract class BaseShapeBatchRenderer2
 
     public abstract void addPoint(IBatchRenderableObject o, float x, float y, float z);
 
-    public abstract void setColor(float r, float g, float b, float a, float glow);
+    public abstract void setColor(float r, float g, float b, float a);
+
+    public abstract void setGlow(float g);
+
+    public void setColor(float r, float g, float b, float a, float glow)
+    {
+        this.setColor(r, g, b, a);
+        this.setGlow(glow);
+    }
 
     public abstract void addAttribute(ShaderGroup.Attribute attribute);
 

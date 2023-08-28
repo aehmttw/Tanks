@@ -107,19 +107,6 @@ public abstract class ModelPart implements IModel
         }
     }
 
-    @Deprecated
-    public static class LegacySquare extends Shape
-    {
-        public double width;
-        public double height;
-
-        public LegacySquare(double width, double height)
-        {
-           this.width = width;
-           this.height = height;
-        }
-    }
-
     public ModelPart(BaseWindow window)
     {
         this.setWindow(window);

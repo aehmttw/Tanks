@@ -37,16 +37,12 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
 
     public LWJGLWindow window;
 
-    public float colorR;
-    public float colorG;
-    public float colorB;
-    public float colorA;
-    public float colorGlow;
-
     public float currentR;
     public float currentG;
     public float currentB;
     public float currentA;
+
+    public float colorGlow;
 
     public boolean depth = false;
     public boolean glow = false;
@@ -135,12 +131,17 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
         this.window.freeVBO(this.vertVBO);
     }
 
-    public void setColor(float r, float g, float b, float a, float glow)
+    public void setColor(float r, float g, float b, float a)
     {
         this.currentR = r / 255;
         this.currentG = g / 255;
         this.currentB = b / 255;
-        this.currentA = a / 255 + ((int) (glow * 256) * 2);
+        this.currentA = a / 255;
+    }
+
+    public void setGlow(float g)
+    {
+        this.colorGlow = g;
     }
 
     public void expand()
@@ -219,7 +220,7 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
                     for (int i = 0; i < a.count; i++)
                     {
                         FloatBuffer b = this.attributeBuffers.get(a);
-                        newAttributeBuffers.get(a).put(b).get();
+                        newAttributeBuffers.get(a).put(b.get());
                     }
                 }
 
@@ -254,11 +255,7 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
             {
                 Buffer b = this.attributeBuffers.get(a);
                 b.flip();
-
-                if (b instanceof FloatBuffer)
-                    b.limit(b.capacity());
-                else if (b instanceof IntBuffer)
-                    b.limit(b.capacity());
+                b.limit(b.capacity());
 
                 this.window.vertexBufferDataDynamic(this.attributeVBOs.get(a), b);
             }
@@ -633,17 +630,19 @@ public class VBOShapeBatchRenderer2 extends BaseShapeBatchRenderer2
         if (!this.initialized)
             this.stage();
 
-        this.window.setColor(255, 255, 255, 255);
-
-        this.shader.setVertexBuffer(vertVBO);
-        this.shader.setColorBuffer(colVBO);
-
-        for (ShaderGroup.Attribute a: this.shader.attributes)
-        {
-            this.shader.setCustomBuffer(a, this.attributeVBOs.get(a), a.count);
-        }
-
         if (!this.hidden)
+        {
+            this.window.setColor(255, 255, 255, 255, this.colorGlow);
+
+            this.shader.setVertexBuffer(vertVBO);
+            this.shader.setColorBuffer(colVBO);
+
+            for (ShaderGroup.Attribute a : this.shader.attributes)
+            {
+                this.shader.setCustomBuffer(a, this.attributeVBOs.get(a), a.count);
+            }
+
             this.shader.drawVBO(this.size);
+        }
     }
 }

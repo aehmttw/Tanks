@@ -1,11 +1,10 @@
 package tanks;
 
 import basewindow.BaseFile;
-import basewindow.IBatchRenderableObject;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
-import tanks.gui.TerrainRenderer;
-import tanks.gui.TrackRenderer;
+import tanks.rendering.TerrainRenderer;
+import tanks.rendering.TrackRenderer;
 import tanks.network.event.EventBeginLevelCountdown;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
@@ -18,7 +17,6 @@ import tanks.network.Client;
 import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
 import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleLight;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -260,8 +258,8 @@ public class Panel
 		{
 			started = true;
 
-			//this.startTime = System.currentTimeMillis() + splash_duration;
-			//Drawing.drawing.playSound("splash_jingle.ogg");
+//			this.startTime = System.currentTimeMillis() + splash_duration;
+//			Drawing.drawing.playSound("splash_jingle.ogg");
 		}
 
 		if (!started)
@@ -306,15 +304,15 @@ public class Panel
 				((ScreenGame) Game.screen).introBattleMusicEnd = 0;
 			}
 
-			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
-
-			introMusicEnd -= 40;
-
-			if (Game.framework == Game.Framework.libgdx)
-				introMusicEnd -= 100;
-
-			if (!tutorial)
-				Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
+//			introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
+//
+//			introMusicEnd -= 40;
+//
+//			if (Game.framework == Game.Framework.libgdx)
+//				introMusicEnd -= 100;
+//
+//			if (!tutorial)
+//				Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
 		}
 
 		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
@@ -349,11 +347,11 @@ public class Panel
 
 		Game.game.window.showKeyboard = false;
 
-		double introTime = 1000;
-		double introAnimationTime = 500;
+		double introTime = 0;//1000;
+		double introAnimationTime = 0;//500;
 
-		if (Game.fancyTerrain && Game.enable3d)
-			introAnimationTime = 1000;
+		//if (Game.fancyTerrain && Game.enable3d)
+		//	introAnimationTime = 1000;
 
 		if (System.currentTimeMillis() - startTime < introTime + introAnimationTime)
 		{

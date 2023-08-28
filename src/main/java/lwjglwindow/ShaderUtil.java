@@ -1,12 +1,15 @@
 package lwjglwindow;
 
 import basewindow.BaseShaderUtil;
+import basewindow.ShaderGroup;
 import basewindow.ShaderProgram;
+import basewindow.ShaderShadowMap;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -128,12 +131,12 @@ public class ShaderUtil extends BaseShaderUtil
         System.arraycopy(programFields, 0, fields, 0, programFields.length);
         System.arraycopy(groupFields, 0, fields, programFields.length, groupFields.length);
 
+        Class[] classes = this.getClass().getClasses();
+
         for (Field f: fields)
         {
             if (ShaderProgram.IUniform.class.isAssignableFrom(f.getType()))
             {
-                Class[] classes = this.getClass().getClasses();
-
                 for (Class c: classes)
                 {
                     if (f.getType().isAssignableFrom(c))
@@ -143,6 +146,25 @@ public class ShaderUtil extends BaseShaderUtil
                         u.programID = this.programID;
                         u.bind();
                         f.set(program, u);
+                    }
+                }
+            }
+            else if (ShaderGroup.IGroupUniform.class.isAssignableFrom(f.getType()))
+            {
+                for (Class c: classes)
+                {
+                    if (f.getType().isAssignableFrom(c))
+                    {
+                        LWJGLGroupUniform u = (LWJGLGroupUniform) f.get(program.group);
+                        if (u == null)
+                        {
+                            u = (LWJGLGroupUniform) c.newInstance();
+                            u.setWindow(window);
+                            f.set(program.group, u);
+                        }
+                        
+                        u.instantiate(f.getName(), this.programID, this.program instanceof ShaderShadowMap);
+                        u.bind(this.program instanceof ShaderShadowMap);
                     }
                 }
             }
@@ -175,6 +197,7 @@ public class ShaderUtil extends BaseShaderUtil
         {
             this.id = GL20.glGetAttribLocation(programID, name);
             GL20.glBindAttribLocation(programID, id, name);
+            System.out.println(name + " " + id);
         }
     }
 
@@ -481,6 +504,251 @@ public class ShaderUtil extends BaseShaderUtil
         public boolean getTranspose()
         {
             return this.transpose;
+        }
+    }
+
+    public interface LWJGLGroupUniform extends ShaderGroup.IGroupUniform
+    {
+        void instantiate(String name, int programID, boolean shadow);
+    }
+
+    public static class LWJGLGroupUniform1b extends ShaderGroup.Uniform1b implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform1b();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform1b();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform1i extends ShaderGroup.Uniform1i implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform1i();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform1i();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform2i extends ShaderGroup.Uniform2i implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform2i();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform2i();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform3i extends ShaderGroup.Uniform3i implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform3i();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform3i();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform4i extends ShaderGroup.Uniform4i implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform4i();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform4i();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform1f extends ShaderGroup.Uniform1f implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform1f();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform1f();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform2f extends ShaderGroup.Uniform2f implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform2f();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform2f();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform3f extends ShaderGroup.Uniform3f implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform3f();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform3f();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniform4f extends ShaderGroup.Uniform4f implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniform4f();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniform4f();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniformMatrix2 extends ShaderGroup.UniformMatrix2 implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniformMatrix2();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniformMatrix2();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniformMatrix3 extends ShaderGroup.UniformMatrix3 implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniformMatrix3();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniformMatrix3();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
+        }
+    }
+
+    public static class LWJGLGroupUniformMatrix4 extends ShaderGroup.UniformMatrix4 implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, boolean shadow)
+        {
+            if (!shadow)
+            {
+                this.baseUniform = new LWJGLUniformMatrix4();
+                ((LWJGLUniform) this.baseUniform).name = name;
+                ((LWJGLUniform) this.baseUniform).programID = programID;
+            }
+            else
+            {
+                this.shadowMapUniform = new LWJGLUniformMatrix4();
+                ((LWJGLUniform) this.shadowMapUniform).name = name;
+                ((LWJGLUniform) this.shadowMapUniform).programID = programID;
+            }
         }
     }
 }

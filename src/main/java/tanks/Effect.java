@@ -2,7 +2,7 @@ package tanks;
 
 import basewindow.IBatchRenderableObject;
 import tanks.bullet.Bullet;
-import tanks.gui.TrackRenderer;
+import tanks.rendering.TrackRenderer;
 import tanks.minigames.Arcade;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
@@ -479,15 +479,18 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
         else if (this.type == EffectType.boostLight)
         {
+            if (Game.game.window.drawingShadow)
+                return;
+
             Drawing.drawing.setColor(255, 255, 255, 255, 1);
             Game.game.window.shapeRenderer.setBatchMode(true, true, true, true, false);
 
-            double max = (this.size);
+            double max = this.size;
             for (int i = 0; i < max; i++)
             {
                 double a = (max - i) / 400;
                 Drawing.drawing.setColor(255 * a, 255 * a, 200 * a, 255, 1.0);
-                Drawing.drawing.fillBox(this.posX, this.posY, i, Obstacle.draw_size, Obstacle.draw_size, 0, (byte) 62);
+                Drawing.drawing.fillBox(this.posX, this.posY, i, Game.tile_size, Game.tile_size, 0, (byte) 62);
             }
 
             Game.game.window.shapeRenderer.setBatchMode(false, true, true, true, false);

@@ -1,11 +1,7 @@
 package basewindow;
 
-import lwjglwindow.LWJGLWindow;
-
 public class ShaderShadowMap extends ShaderProgram implements IBaseShader
 {
-    public Uniform1b texture;
-
     public ShaderShadowMap(BaseWindow window)
     {
         super(window);
@@ -22,5 +18,11 @@ public class ShaderShadowMap extends ShaderProgram implements IBaseShader
         this.util.setVertexBuffer(vertexBufferID);
         this.util.setTexCoordBuffer(texBufferID);
         this.util.drawVBO(numberIndices);
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.group.name + "/shadowmap";
     }
 }

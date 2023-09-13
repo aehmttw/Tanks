@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.obstacle.Obstacle;
+import tanks.rendering.StaticTerrainRenderer;
 
 public abstract class Screen implements IBatchRenderableObject
 {
@@ -35,6 +36,7 @@ public abstract class Screen implements IBatchRenderableObject
 	public int minBgHeight = 0;
 
 	public boolean drawBgRect = true;
+	public boolean stageOnly = false;
 
 	public double interfaceScaleZoomOverride = -1;
 
@@ -127,7 +129,11 @@ public abstract class Screen implements IBatchRenderableObject
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 
-		Drawing.drawing.terrainRenderer.draw();
+		if (stageOnly && Drawing.drawing.terrainRenderer instanceof StaticTerrainRenderer)
+			((StaticTerrainRenderer) Drawing.drawing.terrainRenderer).stage();
+		else
+			Drawing.drawing.terrainRenderer.draw();
+
 		Drawing.drawing.trackRenderer.draw();
 
 //		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))

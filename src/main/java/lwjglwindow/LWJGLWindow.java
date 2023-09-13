@@ -1236,19 +1236,19 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public BaseShapeBatchRenderer createShapeBatchRenderer2()
+	public BaseShapeBatchRenderer createShapeBatchRenderer()
 	{
 		return new VBOShapeBatchRenderer(this);
 	}
 
 	@Override
-	public BaseShapeBatchRenderer createShapeBatchRenderer2(ShaderGroup shader)
+	public BaseShapeBatchRenderer createShapeBatchRenderer(ShaderGroup shader)
 	{
 		return new VBOShapeBatchRenderer(this, shader);
 	}
 
 	@Override
-	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices)
+	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
 	{
 		return new VBOStaticBatchRenderer(this, shader, color, texture, normal, vertices);
 	}

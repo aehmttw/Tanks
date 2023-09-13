@@ -1480,6 +1480,27 @@ public class Drawing
 		}
 	}
 
+	public boolean isIncluded(double x1, double y1, double x2, double y2)
+	{
+		x1 = gameToAbsoluteX(x1, 0);
+		y1 = gameToAbsoluteY(y1, 0);
+		x2 = gameToAbsoluteX(x2, 0);
+		y2 = gameToAbsoluteY(y2, 0);
+
+		int dist = 200;
+
+		if (Game.angledView)
+			dist = 300;
+
+		int xp1 = (x1 - dist * scale > Panel.windowWidth ? 1 : 0) + (x1 + dist * scale < 0 ? -1 : 0);
+		int yp1 = (y1 - dist * scale > Panel.windowHeight ? 1 : 0) + (y1 + dist * scale < 0 ? -1 : 0);
+		int xp2 = (x2 - dist * scale > Panel.windowWidth ? 1 : 0) + (x2 + dist * scale < 0 ? -1 : 0);
+		int yp2 = (y2 - dist * scale > Panel.windowHeight ? 1 : 0) + (y2 + dist * scale < 0 ? -1 : 0);
+		int xp = xp1 + xp2;
+		int yp = yp1 + yp2;
+		return xp >= -1 && xp <= 1 && yp >= -1 && yp <= 1;
+	}
+
 	public double getTrackOffset()
 	{
 		if (Game.followingCam)

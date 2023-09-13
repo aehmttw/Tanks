@@ -263,11 +263,11 @@ public abstract class BaseWindow
 
     public abstract PosedModel createPosedModel(Model m);
 
-    public abstract BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices);
+    public abstract BaseStaticBatchRenderer createStaticBatchRenderer(ShaderGroup shader, boolean color, String texture, boolean normal, int vertices);
 
-    public abstract BaseShapeBatchRenderer createShapeBatchRenderer2();
+    public abstract BaseShapeBatchRenderer createShapeBatchRenderer();
 
-    public abstract BaseShapeBatchRenderer createShapeBatchRenderer2(ShaderGroup shader);
+    public abstract BaseShapeBatchRenderer createShapeBatchRenderer(ShaderGroup shader);
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 

@@ -3,6 +3,8 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
+import tanks.rendering.ShaderGroundOutOfBounds;
+import tanks.rendering.ShaderTracks;
 import tanks.rendering.TerrainRenderer;
 import tanks.rendering.TrackRenderer;
 import tanks.network.event.EventBeginLevelCountdown;
@@ -34,7 +36,7 @@ public class Panel
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
 
-	public final long splash_duration = 4000;
+	public final long splash_duration = 4000 - 40;
 	public boolean playedTutorialIntroMusic = false;
 
 	public static boolean showMouseTarget = true;
@@ -117,6 +119,19 @@ public class Panel
 
 	public void setUp()
 	{
+		Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
+ 		Game.game.shaderTracks = new ShaderTracks(Game.game.window);
+
+		try
+		{
+			Game.game.shaderOutOfBounds.initialize();
+			Game.game.shaderTracks.initialize();
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
 		Drawing.drawing.terrainRenderer = new TerrainRenderer();
 		Drawing.drawing.trackRenderer = new TrackRenderer();
 
@@ -256,6 +271,7 @@ public class Panel
 
 //			this.startTime = System.currentTimeMillis() + splash_duration;
 //			Drawing.drawing.playSound("splash_jingle.ogg");
+//			Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
 		}
 
 		if (!started)

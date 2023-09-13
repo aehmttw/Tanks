@@ -1,11 +1,12 @@
 package lwjglwindow;
 
 import basewindow.BaseStaticBatchRenderer;
-import basewindow.ShaderProgram;
+import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
 import org.lwjgl.BufferUtils;
+import tanks.rendering.StaticTerrainRenderer;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -20,12 +21,12 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
 {
     public LWJGLWindow window;
 
-    public ShaderProgram shader;
+    public ShaderGroup shader;
     public int vertVBO = -1;
     public int colVBO = -1;
     public int texVBO = -1;
     public int normVBO = -1;
-    public HashMap<ShaderProgram.Attribute, Integer> attributeVBOs = new HashMap<>();
+    public HashMap<ShaderGroup.Attribute, Integer> attributeVBOs = new HashMap<>();
 
     protected int vertexCount;
 
@@ -33,11 +34,29 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
     protected FloatBuffer colors;
     protected FloatBuffer texCoords;
     protected FloatBuffer normals;
-    protected HashMap<ShaderProgram.Attribute, Buffer> attributeBuffers = new HashMap<>();
+    protected HashMap<ShaderGroup.Attribute, FloatBuffer> attributeBuffers = new HashMap<>();
 
     public boolean staged = false;
 
-    public VBOStaticBatchRenderer(LWJGLWindow window, ShaderProgram shader, boolean color, String texture, boolean normal, int vertices)
+    protected float colorGlow;
+
+    protected float currentR;
+    protected float currentG;
+    protected float currentB;
+    protected float currentA;
+    protected float currentTexU;
+    protected float currentTexV;
+    protected float currentNormalX;
+    protected float currentNormalY;
+    protected float currentNormalZ;
+
+    public boolean depth = false;
+    public boolean glow = false;
+    public boolean depthMask = false;
+
+    protected HashMap<ShaderGroup.Attribute, float[]> floatAttributes = new HashMap<>();
+
+    public VBOStaticBatchRenderer(LWJGLWindow window, ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
     {
         this.window = window;
         this.vertexCount = vertices;
@@ -47,10 +66,11 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
 
         this.shader = shader;
 
-        for (ShaderProgram.Attribute a : shader.attributes)
+        for (ShaderGroup.Attribute a : shader.attributes)
         {
             attributeVBOs.put(a, window.createVBO());
             attributeBuffers.put(a, BufferUtils.createFloatBuffer(vertices * a.count));
+            this.floatAttributes.put(a, new float[a.count]);
         }
 
         if (color)
@@ -73,58 +93,89 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         }
     }
 
-    public void addVertex(float x, float y, float z)
+    public void setColor(float r, float g, float b, float a)
     {
+        this.currentR = r / 255;
+        this.currentG = g / 255;
+        this.currentB = b / 255;
+        this.currentA = a / 255;
+    }
+
+    public void setTexCoord(float u, float v)
+    {
+        this.currentTexU = u;
+        this.currentTexV = v;
+    }
+
+    public void setNormal(float x, float y, float z)
+    {
+        this.currentNormalX = x;
+        this.currentNormalY = y;
+        this.currentNormalZ = z;
+    }
+
+    public void addPoint(float x, float y, float z)
+    {
+        if (staged)
+            throw new RuntimeException("Renderer is already staged!");
+
         this.vertices.put(x);
         this.vertices.put(y);
         this.vertices.put(z);
-    }
 
-    public void addColor(float r, float g, float b, float a)
-    {
-        this.colors.put(r);
-        this.colors.put(g);
-        this.colors.put(b);
-        this.colors.put(a);
-    }
+        if (this.colors != null)
+        {
+            this.colors.put(this.currentR);
+            this.colors.put(this.currentG);
+            this.colors.put(this.currentB);
+            this.colors.put(this.currentA);
+        }
 
-    public void addTexCoord(float u, float v)
-    {
-        this.texCoords.put(u);
-        this.texCoords.put(v);
-    }
+        if (this.texCoords != null)
+        {
+            this.texCoords.put(this.currentTexU);
+            this.texCoords.put(this.currentTexV);
+        }
 
-    public void addNormal(float x, float y, float z)
-    {
-        this.normals.put(x);
-        this.normals.put(y);
-        this.normals.put(z);
+        if (this.normals != null)
+        {
+            this.normals.put(this.currentNormalX);
+            this.normals.put(this.currentNormalY);
+            this.normals.put(this.currentNormalZ);
+        }
+
+        for (ShaderGroup.Attribute a : attributeBuffers.keySet())
+        {
+            FloatBuffer b = this.attributeBuffers.get(a);
+            float[] vals = this.floatAttributes.get(a);
+
+            for (float f : vals)
+            {
+                b.put(f);
+            }
+        }
     }
 
     @Override
-    public void addNormal(float[] n)
+    public void setNormal(float[] n)
     {
-        this.addNormal(n[0], n[1], n[2]);
+        this.setNormal(n[0], n[1], n[2]);
     }
 
-    public void addAttributeF(ShaderProgram.Attribute a, float... floats)
+    public void setAttribute(ShaderGroup.Attribute a, float... floats)
     {
-        FloatBuffer b = (FloatBuffer) this.attributeBuffers.get(a);
-
+        float[] attribute = this.floatAttributes.get(a);
+        int index = 0;
         for (float f: floats)
         {
-            b.put(f);
+            attribute[index] = f;
+            index++;
         }
     }
 
-    public void addAttributeI(ShaderProgram.Attribute a, int... ints)
+    public void setGlow(float g)
     {
-        IntBuffer b = (IntBuffer) this.attributeBuffers.get(a);
-
-        for (int i: ints)
-        {
-            b.put(i);
-        }
+        this.colorGlow = g;
     }
 
     public void stage()
@@ -153,7 +204,7 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
             this.window.vertexBufferData(this.normVBO, this.normals);
         }
 
-        for (ShaderProgram.Attribute a: this.shader.attributes)
+        for (ShaderGroup.Attribute a: this.shader.attributes)
         {
             Buffer b = this.attributeBuffers.get(a);
             b.flip();
@@ -164,18 +215,18 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         this.staged = true;
     }
 
-    public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depth, boolean depthWrite)
+    public void draw()
     {
         if (!staged)
-            throw new RuntimeException("Drawing an unstaged batch");
+            this.stage();
 
-        this.shader.util.setVertexBuffer(vertVBO);
-        this.shader.util.setColorBuffer(colVBO);
-        this.shader.util.setTexCoordBuffer(texVBO);
-        this.shader.util.setNormalBuffer(normVBO);
+        this.shader.setVertexBuffer(vertVBO);
+        this.shader.setColorBuffer(colVBO);
+        this.shader.setTexCoordBuffer(texVBO);
+        this.shader.setNormalBuffer(normVBO);
 
-        for (ShaderProgram.Attribute a: this.shader.attributes)
-            this.shader.util.setCustomBuffer(a, this.attributeVBOs.get(a), a.count);
+        for (ShaderGroup.Attribute a: this.shader.attributes)
+            this.shader.setCustomBuffer(a, this.attributeVBOs.get(a), a.count);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -186,19 +237,26 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         if (depth)
             window.enableDepthtest();
 
-        if (depthWrite)
+        if (depthMask)
             window.enableDepthmask();
         else
             window.disableDepthmask();
 
+        if (this.glow)
+            window.setGlowBlendFunc();
+        else
+            window.setTransparentBlendFunc();
+
         if (this.texture != null)
             window.setTexture(this.texture, false);
 
-        this.shader.util.drawVBO(this.vertexCount);
+        this.window.setColor(255, 255, 255, 255, this.colorGlow);
+
+        this.shader.drawVBO(this.vertices.limit() / 3);
 
         window.disableDepthtest();
         window.disableTexture();
-
+        window.setTransparentBlendFunc();
         window.enableDepthmask();
 
         glPopMatrix();
@@ -218,7 +276,26 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         if (this.texVBO >= 0)
             this.window.freeVBO(this.texVBO);
 
-        for (ShaderProgram.Attribute a: this.shader.attributes)
+        for (ShaderGroup.Attribute a: this.shader.attributes)
             this.window.freeVBO(this.attributeVBOs.get(a));
+
+        this.attributeVBOs.clear();
+    }
+
+    public void settings(boolean depth)
+    {
+        this.settings(depth, false);
+    }
+
+    public void settings(boolean depth, boolean glow)
+    {
+        this.settings(depth, glow, !(glow));
+    }
+
+    public void settings(boolean depth, boolean glow, boolean depthMask)
+    {
+        this.depth = depth;
+        this.glow = glow;
+        this.depthMask = depthMask;
     }
 }

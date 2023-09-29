@@ -10,7 +10,7 @@ mat4 getTransform()
 
 vec4 getPos(mat4 transform)
 {
-    return vec4(gl_Vertex.x, gl_Vertex.y, min(gl_Vertex.z, gl_Vertex.z * (1.0 - obstacleSizeFrac)), gl_Vertex.w);
+    return vec4(gl_Vertex.x, gl_Vertex.y, gl_Vertex.z * (1.0 - obstacleSizeFrac), gl_Vertex.w);
 }
 
 vec3 getNormal(mat4 transform)
@@ -26,5 +26,5 @@ void getVertVecs(out vec4 pos, out vec3 normal)
 
 vec4 getColor(vec4 colorIn)
 {
-    return colorIn * (1.0 - obstacleSizeFrac) + vec4(0.275, 0.117, 0.0, 1.0) * obstacleSizeFrac;
+    return colorIn * (1.0 - obstacleSizeFrac) + vec4(0.6823, 0.3608, 0.0628, 1.0) * obstacleSizeFrac;
 }

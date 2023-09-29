@@ -681,8 +681,6 @@ public class Level
 
 	public void reloadTiles()
 	{
-		Drawing.drawing.forceRedrawTerrain();
-
 		Game.currentSizeX = (int) (sizeX * Game.bgResMultiplier);
 		Game.currentSizeY = (int) (sizeY * Game.bgResMultiplier);
 

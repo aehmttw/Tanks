@@ -121,14 +121,14 @@ public class ObstacleBreakable extends Obstacle
 
                 byte option = 0;
 
-                if (Obstacle.draw_size >= Game.tile_size)
-                {
-                    if (i > 0)
-                        option += 1;
-
-                    if (i < Math.min(this.stackHeight, Obstacle.default_max_height) - 1)
-                        option += 2;
-                }
+//                if (Obstacle.draw_size >= Game.tile_size)
+//                {
+//                    if (i > 0)
+//                        option += 1;
+//
+//                    if (i < Math.min(this.stackHeight, Obstacle.default_max_height) - 1)
+//                        option += 2;
+//                }
 
                 double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
 

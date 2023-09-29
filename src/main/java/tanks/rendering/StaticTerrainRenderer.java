@@ -9,17 +9,15 @@ import tanks.obstacle.Obstacle;
 
 import java.util.HashMap;
 
-public class TerrainRenderer
+public class StaticTerrainRenderer extends TerrainRenderer
 {
-    public static final int section_size = 2000;
-
-    protected final HashMap<Class<? extends ShaderGroup>, HashMap<Integer, RegionRenderer>> renderers = new HashMap<>();
-    protected final HashMap<IBatchRenderableObject, RegionRenderer> renderersByObj = new HashMap<>();
-    protected final HashMap<Integer, RegionRenderer> outOfBoundsRenderers = new HashMap<>();
+    protected final HashMap<Class<? extends ShaderGroup>, RegionRenderer> renderers = new HashMap<>();
+    public RegionRenderer outOfBoundsRenderer;
 
     public Tile[][] tiles;
 
     public boolean staged = false;
+    public boolean freed = false;
 
     protected float[] currentColor = new float[3];
     protected double currentDepth;
@@ -37,7 +35,7 @@ public class TerrainRenderer
         return 1664525 * i + 1013904223;
     }
 
-    public TerrainRenderer()
+    public StaticTerrainRenderer()
     {
         try
         {
@@ -75,37 +73,27 @@ public class TerrainRenderer
         }
     }
 
-    public HashMap<Integer, RegionRenderer> getRenderers(Class<? extends ShaderGroup> s)
+    public RegionRenderer getRenderer(Class<? extends ShaderGroup> s)
     {
-        HashMap<Integer, RegionRenderer> m = this.renderers.get(s);
-        if (m == null)
-            this.renderers.put(s, new HashMap<>());
         return renderers.get(s);
     }
 
     public static class RegionRenderer
     {
-        public BaseShapeBatchRenderer renderer;
-
-        public int posX;
-
-        public int posY;
-
+        public BaseStaticBatchRenderer renderer;
         public ShaderGroup shader;
 
-        public RegionRenderer(int x, int y, ShaderGroup s)
+        public RegionRenderer(ShaderGroup s)
         {
-            this.posX = x;
-            this.posY = y;
             this.shader = s;
-            this.renderer = Game.game.window.createShapeBatchRenderer(shader);
+            int verts = Game.obstacles.size() * 300 + Game.currentSizeX * Game.currentSizeY * 30;
+            this.renderer = Game.game.window.createStaticBatchRenderer(shader, true, null, false, verts);
         }
     }
 
-    public RegionRenderer getRenderer(IBatchRenderableObject o, double x, double y, boolean outOfBounds)
+    public RegionRenderer getRenderer(IBatchRenderableObject o, boolean outOfBounds)
     {
-        RegionRenderer s = null;
-        HashMap<Integer, RegionRenderer> renderers = this.outOfBoundsRenderers;
+        RegionRenderer s = this.outOfBoundsRenderer;
 
         Class<? extends ShaderGroup> sg = ShaderGroup.class;
 
@@ -116,28 +104,19 @@ public class TerrainRenderer
 
         if (!outOfBounds)
         {
-            s = renderersByObj.get(o);
-            renderers = this.getRenderers(sg);
+            s = this.getRenderer(sg);
         }
 
         if (s == null)
         {
-            int key = f((int) (f((int) (x / section_size)) + y / section_size));
-            if (renderers.get(key) == null)
-            {
-                renderers.put(key, new RegionRenderer((int) (x / section_size), (int) (y / section_size), getShader(sg)));
-            }
-
-            s = renderers.get(key);
-
-            if (!outOfBounds)
-                renderersByObj.put(o, s);
+            this.renderers.put(sg, new RegionRenderer(getShader(sg)));
+            s = renderers.get(sg);
         }
 
         return s;
     }
 
-    public void addVertexCoord(BaseShapeBatchRenderer s, ShaderGroup shader, float f)
+    public void addVertexCoord(BaseStaticBatchRenderer s, ShaderGroup shader, float f)
     {
         if (shader instanceof IObstacleVertexCoordShader)
             s.setAttribute(((IObstacleVertexCoordShader) shader).getVertexCoord(), f);
@@ -145,16 +124,12 @@ public class TerrainRenderer
 
     public void addBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean out)
     {
-        RegionRenderer r = this.getRenderer(o, x, y, out);
-        BaseShapeBatchRenderer s = r.renderer;
-        s.beginAdd(o);
+        if (this.freed)
+            Game.exitToCrash(new RuntimeException("Renderer was freed"));
+
+        RegionRenderer r = this.getRenderer(o, out);
+        BaseStaticBatchRenderer s = r.renderer;
         ShaderGroup shader = r.shader;
-
-        if (shader instanceof IGroundHeightShader)
-            s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) currentDepth);
-
-        if (shader instanceof IGroundColorShader)
-            s.setAttribute(((IGroundColorShader) shader).getGroundColor(), currentColor);
 
         float x0 = (float) x;
         float y0 = (float) y;
@@ -168,7 +143,6 @@ public class TerrainRenderer
         float g1 = (float) Drawing.drawing.currentColorG;
         float b1 = (float) Drawing.drawing.currentColorB;
         float a = (float) Drawing.drawing.currentColorA;
-        float g = (float) Drawing.drawing.currentGlow;
 
         float r2 = r1 * 0.8f;
         float g2 = g1 * 0.8f;
@@ -180,9 +154,15 @@ public class TerrainRenderer
 
         int h = (int) (z / Game.tile_size) * 8;
 
+        if (shader instanceof IGroundHeightShader)
+            s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) currentDepth);
+
+        if (shader instanceof IGroundColorShader)
+            s.setAttribute(((IGroundColorShader) shader).getGroundColor(), currentColor);
+
         if (options % 2 == 0)
         {
-            s.setColor(r1, g1, b1, a, g);
+            s.setColor(r1, g1, b1, a);
             addVertexCoord(s, shader, h + 1f);
             s.addPoint(x1, y0, z0);
             addVertexCoord(s, shader, h + 0f);
@@ -200,7 +180,7 @@ public class TerrainRenderer
 
         if ((options >> 2) % 2 == 0)
         {
-            s.setColor(r2, g2, b2, a, g);
+            s.setColor(r2, g2, b2, a);
             addVertexCoord(s, shader, h + 7f);
             s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 6f);
@@ -218,7 +198,7 @@ public class TerrainRenderer
 
         if ((options >> 3) % 2 == 0)
         {
-            s.setColor(r2, g2, b2, a, g);
+            s.setColor(r2, g2, b2, a);
             addVertexCoord(s, shader, h + 5f);
             s.addPoint(x1, y0, z1);
             addVertexCoord(s, shader, h + 4f);
@@ -236,7 +216,7 @@ public class TerrainRenderer
 
         if ((options >> 4) % 2 == 0)
         {
-            s.setColor(r3, g3, b3, a, g);
+            s.setColor(r3, g3, b3, a);
             addVertexCoord(s, shader, h + 6f);
             s.addPoint(x0, y1, z1);
             addVertexCoord(s, shader, h + 2f);
@@ -254,7 +234,7 @@ public class TerrainRenderer
 
         if ((options >> 5) % 2 == 0)
         {
-            s.setColor(r3, g3, b3, a, g);
+            s.setColor(r3, g3, b3, a);
             addVertexCoord(s, shader, h + 3f);
             s.addPoint(x1, y1, z0);
             addVertexCoord(s, shader, h + 7f);
@@ -272,7 +252,7 @@ public class TerrainRenderer
 
         if ((options >> 1) % 2 == 0)
         {
-            s.setColor(r1, g1, b1, a, g);
+            s.setColor(r1, g1, b1, a);
             addVertexCoord(s, shader, h + 7f);
             s.addPoint(x1, y1, z1);
             addVertexCoord(s, shader, h + 6f);
@@ -289,12 +269,6 @@ public class TerrainRenderer
         }
     }
 
-    public void remove(IBatchRenderableObject o)
-    {
-        this.getRenderer(o, 0, 0, false).renderer.delete(o);
-        this.renderersByObj.remove(o);
-    }
-
     public void populateTiles()
     {
         this.tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
@@ -309,90 +283,60 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (HashMap<Integer, RegionRenderer> h : this.renderers.values())
-        {
-            for (RegionRenderer r : h.values())
-            {
-                r.renderer.free();
-            }
-        }
-
-        for (RegionRenderer r : this.outOfBoundsRenderers.values())
+        for (RegionRenderer r : this.renderers.values())
         {
             r.renderer.free();
         }
 
+        this.outOfBoundsRenderer.renderer.free();
+
         this.tiles = null;
         this.renderers.clear();
-        this.renderersByObj.clear();
-        this.outOfBoundsRenderers.clear();
         this.staged = false;
+
+        this.freed = true;
     }
 
-    public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
+    public static int count = 0;
+    public void drawMap(RegionRenderer s, int xOffset, int yOffset)
     {
-        for (RegionRenderer s : renderers.values())
-        {
-            double sX = asPreview ? previewWidth : Game.currentSizeX;
-            double x = xOffset * Game.tile_size * sX + offX;
-            double y = yOffset * Game.tile_size * Game.currentSizeY + offY;
-            double z = 0;
-            double sc = 1;
+        double sX = asPreview ? previewWidth : Game.currentSizeX;
+        double x = xOffset * Game.tile_size * sX + offX;
+        double y = yOffset * Game.tile_size * Game.currentSizeY + offY;
+        double z = 0;
+        double sc = 1;
 
-            boolean in = asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
+        if (s.shader instanceof RendererShader)
+            s.renderer.settings(((RendererShader) s.shader).depthTest, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask);
+        else
+            s.renderer.settings(true, false, true);
 
-            if (in)
-            {
-                if (s.shader instanceof RendererShader)
-                    s.renderer.settings(((RendererShader) s.shader).depthTest, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask);
-                else
-                    s.renderer.settings(true, false, true);
+        s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
+        s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
 
-                s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
-                s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
+        if (s.shader instanceof IGlowShader)
+            s.renderer.setGlow(((IGlowShader) s.shader).getGlow());
 
-                if (s.shader instanceof IGlowShader)
-                    s.renderer.setGlow(((IGlowShader) s.shader).getGlow());
-
-                s.renderer.draw();
-            }
-        }
+        s.renderer.draw();
     }
 
-    public void draw()
+    public void stage()
     {
+        if (this.freed)
+            Game.exitToCrash(new RuntimeException("Renderer was freed"));
+
         if (!staged)
         {
             this.stageBackground();
             this.stageObstacles();
             this.staged = true;
         }
-        else
-        {
-            for (Obstacle o : Game.redrawObstacles)
-            {
-                int i = Math.max(0, Math.min(Game.currentSizeX, (int) (o.posX / Game.tile_size)));
-                int j = Math.max(0, Math.min(Game.currentSizeY, (int) (o.posY / Game.tile_size)));
-                double r = Game.tilesR[i][j];
-                double g = Game.tilesG[i][j];
-                double b = Game.tilesB[i][j];
-                this.currentDepth = Game.tilesDepth[i][j];
-                currentColor[0] = (float) (r / 255.0);
-                currentColor[1] = (float) (g / 255.0);
-                currentColor[2] = (float) (b / 255.0);
+    }
 
-                if (o.batchDraw && !o.removed)
-                    o.draw();
-            }
-
-            for (int[] t : Game.redrawGroundTiles)
-            {
-                this.drawTile(t[0], t[1]);
-            }
-
-            Game.redrawObstacles.clear();
-            Game.redrawGroundTiles.clear();
-        }
+    public void draw()
+    {
+        if (this.freed)
+            Game.exitToCrash(new RuntimeException("Renderer was freed"));
 
         double width = (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
         double height = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.unzoomedScale / Game.tile_size);
@@ -433,7 +377,7 @@ public class TerrainRenderer
                     {
                         if (x != 0 || y != 0)
                         {
-                            this.drawMap(this.outOfBoundsRenderers, x, y);
+                            this.drawMap(this.outOfBoundsRenderer, x, y);
                         }
                     }
                 }
@@ -484,8 +428,6 @@ public class TerrainRenderer
         currentColor[0] = (float) (r / 255.0);
         currentColor[1] = (float) (g / 255.0);
         currentColor[2] = (float) (b / 255.0);
-
-        this.remove(this.tiles[i][j]);
 
         if (Game.tileDrawables[i][j] != null && !Game.tileDrawables[i][j].removed)
         {

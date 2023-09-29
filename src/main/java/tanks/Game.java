@@ -1,9 +1,6 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ModelPart;
+import basewindow.*;
 import tanks.bullet.*;
 import tanks.bullet.legacy.BulletAir;
 import tanks.extension.Extension;
@@ -33,6 +30,8 @@ import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
+import tanks.rendering.ShaderGroundOutOfBounds;
+import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 import tanks.translation.Translation;
 
@@ -83,13 +82,11 @@ public class Game
 
 	public static Player player;
 
-	public static HashSet<Obstacle> prevObstacles = new HashSet<>();
-
-	public static ArrayList<Movable> removeMovables = new ArrayList<>();
-	public static ArrayList<Obstacle> removeObstacles = new ArrayList<>();
-	public static ArrayList<Effect> removeEffects = new ArrayList<>();
-	public static ArrayList<Effect> removeTracks = new ArrayList<>();
-	public static ArrayList<Cloud> removeClouds = new ArrayList<>();
+	public static HashSet<Movable> removeMovables = new HashSet<>();
+	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
+	public static HashSet<Effect> removeEffects = new HashSet<>();
+	public static HashSet<Effect> removeTracks = new HashSet<>();
+	public static HashSet<Cloud> removeClouds = new HashSet<>();
 
 	public static ArrayList<Effect> addEffects = new ArrayList<>();
 	public static Queue<Effect> recycleEffects = new LinkedList<>();
@@ -120,7 +117,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.2b";
+	public static final String version = "Tanks v1.5.2c";
 	public static final int network_protocol = 52;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -221,6 +218,10 @@ public class Game
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
+
+	public final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
+	public ShaderGroundOutOfBounds shaderOutOfBounds;
+	public ShaderTracks shaderTracks;
 
 	public static boolean enableExtensions = false;
 	public static boolean autoLoadExtensions = true;
@@ -686,16 +687,8 @@ public class Game
 	public static void createModels()
 	{
 		Tank.health_model = Drawing.drawing.createModel();
-		Drawing.rotatedRect = Drawing.drawing.createModel();
 
 		TankModels.initialize();
-
-		Drawing.rotatedRect.shapes = new ModelPart.Shape[1];
-		Drawing.rotatedRect.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-0.5, -0.5, 0),
-				new ModelPart.Point(0.5, -0.5, 0),
-				new ModelPart.Point(0.5, 0.5, 0),
-				new ModelPart.Point(-0.5, 0.5, 0), 1);
 
 		double innerHealthEdge = 0.55;
 		double outerHealthEdge = 0.575;
@@ -833,6 +826,19 @@ public class Game
 		EventTankPlayerCreate e = new EventTankPlayerCreate(player, x, y, angle, t, id, drawAge);
 		Game.eventsOut.add(e);
 		e.execute();
+	}
+
+	public static void addObstacle(Obstacle o)
+	{
+		o.removed = false;
+		Game.obstacles.add(o);
+		Game.redrawObstacles.add(o);
+
+		int x = (int) (o.posX / Game.tile_size);
+		int y = (int) (o.posY / Game.tile_size);
+
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY)
+			Game.redrawGroundTiles.add(new int[]{x, y});
 	}
 
 	public static boolean usernameInvalid(String username)

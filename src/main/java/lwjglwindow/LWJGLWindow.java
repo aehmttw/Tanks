@@ -11,7 +11,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
-import tanks.Game;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -31,8 +30,6 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -1239,25 +1236,19 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public BaseShapeBatchRenderer createShapeBatchRenderer(boolean dynamic)
+	public BaseShapeBatchRenderer createShapeBatchRenderer()
 	{
-		return new DummyShapeBatchRenderer(true);
+		return new VBOShapeBatchRenderer(this);
 	}
 
 	@Override
-	public BaseShapeBatchRenderer2 createShapeBatchRenderer2()
+	public BaseShapeBatchRenderer createShapeBatchRenderer(ShaderGroup shader)
 	{
-		return new VBOShapeBatchRenderer2(this);
+		return new VBOShapeBatchRenderer(this, shader);
 	}
 
 	@Override
-	public BaseShapeBatchRenderer2 createShapeBatchRenderer2(ShaderGroup shader)
-	{
-		return new VBOShapeBatchRenderer2(this, shader);
-	}
-
-	@Override
-	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderProgram shader, boolean color, String texture, boolean normal, int vertices)
+	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
 	{
 		return new VBOStaticBatchRenderer(this, shader, color, texture, normal, vertices);
 	}

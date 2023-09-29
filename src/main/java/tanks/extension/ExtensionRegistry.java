@@ -2,18 +2,13 @@ package tanks.extension;
 
 import basewindow.BaseFile;
 import tanks.Game;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleUnknown;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 import java.util.jar.JarFile;
 

@@ -1,9 +1,8 @@
 package tanks.rendering;
 
-import basewindow.BaseShapeBatchRenderer2;
+import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 
@@ -13,11 +12,10 @@ public class TrackRenderer
 {
     public static final int section_size = 2000;
 
-    public ShaderTracks shader = new ShaderTracks(Game.game.window);
-
     protected final HashMap<Integer, RegionRenderer> renderers = new HashMap<>();
     protected final HashMap<IBatchRenderableObject, RegionRenderer> renderersByObj = new HashMap<>();
     public IBatchRenderableObject[][] tiles;
+    public ShaderTracks shader;
 
     public static int f(int i)
     {
@@ -26,20 +24,12 @@ public class TrackRenderer
 
     public TrackRenderer()
     {
-        try
-        {
-            this.shader.initialize();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            Game.exitToCrash(e);
-        }
+        this.shader = Game.game.shaderTracks;
     }
 
     public class RegionRenderer
     {
-        public BaseShapeBatchRenderer2 renderer = Game.game.window.createShapeBatchRenderer2(shader);
+        public BaseShapeBatchRenderer renderer = Game.game.window.createShapeBatchRenderer(shader);
         public int posX;
         public int posY;
 
@@ -68,7 +58,7 @@ public class TrackRenderer
 
     public void addRect(IBatchRenderableObject o, double x, double y, double z, double width, double height, double rotation)
     {
-        BaseShapeBatchRenderer2 s = this.getRenderer(o, x, y).renderer;
+        BaseShapeBatchRenderer s = this.getRenderer(o, x, y).renderer;
         s.beginAdd(o);
 
         float r1 = (float) Drawing.drawing.currentColorR;
@@ -80,15 +70,13 @@ public class TrackRenderer
         s.setColor(r1, g1, b1, a, g);
         s.setAttribute(shader.addTime, (float) Game.screen.screenAge);
 
-        s.addPoint(o, (float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(width / 2, -height / 2, x, rotation), (float) s.rotateY(width / 2, -height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(width / 2, -height / 2, x, rotation), (float) s.rotateY(width / 2, -height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
 
-        s.addPoint(o, (float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(-width / 2, height / 2, x, rotation), (float) s.rotateY(-width / 2, height / 2, y, rotation), (float) z);
-        s.addPoint(o, (float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
-
-        s.endAdd();
+        s.addPoint((float) s.rotateX(-width / 2, -height / 2, x, rotation), (float) s.rotateY(-width / 2, -height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(-width / 2, height / 2, x, rotation), (float) s.rotateY(-width / 2, height / 2, y, rotation), (float) z);
+        s.addPoint((float) s.rotateX(width / 2, height / 2, x, rotation), (float) s.rotateY(width / 2, height / 2, y, rotation), (float) z);
     }
 
     public void reset()

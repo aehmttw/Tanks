@@ -3,8 +3,7 @@ package tanks.gui.screen;
 import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.obstacle.Obstacle;
-
-import java.util.Arrays;
+import tanks.rendering.StaticTerrainRenderer;
 
 public abstract class Screen implements IBatchRenderableObject
 {
@@ -37,6 +36,7 @@ public abstract class Screen implements IBatchRenderableObject
 	public int minBgHeight = 0;
 
 	public boolean drawBgRect = true;
+	public boolean stageOnly = false;
 
 	public double interfaceScaleZoomOverride = -1;
 
@@ -94,9 +94,6 @@ public abstract class Screen implements IBatchRenderableObject
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
-		if (Game.screen != Game.prevScreen || Game.game.window.hasResized)
-			Drawing.drawing.forceRedrawTerrain();
-
 		for (int i = 0; i < Game.currentSizeX; i++)
 		{
 			for (int j = 0; j < Game.currentSizeY; j++)
@@ -132,10 +129,12 @@ public abstract class Screen implements IBatchRenderableObject
 
 		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
 
-		Drawing.drawing.terrainRendering = true;
-		Drawing.drawing.terrainRenderer2.draw();
+		if (stageOnly && Drawing.drawing.terrainRenderer instanceof StaticTerrainRenderer)
+			((StaticTerrainRenderer) Drawing.drawing.terrainRenderer).stage();
+		else
+			Drawing.drawing.terrainRenderer.draw();
+
 		Drawing.drawing.trackRenderer.draw();
-		Drawing.drawing.terrainRendering = false;
 
 //		if (!selfBatch || (Obstacle.draw_size > 0 && Obstacle.draw_size < Game.tile_size))
 //		{

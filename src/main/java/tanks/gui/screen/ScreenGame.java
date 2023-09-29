@@ -1781,7 +1781,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		for (Obstacle o: Game.removeObstacles)
 		{
 			o.removed = true;
-			Drawing.drawing.terrainRenderer2.remove(o);
+			Drawing.drawing.terrainRenderer.remove(o);
 
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
@@ -2011,9 +2011,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
 				mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-		if (Game.enable3d && (Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size))
-			Drawing.drawing.beginTerrainRenderers();
-
 		this.drawDefaultBackground();
 
 		Drawing drawing = Drawing.drawing;
@@ -2056,9 +2053,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			drawables[c.drawLevel].add(c);
 		}
-
-		if (Game.enable3d && (Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size))
-			Drawing.drawing.drawTerrainRenderers();
 
 		if (Game.game.window.touchscreen)
 		{

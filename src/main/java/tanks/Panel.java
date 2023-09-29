@@ -3,6 +3,8 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
+import tanks.rendering.ShaderGroundOutOfBounds;
+import tanks.rendering.ShaderTracks;
 import tanks.rendering.TerrainRenderer;
 import tanks.rendering.TrackRenderer;
 import tanks.network.event.EventBeginLevelCountdown;
@@ -34,7 +36,7 @@ public class Panel
 	public static double windowWidth = 1400;
 	public static double windowHeight = 900;
 
-	public final long splash_duration = 4000;
+	public final long splash_duration = 4000 - 40;
 	public boolean playedTutorialIntroMusic = false;
 
 	public static boolean showMouseTarget = true;
@@ -117,11 +119,20 @@ public class Panel
 
 	public void setUp()
 	{
-		Drawing.drawing.defaultRenderer = new Drawing.LevelRenderer();
-		Drawing.drawing.terrainRenderer = Drawing.drawing.defaultRenderer.terrainRenderer;
-		Drawing.drawing.terrainRendererTransparent = Drawing.drawing.defaultRenderer.terrainRendererTransparent;
-		Drawing.drawing.terrainRendererShrubbery = Drawing.drawing.defaultRenderer.terrainRendererShrubbery;
-		Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
+ 		Game.game.shaderTracks = new ShaderTracks(Game.game.window);
+
+		try
+		{
+			Game.game.shaderOutOfBounds.initialize();
+			Game.game.shaderTracks.initialize();
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		Drawing.drawing.terrainRenderer = new TerrainRenderer();
 		Drawing.drawing.trackRenderer = new TrackRenderer();
 
 		ModAPI.setUp();
@@ -260,6 +271,7 @@ public class Panel
 
 //			this.startTime = System.currentTimeMillis() + splash_duration;
 //			Drawing.drawing.playSound("splash_jingle.ogg");
+//			Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
 		}
 
 		if (!started)
@@ -691,7 +703,6 @@ public class Panel
 		if (this.frameStartTime - startTime < introTime + introAnimationTime)
 		{
 			this.frameStartTime += 100000;
-			Drawing.drawing.forceRedrawTerrain();
 			double frac = ((this.frameStartTime - startTime - introTime) / introAnimationTime);
 
 			if (Game.enable3d && Game.fancyTerrain)
@@ -748,8 +759,8 @@ public class Panel
 			return;
 		}
 
-		if (Drawing.drawing.terrainRenderer2 == null)
-			Drawing.drawing.terrainRenderer2 = new TerrainRenderer();
+		if (Drawing.drawing.terrainRenderer == null)
+			Drawing.drawing.terrainRenderer = new TerrainRenderer();
 
 		if (Drawing.drawing.trackRenderer == null)
 			Drawing.drawing.trackRenderer = new TrackRenderer();
@@ -758,7 +769,7 @@ public class Panel
 		{
 			lastDrawnScreen = Game.screen;
 			Drawing.drawing.trackRenderer.reset();
-			Drawing.drawing.terrainRenderer2.reset();
+			Drawing.drawing.terrainRenderer.reset();
 		}
 
 		if (!(Game.screen instanceof ScreenGame))
@@ -771,10 +782,7 @@ public class Panel
 		}
 
 		if (!this.introFinished)
-		{
-			Drawing.drawing.forceRedrawTerrain();
 			this.introFinished = true;
-		}
 
 		if (!(Game.screen instanceof ScreenExit))
 		{

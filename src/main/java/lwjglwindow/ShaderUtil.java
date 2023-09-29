@@ -57,8 +57,6 @@ public class ShaderUtil extends BaseShaderUtil
             int gshader = this.createShader(geom, geomHeaders, GL_GEOMETRY_SHADER_EXT);
             glAttachShader(this.programID, gshader);
 
-            //int[] max = new int[1];
-            //glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, max);
             glProgramParameteriEXT(this.programID, GL_GEOMETRY_VERTICES_OUT_EXT, 3);
         }
 
@@ -197,7 +195,6 @@ public class ShaderUtil extends BaseShaderUtil
         {
             this.id = GL20.glGetAttribLocation(programID, name);
             GL20.glBindAttribLocation(programID, id, name);
-            System.out.println(name + " " + id);
         }
     }
 
@@ -251,6 +248,7 @@ public class ShaderUtil extends BaseShaderUtil
         GL20.glEnableVertexAttribArray(attribute.id);
         GL20.glVertexAttribPointer(attribute.id, size, GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        this.enabledAttributes.add(attribute.id);
     }
 
     public void drawVBO(int numberIndices)

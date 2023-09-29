@@ -1,6 +1,6 @@
 package basewindow;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * A shader group allows for shaders to share the same uniforms and attributes
@@ -10,12 +10,13 @@ public class ShaderGroup
 {
     public ShaderBase shaderBase;
     public ShaderShadowMap shaderShadowMap;
-    public ArrayList<Attribute> attributes = new ArrayList<>();
+    public HashSet<Attribute> attributes = new HashSet<>();
     public BaseWindow window;
 
     public Uniform1b texture;
 
     public String name;
+    protected int random = (int) (Math.random() * 100);
 
     public ShaderGroup(BaseWindow w, String name)
     {
@@ -226,4 +227,9 @@ public class ShaderGroup
 
     public static class UniformMatrix4 extends GroupMatrixUniform<ShaderProgram.UniformMatrix4> { }
 
+    @Override
+    public String toString()
+    {
+        return this.name + this.random;
+    }
 }

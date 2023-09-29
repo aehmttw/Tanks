@@ -144,7 +144,6 @@ public class ScreenOptionsWindow extends Screen
     @Override
     public void draw()
     {
-        Drawing.drawing.forceRedrawTerrain();
         this.drawDefaultBackground();
         back.draw();
 

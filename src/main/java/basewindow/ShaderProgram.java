@@ -2,6 +2,7 @@ package basewindow;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class ShaderProgram
 {
@@ -10,13 +11,25 @@ public abstract class ShaderProgram
     public ArrayList<Attribute> attributes = new ArrayList<>();
     public BaseWindow window;
 
+    protected static HashMap<Class, Field[]> fieldsCache = new HashMap<>();
+
+    protected static Field[] getFields(Class c)
+    {
+        Field[] cached = fieldsCache.get(c);
+        if (cached == null)
+        {
+            cached = c.getFields();
+            fieldsCache.put(c, cached);
+        }
+
+        return cached;
+    }
+
     public ShaderProgram(BaseWindow w)
     {
         this.util = w.getShaderUtil(this);
         this.window = w;
     }
-
-    //public abstract void initialize() throws Exception;
 
     public void initializeUniforms()
     {
@@ -30,7 +43,7 @@ public abstract class ShaderProgram
 
     public void bindAttributes() throws IllegalAccessException, InstantiationException
     {
-        for (Field f: this.getClass().getFields())
+        for (Field f: getFields(this.getClass()))
         {
             if (Attribute.class.isAssignableFrom(f.getType()))
             {
@@ -42,7 +55,7 @@ public abstract class ShaderProgram
             }
         }
 
-        for (Field f: this.group.getClass().getFields())
+        for (Field f: getFields(this.group.getClass()))
         {
             if (ShaderGroup.Attribute.class.isAssignableFrom(f.getType()))
             {
@@ -266,7 +279,7 @@ public abstract class ShaderProgram
     {
         try
         {
-            Field[] fields = c.getFields();
+            Field[] fields = getFields(c);
             for (Field f : fields)
             {
                 if (IUniform.class.isAssignableFrom(f.getType()))

@@ -160,7 +160,6 @@ public class ObstacleSnow extends Obstacle
             {
                 this.finalHeight = z;
                 Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-                Drawing.drawing.setShrubberyMode();
                 Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
             }
         }

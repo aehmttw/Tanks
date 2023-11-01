@@ -80,6 +80,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
+            System.out.println(tank + " " + System.currentTimeMillis());
             ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.time, this.sysTime);
         }
     }

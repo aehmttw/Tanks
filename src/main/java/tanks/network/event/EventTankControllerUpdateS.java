@@ -70,6 +70,11 @@ public class EventTankControllerUpdateS extends EventTankUpdate
                 r.timeSinceRefresh = 0;
                 r.interpolationTime = iTime;
                 r.lastUpdate = time;
+
+                r.lastAngle = r.angle;
+                r.lastPitch = r.pitch;
+                r.currentAngle = this.angle;
+                r.currentPitch = this.pitch;
             }
 
             t.posX = this.posX;

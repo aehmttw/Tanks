@@ -339,8 +339,6 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
 
         this.posX = this.posX + this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.posY = this.posY + this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
-
-        Game.eventsOut.add(new EventTankControllerUpdateC(this));
     }
 
     @Override

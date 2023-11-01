@@ -3,6 +3,9 @@ package tanks;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.transformation.Translation;
+import tanks.network.NetworkEventMap;
+import tanks.network.event.INetworkEvent;
+import tanks.network.event.IStackableEvent;
 import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.rendering.TerrainRenderer;
@@ -23,6 +26,7 @@ import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Panel
 {
@@ -103,6 +107,7 @@ public class Panel
 	protected Screen lastDrawnScreen = null;
 
 	public ArrayList<double[]> lights = new ArrayList<>();
+	HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
 
 	public static void initialize()
 	{
@@ -391,14 +396,29 @@ public class Panel
 
 		synchronized (Game.eventsIn)
 		{
+			stackedEventsIn.clear();
+
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
 				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
-					Game.eventsIn.get(i).execute();
+				{
+					INetworkEvent e = Game.eventsIn.get(i);
+
+					if (e instanceof IStackableEvent)
+						stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+					else
+						Game.eventsIn.get(i).execute();
+				}
 			}
 
 			Game.eventsIn.clear();
 		}
+
+		for (INetworkEvent e: stackedEventsIn.values())
+		{
+			e.execute();
+		}
+		stackedEventsIn.clear();
 
 		for (int i = 0; i < Game.game.heightGrid.length; i++)
 		{

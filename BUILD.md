@@ -1,22 +1,62 @@
-
 # Build Instructions
 
-## Installing Java JDK
+## I Just want to play the game
+* [It's on Steam](https://store.steampowered.com/app/1660910/Tanks_The_Crusades/)
+* [Latest Release](https://github.com/aehmttw/tanks/releases)
 
-Download and install java from the source:
-[https://www.oracle.com/java/technologies/downloads/](https://www.oracle.com/java/technologies/downloads/)
+## Dependencies
+* [Java](https://www.java.com/en/)
+* [Maven](https://maven.apache.org/)
 
-Other version of Java 8+ will also work.
+## Building with make
+This is a wrapper for building with maven **YOU STILL NEED MAVEN**
+### Initialize the environment
+```
+make init
+```
 
-## Installing dependencies
+### Package & run
+```
+make
+```
 
-The build script will use Maven to auto-download the dependencies.
-If you wish to download the dependencies separately, you may do so and put them into a folder named "libs"
+### Package
+```
+make package
+```
 
-## Building the Game
+### Run
+```
+make run
+```
 
-### Windows
-Run the file `build.ps1`
+### clean
+```
+make clean
+```
 
-### Mac OS/Linux/Unix
-Opening terminal to the current directory, run `bash build.sh`
+## Building with Maven
+
+### Installing Steamworks
+```
+mvn install:install-file    -Dfile=libs/steamworks4j-1.10 0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
+mvn install:install-file    -Dfile=libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j-lwjgl3    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
+```
+Steamworks4J has had some issues with it's maven repository. As a fix (for now), steamworks4J is bundled with Tanks.
+
+### Packaging
+```
+mvn clean package
+```
+
+### Running
+```
+java -jar target/Tanks.jar
+```
+
+### Clean
+```
+mvn clean
+```
+
+

@@ -45,7 +45,7 @@ public class FriendsMixin
 			}*/
 		}
 
-		@Override
+		//@Override
 		public void onGameOverlayActivated(boolean active)
 		{
 

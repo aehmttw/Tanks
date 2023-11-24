@@ -361,7 +361,10 @@ public class ItemBar
 				}
 			}
 		}
+	}
 
+	public void drawOverlay()
+	{
 		if (this.age - lastItemSwitch < 200)
 		{
 			Item i = defaultItemEmpty;

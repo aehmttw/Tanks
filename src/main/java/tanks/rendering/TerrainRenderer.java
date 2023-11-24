@@ -371,8 +371,8 @@ public class TerrainRenderer
         {
             for (Obstacle o : Game.redrawObstacles)
             {
-                int i = Math.max(0, Math.min(Game.currentSizeX, (int) (o.posX / Game.tile_size)));
-                int j = Math.max(0, Math.min(Game.currentSizeY, (int) (o.posY / Game.tile_size)));
+                int i = Math.max(0, Math.min(Game.currentSizeX - 1, (int) (o.posX / Game.tile_size)));
+                int j = Math.max(0, Math.min(Game.currentSizeY - 1, (int) (o.posY / Game.tile_size)));
                 double r = Game.tilesR[i][j];
                 double g = Game.tilesG[i][j];
                 double b = Game.tilesB[i][j];

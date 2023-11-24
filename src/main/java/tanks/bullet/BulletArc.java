@@ -61,7 +61,7 @@ public class BulletArc extends Bullet
 
         if (this.posZ < Game.tile_size / 2 && !this.destroy)
         {
-            if (this.bounces > 0)
+            if (this.bounces > 0 && (this.posX >= 0 && this.posX <= Game.currentSizeX * Game.tile_size && this.posY >= 0 && this.posY <= Game.currentSizeY * Game.tile_size))
             {
                 this.bounces--;
                 this.posZ += 2 * ((Game.tile_size / 2) - this.posZ);

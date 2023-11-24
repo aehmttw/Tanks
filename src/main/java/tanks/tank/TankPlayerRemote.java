@@ -114,6 +114,10 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         this.posX = TankRemote.cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
         this.posY = TankRemote.cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
+
+        //System.out.printf("t: %f %f | pos: %f %f -> %f %f, vel %f %f -> %f %f\n", this.timeSinceRefresh, this.interpolationTime, +this.prevKnownPosX, this.prevKnownPosY, this.currentKnownPosX, this.currentKnownPosY, this.prevKnownVX, this.prevKnownVY, this.currentKnownVX, this.currentKnownVY);
+        //System.out.printf("pos: %f %f\n", this.posX, this.posY);
+
         double frac = Math.min(1, this.timeSinceRefresh / this.interpolationTime);
         this.vX = (1 - frac) * this.prevKnownVX + frac * this.currentKnownVX;
         this.vY = (1 - frac) * this.prevKnownVY + frac * this.currentKnownVY;
@@ -171,6 +175,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         if (this.hasCollided)
         {
+            //System.out.println("collision");
             this.lastVX = this.vX;
             this.lastVY = this.vY;
             //this.lastPosX = this.posX;
@@ -183,7 +188,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.prevKnownVXFinal = this.lastFinalVX;
             this.prevKnownVYFinal = this.lastFinalVY;
             this.lastAngle = this.angle;
-            this.interpolationTime -= this.timeSinceRefresh;
+            //this.interpolationTime -= this.timeSinceRefresh;
             this.timeSinceRefresh = 0;
         }
 

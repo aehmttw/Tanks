@@ -360,7 +360,7 @@ public class Panel
 		else if (Game.deterministicMode)
 			Panel.frameFrequency = 100.0 / 60;
 		else
-			Panel.frameFrequency = Game.game.window.frameFrequency;
+			Panel.frameFrequency = Math.min(Game.game.window.frameFrequency, 20);
 
 		Game.game.window.showKeyboard = false;
 

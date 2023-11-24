@@ -35,8 +35,8 @@ public class Mine extends Movable implements IAvoidObject
     public int lastBeep = Integer.MAX_VALUE;
 
     public double knockbackRadius = this.radius * 2;
-    public double bulletKnockback = 10;
-    public double tankKnockback = 10;
+    public double bulletKnockback = 0;
+    public double tankKnockback = 0;
 
     public int networkID = -1;
 

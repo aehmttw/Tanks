@@ -14,10 +14,7 @@ import tanks.registry.RegistryTank;
 import static tanks.tank.TankProperty.Category.*;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -248,7 +245,7 @@ public class TankAIControlled extends Tank
 	public double spawnChance = 0.003;
 
 	/** Whether the tank should commit suicide when there are no allied tanks on the field */
-	@TankProperty(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and explode")
+	@TankProperty(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and explode. The explosion will use the properties of the tank's mine.")
 	public boolean enableSuicide = false;
 	/** Base factor in calculating suicide timer: base + random * Math.random()*/
 	@TankProperty(category = lastStand, id = "suicide_timer_base", name = "Base timer", desc = "Minimum time this tank will charge at its enemy before blowing up")
@@ -760,7 +757,7 @@ public class TankAIControlled extends Tank
 		{
 			for (Movable m2 : Game.movables)
 			{
-				if (Team.isAllied(m2, this) && m2 instanceof Tank && !((Tank) m2).resistExplosions && this.team.friendlyFire && Math.pow(m2.posX - posX, 2) + Math.pow(m2.posY - posY, 2) <= Math.pow(Mine.mine_size, 2))
+				if (Team.isAllied(m2, this) && m2 instanceof Tank && !((Tank) m2).resistExplosions && (this.team == null || this.team.friendlyFire) && Math.pow(m2.posX - posX, 2) + Math.pow(m2.posY - posY, 2) <= Math.pow(Mine.mine_size, 2))
 					return false;
 			}
 		}
@@ -784,7 +781,7 @@ public class TankAIControlled extends Tank
 		if (b instanceof BulletArc)
 			b.vZ = this.distance / speed * 0.5 * BulletArc.gravity;
 		else
-			b.moveOut(50 / speed * this.size / Game.tile_size);
+			b.moveOut(50 / speed * this.size / Game.tile_size * this.turretLength / Game.tile_size);
 
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
@@ -807,6 +804,7 @@ public class TankAIControlled extends Tank
 		Movable nearest = null;
 		this.hasTarget = false;
 
+		boolean lowPriority = true;
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
@@ -817,12 +815,17 @@ public class TankAIControlled extends Tank
 				if (BulletHealing.class.isAssignableFrom(this.bullet.bulletClass) && ((Tank) m).health - ((Tank) m).baseHealth >= 1)
 					continue;
 
+				boolean lowP = (BulletBoost.class.isAssignableFrom(this.bullet.bulletClass) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement));
+				if (!lowPriority && lowP)
+					continue;
+
 				double dist = Movable.distanceBetween(this, m);
-				if (dist < nearestDist)
+				if (dist < nearestDist || (lowPriority && !lowP))
 				{
 					this.hasTarget = true;
 					nearestDist = dist;
 					nearest = m;
+					lowPriority = lowP;
 				}
 			}
 		}
@@ -843,7 +846,7 @@ public class TankAIControlled extends Tank
 		{
 			Movable m = Game.movables.get(i);
 
-			if (m instanceof Tank && !(m.getClass().equals(this.getClass())) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
+			if (m instanceof Tank && !(m instanceof TankAIControlled && ((TankAIControlled) m).transformMimic) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
 					&& ((Tank) m).targetable && Movable.distanceBetween(m, this) < this.mimicRange && ((Tank) m).size == this.size && !m.destroy)
 			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
@@ -984,8 +987,9 @@ public class TankAIControlled extends Tank
 		t.attributes = this.attributes;
 		t.statusEffects = this.statusEffects;
 		t.coinValue = this.coinValue;
-		t.cooldown = this.cooldown;
 		t.currentlyVisible = true;
+		t.cooldown = Math.min(t.cooldownBase, this.cooldown);
+		t.age = this.age;
 
 		Tank p = this;
 		if (this.getTopLevelPossessor() != null)
@@ -1123,7 +1127,7 @@ public class TankAIControlled extends Tank
 			{
 				Tile.Type t = Tile.Type.solid;
 
-				if (!o.tankCollision && !(o instanceof ObstacleTeleporter) && !(o instanceof IAvoidObject))
+				if (!o.tankCollision && !(o instanceof ObstacleTeleporter))
 					t = Tile.Type.empty;
 				else if (o.destructible && this.enableMineLaying)
 					t = Tile.Type.destructible;
@@ -1132,14 +1136,20 @@ public class TankAIControlled extends Tank
 				int y = (int) (o.posY / Game.tile_size);
 				Tile tile = tiles[x][y];
 				tile.type = t;
-				tile.unfavorability = Math.min(tile.unfavorability, 10);
 
-				for (int i = -1; i <= 1; i++)
+				if (o.unfavorability >= 0)
+					tile.unfavorability = o.unfavorability;
+				else if (o.tankCollision)
 				{
-					for (int j = -1; j <= 1; j++)
+					tile.unfavorability = 10;
+
+					for (int i = -1; i <= 1; i++)
 					{
-						if (x + i > 0 && x + i < tiles.length && y + j > 0 && y + j < tiles[0].length)
-							tiles[x + i][y + j].unfavorability = Math.max(tile.unfavorability, 1);
+						for (int j = -1; j <= 1; j++)
+						{
+							if (x + i > 0 && x + i < tiles.length && y + j > 0 && y + j < tiles[0].length)
+								tiles[x + i][y + j].unfavorability = Math.max(tile.unfavorability, 1);
+						}
 					}
 				}
 			}
@@ -1151,7 +1161,7 @@ public class TankAIControlled extends Tank
 				tiles[Math.min(Game.currentSizeX - 1, Math.max(0, (int) (m.posX / Game.tile_size)))][Math.min(Game.currentSizeY - 1, Math.max(0, (int) (m.posY / Game.tile_size)))].interesting = true;
 		}
 
-		ArrayList<Tile> queue = new ArrayList<>();
+		Queue<Tile> queue = new LinkedList<>();
 
 		Tile t = tiles[(int)(this.posX / Game.tile_size)][(int)(this.posY / Game.tile_size)];
 		t.explored = true;
@@ -1162,7 +1172,7 @@ public class TankAIControlled extends Tank
 
 		while (!queue.isEmpty())
 		{
-			current = queue.remove(0);
+			current = queue.remove();
 
 			if (current.search(queue, tiles))
 			{
@@ -2252,8 +2262,10 @@ public class TankAIControlled extends Tank
 			this.possessingTank = null;
 			this.currentlyVisible = true;
 			this.targetEnemy = null;
+			this.cooldown = Math.min(this.cooldownBase, this.sightTransformTank.cooldown);
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
 			Game.eventsOut.add(new EventTankTransform(this, this, EventTankTransform.no_effect));
+			this.age = this.sightTransformTank.age;
 			Game.movables.add(this);
 			Game.removeMovables.add(this.sightTransformTank);
 			this.skipNextUpdate = true;
@@ -2320,6 +2332,12 @@ public class TankAIControlled extends Tank
 			this.attributes = t.attributes;
 			this.statusEffects = t.statusEffects;
 			this.targetEnemy = null;
+
+			if (t instanceof TankAIControlled)
+				this.cooldown = Math.min(this.cooldownBase, ((TankAIControlled) t).cooldown);
+
+			this.age = t.age;
+
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 1);
 
 			Game.movables.add(this);
@@ -2407,6 +2425,11 @@ public class TankAIControlled extends Tank
 			t.baseModel = this.baseModel;
 			t.turretModel = this.turretModel;
 			t.turretBaseModel = this.turretBaseModel;
+
+			if (t instanceof TankAIControlled)
+				((TankAIControlled) t).cooldown = Math.min(((TankAIControlled) t).cooldownBase, this.cooldown);
+
+			t.age = this.age;
 
 			t.crusadeID = this.crusadeID;
 
@@ -2515,7 +2538,7 @@ public class TankAIControlled extends Tank
 			this.tileY = y;
 		}
 
-		public boolean search(ArrayList<Tile> queue, Tile[][] map)
+		public boolean search(Queue<Tile> queue, Tile[][] map)
 		{
 			boolean freeLeft = this.tileX > 0;
 			boolean freeTop = this.tileY > 0;
@@ -2568,7 +2591,7 @@ public class TankAIControlled extends Tank
 			return false;
 		}
 
-		public void explore(Tile parent, ArrayList<Tile> queue)
+		public void explore(Tile parent, Queue<Tile> queue)
 		{
 			if (this.type != Type.solid && !this.explored)
 			{

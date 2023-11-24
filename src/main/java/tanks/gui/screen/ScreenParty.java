@@ -93,7 +93,7 @@ public class ScreenParty extends Screen
 
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (2.5 + offset), "Make sure that everyone is using the same port!");
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (2 + offset), "All players should be connected to the same");
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (1.5 + offset), " network, unless the host is port forwarding.");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (1.5 + offset), "network, unless the host is port forwarding.");
 
 		back.draw();
 		port.draw();

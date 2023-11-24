@@ -22,6 +22,11 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	 */
 	public boolean shouldShootThrough = false;
 
+	/**
+	 * If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this
+	 */
+	public int unfavorability = -1;
+
 	public boolean isSurfaceTile = false;
 
 	public boolean enableStacking = true;

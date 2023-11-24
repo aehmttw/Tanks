@@ -178,7 +178,8 @@ public class Arcade extends Minigame
                 {
                     if (m instanceof IServerPlayerTank && !m.destroy)
                     {
-                        survivedFrenzy = true;
+                        // fixes a bug where insta-dying on frenzy gives the bonus
+                        survivedFrenzy = frenzyTanksDestroyed > 5;
                         break;
                     }
                 }

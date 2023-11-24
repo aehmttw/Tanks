@@ -32,6 +32,7 @@ public class ScreenPartyHost extends Screen
     public Button[] kickButtons = new Button[entries_per_page];
 
     public int usernamePage = 0;
+    protected int lastConnectionCount = 0;
 
     public static int entries_per_page = 10;
     public static int username_spacing = 30;
@@ -111,7 +112,11 @@ public class ScreenPartyHost extends Screen
     {
         super(350, 40, 380, 60);
 
-        this.music = "menu_3.ogg";
+        if (ScreenPartyHost.server == null || ScreenPartyHost.server.connections.size() <= 0)
+            this.music = "menu_3.ogg";
+        else
+            this.music = "menu_4.ogg";
+
         this.musicID = "menu";
         toggleIP.fullInfo = true;
 
@@ -221,6 +226,19 @@ public class ScreenPartyHost extends Screen
 
         if (!this.ip.equals(Translation.translate("Party host")))
             this.toggleIP.update();
+
+        int c = server.connections.size();
+
+        if (lastConnectionCount != c)
+        {
+            if (c <= 0)
+                this.music = "menu_3.ogg";
+            else
+                this.music = "menu_4.ogg";
+            Panel.forceRefreshMusic = true;
+        }
+
+        this.lastConnectionCount = c;
     }
 
     @Override

@@ -101,15 +101,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		if (closed)
 			return;
 
-		try
-		{
-			Thread.sleep((long) (Math.random() * 50 + 50));
-		}
-		catch (Exception e)
-		{
-
-		}
-
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
 		boolean wasPing = this.reader.queueMessage(this, buffy, this.clientID);

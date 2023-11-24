@@ -2171,6 +2171,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			//Drawing.drawing.drawInterfaceImage("/mine.png", TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, TankPlayer.mineButton.sizeX, TankPlayer.mineButton.sizeY);
 		}
 
+		if (!(paused && screenshotMode) && Game.player.hotbar.enabledItemBar)
+		{
+			Game.player.hotbar.itemBar.drawOverlay();
+		}
+
 		if (!this.showDefaultMouse)
 			Panel.panel.drawMouseTarget(true);
 

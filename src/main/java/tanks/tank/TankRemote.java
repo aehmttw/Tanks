@@ -159,7 +159,7 @@ public class TankRemote extends Tank
 			this.prevKnownVXFinal = this.lastFinalVX;
 			this.prevKnownVYFinal = this.lastFinalVY;
 			this.lastAngle = this.angle;
-			this.interpolationTime -= this.timeSinceRefresh;
+			//this.interpolationTime -= this.timeSinceRefresh;
 			this.timeSinceRefresh = 0;
 		}
 
@@ -242,6 +242,7 @@ public class TankRemote extends Tank
 	public static double cubicInterpolation2(double p1, double v1, double p2, double v2, double frac)
 	{
 		double r = 0;
+
 		r += (2 * Math.pow(frac, 3) - 3 * Math.pow(frac, 2) + 1) * p1;
 		r += (Math.pow(frac, 3) - 2 * Math.pow(frac, 2) + frac) * v1;
 		r += (-2 * Math.pow(frac, 3) + 3 * Math.pow(frac, 2)) * p2;

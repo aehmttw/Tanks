@@ -26,7 +26,7 @@ jobs:
     - name: init-steamworks4j-lwjgl
       run: mvn install:install-file    -Dfile=libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j-lwjgl3    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
     - name: Build
-      run: mvn package -P lwjgl-natives-linux-amd64,lwjgl-natives-linux-aarch64,lwjgl-natives-linux-arm32,lwjgl-natives-macos-x86_64,lwjgl-natives-macos-aarch64,lwjgl-natives-windows-amd64,lwjgl-natives-windows-x86,lwjgl-natives-windows-aarch64
+      run: mvn package
     - name: Upload
       uses: actions/upload-artifact@v3
       with:

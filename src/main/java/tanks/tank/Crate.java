@@ -109,6 +109,7 @@ public class Crate extends Movable
             this.destroy = true;
             Drawing.drawing.playSound("open.ogg");
 
+            tank.droppedFromCrate = true;
             tank.drawAge = 50;
             if (!tank.isRemote)
             {

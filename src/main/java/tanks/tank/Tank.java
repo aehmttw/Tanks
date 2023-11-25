@@ -185,6 +185,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankProperty(category = general, id = "explode_on_destroy", name = "Explosive", desc="If set, the tank will explode when destroyed. The explosion will use the properties of the tank's mine.")
 	public boolean explodeOnDestroy = false;
 
+	public boolean droppedFromCrate = false;
+
 	/** Whether this tank needs to be destroyed before the level ends. */
 	@TankProperty(category = general, id = "mandatory_kill", name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
 	public boolean mandatoryKill = true;
@@ -907,7 +909,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void onDestroy()
 	{
-		if (this.explodeOnDestroy && this.age >= 250)
+		if (this.explodeOnDestroy && !(this.droppedFromCrate && this.age < 250))
 		{
 			Explosion e = new Explosion(this.posX, this.posY, this.mine.radius, this.mine.damage, this.mine.destroysObstacles, this);
 			e.explode();

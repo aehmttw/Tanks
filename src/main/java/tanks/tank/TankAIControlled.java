@@ -990,7 +990,7 @@ public class TankAIControlled extends Tank
 		t.coinValue = this.coinValue;
 		t.currentlyVisible = true;
 		t.cooldown = Math.min(t.cooldownBase, this.cooldown);
-		t.age = this.age;
+		t.age = 0;
 
 		Tank p = this;
 		if (this.getTopLevelPossessor() != null)
@@ -2266,7 +2266,6 @@ public class TankAIControlled extends Tank
 			this.cooldown = Math.min(this.cooldownBase, this.sightTransformTank.cooldown);
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
 			Game.eventsOut.add(new EventTankTransformPreset(this, false, true));
-			this.age = this.sightTransformTank.age;
 			Game.movables.add(this);
 			Game.removeMovables.add(this.sightTransformTank);
 			this.skipNextUpdate = true;
@@ -2336,8 +2335,6 @@ public class TankAIControlled extends Tank
 
 			if (t instanceof TankAIControlled)
 				this.cooldown = Math.min(this.cooldownBase, ((TankAIControlled) t).cooldown);
-
-			this.age = t.age;
 
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 1);
 
@@ -2430,7 +2427,7 @@ public class TankAIControlled extends Tank
 			if (t instanceof TankAIControlled)
 				((TankAIControlled) t).cooldown = Math.min(((TankAIControlled) t).cooldownBase, this.cooldown);
 
-			t.age = this.age;
+			t.age = 0;
 
 			t.crusadeID = this.crusadeID;
 

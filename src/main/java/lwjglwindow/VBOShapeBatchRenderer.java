@@ -294,7 +294,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public void endModification()
     {
-        if (this.modifying == null || this.modifyingSize < 0)
+        if (this.modifying == null || this.modifyingSize < 0 || this.bufferStartPoints.get(this.modifying) == null)
             return;
 
         int start = this.bufferStartPoints.get(this.modifying);
@@ -462,6 +462,9 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
     {
         if (!this.bufferStartPoints.containsKey(o))
             return;
+
+        if (this.modifying == o)
+            this.modifying = null;
 
         if (this.adding != null)
             this.endAdd();

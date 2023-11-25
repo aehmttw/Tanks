@@ -42,7 +42,7 @@ make clean
 mvn install:install-file    -Dfile=libs/steamworks4j-1.10 0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
 mvn install:install-file    -Dfile=libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar    -DgroupId=com.code-disaster.steamworks4j    -DartifactId=steamworks4j-lwjgl3    -Dversion=1.10.0-SNAPSHOT    -Dpackaging=jar    -DgeneratePom=true
 ```
-Steamworks4J has had some issues with it's maven repository. As a fix (for now), steamworks4J is bundled with Tanks.
+Steamworks4J has had some issues with its maven repository. As a fix (for now), steamworks4J is bundled with Tanks.
 
 ### Packaging
 ```

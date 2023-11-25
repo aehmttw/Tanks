@@ -946,8 +946,8 @@ public class TankAIControlled extends Tank
 		this.willRevertTransformation = true;
 		this.transform(this.sightTransformTank);
 		Drawing.drawing.playGlobalSound("timer.ogg", 1.25f);
-		Effect e1 = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.exclamation);
-		e1.size = this.size;
+		Effect e1 = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.sightTransformTank.size * 0.75, Effect.EffectType.exclamation);
+		e1.size = this.sightTransformTank.size;
 		e1.colR = this.colorR;
 		e1.colG = this.colorG;
 		e1.colB = this.colorB;
@@ -955,7 +955,7 @@ public class TankAIControlled extends Tank
 		e1.glowG = this.sightTransformTank.colorG;
 		e1.glowB = this.sightTransformTank.colorB;
 		Game.effects.add(e1);
-		Game.eventsOut.add(new EventTankTransform(this, this.sightTransformTank, EventTankTransform.exclamation));
+		Game.eventsOut.add(new EventTankTransformPreset(this, true, false));
 	}
 
 	public void handleHealthTransformation()
@@ -964,6 +964,7 @@ public class TankAIControlled extends Tank
 			return;
 
 		this.willRevertTransformation = false;
+		Game.eventsOut.add(new EventTankTransformPreset(this, false, false));
 		this.transform(this.healthTransformTank);
 	}
 
@@ -1901,7 +1902,7 @@ public class TankAIControlled extends Tank
 
 			for (Movable m: Game.movables)
 			{
-				if (m instanceof IAvoidObject)
+				if (m instanceof IAvoidObject && !(Team.isAllied(this, m) && (this.team != null && !this.team.friendlyFire)))
 					avoidances.add((IAvoidObject) m);
 			}
 
@@ -2264,7 +2265,7 @@ public class TankAIControlled extends Tank
 			this.targetEnemy = null;
 			this.cooldown = Math.min(this.cooldownBase, this.sightTransformTank.cooldown);
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
-			Game.eventsOut.add(new EventTankTransform(this, this, EventTankTransform.no_effect));
+			Game.eventsOut.add(new EventTankTransformPreset(this, false, true));
 			this.age = this.sightTransformTank.age;
 			Game.movables.add(this);
 			Game.removeMovables.add(this.sightTransformTank);

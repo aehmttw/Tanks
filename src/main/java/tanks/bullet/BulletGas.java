@@ -150,9 +150,9 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
 
         double mul;
         if (o instanceof Bullet)
-            mul = this.bulletHitKnockback * Math.pow(Bullet.bullet_size, 2) / Math.pow(((Bullet) o).size, 2);
+            mul = this.bulletHitKnockback * Math.pow(Bullet.bullet_size, 2) / Math.max(1, Math.pow(((Bullet) o).size, 2));
         else
-            mul = this.tankHitKnockback * Math.pow(Game.tile_size, 2)  / Math.pow(((Tank) o).size, 2);
+            mul = this.tankHitKnockback * Math.pow(Game.tile_size, 2)  / Math.max(1, Math.pow(((Tank) o).size, 2));
 
         double f = Math.pow(this.frameDamageMultipler, 2);
         double x = this.vX * f * mul;

@@ -101,7 +101,7 @@ public class Explosion extends Movable
                     if (m instanceof Bullet)
                     {
                         double angle = this.getAngleInDirection(m.posX, m.posY);
-                        m.addPolarMotion(angle, power * this.bulletKnockback * Math.pow(Bullet.bullet_size, 2) / Math.pow(((Bullet) m).size, 2));
+                        m.addPolarMotion(angle, power * this.bulletKnockback * Math.pow(Bullet.bullet_size, 2) / Math.max(1, Math.pow(((Bullet) m).size, 2)));
                         ((Bullet) m).collisionX = m.posX;
                         ((Bullet) m).collisionY = m.posY;
                         ((Bullet) m).addTrail();
@@ -109,7 +109,7 @@ public class Explosion extends Movable
                     else if (m instanceof Tank)
                     {
                         double angle = this.getAngleInDirection(m.posX, m.posY);
-                        m.addPolarMotion(angle, power * this.tankKnockback * Math.pow(Game.tile_size, 2) / Math.pow(((Tank) m).size, 2));
+                        m.addPolarMotion(angle, power * this.tankKnockback * Math.pow(Game.tile_size, 2) / Math.max(1, Math.pow(((Tank) m).size, 2)));
                         Tank t = (Tank) m;
                         t.recoilSpeed = m.getSpeed();
                         if (t.recoilSpeed > t.maxSpeed)

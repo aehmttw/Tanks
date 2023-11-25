@@ -6,12 +6,11 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
 import tanks.tank.TankRemote;
 
 import java.util.HashSet;
 
-public class EventTankTransform extends PersonalEvent
+public class EventTankTransformCustom extends PersonalEvent
 {
     public int tank;
 
@@ -64,12 +63,12 @@ public class EventTankTransform extends PersonalEvent
     public int bulletCount;
     public double bulletSpread;
 
-    public EventTankTransform()
+    public EventTankTransformCustom()
     {
 
     }
 
-    public EventTankTransform(Tank t, Tank newTank, int effect)
+    public EventTankTransformCustom(Tank t, Tank newTank, int effect)
     {
         tank = t.networkID;
 

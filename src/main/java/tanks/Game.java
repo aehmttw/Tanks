@@ -2,7 +2,6 @@ package tanks;
 
 import basewindow.*;
 import tanks.bullet.*;
-import tanks.bullet.legacy.BulletAir;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -117,8 +116,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.2c";
-	public static final int network_protocol = 52;
+	public static final String version = "Tanks v1.5.2d";
+	public static final int network_protocol = 53;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -348,7 +347,8 @@ public class Game
 		NetworkEventMap.register(EventTankTeleport.class);
 		NetworkEventMap.register(EventTankUpdateVisibility.class);
 		NetworkEventMap.register(EventTankUpdateColor.class);
-		NetworkEventMap.register(EventTankTransform.class);
+		NetworkEventMap.register(EventTankTransformPreset.class);
+		NetworkEventMap.register(EventTankTransformCustom.class);
 		NetworkEventMap.register(EventTankCharge.class);
 		NetworkEventMap.register(EventTankMimicTransform.class);
 		NetworkEventMap.register(EventTankMimicLaser.class);

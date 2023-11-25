@@ -3,6 +3,8 @@ package tanks.tank;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 
+import java.util.ArrayList;
+
 public class TankRemote extends Tank
 {
 	public final boolean isCopy;
@@ -35,6 +37,8 @@ public class TankRemote extends Tank
 	public double currentPitch;
 
 	public double timeSinceRefresh = 0;
+
+	public ArrayList<TankAIControlled> parentTransformations = new ArrayList<>();
 
 	public TankRemote(String name, double x, double y, double angle, Team team, double size, double ts, double tl, double r, double g, double b, double lives, double baselives)
 	{

@@ -303,7 +303,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 		{
 			if (this.tankHitKnockback > 0)
 			{
-				double mul = Game.tile_size * Game.tile_size / Math.pow(t.size, 2) * this.tankHitKnockback;
+				double mul = Game.tile_size * Game.tile_size / Math.max(1, Math.pow(t.size, 2)) * this.tankHitKnockback;
 				t.vX += this.vX * mul;
 				t.vY += this.vY * mul;
 
@@ -401,8 +401,8 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public void push(Bullet b)
 	{
-		b.vX += this.vX * Math.pow(this.size, 2) / Math.pow(b.size, 2) * this.bulletHitKnockback * Panel.frameFrequency;
-		b.vY += this.vY * Math.pow(this.size, 2) / Math.pow(b.size, 2) * this.bulletHitKnockback * Panel.frameFrequency;
+		b.vX += this.vX * Math.pow(this.size, 2) / Math.max(1, Math.pow(b.size, 2)) * this.bulletHitKnockback * Panel.frameFrequency;
+		b.vY += this.vY * Math.pow(this.size, 2) / Math.max(1, Math.pow(b.size, 2)) * this.bulletHitKnockback * Panel.frameFrequency;
 		b.addTrail();
 	}
 
@@ -437,11 +437,11 @@ public class Bullet extends Movable implements IDrawableLightSource
 		b.collisionX = b.posX;
 		b.collisionY = b.posY;
 
-		double co1 = (ourSpeed * Math.cos(ourDir - toAngle) * (ourMass - theirMass) + 2 * theirMass * theirSpeed * Math.cos(theirDir - toAngle)) / (ourMass + theirMass);
+		double co1 = (ourSpeed * Math.cos(ourDir - toAngle) * (ourMass - theirMass) + 2 * theirMass * theirSpeed * Math.cos(theirDir - toAngle)) / Math.max(1, ourMass + theirMass);
 		double vX1 = co1 * Math.cos(toAngle) + ourSpeed * Math.sin(ourDir - toAngle) * Math.cos(toAngle + Math.PI / 2);
 		double vY1 = co1 * Math.sin(toAngle) + ourSpeed * Math.sin(ourDir - toAngle) * Math.sin(toAngle + Math.PI / 2);
 
-		double co2 = (theirSpeed * Math.cos(theirDir - toAngle) * (theirMass - ourMass) + 2 * ourMass * ourSpeed * Math.cos(ourDir - toAngle)) / (theirMass + ourMass);
+		double co2 = (theirSpeed * Math.cos(theirDir - toAngle) * (theirMass - ourMass) + 2 * ourMass * ourSpeed * Math.cos(ourDir - toAngle)) / Math.max(1, theirMass + ourMass);
 		double vX2 = co2 * Math.cos(toAngle) + theirSpeed * Math.sin(theirDir - toAngle) * Math.cos(toAngle + Math.PI / 2);
 		double vY2 = co2 * Math.sin(toAngle) + theirSpeed * Math.sin(theirDir - toAngle) * Math.sin(toAngle + Math.PI / 2);
 

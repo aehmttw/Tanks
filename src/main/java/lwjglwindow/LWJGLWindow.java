@@ -717,10 +717,12 @@ public class LWJGLWindow extends BaseWindow
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
+		double m = 100;
+
 		if (this.drawingShadow)
 			glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
 		else
-			glFrustum(-absoluteWidth / (absoluteDepth * 2.0), absoluteWidth / (absoluteDepth * 2.0), absoluteHeight / (absoluteDepth * 2.0), -absoluteHeight / (absoluteDepth * 2.0), 1, absoluteDepth * 100);
+			glFrustum(-absoluteWidth / (absoluteDepth * 2.0) * m, absoluteWidth / (absoluteDepth * 2.0) * m, absoluteHeight / (absoluteDepth * 2.0) * m, -absoluteHeight / (absoluteDepth * 2.0) * m, m, absoluteDepth * 100 * m);
 
 		this.angled = false;
 
@@ -770,22 +772,16 @@ public class LWJGLWindow extends BaseWindow
 		if (this.drawingShadow)
 		{
 			applyShadowTransformations();
+
 			for (Transformation t: this.lightBaseTransformation)
 				t.apply();
 		}
 		else
 		{
 			applyTransformations();
+
 			for (Transformation t: this.baseTransformations)
 				t.apply();
-
-			if (!drawingShadow)
-			{
-				float[] projMatrix = new float[16];
-				glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
-
-				//glUniformMatrix4fv(this.shaderHandler.normalProgramVPUniform, false, projMatrix);
-			}
 		}
 	}
 

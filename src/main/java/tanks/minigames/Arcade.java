@@ -18,7 +18,6 @@ import java.util.Random;
 public class Arcade extends Minigame
 {
     public double age = 0;
-    //public double flashTimer = 0;
 
     public double lastHit = -1000;
     public int chain = 0;
@@ -41,7 +40,7 @@ public class Arcade extends Minigame
 
     public int maxChain = 0;
     public int deathCount = 0;
-    public boolean survivedFrenzy = true;
+    public boolean survivedFrenzy = false;
     public int bulletsFired = 0;
     public int kills = 0;
     public int frenzyTanksDestroyed = 0;
@@ -130,9 +129,16 @@ public class Arcade extends Minigame
     }
 
     @Override
-    public void onLevelEnd(boolean levelWon)
+    public void onLevelEndQuick()
     {
-
+        for (Movable m: Game.movables)
+        {
+            if (m instanceof Tank && m instanceof IServerPlayerTank && !m.destroy)
+            {
+                survivedFrenzy = true;
+                break;
+            }
+        }
     }
 
     @Override
@@ -169,21 +175,6 @@ public class Arcade extends Minigame
         if (target instanceof IServerPlayerTank && !ScreenPartyLobby.isClient)
         {
             playerDeathTimes.put(((IServerPlayerTank) target).getPlayer(), this.age);
-
-            if (frenzy)
-            {
-                survivedFrenzy = false;
-
-                for (Movable m: Game.movables)
-                {
-                    if (m instanceof IServerPlayerTank && !m.destroy)
-                    {
-                        // fixes a bug where insta-dying on frenzy gives the bonus
-                        survivedFrenzy = frenzyTanksDestroyed > 5;
-                        break;
-                    }
-                }
-            }
         }
 
         if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IServerPlayerTank))

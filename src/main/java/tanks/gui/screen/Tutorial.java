@@ -54,6 +54,9 @@ public class Tutorial extends Minigame
         this.loadLevel();
         Game.currentLevel = this;
 
+        if (initial)
+            Panel.panel.zoomTimer = 100;
+
         this.touchscreen = touchscreen;
 
         Drawing.drawing.movingCamera = true;

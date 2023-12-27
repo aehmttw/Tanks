@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.*;
+import tanks.obstacle.Obstacle;
 import tanks.rendering.TerrainRenderer;
 import tanks.rendering.TrackRenderer;
 import tanks.network.event.EventPlaySound;
@@ -1303,7 +1304,7 @@ public class Drawing
 
 		double result = (x - (Panel.windowWidth) / scale / 2);
 
-		double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
+		double margin = Obstacle.draw_size / Game.tile_size * Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
 
 		boolean less = result < -margin;
 		boolean greater = result + (Panel.windowWidth) / scale > sizeX + margin;
@@ -1407,6 +1408,32 @@ public class Drawing
 	{
 		return (Game.game.window.absoluteHeight - statsHeight - sizeY / scale) / 2;
 	}
+
+	/**
+	 *	Gets interface coordinate position of left/right edge of screen
+	 */
+	public double getInterfaceEdgeX(boolean right)
+	{
+		if (right)
+			return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+					+ Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+		else
+			return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+				+ Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+	}
+
+	/**
+	 *	Gets interface coordinate position of top/bottom edge of screen
+	 */
+	public double getInterfaceEdgeY(boolean bottom)
+	{
+		if (bottom)
+			return ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+					+ Drawing.drawing.interfaceSizeY;
+		else
+			return -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
+	}
+
 
 	public double gameToAbsoluteX(double x, double sizeX)
 	{

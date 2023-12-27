@@ -76,6 +76,9 @@ public class ScreenOptionsMisc extends Screen
             previewCrusades.setText(previewCrusadesText, ScreenOptions.onText);
         else
             previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
+
+        if (Game.framework == Game.Framework.libgdx)
+            previewCrusades.enabled = false;
     }
 
     @Override

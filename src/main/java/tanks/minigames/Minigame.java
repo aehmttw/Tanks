@@ -98,7 +98,15 @@ public abstract class Minigame extends Level
     }
 
     /**
-     * Override this method to do something when the level ends
+     * Override this method to do something when the level has started to end
+     */
+    public void onLevelEndQuick()
+    {
+
+    }
+
+    /**
+     * Override this method to do something when the level finished ending
      */
     public void onLevelEnd(boolean levelWon)
     {

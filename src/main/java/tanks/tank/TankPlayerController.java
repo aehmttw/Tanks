@@ -60,6 +60,7 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
     @Override
     public void update()
     {
+        this.bullet.cooldown = Math.max(0, this.bullet.cooldown - Panel.frameFrequency);
         this.interpolatedProgress = Math.min(this.interpolatedProgress + Panel.frameFrequency, interpolationTime);
 
         this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;

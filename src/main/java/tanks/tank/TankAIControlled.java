@@ -566,7 +566,7 @@ public class TankAIControlled extends Tank
 			if (this.transformMimic)
 				this.updateMimic();
 
-			if (this.healthTransformTank != null && this.health <= this.transformHealthThreshold)
+			if (this.healthTransformTank != null && this.health <= this.transformHealthThreshold && !ScreenGame.finishedQuick)
 				this.handleHealthTransformation();
 
 			this.postUpdate();
@@ -781,7 +781,7 @@ public class TankAIControlled extends Tank
 		if (b instanceof BulletArc)
 			b.vZ = this.distance / speed * 0.5 * BulletArc.gravity;
 		else
-			b.moveOut(50 / speed * this.size / Game.tile_size * this.turretLength / Game.tile_size);
+			b.moveOut(50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
 
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
@@ -1793,7 +1793,7 @@ public class TankAIControlled extends Tank
 				this.straightShoot = false;
 		}
 
-		if (this.sightTransformTank != null && seesTargetEnemy && this.inControlOfMotion)
+		if (this.sightTransformTank != null && seesTargetEnemy && this.inControlOfMotion && !ScreenGame.finishedQuick)
 			this.handleSightTransformation();
 	}
 
@@ -2222,6 +2222,9 @@ public class TankAIControlled extends Tank
 
 	public void updatePossessingTransform()
 	{
+		if (this.transformTank.destroy)
+			this.destroy = true;
+
 		if (this.transformTank.destroy || this.destroy || ScreenGame.finishedQuick || this.positionLock || !this.willRevertTransformation || this.justTransformed)
 			return;
 

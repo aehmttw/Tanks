@@ -46,7 +46,10 @@ uniform vec4 originalColor;
 uniform float width;
 uniform float height;
 uniform float depth;
+
+#ifndef SCALE
 uniform float scale;
+#endif
 
 uniform int lightsCount;
 uniform sampler2D lights;

@@ -28,6 +28,7 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
             }
 
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.sizeX + "");
 
@@ -50,6 +51,7 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
             }
 
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.sizeY + "");
 

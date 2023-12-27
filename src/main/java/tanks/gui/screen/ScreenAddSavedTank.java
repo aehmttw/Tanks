@@ -257,7 +257,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             }
             catch (Exception e)
             {
-                Game.exitToCrash(e);
+                System.err.println("Failed to load a custom tank from file: " + l);
+                e.printStackTrace();
             }
         }
     }

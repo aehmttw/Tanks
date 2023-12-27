@@ -87,7 +87,7 @@ public class Hotbar
 		if (this.enabledHealthBar)
 		{
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.drawing.interfaceSizeY - 25 + percentHidden - verticalOffset);
+			int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 25 + percentHidden - verticalOffset);
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
@@ -133,7 +133,7 @@ public class Hotbar
 		if (this.enabledAmmunitionBar)
 		{
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
-			int y = (int) (Drawing.drawing.interfaceSizeY - 10 + percentHidden - verticalOffset);
+			int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 10 + percentHidden - verticalOffset);
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
@@ -218,7 +218,7 @@ public class Hotbar
 			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
 
-			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100 + percentHidden - verticalOffset, "Coins: %d", coins);
+			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 100 + percentHidden - verticalOffset, "Coins: %d", coins);
 		}
 
 		if (this.enabledRemainingEnemies)
@@ -232,7 +232,7 @@ public class Hotbar
 			}
 
 			int x = (int) ((Drawing.drawing.interfaceSizeX / 2) - 210);
-			int y = (int) (Drawing.drawing.interfaceSizeY - 17.5 + percentHidden - verticalOffset);
+			int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 17.5 + percentHidden - verticalOffset);
 
 			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, Game.tile_size / 2, Game.tile_size / 2, 0);

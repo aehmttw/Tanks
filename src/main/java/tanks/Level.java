@@ -788,6 +788,6 @@ public class Level
 
 	public static boolean isDark()
 	{
-		return Level.currentColorR + Level.currentColorG + Level.currentColorB <= 127 * 3 || (Game.framework != Game.Framework.libgdx && currentLightIntensity <= 0.5);
+		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || (Game.framework != Game.Framework.libgdx && currentLightIntensity <= 0.5);
 	}
 }

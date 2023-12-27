@@ -468,7 +468,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		}
 
 		if (b.moveOut)
-			b.moveOut(50 / speed * this.size / Game.tile_size);
+			b.moveOut(50 * this.size / Game.tile_size);
 
 		b.setTargetLocation(this.mouseX, this.mouseY);
 

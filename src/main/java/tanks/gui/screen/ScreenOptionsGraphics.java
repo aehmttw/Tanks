@@ -189,6 +189,7 @@ public class ScreenOptionsGraphics extends Screen
 
             update3dGroundButton();
 
+            Drawing.drawing.terrainRenderer.reset();
             Game.resetTiles();
         }
     },
@@ -250,6 +251,7 @@ public class ScreenOptionsGraphics extends Screen
 
             update3dGroundButton();
 
+            Drawing.drawing.terrainRenderer.reset();
             Game.resetTiles();
         }
     },
@@ -267,6 +269,7 @@ public class ScreenOptionsGraphics extends Screen
             else
                 ground3d.setText(ground3dText, ScreenOptions.offText);
 
+            Drawing.drawing.terrainRenderer.reset();
             Game.resetTiles();
         }
     },

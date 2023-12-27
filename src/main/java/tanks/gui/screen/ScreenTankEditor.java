@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class ScreenTankEditor extends Screen implements IItemScreen
+public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackgroundScreen
 {
     public Tab currentTab;
     public ArrayList<Tab> topLevelMenus = new ArrayList<>();
@@ -32,7 +32,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
 
     public Item lastItem;
     public Field lastItemField;
-    public ScreenEditItem lastItemScreen;
+    public ScreenItemEditor lastItemScreen;
     public SelectorDrawable lastItemButton;
     public String message = null;
 
@@ -205,7 +205,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
             {
                 this.lastItem = i;
                 this.lastItemField = itemField;
-                ScreenEditItem editItem = new ScreenEditItem(i, this, true, true);
+                ScreenItemEditor editItem = new ScreenItemEditor(i, this, true, true);
                 editItem.delete.setText("Load from template");
                 Game.screen = editItem;
                 this.lastItemScreen = editItem;
@@ -1158,7 +1158,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen
                     this.lastItem = i;
                     this.lastItemField = f;
                     this.resetLayout();
-                    ScreenEditItem editItem = new ScreenEditItem(i, this);
+                    ScreenItemEditor editItem = new ScreenItemEditor(i, this);
                     editItem.delete.setText("Load from template");
                     Game.screen = editItem;
                     this.lastItemScreen = editItem;
@@ -1520,9 +1520,6 @@ public class ScreenTankEditor extends Screen implements IItemScreen
     {
         Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
         this.drawDefaultBackground();
-
-        //Drawing.drawing.setColor(127, 178, 228, 64);
-        //Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
         if (Game.screen != this)
             return;

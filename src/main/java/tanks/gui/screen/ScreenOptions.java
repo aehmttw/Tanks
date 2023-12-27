@@ -199,6 +199,7 @@ public class ScreenOptions extends Screen
 			f.println("perspective=" + ScreenOptionsGraphics.viewNo);
 			f.println("preview_crusades=" + Game.previewCrusades);
 			f.println("tank_textures=" + Game.tankTextures);
+			f.println("xray_bullets=" + Game.xrayBullets);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("mouse_target_height=" + Panel.showMouseTargetHeight);
 			f.println("constrain_mouse=" + Game.constrainMouse);
@@ -393,6 +394,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "tank_textures":
 						Game.tankTextures = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "xray_bullets":
+						Game.xrayBullets = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "preview_crusades":
 						Game.previewCrusades = Boolean.parseBoolean(optionLine[1]);

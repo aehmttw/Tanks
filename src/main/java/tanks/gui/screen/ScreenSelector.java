@@ -184,7 +184,10 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             this.screen.draw();
         }
         else
+        {
+            Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();
+        }
 
         buttonList.draw();
 

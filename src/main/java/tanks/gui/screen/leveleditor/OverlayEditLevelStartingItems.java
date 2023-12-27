@@ -131,7 +131,7 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
     {
         screenLevelEditor.level.startingItems.add(i);
 
-        ScreenEditItem s = new ScreenEditItem(i, this, true, true);
+        ScreenItemEditor s = new ScreenItemEditor(i, this, true, true);
         s.drawBehindScreen = true;
         Game.screen = s;
     }

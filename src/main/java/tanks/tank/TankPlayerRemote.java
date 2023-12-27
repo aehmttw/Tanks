@@ -224,7 +224,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         }
 
         if (lastLiveBullets != ib.liveBullets || ib.maxLiveBullets != lastMaxLiveBullets || im.liveMines != lastLiveMines || im.maxLiveMines != lastMaxLiveMines)
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxLiveBullets, im.liveMines, im.maxLiveMines));
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxLiveBullets, im.liveMines, im.maxLiveMines, ib.cooldown, ib.cooldownBase));
 
         lastLiveBullets = ib.liveBullets;
         lastLiveMines = im.liveMines;
@@ -465,7 +465,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
         if (b.moveOut)
-            b.moveOut(50 / speed * this.size / Game.tile_size);
+            b.moveOut(50 * this.size / Game.tile_size);
 
         b.setTargetLocation(this.mouseX, this.mouseY);
 

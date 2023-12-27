@@ -3,8 +3,8 @@ package tanks.rendering;
 import basewindow.*;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.screen.ILevelPreviewScreen;
-import tanks.gui.screen.ScreenGame;
+import tanks.gui.ScreenIntro;
+import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
 
 import java.util.HashMap;
@@ -31,6 +31,7 @@ public class TerrainRenderer
     public int previewWidth = 0;
 
     protected ShaderGroundOutOfBounds outsideShader;
+    protected ShaderGroundIntro introShader;
 
     public static int f(int i)
     {
@@ -45,6 +46,7 @@ public class TerrainRenderer
             Game.game.shaderInstances.put(ds.getClass(), ds);
 
             this.outsideShader = Game.game.shaderOutOfBounds;
+            this.introShader = Game.game.shaderIntro;
         }
         catch (Exception e)
         {
@@ -109,6 +111,9 @@ public class TerrainRenderer
 
         Class<? extends ShaderGroup> sg = ShaderGroup.class;
 
+        if (Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit)
+            sg = ShaderGroundIntro.class;
+
         if (o instanceof Obstacle)
             sg = ((Obstacle) o).renderer;
         else if (o instanceof Tile && ((Tile) o).obstacleAbove != null)
@@ -151,7 +156,12 @@ public class TerrainRenderer
         ShaderGroup shader = r.shader;
 
         if (shader instanceof IGroundHeightShader)
-            s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) currentDepth);
+        {
+            if (!Game.enable3dBg)
+                s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) (Math.random() * 10.0));
+            else
+                s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) currentDepth);
+        }
 
         if (shader instanceof IGroundColorShader)
             s.setAttribute(((IGroundColorShader) shader).getGroundColor(), currentColor);
@@ -415,7 +425,25 @@ public class TerrainRenderer
             yEnd = 0;
         }
 
-        if (!(Game.screen instanceof ILevelPreviewScreen))
+        if (Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit)
+        {
+            this.introShader.set();
+            this.introShader.obstacleSizeFrac.set((float) Obstacle.draw_size);
+            this.introShader.d3.set(Game.enable3d);
+
+            for (int x = xStart; x <= xEnd; x++)
+            {
+                for (int y = yStart; y <= yEnd; y++)
+                {
+                    this.drawMap(this.outOfBoundsRenderers, x, y);
+                }
+            }
+
+            Game.game.window.shaderDefault.set();
+            return;
+        }
+
+        if (!(Game.screen instanceof ILevelPreviewScreen) && !(Game.screen instanceof IConditionalOverlayScreen && ((IConditionalOverlayScreen) Game.screen).isOverlayEnabled()))
         {
             this.outsideShader.set();
 
@@ -431,7 +459,7 @@ public class TerrainRenderer
                 {
                     for (int y = yStart; y <= yEnd; y++)
                     {
-                        if (x != 0 || y != 0)
+                        if (Game.screen instanceof IBlankBackgroundScreen || (Game.screen instanceof IConditionalOverlayScreen) || x != 0 || y != 0)
                         {
                             this.drawMap(this.outOfBoundsRenderers, x, y);
                         }
@@ -440,33 +468,36 @@ public class TerrainRenderer
             }
         }
 
-        for (int i = 0; i < 10; i++)
+        if (!(Game.screen instanceof IBlankBackgroundScreen || (Game.screen instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) Game.screen).isOverlayEnabled())))
         {
-            for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+            for (int i = 0; i < 10; i++)
             {
-                try
+                for (Class<? extends ShaderGroup> s : this.renderers.keySet())
                 {
-                    RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
-                    if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
+                    try
                     {
-                        ShaderGroup so = getShader(s);
-                        so.set();
+                        RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
+                        if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
+                        {
+                            ShaderGroup so = getShader(s);
+                            so.set();
 
-                        if (so instanceof IObstacleSizeShader)
-                            ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
+                            if (so instanceof IObstacleSizeShader)
+                                ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
 
-                        if (so instanceof IObstacleTimeShader)
-                            ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
+                            if (so instanceof IObstacleTimeShader)
+                                ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
 
-                        if (so instanceof IShrubHeightShader)
-                            ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
+                            if (so instanceof IShrubHeightShader)
+                                ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
 
-                        this.drawMap(this.renderers.get(s), 0, 0);
+                            this.drawMap(this.renderers.get(s), 0, 0);
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    Game.exitToCrash(e);
+                    catch (Exception e)
+                    {
+                        Game.exitToCrash(e);
+                    }
                 }
             }
         }
@@ -487,28 +518,49 @@ public class TerrainRenderer
 
         this.remove(this.tiles[i][j]);
 
-        if (Game.tileDrawables[i][j] != null && !Game.tileDrawables[i][j].removed)
+        Drawing.drawing.setColor(r, g, b);
+
+        if (Game.enable3d)
         {
-            this.tiles[i][j].obstacleAbove = Game.tileDrawables[i][j];
-            Game.tileDrawables[i][j].drawTile(this.tiles[i][j], r, g, b, depth, Game.tile_size);
+            if (Game.tileDrawables[i][j] != null && !Game.tileDrawables[i][j].removed)
+            {
+                this.tiles[i][j].obstacleAbove = Game.tileDrawables[i][j];
+                Game.tileDrawables[i][j].drawTile(this.tiles[i][j], r, g, b, depth, Game.tile_size);
+            }
+            else
+            {
+                this.tiles[i][j].obstacleAbove = null;
+                this.addBox(this.tiles[i][j],
+                        i * Game.tile_size,
+                        j * Game.tile_size,
+                        -Game.tile_size, Game.tile_size, Game.tile_size,
+                        Game.tile_size + depth, BaseShapeRenderer.hide_behind_face, false);
+            }
         }
         else
         {
-            this.tiles[i][j].obstacleAbove = null;
-            Drawing.drawing.setColor(r, g, b);
             this.addBox(this.tiles[i][j],
                     i * Game.tile_size,
                     j * Game.tile_size,
-                    -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, (byte) 1, false);
+                    0, Game.tile_size, Game.tile_size,
+                    0, (byte) ~(BaseShapeRenderer.hide_front_face), false);
         }
 
         if (!this.staged)
-            this.addBox(this.tiles[i][j],
+        {
+            if (Game.enable3d)
+                this.addBox(this.tiles[i][j],
                     i * Game.tile_size,
                     j * Game.tile_size,
                     -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, (byte) 1, true);
+                    Game.tile_size + depth, BaseShapeRenderer.hide_behind_face, true);
+            else
+                this.addBox(this.tiles[i][j],
+                        i * Game.tile_size,
+                        j * Game.tile_size,
+                        0, Game.tile_size, Game.tile_size,
+                        0, (byte) ~(BaseShapeRenderer.hide_front_face), true);
+        }
     }
 
     public float getShrubHeight()

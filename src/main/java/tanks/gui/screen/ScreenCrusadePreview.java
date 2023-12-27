@@ -2,7 +2,6 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import tanks.*;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.network.event.EventShareCrusade;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -313,7 +312,7 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
     public void addItem(Item i)
     {
         crusade.crusadeItems.add(i);
-        Game.screen = new ScreenEditItem(i, instance);
+        Game.screen = new ScreenItemEditor(i, instance);
     }
 
     @Override

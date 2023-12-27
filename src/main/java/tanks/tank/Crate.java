@@ -106,6 +106,7 @@ public class Crate extends Movable
 
         if (this.posZ <= 0 && !this.destroy)
         {
+            this.posZ = 0;
             this.destroy = true;
             Drawing.drawing.playSound("open.ogg");
 

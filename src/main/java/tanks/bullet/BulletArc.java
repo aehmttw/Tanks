@@ -105,12 +105,7 @@ public class BulletArc extends Bullet
             for (int i = 0; i < count; i++)
             {
                 this.pastPosX.add(this.posX);
-
-                if (Game.enable3d)
-                    this.pastPosY.add(this.posY);
-                else
-                    this.pastPosY.add(this.posY - this.posZ + 25);
-
+                this.pastPosY.add(this.posY);
                 this.pastPosZ.add(this.posZ);
                 this.pastTime.add(this.age);
 
@@ -131,9 +126,6 @@ public class BulletArc extends Bullet
         Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
         Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 
-        if (!Game.enable3d)
-            this.posY -= this.posZ - Game.tile_size / 2;
-
         if (Game.bulletTrails)
         {
             boolean stop = false;
@@ -143,7 +135,7 @@ public class BulletArc extends Bullet
             if (Game.enable3d)
                 Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, this.size, this.size, true, false);
             else
-                Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
+                Drawing.drawing.fillOval(this.posX, this.posY - this.posZ + Game.tile_size / 4, this.size, this.size);
 
             Drawing.drawing.setColor(0, 0, 0, 0, 0.5);
             Game.game.window.shapeRenderer.setBatchMode(true, true, true, false);
@@ -164,6 +156,14 @@ public class BulletArc extends Bullet
                 double x1 = this.pastPosX.get(i - 1);
                 double y1 = this.pastPosY.get(i - 1);
                 double z1 = this.pastPosZ.get(i - 1);
+
+                if (!Game.enable3d)
+                {
+                    y -= z - Game.tile_size / 4;
+                    y1 -= z1 - Game.tile_size / 4;
+                    z = 0;
+                    z1 = 0;
+                }
 
                 double a = Math.PI / 2 + this.angle;
 
@@ -189,11 +189,14 @@ public class BulletArc extends Bullet
             Game.game.window.shapeRenderer.setBatchMode(false, true, true, false);
         }
 
+        if (!Game.enable3d)
+            this.posY -= this.posZ - Game.tile_size / 4;
+
         if (this.destroyTimer <= 60)
             super.draw();
 
         if (!Game.enable3d)
-            this.posY += this.posZ - Game.tile_size / 2;
+            this.posY += this.posZ - Game.tile_size / 4;
 
         double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
 
@@ -232,11 +235,11 @@ public class BulletArc extends Bullet
     public void addDestroyEffect()
     {
         if (!Game.enable3d)
-            this.posY -= this.posZ - Game.tile_size / 2;
+            this.posY -= this.posZ - Game.tile_size / 4;
 
         super.addDestroyEffect();
 
         if (!Game.enable3d)
-            this.posY += this.posZ - Game.tile_size / 2;
+            this.posY += this.posZ - Game.tile_size / 4;
     }
 }

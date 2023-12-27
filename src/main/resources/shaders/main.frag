@@ -229,7 +229,7 @@ void main(void)
             //gl_FragColor.xyz = gl_FragColor.xyz * (1.0 - fogFrac) + vec3(0.8, 0.8, 0.8) * (fogFrac);
         }
     }
-
+   // gl_FragColor = vec4(vec3((1.0 - gl_FragCoord.z) * 500.0), 1.0);
 //    float diff = 1.0f - abs(dot(normal, normalize(inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, -1))));
 //    float elight = max(0, diff - edgeCutoff) / (1.0 - edgeCutoff);
 //    gl_FragColor.xyz *= 1 + elight * edgeLight;

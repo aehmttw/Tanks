@@ -1456,7 +1456,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 
 				m.update();
+			}
 
+			for (Obstacle o : Game.obstacles)
+			{
+				if (o.update)
+					o.update();
+			}
+
+			for (Effect e : Game.tracks)
+				e.update();
+
+			Game.player.hotbar.update();
+
+			for (Movable m: Game.movables)
+			{
 				if (m instanceof Crate)
 					m = ((Crate) m).tank;
 
@@ -1483,17 +1497,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						fullyAliveTeams.add(t);
 				}
 			}
-
-			for (Obstacle o : Game.obstacles)
-			{
-				if (o.update)
-					o.update();
-			}
-
-			for (Effect e : Game.tracks)
-				e.update();
-
-			Game.player.hotbar.update();
 
 			if (!finishedQuick)
 			{
@@ -1546,8 +1549,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			boolean done = fullyAliveTeams.size() <= 1;
 
-			if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).customLevelEnd)
-				done = ((Minigame) Game.currentLevel).levelEnded();
+			if (Game.currentLevel instanceof Minigame)
+			{
+				if (((Minigame) Game.currentLevel).customLevelEnd)
+					done = ((Minigame) Game.currentLevel).levelEnded();
+
+				if (done)
+					((Minigame) Game.currentLevel).onLevelEndQuick();
+			}
 
 			if (Game.screen == this && done)
 			{
@@ -1786,7 +1795,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && Game.enable3d)
 			{
 				Game.redrawGroundTiles.add(new int[]{x, y});
 
@@ -2601,7 +2610,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 		long t4 = System.nanoTime();
-		//System.out.println((t1 - start) + " " + (t2 - t1) + " " + (t3 - t2) + " " + (t4 - t3) + " / " + (t1b - t1a));
 	}
 
 	public void saveRemainingTanks()

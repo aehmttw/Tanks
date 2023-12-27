@@ -426,7 +426,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (showControls)
 		{
-			boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight;
+			boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
 			double vStep = 0;
 			double hStep = 0;
 
@@ -1059,7 +1059,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && Game.enable3d)
 			{
 				Game.redrawGroundTiles.add(new int[]{x, y});
 
@@ -2671,7 +2671,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			Button b = new Button(0, 0, 350, 40, items.get(i).name, () ->
 			{
-				ScreenEditItem s = new ScreenEditItem(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
+				ScreenItemEditor s = new ScreenItemEditor(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
 				s.drawBehindScreen = true;
 				Game.screen = s;
 			});

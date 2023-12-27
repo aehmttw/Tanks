@@ -208,7 +208,7 @@ public class ItemBar
 
 				Button b = this.slotButtons[i];
 				b.posX = ((i - 2) * gap) + (Drawing.drawing.interfaceSizeX / 2);
-				b.posY = Drawing.drawing.interfaceSizeY - bar_margin - this.player.hotbar.verticalOffset;
+				b.posY = Drawing.drawing.getInterfaceEdgeY(true) - bar_margin - this.player.hotbar.verticalOffset;
 				b.update();
 			}
 		}
@@ -260,7 +260,7 @@ public class ItemBar
 
 	public void draw()
 	{
-		int y = (int) (Drawing.drawing.interfaceSizeY - bar_margin + this.player.hotbar.percentHidden - this.player.hotbar.verticalOffset);
+		int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - bar_margin + this.player.hotbar.percentHidden - this.player.hotbar.verticalOffset);
 
 		double slotBgBrightness = 0;
 

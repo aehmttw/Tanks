@@ -100,6 +100,12 @@ public class ScreenChangelog extends Screen
     {
         this.drawDefaultBackground();
 
+        if (pageContents == null)
+            pageContents = pages.get(currentPage).split("\n");
+
+        next.enabled = currentPage < pages.size() - 1;
+        previous.enabled = currentPage > 0;
+
         if (next.enabled || previous.enabled)
         {
             next.draw();
@@ -459,9 +465,9 @@ public class ScreenChangelog extends Screen
                     }
             );
 
-            new Changelog("v1.5.2e", new String[]
+            new Changelog("v1.5.2f", new String[]
                     {
-                            "*What's new in Tanks v1.5.2e:\n\n" +
+                            "*What's new in Tanks v1.5.2f:\n\n" +
                                     "Bug fixes and other minor improvements\n"
                     }
             );

@@ -131,7 +131,7 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements II
     {
         screenLevelEditor.level.shop.add(i);
 
-        ScreenEditItem s = new ScreenEditItem(i, this, false, true);
+        ScreenItemEditor s = new ScreenItemEditor(i, this, false, true);
         s.drawBehindScreen = true;
         Game.screen = s;
     }

@@ -6,7 +6,6 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.TextBox;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.item.Item;
 import tanks.registry.RegistryItem;
 import tanks.tank.TankAIControlled;
@@ -331,7 +330,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         {
             int j = i;
 
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeItems.get(i).name, () -> Game.screen = new ScreenEditItem(crusade.crusadeItems.get(j), (IItemScreen) Game.screen));
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeItems.get(i).name, () -> Game.screen = new ScreenItemEditor(crusade.crusadeItems.get(j), (IItemScreen) Game.screen));
 
             b.image = crusade.crusadeItems.get(j).icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
@@ -450,7 +449,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
     public void addItem(Item i)
     {
         crusade.crusadeItems.add(i);
-        Game.screen = new ScreenEditItem(i, instance);
+        Game.screen = new ScreenItemEditor(i, instance);
     }
 
     @Override

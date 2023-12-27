@@ -31,6 +31,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.colorR, 0, 255, 1);
 
@@ -53,6 +54,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.colorG, 0, 255, 1);
 
@@ -75,6 +77,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.colorB, 0, 255, 1);
 
@@ -93,6 +96,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
 
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.colorVarR + "");
 
@@ -109,6 +113,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
 
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.colorVarG + "");
 
@@ -125,6 +130,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
 
             screenLevelEditor.level.reloadTiles();
+            Drawing.drawing.terrainRenderer.reset();
         }
                 , screenLevelEditor.level.colorVarB + "");
 

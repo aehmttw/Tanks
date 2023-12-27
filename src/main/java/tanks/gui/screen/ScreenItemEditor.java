@@ -12,7 +12,7 @@ import tanks.translation.Translation;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
+public class ScreenItemEditor extends Screen implements IConditionalOverlayScreen
 {
     public Item item;
     public IItemScreen screen;
@@ -86,12 +86,12 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
     }
     );
 
-    public ScreenEditItem(Item item, IItemScreen s)
+    public ScreenItemEditor(Item item, IItemScreen s)
     {
         this(item, s, false, false);
     }
 
-    public ScreenEditItem(Item item, IItemScreen s, boolean omitPrice, boolean omitUnlockLevel)
+    public ScreenItemEditor(Item item, IItemScreen s, boolean omitPrice, boolean omitUnlockLevel)
     {
         super(350, 40, 380, 60);
 
@@ -155,8 +155,8 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
                     }
                     catch (Exception e)
                     {
-                        p.value = 0;
-                        t.inputText = "0";
+                        p.value = 0.0;
+                        t.inputText = "0.0";
                     }
                 };
 
@@ -291,7 +291,10 @@ public class ScreenEditItem extends Screen implements IConditionalOverlayScreen
             ((Screen) this.screen).draw();
         }
         else
+        {
+            Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();
+        }
 
         if (Game.screen instanceof ScreenSelector)
             return;

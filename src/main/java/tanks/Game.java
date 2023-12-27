@@ -29,6 +29,7 @@ import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
+import tanks.rendering.ShaderGroundIntro;
 import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
@@ -116,7 +117,7 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.2e";
+	public static final String version = "Tanks v1.5.2f";
 	public static final int network_protocol = 53;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
@@ -219,6 +220,7 @@ public class Game
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
 
 	public final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
+	public ShaderGroundIntro shaderIntro;
 	public ShaderGroundOutOfBounds shaderOutOfBounds;
 	public ShaderTracks shaderTracks;
 
@@ -837,7 +839,7 @@ public class Game
 		int x = (int) (o.posX / Game.tile_size);
 		int y = (int) (o.posY / Game.tile_size);
 
-		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY)
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
 			Game.redrawGroundTiles.add(new int[]{x, y});
 	}
 

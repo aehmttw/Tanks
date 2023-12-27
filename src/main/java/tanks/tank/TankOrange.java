@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletFlame2;
+import tanks.bullet.legacy.BulletFlame;
 
 /**
  * A short-range tank which shoots fire
@@ -26,7 +27,7 @@ public class TankOrange extends TankAIControlled
 		this.mineAvoidSensitivity = 1;
 
 		this.bullet.maxLiveBullets = 0;
-		this.bullet.bulletClass = BulletFlame2.class;
+		this.bullet.bulletClass = BulletFlame.class;
 		this.bullet.cooldownBase = 0;
 		this.cooldownBase = 0;
 		this.cooldownRandom = 0;

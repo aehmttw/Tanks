@@ -26,6 +26,9 @@ public abstract class BaseWindow
     public double absoluteHeight;
     public double absoluteDepth;
 
+    public double clipMultiplier = 100;
+    public double clipDistMultiplier = 1;
+
     public boolean hasResized;
 
     public double absoluteMouseX;

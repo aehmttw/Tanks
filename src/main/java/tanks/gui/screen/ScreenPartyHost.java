@@ -120,7 +120,7 @@ public class ScreenPartyHost extends Screen
         this.musicID = "menu";
         toggleIP.fullInfo = true;
 
-        chatbox = new ChatBox(this.centerX, Drawing.drawing.interfaceSizeY - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () ->
+        chatbox = new ChatBox(this.centerX, Drawing.drawing.getInterfaceEdgeY(true) - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () ->
         {
             ScreenPartyHost.chat.add(0, new ChatMessage(Game.player, ScreenPartyHost.chatbox.inputText));
             Game.eventsOut.add(new EventPlayerChat(Game.player, ScreenPartyHost.chatbox.inputText));
@@ -333,7 +333,7 @@ public class ScreenPartyHost extends Screen
 
                             Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
                             Drawing.drawing.setColor(0, 0, 0);
-                            Drawing.drawing.drawInterfaceText(this.centerX - w - 255, y, server.connections.get(i).lastLatencyAverage + "ms", true);
+                            Drawing.drawing.drawInterfaceText(this.centerX - w - 255, y, server.connections.get(i).lastLatency + "ms", true);
                         }
                         catch (Exception e)
                         {

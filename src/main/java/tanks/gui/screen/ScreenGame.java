@@ -1918,6 +1918,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void setPerspective()
 	{
+		Game.game.window.clipMultiplier = 100;
+		Game.game.window.clipDistMultiplier = 1;
+
 		if (Game.angledView && Game.framework == Game.Framework.lwjgl)
 		{
 			if (!Game.game.window.drawingShadow)
@@ -1943,6 +1946,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (Game.followingCam && Game.framework == Game.Framework.lwjgl && !Game.game.window.drawingShadow)
 		{
 			double frac = Panel.panel.zoomTimer;
+
+			Game.game.window.clipMultiplier = 1;
+			Game.game.window.clipDistMultiplier = 100;
 
 			if (!Game.firstPerson)
 			{

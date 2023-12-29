@@ -64,6 +64,8 @@ public class ChatBox extends TextBox
 		if (Game.screen instanceof ScreenInfo)
 			return;
 
+		this.posY = Drawing.drawing.getInterfaceEdgeY(true) - 30;
+
 		if (!Game.game.window.touchscreen)
 		{
 			double mx = Drawing.drawing.getInterfaceMouseX();

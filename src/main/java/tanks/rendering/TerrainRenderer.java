@@ -157,7 +157,7 @@ public class TerrainRenderer
 
         if (shader instanceof IGroundHeightShader)
         {
-            if (!Game.enable3dBg)
+            if (!Game.enable3dBg && Game.screen instanceof ScreenIntro)
                 s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) (Math.random() * 10.0));
             else
                 s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) currentDepth);
@@ -349,7 +349,7 @@ public class TerrainRenderer
             double z = 0;
             double sc = 1;
 
-            boolean in = asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
+            boolean in = Game.followingCam || asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
 
             if (in)
             {

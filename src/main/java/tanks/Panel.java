@@ -359,7 +359,9 @@ public class Panel
 							{
 								if (Crusade.currentCrusade.crusadePlayers.containsKey(p))
 								{
-									Crusade.currentCrusade.crusadePlayers.get(p).coins = p.hotbar.coins;
+									if (Crusade.crusadeMode)
+										Crusade.currentCrusade.crusadePlayers.get(p).coins = p.hotbar.coins;
+
 									Crusade.currentCrusade.disconnectedPlayers.add(Crusade.currentCrusade.crusadePlayers.remove(p));
 								}
 							}
@@ -893,9 +895,9 @@ public class Panel
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
-			double[] col = getLatencyColor(ClientHandler.lastLatencyAverage);
+			double[] col = getLatencyColor(Client.handler.lastLatency);
 			Drawing.drawing.setColor(col[0], col[1], col[2]);
-			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + ClientHandler.lastLatencyAverage + "ms");
+			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + Client.handler.lastLatency + "ms");
 		}
 
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)

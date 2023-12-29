@@ -28,13 +28,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 	public ChannelHandlerContext ctx;
 	public SteamID steamID;
 
-	public static long lastMessage = -1;
-	public static long latency = 0;
-
-	public static long latencySum = 0;
-	public static int latencyCount = 1;
-	public static long lastLatencyTime = 0;
-	public static long lastLatencyAverage = 0;
+	public long lastPingSent;
+	public long lastLatency;
 
 	public boolean online;
 
@@ -81,9 +76,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		}
 
 		ScreenPartyLobby.isClient = true;
-
-		this.sendEvent(new EventPing());
-    }
+	}
 
     public void close()
 	{
@@ -176,36 +169,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
     }
 	
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws InterruptedException
+    public void channelRead(ChannelHandlerContext ctx, Object msg)
 	{
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		boolean reply = this.reader.queueMessage(buffy, null);
+		this.reader.queueMessage(this, buffy, null);
 		ReferenceCountUtil.release(msg);
-
-		if (reply)
-		{
-			if (lastMessage < 0)
-				lastMessage = System.currentTimeMillis();
-
-			long time = System.currentTimeMillis();
-			latency = time - lastMessage;
-			lastMessage = time;
-
-			latencyCount++;
-			latencySum += latency;
-
-			if (time / 1000 > lastLatencyTime)
-			{
-				lastLatencyTime = time / 1000;
-				lastLatencyAverage = latencySum / latencyCount;
-
-				latencySum = 0;
-				latencyCount = 0;
-			}
-
-			this.sendEvent(new EventPing());
-		}
     }
 
     public void reply()

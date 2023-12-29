@@ -2,6 +2,8 @@ package tanks;
 
 import basewindow.*;
 import tanks.bullet.*;
+import tanks.bullet.legacy.BulletAir;
+import tanks.bullet.legacy.BulletFlame;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -523,7 +525,7 @@ public class Game
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
-		registerBullet(BulletFlame2.class, BulletFlame2.bullet_name, "bullet_flame.png");
+		registerBullet(BulletFlame.class, BulletFlame.bullet_name, "bullet_flame.png");
 		registerBullet(BulletLaser.class, BulletLaser.bullet_name, "bullet_laser.png");
 		registerBullet(BulletFreeze.class, BulletFreeze.bullet_name, "bullet_freeze.png");
 		registerBullet(BulletElectric.class, BulletElectric.bullet_name, "bullet_electric.png");
@@ -531,7 +533,7 @@ public class Game
 		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
 		registerBullet(BulletExplosive.class, BulletExplosive.bullet_name, "bullet_explosive.png");
 		registerBullet(BulletBoost.class, BulletBoost.bullet_name, "bullet_boost.png");
-		registerBullet(BulletAir2.class, BulletAir2.bullet_name, "bullet_air.png");
+		registerBullet(BulletAir.class, BulletAir.bullet_name, "bullet_air.png");
 		registerBullet(BulletHoming.class, BulletHoming.bullet_name, "bullet_homing.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
@@ -1016,7 +1018,10 @@ public class Game
 			e1.printStackTrace();
 		}
 
-		Drawing.drawing.playSound("leave.ogg");
+		if (Game.game.window != null)
+			Drawing.drawing.playSound("leave.ogg");
+		else
+			throw new RuntimeException("Failed to start game", e);
 	}
 
 	public static void resetTiles()

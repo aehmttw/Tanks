@@ -35,16 +35,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public String rawUsername;
 	public String username;
 
-	public long lastMessage = -1;
-	public long latency = 0;
-
-	public long latencySum = 0;
-	public int latencyCount = 1;
-	public long lastLatencyTime = 0;
-	public long lastLatencyAverage = 0;
+	public long lastPingSent;
+	public long lastLatency;
+	public boolean pingReceived = true;
 
 	public boolean closed = false;
-	public boolean canPing = true;
 
 	public ServerHandler(Server s)
 	{
@@ -87,12 +82,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 			}
 		}
 
-		//System.out.println(eventFrequencies);
-
-		for (String s: eventFrequencies.keySet())
-		{
-			System.out.println(s + ": " + eventFrequencies.get(s));
-		}
+//		//System.out.println(eventFrequencies);
+//
+//		for (String s: eventFrequencies.keySet())
+//		{
+//			System.out.println(s + ": " + eventFrequencies.get(s));
+//		}
 	}
 
 	@Override
@@ -103,34 +98,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 		this.ctx = ctx;
 		ByteBuf buffy = (ByteBuf) msg;
-		boolean wasPing = this.reader.queueMessage(this, buffy, this.clientID);
+		this.reader.queueMessage(this, buffy, this.clientID);
 
 		if (steamID == null)
 			ReferenceCountUtil.release(msg);
-
-		if (wasPing)
-		{
-			if (lastMessage < 0)
-				lastMessage = System.currentTimeMillis();
-
-			long time = System.currentTimeMillis();
-			latency = time - lastMessage;
-			lastMessage = time;
-
-			latencyCount++;
-			latencySum += latency;
-
-			if (time / 1000 > lastLatencyTime)
-			{
-				lastLatencyTime = time / 1000;
-				lastLatencyAverage = latencySum / latencyCount;
-
-				latencySum = 0;
-				latencyCount = 0;
-			}
-
-			//this.sendEvent(new EventPing());
-		}
 	}
 
 	public void reply()
@@ -176,6 +147,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 				this.ctx.flush();
 
 			this.events.clear();
+
+			if (pingReceived && System.currentTimeMillis() - lastPingSent > 1000)
+			{
+				pingReceived = false;
+				lastPingSent = System.currentTimeMillis();
+				this.sendEvent(new EventPing(false));
+			}
 		}
 	}
 

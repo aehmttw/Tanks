@@ -717,12 +717,12 @@ public class LWJGLWindow extends BaseWindow
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		double m = 100;
+		double m = clipMultiplier;
 
 		if (this.drawingShadow)
 			glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
 		else
-			glFrustum(-absoluteWidth / (absoluteDepth * 2.0) * m, absoluteWidth / (absoluteDepth * 2.0) * m, absoluteHeight / (absoluteDepth * 2.0) * m, -absoluteHeight / (absoluteDepth * 2.0) * m, m, absoluteDepth * 100 * m);
+			glFrustum(-absoluteWidth / (absoluteDepth * 2.0) * m, absoluteWidth / (absoluteDepth * 2.0) * m, absoluteHeight / (absoluteDepth * 2.0) * m, -absoluteHeight / (absoluteDepth * 2.0) * m, m, absoluteDepth * m * clipDistMultiplier);
 
 		this.angled = false;
 

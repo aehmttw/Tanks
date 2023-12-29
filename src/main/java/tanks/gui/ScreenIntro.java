@@ -89,6 +89,7 @@ public class ScreenIntro extends Screen
     @Override
     public void draw()
     {
+        Game.game.window.clipMultiplier = 2;
         double frac = Math.min(1, ((lastTime - startTime - introTime) / introAnimationTime));
 
         if (Game.enable3d && Game.fancyTerrain)
@@ -120,5 +121,7 @@ public class ScreenIntro extends Screen
         Game.game.window.loadPerspective();
 
         Panel.panel.drawBar((1 - frac) * 40);
+
+        Game.game.window.clipMultiplier = 100;
     }
 }

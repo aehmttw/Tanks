@@ -435,6 +435,23 @@ public class Ray
 		return dist;
 	}
 
+	public double getTargetDist(double mul, Tank m)
+	{
+		this.bounceX.add(0, this.posX);
+		this.bounceY.add(0, this.posY);
+
+		if (this.getTarget(mul, m) != m)
+			return -1;
+
+		double dist = 0;
+		for (int i = 0; i < this.bounceX.size() - 1; i++)
+		{
+			dist += Math.sqrt(Math.pow(this.bounceX.get(i + 1) - this.bounceX.get(i), 2) + Math.pow(this.bounceY.get(i + 1) - this.bounceY.get(i), 2));
+		}
+
+		return dist;
+	}
+
 	public double getAngleInDirection(double x, double y)
 	{
 		x -= this.posX;

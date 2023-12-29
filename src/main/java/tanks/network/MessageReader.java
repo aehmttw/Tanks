@@ -27,15 +27,19 @@ public class MessageReader
 
 	protected int lastID;
 
-	public boolean queueMessage(ByteBuf m, UUID clientID)
+	public void queueMessage(ClientHandler c, ByteBuf m, UUID clientID)
 	{
-		return this.queueMessage(null, m, clientID);
+		this.queueMessage(null, c, m, clientID);
 	}
 
-	public synchronized boolean queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
+
+	public void queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
 	{
-		boolean reply = false;
-		
+		this.queueMessage(s, null, m, clientID);
+	}
+
+	public synchronized void queueMessage(ServerHandler s, ClientHandler c, ByteBuf m, UUID clientID)
+	{
 		try
 		{
 			byte[] bytes = new byte[59];
@@ -70,7 +74,7 @@ public class MessageReader
 							ScreenPartyLobby.connections.clear();
 						}
 
-						return false;
+						return;
 					}
 				}
 				
@@ -78,7 +82,7 @@ public class MessageReader
 
 				while (queue.readableBytes() >= endpoint)
 				{
-					reply = this.readMessage(s, queue, clientID) || reply;
+					this.readMessage(s, c, queue, clientID);
 					queue.discardReadBytes();
 					
 					reading = false;
@@ -105,7 +109,7 @@ public class MessageReader
 								ScreenPartyLobby.connections.clear();
 							}
 
-							return false;
+							return;
 						}
 
 						reading = true;
@@ -144,11 +148,9 @@ public class MessageReader
 				ScreenPartyLobby.connections.clear();
 			}
 		}
-
-		return reply;
 	}
 
-	public synchronized boolean readMessage(ServerHandler s, ByteBuf m, UUID clientID) throws Exception
+	public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
 	{
 		int i = m.readInt();
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
@@ -166,12 +168,12 @@ public class MessageReader
 			((PersonalEvent) e).clientID = clientID;
 		}
 
-		if (e instanceof EventPing)
-			return true;
-		else if (e instanceof IOnlineServerEvent)
+		if (e instanceof IOnlineServerEvent)
 			s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));
-		else if (e instanceof IServerThreadEvent)
+		else if (e instanceof IServerThreadEvent && s != null)
 			((IServerThreadEvent) e).execute(s);
+		else if (e instanceof IClientThreadEvent && ch != null)
+			((IClientThreadEvent) e).execute(ch);
 		else
 		{
 			synchronized (Game.eventsIn)
@@ -179,8 +181,6 @@ public class MessageReader
 				Game.eventsIn.add(e);
 			}
 		}
-
-		return false;
 	}
 
 	public static void updateLastMessageTime()

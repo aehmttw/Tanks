@@ -119,12 +119,12 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw()
     {
-        if (!Game.game.window.shapeRenderer.supportsBatching)
+        if (!Game.game.window.shapeRenderer.supportsBatching || !Game.enable3d)
         {
             if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
                 this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);
 
-            if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
+            if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
             {
                 this.visualDepth = 0.5;
             }

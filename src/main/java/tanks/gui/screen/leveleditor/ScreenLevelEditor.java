@@ -2004,15 +2004,23 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		for (Movable m: Game.movables)
 			drawables[m.drawLevel].add(m);
 
-		for (int i = 0; i < drawables.length; i++)
+		if (Game.enable3d)
 		{
-			for (Obstacle o : Game.obstacles)
+			for (int i = 0; i < drawables.length; i++)
 			{
-				if (o.drawLevel == i && !o.batchDraw)
+				for (Obstacle o : Game.obstacles)
 				{
-					drawables[i].add(o);
+					if (o.drawLevel == i && !o.batchDraw)
+					{
+						drawables[i].add(o);
+					}
 				}
 			}
+		}
+		else
+		{
+			for (Obstacle o : Game.obstacles)
+				drawables[o.drawLevel].add(o);
 		}
 
 		for (Effect e: Game.effects)

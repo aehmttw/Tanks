@@ -14,8 +14,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
     protected final HashMap<Class<? extends ShaderGroup>, RegionRenderer> renderers = new HashMap<>();
     public RegionRenderer outOfBoundsRenderer;
 
-    public Tile[][] tiles;
-
     public boolean staged = false;
     public boolean freed = false;
 
@@ -418,41 +416,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         Game.game.window.shaderDefault.set();
     }
 
-    public void drawTile(int i, int j)
-    {
-        double r = Game.tilesR[i][j];
-        double g = Game.tilesG[i][j];
-        double b = Game.tilesB[i][j];
-        double depth = Game.tilesDepth[i][j];
-        this.currentDepth = depth;
-        currentColor[0] = (float) (r / 255.0);
-        currentColor[1] = (float) (g / 255.0);
-        currentColor[2] = (float) (b / 255.0);
-
-        if (Game.tileDrawables[i][j] != null && !Game.tileDrawables[i][j].removed)
-        {
-            this.tiles[i][j].obstacleAbove = Game.tileDrawables[i][j];
-            Game.tileDrawables[i][j].drawTile(this.tiles[i][j], r, g, b, depth, Game.tile_size);
-        }
-        else
-        {
-            this.tiles[i][j].obstacleAbove = null;
-            Drawing.drawing.setColor(r, g, b);
-            this.addBox(this.tiles[i][j],
-                    i * Game.tile_size,
-                    j * Game.tile_size,
-                    -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, (byte) 1, false);
-        }
-
-        if (!this.staged)
-            this.addBox(this.tiles[i][j],
-                    i * Game.tile_size,
-                    j * Game.tile_size,
-                    -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, (byte) 1, true);
-    }
-
     public float getShrubHeight()
     {
         float shrubMod = 0.25f;
@@ -512,10 +475,5 @@ public class StaticTerrainRenderer extends TerrainRenderer
                 o.draw();
         }
         Obstacle.draw_size = d;
-    }
-
-    public static class Tile implements IBatchRenderableObject
-    {
-        public Obstacle obstacleAbove = null;
     }
 }

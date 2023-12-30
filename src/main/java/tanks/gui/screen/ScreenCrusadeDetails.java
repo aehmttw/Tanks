@@ -9,7 +9,7 @@ import tanks.translation.Translation;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ScreenCrusadeDetails extends Screen
+public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScreen
 {
     public Crusade crusade;
     public ScreenCrusadeLevels background;

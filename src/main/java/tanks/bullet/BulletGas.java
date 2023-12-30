@@ -44,6 +44,7 @@ public abstract class BulletGas extends Bullet implements IDrawableWithGlow
         this.externalBulletCollision = false;
         this.destroyBullets = false;
         this.canMultiDamage = true;
+        this.canBeCanceled = false;
     }
 
     @Override

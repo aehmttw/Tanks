@@ -39,6 +39,7 @@ public class BulletAir extends Bullet
         this.damage = 0;
         this.pitchVariation = 1;
         this.canMultiDamage = true;
+        this.canBeCanceled = false;
     }
 
     @Override

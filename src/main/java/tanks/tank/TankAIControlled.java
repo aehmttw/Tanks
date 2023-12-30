@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import basewindow.IModel;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.network.event.*;
@@ -342,6 +343,12 @@ public class TankAIControlled extends Tank
 
 	/** Time until the nearest threat bullet will strike */
 	protected double nearestBulletDist;
+
+	/** Nearest deflectable bullet aiming at this tank, if avoid timer is > than 0*/
+	protected Bullet nearestBulletDeflect;
+
+	/** Time until the nearest deflectable threat bullet will strike */
+	protected double nearestBulletDeflectDist;
 
 	/** Number of bullet threats that will hit this tank */
 	protected int bulletThreatCount;
@@ -1286,6 +1293,7 @@ public class TankAIControlled extends Tank
 
 		ArrayList<Bullet> toAvoid = new ArrayList<>();
 		ArrayList<Double> toAvoidDist = new ArrayList<>();
+		ArrayList<Bullet> toAvoidDeflect = new ArrayList<>();
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -1295,26 +1303,44 @@ public class TankAIControlled extends Tank
 				double dist = Movable.distanceBetween(this, b);
 
 				double distBox = this.enableMovement ? 10 : 20;
-				if (!(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire) && b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox && (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3))
+				if (!(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire)
+						&& b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox
+						&& (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3))
 				{
-					Ray r = b.getRay();
-					int mul = this.enableMovement ? 3 : 1;
-					r.tankHitSizeMul = 3;
+					int c = enableMovement ? 1 : 0;
+					for (int o = 0; o <= c; o++)
+					{
+						int mul = o == 1 ? 3 : 1;
 
-					if (dist < this.size * mul)
-					{
-						avoid = true;
-						toAvoid.add(b);
-						toAvoidDist.add(dist);
-					}
-					else
-					{
-						double d = r.getTargetDist(mul, this);
-						if (d >= 0)
+						if (dist < this.size * mul)
 						{
 							avoid = true;
-							toAvoid.add(b);
-							toAvoidDist.add(d);
+
+							if (o == 1)
+							{
+								toAvoid.add(b);
+								toAvoidDist.add(dist);
+							}
+							else
+								toAvoidDeflect.add(b);
+						}
+						else
+						{
+							Ray r = b.getRay();
+							r.tankHitSizeMul = 3;
+							double d = r.getTargetDist(mul, this);
+							if (d >= 0)
+							{
+								avoid = true;
+
+								if (o == 1)
+								{
+									toAvoid.add(b);
+									toAvoidDist.add(d);
+								}
+								else
+									toAvoidDeflect.add(b);
+							}
 						}
 					}
 				}
@@ -1327,15 +1353,35 @@ public class TankAIControlled extends Tank
 		{
 			Bullet nearest = null;
 			double nearestDist = Double.MAX_VALUE;
+
+			Bullet nearestDeflectable = null;
+			double nearestDeflectableDist = Double.MAX_VALUE;
+
+			int j = 0;
 			for (int i = 0; i < toAvoid.size(); i++)
 			{
-				double dist = toAvoidDist.get(i) / toAvoid.get(i).getSpeed();
+				Bullet b = toAvoid.get(i);
+				double dist = toAvoidDist.get(i) / b.getSpeed();
 				if (dist < nearestDist)
 				{
-					nearest = toAvoid.get(i);
+					nearest = b;
 					nearestDist = dist;
 				}
+
+				if (j < toAvoidDeflect.size() && toAvoidDeflect.get(j) == b)
+				{
+					if (!b.heavy && b.canBeCanceled && (!Team.isAllied(this, b) || !this.enableMovement) && dist < nearestDeflectableDist)
+					{
+						nearestDeflectable = b;
+						nearestDeflectableDist = dist;
+					}
+
+					j++;
+				}
 			}
+
+			if (nearest == null)
+				return;
 
 			double direction = nearest.getPolarDirection();
 			double distance = Movable.distanceBetween(this, nearest);
@@ -1395,6 +1441,9 @@ public class TankAIControlled extends Tank
 			this.avoidTimer = this.bulletAvoidTimerBase;
 			this.nearestBullet = nearest;
 			this.nearestBulletDist = nearestDist;
+
+			this.nearestBulletDeflect = nearestDeflectable;
+			this.nearestBulletDeflectDist = nearestDeflectableDist;
 		}
 	}
 
@@ -1552,14 +1601,14 @@ public class TankAIControlled extends Tank
 
 	public void updateTurretStraight()
 	{
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled && (this.enableMovement || this.nearestBulletDist <= this.bulletThreatCount * this.cooldownBase * 1.5))
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(this.cooldownBase, 50) * 1.5))
 		{
-			double a = this.nearestBullet.getAngleInDirection(this.posX + 50 / this.bullet.speed * this.nearestBullet.vX, this.posY + 50 / this.bullet.speed * this.nearestBullet.vY);
-			double speed = this.nearestBullet.getLastMotionInDirection(a + Math.PI / 2);
+			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
+			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
 
 			if (speed < this.bullet.speed)
 			{
-				double d = this.getAngleInDirection(nearestBullet.posX, nearestBullet.posY) - Math.asin(speed / this.bullet.speed);
+				double d = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY) - Math.asin(speed / this.bullet.speed);
 
 				if (!Double.isNaN(d))
 					this.aimAngle = d;
@@ -1717,7 +1766,7 @@ public class TankAIControlled extends Tank
 		}
 
 		if (Movable.absoluteAngleBetween(this.angle, this.aimAngle) <= this.aimThreshold)
-			if ((arc && this.targetEnemy != null) || (m != null && m.equals(this.targetEnemy) || (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled)))
+			if ((arc && this.targetEnemy != null) || (m != null && m.equals(this.targetEnemy) || (this.avoidTimer > 0 && this.disableOffset && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy)))
 				this.shoot();
 	}
 
@@ -1732,14 +1781,14 @@ public class TankAIControlled extends Tank
 
 		this.search();
 
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled && (this.enableMovement || this.nearestBulletDist <= this.bulletThreatCount * this.cooldownBase * 1.5))
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDist <= this.bulletThreatCount * Math.max(Math.max(Math.max(this.cooldownBase, this.bullet.cooldownBase), this.bullet.cooldownBase), 50) * 1.5))
 		{
-			double a = this.nearestBullet.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBullet.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBullet.vY);
-			double speed = this.nearestBullet.getLastMotionInDirection(a + Math.PI / 2);
+			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
+			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
 
 			if (speed < this.bullet.speed)
 			{
-				double d = this.getAngleInDirection(nearestBullet.posX, nearestBullet.posY) - Math.asin(speed / this.bullet.speed);
+				double d = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY) - Math.asin(speed / this.bullet.speed);
 
 				if (!Double.isNaN(d))
 				{
@@ -1751,7 +1800,7 @@ public class TankAIControlled extends Tank
 			this.disableOffset = true;
 		}
 
-		if (aim && (this.hasTarget || (this.avoidTimer > 0 && this.enableDefensiveFiring && !this.nearestBullet.destroy && !this.nearestBullet.heavy && this.nearestBullet.canBeCanceled)))
+		if (aim && (this.hasTarget || (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy)))
 			this.updateAimingTurret();
 		else if (currentlySeeking && this.seekPause <= 0)
 			this.updateSeekingTurret();

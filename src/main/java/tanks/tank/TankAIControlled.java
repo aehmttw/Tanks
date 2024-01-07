@@ -1,7 +1,6 @@
 package tanks.tank;
 
 import basewindow.IModel;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.network.event.*;

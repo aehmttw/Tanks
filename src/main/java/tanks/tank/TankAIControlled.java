@@ -22,7 +22,7 @@ import java.util.*;
 public class TankAIControlled extends Tank
 {
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
-	protected enum RotationPhase {clockwise, counterClockwise, aiming}
+	protected enum RotationPhase {clockwise, counter_clockwise, aiming}
 
 	// The following are properties which are used externally to determine the behavior settings of the tank.
 	// Simple modifications of tanks can just change these values to produce a desired behavior.
@@ -55,6 +55,22 @@ public class TankAIControlled extends Tank
 	public boolean enableBulletAvoidance = true;
 	@TankProperty(category = movementAvoid, id = "enable_mine_avoidance", name = "Avoid mines")
 	public boolean enableMineAvoidance = true;
+	@TankProperty(category = movementAvoid, id = "avoid_seek_open_spaces", name = "Seek open spaces", desc = "If enabled, when this tank avoids farther bullets, it will seek out open spaces around it to make it harder to corner")
+	public boolean avoidSeekOpenSpaces = false;
+
+	/** The method used to avoid bullets
+	 *  Back off = move away from the bullet directly
+	 *  Dodge = move at an angle from the bullet
+	 *  Aggressive Dodge = move at an angle toward the bullet
+	 *  Intersect = move away from where bullet path will intersect tank; less accurate */
+	public enum BulletAvoidType {intersect, back_off, dodge, aggressive_dodge}
+
+	@TankProperty(category = movementAvoid, id = "bullet_avoid_type", name = "Bullet avoid type", desc = "Method the tank will use to avoid bullets \n " +
+			"\n Intersect: move away from where the bullet will hit the tank (less accurate) " +
+			"\n Back off: move away from the bullet (may back into corners) " +
+			"\n Dodge: move at an angle away from the bullet (more accurate)" +
+			"\n Aggressive dodge: move at an angle toward the bullet")
+	public BulletAvoidType bulletAvoidType = BulletAvoidType.intersect;
 	/** How close the tank needs to get to a mine to avoid it*/
 	@TankProperty(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius", desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
 	public double mineAvoidSensitivity = 1.5;
@@ -79,8 +95,9 @@ public class TankAIControlled extends Tank
 	 * 	Approach = go towards the target enemy
 	 * 	Flee = go away from the target enemy
 	 * 	Strafe = move perpendicular to target enemy
+	 * 	Aggressive Strafe = move at a 45 degree angle toward target enemy
 	 * 	Keep Distance = stay a particular distance away from the target enemy*/
-	public enum TargetEnemySightBehavior {approach, flee, strafe, keep_distance}
+	public enum TargetEnemySightBehavior {approach, flee, strafe, aggressive_strafe, keep_distance}
 
 	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
 	@TankProperty(category = movementOnSight, id = "enable_looking_at_target_enemy", name = "Test sight", desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
@@ -88,7 +105,7 @@ public class TankAIControlled extends Tank
 	/** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
 	public boolean enableTargetEnemyReaction = true;
 	/** Type of behavior tank should have if its target enemy is in line of sight*/
-	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight - either flee from the target, approach it, or strafe around it \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
+	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight - either flee from the target, approach it, strafe around it, aggressively strafe toward it, or maintain a distance to it \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
 	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
 	/** If set to strafe upon seeing the target enemy, chance to change orbit direction*/
 	@TankProperty(category = movementOnSight, id = "strafe_direction_change_chance", name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
@@ -464,7 +481,7 @@ public class TankAIControlled extends Tank
 		this.direction = ((int)(this.random.nextDouble() * 8)) / 2.0;
 
 		if (this.random.nextDouble() < 0.5)
-			this.idlePhase = RotationPhase.counterClockwise;
+			this.idlePhase = RotationPhase.counter_clockwise;
 
 		this.angle = angle;
 		this.orientation = angle;
@@ -528,6 +545,12 @@ public class TankAIControlled extends Tank
 			this.baseColorG = this.colorG;
 			this.baseColorB = this.colorB;
 			this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
+
+			if (this.targetEnemySightBehavior == TargetEnemySightBehavior.aggressive_strafe)
+				this.strafeDirection /= 2;
+
+			if (this.random.nextDouble() < 0.5)
+				this.strafeDirection = -this.strafeDirection;
 		}
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
@@ -943,7 +966,7 @@ public class TankAIControlled extends Tank
 			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.flee)
 			this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
-		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.strafe)
+		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.strafe || this.targetEnemySightBehavior == TargetEnemySightBehavior.aggressive_strafe)
 		{
 			if (this.random.nextDouble() < this.strafeDirectionChangeChance * Panel.frameFrequency)
 				strafeDirection = -strafeDirection;
@@ -1293,6 +1316,7 @@ public class TankAIControlled extends Tank
 		ArrayList<Bullet> toAvoid = new ArrayList<>();
 		ArrayList<Double> toAvoidDist = new ArrayList<>();
 		ArrayList<Bullet> toAvoidDeflect = new ArrayList<>();
+		ArrayList<Ray> toAvoidTargets = new ArrayList<>();
 
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
@@ -1319,6 +1343,7 @@ public class TankAIControlled extends Tank
 							{
 								toAvoid.add(b);
 								toAvoidDist.add(dist);
+								toAvoidTargets.add(b.getRay());
 							}
 							else
 								toAvoidDeflect.add(b);
@@ -1336,6 +1361,7 @@ public class TankAIControlled extends Tank
 								{
 									toAvoid.add(b);
 									toAvoidDist.add(d);
+									toAvoidTargets.add(r);
 								}
 								else
 									toAvoidDeflect.add(b);
@@ -1351,6 +1377,7 @@ public class TankAIControlled extends Tank
 		if (avoid)
 		{
 			Bullet nearest = null;
+			Ray nearestTarget = null;
 			double nearestDist = Double.MAX_VALUE;
 
 			Bullet nearestDeflectable = null;
@@ -1364,6 +1391,7 @@ public class TankAIControlled extends Tank
 				if (dist < nearestDist)
 				{
 					nearest = b;
+					nearestTarget = toAvoidTargets.get(i);
 					nearestDist = dist;
 				}
 
@@ -1389,7 +1417,7 @@ public class TankAIControlled extends Tank
 			if (this.enableMovement)
 			{
 				double m = distance / nearest.getSpeed() * this.maxSpeed;
-				if (m > Game.tile_size * 4)
+				if (m > Game.tile_size * 4 && avoidSeekOpenSpaces)
 				{
 					int count = fleeDistances.length;
 					double[] d = fleeDistances;
@@ -1399,8 +1427,13 @@ public class TankAIControlled extends Tank
 						Ray r = new Ray(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size);
 						r.size = Game.tile_size * this.hitboxSize - 1;
 
+						boolean b = this.targetEnemy != null && this.bulletAvoidType == BulletAvoidType.aggressive_dodge && Movable.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
+
 						double dist = r.getDist();
 						d[dir] = dist;
+
+						if (b)
+							d[dir] = Math.min(d[dir] - Game.tile_size, Game.tile_size * 3);
 					}
 
 					int greatest = -1;
@@ -1421,7 +1454,7 @@ public class TankAIControlled extends Tank
 						// randomly pick one >= 3 tiles
 						while (true)
 						{
-							int c = (int) (Math.random() * count);
+							int c = (int) (this.random.nextDouble() * count);
 							if (d[c] >= Game.tile_size * 4)
 							{
 								this.avoidDirection = direction + fleeDirections[greatest];
@@ -1432,8 +1465,38 @@ public class TankAIControlled extends Tank
 				}
 				else
 				{
-					double frac = 2 - Math.max(m / (Game.tile_size * 2), 1);
-					this.avoidDirection = direction + Math.PI * (frac + 1) * 0.25 * Math.signum(diff);
+					double frac = Math.max(0, 2 - Math.max(m / (Game.tile_size * 2), 1));
+
+					if (this.bulletAvoidType == BulletAvoidType.aggressive_dodge || this.bulletAvoidType == BulletAvoidType.dodge)
+					{
+						double invert = 1;
+
+						if (this.bulletAvoidType == BulletAvoidType.aggressive_dodge)
+							invert = -1;
+
+						this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * invert / 2) * Math.signum(diff);
+					}
+					else if (this.bulletAvoidType == BulletAvoidType.back_off)
+						this.avoidDirection = nearest.getAngleInDirection(this.posX, this.posY);
+					else if (this.bulletAvoidType == BulletAvoidType.intersect)
+					{
+						double targetX = nearestTarget.targetX;
+						double targetY = nearestTarget.targetY;
+
+						this.avoidTimer = this.bulletAvoidTimerBase;
+						this.avoidDirection = this.getAngleInDirection(targetX, targetY) + Math.PI;
+						diff = Movable.angleBetween(this.avoidDirection, direction);
+
+						if (Math.abs(diff) < Math.PI / 4)
+							this.avoidDirection = direction + Math.signum(diff) * Math.PI / 4;
+
+						Ray r = new Ray(this.posX, this.posY, this.avoidDirection, 0, this, Game.tile_size);
+						r.size = Game.tile_size * this.hitboxSize - 1;
+						double d = r.getDist();
+
+						if (d < Game.tile_size * 2)
+							this.avoidDirection = direction - diff;
+					}
 				}
 			}
 
@@ -1592,7 +1655,7 @@ public class TankAIControlled extends Tank
 		{
 			this.idleTimer = this.random.nextDouble() * turretIdleTimerRandom + turretIdleTimerBase;
 			if (this.idlePhase == RotationPhase.clockwise)
-				this.idlePhase = RotationPhase.counterClockwise;
+				this.idlePhase = RotationPhase.counter_clockwise;
 			else
 				this.idlePhase = RotationPhase.clockwise;
 		}
@@ -1817,7 +1880,7 @@ public class TankAIControlled extends Tank
 		{
 			searchAngle += this.random.nextDouble() * 0.1 * Panel.frameFrequency;
 		}
-		else if (this.searchPhase == RotationPhase.counterClockwise)
+		else if (this.searchPhase == RotationPhase.counter_clockwise)
 		{
 			searchAngle -= this.random.nextDouble() * 0.1 * Panel.frameFrequency;
 		}
@@ -1831,7 +1894,7 @@ public class TankAIControlled extends Tank
 				if (this.random.nextDouble() < 0.5)
 					this.searchPhase = RotationPhase.clockwise;
 				else
-					this.searchPhase = RotationPhase.counterClockwise;
+					this.searchPhase = RotationPhase.counter_clockwise;
 			}
 		}
 
@@ -1963,7 +2026,7 @@ public class TankAIControlled extends Tank
 		if (this.idleTimer <= 0)
 		{
 			if (this.idlePhase == RotationPhase.clockwise)
-				this.idlePhase = RotationPhase.counterClockwise;
+				this.idlePhase = RotationPhase.counter_clockwise;
 			else
 				this.idlePhase = RotationPhase.clockwise;
 
@@ -1982,7 +2045,7 @@ public class TankAIControlled extends Tank
 		if (Movable.absoluteAngleBetween(dir, this.angle) > Math.PI / 8)
 		{
 			if (Movable.angleBetween(dir, this.angle) < 0)
-				this.idlePhase = RotationPhase.counterClockwise;
+				this.idlePhase = RotationPhase.counter_clockwise;
 			else
 				this.idlePhase = RotationPhase.clockwise;
 		}
@@ -2227,7 +2290,7 @@ public class TankAIControlled extends Tank
 			{
 				totalWeight += s.weight;
 			}
-			double selected = Math.random() * totalWeight;
+			double selected = this.random.nextDouble() * totalWeight;
 
 			for (SpawnedTankEntry s: this.spawnedTankEntries)
 			{

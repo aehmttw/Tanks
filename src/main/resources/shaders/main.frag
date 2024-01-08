@@ -122,26 +122,24 @@ void main(void)
     if (vbo)
         gl_FragColor *= originalColor;
 
+    float maxLight = 1.0;
+    float minLight = 0.0;
+
+    //            if (!customLight)
+    {
+        maxLight = light * (1.0 - glow) + glowLight * glow;
+        minLight = shade * (1.0 - glow) + glowShade * glow;
+    }
+
     if (shadow)
     {
         vec4 lightNDCPosition = lightBiasedClipPosition / lightBiasedClipPosition.w;
 
         vec4 depthVec = texture2D(depthTexture, lightNDCPosition.xy);
 
-        if (!depthtest)
-            gl_FragColor *= vec4(1.0, 1.0, 1.0, 1.0);
-        else
+        if (depthtest)
         {
             bool lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
-
-            float maxLight = 1.0;
-            float minLight = 0.0;
-
-//            if (!customLight)
-            {
-                maxLight = light * (1.0 - glow) + glowLight * glow;
-                minLight = shade * (1.0 - glow) + glowShade * glow;
-            }
 
             float col;
 
@@ -228,6 +226,11 @@ void main(void)
             //float fogFrac = pow(max(0.0, min(1.0, (position.w / depth - 0.2) / 0.8)), 5.0);
             //gl_FragColor.xyz = gl_FragColor.xyz * (1.0 - fogFrac) + vec3(0.8, 0.8, 0.8) * (fogFrac);
         }
+    }
+    else
+    {
+        if (depthtest)
+            gl_FragColor.xyz *= maxLight;
     }
    // gl_FragColor = vec4(vec3((1.0 - gl_FragCoord.z) * 500.0), 1.0);
 //    float diff = 1.0f - abs(dot(normal, normalize(inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, -1))));

@@ -24,6 +24,7 @@ public class ScreenIntro extends Screen
     public ScreenIntro()
     {
         this.musicID = "menu";
+        this.music = "menu_1.ogg";
 
         zoomTranslation.window = Game.game.window;
         zoomTranslation.applyAsShadow = true;

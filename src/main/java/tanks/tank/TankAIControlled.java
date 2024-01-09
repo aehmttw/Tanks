@@ -97,8 +97,9 @@ public class TankAIControlled extends Tank
 	 * 	Flee = go away from the target enemy
 	 * 	Strafe = move perpendicular to target enemy
 	 * 	Sidewind = move at a 45 degree angle toward target enemy
+	 * 	Backwind = move at a 45 degree angle away target enemy
 	 * 	Keep Distance = stay a particular distance away from the target enemy*/
-	public enum TargetEnemySightBehavior {approach, flee, strafe, sidewind, keep_distance}
+	public enum TargetEnemySightBehavior {approach, flee, strafe, sidewind, backwind, keep_distance}
 
 	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
 	@TankProperty(category = movementOnSight, id = "enable_looking_at_target_enemy", name = "Test sight", desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
@@ -106,7 +107,14 @@ public class TankAIControlled extends Tank
 	/** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
 	public boolean enableTargetEnemyReaction = true;
 	/** Type of behavior tank should have if its target enemy is in line of sight*/
-	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight - either flee from the target, approach it, strafe around it, sidewind (zig-zag) toward it, or maintain a distance to it \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
+	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight \n " +
+			"Approach - move directly toward the target \n " +
+			"Flee - move directly away from the target \n" +
+			"Strafe around it - move perpendicular to the target \n" +
+			"Sidewind - zig-zag toward the target \n" +
+			"Backwind - zig-zag away from the target \n" +
+			"Keep distance - move to or away from the target until at a specific distance to it \n" +
+			" \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
 	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
 	/** If set to strafe upon seeing the target enemy, chance to change orbit direction*/
 	@TankProperty(category = movementOnSight, id = "strafe_direction_change_chance", name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
@@ -549,6 +557,8 @@ public class TankAIControlled extends Tank
 
 			if (this.targetEnemySightBehavior == TargetEnemySightBehavior.sidewind)
 				this.strafeDirection /= 2;
+			else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.backwind)
+				this.strafeDirection *= 1.5;
 
 			if (this.random.nextDouble() < 0.5)
 				this.strafeDirection = -this.strafeDirection;
@@ -967,7 +977,7 @@ public class TankAIControlled extends Tank
 			this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.flee)
 			this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
-		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.strafe || this.targetEnemySightBehavior == TargetEnemySightBehavior.sidewind)
+		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.strafe || this.targetEnemySightBehavior == TargetEnemySightBehavior.sidewind || this.targetEnemySightBehavior == TargetEnemySightBehavior.backwind)
 		{
 			if (this.random.nextDouble() < this.strafeDirectionChangeChance * Panel.frameFrequency)
 				strafeDirection = -strafeDirection;

@@ -489,6 +489,27 @@ public class ScreenChangelog extends Screen
                     }
             );
 
+            new Changelog("v1.5.2i", new String[]
+                    {
+                            "*What's new in Tanks v1.5.2i:\n\n" +
+                                    "Added units to time and distance in tank editor\n" +
+                                    "Added 'Backwind' tank AI on sight - zig zag away\n" +
+                                    "Renamed 'Aggressive strafe' to 'Sidewind'\n" +
+                                    "Adjusted Tank AI:\n" +
+                                    "- Black tanks now seek open spaces and back off\n" +
+                                    "- Dark green tanks now dodge\n" +
+                                    "- Light pink tanks now seek open spaces and dodge\n" +
+                                    "- Angry light pink tanks now aggressively dodge and sidewind on sight\n" +
+                                    "- Mimic tanks (when not mimicking) now seek open spaces and dodge\n" +
+                                    "- Orange tanks now seek open spaces and aggressively dodge\n" +
+                                    "- Purple tanks now seek open spaces, dodge, and turn turret faster\n" +
+                                    "- Salmon tanks now seek backwind on sight\n" +
+                                    "- White tanks now seek open spaces, dodge, and turn turret faster\n" +
+                                    "- Yellow tanks now fire less but lay more mines\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
+
         }
     }
 }

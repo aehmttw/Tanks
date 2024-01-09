@@ -402,13 +402,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
 
         public void draw()
         {
+            if (parent != null)
+                back.draw();
+
             this.drawUIElements();
 
             previous.enabled = page > 0;
             next.enabled = (uiElements.size() > (1 + page) * rows * 3);
-
-            if (parent != null)
-                back.draw();
 
             if (rows * 3 < uiElements.size())
             {

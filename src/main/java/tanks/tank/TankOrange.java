@@ -2,7 +2,6 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletFlame2;
 import tanks.bullet.legacy.BulletFlame;
 
 /**
@@ -25,6 +24,8 @@ public class TankOrange extends TankAIControlled
 
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;
+		this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
+		this.avoidanceSeekOpenSpaces = true;
 
 		this.bullet.maxLiveBullets = 0;
 		this.bullet.bulletClass = BulletFlame.class;

@@ -24,6 +24,7 @@ public class TankDarkGreen extends TankAIControlled
 		this.bullet.effect = Bullet.BulletEffect.trail;
 		this.bullet.name = "Mini bullet";
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
+		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
 
 		if (Game.tankTextures)
 		{

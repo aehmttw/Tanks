@@ -3,7 +3,6 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class TankLightPinkAngry extends TankAIControlled
@@ -33,6 +32,9 @@ public class TankLightPinkAngry extends TankAIControlled
         this.bullet.speed = 25.0 / 4;
         this.bullet.bounces = 0;
         this.bullet.effect = Bullet.BulletEffect.fire;
+
+        this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
+        this.targetEnemySightBehavior = TargetEnemySightBehavior.sidewind;
 
         if (Game.tankTextures)
         {

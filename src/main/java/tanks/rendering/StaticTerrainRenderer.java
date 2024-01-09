@@ -351,9 +351,9 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         if (asPreview)
         {
-            xStart = -(100 / previewWidth - 1);
+            xStart = -(100 / previewWidth) - 1;
             yStart = 0;
-            xEnd = 100 / previewWidth - 1;
+            xEnd = 100 / previewWidth + 1;
             yEnd = 0;
         }
 

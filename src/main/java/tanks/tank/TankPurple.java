@@ -15,6 +15,11 @@ public class TankPurple extends TankAIControlled
 		this.cooldownRandom = 40;
 		this.enablePathfinding = true;
 
+		this.turretAimSpeed = 0.045;
+		this.turretIdleSpeed = 0.001;
+		this.avoidanceSeekOpenSpaces = true;
+		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+
 		this.coinValue = 10;
 
 		this.description = "A smart, fast tank which can lay mines";

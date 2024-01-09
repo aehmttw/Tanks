@@ -32,6 +32,7 @@ public class BulletFlame extends Bullet implements IDrawableWithGlow
 		this.itemSound = "flame.ogg";
 		this.pitchVariation = 0.0;
 		this.canBeCanceled = false;
+		this.burnsBushes = true;
 	}
 	
 	@Override

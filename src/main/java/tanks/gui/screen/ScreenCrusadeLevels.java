@@ -119,34 +119,6 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
             Arrays.fill(Game.game.groundHeightGrid[i], -1000);
         }
 
-        if (Game.enable3d)
-            for (Obstacle o: Game.obstacles)
-            {
-                if (o.replaceTiles)
-                    o.postOverride();
-
-                int x = (int) (o.posX / Game.tile_size);
-                int y = (int) (o.posY / Game.tile_size);
-
-                if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-                {
-                    Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-                    Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
-                }
-            }
-
-        if (Game.enable3d && Game.game.window.shapeRenderer.supportsBatching)
-        {
-            for (int i = 0; i < drawables.length; i++)
-            {
-                for (Obstacle o : Game.obstacles)
-                {
-                    if (o.drawLevel == i && o.batchDraw)
-                        o.draw();
-                }
-            }
-        }
-
         this.drawBgRect = false;
         this.stageOnly = true;
         this.drawDefaultBackground();

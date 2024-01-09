@@ -1092,7 +1092,7 @@ public class Drawing
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
 		{
-			drawUncenteredInterfaceText(x + xPadding, y + 2 + yPadding * (2 * i + 1), text[i]);
+			drawUncenteredInterfaceText(x + xPadding, y + yPadding * (2 * i + 1), text[i]);
 		}
 
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));

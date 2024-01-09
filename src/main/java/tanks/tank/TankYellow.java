@@ -13,8 +13,11 @@ public class TankYellow extends TankAIControlled
 
 		this.bullet.maxLiveBullets = 1;
 		this.mine.maxLiveMines = 4;
-		this.mineTimerBase = 200;
-		this.mineTimerRandom = 400;
+		this.mineTimerBase = 100;
+		this.mineTimerRandom = 300;
+		this.cooldownBase = 120;
+		this.cooldownRandom = 100;
+
 		this.mineTimer = this.mineTimerBase + this.mineTimerRandom * this.random.nextDouble();
 
 		if (Game.tankTextures)

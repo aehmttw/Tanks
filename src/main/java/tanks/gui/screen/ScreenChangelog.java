@@ -480,6 +480,15 @@ public class ScreenChangelog extends Screen
                     }
             );
 
+            new Changelog("v1.5.2h", new String[]
+                    {
+                            "*What's new in Tanks v1.5.2h:\n\n" +
+                                    "Added new 'Bullet avoid type' to tank customization\n" +
+                                    "Added 'Aggressive strafe' sight behavior\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
+
         }
     }
 }

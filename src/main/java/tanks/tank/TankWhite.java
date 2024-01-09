@@ -1,7 +1,6 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.network.event.EventTankUpdateVisibility;
 
 /**
  * An invisible smart tank.
@@ -17,6 +16,11 @@ public class TankWhite extends TankAIControlled
 		this.invisible = true;
 
 		this.coinValue = 10;
+
+		this.turretAimSpeed = 0.045;
+		this.turretIdleSpeed = 0.001;
+		this.avoidanceSeekOpenSpaces = true;
+		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
 
 		this.description = "An invisible smart tank";
 	}

@@ -157,7 +157,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 					if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
 						options[i] = o;
 
-					drawing.fillBox(this, this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size - cutoff, o);
+					drawing.fillBox(this, this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size, o);
 				}
 			}
 		}

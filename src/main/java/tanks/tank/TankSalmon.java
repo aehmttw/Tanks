@@ -23,7 +23,7 @@ public class TankSalmon extends TankAIControlled
 		this.turretAimSpeed = 0.06;
 		this.enablePathfinding = true;
 		this.enablePredictiveFiring = false;
-		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
+		this.targetEnemySightBehavior = TargetEnemySightBehavior.backwind;
 
 		this.coinValue = 10;
 

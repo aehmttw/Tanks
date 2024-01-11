@@ -612,7 +612,12 @@ public class LWJGLWindow extends BaseWindow
 			}
 		}
 
-		ByteBuffer buf = ByteBuffer.allocateDirect(16 * this.scaledLights.size());
+
+		int p = 1;
+		while (p < lights.size() * 4)
+			p *= 2;
+
+		ByteBuffer buf = ByteBuffer.allocateDirect(4 * p);
 
 		for (double[] l : this.scaledLights)
 		{
@@ -645,11 +650,6 @@ public class LWJGLWindow extends BaseWindow
 		buf.flip();
 
 		currentShaderGroup.shaderBase.lightsCount.set(lights.size());
-
-		int p = 1;
-		while (p < lights.size() * 4)
-			p *= 2;
-
 		currentShaderGroup.shaderBase.lightsTexSize.set(p);
 		currentShaderGroup.shaderBase.scale.set((float) scale);
 

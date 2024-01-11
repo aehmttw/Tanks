@@ -2,10 +2,11 @@ package basewindow;
 
 public class ShaderBase extends ShaderProgram implements IBaseShader
 {
+    public Uniform1b texture;
     public Uniform1i depthTexture;
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
-    public Uniform3f lightVec;
+//    public Uniform3f lightVec;
     public Uniform1b depthtest;
     public Uniform1f glow;
     public Uniform1i shadowres;
@@ -27,6 +28,16 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1b shadow;
     public Uniform1b vbo;
     public Uniform4f originalColor;
+
+    public Uniform1f width;
+    public Uniform1f height;
+    public Uniform1f depth;
+    public Uniform1f scale;
+
+    public Uniform1i lightsCount;
+    public Uniform1i lightsTexSize;
+    public Uniform1i lightsTexture;
+
 //    public Uniform1b useNormal;
 
     public BaseWindow window;
@@ -48,6 +59,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public void initializeUniforms()
     {
         this.depthTexture.set(1);
+        this.lightsTexture.set(2);
     }
 
     public void renderVBO(int vertexBufferID, int colorBufferID, int texBufferID, int normalBufferID, int numberIndices)

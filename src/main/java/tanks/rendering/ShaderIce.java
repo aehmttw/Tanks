@@ -1,10 +1,12 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
+import basewindow.OnlyBaseUniform;
 
 @RendererDrawLayer(7)
 public class ShaderIce extends RendererShader implements IObstacleSizeShader, IGroundHeightShader
 {
+    @OnlyBaseUniform
     public Uniform1f obstacleSizeFrac;
     public Attribute1f groundHeight;
 

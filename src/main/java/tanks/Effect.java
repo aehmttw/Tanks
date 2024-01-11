@@ -895,7 +895,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
     @Override
     public boolean lit()
     {
-        return false;
+        return (Game.fancyLights && type == EffectType.explosion);
     }
 
     @Override

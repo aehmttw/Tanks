@@ -3,8 +3,6 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.tank.TankMimic;
-import tanks.tank.TankModels;
 
 public class ScreenDebug extends Screen
 {
@@ -13,6 +11,7 @@ public class ScreenDebug extends Screen
     public String followingCamText = "Immersive camera: ";
     public String tankIDsText = "Show tank IDs: ";
     public String invulnerableText = "Invulnerable: ";
+    public String fancyLightsText = "Fancy lighting: ";
 
     public ScreenDebug()
     {
@@ -43,6 +42,11 @@ public class ScreenDebug extends Screen
             invulnerable.setText(invulnerableText, ScreenOptions.onText);
         else
             invulnerable.setText(invulnerableText, ScreenOptions.offText);
+
+        if (Game.fancyLights)
+            fancyLighting.setText(fancyLightsText, ScreenOptions.onText);
+        else
+            fancyLighting.setText(fancyLightsText, ScreenOptions.offText);
     }
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
@@ -60,7 +64,7 @@ public class ScreenDebug extends Screen
     Button fontTest = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Test fonts", () -> Game.screen = new ScreenTestFonts()
     );
 
-    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * -2, this.objWidth, this.objHeight, "", new Runnable()
+    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * -2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -74,7 +78,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * -1, this.objWidth, this.objHeight, "", new Runnable()
+    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * -1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -88,7 +92,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0, this.objWidth, this.objHeight, "", new Runnable()
+    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -102,7 +106,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button tankIDs = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+    Button tankIDs = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -116,7 +120,7 @@ public class ScreenDebug extends Screen
         }
     });
 
-    Button invulnerable = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button invulnerable = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -127,6 +131,20 @@ public class ScreenDebug extends Screen
                 invulnerable.setText(invulnerableText, ScreenOptions.onText);
             else
                 invulnerable.setText(invulnerableText, ScreenOptions.offText);
+        }
+    });
+
+    Button fancyLighting = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.fancyLights = !Game.fancyLights;
+
+            if (Game.fancyLights)
+                fancyLighting.setText(fancyLightsText, ScreenOptions.onText);
+            else
+                fancyLighting.setText(fancyLightsText, ScreenOptions.offText);
         }
     });
 
@@ -142,6 +160,7 @@ public class ScreenDebug extends Screen
         firstPerson.update();
         invulnerable.update();
         tankIDs.update();
+        fancyLighting.update();
         back.update();
     }
 
@@ -162,6 +181,7 @@ public class ScreenDebug extends Screen
         tankIDs.draw();
         invulnerable.draw();
         fontTest.draw();
+        fancyLighting.draw();
         back.draw();
     }
 }

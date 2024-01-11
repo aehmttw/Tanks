@@ -1,9 +1,11 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
+import basewindow.OnlyBaseUniform;
 
 public class ShaderBoostPanel extends RendererShader implements IObstacleSizeShader, IObstacleVertexCoordShader, IObstacleTimeShader, IGlowShader
 {
+    @OnlyBaseUniform
     public Uniform1i time;
     public Uniform1f obstacleSizeFrac;
     public Attribute1f vertexCoord;

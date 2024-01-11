@@ -1,7 +1,7 @@
 #define DEPTH_OFFSET 0.0005
 #define LIGHT_SCALE 32.0
 
-uniform vec3 lightVec;
+//uniform vec3 lightVec;
 
 //uniform bool customLight;
 //uniform vec3 lightDiffuse;
@@ -52,7 +52,8 @@ uniform float depth;
 uniform float scale;
 
 uniform int lightsCount;
-uniform sampler2D lights;
+uniform int lightsTexSize;
+uniform sampler2D lightsTexture;
 
 float rescale(float f)
 {
@@ -182,6 +183,9 @@ void main(void)
                     col = minLight;
             }
 
+
+            vec4 baseColor = vec4(gl_FragColor.xyz, 0.0);
+
 //            if (customLight)
 //                gl_FragColor.xyz *= (lightDiffuse * col + lightAmbient);
 //            else
@@ -210,18 +214,29 @@ void main(void)
             {
                 float off = 0.5 / 256.0;
                 vec4 sub = vec4(off, off, off, 0);
-                vec4 light = texture2D(lights, vec2((float(i * c)) / float(lightsCount * c), 0.0)) - sub;
-                light += (texture2D(lights, vec2((float(i * c + 1)) / float(lightsCount * c), 0.0)) - sub) / 256.0;
-                light += (texture2D(lights, vec2((float(i * c + 2)) / float(lightsCount * c), 0.0)) - sub) / 65536.0;
-                float l = max(0.0, (light.w * 100000.0) /
-                         (pow((rescale(light.x) * width - position.x) / scale, 2.0)
-                        + pow((rescale(light.y) * height - position.y) / scale, 2.0)
-                        + pow((rescale(light.z) * depth - position.z) / scale, 2.0)));
-                extraLight += l * (texture2D(lights, vec2((float(i * c + 3)) / float(lightsCount * c), 0.0)));
+                vec4 light = texture2D(lightsTexture, vec2((float(i * c)) / float(lightsTexSize), 0.0)) - sub;
+                light += (texture2D(lightsTexture, vec2((float(i * c + 1)) / float(lightsTexSize), 0.0)) - sub) / 256.0;
+                light += (texture2D(lightsTexture, vec2((float(i * c + 2)) / float(lightsTexSize), 0.0)) - sub) / 65536.0;
+                float lw = light.w * 100000.0;
+                vec3 pr = vec3((rescale(light.x) * width - position.x) / scale, (rescale(light.y) * height - position.y) / scale, (rescale(light.z) * depth - position.z) / scale);
+                float cutoff = 0.01;
+
+                if (lw < cutoff * (pr.x * pr.x) || lw < cutoff * (pr.y * pr.y) || lw < cutoff * (pr.z * pr.z))
+                    continue;
+
+                float l = max(0.0, lw / (pow(pr.x, 2.0) + pow(pr.y, 2.0) + pow(pr.z, 2.0)));
+                l = max(0.0, (l - cutoff) / (1.0 - cutoff));
+                float frac = 1.0 - (1.0 / (l * 10.0 + 1.0));
+                l = l * (l * (1.0 - frac) + frac);
+
+                float uc = 0.35;
+                if (l > uc)
+                    l = uc + 1.0 - (1.0 / (1.0 + l - uc));
+                extraLight += l * (texture2D(lightsTexture, vec2((float(i * c + 3)) / float(lightsTexSize), 0.0)));
             }
 
             vec4 extraLightSqrt = vec4(sqrt(extraLight.x), sqrt(extraLight.y), sqrt(extraLight.z), 0.0);
-            gl_FragColor += extraLightSqrt;
+            gl_FragColor += extraLightSqrt * baseColor;
 
             //float fogFrac = pow(max(0.0, min(1.0, (position.w / depth - 0.2) / 0.8)), 5.0);
             //gl_FragColor.xyz = gl_FragColor.xyz * (1.0 - fogFrac) + vec3(0.8, 0.8, 0.8) * (fogFrac);
@@ -232,6 +247,7 @@ void main(void)
         if (depthtest)
             gl_FragColor.xyz *= maxLight;
     }
+
    // gl_FragColor = vec4(vec3((1.0 - gl_FragCoord.z) * 500.0), 1.0);
 //    float diff = 1.0f - abs(dot(normal, normalize(inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, -1))));
 //    float elight = max(0, diff - edgeCutoff) / (1.0 - edgeCutoff);

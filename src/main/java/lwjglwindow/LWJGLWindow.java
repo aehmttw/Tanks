@@ -644,9 +644,14 @@ public class LWJGLWindow extends BaseWindow
 
 		buf.flip();
 
-//		glUniform1i(this.lightsCountFlag, lights.size());
-//		glUniform1f(this.scaleFlag, (float) scale);
-//		glUniform1i(this.lightsFlag,2);
+		currentShaderGroup.shaderBase.lightsCount.set(lights.size());
+
+		int p = 1;
+		while (p < lights.size() * 4)
+			p *= 2;
+
+		currentShaderGroup.shaderBase.lightsTexSize.set(p);
+		currentShaderGroup.shaderBase.scale.set((float) scale);
 
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE2);
@@ -656,7 +661,7 @@ public class LWJGLWindow extends BaseWindow
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lights.size() * 4, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 		glActiveTexture(GL_TEXTURE0);
 	}
 
@@ -1142,7 +1147,7 @@ public class LWJGLWindow extends BaseWindow
 		glEnable(GL_TEXTURE_2D);
 
 		if (!drawingShadow)
-			this.currentShaderGroup.texture.set(true);
+			this.currentShaderGroup.shaderBase.texture.set(true);
 
 		GL20.glActiveTexture(GL13.GL_TEXTURE0);
 	}
@@ -1153,7 +1158,7 @@ public class LWJGLWindow extends BaseWindow
 		glDisable(GL_TEXTURE_2D);
 
 		if (!drawingShadow)
-			this.currentShaderGroup.texture.set(false);
+			this.currentShaderGroup.shaderBase.texture.set(false);
 
 		glEnable(GL_TEXTURE_2D);
 		GL20.glActiveTexture(GL13.GL_TEXTURE1);

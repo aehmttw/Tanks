@@ -13,8 +13,6 @@ public class ShaderGroup
     public HashSet<Attribute> attributes = new HashSet<>();
     public BaseWindow window;
 
-    public Uniform1b texture;
-
     public String name;
     protected int random = (int) (Math.random() * 100);
 

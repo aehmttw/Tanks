@@ -152,6 +152,8 @@ public class Game
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
 
+	public static boolean fancyLights = false;
+
 	public static boolean tankTextures = true;
 
 	public static boolean soundsEnabled = true;

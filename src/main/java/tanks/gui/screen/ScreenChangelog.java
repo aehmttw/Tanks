@@ -503,7 +503,7 @@ public class ScreenChangelog extends Screen
                                     "- Mimic tanks (when not mimicking) now seek open spaces and dodge\n" +
                                     "- Orange tanks now seek open spaces and aggressively dodge\n" +
                                     "- Purple tanks now seek open spaces, dodge, and turn turret faster\n" +
-                                    "- Salmon tanks now seek backwind on sight\n" +
+                                    "- Salmon tanks now backwind on sight\n" +
                                     "- White tanks now seek open spaces, dodge, and turn turret faster\n" +
                                     "- Yellow tanks now fire less but lay more mines\n" +
                                     "Bug fixes and other minor improvements\n"

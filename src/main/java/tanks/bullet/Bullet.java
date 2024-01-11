@@ -1223,7 +1223,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 	@Override
 	public boolean lit()
 	{
-		return false;
+		return Game.fancyLights;
 	}
 
 	@Override

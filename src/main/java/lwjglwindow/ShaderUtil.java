@@ -1,9 +1,6 @@
 package lwjglwindow;
 
-import basewindow.BaseShaderUtil;
-import basewindow.ShaderGroup;
-import basewindow.ShaderProgram;
-import basewindow.ShaderShadowMap;
+import basewindow.*;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -142,7 +139,18 @@ public class ShaderUtil extends BaseShaderUtil
                         LWJGLUniform u = (LWJGLUniform) c.newInstance();
                         u.name = f.getName();
                         u.programID = this.programID;
-                        u.bind();
+
+                        try
+                        {
+                            u.bind();
+                        }
+                        catch (Exception e)
+                        {
+                            // If you get this, it means one of your shader uniforms doesn't have a corresponding
+                            // GLSL uniform. This could happen if the uniform is unused and is thus optimized out by the GLSL compiler.
+                            throw new RuntimeException("Failed to bind uniform in " + program, e);
+                        }
+
                         f.set(program, u);
                     }
                 }
@@ -160,9 +168,23 @@ public class ShaderUtil extends BaseShaderUtil
                             u.setWindow(window);
                             f.set(program.group, u);
                         }
-                        
-                        u.instantiate(f.getName(), this.programID, this.program instanceof ShaderShadowMap);
-                        u.bind(this.program instanceof ShaderShadowMap);
+
+                        try
+                        {
+                            u.instantiate(f.getName(), this.programID, this.program instanceof ShaderShadowMap);
+
+                            if (!((f.getAnnotation(OnlyBaseUniform.class) != null && this.program instanceof ShaderShadowMap) ||
+                                (f.getAnnotation(OnlyShadowMapUniform.class) != null && this.program instanceof ShaderBase)))
+                                u.bind(this.program instanceof ShaderShadowMap);
+                        }
+                        catch (Exception e)
+                        {
+                            // If you get this, it means one of your shader uniforms in a ShaderGroup class doesn't have a corresponding
+                            // GLSL uniform. This could happen if you only use the uniform in the base or shadow map shader of the group
+                            // (in which case you can tag them with @OnlyBaseUniform or @OnlyShadowMapUniform)
+                            // or if the uniform is unused and is thus optimized out by the GLSL compiler.
+                            throw new RuntimeException("Failed to bind uniform in " + program, e);
+                        }
                     }
                 }
             }
@@ -277,6 +299,8 @@ public class ShaderUtil extends BaseShaderUtil
         public void bind()
         {
             this.flag = GL20.glGetUniformLocation(programID, name);
+            if (this.flag < 0)
+                throw new RuntimeException("Failed to bind uniform: " + name);
         }
     }
 

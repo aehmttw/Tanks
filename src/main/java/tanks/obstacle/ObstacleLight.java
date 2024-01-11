@@ -6,6 +6,7 @@ import tanks.IDrawableLightSource;
 
 public class ObstacleLight extends Obstacle implements IDrawableLightSource
 {
+	/** 7 values, first 3 are automatically set to coords, 4th is brightness, 5-7 are color*/
 	public double[] lightInfo;
 
 	public ObstacleLight(String name, double posX, double posY)
@@ -61,7 +62,9 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 		double s = this.stackHeight * Game.tile_size * 4;
 		double frac = Obstacle.draw_size / Game.tile_size * 0.75;
 		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
-		Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
+
+		if (!Game.fancyLights)
+			Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
 	}
 
 	@Override
@@ -85,13 +88,13 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 	@Override
 	public boolean lit()
 	{
-		return false;
+		return Game.fancyLights;
 	}
 
 	@Override
 	public double[] getLightInfo()
 	{
-		this.lightInfo[3] = Math.pow(this.stackHeight, 3) / 4 * Obstacle.draw_size / Game.tile_size;
+		this.lightInfo[3] = Math.pow(this.stackHeight, 2) * Obstacle.draw_size / Game.tile_size;
 		return this.lightInfo;
 	}
 }

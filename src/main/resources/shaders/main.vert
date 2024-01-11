@@ -1,4 +1,4 @@
-uniform vec3 lightVec;
+//uniform vec3 lightVec;
 
 uniform mat4 lightViewProjectionMatrix;
 uniform mat4 biasMatrix;
@@ -52,7 +52,7 @@ uniform float scale;
 #endif
 
 uniform int lightsCount;
-uniform sampler2D lights;
+uniform sampler2D lightsTexture;
 
 //uniform bool bonesEnabled;
 //uniform mat4 boneMatrices[128];

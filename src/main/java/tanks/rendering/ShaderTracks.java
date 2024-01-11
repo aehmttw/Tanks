@@ -1,11 +1,14 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
+import basewindow.OnlyBaseUniform;
 import basewindow.ShaderGroup;
 
 public class ShaderTracks extends ShaderGroup
 {
+    @OnlyBaseUniform
     public Uniform1f time;
+    @OnlyBaseUniform
     public Uniform1f maxAge;
     public Attribute1f addTime;
 

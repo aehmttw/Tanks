@@ -98,8 +98,11 @@ public class ShaderHandler
 
         this.window.setShader(this.window.shaderDefault.shaderBase);
         this.window.shaderDefault.shaderBase.shadowres.set(this.size);
-        this.window.shaderDefault.shaderBase.lightVec.set((float) this.window.lightVec[0], (float) this.window.lightVec[1], (float) this.window.lightVec[2]);
+        //this.window.shaderDefault.shaderBase.lightVec.set((float) this.window.lightVec[0], (float) this.window.lightVec[1], (float) this.window.lightVec[2]);
         this.window.shaderDefault.shaderBase.shadow.set(this.window.shadowsEnabled);
+        this.window.shaderDefault.shaderBase.width.set((float) this.window.absoluteWidth);
+        this.window.shaderDefault.shaderBase.height.set((float) this.window.absoluteHeight);
+        this.window.shaderDefault.shaderBase.depth.set((float) this.window.absoluteDepth);
 
         if (!this.initialized)
         {

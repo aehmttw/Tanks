@@ -675,6 +675,16 @@ public class Panel
 		if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
 			this.drawBar();
 
+		if (Game.enableExtensions)
+		{
+			for (int i = 0; i < Game.extensionRegistry.extensions.size(); i++)
+			{
+				Extension e = Game.extensionRegistry.extensions.get(i);
+
+				e.draw();
+			}
+		}
+
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 

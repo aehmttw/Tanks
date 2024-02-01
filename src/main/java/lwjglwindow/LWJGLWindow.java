@@ -1259,34 +1259,4 @@ public class LWJGLWindow extends BaseWindow
 	{
 		return new ShaderUtil(this, p);
 	}
-
-	@Override
-	public void setShader(ShaderBase s)
-	{
-		ShaderBase old = null;
-		if (this.currentShaderGroup != null)
-			old = this.currentShaderGroup.shaderBase;
-
-		this.currentShaderGroup = s.group;
-		this.currentShader = s;
-		s.set();
-
-		if (old != null)
-			s.copyUniformsFrom(old, ShaderBase.class);
-	}
-
-	@Override
-	public void setShader(ShaderShadowMap s)
-	{
-		ShaderShadowMap old = null;
-		if (this.currentShaderGroup != null)
-			old = this.currentShaderGroup.shaderShadowMap;
-
-		this.currentShaderGroup = s.group;
-		this.currentShader = s;
-		s.set();
-
-		if (old != null)
-			s.copyUniformsFrom(old, ShaderShadowMap.class);
-	}
 }

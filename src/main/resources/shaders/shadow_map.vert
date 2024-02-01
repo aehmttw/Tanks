@@ -7,5 +7,5 @@ void main(void)
     gl_Position = gl_ModelViewProjectionMatrix * getPos(transform);
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
-    gl_TexCoord[1] = gl_MultiTexCoord1;
+    //gl_TexCoord[1] = gl_MultiTexCoord1;
 }

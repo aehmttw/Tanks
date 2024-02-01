@@ -28,7 +28,7 @@ public class GameDrawer implements IDrawer
 				{
 					Extension e = Game.extensionRegistry.extensions.get(i);
 
-					e.draw();
+					e.drawPostMouse();
 				}
 			}
 		}

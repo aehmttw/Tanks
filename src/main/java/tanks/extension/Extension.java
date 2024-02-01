@@ -120,6 +120,12 @@ public class Extension
 
     }
 
+    // Called after every frame after the mouse cursor is drawn. Can be left blank.
+    public void drawPostMouse()
+    {
+
+    }
+
     public ArrayList<String> getFileContents(String file)
     {
         try

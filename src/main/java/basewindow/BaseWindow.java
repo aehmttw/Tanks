@@ -274,9 +274,33 @@ public abstract class BaseWindow
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 
-    public abstract void setShader(ShaderBase s);
+    public void setShader(ShaderBase s)
+    {
+        ShaderBase old = null;
+        if (this.currentShaderGroup != null)
+            old = this.currentShaderGroup.shaderBase;
 
-    public abstract void setShader(ShaderShadowMap s);
+        this.currentShaderGroup = s.group;
+        this.currentShader = s;
+        s.set();
+
+        if (old != null)
+            s.copyUniformsFrom(old, ShaderBase.class);
+    }
+
+    public void setShader(ShaderShadowMap s)
+    {
+        ShaderShadowMap old = null;
+        if (this.currentShaderGroup != null)
+            old = this.currentShaderGroup.shaderShadowMap;
+
+        this.currentShaderGroup = s.group;
+        this.currentShader = s;
+        s.set();
+
+        if (old != null)
+            s.copyUniformsFrom(old, ShaderShadowMap.class);
+    }
 
     public void setupKeyCodes()
     {

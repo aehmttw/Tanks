@@ -1,18 +1,17 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.network.event.EventMineChangeTimer;
-import tanks.network.event.EventMineRemove;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemMine;
-import tanks.obstacle.Obstacle;
+import tanks.network.event.EventMineChangeTimer;
+import tanks.network.event.EventMineRemove;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Mine extends Movable implements IAvoidObject, IDrawableLightSource
+public class Mine extends Movable implements IAvoidObject, IDrawableLightSource, IExplodable
 {
     public static double mine_size = 30;
     public static double mine_radius = Game.tile_size * 2.5;
@@ -307,5 +306,27 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource
         this.lightInfo[5] = this.outlineColorG;
         this.lightInfo[6] = this.outlineColorB;
         return this.lightInfo;
+    }
+
+    @Override
+    public void onExploded(Explosion explosion)
+    {
+        if (this.isRemote) return;
+        if (this.timer <= 10) return;
+
+        this.timer = 10;
+        Game.eventsOut.add(new EventMineChangeTimer(this));
+    }
+
+    @Override
+    public void applyExplosionKnockback(double angle, double power, Explosion explosion)
+    {
+
+    }
+
+    @Override
+    public double getSize()
+    {
+        return this.size;
     }
 }

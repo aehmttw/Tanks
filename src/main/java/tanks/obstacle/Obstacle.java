@@ -3,10 +3,12 @@ package tanks.obstacle;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
 import tanks.*;
+import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
+import tanks.tank.Explosion;
 
-public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IGameObject, IBatchRenderableObject
+public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IGameObject, IBatchRenderableObject, IExplodable
 {
 	public static final int default_max_height = 8;
 
@@ -490,5 +492,28 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public Effect getCompanionEffect()
 	{
 		return null;
+	}
+
+	@Override
+	public void onExploded(Explosion explosion)
+	{
+		if (!this.destructible) return;
+		if (Game.removeObstacles.contains(this)) return;
+
+		this.onDestroy(explosion);
+		this.playDestroyAnimation(explosion.posX, explosion.posY, explosion.radius);
+		Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY, this.name, explosion.posX, explosion.posY, explosion.radius + Game.tile_size / 2));
+	}
+
+	@Override
+	public void applyExplosionKnockback(double angle, double power, Explosion explosion)
+	{
+
+	}
+
+	@Override
+	public double getSize()
+	{
+		return 0;
 	}
 }

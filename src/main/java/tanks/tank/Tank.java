@@ -4,6 +4,7 @@ import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.minigames.Minigame;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public abstract class Tank extends Movable implements ISolidObject
+public abstract class Tank extends Movable implements ISolidObject, IExplodable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -1002,7 +1003,19 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.effects.add(e);
 		}
 
-		return this.health <= 0;
+		boolean died = this.health <= 0;
+
+		if (died && Game.currentLevel instanceof Minigame) {
+			Minigame minigame = (Minigame) Game.currentLevel;
+			Tank attacker = null;
+			if (source instanceof Tank) attacker = (Tank) source;
+			if (source instanceof Bullet) attacker = ((Bullet) source).tank;
+			if (source instanceof Explosion) attacker = ((Explosion) source).tank;
+
+			minigame.onKill(attacker, this);
+		}
+
+		return died;
 	}
 
 	public void checkHit(Tank owner, IGameObject source)
@@ -1210,6 +1223,30 @@ public abstract class Tank extends Movable implements ISolidObject
 			else
 				Drawing.drawing.fillOval(x + v, y + v1, s * dotSize, s * dotSize);
 		}
+	}
+
+	@Override
+	public void onExploded(Explosion explosion)
+	{
+		boolean kill = this.damage(explosion.damage, explosion);
+		if (!kill) Drawing.drawing.playGlobalSound("damage.ogg");
+	}
+	@Override
+	public void applyExplosionKnockback(double angle, double power, Explosion explosion)
+	{
+		this.addPolarMotion(angle, power * explosion.tankKnockback * Math.pow(Game.tile_size, 2) / Math.max(1, Math.pow(this.size, 2)));
+		this.recoilSpeed = this.getSpeed();
+		if (this.recoilSpeed > this.maxSpeed)
+		{
+			this.inControlOfMotion = false;
+			this.tookRecoil = true;
+		}
+	}
+
+	@Override
+	public double getSize()
+	{
+		return this.size;
 	}
 
 	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)

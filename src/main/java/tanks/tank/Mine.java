@@ -317,13 +317,6 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
         this.timer = 10;
         Game.eventsOut.add(new EventMineChangeTimer(this));
     }
-
-    @Override
-    public void applyExplosionKnockback(double angle, double power, Explosion explosion)
-    {
-
-    }
-
     @Override
     public double getSize()
     {

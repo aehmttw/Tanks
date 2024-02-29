@@ -506,12 +506,6 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	}
 
 	@Override
-	public void applyExplosionKnockback(double angle, double power, Explosion explosion)
-	{
-
-	}
-
-	@Override
 	public double getSize()
 	{
 		return 0;

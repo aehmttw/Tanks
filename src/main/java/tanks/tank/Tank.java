@@ -4,6 +4,8 @@ import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.gui.IFixedMenu;
+import tanks.gui.Scoreboard;
 import tanks.minigames.Minigame;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
@@ -1013,6 +1015,21 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 			if (source instanceof Explosion) attacker = ((Explosion) source).tank;
 
 			minigame.onKill(attacker, this);
+
+			for (IFixedMenu m : ModAPI.menuGroup)
+			{
+				if (!(m instanceof Scoreboard)) continue;
+				Scoreboard scoreboard = (Scoreboard) m;
+
+				if (scoreboard.objectiveType != Scoreboard.objectiveTypes.kills) continue;
+
+                if (!scoreboard.teams.isEmpty())
+                    scoreboard.addTeamScore(this.team, 1);
+                else if (this instanceof TankPlayer && !scoreboard.players.isEmpty())
+                    scoreboard.addPlayerScore(((TankPlayer) this).player, 1);
+                else if (this instanceof TankPlayerRemote && !scoreboard.players.isEmpty())
+                    scoreboard.addPlayerScore(((TankPlayerRemote) this).player, 1);
+            }
 		}
 
 		return died;
@@ -1057,7 +1074,6 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 	{
 		if ((this.invulnerable || this.invulnerabilityTimer > 0) || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
 			return 0;
-
 		return 1;
 	}
 

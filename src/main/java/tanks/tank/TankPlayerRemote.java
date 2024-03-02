@@ -499,7 +499,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     }
 
     @Override
-    public void onDestroy()
+    public void onDestroy(Tank attacker, IGameObject source)
     {
         if (Crusade.crusadeMode)
             this.player.remainingLives--;

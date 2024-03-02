@@ -477,8 +477,6 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 			{
 				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
 
-				this.onDestroy();
-
 				if (Game.effectsEnabled)
 				{
 					for (int i = 0; i < this.size * 2 * Game.effectMultiplier; i++)
@@ -910,13 +908,47 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
 	}
 
-	public void onDestroy()
+	public void onDestroy(Tank attacker, IGameObject source)
 	{
 		if (this.explodeOnDestroy && !(this.droppedFromCrate && this.age < 250))
 		{
 			Explosion e = new Explosion(this.posX, this.posY, this.mine.radius, this.mine.damage, this.mine.destroysObstacles, this);
 			e.explode();
 		}
+
+		if (Game.currentLevel instanceof Minigame)
+		{
+			((Minigame) Game.currentLevel).onKill(attacker, this);
+		}
+
+		for (IFixedMenu m : ModAPI.menuGroup)
+		{
+			if (!(m instanceof Scoreboard)) continue;
+			Scoreboard scoreboard = (Scoreboard) m;
+
+			if (scoreboard.objectiveType != Scoreboard.objectiveTypes.kills) continue;
+
+			if (!scoreboard.teams.isEmpty())
+				scoreboard.addTeamScore(this.team, 1);
+			else if (this instanceof TankPlayer && !scoreboard.players.isEmpty())
+				scoreboard.addPlayerScore(((TankPlayer) this).player, 1);
+			else if (this instanceof TankPlayerRemote && !scoreboard.players.isEmpty())
+				scoreboard.addPlayerScore(((TankPlayerRemote) this).player, 1);
+		}
+
+		if (attacker == null) return;
+
+		if (attacker instanceof TankPlayer) ((TankPlayer) attacker).player.hotbar.coins += this.coinValue;
+		else if (attacker instanceof TankPlayerRemote) ((TankPlayerRemote) attacker).player.hotbar.coins += this.coinValue;
+	}
+	private static Tank getTankFromDamageDealer(IGameObject source) {
+		Tank attacker = null;
+
+		if (source instanceof Tank) attacker = (Tank) source;
+		else if (source instanceof Bullet) attacker = ((Bullet) source).tank;
+		else if (source instanceof Explosion) attacker = ((Explosion) source).tank;
+
+		return attacker;
 	}
 
 	@Override
@@ -978,14 +1010,7 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 
-		Tank owner = null;
-
-		if (source instanceof Bullet)
-			owner = ((Bullet) source).tank;
-		else if (source instanceof Explosion)
-			owner = ((Explosion) source).tank;
-		else if (source instanceof Tank)
-			owner = (Tank) source;
+		Tank attacker = getTankFromDamageDealer(source);
 
 		if (this.health > 0)
 		{
@@ -995,7 +1020,7 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 		else
 			this.destroy = true;
 
-		this.checkHit(owner, source);
+		this.checkHit(attacker, source);
 
 		if (this.health > 6 && (int) (this.health + amount) != (int) (this.health))
 		{
@@ -1007,29 +1032,8 @@ public abstract class Tank extends Movable implements ISolidObject, IExplodable
 
 		boolean died = this.health <= 0;
 
-		if (died && Game.currentLevel instanceof Minigame) {
-			Minigame minigame = (Minigame) Game.currentLevel;
-			Tank attacker = null;
-			if (source instanceof Tank) attacker = (Tank) source;
-			if (source instanceof Bullet) attacker = ((Bullet) source).tank;
-			if (source instanceof Explosion) attacker = ((Explosion) source).tank;
-
-			minigame.onKill(attacker, this);
-
-			for (IFixedMenu m : ModAPI.menuGroup)
-			{
-				if (!(m instanceof Scoreboard)) continue;
-				Scoreboard scoreboard = (Scoreboard) m;
-
-				if (scoreboard.objectiveType != Scoreboard.objectiveTypes.kills) continue;
-
-                if (!scoreboard.teams.isEmpty())
-                    scoreboard.addTeamScore(this.team, 1);
-                else if (this instanceof TankPlayer && !scoreboard.players.isEmpty())
-                    scoreboard.addPlayerScore(((TankPlayer) this).player, 1);
-                else if (this instanceof TankPlayerRemote && !scoreboard.players.isEmpty())
-                    scoreboard.addPlayerScore(((TankPlayerRemote) this).player, 1);
-            }
+		if (died) {
+			this.onDestroy(attacker, source);
 		}
 
 		return died;

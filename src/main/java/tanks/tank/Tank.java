@@ -4,6 +4,9 @@ import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.gui.IFixedMenu;
+import tanks.gui.Scoreboard;
+import tanks.minigames.Minigame;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
@@ -22,7 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public abstract class Tank extends Movable implements ISolidObject
+public abstract class Tank extends Movable implements ISolidObject, IExplodable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -474,8 +477,6 @@ public abstract class Tank extends Movable implements ISolidObject
 			{
 				Drawing.drawing.playSound("destroy.ogg", (float) (Game.tile_size / this.size));
 
-				this.onDestroy();
-
 				if (Game.effectsEnabled)
 				{
 					for (int i = 0; i < this.size * 2 * Game.effectMultiplier; i++)
@@ -907,13 +908,47 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
 	}
 
-	public void onDestroy()
+	public void onDestroy(Tank attacker, IGameObject source)
 	{
 		if (this.explodeOnDestroy && !(this.droppedFromCrate && this.age < 250))
 		{
 			Explosion e = new Explosion(this.posX, this.posY, this.mine.radius, this.mine.damage, this.mine.destroysObstacles, this);
 			e.explode();
 		}
+
+		if (Game.currentLevel instanceof Minigame)
+		{
+			((Minigame) Game.currentLevel).onKill(attacker, this);
+		}
+
+		for (IFixedMenu m : ModAPI.menuGroup)
+		{
+			if (!(m instanceof Scoreboard)) continue;
+			Scoreboard scoreboard = (Scoreboard) m;
+
+			if (scoreboard.objectiveType != Scoreboard.objectiveTypes.kills) continue;
+
+			if (!scoreboard.teams.isEmpty())
+				scoreboard.addTeamScore(this.team, 1);
+			else if (this instanceof TankPlayer && !scoreboard.players.isEmpty())
+				scoreboard.addPlayerScore(((TankPlayer) this).player, 1);
+			else if (this instanceof TankPlayerRemote && !scoreboard.players.isEmpty())
+				scoreboard.addPlayerScore(((TankPlayerRemote) this).player, 1);
+		}
+
+		if (attacker == null) return;
+
+		if (attacker instanceof TankPlayer) ((TankPlayer) attacker).player.hotbar.coins += this.coinValue;
+		else if (attacker instanceof TankPlayerRemote) ((TankPlayerRemote) attacker).player.hotbar.coins += this.coinValue;
+	}
+	private static Tank getTankFromDamageDealer(IGameObject source) {
+		Tank attacker = null;
+
+		if (source instanceof Tank) attacker = (Tank) source;
+		else if (source instanceof Bullet) attacker = ((Bullet) source).tank;
+		else if (source instanceof Explosion) attacker = ((Explosion) source).tank;
+
+		return attacker;
 	}
 
 	@Override
@@ -975,14 +1010,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 
-		Tank owner = null;
-
-		if (source instanceof Bullet)
-			owner = ((Bullet) source).tank;
-		else if (source instanceof Explosion)
-			owner = ((Explosion) source).tank;
-		else if (source instanceof Tank)
-			owner = (Tank) source;
+		Tank attacker = getTankFromDamageDealer(source);
 
 		if (this.health > 0)
 		{
@@ -992,7 +1020,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		else
 			this.destroy = true;
 
-		this.checkHit(owner, source);
+		this.checkHit(attacker, source);
 
 		if (this.health > 6 && (int) (this.health + amount) != (int) (this.health))
 		{
@@ -1002,7 +1030,13 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.effects.add(e);
 		}
 
-		return this.health <= 0;
+		boolean died = this.health <= 0;
+
+		if (died) {
+			this.onDestroy(attacker, source);
+		}
+
+		return died;
 	}
 
 	public void checkHit(Tank owner, IGameObject source)
@@ -1044,7 +1078,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if ((this.invulnerable || this.invulnerabilityTimer > 0) || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
 			return 0;
-
 		return 1;
 	}
 
@@ -1210,6 +1243,30 @@ public abstract class Tank extends Movable implements ISolidObject
 			else
 				Drawing.drawing.fillOval(x + v, y + v1, s * dotSize, s * dotSize);
 		}
+	}
+
+	@Override
+	public void onExploded(Explosion explosion)
+	{
+		boolean kill = this.damage(explosion.damage, explosion);
+		if (!kill) Drawing.drawing.playGlobalSound("damage.ogg");
+	}
+	@Override
+	public void applyExplosionKnockback(double angle, double power, Explosion explosion)
+	{
+		this.addPolarMotion(angle, power * explosion.tankKnockback * Math.pow(Game.tile_size, 2) / Math.max(1, Math.pow(this.size, 2)));
+		this.recoilSpeed = this.getSpeed();
+		if (this.recoilSpeed > this.maxSpeed)
+		{
+			this.inControlOfMotion = false;
+			this.tookRecoil = true;
+		}
+	}
+
+	@Override
+	public double getSize()
+	{
+		return this.size;
 	}
 
 	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)

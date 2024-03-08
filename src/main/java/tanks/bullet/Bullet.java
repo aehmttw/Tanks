@@ -2,14 +2,15 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.bullet.legacy.BulletFlame;
-import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.item.ItemBullet;
-import tanks.minigames.Minigame;
-import tanks.network.event.*;
+import tanks.network.event.EventBulletAddAttributeModifier;
+import tanks.network.event.EventBulletBounce;
+import tanks.network.event.EventBulletDestroyed;
+import tanks.network.event.EventBulletUpdate;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
@@ -18,7 +19,7 @@ import java.util.HashMap;
 
 import static tanks.tank.TankProperty.Category.appearanceGlow;
 
-public class Bullet extends Movable implements IDrawableLightSource
+public class Bullet extends Movable implements IDrawableLightSource, IExplodable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -321,72 +322,8 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 			boolean kill = t.damage(this.damage * this.frameDamageMultipler, this);
 
-			if (kill)
-			{
-				if (Game.currentLevel instanceof Minigame)
-				{
-					((Minigame) Game.currentLevel).onKill(this.tank, t);
-
-					if (((Minigame) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
-					{
-						String message = ((Minigame) Game.currentLevel).generateKillMessage(t, this.tank, true);
-						ScreenPartyHost.chat.add(0, new ChatMessage(message));
-						Game.eventsOut.add(new EventChat(message));
-					}
-
-					for (IFixedMenu m : ModAPI.menuGroup)
-					{
-						if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-						{
-							if (!((Scoreboard) m).teams.isEmpty())
-								((Scoreboard) m).addTeamScore(this.tank.team, 1);
-
-							else if (this.tank instanceof TankPlayer && !((Scoreboard) m).players.isEmpty())
-								((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-							else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) m).players.isEmpty())
-								((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-						}
-					}
-				}
-
-				if (this.tank.equals(Game.playerTank))
-				{
-					if (Game.currentLevel instanceof Minigame && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
-						Game.player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
-					else
-						Game.player.hotbar.coins += t.coinValue;
-				}
-				else if (this.tank instanceof TankPlayerRemote && Crusade.crusadeMode)
-				{
-					((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
-					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
-				}
-				else if ((Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
-				{
-					if (this.tank instanceof TankPlayerRemote)
-					{
-						((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
-						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
-					}
-				}
-				else if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).playerKillCoins > 0)
-				{
-					if (this.tank instanceof TankPlayer)
-					{
-						((TankPlayer) this.tank).player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
-						Game.eventsOut.add(new EventUpdateCoins(((TankPlayer) this.tank).player));
-					}
-
-					else if (this.tank instanceof TankPlayerRemote)
-					{
-						((TankPlayerRemote) this.tank).player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
-						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
-					}
-				}
-			}
-			else if (this.playPopSound && this.damage > 0)
-				Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+            if (this.playPopSound && this.damage > 0 && !kill)
+                Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
 		}
 		else if (this.playPopSound && !this.heavy)
 			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
@@ -1079,6 +1016,30 @@ public class Bullet extends Movable implements IDrawableLightSource
 			old.setFrontAngleOffset(offset);
 			t.setBackAngleOffset(-offset);
 		}
+	}
+
+	@Override
+	public void onExploded(Explosion explosion)
+	{
+		if (this.destroy) return;
+		if (!explosion.destroysBullets) return;
+
+		this.destroy = true;
+	}
+
+	@Override
+	public void applyExplosionKnockback(double angle, double power, Explosion explosion)
+	{
+		this.addPolarMotion(angle, power * explosion.bulletKnockback * Math.pow(Bullet.bullet_size, 2) / Math.max(1, Math.pow(this.size, 2)));
+		this.collisionX = explosion.posX;
+		this.collisionY = explosion.posY;
+		this.addTrail();
+	}
+
+	@Override
+	public double getSize()
+	{
+		return this.size;
 	}
 
 	@Override

@@ -145,7 +145,7 @@ public class ScreenSavedLevels extends Screen
 			Drawing.drawing.setColor(0, 0, 0);
 			Drawing.drawing.setInterfaceFontSize(24);
 
-			if (search.inputText.length() > 0)
+			if (!search.inputText.isEmpty())
 			{
 				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No levels found");
 			}

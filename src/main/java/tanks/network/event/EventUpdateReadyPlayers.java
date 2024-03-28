@@ -24,7 +24,7 @@ public class EventUpdateReadyPlayers extends PersonalEvent
 		for (Player p: players)
 			s.append(p.clientID).append(",");
 
-		if (players.size() == 0)
+		if (players.isEmpty())
 			readyPlayers = "";
 		else
 			readyPlayers = s.substring(0, s.length() - 1);

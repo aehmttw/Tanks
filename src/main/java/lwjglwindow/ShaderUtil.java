@@ -64,7 +64,7 @@ public class ShaderUtil extends BaseShaderUtil
         int linked = glGetProgrami(this.programID, GL_LINK_STATUS);
         String programLog = glGetProgramInfoLog(this.programID);
 
-        if (programLog.trim().length() > 0)
+        if (!programLog.trim().isEmpty())
             System.err.println(programLog);
 
         if (linked == 0)

@@ -22,7 +22,7 @@ public class ScreenHostingEnded extends Screen
 
 		//synchronized(ScreenPartyHost.server.connections)
 		{
-			while (ScreenPartyHost.server.connections.size() > 0)
+			while (!ScreenPartyHost.server.connections.isEmpty())
 			{
 				for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
 				{

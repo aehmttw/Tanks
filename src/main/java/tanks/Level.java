@@ -499,7 +499,7 @@ public class Level
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null && sc == null)
 			playerCount += ScreenPartyHost.server.connections.size();
 
-		if (this.includedPlayers.size() > 0)
+		if (!this.includedPlayers.isEmpty())
 			playerCount = this.includedPlayers.size();
 		else
 		{
@@ -507,7 +507,7 @@ public class Level
 		}
 
 		int extraSpawns = 0;
-		if (playerCount > playerSpawnsX.size() && playerSpawnsX.size() > 0)
+		if (playerCount > playerSpawnsX.size() && !playerSpawnsX.isEmpty())
 		{
 			extraSpawns = playerCount / playerSpawnsX.size() - 1;
 
@@ -619,7 +619,7 @@ public class Level
 		{
 			for (int i = 0; i < playerCount; i++)
 			{
-				if (this.availablePlayerSpawns.size() == 0)
+				if (this.availablePlayerSpawns.isEmpty())
 				{
 					for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
 					{

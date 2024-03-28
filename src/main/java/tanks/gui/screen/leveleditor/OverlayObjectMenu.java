@@ -148,7 +148,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
                     , t.description);
 
-            if (t.description.equals(""))
+            if (t.description.isEmpty())
                 b.enableHover = false;
 
             this.tankButtons.add(b);
@@ -175,7 +175,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
                     , o.description);
 
-            if (o.description.equals(""))
+            if (o.description.isEmpty())
                 b.enableHover = false;
 
             this.obstacleButtons.add(b);

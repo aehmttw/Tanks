@@ -14,7 +14,7 @@ public class ScreenPlay extends Screen
 
 	Button multiplayer = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Multiplayer", () ->
 	{
-		if (!Game.player.username.equals(""))
+		if (!Game.player.username.isEmpty())
 		{
 			if (Game.game.input.hotbarToggle.isPressed())
 				Game.screen = new ScreenPlayMultiplayer();

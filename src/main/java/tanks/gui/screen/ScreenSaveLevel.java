@@ -97,7 +97,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            if (levelName.inputText.equals(""))
+            if (levelName.inputText.isEmpty())
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
         }
@@ -148,8 +148,19 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         for (Movable m: Game.movables)
             drawables[m.drawLevel].add(m);
 
-        for (Obstacle o: Game.obstacles)
-            drawables[o.drawLevel].add(o);
+        if (Game.enable3d && Game.game.window.shapeRenderer.supportsBatching)
+        {
+            for (Obstacle o : Game.obstacles)
+            {
+                if (!o.batchDraw)
+                    drawables[o.drawLevel].add(o);
+            }
+        }
+        else
+        {
+            for (Obstacle o : Game.obstacles)
+                drawables[o.drawLevel].add(o);
+        }
 
         for (Effect e: Game.effects)
             drawables[7].add(e);

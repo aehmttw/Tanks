@@ -128,7 +128,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                         file.startWriting();
                         String ls = level.levelString;
                         StringBuilder tanks = new StringBuilder("\ntanks\n");
-                        if (previous2.crusade.customTanks.size() > 0)
+                        if (!previous2.crusade.customTanks.isEmpty())
                         {
                             for (TankAIControlled t: previous2.crusade.customTanks)
                                 tanks.append(t.toString()).append("\n");
@@ -213,7 +213,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            if (levelName.inputText.equals(""))
+            if (levelName.inputText.isEmpty())
                 levelName.inputText = levelName.previousInputText;
             updateSaveButton();
         }

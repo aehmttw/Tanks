@@ -154,7 +154,7 @@ public class ObstacleTeleporter extends Obstacle
 
 			this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency);
 
-			if (t != null && teleporters.size() > 0 && this.cooldown <= 0)
+			if (t != null && !teleporters.isEmpty() && this.cooldown <= 0)
 			{
 				int i = (int) (Math.random() * teleporters.size());
 

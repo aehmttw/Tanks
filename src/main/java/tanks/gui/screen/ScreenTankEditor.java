@@ -974,7 +974,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.length() == 0)
+                        if (t.inputText.isEmpty())
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, Integer.parseInt(t.inputText));
@@ -986,7 +986,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 };
 
                 t.hoverText = formatDescription(p);
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.maxChars = 9;
                 t.allowNegatives = true;
                 t.allowLetters = false;
@@ -1001,7 +1001,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.length() == 0)
+                        if (t.inputText.isEmpty())
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, Double.parseDouble(t.inputText));
@@ -1020,7 +1020,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 };
 
                 t.hoverText = formatDescription(p);
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.allowDoubles = true;
                 t.allowNegatives = true;
                 t.allowLetters = false;
@@ -1060,7 +1060,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p);
                 t.images = emblems;
                 t.imageR = 127;
@@ -1075,7 +1075,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.length() == 0 && p.miscType() != TankProperty.MiscType.description)
+                        if (t.inputText.isEmpty() && p.miscType() != TankProperty.MiscType.description)
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, t.inputText);
@@ -1087,7 +1087,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 };
 
                 t.hoverText = formatDescription(p);
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.lowerCase = true;
                 t.allowSpaces = true;
                 t.enableSpaces = false;
@@ -1115,7 +1115,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p);
                 return t;
             }
@@ -1144,7 +1144,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p);
                 return t;
             }
@@ -1164,7 +1164,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     this.lastItemScreen = editItem;
                     this.lastItemButton = b;
                 };
-                b.enableHover = !p.desc().equals("");
+                b.enableHover = !p.desc().isEmpty();
                 b.hoverText = formatDescription(p);
                 b.image = i.icon;
                 b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
@@ -1214,7 +1214,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 else
                     b.optionText = "\u00A7127000000255none";
 
-                b.enableHover = !p.desc().equals("");
+                b.enableHover = !p.desc().isEmpty();
                 b.hoverText = formatDescription(p);
 
                 return b;
@@ -1260,7 +1260,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p);
                 t.models = models;
 
@@ -1358,7 +1358,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                         s.optionText = "";
                 }
 
-                s.enableHover = !p.desc().equals("");
+                s.enableHover = !p.desc().isEmpty();
                 s.hoverText = formatDescription(p);
 
                 return s;
@@ -1406,7 +1406,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
         TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, "Spawn weight", () -> {}, e.weight + "", "Bigger numbers relative to---other spawned tanks increase---the likelihood of this tank---being spawned");
         t.function = () ->
         {
-            if (t.inputText.length() == 0)
+            if (t.inputText.isEmpty())
                 t.inputText = e.weight + "";
             else
                 e.weight = Double.parseDouble(t.inputText);

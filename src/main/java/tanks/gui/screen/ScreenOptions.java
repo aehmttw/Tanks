@@ -124,7 +124,7 @@ public class ScreenOptions extends Screen
 		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
 			Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
 
-		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && Game.player.username.length() >= 1)
+		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && !Game.player.username.isEmpty())
 		{
 			Drawing.drawing.setColor(127, 127, 127);
 			double s = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale;
@@ -140,7 +140,7 @@ public class ScreenOptions extends Screen
 		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
 		Drawing.drawing.drawInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, Game.player.username);
 
-		if (Game.player.username.length() < 1)
+		if (Game.player.username.isEmpty())
 		{
 			Drawing.drawing.setColor(127, 127, 127);
 			Drawing.drawing.displayInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, "Pick a username...");

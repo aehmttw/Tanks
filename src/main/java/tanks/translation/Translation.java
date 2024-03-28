@@ -29,7 +29,7 @@ public class Translation
 
             String[] parts = s.split("=");
 
-            if (parts.length > 1 && !parts[1].equals(""))
+            if (parts.length > 1 && !parts[1].isEmpty())
                 this.translations.put(parts[0], parts[1]);
         }
     }

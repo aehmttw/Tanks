@@ -2988,7 +2988,7 @@ public class TankAIControlled extends Tank
 							int end = s.indexOf("]");
 							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
 							HashSet<String> hashSet;
-							if (csv[0].equals(""))
+							if (csv[0].isEmpty())
 								hashSet = new HashSet<>();
 							else
 								hashSet = new HashSet<>(Arrays.asList(csv));

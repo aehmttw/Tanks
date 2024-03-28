@@ -4,8 +4,8 @@ import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
-import tanks.network.event.INetworkEvent;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
 import tanks.obstacle.Obstacle;
@@ -64,7 +64,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public double selectX2;
 	public double selectY2;
 
-	public enum SymmetryType {none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90};
+	public enum SymmetryType {none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90}
 	public SymmetryType symmetryType = SymmetryType.none;
 	public double symmetryX1;
 	public double symmetryY1;
@@ -195,14 +195,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	);
 
 	Button copy = new Button(0, -1000, 70, 70, "", () ->
-	{
-		this.copy(false);
-	}, "Copy (%s)", Game.game.input.editorCopy.getInputs());
+            this.copy(false), "Copy (%s)", Game.game.input.editorCopy.getInputs());
 
 	Button cut = new Button(0, -1000, 70, 70, "", () ->
-	{
-		this.copy(true);
-	}, "Cut (%s)", Game.game.input.editorCut.getInputs());
+            this.copy(true), "Cut (%s)", Game.game.input.editorCut.getInputs());
 
 	Button paste = new Button(0, -1000, 70, 70, "", () ->
 	{
@@ -863,7 +859,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				InputPoint p = Game.game.window.touchPoints.get(i);
 
-				if (p.tag.equals("") || p.tag.equals("levelbuilder"))
+				if (p.tag.isEmpty() || p.tag.equals("levelbuilder"))
 				{
 					input = true;
 
@@ -1834,22 +1830,22 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		for (int i = 0; i < unmarked.size(); i++)
-		{
-			level.append((int)(unmarked.get(i).posX / Game.tile_size)).append("-").append((int)(unmarked.get(i).posY / Game.tile_size));
-			level.append("-").append(unmarked.get(i).name);
+        for (Obstacle obstacle : unmarked)
+        {
+            level.append((int) (obstacle.posX / Game.tile_size)).append("-").append((int) (obstacle.posY / Game.tile_size));
+            level.append("-").append(obstacle.name);
 
-			Obstacle u = unmarked.get(i);
-			if (u instanceof ObstacleUnknown && ((ObstacleUnknown) u).metadata != null)
-				level.append("-").append(((ObstacleUnknown) u).metadata);
-			else if (u.enableStacking)
-				level.append("-").append(u.stackHeight);
-			else if (u.enableGroupID)
-				level.append("-").append(u.groupID);
+            Obstacle u = obstacle;
+            if (u instanceof ObstacleUnknown && ((ObstacleUnknown) u).metadata != null)
+                level.append("-").append(((ObstacleUnknown) u).metadata);
+            else if (u.enableStacking)
+                level.append("-").append(u.stackHeight);
+            else if (u.enableGroupID)
+                level.append("-").append(u.groupID);
 
 
-			level.append(",");
-		}
+            level.append(",");
+        }
 
 		if (level.charAt(level.length() - 1) == ',')
 		{
@@ -1885,15 +1881,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		level.append("|");
 
-		for (int i = 0; i < teams.size(); i++)
-		{
-			Team t = teams.get(i);
-			level.append(t.name).append("-").append(t.friendlyFire);
-			if (t.enableColor)
-				level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
+        for (Team t : teams)
+        {
+            level.append(t.name).append("-").append(t.friendlyFire);
+            if (t.enableColor)
+                level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
 
-			level.append(",");
-		}
+            level.append(",");
+        }
 
 		level = new StringBuilder(level.substring(0, level.length() - 1));
 
@@ -2385,7 +2380,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			playerCount += ScreenPartyHost.server.connections.size();
 
 		ArrayList<Integer> availablePlayerSpawns = new ArrayList<>();
-		ArrayList<INetworkEvent> playerEvents = new ArrayList<>();
 
 		for (int i = 0; i < playerCount; i++)
 		{
@@ -2421,12 +2415,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		for (INetworkEvent e: playerEvents)
-		{
-			e.execute();
-		}
-
-		for (int i = 0; i < Game.movables.size(); i++)
+        for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable m = Game.movables.get(i);
 
@@ -3062,7 +3051,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (Effect o: Game.effects)
 		{
-			if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
+			if (o != null && ((IDrawableLightSource) o).lit())
 			{
 				double[] l = ((IDrawableLightSource) o).getLightInfo();
 				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);

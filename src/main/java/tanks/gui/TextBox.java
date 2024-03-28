@@ -295,7 +295,7 @@ public class TextBox implements IDrawable, ITrigger
 				double mx = Drawing.drawing.getInterfacePointerX(p.x);
 				double my = Drawing.drawing.getInterfacePointerY(p.y);
 
-				boolean handled = checkMouse(mx, my, true, p.valid && p.tag.equals(""), p);
+				boolean handled = checkMouse(mx, my, true, p.valid && p.tag.isEmpty(), p);
 
 				if (handled)
 					p.tag = "textbox";

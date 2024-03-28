@@ -180,7 +180,7 @@ public class EventAddTextBox extends PersonalEvent
                     Game.screen = new ScreenOnlineWaiting();
             };
 
-            if (hover.equals(""))
+            if (hover.isEmpty())
                 t.enableHover = false;
 
             t.enableSpaces = this.enableSpaces;

@@ -1758,7 +1758,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			{
 				InputPoint p = Game.game.window.touchPoints.get(i);
 
-				if (p.tag.equals(""))
+				if (p.tag.isEmpty())
 				{
 					double mx = Drawing.drawing.toGameCoordsX(Drawing.drawing.getInterfacePointerX(p.x));
 					double my = Drawing.drawing.getInterfacePointerY(p.y);
@@ -2238,7 +2238,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (!title.equals(""))
+			if (!title.isEmpty())
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 127);
@@ -2249,7 +2249,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, title);
 			}
 
-			if (!subtitle.equals(""))
+			if (!subtitle.isEmpty())
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 127);

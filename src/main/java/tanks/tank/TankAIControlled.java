@@ -3,18 +3,18 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 
-import static tanks.tank.TankProperty.Category.*;
-
 import java.lang.reflect.Field;
 import java.util.*;
+
+import static tanks.tank.TankProperty.Category.*;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -22,6 +22,7 @@ import java.util.*;
 public class TankAIControlled extends Tank
 {
 	public static boolean useTankReferences = true;
+	protected static TankAIControlled compare;
 
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
 	protected enum RotationPhase {clockwise, counter_clockwise, aiming}
@@ -507,6 +508,11 @@ public class TankAIControlled extends Tank
 		{
 			fleeDirections[i] = Math.PI / 4 + (i * 2 / fleeDirections.length) * Math.PI / 2 + i * Math.PI / fleeDirections.length;
 		}
+	}
+
+	protected TankAIControlled()
+	{
+		this(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
 	}
 
 	public void updateVisibility()
@@ -2885,6 +2891,9 @@ public class TankAIControlled extends Tank
 	@Override
 	public String toString()
 	{
+		if (compare == null)
+			compare = new TankAIControlled();
+
 		if (fromRegistry)
 			return "<" + this.name + ">";
 
@@ -2895,26 +2904,30 @@ public class TankAIControlled extends Tank
 			for (Field f : this.getClass().getFields())
 			{
 				TankProperty a = f.getAnnotation(TankProperty.class);
-				if (a != null)
-				{
-					s.append(a.id());
-					s.append("=");
+				if (a == null)
+					continue;
 
-					if (f.get(this) != null)
+				Object obj = f.get(this);
+				if (Objects.equals(obj, f.get(compare)))
+					continue;
+
+				s.append(a.id());
+				s.append("=");
+
+				if (f.get(this) != null)
+				{
+					if (a.miscType() == TankProperty.MiscType.description)
 					{
-						if (a.miscType() == TankProperty.MiscType.description)
-						{
-							String desc = (String) f.get(this);
-							s.append("<").append(desc.length()).append(">").append(desc);
-						}
-						else
-							s.append(f.get(this));
+						String desc = (String) f.get(this);
+						s.append("<").append(desc.length()).append(">").append(desc);
 					}
 					else
-						s.append("*");
-
-					s.append(";");
+						s.append(f.get(this));
 				}
+				else
+					s.append("*");
+
+				s.append(";");
 			}
 
 			return s.append("]").toString();
@@ -3106,7 +3119,6 @@ public class TankAIControlled extends Tank
 	{
 		TankAIControlled t = new TankAIControlled(name, x, y, this.size, this.colorR, this.colorG, this.colorB, angle, this.shootAIType);
 		this.cloneProperties(t);
-
 		return t;
 	}
 
@@ -3143,12 +3155,9 @@ public class TankAIControlled extends Tank
 					{
 						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
 
-						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
+						ArrayList<SpawnedTankEntry> al = new ArrayList<>();
 						for (SpawnedTankEntry o: a1)
-						{
-							al.add(new SpawnedTankEntry(o.tank, o.weight, true));
-						}
-
+                            al.add(new SpawnedTankEntry(o.tank, o.weight, true));
 						f.set(t, al);
 					}
 					else if (a.miscType() == TankProperty.MiscType.music)

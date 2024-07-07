@@ -605,17 +605,17 @@ public class TankAIControlled extends Tank
 				}
 			}
 
-			if (!ScreenGame.finished)
-			{
-				this.updateTurretAI();
-				this.updateMineAI();
-			}
-
 			if (this.enableSuicide)
 				this.updateSuicideAI();
 
 			if (this.chargeUp)
 				this.checkCharge();
+
+			if (!ScreenGame.finished)
+			{
+				this.updateTurretAI();
+				this.updateMineAI();
+			}
 
 			if (this.transformMimic)
 				this.updateMimic();
@@ -1341,7 +1341,7 @@ public class TankAIControlled extends Tank
 						&& b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox
 						&& (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3))
 				{
-					int c = enableMovement ? 1 : 0;
+					int c = 1;
 					for (int o = 0; o <= c; o++)
 					{
 						int mul = o == 1 ? 3 : 1;

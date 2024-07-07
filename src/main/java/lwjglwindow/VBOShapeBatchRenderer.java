@@ -492,7 +492,10 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
             for (ShaderGroup.Attribute a: attributeBuffers.keySet())
             {
-                this.attributeBuffers.get(a).put(0);
+                for (int j = 0; j < a.count; j++)
+                {
+                    this.attributeBuffers.get(a).put(i * a.count + j, 0);
+                }
             }
         }
 

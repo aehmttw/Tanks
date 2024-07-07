@@ -727,7 +727,12 @@ public class LWJGLWindow extends BaseWindow
 		if (this.drawingShadow)
 			glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
 		else
-			glFrustum(-absoluteWidth / (absoluteDepth * 2.0) * m, absoluteWidth / (absoluteDepth * 2.0) * m, absoluteHeight / (absoluteDepth * 2.0) * m, -absoluteHeight / (absoluteDepth * 2.0) * m, m, absoluteDepth * m * clipDistMultiplier);
+			glFrustum(
+					-absoluteWidth / (absoluteDepth * 2.0) * m,
+					absoluteWidth / (absoluteDepth * 2.0) * m,
+					absoluteHeight / (absoluteDepth * 2.0) * m,
+					-absoluteHeight / (absoluteDepth * 2.0) * m,
+					m, absoluteDepth * m * clipDistMultiplier);
 
 		this.angled = false;
 

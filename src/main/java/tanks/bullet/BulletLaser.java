@@ -44,6 +44,7 @@ public class BulletLaser extends BulletInstant
 	public void collidedWithObject(Movable m)
 	{
 		this.playPopSound = true;
+		System.out.println(m);
 		super.collidedWithObject(m);
 		this.playPopSound = false;
 	}

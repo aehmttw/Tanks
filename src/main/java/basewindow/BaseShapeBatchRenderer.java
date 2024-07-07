@@ -76,6 +76,8 @@ public abstract class BaseShapeBatchRenderer
 
     public abstract void draw();
 
+    public abstract void endModification();
+
     public abstract void free();
 
     public double rotateX(double px, double py, double posX, double rotation)

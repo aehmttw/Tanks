@@ -351,6 +351,7 @@ public class TerrainRenderer
 
             boolean in = Game.followingCam || asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
 
+            s.renderer.endModification();
             if (in)
             {
                 if (s.shader instanceof RendererShader)

@@ -309,7 +309,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                         t.sizeX *= 3;
                         ((TabGeneral) this).description = t;
                     }
-                    else if (!(p.miscType() == TankProperty.MiscType.music && Game.framework == Game.Framework.libgdx))
+                    else
                         this.uiElements.add(screen.getUIElementForField(f, p, screen.tank));
                 }
             }

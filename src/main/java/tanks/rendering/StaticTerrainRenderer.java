@@ -1,6 +1,9 @@
 package tanks.rendering;
 
-import basewindow.*;
+import basewindow.BaseShapeBatchRenderer;
+import basewindow.BaseWindow;
+import basewindow.IBatchRenderableObject;
+import basewindow.ShaderGroup;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ILevelPreviewScreen;
@@ -78,7 +81,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
     public static class RegionRenderer
     {
-        public BaseStaticBatchRenderer renderer;
+        public BaseShapeBatchRenderer renderer;
         public ShaderGroup shader;
 
         public RegionRenderer(ShaderGroup s)
@@ -114,7 +117,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
         return s;
     }
 
-    public void addVertexCoord(BaseStaticBatchRenderer s, ShaderGroup shader, float f)
+    public void addVertexCoord(BaseShapeBatchRenderer s, ShaderGroup shader, float f)
     {
         if (shader instanceof IObstacleVertexCoordShader)
             s.setAttribute(((IObstacleVertexCoordShader) shader).getVertexCoord(), f);
@@ -126,7 +129,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
             Game.exitToCrash(new RuntimeException("Renderer was freed"));
 
         RegionRenderer r = this.getRenderer(o, out);
-        BaseStaticBatchRenderer s = r.renderer;
+        BaseShapeBatchRenderer s = r.renderer;
         ShaderGroup shader = r.shader;
 
         float x0 = (float) x;

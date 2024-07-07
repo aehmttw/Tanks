@@ -2,7 +2,6 @@ package tanks;
 
 import tanks.minigames.Arcade;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StatusEffect

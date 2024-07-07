@@ -1,9 +1,11 @@
 package tanks.bullet;
 
-import tanks.*;
-import tanks.network.event.EventBulletUpdate;
-import tanks.network.event.EventTankControllerAddVelocity;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.IDrawableWithGlow;
+import tanks.Movable;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 

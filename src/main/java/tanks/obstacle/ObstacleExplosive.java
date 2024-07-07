@@ -4,9 +4,9 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
 import tanks.bullet.Bullet;
-import tanks.network.event.EventObstacleDestroy;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
+import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderExplosive;
 import tanks.tank.*;
 

@@ -1,6 +1,9 @@
 package tanks.bullet;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.IDrawableWithGlow;
+import tanks.Movable;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.Tank;
 

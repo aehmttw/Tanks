@@ -30,7 +30,7 @@ public class BulletFlame2 extends BulletGas
         this.glowSize = 3;
         this.maxLiveBullets = 0;
         this.cooldown = 0;
-        this.effect = Bullet.BulletEffect.none;
+        this.effect = BulletEffect.none;
         this.bounces = 0;
         this.damage = 0.1;
         this.lowersBushes = false;

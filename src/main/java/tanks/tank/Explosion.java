@@ -2,8 +2,6 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.minigames.Arcade;
-import tanks.network.event.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
@@ -12,6 +10,7 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
 import tanks.minigames.Minigame;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 
 public class Explosion extends Movable

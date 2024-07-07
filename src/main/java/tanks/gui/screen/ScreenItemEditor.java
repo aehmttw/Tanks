@@ -5,8 +5,8 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.*;
-import tanks.hotbar.item.Item;
 import tanks.gui.property.*;
+import tanks.hotbar.item.Item;
 import tanks.translation.Translation;
 
 import java.io.IOException;

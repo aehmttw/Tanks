@@ -4,23 +4,24 @@ import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.network.event.EventTankAddAttributeModifier;
-import tanks.network.event.EventTankUpdate;
-import tanks.network.event.EventTankUpdateHealth;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
+import tanks.network.event.EventTankAddAttributeModifier;
+import tanks.network.event.EventTankUpdate;
+import tanks.network.event.EventTankUpdateHealth;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
-import static tanks.tank.TankProperty.Category.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import static tanks.tank.TankProperty.Category.*;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -733,6 +734,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				}
 			}
 		}
+
 
 		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], 255, luminance);
 

@@ -2,7 +2,6 @@ package tanks.gui;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.ModAPI;
 import tanks.Panel;
 
 import java.util.ArrayList;

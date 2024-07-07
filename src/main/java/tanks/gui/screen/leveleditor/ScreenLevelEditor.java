@@ -3,10 +3,11 @@ package tanks.gui.screen.leveleditor;
 import basewindow.BaseFile;
 import basewindow.InputPoint;
 import tanks.*;
-import tanks.network.event.INetworkEvent;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
 import tanks.hotbar.item.Item;
+import tanks.network.event.INetworkEvent;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
 import tanks.tank.Tank;
@@ -882,6 +883,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				panDown = false;
 		}
 
+		double px = Drawing.drawing.toInterfaceCoordsX(panCurrentX);
+		double py = Drawing.drawing.toInterfaceCoordsY(panCurrentY);
+
 		if (!zoomDown && panDown)
 		{
 			if (prevPanDown && !prevZoomDown)
@@ -890,25 +894,41 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				offsetY += panCurrentY - panY;
 			}
 
-			panX = Drawing.drawing.getMouseX();
-			panY = Drawing.drawing.getMouseY();
+			panX = Drawing.drawing.toGameCoordsX(px);
+			panY = Drawing.drawing.toGameCoordsY(py);
 		}
 
 
 		if (zoomDown)
 		{
-			double x = (panCurrentX + zoomCurrentX) / 2;
-			double y = (panCurrentY + zoomCurrentY) / 2;
-			double d = Math.sqrt(Math.pow(Drawing.drawing.toInterfaceCoordsX(panCurrentX) - Drawing.drawing.toInterfaceCoordsX(zoomCurrentX), 2)
-					+ Math.pow(Drawing.drawing.toInterfaceCoordsY(panCurrentY) - Drawing.drawing.toInterfaceCoordsY(zoomCurrentY), 2));
+			double zx = Drawing.drawing.toInterfaceCoordsX(zoomCurrentX);
+			double zy = Drawing.drawing.toInterfaceCoordsY(zoomCurrentY);
+			double d = Math.sqrt(Math.pow(px - zx, 2) + Math.pow(py - zy, 2));
 
 			if (prevZoomDown)
 			{
+				zoom *= d / zoomDist;
+				zoom = Math.max(0.75, Math.min(Math.max(2 / (Drawing.drawing.unzoomedScale / Drawing.drawing.interfaceScale), 1), zoom));
+				Drawing.drawing.scale = getScale();
+
+				panCurrentX = Drawing.drawing.toGameCoordsX(px);
+				panCurrentY = Drawing.drawing.toGameCoordsY(py);
+				zoomCurrentX = Drawing.drawing.toGameCoordsX(zx);
+				zoomCurrentY = Drawing.drawing.toGameCoordsY(zy);
+
+				double x = (panCurrentX + zoomCurrentX) / 2;
+				double y = (panCurrentY + zoomCurrentY) / 2;
 				offsetX += x - panX;
 				offsetY += y - panY;
-				zoom *= d / zoomDist;
 			}
 
+			panCurrentX = Drawing.drawing.toGameCoordsX(px);
+			panCurrentY = Drawing.drawing.toGameCoordsY(py);
+			zoomCurrentX = Drawing.drawing.toGameCoordsX(zx);
+			zoomCurrentY = Drawing.drawing.toGameCoordsY(zy);
+
+			double x = (panCurrentX + zoomCurrentX) / 2;
+			double y = (panCurrentY + zoomCurrentY) / 2;
 			panX = x;
 			panY = y;
 			zoomDist = d;
@@ -2149,6 +2169,22 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				Drawing.drawing.displayInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - 0, "Pinch to zoom");
 				recenter.draw();
+//				if (panDown)
+//				{
+//					Drawing.drawing.setColor(255, 255, 255);
+//					Drawing.drawing.setInterfaceFontSize(24);
+//					Drawing.drawing.fillOval(this.panCurrentX, this.panCurrentY, 40, 40);
+//					Drawing.drawing.drawInterfaceText(100, 100, (int) this.panCurrentX + " " + (int) this.panCurrentY);
+//				}
+//				Drawing.drawing.setColor(255, 0, 255);
+//				Drawing.drawing.fillOval(this.panX, this.panY, 40, 40);
+//				Drawing.drawing.drawInterfaceText(100, 200, (int) this.panX + " " + (int) this.panY);
+//				if (zoomDown)
+//				{
+//					Drawing.drawing.setColor(0, 255, 255);
+//					Drawing.drawing.fillOval(this.zoomCurrentX, this.zoomCurrentY, 40, 40);
+//					Drawing.drawing.drawInterfaceText(100, 300, (int) this.zoomCurrentX + " " + (int) this.zoomCurrentY);
+//				}
 			}
 			else
 			{

@@ -1,9 +1,9 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.network.event.EventBulletUpdateTarget;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.EventBulletUpdateTarget;
 import tanks.tank.Ray;
 import tanks.tank.Tank;
 

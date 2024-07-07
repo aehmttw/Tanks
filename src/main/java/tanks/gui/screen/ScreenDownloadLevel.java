@@ -4,7 +4,6 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 

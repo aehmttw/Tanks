@@ -3,18 +3,18 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 
-import static tanks.tank.TankProperty.Category.*;
-
 import java.lang.reflect.Field;
 import java.util.*;
+
+import static tanks.tank.TankProperty.Category.*;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -605,17 +605,17 @@ public class TankAIControlled extends Tank
 				}
 			}
 
-			if (this.enableSuicide)
-				this.updateSuicideAI();
-
-			if (this.chargeUp)
-				this.checkCharge();
-
 			if (!ScreenGame.finished)
 			{
 				this.updateTurretAI();
 				this.updateMineAI();
 			}
+
+			if (this.enableSuicide)
+				this.updateSuicideAI();
+
+			if (this.chargeUp)
+				this.checkCharge();
 
 			if (this.transformMimic)
 				this.updateMimic();
@@ -1341,7 +1341,7 @@ public class TankAIControlled extends Tank
 						&& b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox
 						&& (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3))
 				{
-					int c = 1;
+					int c = enableMovement ? 1 : 0;
 					for (int o = 0; o <= c; o++)
 					{
 						int mul = o == 1 ? 3 : 1;

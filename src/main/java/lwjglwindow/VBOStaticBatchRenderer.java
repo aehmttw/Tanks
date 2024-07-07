@@ -1,23 +1,20 @@
 package lwjglwindow;
 
-import basewindow.BaseStaticBatchRenderer;
+import basewindow.BaseShapeBatchRenderer;
+import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
 import org.lwjgl.BufferUtils;
-import tanks.rendering.StaticTerrainRenderer;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 
-import static basewindow.BaseShaderUtil.FLOAT;
-import static basewindow.BaseShaderUtil.INT;
 import static org.lwjgl.opengl.GL11.*;
 
-public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
+public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 {
     public LWJGLWindow window;
 
@@ -55,9 +52,12 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
     public boolean depthMask = false;
 
     protected HashMap<ShaderGroup.Attribute, float[]> floatAttributes = new HashMap<>();
+    public String texture;
 
     public VBOStaticBatchRenderer(LWJGLWindow window, ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
     {
+        super(false);
+
         this.window = window;
         this.vertexCount = vertices;
 
@@ -114,6 +114,18 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         this.currentNormalZ = z;
     }
 
+    @Override
+    public void delete(IBatchRenderableObject o)
+    {
+
+    }
+
+    @Override
+    public void beginAdd(IBatchRenderableObject o)
+    {
+
+    }
+
     public void addPoint(float x, float y, float z)
     {
         if (staged)
@@ -156,7 +168,6 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         }
     }
 
-    @Override
     public void setNormal(float[] n)
     {
         this.setNormal(n[0], n[1], n[2]);
@@ -176,6 +187,12 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
     public void setGlow(float g)
     {
         this.colorGlow = g;
+    }
+
+    @Override
+    public void addAttribute(ShaderGroup.Attribute attribute)
+    {
+
     }
 
     public void stage()
@@ -260,6 +277,12 @@ public class VBOStaticBatchRenderer extends BaseStaticBatchRenderer
         window.enableDepthmask();
 
         glPopMatrix();
+    }
+
+    @Override
+    public void endModification()
+    {
+
     }
 
     @Override

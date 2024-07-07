@@ -1,14 +1,12 @@
 package basewindow;
 
-import lwjglwindow.LWJGLWindow;
-
 public class ShaderShadowMapBones extends ShaderShadowMap implements IBaseShader, IBoneShader
 {
     public Uniform1b bonesEnabled;
     public UniformMatrix4 boneMatrices;
     public Attribute bones;
 
-    public ShaderShadowMapBones(LWJGLWindow window)
+    public ShaderShadowMapBones(BaseWindow window)
     {
         super(window);
     }

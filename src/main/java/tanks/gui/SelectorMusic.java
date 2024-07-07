@@ -56,6 +56,8 @@ public class SelectorMusic extends Selector
     @Override
     public void setScreen()
     {
+        this.resetLayout();
+
         if (this.screen != null)
         {
             this.screen.tank.musicTracks.clear();

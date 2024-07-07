@@ -1,9 +1,9 @@
 package tanks;
 
 import tanks.AttributeModifier.Operation;
-import tanks.network.event.EventCreateFreezeEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.event.EventCreateFreezeEffect;
 
 public class AreaEffectFreeze extends AreaEffect
 {

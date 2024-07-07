@@ -2,7 +2,6 @@ package tanks.gui.screen;
 
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 

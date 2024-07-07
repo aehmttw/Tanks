@@ -3,9 +3,9 @@ package tanks.network.event.online;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Level;
-import tanks.network.event.PersonalEvent;
 import tanks.gui.screen.ScreenDownloadLevel;
 import tanks.network.NetworkUtils;
+import tanks.network.event.PersonalEvent;
 
 public class EventSendLevelToDownload extends PersonalEvent
 {

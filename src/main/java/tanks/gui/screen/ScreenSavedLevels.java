@@ -1,7 +1,6 @@
 package tanks.gui.screen;
 
 import tanks.Drawing;
-import tanks.Function;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
@@ -9,9 +8,6 @@ import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBox;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class ScreenSavedLevels extends Screen
 {

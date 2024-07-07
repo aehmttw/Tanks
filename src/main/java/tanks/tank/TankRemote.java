@@ -116,6 +116,8 @@ public class TankRemote extends Tank
 		this.fromRegistry = t.fromRegistry;
 		this.trackSpacing = t.trackSpacing;
 		this.enableTracks = t.enableTracks;
+		this.multipleTurrets = t.multipleTurrets;
+		this.bullet.shotCount = t.bullet.shotCount;
 	}
 
 	@Override

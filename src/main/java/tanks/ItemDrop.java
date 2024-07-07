@@ -6,7 +6,6 @@ import tanks.network.event.EventItemDropDestroy;
 import tanks.network.event.EventItemPickup;
 import tanks.tank.IServerPlayerTank;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

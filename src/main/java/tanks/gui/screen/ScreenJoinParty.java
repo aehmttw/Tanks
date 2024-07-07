@@ -5,10 +5,10 @@ import com.codedisaster.steamworks.SteamNetworking;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.network.event.EventSendClientDetails;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
+import tanks.network.event.EventSendClientDetails;
 
 import java.util.UUID;
 

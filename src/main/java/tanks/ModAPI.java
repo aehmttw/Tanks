@@ -1,8 +1,8 @@
 package tanks;
 
 import tanks.gui.IFixedMenu;
+import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
-import tanks.network.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;

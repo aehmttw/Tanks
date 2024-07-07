@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.Team;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;

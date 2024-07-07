@@ -2,10 +2,10 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.minigames.Minigame;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SearchBox;
+import tanks.minigames.Minigame;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

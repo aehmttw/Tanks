@@ -3,11 +3,11 @@ package tanks.network.event.online;
 import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.network.event.PersonalEvent;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
 import tanks.gui.screen.ScreenOnlineWaiting;
 import tanks.network.NetworkUtils;
+import tanks.network.event.PersonalEvent;
 
 public class EventAddButton extends PersonalEvent
 {

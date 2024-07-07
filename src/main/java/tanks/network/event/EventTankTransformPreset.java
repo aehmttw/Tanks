@@ -1,15 +1,11 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
-import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankRemote;
-
-import java.util.HashSet;
 
 public class EventTankTransformPreset extends PersonalEvent
 {
@@ -83,8 +79,6 @@ public class EventTankTransformPreset extends PersonalEvent
             t.trackSpacing = target.trackSpacing;
 
             ((TankAIControlled) ((TankRemote) t).tank).spawnedTankEntries = target.spawnedTankEntries;
-            ((TankAIControlled) ((TankRemote) t).tank).healthTransformTank = target.healthTransformTank;
-            ((TankAIControlled) ((TankRemote) t).tank).sightTransformTank = target.sightTransformTank;
 
             ((TankRemote) t).invisible = false;
             ((TankRemote) t).vanished = false;

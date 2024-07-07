@@ -1,7 +1,6 @@
 package tanks.bullet;
 
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.event.EventLayMine;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Explosion;
 import tanks.tank.Mine;

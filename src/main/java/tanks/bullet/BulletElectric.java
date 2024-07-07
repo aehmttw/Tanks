@@ -2,12 +2,12 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.AttributeModifier.Operation;
-import tanks.network.event.EventBulletDestroyed;
-import tanks.network.event.EventBulletStunEffect;
-import tanks.network.event.EventBulletInstantWaypoint;
-import tanks.network.event.EventShootBullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.EventBulletDestroyed;
+import tanks.network.event.EventBulletInstantWaypoint;
+import tanks.network.event.EventBulletStunEffect;
+import tanks.network.event.EventShootBullet;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 

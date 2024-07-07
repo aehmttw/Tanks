@@ -1,8 +1,6 @@
 package tanks.hotbar.item;
 
 import tanks.*;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.property.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;

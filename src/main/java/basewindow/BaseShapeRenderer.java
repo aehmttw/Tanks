@@ -11,8 +11,6 @@ public abstract class BaseShapeRenderer
     public static final byte hide_all_faces = 63;
     public static final byte hide_draw_on_top = 64;
 
-    public boolean supportsBatching = false;
-
     public abstract void fillOval(double x, double y, double sX, double sY);
 
     public abstract void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest);

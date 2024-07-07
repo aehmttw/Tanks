@@ -1,7 +1,5 @@
 package basewindow;
 
-import static basewindow.BaseShaderUtil.FLOAT;
-
 public class ShaderBones extends ShaderBase implements IBaseShader, IBoneShader
 {
     public Uniform1b bonesEnabled;

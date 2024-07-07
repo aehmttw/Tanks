@@ -2,11 +2,9 @@ package tanks.gui.screen;
 
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
 import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
 import tanks.tank.TankAIControlled;
-import tanks.translation.Translation;
 
 import java.util.ArrayList;
 

@@ -2,7 +2,6 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.event.PersonalEvent;
 import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
 

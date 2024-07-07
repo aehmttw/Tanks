@@ -4,7 +4,6 @@ import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.minigames.Minigame;
-import tanks.network.event.EventArcadeHit;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -345,6 +344,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			this.logo.posX = Drawing.drawing.sizeX / 2;
 			this.logo.posY = Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom;
+
+			if (Drawing.drawing.interfaceScaleZoom > 1)
+			{
+				this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
+				this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
+			}
 		}
 	}
 
@@ -392,7 +397,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		about.draw();
 
-
 		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR), Turret.calculateSecondaryColor(Game.player.colorG), Turret.calculateSecondaryColor(Game.player.colorB));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
@@ -409,10 +413,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
-//		for (int i = 0; i < Game.tracks.size(); i++)
-//		{
-//			Game.tracks.get(i).draw();
-//		}
+		for (int i = 0; i < Game.tracks.size(); i++)
+		{
+			Game.tracks.get(i).draw();
+		}
 
 		for (int i = Game.movables.size() - 1; i >= 0; i--)
 		{
@@ -436,7 +440,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	@Override
 	public void draw()
 	{
-		this.drawDefaultBackground();
+		if (Game.screen == this)
+			this.drawDefaultBackground();
 
 		this.drawWithoutBackground();
 	}

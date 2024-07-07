@@ -1,16 +1,15 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.network.ServerHandler;
-import tanks.network.event.EventPlayerChat;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
+import tanks.network.ServerHandler;
 import tanks.network.SynchronizedList;
+import tanks.network.event.EventPlayerChat;
 import tanks.tank.Tank;
-import tanks.tank.TankModels;
 import tanks.translation.Translation;
 
 import java.net.Inet4Address;

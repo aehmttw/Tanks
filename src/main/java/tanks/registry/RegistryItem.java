@@ -1,20 +1,10 @@
 package tanks.registry;
 
-import basewindow.BaseFile;
-import tanks.Game;
-import tanks.Player;
-import tanks.bullet.*;
 import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemEmpty;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class RegistryItem
 {

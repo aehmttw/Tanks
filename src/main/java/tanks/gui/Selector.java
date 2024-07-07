@@ -377,8 +377,8 @@ public class Selector implements IDrawable, ITrigger
     public void resetLayout()
     {
         Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
-        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
-        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
     }
 
     @Override

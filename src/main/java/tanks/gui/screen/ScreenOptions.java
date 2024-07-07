@@ -128,13 +128,13 @@ public class ScreenOptions extends Screen
 		{
 			Drawing.drawing.setColor(127, 127, 127);
 			double s = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale;
-			Drawing.drawing.fillInterfaceRect(personalize.posX, personalize.posY + personalize.sizeY * 0.1, s, 40);
 			double z = this.objHeight / 40;
+			Drawing.drawing.fillInterfaceRect(personalize.posX, personalize.posY + personalize.sizeY * 0.1, s, z * 40);
 			Drawing.drawing.fillInterfaceOval(personalize.posX - (s) / 2, personalize.posY + personalize.sizeY * 0.1, z * 40, z * 40);
 			Drawing.drawing.fillInterfaceOval(personalize.posX + (s) / 2, personalize.posY + personalize.sizeY * 0.1, z * 40, z * 40);
 		}
 
-		preview.drawForInterface(personalize.posX - personalize.sizeX / 2 + personalize.sizeY * 0.7, personalize.posY, 1);
+		preview.drawForInterface(personalize.posX - personalize.sizeX / 2 + personalize.sizeY * 0.7, personalize.posY, objHeight / 40);
 
 		Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
 		Drawing.drawing.drawInterfaceText(personalize.posX + 2, personalize.posY + personalize.sizeY * 0.1 + 2, Game.player.username);
@@ -480,12 +480,7 @@ public class ScreenOptions extends Screen
 			f.stopReading();
 
 			if (Game.framework == Game.Framework.libgdx)
-			{
-				Game.angledView = false;
 				Panel.showMouseTarget = false;
-				Game.vsync = true;
-				Game.previewCrusades = false;
-			}
 
 			if (!Game.soundsEnabled)
 				Game.soundVolume = 0;

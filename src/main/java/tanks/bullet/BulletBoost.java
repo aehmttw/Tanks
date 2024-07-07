@@ -1,6 +1,9 @@
 package tanks.bullet;
 
-import tanks.*;
+import tanks.AttributeModifier;
+import tanks.Drawing;
+import tanks.Effect;
+import tanks.Game;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 

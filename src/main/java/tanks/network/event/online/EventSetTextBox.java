@@ -1,8 +1,8 @@
 package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
-import tanks.network.event.PersonalEvent;
 import tanks.network.NetworkUtils;
+import tanks.network.event.PersonalEvent;
 import tanksonline.TanksOnlineServerHandler;
 
 public class EventSetTextBox extends PersonalEvent implements IOnlineServerEvent

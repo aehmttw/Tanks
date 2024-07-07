@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
-import basewindow.*;
+import basewindow.InputCodes;
+import basewindow.Model;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;

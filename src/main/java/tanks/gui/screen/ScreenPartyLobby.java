@@ -2,15 +2,14 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.network.event.EventChat;
 import tanks.gui.Button;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
 import tanks.network.SynchronizedList;
+import tanks.network.event.EventChat;
 import tanks.tank.Tank;
-import tanks.tank.TankModels;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;

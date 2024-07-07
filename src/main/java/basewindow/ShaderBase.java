@@ -38,6 +38,8 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1i lightsTexSize;
     public Uniform1i lightsTexture;
 
+    public Uniform1i tex;
+
 //    public Uniform1b useNormal;
 
     public BaseWindow window;
@@ -58,6 +60,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     @Override
     public void initializeUniforms()
     {
+        this.tex.set(0);
         this.depthTexture.set(1);
         this.lightsTexture.set(2);
     }

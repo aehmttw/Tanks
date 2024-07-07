@@ -1,12 +1,15 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
-import tanks.network.event.EventShareCrusade;
+import tanks.Crusade;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.TextBox;
 import tanks.hotbar.item.Item;
+import tanks.network.event.EventShareCrusade;
 
 import java.io.IOException;
 import java.util.ArrayList;

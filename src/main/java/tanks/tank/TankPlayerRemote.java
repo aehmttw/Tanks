@@ -2,7 +2,6 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.network.event.*;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
@@ -12,6 +11,7 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemEmpty;
 import tanks.hotbar.item.ItemMine;
+import tanks.network.event.*;
 
 public class TankPlayerRemote extends Tank implements IServerPlayerTank
 {

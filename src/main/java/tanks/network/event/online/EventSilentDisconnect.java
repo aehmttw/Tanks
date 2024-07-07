@@ -2,10 +2,10 @@ package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.event.PersonalEvent;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.ScreenPlayMultiplayer;
 import tanks.network.Client;
+import tanks.network.event.PersonalEvent;
 
 public class EventSilentDisconnect extends PersonalEvent
 {

@@ -14,7 +14,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     public ImmediateModeShapeRenderer(LWJGLWindow window)
     {
         this.window = window;
-        this.supportsBatching = true;
     }
     
     public void fillOval(double x, double y, double sX, double sY)

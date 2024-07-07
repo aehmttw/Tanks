@@ -94,12 +94,12 @@ public class ScreenOptionsGraphics extends Screen
         else
             antialiasing.setText(antialiasingText, ScreenOptions.onText);
 
-        if (Game.framework == Game.Framework.libgdx)
-        {
-            altPerspective.enabled = false;
-            shadows.enabled = false;
-            maxFPS.enabled = false;
-        }
+//        if (Game.framework == Game.Framework.libgdx)
+//        {
+//            altPerspective.enabled = false;
+//            shadows.enabled = false;
+//            maxFPS.enabled = false;
+//        }
 
         if (!Game.game.window.antialiasingSupported)
         {
@@ -107,8 +107,8 @@ public class ScreenOptionsGraphics extends Screen
             antialiasing.enabled = false;
         }
 
-        if (Game.framework == Game.Framework.libgdx)
-            Game.shadowsEnabled = false;
+//        if (Game.framework == Game.Framework.libgdx)
+//            Game.shadowsEnabled = false;
 
         if (!Game.shadowsEnabled)
             shadows.setText("Shadows: ", ScreenOptions.offText);

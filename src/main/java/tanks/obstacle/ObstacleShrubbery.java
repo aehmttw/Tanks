@@ -2,13 +2,12 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.bullet.legacy.BulletAir;
 import tanks.bullet.BulletInstant;
 import tanks.gui.screen.ICrusadePreviewScreen;
-import tanks.network.event.EventObstacleShrubberyBurn;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.IOverlayScreen;
 import tanks.gui.screen.ScreenGame;
+import tanks.network.event.EventObstacleShrubberyBurn;
 import tanks.rendering.ShaderShrubbery;
 import tanks.tank.Tank;
 
@@ -60,7 +59,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.height = Math.min(this.height + Panel.frameFrequency, 255);
 
-		if (ScreenGame.finishedQuick && !Game.game.window.shapeRenderer.supportsBatching)
+		if (ScreenGame.finishedQuick)
 		{
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}
@@ -78,7 +77,7 @@ public class ObstacleShrubbery extends Obstacle
 	{
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-		if (!Game.game.window.shapeRenderer.supportsBatching || !Game.enable3d)
+		if (!Game.enable3d)
 		{
 			if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
 			{

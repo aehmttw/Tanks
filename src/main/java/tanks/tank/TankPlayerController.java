@@ -5,12 +5,12 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.BulletElectric;
-import tanks.network.event.EventTankControllerUpdateC;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemRemote;
+import tanks.network.event.EventTankControllerUpdateC;
 
 import java.util.UUID;
 

@@ -5,9 +5,8 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
 import tanks.bullet.Bullet;
-import tanks.network.event.EventBulletUpdate;
-import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 

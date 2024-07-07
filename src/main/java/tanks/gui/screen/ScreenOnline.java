@@ -5,7 +5,6 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 

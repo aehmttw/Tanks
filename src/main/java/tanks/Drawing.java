@@ -1,13 +1,16 @@
 package tanks;
 
-import basewindow.*;
-import tanks.obstacle.Obstacle;
-import tanks.rendering.TerrainRenderer;
-import tanks.rendering.TrackRenderer;
-import tanks.network.event.EventPlaySound;
+import basewindow.IBatchRenderableObject;
+import basewindow.IModel;
+import basewindow.Model;
+import basewindow.ModelPart;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
+import tanks.network.event.EventPlaySound;
+import tanks.obstacle.Obstacle;
+import tanks.rendering.TerrainRenderer;
+import tanks.rendering.TrackRenderer;
 import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 

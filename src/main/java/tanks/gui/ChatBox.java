@@ -5,9 +5,7 @@ import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.input.InputBinding;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenInfo;
 
 public class ChatBox extends TextBox

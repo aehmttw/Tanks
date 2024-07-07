@@ -1,6 +1,7 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
+import basewindow.OnlyBaseUniform;
 
 public class ShaderGroundOutOfBounds extends RendererShader implements IObstacleSizeShader
 {

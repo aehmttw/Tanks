@@ -1,25 +1,22 @@
 package tanks;
 
-import basewindow.BaseFile;
 import basewindow.InputCodes;
-import basewindow.transformation.Translation;
-import tanks.gui.ScreenIntro;
-import tanks.network.NetworkEventMap;
-import tanks.network.event.INetworkEvent;
-import tanks.network.event.IStackableEvent;
-import tanks.rendering.*;
-import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.online.IOnlineServerEvent;
 import tanks.extension.Extension;
 import tanks.gui.IFixedMenu;
+import tanks.gui.ScreenIntro;
 import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.network.Client;
-import tanks.network.ClientHandler;
 import tanks.network.MessageReader;
+import tanks.network.NetworkEventMap;
+import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.INetworkEvent;
+import tanks.network.event.IStackableEvent;
+import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
+import tanks.rendering.*;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -675,23 +672,13 @@ public class Panel
 		if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
 			this.drawBar();
 
-		if (Game.enableExtensions)
-		{
-			for (int i = 0; i < Game.extensionRegistry.extensions.size(); i++)
-			{
-				Extension e = Game.extensionRegistry.extensions.get(i);
-
-				e.draw();
-			}
-		}
-
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
 		Drawing.drawing.setColor(255, 255, 255);
 
-		Drawing.drawing.setColor(0, 0, 0, 0);
-		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
+//		Drawing.drawing.setColor(0, 0, 0, 0);
+//		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
 
 		Game.screen.drawPostMouse();
 
@@ -733,7 +720,7 @@ public class Panel
 				{
 					double v = 1;
 					if (Game.screen instanceof ScreenIntro)
-						v = Obstacle.draw_size;
+						v = Obstacle.draw_size / Game.tile_size;
 
 					if (v > 0.05)
 					{

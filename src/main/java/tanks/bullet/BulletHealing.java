@@ -2,8 +2,8 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.AttributeModifier.Operation;
-import tanks.network.event.EventTankUpdateHealth;
 import tanks.hotbar.item.ItemBullet;
+import tanks.network.event.EventTankUpdateHealth;
 import tanks.tank.Tank;
 
 public class BulletHealing extends BulletInstant

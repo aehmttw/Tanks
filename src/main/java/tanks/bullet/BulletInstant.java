@@ -3,11 +3,11 @@ package tanks.bullet;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.screen.ScreenGame;
+import tanks.hotbar.item.ItemBullet;
 import tanks.network.event.EventBulletDestroyed;
 import tanks.network.event.EventBulletInstantWaypoint;
 import tanks.network.event.EventShootBullet;
-import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;

@@ -2,8 +2,6 @@ package tanks.gui.screen;
 
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.ChatMessage;
-import tanks.hotbar.item.Item;
 
 public class ScreenPartyResumeCrusade extends Screen
 {

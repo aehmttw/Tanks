@@ -1130,6 +1130,18 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
+	public float[] getTransformedMouse()
+	{
+		return new float[0];
+	}
+
+	@Override
+	public float[] getTransformedMouse(double x, double y)
+	{
+		return new float[0];
+	}
+
+	@Override
 	public ModelPart createModelPart()
 	{
 		return new ImmediateModeModelPart(this);
@@ -1254,7 +1266,7 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public BaseStaticBatchRenderer createStaticBatchRenderer(ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
+	public BaseShapeBatchRenderer createStaticBatchRenderer(ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
 	{
 		return new VBOStaticBatchRenderer(this, shader, color, texture, normal, vertices);
 	}

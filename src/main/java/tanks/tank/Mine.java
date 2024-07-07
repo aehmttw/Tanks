@@ -1,13 +1,12 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.network.event.EventMineChangeTimer;
-import tanks.network.event.EventMineRemove;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemMine;
-import tanks.obstacle.Obstacle;
+import tanks.network.event.EventMineChangeTimer;
+import tanks.network.event.EventMineRemove;
 
 import java.util.ArrayList;
 import java.util.HashMap;

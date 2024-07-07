@@ -5,17 +5,17 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletElectric;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenTitle;
-import tanks.network.event.EventLayMine;
-import tanks.network.event.EventShootBullet;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenTitle;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.*;
+import tanks.network.event.EventLayMine;
+import tanks.network.event.EventShootBullet;
 
 /**
  * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
@@ -294,8 +294,19 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 						if (!p.tag.equals("") && !p.tag.equals("aim") && !p.tag.equals("shoot"))
 							continue;
 
-						double px = Drawing.drawing.getInterfacePointerX(p.x);
-						double py = Drawing.drawing.getInterfacePointerY(p.y);
+						if (Game.screen instanceof ScreenGame)
+						{
+							Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
+							Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
+						}
+						float[] tp = Game.game.window.getTransformedMouse(p.x, p.y);
+						if (Game.screen instanceof ScreenGame)
+						{
+							Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
+							Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
+						}
+						double px = Drawing.drawing.getInterfacePointerX(tp[0]);
+						double py = Drawing.drawing.getInterfacePointerY(tp[1]);
 
 						if (!Game.followingCam)
 						{

@@ -7,10 +7,12 @@ import tanks.Panel;
 import tanks.gui.Firework;
 import tanks.minigames.Arcade;
 import tanks.network.event.EventArcadeBonuses;
-import tanks.tank.Tank;
 import tanks.translation.Translation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 {
@@ -441,7 +443,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
 
         posX = posX * (1 - heightFrac) + this.centerX * heightFrac;
-        posY = posY * (1 - heightFrac) + (this.objYSpace * 2) * heightFrac;
+        posY = posY * (1 - heightFrac) + (this.objYSpace * (2 / Drawing.drawing.interfaceScaleZoom)) * heightFrac;
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
         String s = Translation.translate("Score: %d", score);

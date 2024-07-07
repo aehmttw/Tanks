@@ -2,11 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.gui.ButtonList;
-import tanks.gui.screen.ScreenGame;
 import tanks.minigames.Arcade;
-
-import java.util.ArrayList;
 
 public class EventArcadeRampage extends PersonalEvent
 {

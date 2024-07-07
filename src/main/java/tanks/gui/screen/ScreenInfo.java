@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
-import tanks.tank.TankPlayer;
 
 public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDarkScreen
 {
@@ -60,6 +58,9 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 700 * this.objWidth / 350, 400 * this.objHeight / 40);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 680 * this.objWidth / 350, 380 * this.objHeight / 40);
 
+        double boxWidth = 660 * this.objWidth / 350;
+        double boxHeight = 240 * this.objHeight / 40;
+
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 2.5, this.title);
@@ -67,14 +68,20 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(255, 255, 255);
 
-        int diff = 300;
+        double width = 0;
+        double height = Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, "hello") / Drawing.drawing.interfaceScale - this.objYSpace / 2;
+        for (int i = 0; i < text.length; i++)
+        {
+            width = Math.max(Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, this.text[i]) / Drawing.drawing.interfaceScale, width);
+            height += this.objYSpace / 2;
+        }
 
-        if (Drawing.drawing.interfaceScaleZoom > 1)
-            diff = 390;
+        double scale = Math.min(1, Math.min(boxWidth / width, boxHeight / height));
 
         for (int i = 0; i < text.length; i++)
         {
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - diff, Drawing.drawing.interfaceSizeY / 2 + (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i], false);
+            Drawing.drawing.setInterfaceFontSize(this.textSize * scale);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - width / 2 * scale, Drawing.drawing.interfaceSizeY / 2 + scale * (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i], false);
         }
 
         back.draw();

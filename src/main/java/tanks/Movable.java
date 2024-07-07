@@ -1,15 +1,12 @@
 package tanks;
 
 import tanks.bullet.Bullet;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.EventStatusEffectBegin;
 import tanks.network.event.EventStatusEffectDeteriorate;
 import tanks.network.event.EventStatusEffectEnd;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Mine;
 import tanks.tank.NameTag;
 import tanks.tank.Tank;
 

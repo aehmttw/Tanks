@@ -5,6 +5,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawable;
 import tanks.gui.screen.ScreenGame;
+import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;
 import tanks.tank.TankPlayer;
 
@@ -66,7 +67,7 @@ public class Joystick implements IDrawable
             this.activeInput = -1;
         }
 
-        if (!(Game.playerTank == null || Game.playerTank.destroy || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused)))
+        if (!(Game.playerTank == null || (Game.playerTank.destroy && !(Game.currentLevel instanceof Arcade)) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused)))
         {
             for (int i : Game.game.window.touchPoints.keySet())
             {

@@ -1,7 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
+import tanks.Crusade;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
 import tanks.translation.Translation;
@@ -100,7 +103,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             Game.screen = new ScreenCrusades();
     });
 
-    Button showRecordButton = new Button(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i", () ->
+    Button showRecordButton = new Button(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i", () ->
     {
         ScreenCrusadeStats s = new ScreenCrusadeStats(crusade, this);
         Game.screen = s;
@@ -215,8 +218,8 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
         if (Game.previewCrusades)
         {
             Drawing.drawing.setColor(0, 0, 0, 127);
-            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7, this.objYSpace * 9);
-            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.interfaceSizeX * 0.7 - 20, this.objYSpace * 9 - 20);
+            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * 0.7, this.objYSpace * 9);
+            Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * 0.7 - 20, this.objYSpace * 9 - 20);
 
             Drawing.drawing.setColor(255, 255, 255);
         }
@@ -233,7 +236,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             Drawing.drawing.setInterfaceFontSize(this.textSize * 0.75);
 
             if (Game.previewCrusades)
-                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.interfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * 4,  true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * 4,  true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
             else
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 4, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
 
@@ -291,5 +294,14 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
                 pos += this.objYSpace * 0.4;
             }
         }
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.objWidth = 350 * Drawing.drawing.interfaceScaleZoom;
+        this.objHeight = 40 * Drawing.drawing.interfaceScaleZoom;
+        this.objXSpace = 380 * Drawing.drawing.interfaceScaleZoom;
+        this.objYSpace = 60 * Drawing.drawing.interfaceScaleZoom;
     }
 }

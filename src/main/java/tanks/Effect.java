@@ -2,10 +2,10 @@ package tanks;
 
 import basewindow.IBatchRenderableObject;
 import tanks.bullet.Bullet;
-import tanks.rendering.TrackRenderer;
-import tanks.minigames.Arcade;
 import tanks.gui.screen.ScreenGame;
+import tanks.minigames.Arcade;
 import tanks.obstacle.Obstacle;
+import tanks.rendering.TrackRenderer;
 import tanks.tank.Turret;
 
 public class Effect extends Movable implements IDrawableWithGlow, IDrawableLightSource, IBatchRenderableObject

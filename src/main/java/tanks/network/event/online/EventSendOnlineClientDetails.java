@@ -2,9 +2,9 @@ package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.network.NetworkUtils;
 import tanks.network.event.EventKick;
 import tanks.network.event.PersonalEvent;
-import tanks.network.NetworkUtils;
 import tanksonline.AccessCode;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServerHandler;

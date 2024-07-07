@@ -1,8 +1,8 @@
 package tanks.hotbar.item;
 
 import tanks.*;
+import tanks.gui.property.UIPropertyDouble;
 import tanks.network.event.EventTankUpdateHealth;
-import tanks.gui.property.*;
 import tanks.tank.Tank;
 
 public class ItemShield extends Item

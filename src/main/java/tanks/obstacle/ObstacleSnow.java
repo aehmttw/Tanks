@@ -2,11 +2,10 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.network.event.EventObstacleSnowMelt;
 import tanks.gui.screen.*;
+import tanks.network.event.EventObstacleSnowMelt;
 import tanks.rendering.ShaderSnow;
 import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
 
 public class ObstacleSnow extends Obstacle
 {
@@ -119,7 +118,7 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw()
     {
-        if (!Game.game.window.shapeRenderer.supportsBatching || !Game.enable3d)
+        if (!Game.enable3d)
         {
             if (Game.screen instanceof ScreenGame && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient || !((ScreenGame) Game.screen).paused))
                 this.visualDepth = Math.min(this.visualDepth + Panel.frameFrequency / 255, 1);

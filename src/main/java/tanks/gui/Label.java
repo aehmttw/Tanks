@@ -1,6 +1,7 @@
 package tanks.gui;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.IDrawable;
 import tanks.translation.Translation;
 
 public class Label implements IDrawable

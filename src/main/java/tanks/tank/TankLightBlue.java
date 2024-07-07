@@ -2,7 +2,6 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletAir2;
 import tanks.bullet.legacy.BulletAir;
 
 /**

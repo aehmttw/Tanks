@@ -7,6 +7,7 @@ public class InputPoint
 
     public double x;
     public double y;
+
     public String tag = "";
     public boolean valid = true;
 

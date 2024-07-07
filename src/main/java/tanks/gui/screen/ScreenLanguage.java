@@ -1,13 +1,10 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
 
 public class ScreenLanguage extends Screen
 {

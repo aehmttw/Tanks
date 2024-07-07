@@ -1,18 +1,17 @@
 package tanks.hotbar;
 
 import tanks.*;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.minigames.Arcade;
-import tanks.network.Server;
-import tanks.network.ServerHandler;
-import tanks.network.event.EventSetItem;
-import tanks.network.event.EventSetItemBarSlot;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemEmpty;
+import tanks.minigames.Arcade;
+import tanks.network.ServerHandler;
+import tanks.network.event.EventSetItem;
+import tanks.network.event.EventSetItemBarSlot;
 
 public class ItemBar
 {

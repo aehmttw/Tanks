@@ -5,8 +5,6 @@ import basewindow.InputPoint;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
-import tanks.network.ConnectedPlayer;
-import tanks.network.event.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -18,6 +16,8 @@ import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemRemote;
 import tanks.minigames.Minigame;
 import tanks.network.Client;
+import tanks.network.ConnectedPlayer;
+import tanks.network.event.*;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -1921,7 +1921,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Game.game.window.clipMultiplier = 100;
 		Game.game.window.clipDistMultiplier = 1;
 
-		if (Game.angledView && Game.framework == Game.Framework.lwjgl)
+		if (Game.angledView)
 		{
 			if (!Game.game.window.drawingShadow)
 			{
@@ -1932,7 +1932,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			this.slantRotation.pitch = this.slant * -Math.PI / 16;
-			//this.slantTranslation.y = -this.slant * 0.05;
+			this.slantTranslation.y = -this.slant * 0.05;
 
 			if (!Game.followingCam)
 			{
@@ -2041,7 +2041,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 
 		long t1a = System.nanoTime();
-		if (Game.enable3d && /*(Obstacle.draw_size <= 0 || Obstacle.draw_size >= Game.tile_size) && */Game.game.window.shapeRenderer.supportsBatching)
+		if (Game.enable3d)
 		{
 			for (int i = 0; i < drawables.length; i++)
 			{
@@ -2069,13 +2069,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			drawables[c.drawLevel].add(c);
 		}
 
-		if (Game.game.window.touchscreen)
-		{
-			drawables[9].add(TankPlayer.controlStick);
-
-			if (TankPlayer.shootStickEnabled && !TankPlayer.shootStickHidden)
-				drawables[9].add(TankPlayer.shootStick);
-		}
 		long t2 = System.nanoTime();
 
 		for (int i = 0; i < this.drawables.length; i++)
@@ -2173,19 +2166,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 		}
 
-		if (Game.game.window.touchscreen && TankPlayer.shootStickEnabled)
-		{
-			double size = TankPlayer.mineButton.sizeX * Obstacle.draw_size / Game.tile_size;
-			Drawing.drawing.setColor(255, 127, 0, 64);
-			Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size, size);
-
-			Drawing.drawing.setColor(255, 255, 0, 64);
-			Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size * 0.8, size * 0.8);
-
-			//Drawing.drawing.setColor(255, 255, 255, 64);
-			//Drawing.drawing.drawInterfaceImage("/mine.png", TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, TankPlayer.mineButton.sizeX, TankPlayer.mineButton.sizeY);
-		}
-
 		if (!(paused && screenshotMode) && Game.player.hotbar.enabledItemBar)
 		{
 			Game.player.hotbar.itemBar.drawOverlay();
@@ -2194,10 +2174,26 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (!this.showDefaultMouse)
 			Panel.panel.drawMouseTarget(true);
 
-		if (Game.framework == Game.Framework.lwjgl)
+		Game.game.window.transformations.clear();
+		Game.game.window.loadPerspective();
+
+		if (Game.game.window.touchscreen)
 		{
-			Game.game.window.transformations.clear();
-			Game.game.window.loadPerspective();
+			TankPlayer.controlStick.draw();
+
+			if (TankPlayer.shootStickEnabled && !TankPlayer.shootStickHidden)
+				TankPlayer.shootStick.draw();
+
+			if (TankPlayer.shootStickEnabled)
+			{
+				double size = TankPlayer.mineButton.sizeX * Obstacle.draw_size / Game.tile_size;
+				Drawing.drawing.setColor(255, 127, 0, 64);
+				Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size, size);
+
+				Drawing.drawing.setColor(255, 255, 0, 64);
+				Drawing.drawing.fillInterfaceOval(TankPlayer.mineButton.posX, TankPlayer.mineButton.posY, size * 0.8, size * 0.8);
+			}
+
 		}
 
 		if (npcShopScreen)

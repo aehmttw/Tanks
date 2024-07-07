@@ -1,8 +1,6 @@
 package tanks.extension;
 
 import tanks.Game;
-import tanks.ModAPI;
-import tanks.minigames.Minigame;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -116,12 +114,6 @@ public class Extension
 
     // Called after every frame. Draw UI elements, etc. here. Can be left blank.
     public void draw()
-    {
-
-    }
-
-    // Called after every frame after the mouse cursor is drawn. Can be left blank.
-    public void drawPostMouse()
     {
 
     }

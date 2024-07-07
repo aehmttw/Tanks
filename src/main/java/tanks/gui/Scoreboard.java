@@ -1,6 +1,9 @@
 package tanks.gui;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Player;
+import tanks.Team;
 import tanks.network.event.EventAddScoreboard;
 import tanks.network.event.EventChangeScoreboardAttribute;
 import tanks.network.event.EventScoreboardUpdateScore;

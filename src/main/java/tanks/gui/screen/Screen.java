@@ -1,7 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.IBatchRenderableObject;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
+import tanks.Panel;
 import tanks.gui.ScreenIntro;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;
@@ -143,11 +146,6 @@ public abstract class Screen implements IBatchRenderableObject
 		}
 
 		this.lastObsSize = Obstacle.draw_size;
-	}
-
-	public double getFlashCol(double col, int i, int j)
-	{
-		return col * (1 - Game.tilesFlash[i][j]) + Game.tilesFlash[i][j] * 255;
 	}
 
 	public double getOffsetX()

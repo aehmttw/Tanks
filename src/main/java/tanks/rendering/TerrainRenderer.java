@@ -47,6 +47,9 @@ public class TerrainRenderer
 
             this.outsideShader = Game.game.shaderOutOfBounds;
             this.introShader = Game.game.shaderIntro;
+
+            Game.game.shaderInstances.put(this.outsideShader.getClass(), this.outsideShader);
+            Game.game.shaderInstances.put(this.introShader.getClass(), this.introShader);
         }
         catch (Exception e)
         {
@@ -112,7 +115,9 @@ public class TerrainRenderer
         Class<? extends ShaderGroup> sg = ShaderGroup.class;
 
         if (Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit)
+        {
             sg = ShaderGroundIntro.class;
+        }
 
         if (o instanceof Obstacle)
             sg = ((Obstacle) o).renderer;
@@ -124,6 +129,9 @@ public class TerrainRenderer
             s = renderersByObj.get(o);
             renderers = this.getRenderers(sg);
         }
+        else if (!(Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit))
+            sg = ShaderGroundOutOfBounds.class;
+
 
         if (s == null)
         {
@@ -429,7 +437,7 @@ public class TerrainRenderer
         if (Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit)
         {
             this.introShader.set();
-            this.introShader.obstacleSizeFrac.set((float) Obstacle.draw_size);
+            this.introShader.setSize((float) (Obstacle.draw_size / Game.tile_size));
             this.introShader.d3.set(Game.enable3d);
 
             for (int x = xStart; x <= xEnd; x++)
@@ -449,7 +457,7 @@ public class TerrainRenderer
             this.outsideShader.set();
 
             float size = (float) (Obstacle.draw_size / Game.tile_size);
-            if (!(Game.screen instanceof ScreenGame))
+            if (!(Game.screen instanceof ScreenGame || Game.screen instanceof ScreenExit))
                 size = 0;
 
             this.outsideShader.setSize(size);

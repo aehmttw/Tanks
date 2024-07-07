@@ -2,7 +2,6 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
 import tanks.gui.InputSelector;
 
 public class ScreenControlsHotbar extends Screen

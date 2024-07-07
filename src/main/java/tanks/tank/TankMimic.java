@@ -1,7 +1,6 @@
 package tanks.tank;
 
-import basewindow.Model;
-import tanks.*;
+import tanks.Game;
 
 /**
  * A tank which mimics the closest tank it sees

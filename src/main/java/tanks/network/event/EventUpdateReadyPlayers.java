@@ -7,7 +7,6 @@ import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class EventUpdateReadyPlayers extends PersonalEvent
 {

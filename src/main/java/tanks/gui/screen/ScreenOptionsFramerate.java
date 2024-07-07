@@ -89,7 +89,9 @@ public class ScreenOptionsFramerate extends Screen
     public void update()
     {
         vsync.update();
-        unlimited.update();
+
+        if (Game.framework != Game.Framework.libgdx)
+            unlimited.update();
 
         if (Game.vsync)
         {
@@ -118,7 +120,16 @@ public class ScreenOptionsFramerate extends Screen
     {
         this.drawDefaultBackground();
 
-        unlimited.draw();
+        if (Game.framework != Game.Framework.libgdx)
+            unlimited.draw();
+        else
+        {
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.drawInterfaceText(unlimited.posX, unlimited.posY - this.objYSpace / 4, "Framerate is capped to your");
+            Drawing.drawing.drawInterfaceText(unlimited.posX, unlimited.posY + this.objYSpace / 4, "display's refresh rate on mobile");
+
+        }
 
         if (Game.maxFPS > 0 && !Game.vsync)
             maxFPS.draw();

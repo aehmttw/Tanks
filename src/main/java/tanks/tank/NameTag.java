@@ -3,7 +3,6 @@ package tanks.tank;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawable;
-import tanks.Movable;
 
 public class NameTag implements IDrawable
 {

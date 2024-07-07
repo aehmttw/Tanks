@@ -1,13 +1,14 @@
 package tanks;
 
-import tanks.gui.screen.*;
+import tanks.gui.screen.ILevelPreviewScreen;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
-import tanks.obstacle.Obstacle;
 import tanks.network.event.*;
+import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -788,6 +789,6 @@ public class Level
 
 	public static boolean isDark()
 	{
-		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || (Game.framework != Game.Framework.libgdx && currentLightIntensity <= 0.5);
+		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || currentLightIntensity <= 0.5;
 	}
 }

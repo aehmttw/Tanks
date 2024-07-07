@@ -1,12 +1,10 @@
 package tanks.gui;
 
-import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.ScreenInfo;
 
 public class TextBoxSlider extends TextBox
 {

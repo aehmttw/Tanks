@@ -1,12 +1,13 @@
 package tanks;
+
 import basewindow.BaseFile;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
-import tanks.network.event.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
+import tanks.hotbar.item.ItemBullet;
+import tanks.hotbar.item.ItemMine;
+import tanks.network.event.*;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;

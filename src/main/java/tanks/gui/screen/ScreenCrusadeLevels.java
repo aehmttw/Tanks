@@ -1,6 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.transformation.*;
+import basewindow.transformation.RotationAboutPoint;
+import basewindow.transformation.ScaleAboutPoint;
+import basewindow.transformation.Transformation;
+import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;
@@ -260,7 +263,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
                 Game.movables = l.movables;
                 Game.obstacles = l.obstacles;
 
-                l.renderer.offX = Drawing.drawing.interfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size;
+                l.renderer.offX = Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size;
                 l.renderer.offY = Game.tile_size * -(i - rem);
                 l.renderer.draw();
 
@@ -272,7 +275,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
                         drawables[m.nameTag.drawLevel].add(m.nameTag);
                 }
 
-                if (Game.enable3d && Game.game.window.shapeRenderer.supportsBatching)
+                if (Game.enable3d)
                 {
                     for (int n = 0; n < drawables.length; n++)
                     {
@@ -293,7 +296,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
                     }
                 }
 
-                translation.x = (Drawing.drawing.interfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size) / Game.game.window.absoluteWidth * Drawing.drawing.interfaceScale;
+                translation.x = (Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size) / Game.game.window.absoluteWidth * Drawing.drawing.interfaceScale;
                 translation.y = Game.tile_size * -(i - rem) / Game.game.window.absoluteHeight * Drawing.drawing.scale;
                 translation.applyAsShadow = true;
                 Game.game.window.addMatrix();

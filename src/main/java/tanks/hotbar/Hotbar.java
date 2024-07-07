@@ -5,8 +5,6 @@ import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.hotbar.item.ItemMine;
-import tanks.minigames.Arcade;
-import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
@@ -73,12 +71,14 @@ public class Hotbar
 	{
 		if (Game.game.window.touchscreen)
 		{
+			int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 12);
+
 			Drawing.drawing.setColor(255, 255, 255, 64);
 
 			if (!this.persistent)
-				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 12, 64, 16);
+				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, y, 64, 16);
 			else
-				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 12, 64, -16);
+				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, y, 64, -16);
 		}
 
 		if (this.enabledItemBar)

@@ -4,7 +4,6 @@ import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.IAvoidObject;
-import tanks.tank.Mine;
 import tanks.tank.Tank;
 
 public class ObstacleLava extends Obstacle implements IAvoidObject

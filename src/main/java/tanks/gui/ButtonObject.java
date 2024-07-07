@@ -3,7 +3,6 @@ package tanks.gui;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawableForInterface;
-import tanks.tank.TankProperty;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;

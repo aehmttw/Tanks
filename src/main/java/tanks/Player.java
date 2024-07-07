@@ -1,13 +1,11 @@
 package tanks;
 
 import basewindow.BaseFile;
-import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.hotbar.item.Item;
 import tanks.network.ConnectedPlayer;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 
 import java.util.ArrayList;

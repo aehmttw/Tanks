@@ -1,7 +1,6 @@
 package tanks.generator;
 
 import tanks.Game;
-import tanks.Level;
 import tanks.gui.screen.ScreenPartyHost;
 
 import java.util.ArrayList;
@@ -524,7 +523,7 @@ public class LevelGeneratorRandom extends LevelGenerator
 			}
 		}
 
-		if (dark && Game.framework != Game.Framework.libgdx)
+		if (dark)
 		{
 			for (int j = 0; j < numLights; j++)
 			{

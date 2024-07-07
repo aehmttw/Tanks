@@ -9,14 +9,12 @@ import tanks.gui.screen.ITankScreen;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenAddSavedTank;
 import tanks.gui.screen.ScreenTankEditor;
-import tanks.hotbar.item.Item;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITankScreen
 {

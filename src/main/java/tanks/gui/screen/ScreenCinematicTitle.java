@@ -2,14 +2,10 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Movable;
 import tanks.Panel;
-import tanks.bullet.Bullet;
-import tanks.obstacle.Obstacle;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.TankDummyLoadingScreen;
-import tanks.tank.Turret;
 
 public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundScreen
 {

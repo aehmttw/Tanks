@@ -3,7 +3,9 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
-import tanks.tank.*;
+import tanks.tank.Crate;
+import tanks.tank.TankPlayerController;
+import tanks.tank.TankRemote;
 
 public class EventArcadeClearMovables extends PersonalEvent
 {

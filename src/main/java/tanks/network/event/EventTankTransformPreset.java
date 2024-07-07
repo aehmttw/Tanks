@@ -83,6 +83,8 @@ public class EventTankTransformPreset extends PersonalEvent
             t.trackSpacing = target.trackSpacing;
 
             ((TankAIControlled) ((TankRemote) t).tank).spawnedTankEntries = target.spawnedTankEntries;
+            ((TankAIControlled) ((TankRemote) t).tank).healthTransformTank = target.healthTransformTank;
+            ((TankAIControlled) ((TankRemote) t).tank).sightTransformTank = target.sightTransformTank;
 
             ((TankRemote) t).invisible = false;
             ((TankRemote) t).vanished = false;

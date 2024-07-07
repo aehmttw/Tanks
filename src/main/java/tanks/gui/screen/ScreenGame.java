@@ -576,7 +576,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			this.drawables[i] = new ArrayList<>();
 		}
 
-		slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0.5, 0.5, -1);
+		slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0, 0.5, -1);
 		slantTranslation = new Translation(Game.game.window, 0, 0, 0);
 
 		this.horizontalFaces = new Face[2];
@@ -1932,7 +1932,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			this.slantRotation.pitch = this.slant * -Math.PI / 16;
-			this.slantTranslation.y = -this.slant * 0.05;
+			//this.slantTranslation.y = -this.slant * 0.05;
 
 			if (!Game.followingCam)
 			{

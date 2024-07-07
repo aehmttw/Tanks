@@ -468,7 +468,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public void collidedWithBullet(Bullet b)
 	{
-		if (this.heavy == b.heavy && this.enableExternalCollisions)
+		if (this.heavy == b.heavy && b.enableExternalCollisions)
 		{
 			if (this.bulletHitKnockback <= 0 && b.bulletHitKnockback <= 0)
 			{

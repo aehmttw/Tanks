@@ -292,9 +292,6 @@ public class Trail implements IDrawable
 
             Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
-            Drawing.drawing.addFacingVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.movable.posZ - 1, -ox * backWidth, -oy * backWidth, 0);
-            Drawing.drawing.addFacingVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.movable.posZ - 1, ox * backWidth, oy * backWidth, 0);
-
             if (trail3d)
                 drawTube3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3),
                         frontWidth, r, g, b, a,

@@ -509,7 +509,6 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     }
             );
-
         }
     }
 }

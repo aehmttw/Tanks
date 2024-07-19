@@ -509,11 +509,12 @@ public class Bullet extends Movable implements IDrawableLightSource
 				l = this;
 			}
 
-			if (this.playBounceSound)
-				Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / h.size), 1f);
-
 			if (h.bulletHitKnockback > 0)
+			{
 				h.push(l);
+				if (this.playBounceSound)
+					Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / h.size), 1f);
+			}
 			else if (this.destroyBullets)
 				l.pop();
 		}

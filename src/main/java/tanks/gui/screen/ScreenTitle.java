@@ -413,11 +413,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
-		for (int i = 0; i < Game.tracks.size(); i++)
-		{
-			Game.tracks.get(i).draw();
-		}
-
 		for (int i = Game.movables.size() - 1; i >= 0; i--)
 		{
 			Game.movables.get(i).draw();

@@ -1121,13 +1121,13 @@ public class Drawing
 
 	public void addSyncedMusic(String sound, float volume, boolean looped, long fadeTime)
 	{
-		if (Game.game.window.soundsEnabled && Game.musicEnabled)
+		if (Game.game.window.soundsEnabled && Game.musicEnabled && Game.enableLayeredMusic)
 			Game.game.window.soundPlayer.addSyncedMusic("/music/" + sound, volume, looped, fadeTime);
 	}
 
 	public void removeSyncedMusic(String sound, long fadeTime)
 	{
-		if (Game.game.window.soundsEnabled && Game.musicEnabled)
+		if (Game.game.window.soundsEnabled && Game.musicEnabled && Game.enableLayeredMusic)
 			Game.game.window.soundPlayer.removeSyncedMusic("/music/" + sound, fadeTime);
 	}
 

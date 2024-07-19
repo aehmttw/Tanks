@@ -612,7 +612,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
         else
         {
-            Game.exitToCrash(new RuntimeException("Invalid effect type!"));
+            Game.exitToCrash(new RuntimeException("Invalid effect type: " + this.type));
         }
     }
 

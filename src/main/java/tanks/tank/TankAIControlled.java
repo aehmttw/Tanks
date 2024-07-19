@@ -69,7 +69,7 @@ public class TankAIControlled extends Tank
 	@TankProperty(category = movementAvoid, id = "bullet_avoid_behavior", name = "Bullet avoid behavior", desc = "Method the tank will use to avoid bullets \n " +
 			"\n Intersect: move away from where the bullet will hit the tank (less accurate) " +
 			"\n Back off: move away from the bullet (may back into corners) " +
-			"\n Dodge: move at an angle away from the bullet (more accurate)" +
+			"\n Dodge: move at an angle away from the bullet (more accurate) " +
 			"\n Aggressive dodge: move at an angle toward the bullet")
 	public BulletAvoidBehavior bulletAvoidBehvavior = BulletAvoidBehavior.intersect;
 	/** How close the tank needs to get to a mine to avoid it*/
@@ -109,10 +109,10 @@ public class TankAIControlled extends Tank
 	/** Type of behavior tank should have if its target enemy is in line of sight*/
 	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight \n " +
 			"Approach - move directly toward the target \n " +
-			"Flee - move directly away from the target \n" +
-			"Strafe around it - move perpendicular to the target \n" +
-			"Sidewind - zig-zag toward the target \n" +
-			"Backwind - zig-zag away from the target \n" +
+			"Flee - move directly away from the target \n " +
+			"Strafe around it - move perpendicular to the target \n " +
+			"Sidewind - zig-zag toward the target \n " +
+			"Backwind - zig-zag away from the target \n " +
 			"Keep distance - move to or away from the target until at a specific distance to it \n" +
 			" \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
 	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;

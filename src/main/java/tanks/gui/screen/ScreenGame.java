@@ -2435,6 +2435,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (!paused && Game.game.window.touchscreen && !shopScreen)
 		{
 			pause.draw();
+			Drawing.drawing.setColor(255, 255, 255);
 			Drawing.drawing.drawInterfaceImage("icons/pause.png", pause.posX, pause.posY, 40, 40);
 
 			if (Drawing.drawing.enableMovingCamera)
@@ -2444,6 +2445,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				if (!Panel.autoZoom)
 					zoomAuto.draw();
 
+				Drawing.drawing.setColor(255, 255, 255);
 				if (Drawing.drawing.movingCamera)
 					Drawing.drawing.drawInterfaceImage("icons/zoom_out.png", zoom.posX, zoom.posY, 40, 40);
 				else

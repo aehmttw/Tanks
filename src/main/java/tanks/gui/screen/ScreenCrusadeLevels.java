@@ -37,7 +37,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
     protected Translation translation = new Translation(Game.game.window, 0, 0, 0);
 
     double shadowScaleNum = 0.2;
-    protected ScaleAboutPoint shadowScale = new ScaleAboutPoint(Game.game.window, shadowScaleNum, shadowScaleNum, shadowScaleNum, 0.5, 0.5, 0.5);
+    protected ScaleAboutPoint shadowScale = new ScaleAboutPoint(Game.game.window, shadowScaleNum, shadowScaleNum, 1.0, 0.5, 0.5, 0.5);
 
     protected ArrayList<ScreenLevel> levels = new ArrayList<>();
     protected HashMap<Integer, ScreenLevel> levelsPos = new HashMap<>();

@@ -33,6 +33,9 @@ public class Hotbar
 
 	public void update()
 	{
+		Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
+		Hotbar.toggle.posY = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 12);
+
 		if (Game.game.window.touchscreen)
 		{
 			this.verticalOffset = 20;

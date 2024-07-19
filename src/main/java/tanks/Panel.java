@@ -157,9 +157,6 @@ public class Panel
 		TankPlayer.controlStick.mobile = TankPlayer.controlStickMobile;
 		TankPlayer.controlStick.snap = TankPlayer.controlStickSnap;
 
-		Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;
-		Hotbar.toggle.posY = Drawing.drawing.interfaceSizeY - 20;
-
 		Game.createModels();
 
 		Game.dummyTank = new TankDummy("dummy",0, 0, 0);

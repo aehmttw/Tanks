@@ -213,6 +213,7 @@ public class ScreenOptions extends Screen
 			f.println("sound_volume=" + Game.soundVolume);
 			f.println("music=" + Game.musicEnabled);
 			f.println("music_volume=" + Game.musicVolume);
+			f.println("layered_music=" + Game.enableLayeredMusic);
 			f.println("auto_start=" + Game.autostart);
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
@@ -340,6 +341,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "music":
 						Game.musicEnabled = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "layered_music":
+						Game.enableLayeredMusic = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "sound_volume":
 						Game.soundVolume = Float.parseFloat(optionLine[1]);

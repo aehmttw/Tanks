@@ -1096,8 +1096,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				double xDist = Math.abs(m.posX - boundedX);
 				double yDist = Math.abs(m.posY - boundedY);
-				double dist = Math.max(xDist / (Drawing.drawing.interfaceSizeX),
-						yDist / (Drawing.drawing.interfaceSizeY)) * 3;
+				double dist = Math.max(xDist / (Drawing.drawing.interfaceSizeX), yDist / (Drawing.drawing.interfaceSizeY)) * 2.2;
 
 				if (dist < nearest)
 				{
@@ -1127,7 +1126,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double getAutoZoom()
 	{
 		double dist = Math.min(4, Math.max(1, getAutoZoomRaw()));
-		return 1 / dist;
+		double targetScale = Drawing.drawing.interfaceScale / dist;
+		return Math.max(Math.min((targetScale - Drawing.drawing.unzoomedScale) / (Drawing.drawing.interfaceScale - Drawing.drawing.unzoomedScale), 1), 0);
 	}
 
 	public void setBufferCooldown(double value)

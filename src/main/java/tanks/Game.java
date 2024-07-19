@@ -273,6 +273,7 @@ public class Game
 
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
+	public static boolean enableLayeredMusic = true;
 
 	public static boolean isOnlineServer;
 	public static boolean connectedToOnline = false;

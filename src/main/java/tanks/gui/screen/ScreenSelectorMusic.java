@@ -31,7 +31,6 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
             Drawing.drawing.playVibration("click");
             selector.submitEffect();
             selector.lastFrame = Panel.panel.ageFrames;
-            Game.screen = screen;
 
             for (int i = 0; i < selector.options.length; i++)
             {
@@ -39,6 +38,7 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
                     Drawing.drawing.removeSyncedMusic(selector.options[i], 500);
             }
 
+            Game.screen = screen;
             selector.function.run();
         }
     }

@@ -24,7 +24,9 @@ public class Crate extends Movable
     @Override
     public void draw()
     {
-        this.age += Panel.frameFrequency;
+        if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
+            this.age += Panel.frameFrequency;
+
         double size = this.size * Obstacle.draw_size / Game.tile_size * Math.min(1, this.age / (Game.tile_size * 1.5));
 
         if (Game.enable3d)

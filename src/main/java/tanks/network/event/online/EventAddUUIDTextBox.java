@@ -47,7 +47,7 @@ public class EventAddUUIDTextBox extends EventAddTextBox
                     Game.screen = new ScreenOnlineWaiting();
             };
 
-            if (hover.isEmpty())
+            if (hover.equals(""))
                 t.enableHover = false;
 
             t.posX -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeX * (xAlignment + 1) / 2.0;

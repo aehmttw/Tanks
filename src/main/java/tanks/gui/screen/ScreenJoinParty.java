@@ -162,7 +162,7 @@ public class ScreenJoinParty extends Screen
 						port = Integer.parseInt(ip.inputText.substring(colon + 1));
 					}
 
-					if (ip.inputText.isEmpty())
+					if (ip.inputText.equals(""))
 						Client.connect("localhost", Game.port, false, connectionID);
 					else
 						Client.connect(ipaddress, port, false, connectionID);

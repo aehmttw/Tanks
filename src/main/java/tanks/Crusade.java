@@ -110,7 +110,7 @@ public class Crusade
 			{
 				String s = f.nextLine();
 				
-				if (!s.isEmpty())
+				if (!s.equals(""))
 					list.add(s);
 
 				c.append(s).append("\n");

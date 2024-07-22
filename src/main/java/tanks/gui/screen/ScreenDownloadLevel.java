@@ -71,7 +71,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            if (levelName.inputText.isEmpty())
+            if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
         }

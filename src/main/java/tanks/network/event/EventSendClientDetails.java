@@ -85,7 +85,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			return;
 		}
 
-		if (Game.usernameInvalid(this.username) || this.username.isEmpty())
+		if (Game.usernameInvalid(this.username) || this.username.equals(""))
 		{
 			s.sendEventAndClose(new EventKick("Invalid username!"));
 			return;

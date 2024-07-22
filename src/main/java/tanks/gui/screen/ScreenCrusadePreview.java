@@ -148,7 +148,7 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
 
         crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Crusade save name", () ->
         {
-            if (crusadeName.inputText.isEmpty())
+            if (crusadeName.inputText.equals(""))
                 crusadeName.inputText = crusadeName.previousInputText;
             updateDownloadButton();
         }

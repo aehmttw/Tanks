@@ -66,7 +66,7 @@ public class ScreenJoinOnlineServer extends Screen
                             ipaddress = ipaddress.split(":")[0];
                         }
 
-                        if (ipaddress.isEmpty())
+                        if (ipaddress.equals(""))
                             Client.connect("localhost", Game.port, true, connectionID);
                         else
                             Client.connect(ipaddress, port, true, connectionID);

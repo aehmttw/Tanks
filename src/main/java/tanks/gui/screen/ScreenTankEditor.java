@@ -986,7 +986,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 };
 
                 t.hoverText = formatDescription(p);
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.maxChars = 9;
                 t.allowNegatives = true;
                 t.allowLetters = false;
@@ -1020,7 +1020,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 };
 
                 t.hoverText = formatDescription(p);
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.allowDoubles = true;
                 t.allowNegatives = true;
                 t.allowLetters = false;
@@ -1060,7 +1060,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
                 t.images = emblems;
                 t.imageR = 127;
@@ -1087,7 +1087,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 };
 
                 t.hoverText = formatDescription(p);
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.lowerCase = true;
                 t.allowSpaces = true;
                 t.enableSpaces = false;
@@ -1115,7 +1115,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
                 return t;
             }
@@ -1144,7 +1144,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
                 return t;
             }
@@ -1164,7 +1164,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     this.lastItemScreen = editItem;
                     this.lastItemButton = b;
                 };
-                b.enableHover = !p.desc().isEmpty();
+                b.enableHover = !p.desc().equals("");
                 b.hoverText = formatDescription(p);
                 b.image = i.icon;
                 b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
@@ -1214,7 +1214,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 else
                     b.optionText = "\u00A7127000000255none";
 
-                b.enableHover = !p.desc().isEmpty();
+                b.enableHover = !p.desc().equals("");
                 b.hoverText = formatDescription(p);
 
                 return b;
@@ -1260,7 +1260,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                     }
                 };
 
-                t.enableHover = !p.desc().isEmpty();
+                t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
                 t.models = models;
 
@@ -1358,7 +1358,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                         s.optionText = "";
                 }
 
-                s.enableHover = !p.desc().isEmpty();
+                s.enableHover = !p.desc().equals("");
                 s.hoverText = formatDescription(p);
 
                 return s;

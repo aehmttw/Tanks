@@ -43,7 +43,7 @@ public class EventAddMenuButton extends EventAddButton
             }, hover);
 
             b.enabled = this.enabled;
-            b.enableHover = !this.hover.isEmpty();
+            b.enableHover = !this.hover.equals("");
 
             s.buttons.put(this.id, b);
         }

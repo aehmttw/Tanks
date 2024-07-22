@@ -41,7 +41,7 @@ public class EventPlaySound extends PersonalEvent
     @Override
     public void execute()
     {
-        if (this.clientID == null && !this.sound.isEmpty())
+        if (this.clientID == null && !this.sound.equals(""))
         {
             try
             {

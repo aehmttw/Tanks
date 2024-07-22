@@ -130,7 +130,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             }
                 , t.description);
 
-            if (t.description.isEmpty())
+            if (t.description.equals(""))
                 b.enableHover = false;
 
             this.tankButtons.add(b);
@@ -197,7 +197,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 count++;
 
                 String desc = t.description;
-                if (!t.description.isEmpty())
+                if (!t.description.equals(""))
                     desc += " \n \n ";
 
                 desc += "\u00A7000255255255Custom tank from this level";
@@ -237,7 +237,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 final TankAIControlled tt = t;
 
                 String desc = t.description;
-                if (!t.description.isEmpty())
+                if (!t.description.equals(""))
                     desc += " \n \n ";
 
                 desc += "\u00A7000255000255Saved custom tank template";

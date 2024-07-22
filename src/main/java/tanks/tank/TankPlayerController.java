@@ -231,7 +231,7 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
                     {
                         InputPoint p = Game.game.window.touchPoints.get(i);
 
-                        if (!p.tag.isEmpty() && !p.tag.equals("aim") && !p.tag.equals("shoot"))
+                        if (!p.tag.equals("") && !p.tag.equals("aim") && !p.tag.equals("shoot"))
                             continue;
 
                         double px = Drawing.drawing.getInterfacePointerX(p.x);

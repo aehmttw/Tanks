@@ -256,7 +256,7 @@ public class Selector implements IDrawable, ITrigger
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 
-                if (p.tag.isEmpty())
+                if (p.tag.equals(""))
                 {
                     double mx = Drawing.drawing.getInterfacePointerX(p.x);
                     double my = Drawing.drawing.getInterfacePointerY(p.y);

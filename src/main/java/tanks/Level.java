@@ -323,7 +323,7 @@ public class Level
 
 		this.reloadTiles();
 
-		if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
+		if (!((obstaclesPos.length == 1 && obstaclesPos[0].equals("")) || obstaclesPos.length == 0)) 
 		{
 			for (int i = 0; i < obstaclesPos.length; i++)
 			{
@@ -415,7 +415,7 @@ public class Level
 
 		ArrayList<Tank> tanksToRemove = new ArrayList<>();
 
-		if (!preset[2].isEmpty())
+		if (!preset[2].equals(""))
 		{
 			for (int i = 0; i < tanks.length; i++)
 			{

@@ -13,7 +13,7 @@ public class EventDisplayText extends PersonalEvent
     public String text;
     public boolean afterGameStarted;
     public int duration;
-    public boolean hasItems = Game.currentLevel != null && (!Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty() || Crusade.crusadeMode);
+    public boolean hasItems = Game.currentLevel != null && (Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0 || Crusade.crusadeMode);
 
     public double colorR;
     public double colorG;

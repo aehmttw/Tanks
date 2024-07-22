@@ -1564,7 +1564,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				{
 					Panel.forceRefreshMusic = true;
 
-					if (Game.playerTank != null && (fullyAliveTeams.contains(Game.playerTank.team) || (!fullyAliveTeams.isEmpty() && fullyAliveTeams.get(0).name.equals(Game.clientID.toString()))))
+                    if (Game.playerTank != null && (fullyAliveTeams.contains(Game.playerTank.team) || (fullyAliveTeams.size() > 0 && fullyAliveTeams.get(0).name.equals(Game.clientID.toString()))))
 					{
 						if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks)
 						{
@@ -1590,7 +1590,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					String s = "**";
 
-					if (!fullyAliveTeams.isEmpty())
+                    if (fullyAliveTeams.size() > 0)
 						s = fullyAliveTeams.get(0).name;
 
 					if (ScreenPartyHost.isServer)
@@ -1647,7 +1647,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 							for (int i = 0; i < Game.players.size(); i++)
 							{
-								if (Game.players.get(i) != null && Game.players.get(i).tank != null && aliveTeams.contains(Game.players.get(i).tank.team) || (!aliveTeams.isEmpty() && aliveTeams.get(0).name.equals(Game.players.get(i).clientID.toString())))
+                                if (Game.players.get(i) != null && Game.players.get(i).tank != null && aliveTeams.contains(Game.players.get(i).tank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.players.get(i).clientID.toString())))
 								{
 									Panel.levelPassed = true;
 
@@ -1660,7 +1660,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 							if (Game.playerTank != null)
 							{
-								if (aliveTeams.contains(Game.playerTank.team) || (!aliveTeams.isEmpty() && aliveTeams.get(0).name.equals(Game.clientID.toString())))
+                                if (aliveTeams.contains(Game.playerTank.team) || (aliveTeams.size() > 0 && aliveTeams.get(0).name.equals(Game.clientID.toString())))
 								{
 									if (Crusade.crusadeMode)
 										Panel.winlose = "Battle cleared!";
@@ -1696,7 +1696,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 								String s = "**";
 
-								if (!aliveTeams.isEmpty())
+                                if (aliveTeams.size() > 0)
 									s = aliveTeams.get(0).name;
 
 								ScreenPartyHost.readyPlayers.clear();

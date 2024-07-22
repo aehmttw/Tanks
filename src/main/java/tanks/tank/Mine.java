@@ -73,7 +73,7 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource
 
         if (!ScreenPartyLobby.isClient)
         {
-            if (!freeIDs.isEmpty())
+            if (freeIDs.size() > 0)
                 this.networkID = freeIDs.remove(0);
             else
             {

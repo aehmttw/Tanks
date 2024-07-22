@@ -128,7 +128,7 @@ public class ScreenItemEditor extends Screen implements IConditionalOverlayScree
                 TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, name, () -> {}, p.value + "");
                 t.function = () ->
                 {
-                    if (t.inputText.isEmpty())
+                    if (t.inputText.length() == 0)
                         t.inputText = p.value + "";
                     else
                         p.value = Integer.parseInt(t.inputText);
@@ -148,7 +148,7 @@ public class ScreenItemEditor extends Screen implements IConditionalOverlayScree
                 {
                     try
                     {
-                        if (t.inputText.isEmpty())
+                        if (t.inputText.length() == 0)
                             t.inputText = p.value + "";
                         else
                             p.value = Double.parseDouble(t.inputText);
@@ -172,7 +172,7 @@ public class ScreenItemEditor extends Screen implements IConditionalOverlayScree
                 TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, name, () -> {}, p.value + "");
                 t.function = () ->
                 {
-                    if (t.inputText.isEmpty())
+                    if (t.inputText.length() == 0)
                         t.inputText = (String) p.value;
                     else
                         p.value = t.inputText;

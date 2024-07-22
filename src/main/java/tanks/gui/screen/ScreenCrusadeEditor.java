@@ -209,7 +209,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         {
             BaseFile file = Game.game.fileManager.getFile(crusade.fileName);
 
-            if (!crusadeName.inputText.isEmpty() && !Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText + ".tanks").exists())
+            if (crusadeName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + crusadeName.inputText + ".tanks").exists())
             {
                 if (file.exists())
                 {
@@ -235,7 +235,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
 
         startingLives = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Starting lives", () ->
         {
-            if (startingLives.inputText.isEmpty())
+            if (startingLives.inputText.length() == 0)
                 startingLives.inputText = crusade.startingLives + "";
             else
                 crusade.startingLives = Integer.parseInt(startingLives.inputText);
@@ -250,7 +250,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
 
         bonusLifeFrequency = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "Bonus life frequency", () ->
         {
-            if (bonusLifeFrequency.inputText.isEmpty())
+            if (bonusLifeFrequency.inputText.length() == 0)
                 bonusLifeFrequency.inputText = crusade.bonusLifeFrequency + "";
             else
                 crusade.bonusLifeFrequency = Integer.parseInt(bonusLifeFrequency.inputText);

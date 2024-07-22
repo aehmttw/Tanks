@@ -96,7 +96,7 @@ public class ScreenOptionsPartyHost extends Screen
 
         timer = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Countdown time", () ->
         {
-            if (timer.inputText.isEmpty())
+            if (timer.inputText.length() == 0)
                 timer.inputText = Game.partyStartTime / 100.0 + "";
             else
                 Game.partyStartTime = Double.parseDouble(timer.inputText) * 100;

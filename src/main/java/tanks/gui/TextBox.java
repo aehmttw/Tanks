@@ -222,7 +222,7 @@ public class TextBox implements IDrawable, ITrigger
 			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 		}
 
-		if (selected && !inputText.isEmpty())
+        if (selected && inputText.length() > 0)
 		{
 			if (Game.glowEnabled)
 			{
@@ -404,7 +404,7 @@ public class TextBox implements IDrawable, ITrigger
 			}
 		}
 
-		if (clearSelected && valid && !inputText.isEmpty())
+        if (clearSelected && valid && inputText.length() > 0)
 		{
 			handled = true;
 			this.clear();
@@ -596,7 +596,7 @@ public class TextBox implements IDrawable, ITrigger
 						inputText += key;
 				}
 
-				if (allowNegatives && inputText.isEmpty())
+                if (allowNegatives && inputText.length() == 0)
 				{
 					if ('-' == key)
 						inputText += key;

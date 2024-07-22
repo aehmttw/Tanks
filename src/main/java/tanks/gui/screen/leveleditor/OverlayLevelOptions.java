@@ -34,7 +34,7 @@ public class OverlayLevelOptions extends ScreenLevelEditorOverlay
             BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelEditor.name);
 
             String input = levelName.inputText.replace(" ", "_");
-            if (!levelName.inputText.isEmpty() && !Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + input + ".tanks").exists())
+            if (levelName.inputText.length() > 0 && !Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + input + ".tanks").exists())
             {
                 if (file.exists())
                 {

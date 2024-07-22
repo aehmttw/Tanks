@@ -33,7 +33,7 @@ public class ExtensionRegistry
 				{
 					String line = in.nextLine();
 
-					if (line == null || line.isEmpty())
+                    if (line == null || line.length() == 0)
 						continue;
 
 					String[] extensionLine = line.split(",");

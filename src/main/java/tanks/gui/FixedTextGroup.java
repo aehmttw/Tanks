@@ -38,7 +38,7 @@ public class FixedTextGroup implements IFixedMenu
         if (!afterGameStarted)
             defineTime = System.currentTimeMillis();
 
-        if (!Game.currentLevel.startingItems.isEmpty() || !Game.currentLevel.shop.isEmpty())
+        if (Game.currentLevel.startingItems.size() > 0 || Game.currentLevel.shop.size() > 0)
             actionBarLocation = 200;
     }
 
@@ -62,7 +62,7 @@ public class FixedTextGroup implements IFixedMenu
         if (!afterGameStarted)
             defineTime = System.currentTimeMillis();
 
-        if (!Game.currentLevel.startingItems.isEmpty() || !Game.currentLevel.shop.isEmpty())
+        if (Game.currentLevel.startingItems.size() > 0 || Game.currentLevel.shop.size() > 0)
             actionBarLocation = 200;
     }
 

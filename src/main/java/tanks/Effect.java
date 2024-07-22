@@ -49,7 +49,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
     {
-        while (!Game.recycleEffects.isEmpty())
+        while (Game.recycleEffects.size() > 0)
         {
             Effect e = Game.recycleEffects.remove();
 

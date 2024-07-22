@@ -77,7 +77,7 @@ public class TankNPC extends TankDummy
         this.messages = messages.split("\n");
         this.shopItems = shop;
         this.tagName = tagName;
-        this.showName = !tagName.isEmpty();
+        this.showName = tagName.length() > 0;
         this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, tagName);
 
         this.colorR = r;

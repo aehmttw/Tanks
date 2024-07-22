@@ -72,7 +72,7 @@ public class SearchBox extends TextBox
 		Drawing.drawing.setColor(0, 0, 0);
 		this.drawInput();
 
-		if (!inputText.isEmpty())
+        if (inputText.length() > 0)
 		{
 			if (Game.glowEnabled)
 			{
@@ -113,7 +113,7 @@ public class SearchBox extends TextBox
 
 		hover = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
 
-		clearSelected = !this.inputText.isEmpty() && mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
+        clearSelected = this.inputText.length() > 0 && mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2;
 
 		if (hover && valid && enabled && !clearSelected)
 		{
@@ -136,7 +136,7 @@ public class SearchBox extends TextBox
 			}
 		}
 
-		if (clearSelected && valid && !inputText.isEmpty())
+        if (clearSelected && valid && inputText.length() > 0)
 		{
 			handled = true;
 			this.clear();

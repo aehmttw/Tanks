@@ -974,7 +974,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.isEmpty())
+                        if (t.inputText.length() == 0)
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, Integer.parseInt(t.inputText));
@@ -1001,7 +1001,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.isEmpty())
+                        if (t.inputText.length() == 0)
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, Double.parseDouble(t.inputText));
@@ -1075,7 +1075,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.isEmpty() && p.miscType() != TankProperty.MiscType.description)
+                        if (t.inputText.length() == 0 && p.miscType() != TankProperty.MiscType.description)
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, t.inputText);
@@ -1406,7 +1406,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
         TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, "Spawn weight", () -> {}, e.weight + "", "Bigger numbers relative to---other spawned tanks increase---the likelihood of this tank---being spawned");
         t.function = () ->
         {
-            if (t.inputText.isEmpty())
+            if (t.inputText.length() == 0)
                 t.inputText = e.weight + "";
             else
                 e.weight = Double.parseDouble(t.inputText);

@@ -336,7 +336,7 @@ public class Arcade extends Minigame
 
             }
 
-            if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && !alivePlayers.isEmpty() && timer > 0)
+            if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / 2) + 3 && alivePlayers.size() > 0 && timer > 0)
             {
                 int count = (int) ((this.random.nextDouble() * 2 + 2));
                 for (int i = 0; i < count; i++)
@@ -451,7 +451,7 @@ public class Arcade extends Minigame
         playerDeathTimes.remove(p);
 
         int r;
-        if (!this.availablePlayerSpawns.isEmpty())
+        if (this.availablePlayerSpawns.size() > 0)
             r = this.availablePlayerSpawns.remove((int) (this.random.nextDouble() * this.availablePlayerSpawns.size()));
         else
             r = (int) (this.playerSpawnsX.size() * this.random.nextDouble());

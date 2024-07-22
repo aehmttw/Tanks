@@ -114,7 +114,7 @@ public class ChatBox extends TextBox
 
 		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
 		{
-			if (!this.inputText.trim().isEmpty())
+            if (this.inputText.trim().length() > 0)
 				this.function.run();
 
 			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);

@@ -897,7 +897,7 @@ public class Game
 
 	public static String formatString(String s)
 	{
-		if (s.length() == 0)
+        if (s.length() == 0)
 			return s;
 		else if (s.length() == 1)
 			return s.toUpperCase();
@@ -1347,7 +1347,7 @@ public class Game
 
 			if (ia != ib)
 				return ia - ib;
-			else if ((la.toString().length() == 0 || lb.toString().length() == 0) && la.toString().length() + lb.toString().length() > 0)
+            else if ((la.toString().length() == 0 || lb.toString().length() == 0) && la.toString().length() + lb.toString().length() > 0)
 				return lb.toString().length() - la.toString().length();
 			else if (la.toString().length() != lb.toString().length())
 				return la.toString().length() - lb.toString().length();

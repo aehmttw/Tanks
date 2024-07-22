@@ -377,7 +377,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		this.name = lvlName;
 
-		if (this.teams.size() == 0)
+        if (this.teams.size() == 0)
 			mouseTank.team = null;
 		else
 			mouseTank.team = this.teams.get(teamNum);
@@ -445,7 +445,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			menu.posY = pause.posY + vStep;
 			menu.update();
 
-			playControl.enabled = spawns.size() > 0;
+            playControl.enabled = spawns.size() > 0;
 			playControl.posX = pause.posX - hStep * 2;
 			playControl.posY = pause.posY + vStep * 2;
 			playControl.update();
@@ -512,17 +512,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			paste.posX = panZoom.posX + hStep;
 			paste.posY = panZoom.posY + vStep;
 
-			if (clipboard.size() > 0)
+            if (clipboard.size() > 0)
 				paste.update();
 
-			undo.enabled = actions.size() > 0;
+            undo.enabled = actions.size() > 0;
 			undo.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
 					+ Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * controlsSizeMultiplier;
 			undo.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
 					+ Drawing.drawing.interfaceSizeY - 50 * controlsSizeMultiplier;
 			undo.update();
 
-			redo.enabled = redoActions.size() > 0;
+            redo.enabled = redoActions.size() > 0;
 			redo.posX = undo.posX + hStep;
 			redo.posY = undo.posY - vStep;
 			redo.update();
@@ -949,7 +949,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Drawing.drawing.playVibration("click");
 
 
-		if (Game.game.input.editorPlay.isValid() && this.spawns.size() > 0)
+        if (Game.game.input.editorPlay.isValid() && this.spawns.size() > 0)
 		{
 			this.play();
 			Game.game.input.play.invalidate();
@@ -1036,13 +1036,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.rotateShortcut.function.run();
 		}
 
-		if (redoActions.size() > 0 && redoLength != actions.size())
+        if (redoActions.size() > 0 && redoLength != actions.size())
 		{
 			redoActions.clear();
 			redoLength = -1;
 		}
 
-		if (Game.game.input.editorUndo.isValid() && actions.size() > 0)
+        if (Game.game.input.editorUndo.isValid() && actions.size() > 0)
 		{
 			Action a = actions.remove(actions.size() - 1);
 			a.undo();
@@ -1051,7 +1051,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Game.game.input.editorUndo.invalidate();
 		}
 
-		if (Game.game.input.editorRedo.isValid() && redoActions.size() > 0)
+        if (Game.game.input.editorRedo.isValid() && redoActions.size() > 0)
 		{
 			Action a = redoActions.remove(redoActions.size() - 1);
 			a.redo();
@@ -1308,7 +1308,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						}
 					}
 
-					if (this.actions.size() > 0)
+                    if (this.actions.size() > 0)
 					{
 						Action a = new Action.ActionGroup(this, this.actions);
 						actions.add(a);
@@ -1746,16 +1746,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
 		double[][][] obstacles = new double[Game.registryObstacle.obstacleEntries.size()][this.level.sizeX][this.level.sizeY];
 
-		for (int i = 0; i < obstacles.length; i++)
-		{
-			for (int j = 0; j < obstacles[i].length; j++)
-			{
-				for (int k = 0; k < obstacles[i][j].length; k++)
-				{
-					obstacles[i][j][k] = -1;
-				}
-			}
-		}
+        for (int i = 0; i < obstacles.length; i++)
+        {
+            for (int j = 0; j < obstacles[i].length; j++)
+            {
+                for (int k = 0; k < obstacles[i][j].length; k++)
+                {
+                    obstacles[i][j][k] = -1;
+                }
+            }
+        }
 
 		for (int h = 0; h < Game.registryObstacle.obstacleEntries.size(); h++)
 		{
@@ -1898,7 +1898,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		if (Game.movables.size() == 0)
+        if (Game.movables.size() == 0)
 		{
 			level.append("|");
 		}
@@ -2335,7 +2335,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			undo.draw();
 			redo.draw();
 
-			if (clipboard.size() > 0)
+            if (clipboard.size() > 0)
 				paste.draw();
 
 			if (selection)
@@ -2426,7 +2426,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (int i = 0; i < playerCount; i++)
 		{
-			if (availablePlayerSpawns.size() == 0)
+            if (availablePlayerSpawns.size() == 0)
 			{
 				for (int j = 0; j < this.spawns.size(); j++)
 				{

@@ -876,8 +876,8 @@ public class Panel
 		if (Game.framework == Game.Framework.libgdx)
 			boundary += 40;
 
-		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
-		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
+		Game.game.window.fontRenderer.drawString(boundary + 10, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
+		Game.game.window.fontRenderer.drawString(boundary + 10, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 
 		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
 

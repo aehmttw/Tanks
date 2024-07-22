@@ -21,6 +21,9 @@ import static tanks.tank.TankProperty.Category.*;
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
 public class TankAIControlled extends Tank
 {
+	public static boolean useTankReferences = true;
+	protected static TankAIControlled compare;
+
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
 	protected enum RotationPhase {clockwise, counter_clockwise, aiming}
 
@@ -507,6 +510,11 @@ public class TankAIControlled extends Tank
 		}
 	}
 
+	private TankAIControlled()
+	{
+		this("compare", 0, 0, 50, 0, 0, 0, 0, ShootAI.none);
+	}
+
 	public void updateVisibility()
 	{
 		if (this.invisible)
@@ -568,7 +576,7 @@ public class TankAIControlled extends Tank
 
 		this.justTransformed = false;
 
-		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
+		if (!this.spawnedTankEntries.isEmpty() && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
 		if (!this.destroy)
@@ -1121,7 +1129,7 @@ public class TankAIControlled extends Tank
 
 			int chosenDir = (int)(this.random.nextDouble() * directions.size());
 
-			if (directions.size() == 0)
+			if (directions.isEmpty())
 				this.direction = (this.direction + 2) % 4;
 			else
 				this.direction = directions.get(chosenDir);
@@ -1280,7 +1288,7 @@ public class TankAIControlled extends Tank
 
 		double mul = 1;
 
-		if (this.path.size() > 0 && this.path.get(0).type == Tile.Type.destructible)
+		if (!this.path.isEmpty() && this.path.get(0).type == Tile.Type.destructible)
 			mul = 3;
 		else if (this.path.size() > 1 && this.path.get(1).type == Tile.Type.destructible)
 			mul = 2;
@@ -2883,6 +2891,9 @@ public class TankAIControlled extends Tank
 	@Override
 	public String toString()
 	{
+		if (compare == null)
+			compare = new TankAIControlled();
+
 		if (fromRegistry)
 			return "<" + this.name + ">";
 
@@ -2893,26 +2904,30 @@ public class TankAIControlled extends Tank
 			for (Field f : this.getClass().getFields())
 			{
 				TankProperty a = f.getAnnotation(TankProperty.class);
-				if (a != null)
-				{
-					s.append(a.id());
-					s.append("=");
+				if (a == null)
+					continue;
 
-					if (f.get(this) != null)
+				Object obj = f.get(this);
+				if (Objects.equals(obj, f.get(compare)))
+					continue;
+
+				s.append(a.id());
+				s.append("=");
+
+				if (f.get(this) != null)
+				{
+					if (a.miscType() == TankProperty.MiscType.description)
 					{
-						if (a.miscType() == TankProperty.MiscType.description)
-						{
-							String desc = (String) f.get(this);
-							s.append("<").append(desc.length()).append(">").append(desc);
-						}
-						else
-							s.append(f.get(this));
+						String desc = (String) f.get(this);
+						s.append("<").append(desc.length()).append(">").append(desc);
 					}
 					else
-						s.append("*");
-
-					s.append(";");
+						s.append(f.get(this));
 				}
+				else
+					s.append("*");
+
+				s.append(";");
 			}
 
 			return s.append("]").toString();
@@ -3141,12 +3156,9 @@ public class TankAIControlled extends Tank
 					{
 						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
 
-						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
+						ArrayList<SpawnedTankEntry> al = new ArrayList<>();
 						for (SpawnedTankEntry o: a1)
-						{
-							al.add(new SpawnedTankEntry(o.tank, o.weight, true));
-						}
-
+                            al.add(new SpawnedTankEntry(o.tank, o.weight, true));
 						f.set(t, al);
 					}
 					else if (a.miscType() == TankProperty.MiscType.music)

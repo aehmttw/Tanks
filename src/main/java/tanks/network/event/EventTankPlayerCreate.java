@@ -32,6 +32,10 @@ public class EventTankPlayerCreate extends PersonalEvent
 	public int colorG2;
 	public int colorB2;
 
+	public int colorR3;
+	public int colorG3;
+	public int colorB3;
+
 	public int networkID;
 
 	public double drawAge;
@@ -66,9 +70,13 @@ public class EventTankPlayerCreate extends PersonalEvent
 		this.colorG = p.colorG;
 		this.colorB = p.colorB;
 
-		this.colorR2 = p.turretColorR;
-		this.colorG2 = p.turretColorG;
-		this.colorB2 = p.turretColorB;
+		this.colorR2 = p.colorR2;
+		this.colorG2 = p.colorG2;
+		this.colorB2 = p.colorB2;
+
+		this.colorR3 = p.colorR3;
+		this.colorG3 = p.colorG3;
+		this.colorB3 = p.colorB3;
 	}
 	
 	@Override
@@ -131,6 +139,11 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.secondaryColorG = this.colorG2;
 		t.secondaryColorB = this.colorB2;
 
+		t.enableTertiaryColor = true;
+		t.tertiaryColorR = this.colorR3;
+		t.tertiaryColorG = this.colorG3;
+		t.tertiaryColorB = this.colorB3;
+
 		t.drawAge = this.drawAge;
 
 		t.setNetworkID(this.networkID);
@@ -158,6 +171,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 		b.writeInt(this.colorR2);
 		b.writeInt(this.colorG2);
 		b.writeInt(this.colorB2);
+		b.writeInt(this.colorR3);
+		b.writeInt(this.colorG3);
+		b.writeInt(this.colorB3);
 
 		b.writeDouble(this.drawAge);
 	}
@@ -179,6 +195,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 		this.colorR2 = b.readInt();
 		this.colorG2 = b.readInt();
 		this.colorB2 = b.readInt();
+		this.colorR3 = b.readInt();
+		this.colorG3 = b.readInt();
+		this.colorB3 = b.readInt();
 
 		this.drawAge = b.readDouble();
 	}

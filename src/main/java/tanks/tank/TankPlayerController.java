@@ -4,7 +4,7 @@ import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.bullet.BulletElectric;
+import tanks.bullet.legacy.BulletElectric;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.item.Item;

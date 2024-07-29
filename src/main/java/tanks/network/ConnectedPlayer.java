@@ -16,6 +16,9 @@ public class ConnectedPlayer
 	public double colorR2;
 	public double colorG2;
 	public double colorB2;
+	public double colorR3;
+	public double colorG3;
+	public double colorB3;
 
 	public ConnectedPlayer(UUID id, String name)
 	{
@@ -27,7 +30,7 @@ public class ConnectedPlayer
 			this.username = Game.chatFilter.filterChat(this.rawUsername);
 	}
 
-	public void setColors(double r, double g, double b, double r2, double g2, double b2)
+	public void setColors(double r, double g, double b, double r2, double g2, double b2, double r3, double g3, double b3)
 	{
 		this.colorR = r;
 		this.colorG = g;
@@ -35,5 +38,8 @@ public class ConnectedPlayer
 		this.colorR2 = r2;
 		this.colorG2 = g2;
 		this.colorB2 = b2;
+		this.colorR3 = r3;
+		this.colorG3 = g3;
+		this.colorB3 = b3;
 	}
 }

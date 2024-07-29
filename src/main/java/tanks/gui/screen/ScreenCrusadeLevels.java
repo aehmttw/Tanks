@@ -120,6 +120,7 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
         {
             Arrays.fill(Game.game.heightGrid[i], -1000);
             Arrays.fill(Game.game.groundHeightGrid[i], -1000);
+            Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
         }
 
         this.drawBgRect = false;

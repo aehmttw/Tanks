@@ -3,6 +3,8 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
+import tanks.bullet.legacy.BulletBoost;
+import tanks.bullet.legacy.BulletExplosive;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.Item;
 import tanks.hotbar.item.ItemBullet;
@@ -807,6 +809,7 @@ public class TankAIControlled extends Tank
 
 	public boolean isTargetSafe(double posX, double posY)
 	{
+		//TODO
 		if (BulletExplosive.class.isAssignableFrom(this.bullet.bulletClass))
 		{
 			for (Movable m2 : Game.movables)

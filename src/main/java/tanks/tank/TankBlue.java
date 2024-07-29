@@ -1,7 +1,8 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.BulletElectric;
+import tanks.bullet.BulletElectric2;
+import tanks.bullet.legacy.BulletElectric;
 
 /**
  * A stationary tank which shoots stunning electricity that arcs between targets
@@ -17,7 +18,7 @@ public class TankBlue extends TankAIControlled
 		this.enablePredictiveFiring = false;
 		this.bullet.maxLiveBullets = 1;
 		this.bullet.bounces = 3;
-		this.bullet.bulletClass = BulletElectric.class;
+		this.bullet.bulletClass = BulletElectric2.class;
 		this.bullet.damage = 0.125;
 		this.bullet.name = "Zap";
 		this.turretAimSpeed = 0.02;

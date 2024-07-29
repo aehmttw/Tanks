@@ -103,6 +103,9 @@ public abstract class Screen implements IBatchRenderableObject
 			{
 				if (Game.game.heightGrid[i][j] <= -1000)
 					Game.game.heightGrid[i][j] = 0;
+
+				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
+					Game.game.groundEdgeHeightGrid[i][j] = 0;
 			}
 		}
 

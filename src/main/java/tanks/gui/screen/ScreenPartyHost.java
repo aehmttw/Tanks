@@ -221,23 +221,23 @@ public class ScreenPartyHost extends Screen
             {
                 this.kickButtons[i].update();
             }
+
+            int c = server.connections.size();
+
+            if (lastConnectionCount != c)
+            {
+                if (c <= 0)
+                    this.music = "menu_3.ogg";
+                else
+                    this.music = "menu_4.ogg";
+                Panel.forceRefreshMusic = true;
+            }
+
+            this.lastConnectionCount = c;
         }
 
         if (!this.ip.equals(Translation.translate("Party host")))
             this.toggleIP.update();
-
-        int c = server.connections.size();
-
-        if (lastConnectionCount != c)
-        {
-            if (c <= 0)
-                this.music = "menu_3.ogg";
-            else
-                this.music = "menu_4.ogg";
-            Panel.forceRefreshMusic = true;
-        }
-
-        this.lastConnectionCount = c;
     }
 
     @Override
@@ -308,7 +308,7 @@ public class ScreenPartyHost extends Screen
 
                 Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, Game.player.username);
                 Drawing.drawing.drawInterfaceText(this.centerX - 190, this.centerY + username_y_offset, n);
-                Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, this.centerY + username_y_offset, Game.player.colorR, Game.player.colorG, Game.player.colorB, Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
+                Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, this.centerY + username_y_offset, Game.player.colorR, Game.player.colorG, Game.player.colorB, Game.player.colorR2, Game.player.colorG2, Game.player.colorB2, Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);
             }
 
             if (server.connections != null)
@@ -326,7 +326,7 @@ public class ScreenPartyHost extends Screen
                             Drawing.drawing.setColor(0, 0, 0);
                             Drawing.drawing.drawInterfaceText(this.centerX - 190, y, server.connections.get(i).username);
 
-                            Tank.drawTank(this.centerX - w - 230, y, h.player.colorR, h.player.colorG, h.player.colorB, h.player.turretColorR, h.player.turretColorG, h.player.turretColorB);
+                            Tank.drawTank(this.centerX - w - 230, y, h.player.colorR, h.player.colorG, h.player.colorB, h.player.colorR2, h.player.colorG2, h.player.colorB2, h.player.colorR3, h.player.colorG3, h.player.colorB3);
 
                             this.kickButtons[i - this.usernamePage * entries_per_page].draw();
 

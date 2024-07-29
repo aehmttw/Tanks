@@ -1,22 +1,23 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.bullet.legacy.BulletAir;
 import tanks.bullet.legacy.BulletFlame;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static tanks.tank.TankProperty.Category.appearanceGlow;
 
 public class Bullet extends Movable implements IDrawableLightSource
 {
@@ -74,9 +75,12 @@ public class Bullet extends Movable implements IDrawableLightSource
 	@BulletProperty(id = "luminance", name = "Luminance", category = BulletProperty.Category.appearance)
 	public double luminance = 0.5;
 
-	@TankProperty(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity")
+	//@BulletProperty(id = "trails", name = "Trail", category = BulletProperty.Category.appearance)
+	public ArrayList<Trail> trailEffects = new ArrayList<>();
+
+	@BulletProperty(category = BulletProperty.Category.appearance, id = "glow_intensity", name = "Aura intensity")
 	public double glowIntensity = 1;
-	@TankProperty(category = appearanceGlow, id = "glow_size", name = "Aura size")
+	@BulletProperty(category = BulletProperty.Category.appearance, id = "glow_size", name = "Aura size")
 	public double glowSize = 4;
 
 	public double iPosZ;
@@ -102,9 +106,25 @@ public class Bullet extends Movable implements IDrawableLightSource
 	@BulletProperty(id = "stun", name = "Stun duration", category = BulletProperty.Category.impact)
 	public double hitStun = 0;
 
+	@BulletProperty(id = "freezing", name = "Freezing", category = BulletProperty.Category.impact)
+	public boolean freezing = false;
+
+	@BulletProperty(id = "boosting", name = "Boosting", category = BulletProperty.Category.impact)
+	public boolean boosting = false;
+
 	@BulletProperty(id = "area_effect", name = "Area effect", category = BulletProperty.Category.impact)
 	public AreaEffect hitAreaEffect = null;
 
+	@BulletProperty(id = "rebounds", name = "Max rebounds", category = BulletProperty.Category.travel)
+	public int rebounds = 0;
+
+	@BulletProperty(id = "rebound_delay", name = "Rebound delay", category = BulletProperty.Category.travel)
+	public double reboundDelay = 10;
+
+	protected double delay = 0;
+	protected ArrayList<Movable> previousRebounds = new ArrayList<>();
+	protected boolean beganRebound = true;
+	protected Bullet reboundSuccessor = null;
 
 	public boolean enableExternalCollisions = true;
 
@@ -136,6 +156,13 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	@BulletProperty(id = "heavy", name = "Heavy", category = BulletProperty.Category.travel)
 	public boolean heavy = false;
+
+	@BulletProperty(id = "homing_sharpness", name = "Homing strength", category = BulletProperty.Category.travel)
+	public double homingSharpness = 0;
+
+	public Tank homingTarget = null;
+	public Tank homingPrevTarget = null;
+	public double homingTargetTime = 0;
 
 	public ItemBullet item;
 
@@ -186,6 +213,8 @@ public class Bullet extends Movable implements IDrawableLightSource
 	protected ArrayList<Trail>[] trails;
 	protected boolean addedTrail = false;
 	protected double lastTrailAngle = -1;
+	protected double lastTrailPitch = -1;
+	protected boolean trail3d = false;
 
 	public boolean justBounced = false;
 
@@ -235,11 +264,6 @@ public class Bullet extends Movable implements IDrawableLightSource
 		if (a != null)
 			this.addStatusEffect(StatusEffect.boost_bullet, a.age, 0, a.deteriorationAge, a.duration);
 
-		this.trails = (ArrayList<Trail>[])(new ArrayList[10]);
-
-		for (int i = 0; i < this.trails.length; i++)
-			this.trails[i] = new ArrayList<>();
-
 		if (!this.tank.isRemote)
 		{
 			if (freeIDs.size() > 0)
@@ -274,6 +298,25 @@ public class Bullet extends Movable implements IDrawableLightSource
 		}
 	}
 
+	public void cloneProperties(Bullet b)
+	{
+		try
+		{
+			for (Field f : b.getClass().getFields())
+			{
+				BulletProperty p = f.getAnnotation(BulletProperty.class);
+				if (p != null)
+				{
+					f.set(b, f.get(this));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+	}
+
 	public void moveOut(double amount)
 	{
 		double a = this.getPolarDirection();
@@ -286,6 +329,42 @@ public class Bullet extends Movable implements IDrawableLightSource
 	}
 
 	public void collided()
+	{
+
+	}
+
+	public void rebound(Movable m)
+	{
+		try
+		{
+			Bullet b = this.getClass().getConstructor(double.class, double.class, int.class, Tank.class, boolean.class, ItemBullet.class)
+					.newInstance(m.posX, m.posY, 0, this.tank, false, this.item);
+			this.cloneProperties(b);
+			b.iPosZ = this.posZ;
+			b.posZ = this.posZ;
+			if (b instanceof BulletArc || b instanceof BulletAirStrike)
+				b.posZ += 15;
+			b.previousRebounds = this.previousRebounds;
+			b.previousRebounds.add(m);
+			b.delay = this.reboundDelay;
+			b.rebounds = this.rebounds - 1;
+			b.beganRebound = false;
+			b.affectsMaxLiveBullets = this.affectsMaxLiveBullets;
+			Game.movables.add(b);
+			Game.movables.add(new BulletReboundIndicator(b));
+
+			this.reboundSuccessor = b;
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+	}
+
+	/**
+	 * Triggered when colliding with an obstacle or map edge and having no bounces left
+	 */
+	public void collidedWithNothing()
 	{
 
 	}
@@ -319,7 +398,31 @@ public class Bullet extends Movable implements IDrawableLightSource
 					Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size));
 			}
 
+			double healthBefore = t.health;
+			double healFlashBefore = t.healFlashAnimation;
 			boolean kill = t.damage(this.damage * this.frameDamageMultipler, this);
+			if (!t.destroy && this.hitStun > 0)
+				this.applyStun(t);
+
+			if (this.damage < 0)
+			{
+				t.health = Math.max(healthBefore, Math.min(t.health, t.baseHealth + 1));
+				if (healthBefore == t.health)
+					t.healFlashAnimation = healFlashBefore;
+
+				float pitch = (float) ((Math.min(t.health, t.baseHealth + 1) / (t.baseHealth + 1) / 2) + 1f) / 2;
+				if (this.item.cooldownBase > 0)
+					Drawing.drawing.playGlobalSound("heal_impact_2.ogg", pitch);
+				else
+				{
+					float freq = (float) (this.frameDamageMultipler / 10);
+					if (Game.game.window.touchscreen)
+						freq = 1;
+					Drawing.drawing.playGlobalSound("heal2.ogg", pitch, freq);
+				}
+
+				t.addAttribute(new AttributeModifier("healray", AttributeModifier.healray, AttributeModifier.Operation.add, 1.0));
+			}
 
 			if (kill)
 			{
@@ -385,8 +488,39 @@ public class Bullet extends Movable implements IDrawableLightSource
 					}
 				}
 			}
-			else if (this.playPopSound && this.damage > 0)
-				Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+			else
+			{
+				if (this.playPopSound && this.damage > 0)
+					Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+
+				if (this.boosting)
+				{
+					AttributeModifier c = new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3);
+					c.duration = 10 * this.size;
+					c.deteriorationAge = 5 * this.size;
+					t.addUnduplicateAttribute(c);
+
+					AttributeModifier e = new AttributeModifier("bullet_boost", AttributeModifier.bullet_boost, AttributeModifier.Operation.multiply, 1);
+					e.duration = 10 * this.size;
+					e.deteriorationAge = 5 * this.size;
+					t.addUnduplicateAttribute(e);
+
+					AttributeModifier a = new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1);
+					a.duration = 10 * this.size;
+					a.deteriorationAge = 5 * this.size;
+					t.addUnduplicateAttribute(a);
+
+					AttributeModifier b = new AttributeModifier("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75);
+					b.duration = 10 * this.size;
+					b.deteriorationAge = 5 * this.size;
+					t.addUnduplicateAttribute(b);
+
+					AttributeModifier d = new AttributeModifier("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1);
+					d.duration = 10 * this.size;
+					d.deteriorationAge = 5 * this.size;
+					t.addUnduplicateAttribute(d);
+				}
+			}
 		}
 		else if (this.playPopSound && !this.heavy)
 			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
@@ -395,9 +529,30 @@ public class Bullet extends Movable implements IDrawableLightSource
 	public void collidedWithObject(Movable o)
 	{
 		if (o instanceof Mine)
+		{
 			this.collidedWithMisc(o);
+
+			if (this.destroy && this.rebounds > 0)
+				this.rebound(o);
+		}
 		else if (o instanceof Bullet && ((Bullet) o).enableCollision && ((Bullet) o).enableExternalCollisions)
+		{
 			this.collidedWithBullet((Bullet) o);
+
+			if (this.destroy && this.rebounds > 0)
+				this.rebound(o);
+
+			if (o.destroy && ((Bullet) o).rebounds > 0)
+				((Bullet) o).rebound(this);
+
+			if (((Bullet) o).reboundSuccessor != null && this.reboundSuccessor != null)
+			{
+				this.reboundSuccessor.inside.add(((Bullet) o).reboundSuccessor);
+				this.reboundSuccessor.insideOld.add(((Bullet) o).reboundSuccessor);
+				((Bullet) o).reboundSuccessor.inside.add(this.reboundSuccessor);
+				((Bullet) o).reboundSuccessor.insideOld.add(this.reboundSuccessor);
+			}
+		}
 	}
 
 	public void push(Bullet b)
@@ -468,7 +623,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public void collidedWithBullet(Bullet b)
 	{
-		if (this.heavy == b.heavy && this.enableExternalCollisions)
+		if (this.heavy == b.heavy && b.enableExternalCollisions)
 		{
 			if (this.bulletHitKnockback <= 0 && b.bulletHitKnockback <= 0)
 			{
@@ -479,7 +634,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 			else if (this.bulletHitKnockback > 0 && b.bulletHitKnockback <= 0)
 			{
 				this.push(b);
-				if (this.destroyBullets)
+				if (b.destroyBullets)
 					this.pop();
 			}
 			else if (this.bulletHitKnockback <= 0)
@@ -526,6 +681,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 		{
 			this.pop();
 			m.destroy = true;
+
+			if (this.rebounds > 0)
+				this.rebound(m);
 		}
 	}
 
@@ -733,12 +891,15 @@ public class Bullet extends Movable implements IDrawableLightSource
 					{
 						this.collided();
 						this.collidedWithTank(t);
+
+						if (this.rebounds > 0)
+							this.rebound(t);
 					}
 
 					this.inside.add(t);
 				}
 			}
-			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && (((Bullet) o).bulletCollision && ((Bullet) o).externalBulletCollision && this.bulletCollision)) || o instanceof Mine) && o != this && !o.destroy)
+			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && ((Bullet) o).delay <= 0 && (((Bullet) o).bulletCollision && ((Bullet) o).externalBulletCollision && this.bulletCollision)) || o instanceof Mine) && o != this && !o.destroy)
 			{
 				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 
@@ -780,6 +941,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 			if (this.bounces < 0 || this.bouncyBounces < 0 || !allowBounce)
 			{
+				this.collidedWithNothing();
 				this.pop();
 			}
 			else if (this.playBounceSound)
@@ -800,9 +962,245 @@ public class Bullet extends Movable implements IDrawableLightSource
 		return r;
 	}
 
+	public void updateHoming()
+	{
+		Tank nearest = null;
+		double nearestDist = Double.MAX_VALUE;
+
+		for (Movable m: Game.movables)
+		{
+			if (m instanceof Tank && !Team.isAllied(this, m) && !m.destroy)
+			{
+				Tank t = (Tank) m;
+				double d = Movable.distanceBetween(this, m);
+
+				if (d < nearestDist)
+				{
+					nearestDist = d;
+					nearest = t;
+				}
+			}
+		}
+
+		double s = this.getSpeed();
+		if (!this.isRemote)
+		{
+			this.homingTarget = null;
+			if (nearest != null && !this.destroy)
+			{
+				double a = this.getAngleInDirection(nearest.posX, nearest.posY);
+				Ray r = new Ray(this.posX, this.posY, a, 0, this.tank);
+
+				if (this instanceof BulletArc || this instanceof BulletAirStrike)
+				{
+					s = Math.sqrt(this.vX * this.vX + this.vY * this.vY + this.vZ * this.vZ);
+					if (this.vZ < 0)
+					{
+						double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * BulletArc.gravity * (this.posZ - Game.tile_size / 2))) / BulletArc.gravity;
+
+						double dx = ((nearest.posX - this.posX) - this.vX * time) / (0.5 * time * time);
+						double dy = ((nearest.posY - this.posY) - this.vY * time) / (0.5 * time * time);
+						double change = Math.sqrt(dx * dx + dy * dy);
+						double cappedChange = Math.min(change, this.homingSharpness / 2.5);
+
+						this.vX += dx / change * cappedChange * Panel.frameFrequency;
+						this.vY += dy / change * cappedChange * Panel.frameFrequency;
+
+						if (this instanceof BulletArc)
+							this.vZ -= BulletArc.gravity * this.homingSharpness * Panel.frameFrequency;
+
+						this.homingTarget = nearest;
+					}
+				}
+				else if (r.getTarget() == nearest)
+				{
+					this.addPolarMotion(a, Panel.frameFrequency * this.homingSharpness);
+					double s2 = this.getSpeed();
+					this.vX *= s / s2;
+					this.vY *= s / s2;
+
+					this.homingTarget = nearest;
+				}
+			}
+
+			if (this.homingTarget != this.homingPrevTarget)
+			{
+				Game.eventsOut.add(new EventBulletUpdateTarget(this));
+			}
+		}
+
+		if (this.homingTarget != null)
+		{
+			double nX = this.vX / s;
+			double nY = this.vY / s;
+
+			if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finishedQuick)
+			{
+				double d = Movable.distanceBetween(this, Game.playerTank);
+
+				if (d <= 500)
+				{
+					double dX = (this.posX - Game.playerTank.posX) / d;
+					double dY = (this.posY - Game.playerTank.posY) / d;
+
+					double v = 1 + ((nX * dX + nY * dY) * this.speed) / 15.0;
+
+					Drawing.drawing.playSound("wind.ogg", (float) (0.8 / (float) v + Math.random() * 0.1f - 0.05f), (float) Math.min(1, 100 / d));
+				}
+			}
+
+			if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled)
+			{
+				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+				double var = 50;
+				e.maxAge /= 2;
+
+				double r1 = 255;
+				double g1 = 120;
+				double b1 = 0;
+
+				e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
+				e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
+				e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
+
+				double v = this.homingSharpness > 0 ? 1 : -1;
+
+				if (Game.enable3d)
+					e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, Math.PI * 0.1 * (Math.random() - 0.5), this.size / 50.0 * (12 + Math.random() * 4) * v);
+				else
+					e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, this.size / 50.0 * (12 + Math.random() * 4) * v);
+
+				Game.effects.add(e);
+			}
+
+			this.homingTargetTime += Panel.frameFrequency;
+		}
+
+		if (homingPrevTarget != this.homingTarget)
+			this.homingTargetTime = 0;
+
+		this.homingPrevTarget = this.homingTarget;
+
+	}
+
+	public void applyStun(Movable movable)
+	{
+		AttributeModifier a = new AttributeModifier(AttributeModifier.velocity, AttributeModifier.Operation.multiply, -1);
+		a.duration = this.hitStun;
+		movable.addAttribute(a);
+		if (!this.tank.isRemote)
+		{
+			Game.eventsOut.add(new EventBulletStunEffect(movable.posX, movable.posY, this.posZ, this.hitStun / 100.0));
+
+			if (Game.effectsEnabled)
+			{
+				for (int i = 0; i < 25 * Game.effectMultiplier; i++)
+				{
+					Effect e = Effect.createNewEffect(movable.posX, movable.posY, this.posZ, Effect.EffectType.stun);
+					e.maxAge *= this.hitStun / 100.0;
+					double var = 50;
+					e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+					e.glowR = 0;
+					e.glowG = 128;
+					e.glowB = 128;
+					Game.effects.add(e);
+				}
+			}
+		}
+	}
+
+	public void initTrails()
+	{
+		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
+			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0,1, 1, 15, 0, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
+
+		if (this.effect == BulletEffect.fireTrail)
+		{
+			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 7,2, 2, 50, 0, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
+			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 3,2, 2, 4, 0, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
+		}
+
+		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
+			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0, 5, 1, 5, 0, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
+
+		if (this.effect == BulletEffect.darkFire)
+			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0, 5, 1, 5, 0,  64, 0, 128, 255, 0, 0, 0, 0, false, 1, true, true));
+
+		this.trails = (ArrayList<Trail>[])(new ArrayList[this.trailEffects.size()]);
+
+		for (int i = 0; i < this.trails.length; i++)
+			this.trails[i] = new ArrayList<>();
+	}
+
 	@Override
 	public void update()
 	{
+		if (this.delay > 0)
+		{
+			this.delay -= Panel.frameFrequency;
+			return;
+		}
+
+		if (!this.previousRebounds.isEmpty() && !this.beganRebound)
+		{
+			this.beganRebound = true;
+
+			Movable m = this.previousRebounds.get(this.previousRebounds.size() - 1);
+			this.posX = m.posX;
+			this.posY = m.posY;
+			this.inside.add(m);
+			this.insideOld.add(m);
+
+			Movable nearest = null;
+			double nearestDist = Double.MAX_VALUE;
+			for (Movable m1: Game.movables)
+			{
+				if (!Team.isAllied(this, m1) && this != m1 && !m1.destroy && !this.previousRebounds.contains(m1) && ((m1 instanceof Bullet && ((Bullet) m1).enableCollision && ((Bullet) m1).bulletCollision && ((Bullet) m1).delay <= 0) || m1 instanceof Mine || m1 instanceof Tank))
+				{
+					double d = Movable.distanceBetween(this, m1);
+					if (d < nearestDist)
+					{
+						nearest = m1;
+						nearestDist = d;
+					}
+				}
+			}
+
+			if (nearest == null)
+			{
+				if (this.affectsMaxLiveBullets)
+					this.item.liveBullets--;
+
+				Game.removeMovables.add(this);
+				return;
+			}
+			else
+			{
+				this.setMotionInDirection(nearest.posX, nearest.posY, this.speed);
+				this.setTargetLocation(nearest.posX, nearest.posY);
+				Game.eventsOut.add(new EventShootBullet(this));
+			}
+		}
+
+		if (this.trails == null)
+			this.initTrails();
+
+		if (this.homingSharpness != 0)
+			this.updateHoming();
+
+		if (this.hitExplosion != null)
+		{
+			this.playPopSound = false;
+			this.outlineColorR = 255;
+			this.outlineColorG = (((int) this.age % 80) / 40 == 1) ? 255 : 0;
+			this.outlineColorB = 0;
+		}
+
+		if (this.freezing || this.boosting)
+			this.playPopSound = false;
+
 		if (!this.isRemote && ScreenPartyHost.isServer && (this.vX != this.lastOriginalVX || this.vY != this.lastOriginalVY) && !justBounced)
 			Game.eventsOut.add(new EventBulletUpdate(this));
 
@@ -859,10 +1257,8 @@ public class Bullet extends Movable implements IDrawableLightSource
 				freeIDs.add(this.networkID);
 				idMap.remove(this.networkID);
 
-				if (this.affectsMaxLiveBullets)
-				{
+				if (this.affectsMaxLiveBullets && this.reboundSuccessor == null)
 					this.item.liveBullets--;
-				}
 
 				if (!this.isRemote)
 					this.onDestroy();
@@ -984,7 +1380,8 @@ public class Bullet extends Movable implements IDrawableLightSource
 			Game.removeMovables.add(this);
 		}
 
-		if (this.effect != BulletEffect.none && !this.addedTrail && !this.destroy && Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001)
+		if (this.effect != BulletEffect.none && !this.addedTrail && !this.destroy &&
+				(Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && Movable.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
 		{
 			this.addTrail(true);
 		}
@@ -1012,6 +1409,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public void addTrail(boolean redirect)
 	{
+		if (this.trails == null)
+			this.initTrails();
+
 		this.addedTrail = true;
 
 		if (!Game.bulletTrails || this.effect == BulletEffect.none)
@@ -1021,6 +1421,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 		double x = this.collisionX;
 		double y = this.collisionY;
+		double z = this.posZ;
 
 		if (redirect)
 		{
@@ -1028,39 +1429,38 @@ public class Bullet extends Movable implements IDrawableLightSource
 			y = this.posY;
 		}
 
+		this.lastTrailAngle = this.getPolarDirection();
+
+		if (this.trail3d)
+			this.lastTrailPitch = this.getPolarPitch();
+
+		for (int i = 0; i < this.trailEffects.size(); i++)
+		{
+			Trail t = this.trailEffects.get(i);
+
+			if (!this.trail3d)
+				this.addTrailObj(i, new Trail(this, this.speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
+					t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
+			else
+				this.addTrailObj(i, new Trail3D(this, this.speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
+						t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
+		}
+	}
+
+	public void stopTrails()
+	{
 		for (ArrayList<Trail> trail : this.trails)
 		{
 			if (trail.size() > 0)
 			{
 				Trail t = trail.get(0);
-				t.spawning = false;
-				t.frontX = x;
-				t.frontY = y;
+				if (t.spawning)
+				{
+					t.spawning = false;
+					t.frontX = this.posX;
+					t.frontY = this.posY;
+				}
 			}
-		}
-
-		this.lastTrailAngle = this.getPolarDirection();
-
-		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
-			this.addTrailObj(0, new Trail(this, this.speed, x, y, this.size / 2, this.size / 2, 15 * this.size * speed / 3.125, this.lastTrailAngle, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5), redirect);
-
-		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
-			this.addTrailObj(2, new Trail(this, this.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 255, 255, 0, 255, 255, 0, 0, 0, false, 1), redirect);
-
-		if (this.effect == BulletEffect.darkFire)
-			this.addTrailObj(2, new Trail(this, this.speed, x, y, this.size / 2 * 5, this.size / 2, 10 * this.size * speed / 6.25, this.lastTrailAngle, 64, 0, 128, 255, 0, 0, 0, 0, false, 0.5), redirect);
-
-		if (this.effect == BulletEffect.fireTrail)
-		{
-			Trail t = new Trail(this, this.speed, x, y, this.size, this.size, 100 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5);
-			t.delay = 14 * this.size * speed / 6.25;
-			t.frontCircle = false;
-			this.addTrailObj(0, t, redirect);
-
-			Trail t2 = new Trail(this, this.speed, x, y, this.size, this.size, 8 * this.size * speed / 6.25, this.lastTrailAngle, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5);
-			t2.delay = 6 * this.size * speed / 6.25;
-			t2.backCircle = false;
-			this.addTrailObj(1, t2, redirect);
 		}
 	}
 
@@ -1073,19 +1473,65 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 		this.trails[group].add(0, t);
 
-		if (redirect && old != null)
+		if (old != null && old.spawning)
 		{
-			double angle = this.getPolarDirection();
-			double offset = Movable.angleBetween(angle, old.angle) / 2;
-			old.setFrontAngleOffset(offset);
-			t.setBackAngleOffset(-offset);
+			old.spawning = false;
+			old.frontX = t.backX;
+			old.frontY = t.backY;
+
+			if (redirect)
+			{
+				double angle = this.getPolarDirection();
+				double offset = Movable.angleBetween(angle, old.angle) / 2;
+
+				if (t instanceof Trail3D && old instanceof Trail3D)
+				{
+					Trail3D t1 = (Trail3D) t;
+					Trail3D old1 = (Trail3D) old;
+					double offset2 = Movable.angleBetween(t1.pitch, old1.pitch) / 2;
+					old1.setFrontAngleOffset(offset, offset2);
+					t1.setBackAngleOffset(-offset, -offset2);
+				}
+				else
+				{
+					old.setFrontAngleOffset(offset);
+					t.setBackAngleOffset(-offset);
+				}
+			}
 		}
 	}
 
 	@Override
 	public void draw()
 	{
+		if (this.delay > 0)
+			return;
+
 		double glow = this.getAttributeValue(AttributeModifier.glow, 0.5);
+
+		if (this.freezing && Game.bulletTrails)
+		{
+			for (int i = 0; i < 30 - 10 * Math.sin(this.age / 12.0); i++)
+			{
+				Drawing.drawing.setColor(255, 255, 255, 20, 1);
+
+				if (Game.enable3d)
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, i * 4, i * 4);
+				else
+					Drawing.drawing.fillGlow(this.posX, this.posY, i * 4, i * 4);
+			}
+		}
+
+		if (this.boosting && Game.glowEnabled)
+		{
+			double frac = Math.min(1, this.destroyTimer / 60);
+			Drawing.drawing.setColor(255, 180, 0, 180 * frac, 1);
+
+			if (Game.enable3d)
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 8, this.size * 8);
+			else
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 8, this.size * 8);
+		}
 
 		if (Game.glowEnabled)
 		{
@@ -1116,6 +1562,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 * sizeMul, this.size * 4 * sizeMul, shade);
 			}
 		}
+
+		if (this.trails == null)
+			this.initTrails();
 
 		for (ArrayList<Trail> trail : this.trails)
 		{
@@ -1173,6 +1622,33 @@ public class Bullet extends Movable implements IDrawableLightSource
 				Drawing.drawing.fillOval(posX, posY, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6);
 
 		}
+
+		if (this.homingSharpness != 0)
+			this.drawHoming();
+	}
+
+	public void drawHoming()
+	{
+		double limit = 50;
+		if (!ScreenGame.finishedQuick && this.homingTarget != null)
+		{
+			double frac;
+
+			frac = Math.min(homingTargetTime / limit, 1);
+
+			double s = (2 - frac) * 80;
+			double d = Math.min((1 - this.destroyTimer / this.maxDestroyTimer) * 2, 1);
+
+			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+			Drawing.drawing.drawImage(frac * Math.PI / 2 + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY), "cursor.png", this.homingTarget.posX, this.homingTarget.posY, s, s);
+
+			if (Game.glowEnabled)
+			{
+				Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 16, this.size * 16);
+			}
+		}
+		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, 255, 1);
 	}
 
 	@Override
@@ -1195,7 +1671,55 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public void onDestroy()
 	{
+		if (!ScreenPartyLobby.isClient)
+		{
+			if (this.hitExplosion != null)
+			{
+				this.hitExplosion.posX = this.posX;
+				this.hitExplosion.posY = this.posY;
+				this.hitExplosion.explode();
+			}
 
+			if (this.freezing)
+			{
+				Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
+				Drawing.drawing.playGlobalSound("freeze.ogg");
+			}
+		}
+
+		if (this.boosting)
+		{
+			if (Game.playerTank != null && !Game.playerTank.destroy)
+			{
+				double distsq = Math.pow(this.posX - Game.playerTank.posX, 2) + Math.pow(this.posY - Game.playerTank.posY, 2);
+
+				double radius = 250000;
+				if (distsq <= radius)
+				{
+					Drawing.drawing.playSound("boost.ogg", (float) (10.0 / this.size), (float) ((radius - distsq) / radius));
+				}
+			}
+
+			if (Game.effectsEnabled)
+			{
+				for (int i = 0; i < 25 * Game.effectMultiplier; i++)
+				{
+					Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
+					double var = 50;
+
+					e.colR = Math.min(255, Math.max(0, this.outlineColorR + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, this.outlineColorG + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, this.outlineColorB + Math.random() * var - var / 2));
+
+					if (Game.enable3d)
+						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() + 0.5);
+					else
+						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() + 0.5);
+
+					Game.effects.add(e);
+				}
+			}
+		}
 	}
 
 	public void addDestroyEffect()

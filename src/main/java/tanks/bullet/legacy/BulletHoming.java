@@ -1,6 +1,8 @@
-package tanks.bullet;
+package tanks.bullet.legacy;
 
 import tanks.*;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletArc;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.network.event.EventBulletUpdateTarget;

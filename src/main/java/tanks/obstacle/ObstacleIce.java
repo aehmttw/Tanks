@@ -66,10 +66,17 @@ public class ObstacleIce extends Obstacle
         }
     }
 
+    @Override
     public double getTileHeight()
     {
         double frac = Obstacle.draw_size / Game.tile_size;
         return -frac * 15;
+    }
+
+    @Override
+    public double getEdgeDrawDepth()
+    {
+        return -15;
     }
 
     public double getGroundHeight()

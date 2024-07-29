@@ -22,7 +22,7 @@ public class TankMustard extends TankAIControlled
         this.enablePredictiveFiring = true;
         this.bullet.bulletClass = BulletArc.class;
         this.bullet.maxLiveBullets = 5;
-        this.bullet.effect = Bullet.BulletEffect.none;
+        this.bullet.effect = Bullet.BulletEffect.trail;
         this.bullet.size = 25;
         this.turretAimSpeed = 0.02;
         this.enableLookingAtTargetEnemy = false;

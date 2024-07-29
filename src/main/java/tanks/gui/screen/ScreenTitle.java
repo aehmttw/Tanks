@@ -397,11 +397,14 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		about.draw();
 
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR), Turret.calculateSecondaryColor(Game.player.colorG), Turret.calculateSecondaryColor(Game.player.colorB));
+		if (Game.player.enableTertiaryColor)
+			Drawing.drawing.setColor(Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);
+		else
+			Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR), Turret.calculateSecondaryColor(Game.player.colorG), Turret.calculateSecondaryColor(Game.player.colorB));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
 
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.turretColorR), Turret.calculateSecondaryColor(Game.player.turretColorG), Turret.calculateSecondaryColor(Game.player.turretColorB));
+		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR2), Turret.calculateSecondaryColor(Game.player.colorG2), Turret.calculateSecondaryColor(Game.player.colorB2));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
@@ -409,7 +412,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
 
-		Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
+		Drawing.drawing.setColor(Game.player.colorR2, Game.player.colorG2, Game.player.colorB2);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 

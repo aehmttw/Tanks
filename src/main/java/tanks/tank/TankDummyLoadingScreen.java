@@ -15,9 +15,9 @@ public class TankDummyLoadingScreen extends Tank
 		this.colorR = Game.player.colorR;
 		this.colorG = Game.player.colorG;
 		this.colorB = Game.player.colorB;
-		this.secondaryColorR = Game.player.turretColorR;
-		this.secondaryColorG = Game.player.turretColorG;
-		this.secondaryColorB = Game.player.turretColorB;
+		this.secondaryColorR = Game.player.colorR2;
+		this.secondaryColorG = Game.player.colorG2;
+		this.secondaryColorB = Game.player.colorB2;
 
 		this.description = "A spinning tank shown on the loading screen";
 	}

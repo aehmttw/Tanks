@@ -20,6 +20,10 @@ public class EventUpdateTankColors extends PersonalEvent
     public int colorG2;
     public int colorB2;
 
+    public int colorR3;
+    public int colorG3;
+    public int colorB3;
+
     public EventUpdateTankColors()
     {
 
@@ -33,9 +37,13 @@ public class EventUpdateTankColors extends PersonalEvent
         this.colorG = p.colorG;
         this.colorB = p.colorB;
 
-        this.colorR2 = p.turretColorR;
-        this.colorG2 = p.turretColorG;
-        this.colorB2 = p.turretColorB;
+        this.colorR2 = p.colorR2;
+        this.colorG2 = p.colorG2;
+        this.colorB2 = p.colorB2;
+
+        this.colorR3 = p.colorR3;
+        this.colorG3 = p.colorG3;
+        this.colorB3 = p.colorB3;
     }
 
     @Override
@@ -48,6 +56,9 @@ public class EventUpdateTankColors extends PersonalEvent
         b.writeInt(this.colorR2);
         b.writeInt(this.colorG2);
         b.writeInt(this.colorB2);
+        b.writeInt(this.colorR3);
+        b.writeInt(this.colorG3);
+        b.writeInt(this.colorB3);
     }
 
     @Override
@@ -60,6 +71,9 @@ public class EventUpdateTankColors extends PersonalEvent
         this.colorR2 = b.readInt();
         this.colorG2 = b.readInt();
         this.colorB2 = b.readInt();
+        this.colorR3 = b.readInt();
+        this.colorG3 = b.readInt();
+        this.colorB3 = b.readInt();
     }
 
     @Override
@@ -79,6 +93,9 @@ public class EventUpdateTankColors extends PersonalEvent
                         p.colorR2 = this.colorR2;
                         p.colorG2 = this.colorG2;
                         p.colorB2 = this.colorB2;
+                        p.colorR3 = this.colorR3;
+                        p.colorG3 = this.colorG3;
+                        p.colorB3 = this.colorB3;
                     }
                 }
             }

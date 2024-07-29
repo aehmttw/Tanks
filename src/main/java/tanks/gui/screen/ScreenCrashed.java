@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenCrashed extends Screen
@@ -14,6 +15,9 @@ public class ScreenCrashed extends Screen
 
 		if (Math.random() < 0.01)
 			sadFace = ":)";
+
+		this.music = "ready_music_3.ogg";
+		Panel.forceRefreshMusic = true;
 	}
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", () -> System.exit(0));
@@ -53,8 +57,18 @@ public class ScreenCrashed extends Screen
 		drawing.displayInterfaceText(50, 290, false, "Also, you may want to report this crash!");
 
 		drawing.displayInterfaceText(50, 350,  false, "Crash details:");
+
+		double boxWidth = 1300;
+		double width = 0;
+		width = Math.max(Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale, width);
+		width = Math.max(Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashLine) / Drawing.drawing.interfaceScale, width);
+
+		double scale = Math.min(1, boxWidth / width);
+		drawing.setInterfaceFontSize(24 * scale);
 		drawing.drawInterfaceText(50, 380, Game.crashMessage, false);
 		drawing.drawInterfaceText(50, 410, Game.crashLine, false);
+
+		drawing.setInterfaceFontSize(24);
 		drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version);
 
 		drawing.displayInterfaceText(50, 500,  false, "Check the crash report file for more information: ");

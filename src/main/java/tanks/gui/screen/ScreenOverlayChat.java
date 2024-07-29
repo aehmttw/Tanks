@@ -141,7 +141,10 @@ public class ScreenOverlayChat
 
                             Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, size, size, 0);
 
-                            Drawing.drawing.setColor((c.r1 + c.r2) / 2, (c.g1 + c.g2) / 2, (c.b1 + c.b2) / 2);
+                            if (c.r3 >= 0)
+                                Drawing.drawing.setColor(c.r3, c.g3, c.b3);
+                            else
+                                Drawing.drawing.setColor((c.r1 + c.r2) / 2, (c.g1 + c.g2) / 2, (c.b1 + c.b2) / 2);
                             Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
                         }
 

@@ -26,11 +26,16 @@ public class Player
     public int colorG = 150;
     public int colorB = 255;
 
-    public int turretColorR = (int) Turret.calculateSecondaryColor(colorR);
-    public int turretColorG = (int) Turret.calculateSecondaryColor(colorG);
-    public int turretColorB = (int) Turret.calculateSecondaryColor(colorB);
+    public int colorR2 = (int) Turret.calculateSecondaryColor(colorR);
+    public int colorG2 = (int) Turret.calculateSecondaryColor(colorG);
+    public int colorB2 = (int) Turret.calculateSecondaryColor(colorB);
+
+    public int colorR3 = (this.colorR + this.colorR2) / 2;
+    public int colorG3 = (this.colorG + this.colorG2) / 2;
+    public int colorB3 = (this.colorB + this.colorB2) / 2;
 
     public boolean enableSecondaryColor = false;
+    public boolean enableTertiaryColor = false;
 
     protected ConnectedPlayer connectedPlayer;
 
@@ -202,9 +207,12 @@ public class Player
         this.connectedPlayer.colorR = this.colorR;
         this.connectedPlayer.colorG = this.colorG;
         this.connectedPlayer.colorB = this.colorB;
-        this.connectedPlayer.colorR2 = this.turretColorR;
-        this.connectedPlayer.colorG2 = this.turretColorG;
-        this.connectedPlayer.colorB2 = this.turretColorB;
+        this.connectedPlayer.colorR2 = this.colorR2;
+        this.connectedPlayer.colorG2 = this.colorG2;
+        this.connectedPlayer.colorB2 = this.colorB2;
+        this.connectedPlayer.colorR3 = this.colorR3;
+        this.connectedPlayer.colorG3 = this.colorG3;
+        this.connectedPlayer.colorB3 = this.colorB3;
         return this.connectedPlayer;
     }
 }

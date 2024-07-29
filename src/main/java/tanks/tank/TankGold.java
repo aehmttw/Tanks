@@ -2,7 +2,8 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletBoost;
+import tanks.bullet.BulletBoost2;
+import tanks.bullet.legacy.BulletBoost;
 
 /**
  * A tank which speeds up its allies and becomes explosive as a last stand
@@ -26,7 +27,7 @@ public class TankGold extends TankAIControlled
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
 		this.bullet.speed = 25 / 4.0;
-		this.bullet.bulletClass = BulletBoost.class;
+		this.bullet.bulletClass = BulletBoost2.class;
 		this.bullet.name = "Booster bullet";
 		this.enableSuicide = true;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.keep_distance;

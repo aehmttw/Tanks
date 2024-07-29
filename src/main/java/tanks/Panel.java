@@ -326,6 +326,7 @@ public class Panel
 		{
 			Arrays.fill(Game.game.heightGrid[i], -1000);
 			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
+			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
 		}
 
 		if (ScreenPartyHost.isServer)

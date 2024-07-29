@@ -2,7 +2,8 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletFreeze;
+import tanks.bullet.BulletFreeze2;
+import tanks.bullet.legacy.BulletFreeze;
 
 /**
  * A support tank which shoots freezing bullets that deal low damage
@@ -25,7 +26,7 @@ public class TankCyan extends TankAIControlled
 		this.bullet.effect = Bullet.BulletEffect.ice;
 		this.bullet.speed = 25.0 / 8;
 		this.bullet.damage = 0.25;
-		this.bullet.bulletClass = BulletFreeze.class;
+		this.bullet.bulletClass = BulletFreeze2.class;
 		this.bullet.name = "Freezing bullet";
 		this.enableLookingAtTargetEnemy = false;
 		this.turnChance = 0.001;

@@ -51,10 +51,11 @@ public class Trail implements IDrawable
 
     public Movable movable;
 
-    public Trail(Movable m, double speed, double backX, double backY, double backWidth, double frontWidth, double length, double angle,
+    public Trail(Movable m, double speed, double backX, double backY,
+                 double delay, double backWidth, double frontWidth, double length, double angle,
                  double frontR, double frontG, double frontB, double frontA,
                  double backR, double backG, double backB, double backA,
-                 boolean glow, double luminosity)
+                 boolean glow, double luminosity, boolean frontCircle, boolean backCircle)
     {
         this.movable = m;
         this.speed = speed;
@@ -67,6 +68,7 @@ public class Trail implements IDrawable
         this.backWidth = backWidth;
         this.frontWidth = frontWidth;
         this.maxLength = length;
+        this.delay = delay;
 
         this.frontR = frontR;
         this.frontG = frontG;
@@ -78,6 +80,9 @@ public class Trail implements IDrawable
         this.backB = backB;
         this.backA = backA;
         this.luminosity = luminosity;
+
+        this.frontCircle = frontCircle;
+        this.backCircle = backCircle;
 
         this.glow = glow;
     }
@@ -294,13 +299,13 @@ public class Trail implements IDrawable
 
             if (trail3d)
                 drawTube3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3),
-                        frontWidth, r, g, b, a,
+                        frontWidth, frac1 >= 0 ? frontAngleOffset : 0, r, g, b, a,
                         this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4),
-                        backWidth, Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB, Drawing.drawing.currentColorA);
+                        backWidth, frac2 <= 1 ? backAngleOffset : 0, Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB, Drawing.drawing.currentColorA);
         }
     }
 
-    public void drawTube3D(double frontX, double frontY, double frontWidth, double frontR, double frontG, double frontB, double frontA, double backX, double backY, double backWidth, double backR, double backG, double backB, double backA)
+    public void drawTube3D(double frontX, double frontY, double frontWidth, double frontAngleOffset, double frontR, double frontG, double frontB, double frontA, double backX, double backY, double backWidth, double backAngleOffset, double backR, double backG, double backB, double backA)
     {
         Game.game.window.shapeRenderer.setBatchMode(true, true, Game.enable3d, this.glow, false);
 
@@ -317,10 +322,10 @@ public class Trail implements IDrawable
             double z2Front = vert2 * frontWidth + this.movable.posZ;
             double z1Back = vert1 * backWidth + this.movable.posZ;
             double z2Back = vert2 * backWidth + this.movable.posZ;
-            double oxFront = frontWidth * Math.cos(this.angle + this.frontAngleOffset + Math.PI / 2);
-            double oyFront = frontWidth * Math.sin(this.angle + this.frontAngleOffset + Math.PI / 2);
-            double oxBack = backWidth * Math.cos(this.angle + this.backAngleOffset + Math.PI / 2);
-            double oyBack = backWidth * Math.sin(this.angle + this.backAngleOffset + Math.PI / 2);
+            double oxFront = frontWidth * Math.cos(this.angle + frontAngleOffset + Math.PI / 2);
+            double oyFront = frontWidth * Math.sin(this.angle + frontAngleOffset + Math.PI / 2);
+            double oxBack = backWidth * Math.cos(this.angle + backAngleOffset + Math.PI / 2);
+            double oyBack = backWidth * Math.sin(this.angle + backAngleOffset + Math.PI / 2);
             double frontX1 = frontX + oxFront * hor1;
             double frontX2 = frontX + oxFront * hor2;
             double frontY1 = frontY + oyFront * hor1;
@@ -357,8 +362,8 @@ public class Trail implements IDrawable
             if (back)
                 angleOffset = Math.PI;
 
-            double size = o * 1.0 / polyCount;
-            double size2 = (o + 1.0) / polyCount2;
+            double size = o * 1.0 / (outerPolyCount);
+            double size2 = (o + 1.0) / (outerPolyCount);
             double fX = frontX + size * Math.cos(this.angle + angleOffset) * frontWidth;
             double fY = frontY + size * Math.sin(this.angle + angleOffset) * frontWidth;
             double fXi = frontX + size2 * Math.cos(this.angle + angleOffset) * frontWidth;

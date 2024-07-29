@@ -43,8 +43,6 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
     //Effects that have this set to true are removed faster when the level has ended
     public boolean fastRemoveOnExit = false;
 
-    public int drawLayer = 7;
-
     public State state = State.live;
 
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
@@ -85,6 +83,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         this.posY = y;
         this.posZ = z;
         this.type = type;
+        this.drawLevel = 7;
 
         this.prevGridX = (int) (this.posX / Game.tile_size);
         this.prevGridY = (int) (this.posY / Game.tile_size);
@@ -166,7 +165,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
             this.maxAge = 50;
         else if (type == EffectType.chain || type == EffectType.tutorialProgress)
         {
-            this.drawLayer = 9;
+            this.drawLevel = 9;
             this.maxAge = 100;
             this.size = Game.tile_size * 2;
         }
@@ -198,7 +197,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         this.distance = 0;
         this.radius = 0;
         this.enableGlow = true;
-        this.drawLayer = 7;
+        this.drawLevel = 7;
         this.state = State.live;
         this.force = false;
         this.fastRemoveOnExit = false;
@@ -371,9 +370,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
         else if (this.type == EffectType.stun)
         {
-            double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+            double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
             double angle = this.angle + this.age / 20;
-            double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+            double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
 
             drawing.setColor(this.colR, this.colG, this.colB, 255, 0.5);
             double[] o = Movable.getLocationInDirection(angle, distance);
@@ -676,9 +675,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
         else if (this.type == EffectType.stun)
         {
-            double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+            double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
             double angle = this.angle + this.age / 20;
-            double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) * 3 / this.maxAge), Math.min(1, this.age * 3 / this.maxAge)));
+            double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
 
             double[] o = Movable.getLocationInDirection(angle, distance);
 

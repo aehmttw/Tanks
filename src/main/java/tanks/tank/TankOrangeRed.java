@@ -2,7 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletExplosive;
+import tanks.bullet.BulletExplosive2;
 
 /**
  * A tank which shoots explosive bullets
@@ -21,7 +21,7 @@ public class TankOrangeRed extends TankAIControlled
         this.cooldownRandom = 40;
         this.cooldownBase = 160;
         this.turretAimSpeed = 0.02;
-        this.bullet.bulletClass = BulletExplosive.class;
+        this.bullet.bulletClass = BulletExplosive2.class;
         this.bullet.bounces = 0;
         this.bullet.effect = Bullet.BulletEffect.trail;
         this.bullet.size = 20;

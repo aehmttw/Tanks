@@ -21,6 +21,9 @@ public class ChatMessage
 	public double r2;
 	public double g2;
 	public double b2;
+	public double r3 = -1;
+	public double g3 = -1;
+	public double b3 = -1;
 
 	public ChatMessage(String s)
 	{
@@ -50,6 +53,9 @@ public class ChatMessage
 			this.r2 = Integer.parseInt(c[3]);
 			this.g2 = Integer.parseInt(c[4]);
 			this.b2 = Integer.parseInt(c[5]);
+			this.r3 = Integer.parseInt(c[6]);
+			this.g3 = Integer.parseInt(c[7]);
+			this.b3 = Integer.parseInt(c[8]);
 		}
 
 		this.rawMessage = n + ": " + s;
@@ -66,9 +72,12 @@ public class ChatMessage
 		this.r1 = p.colorR;
 		this.g1 = p.colorG;
 		this.b1 = p.colorB;
-		this.r2 = p.turretColorR;
-		this.g2 = p.turretColorG;
-		this.b2 = p.turretColorB;
+		this.r2 = p.colorR2;
+		this.g2 = p.colorG2;
+		this.b2 = p.colorB2;
+		this.r3 = p.colorR3;
+		this.g3 = p.colorG3;
+		this.b3 = p.colorB3;
 		this.enableTankIcon = true;
 
 		String n = "    " + p.username;

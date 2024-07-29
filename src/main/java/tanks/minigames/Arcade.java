@@ -465,9 +465,9 @@ public class Arcade extends Minigame
         t.colorR = p.colorR;
         t.colorG = p.colorG;
         t.colorB = p.colorB;
-        t.secondaryColorR = p.turretColorR;
-        t.secondaryColorG = p.turretColorG;
-        t.secondaryColorB = p.turretColorB;
+        t.secondaryColorR = p.colorR2;
+        t.secondaryColorG = p.colorG2;
+        t.secondaryColorB = p.colorB2;
         Game.movables.add(new Crate(t));
         Game.eventsOut.add(new EventAirdropTank(t));
     }

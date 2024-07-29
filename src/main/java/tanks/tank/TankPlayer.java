@@ -4,7 +4,7 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletElectric;
+import tanks.bullet.legacy.BulletElectric;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -62,9 +62,13 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		this.colorR = Game.player.colorR;
 		this.colorG = Game.player.colorG;
 		this.colorB = Game.player.colorB;
-		this.secondaryColorR = Game.player.turretColorR;
-		this.secondaryColorG = Game.player.turretColorG;
-		this.secondaryColorB = Game.player.turretColorB;
+		this.secondaryColorR = Game.player.colorR2;
+		this.secondaryColorG = Game.player.colorG2;
+		this.secondaryColorB = Game.player.colorB2;
+		this.enableTertiaryColor = Game.player.enableTertiaryColor;
+		this.tertiaryColorR = Game.player.colorR3;
+		this.tertiaryColorG = Game.player.colorG3;
+		this.tertiaryColorB = Game.player.colorB3;
 
 		if (enableDestroyCheat)
 		{

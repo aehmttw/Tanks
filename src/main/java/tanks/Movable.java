@@ -235,6 +235,11 @@ public abstract class Movable implements IDrawableForInterface, IGameObject
 		return Movable.getPolarDirection(this.vX, this.vY);
 	}
 
+	public double getPolarPitch()
+	{
+		return Math.atan(this.vZ / this.getSpeed());
+	}
+
 	public double getLastPolarDirection()
 	{
 		return Movable.getPolarDirection(this.lastVX, this.lastVY);

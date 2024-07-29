@@ -728,6 +728,7 @@ public class Level
 
 		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
 		Game.game.groundHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.game.groundEdgeHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
 		Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
 
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];

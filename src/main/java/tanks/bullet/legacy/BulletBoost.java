@@ -1,9 +1,10 @@
-package tanks.bullet;
+package tanks.bullet.legacy;
 
 import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
+import tanks.bullet.Bullet;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
@@ -19,11 +20,14 @@ public class BulletBoost extends Bullet
 	public BulletBoost(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsLiveBulletCount, ib);
+		this.overrideOutlineColor = true;
 		this.outlineColorR = 255;
 		this.outlineColorG = 180;
 		this.outlineColorB = 0;
-		this.damage = 0;
 		this.name = bullet_name;
+
+		// TODO: a way to calculate these?
+		this.damage = 0;
 		this.shouldDodge = false;
 		this.dealsDamage = false;
 

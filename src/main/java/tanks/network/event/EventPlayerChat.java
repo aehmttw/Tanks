@@ -20,7 +20,8 @@ public class EventPlayerChat extends PersonalEvent
 	{
 		this.message = m;
 		this.username = "\u00A7" + p.colorR + "," + p.colorG + "," + p.colorB + "," +
-				p.turretColorR + "," + p.turretColorG + "," + p.turretColorB + "|" + p.username;
+				p.colorR2 + "," + p.colorG2 + "," + p.colorB2 + "," +
+				p.colorR3 + "," + p.colorG3 + "," + p.colorB3 + "|" + p.username;
 	}
 
 	@Override

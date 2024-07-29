@@ -4,6 +4,7 @@ import basewindow.IBatchRenderableObject;
 import basewindow.IModel;
 import basewindow.Model;
 import basewindow.ModelPart;
+import basewindow.transformation.AxisRotation;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
@@ -691,6 +692,22 @@ public class Drawing
 		double drawSizeZ = depth * scale;
 
 		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
+	}
+
+	public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, AxisRotation[] axisRotations)
+	{
+		double drawX = gameToAbsoluteX(x, 0);
+		double drawY = gameToAbsoluteY(y, 0);
+		double drawZ = z * scale;
+
+		if (isOutOfBounds(drawX, drawY))
+			return;
+
+		double drawSizeX = width * scale;
+		double drawSizeY = height * scale;
+		double drawSizeZ = depth * scale;
+
+		m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, axisRotations, true);
 	}
 
 	public void drawRect(double x, double y, double sizeX, double sizeY)

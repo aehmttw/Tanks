@@ -1,8 +1,9 @@
-package tanks.bullet;
+package tanks.bullet.legacy;
 
 import tanks.AreaEffectFreeze;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.bullet.Bullet;
 import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 
@@ -18,6 +19,7 @@ public class BulletFreeze extends Bullet
 	public BulletFreeze(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet ib)
 	{
 		super(x, y, bounces, t, affectsLiveBulletCount, ib);
+		this.overrideOutlineColor = true;
 		this.outlineColorR = 255;
 		this.outlineColorG = 255;
 		this.outlineColorB = 255;

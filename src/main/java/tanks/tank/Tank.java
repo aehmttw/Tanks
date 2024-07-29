@@ -166,7 +166,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double drawAge = 0;
 	public double destroyTimer = 0;
 	public boolean hasCollided = false;
-	public double flashAnimation = 0;
+	public double damageFlashAnimation = 0;
+	public double healFlashAnimation = 0;
 	public double treadAnimation = 0;
 	public boolean drawTread = false;
 
@@ -461,7 +462,8 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.attributeImmunities.addAll(Arrays.asList("ice_slip", "ice_accel", "ice_max_speed", "freeze"));
 		}
 
-		this.flashAnimation = Math.max(0, this.flashAnimation - 0.05 * Panel.frameFrequency);
+		this.damageFlashAnimation = Math.max(0, this.damageFlashAnimation - 0.05 * Panel.frameFrequency);
+		this.healFlashAnimation = Math.max(0, this.healFlashAnimation - 0.05 * Panel.frameFrequency);
 
 		if (destroy)
 		{
@@ -754,9 +756,10 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 
-		double flash = Math.min(1, this.flashAnimation);
+		double dmgFlash = Math.min(1, this.damageFlashAnimation);
+		double healFlash = Math.min(1, this.healFlashAnimation);
 
-		Drawing.drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash), this.colorB * (1 - flash), 255, luminance);
+		Drawing.drawing.setColor(this.colorR * (1 - Math.max(dmgFlash, healFlash)) + 255 * dmgFlash, this.colorG * (1 - Math.max(dmgFlash, healFlash)) + 255 * healFlash, this.colorB * (1 - Math.max(dmgFlash, healFlash)), 255, luminance);
 
 		if (forInterface)
 		{
@@ -989,7 +992,9 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.health > 0)
 		{
 			if (finalAmount > 0)
-				this.flashAnimation = 1;
+				this.damageFlashAnimation = 1;
+			else if (finalAmount < 0)
+				this.healFlashAnimation = 1;
 		}
 		else
 			this.destroy = true;
@@ -1216,10 +1221,20 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)
 	{
-		drawTank(x, y, r1, g1, b1, r2, g2, b2, Game.tile_size / 2);
+		drawTank(x, y, r1, g1, b1, r2, g2, b2, (r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, Game.tile_size / 2);
 	}
 
 	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double size)
+	{
+		drawTank(x, y, r1, g1, b1, r2, g2, b2, (r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, size);
+	}
+
+	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double r3, double g3, double b3)
+	{
+		drawTank(x, y, r1, g1, b1, r2, g2, b2, r3, g3, b3, Game.tile_size / 2);
+	}
+
+	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double r3, double g3, double b3, double size)
 	{
 		Drawing.drawing.setColor(r2, g2, b2);
 		Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, size, size, 0);
@@ -1231,7 +1246,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, size, size, 0);
 
-		Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
+		Drawing.drawing.setColor(r3, g3, b3);
 		Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
 	}
 }

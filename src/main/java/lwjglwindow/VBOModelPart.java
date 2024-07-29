@@ -1,6 +1,7 @@
 package lwjglwindow;
 
 import basewindow.*;
+import basewindow.transformation.AxisRotation;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
@@ -20,6 +21,46 @@ public class VBOModelPart extends ModelPart
     protected int vertexVBO;
     protected int texVBO;
     protected int normalVBO;
+
+    @Override
+    public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
+    {
+        IBaseShader shader = (IBaseShader) this.window.currentShader;
+
+        if (this.material.useDefaultDepthMask)
+            window.setDrawOptions(depthTest, this.material.glow, this.window.colorA >= 1.0);
+        else
+            window.setDrawOptions(depthTest, this.material.glow, this.material.depthMask);
+
+        if (this.material.customLight)
+            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
+
+        window.setCelShadingSections(this.material.celSections);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
+
+        for (AxisRotation a: axisRotations)
+        {
+            a.apply();
+        }
+
+        Scale.transform(window, sX, sY, sZ);
+
+        if (this.material.texture != null)
+            window.setTexture(this.material.texture, false);
+
+        shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
+        window.disableTexture();
+
+        glPopMatrix();
+
+        window.disableDepthtest();
+
+        if (this.material.customLight)
+            window.disableMaterialLights();
+    }
 
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)

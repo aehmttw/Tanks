@@ -535,6 +535,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public ScreenGame()
 	{
+		Game.recomputeHeightGrid();
 		this.selfBatch = false;
 		this.enableMargins = !Game.followingCam;
 
@@ -861,16 +862,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Game.player.hotbar.update();
 		minimap.update();
 
-		for (Obstacle o: Game.obstacles)
-		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-			{
-				Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
-			}
-		}
+		Game.recomputeHeightGrid();
 
 		for (int i = 0; i < Game.currentSizeX; i++)
 		{
@@ -878,6 +870,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			{
 				if (Game.game.groundHeightGrid[i][j] <= -1000)
 					Game.game.groundHeightGrid[i][j] = Game.tilesDepth[i][j];
+
+				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
+					Game.game.groundEdgeHeightGrid[i][j] = 0;
 			}
 		}
 
@@ -1984,10 +1979,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				int x = (int) (o.posX / Game.tile_size);
 				int y = (int) (o.posY / Game.tile_size);
 
-				if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
+				if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
 				{
 					Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
 					Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
+					Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
 				}
 
 				if (!Game.game.window.drawingShadow)
@@ -2061,7 +2057,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		for (Effect e: Game.effects)
 		{
-			drawables[e.drawLayer].add(e);
+			drawables[e.drawLevel].add(e);
 		}
 
 		for (Cloud c: Game.clouds)
@@ -2364,7 +2360,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 								Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, name);
 								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, name);
-								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, opacity / 255 * 25);
+								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, cp.colorR3, cp.colorG3, cp.colorB3, opacity / 255 * 25);
 							}
 						}
 					}

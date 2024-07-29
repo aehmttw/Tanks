@@ -30,7 +30,9 @@ public class EventTankUpdateHealth extends PersonalEvent
 			return;
 
 		if (t.health > health && health > 0)
-			t.flashAnimation = 1;
+			t.damageFlashAnimation = 1;
+		else if (health > t.health)
+			t.healFlashAnimation = 1;
 
 		double before = t.health;
 		t.health = health;

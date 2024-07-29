@@ -1,8 +1,6 @@
 package tanks.bullet;
 
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.network.event.EventBulletDestroyed;
@@ -31,6 +29,7 @@ public abstract class BulletInstant extends Bullet
 		this.enableExternalCollisions = false;
 		this.playPopSound = false;
 		this.playBounceSound = false;
+		this.effect = BulletEffect.none;
 	}
 
 	public void saveTarget()
@@ -116,6 +115,9 @@ public abstract class BulletInstant extends Bullet
 	@Override
 	public void collided()
 	{
+		if (this.hitStun > 0)
+			this.addElectricEffect();
+
 		this.segments.add(new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColorR, this.baseColorG, this.baseColorB));
 		this.lastX = this.collisionX;
 		this.lastY = this.collisionY;
@@ -125,6 +127,60 @@ public abstract class BulletInstant extends Bullet
 		{
 			this.xTargets.add(this.collisionX);
 			this.yTargets.add(this.collisionY);
+		}
+	}
+
+	public void addElectricEffect()
+	{
+		double dist = Math.sqrt(Math.pow(this.collisionX - this.lastX, 2) + Math.pow(this.collisionY - this.lastY, 2));
+
+		boolean glows = false;
+		double size = 0.25;
+
+		if (Game.fancyBulletTrails)
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				int segs = (int) ((Math.random() * 0.4 + 0.8) * dist / 50);
+
+				double lX = this.lastX;
+				double lY = this.lastY;
+				double lZ = this.lastZ;
+
+				for (int i = 0; i < segs; i++)
+				{
+					double frac = (i + 1.0) / (segs + 1);
+					double nX = (1 - frac) * this.lastX + frac * this.collisionX + (Math.random() - 0.5) * 50;
+					double nY = (1 - frac) * this.lastY + frac * this.collisionY + (Math.random() - 0.5) * 50;
+					double nZ = (1 - frac) * this.lastZ + frac * this.posZ + (Math.random() - 0.5) * 30;
+					Laser l = new Laser(lX, lY, lZ, nX, nY, nZ, this.size * size, this.getAngleInDirection(this.lastX, this.lastY), this.outlineColorR, this.outlineColorG, this.outlineColorB);
+					l.glows = glows;
+					this.segments.add(l);
+					lX = nX;
+					lY = nY;
+					lZ = nZ;
+				}
+				Laser l = new Laser(lX, lY, lZ, this.collisionX, this.collisionY, this.posZ, this.size * size, this.getAngleInDirection(this.lastX, this.lastY), this.outlineColorR, this.outlineColorG, this.outlineColorB);
+				l.glows = glows;
+				this.segments.add(l);
+			}
+		}
+	}
+
+	@Override
+	public void collidedWithNothing()
+	{
+		if (this.damage < 0)
+		{
+			if (this.item.cooldownBase > 0)
+				Drawing.drawing.playGlobalSound("heal_impact_1.ogg");
+			else
+			{
+				float freq = (float) (this.frameDamageMultipler / 10);
+				if (Game.game.window.touchscreen)
+					freq = 1;
+				Drawing.drawing.playGlobalSound("heal1.ogg", 1, freq);
+			}
 		}
 	}
 
@@ -155,6 +211,15 @@ public abstract class BulletInstant extends Bullet
 	@Override
 	public void update()
 	{
+		if (this.delay > 0)
+		{
+			this.delay -= Panel.frameFrequency;
+			return;
+		}
+
+		if (!this.expired)
+			this.shoot();
+
 		boolean finished = true;
 
 		for (Laser s: this.segments)
@@ -189,5 +254,13 @@ public abstract class BulletInstant extends Bullet
 	public void addTrail(boolean redirect)
 	{
 
+	}
+
+	@Override
+	public void collidedWithObject(Movable m)
+	{
+		this.playPopSound = true;
+		super.collidedWithObject(m);
+		this.playPopSound = false;
 	}
 }

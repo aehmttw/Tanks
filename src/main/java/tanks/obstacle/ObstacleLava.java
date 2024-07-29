@@ -37,9 +37,9 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
     @Override
     public void onObjectEntry(Movable m)
     {
-        if (m instanceof Tank && ((Tank) m).flashAnimation < 1 && !ScreenGame.finished)
+        if (m instanceof Tank && ((Tank) m).damageFlashAnimation < 1 && !ScreenGame.finished)
         {
-            ((Tank) m).flashAnimation = 1;
+            ((Tank) m).damageFlashAnimation = 1;
             ((Tank) m).damage(0.005 * Panel.frameFrequency, m);
         }
 

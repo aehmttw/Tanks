@@ -2,8 +2,7 @@ package tanks;
 
 import basewindow.*;
 import tanks.bullet.*;
-import tanks.bullet.legacy.BulletAir;
-import tanks.bullet.legacy.BulletFlame;
+import tanks.bullet.legacy.BulletElectric;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -62,6 +61,7 @@ public class Game
 	public boolean[][] unbreakableGrid;
 	public double[][] heightGrid;
 	public double[][] groundHeightGrid;
+	public double[][] groundEdgeHeightGrid;
 
 	public double[][] lastHeightGrid;
 
@@ -119,8 +119,8 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.5.2";
-	public static final int network_protocol = 54;
+	public static final String version = "Tanks v1.6.a";
+	public static final int network_protocol = 55;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -347,6 +347,7 @@ public class Game
 		NetworkEventMap.register(EventBulletAddAttributeModifier.class);
 		NetworkEventMap.register(EventBulletStunEffect.class);
 		NetworkEventMap.register(EventBulletUpdateTarget.class);
+		NetworkEventMap.register(EventBulletReboundIndicator.class);
 		NetworkEventMap.register(EventLayMine.class);
 		NetworkEventMap.register(EventMineRemove.class);
 		NetworkEventMap.register(EventMineChangeTimer.class);
@@ -528,16 +529,17 @@ public class Game
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
-		registerBullet(BulletFlame.class, BulletFlame.bullet_name, "bullet_flame.png");
+		registerBullet(BulletFlame2.class, BulletFlame2.bullet_name, "bullet_flame.png");
 		registerBullet(BulletLaser.class, BulletLaser.bullet_name, "bullet_laser.png");
-		registerBullet(BulletFreeze.class, BulletFreeze.bullet_name, "bullet_freeze.png");
-		registerBullet(BulletElectric.class, BulletElectric.bullet_name, "bullet_electric.png");
+		registerBullet(BulletFreeze2.class, BulletFreeze2.bullet_name, "bullet_freeze.png");
+		registerBullet(BulletElectric2.class, BulletElectric2.bullet_name, "bullet_electric.png");
 		registerBullet(BulletHealing.class, BulletHealing.bullet_name, "bullet_healing.png");
 		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
-		registerBullet(BulletExplosive.class, BulletExplosive.bullet_name, "bullet_explosive.png");
-		registerBullet(BulletBoost.class, BulletBoost.bullet_name, "bullet_boost.png");
-		registerBullet(BulletAir.class, BulletAir.bullet_name, "bullet_air.png");
-		registerBullet(BulletHoming.class, BulletHoming.bullet_name, "bullet_homing.png");
+		registerBullet(BulletExplosive2.class, BulletExplosive2.bullet_name, "bullet_explosive.png");
+		registerBullet(BulletBoost2.class, BulletBoost2.bullet_name, "bullet_boost.png");
+		registerBullet(BulletAir2.class, BulletAir2.bullet_name, "bullet_air.png");
+		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_name, "bullet_fire.png");
+		registerBullet(BulletHoming2.class, BulletHoming2.bullet_name, "bullet_homing.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
 		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
@@ -846,6 +848,41 @@ public class Game
 
 		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
 			Game.redrawGroundTiles.add(new int[]{x, y});
+
+		if (Game.enable3d && (!Game.fancyTerrain || !Game.enable3dBg))
+		{
+			if (x > 0) Game.redrawGroundTiles.add(new int[]{x - 1, y});
+			if (x < Game.currentSizeX - 1)  Game.redrawGroundTiles.add(new int[]{x + 1, y});
+			if (y > 0) Game.redrawGroundTiles.add(new int[]{x, y - 1});
+			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new int[]{x, y + 1});
+		}
+	}
+
+	public static void recomputeHeightGrid()
+	{
+		for (int i = 0; i < Game.game.heightGrid.length; i++)
+		{
+			Arrays.fill(Game.game.heightGrid[i], -1000);
+			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
+			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
+		}
+
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle o = Game.obstacles.get(i);
+
+			if (o.replaceTiles)
+				o.postOverride();
+
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
+			{
+				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
+				Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
+			}
+		}
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -1038,6 +1075,7 @@ public class Game
 		Game.tilesFlash = new double[28][18];
 		Game.game.heightGrid = new double[28][18];
 		Game.game.groundHeightGrid = new double[28][18];
+		Game.game.groundEdgeHeightGrid = new double[28][18];
 		Game.tileDrawables = new Obstacle[28][18];
 
 		double var = 0;
@@ -1117,6 +1155,17 @@ public class Game
 			r = 0;
 		else
 			r = Game.game.heightGrid[x][y];
+
+		return r;
+	}
+
+	public static double sampleEdgeGroundDepth(int x, int y)
+	{
+		double r;
+		if (!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
+			r = 0;
+		else
+			r = Game.game.groundEdgeHeightGrid[x][y];
 
 		return r;
 	}

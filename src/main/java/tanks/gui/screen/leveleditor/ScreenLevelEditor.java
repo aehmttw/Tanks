@@ -1996,19 +1996,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 
 		if (Game.enable3d)
-			for (int i = 0; i < Game.obstacles.size(); i++)
-			{
-				Obstacle o = Game.obstacles.get(i);
-
-				if (o.replaceTiles)
-					o.postOverride();
-
-				int x = (int) (o.posX / Game.tile_size);
-				int y = (int) (o.posY / Game.tile_size);
-
-				if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-					Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-			}
+			Game.recomputeHeightGrid();
 
 		Drawing.drawing.setColor(174, 92, 16);
 

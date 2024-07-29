@@ -51,6 +51,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void update()
     {
+        Game.recomputeHeightGrid();
         this.screenLevelEditor.updateMusic(this.musicInstruments);
 
         if (Game.game.input.editorPause.isValid())

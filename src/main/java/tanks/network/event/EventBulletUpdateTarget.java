@@ -2,7 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletHoming;
+import tanks.bullet.legacy.BulletHoming;
 import tanks.tank.Tank;
 
 public class EventBulletUpdateTarget extends PersonalEvent
@@ -15,14 +15,14 @@ public class EventBulletUpdateTarget extends PersonalEvent
 
     }
 
-    public EventBulletUpdateTarget(BulletHoming b)
+    public EventBulletUpdateTarget(Bullet b)
     {
         this.bullet = b.networkID;
 
-        if (b.target == null)
+        if (b.homingTarget == null)
             this.target = -1;
         else
-            this.target = b.target.networkID;
+            this.target = b.homingTarget.networkID;
     }
 
     @Override
@@ -44,9 +44,9 @@ public class EventBulletUpdateTarget extends PersonalEvent
     {
         Bullet b = Bullet.idMap.get(this.bullet);
 
-        if (b instanceof BulletHoming && this.clientID == null)
+        if (this.clientID == null)
         {
-            ((BulletHoming) b).target = Tank.idMap.get(this.target);
+            b.homingTarget = Tank.idMap.get(this.target);
         }
     }
 }

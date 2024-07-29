@@ -1,6 +1,7 @@
 package lwjglwindow;
 
 import basewindow.*;
+import basewindow.transformation.AxisRotation;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
@@ -47,6 +48,12 @@ public class VBOPosedModel extends PosedModel
         }
 
         this.matrices = new float[this.model.bones.size() * 16];
+    }
+
+    @Override
+    public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
+    {
+
     }
 
     @Override

@@ -3,12 +3,19 @@ package lwjglwindow;
 import basewindow.BaseWindow;
 import basewindow.Model;
 import basewindow.ModelPart;
+import basewindow.transformation.AxisRotation;
 
 import java.util.ArrayList;
 
 public class ImmediateModeModelPart extends ModelPart
 {
     public BaseWindow window;
+
+    @Override
+    public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
+    {
+
+    }
 
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)

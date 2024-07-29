@@ -359,7 +359,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	}
 
 	/**
-	 * Returns height of tile in terms of drawing, to determine faces that should be drawn of tiles next to it
+	 * @return height of tile in terms of drawing, for things like block particle collision
 	 * */
 	public double getTileHeight()
 	{
@@ -367,6 +367,14 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 			return 0;
 
 		return this.stackHeight * Game.tile_size;
+	}
+
+	/**
+	 * @return how deep the edges of the tile span - for example, ice tiles go down to -15, but most tiles only go down to 0
+	 */
+	public double getEdgeDrawDepth()
+	{
+		return 0;
 	}
 
 

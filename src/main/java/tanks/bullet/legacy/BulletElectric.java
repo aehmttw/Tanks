@@ -1,12 +1,13 @@
-package tanks.bullet;
+package tanks.bullet.legacy;
 
 import tanks.*;
-import tanks.AttributeModifier.Operation;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletInstant;
+import tanks.bullet.Laser;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.item.ItemBullet;
 import tanks.network.event.EventBulletDestroyed;
 import tanks.network.event.EventBulletInstantWaypoint;
-import tanks.network.event.EventBulletStunEffect;
 import tanks.network.event.EventShootBullet;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
@@ -42,6 +43,8 @@ public class BulletElectric extends BulletInstant
 		this.baseColorR = 0;
 		this.baseColorG = 255;
 		this.baseColorB = 255;
+
+		this.hitStun = 100;
 	}
 
 	public void sendEvent()
@@ -165,10 +168,6 @@ public class BulletElectric extends BulletInstant
 		this.posX = movable.posX;
 		this.posY = movable.posY;
 
-		AttributeModifier a = new AttributeModifier(AttributeModifier.velocity, Operation.multiply, -1);
-		a.duration = 100;
-		movable.addAttribute(a);
-
 		if (chain > 0 && !this.tank.isRemote)
 		{
 			double nd = Double.MAX_VALUE;
@@ -206,33 +205,6 @@ public class BulletElectric extends BulletInstant
 				Game.movables.add(b);
 			}
 		}
-
-		if (!this.tank.isRemote)
-		{
-			if (movable instanceof Tank)
-			{
-				Game.eventsOut.add(new EventBulletStunEffect(this.posX, this.posY, this.posZ, 1));
-
-				if (Game.effectsEnabled)
-				{
-					for (int i = 0; i < 25 * Game.effectMultiplier; i++)
-					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.stun);
-						double var = 50;
-						e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-						e.glowR = 0;
-						e.glowG = 128;
-						e.glowB = 128;
-						Game.effects.add(e);
-					}
-				}
-			}
-			else
-				movable.destroy = true;
-		}
-
 	}
 
 	@Override

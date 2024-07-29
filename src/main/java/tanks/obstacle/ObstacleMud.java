@@ -50,8 +50,8 @@ public class ObstacleMud extends Obstacle
             double a = m.getPolarDirection();
             Effect e1 = Effect.createNewEffect(m.posX, m.posY, Effect.EffectType.piece);
             Effect e2 = Effect.createNewEffect(m.posX, m.posY, Effect.EffectType.piece);
-            e1.drawLayer = 1;
-            e2.drawLayer = 1;
+            e1.drawLevel = 1;
+            e2.drawLevel = 1;
             e1.setPolarMotion(a - Math.PI / 2, t.size * 0.25);
             e2.setPolarMotion(a + Math.PI / 2, t.size * 0.25);
             e1.size = t.size / 5;

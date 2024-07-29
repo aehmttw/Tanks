@@ -70,11 +70,14 @@ public class ScreenOptionsPersonalize extends Screen
 
 		Button.drawGlow(color.posX - color.sizeX / 2 + color.sizeY / 2, color.posY + 2.5, color.sizeY * 3 / 4, color.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 
-		Drawing.drawing.setColor(Game.player.turretColorR, Game.player.turretColorG, Game.player.turretColorB);
+		Drawing.drawing.setColor(Game.player.colorR2, Game.player.colorG2, Game.player.colorB2);
 		Drawing.drawing.fillInterfaceOval(color.posX - color.sizeX / 2 + color.sizeY / 2, color.posY, color.sizeY * 0.8, color.sizeY * 0.8);
 
-		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+		Drawing.drawing.setColor(Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);
 		Drawing.drawing.fillInterfaceOval(color.posX - color.sizeX / 2 + color.sizeY / 2, color.posY, color.sizeY * 0.6, color.sizeY * 0.6);
+
+		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+		Drawing.drawing.fillInterfaceOval(color.posX - color.sizeX / 2 + color.sizeY / 2, color.posY, color.sizeY * 0.4, color.sizeY * 0.4);
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);

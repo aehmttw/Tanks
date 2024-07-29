@@ -538,12 +538,21 @@ public class TerrainRenderer
             }
             else
             {
+                byte o = BaseShapeRenderer.hide_behind_face;
+                if (!Game.fancyTerrain || !Game.enable3dBg)
+                {
+                    if (Game.sampleEdgeGroundDepth(i - 1, j) >= 0) o |= BaseShapeRenderer.hide_left_face;
+                    if (Game.sampleEdgeGroundDepth(i + 1, j) >= 0) o |= BaseShapeRenderer.hide_right_face;
+                    if (Game.sampleEdgeGroundDepth(i, j - 1) >= 0) o |= BaseShapeRenderer.hide_high_face;
+                    if (Game.sampleEdgeGroundDepth(i, j + 1) >= 0) o |= BaseShapeRenderer.hide_low_face;
+                }
+
                 this.tiles[i][j].obstacleAbove = null;
                 this.addBox(this.tiles[i][j],
                         i * Game.tile_size,
                         j * Game.tile_size,
                         -Game.tile_size, Game.tile_size, Game.tile_size,
-                        Game.tile_size + depth, BaseShapeRenderer.hide_behind_face, false);
+                        Game.tile_size + depth, o, false);
             }
         }
         else

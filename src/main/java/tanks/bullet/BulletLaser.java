@@ -16,9 +16,17 @@ public class BulletLaser extends BulletInstant
 	{
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
 		this.playPopSound = false;
+
+		this.overrideBaseColor = true;
 		this.baseColorR = 255;
 		this.baseColorG = 0;
 		this.baseColorB = 0;
+
+		this.overrideOutlineColor = true;
+		this.outlineColorR = 255;
+		this.outlineColorG = 200;
+		this.outlineColorB = 200;
+
 		this.name = bullet_name;
 		this.effect = BulletEffect.none;
 		this.itemSound = "laser.ogg";
@@ -27,22 +35,5 @@ public class BulletLaser extends BulletInstant
 	public BulletLaser(double x, double y, int bounces, Tank t, ItemBullet ib)
 	{
 		this(x, y, bounces, t, false, ib);
-	}
-
-	@Override
-	public void update()
-	{
-		if (!this.expired)
-			this.shoot();
-
-		super.update();
-	}
-
-	@Override
-	public void collidedWithObject(Movable m)
-	{
-		this.playPopSound = true;
-		super.collidedWithObject(m);
-		this.playPopSound = false;
 	}
 }

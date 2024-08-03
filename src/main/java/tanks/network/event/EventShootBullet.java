@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 

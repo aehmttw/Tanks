@@ -7,7 +7,7 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBox;
-import tanks.hotbar.item.Item;
+import tanks.item.legacy.Item;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;

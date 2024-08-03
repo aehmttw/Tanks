@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletArc;
+import tanks.bullet.DefaultBullets;
 
 /**
  * A stationary tank which lobs bullets over walls
@@ -20,17 +21,14 @@ public class TankMustard extends TankAIControlled
         this.enableMovement = false;
         this.enableMineLaying = false;
         this.enablePredictiveFiring = true;
-        this.bullet.bulletClass = BulletArc.class;
-        this.bullet.maxLiveBullets = 5;
-        this.bullet.effect = Bullet.BulletEffect.trail;
-        this.bullet.size = 25;
+
+        this.setBullet(DefaultBullets.artillery_shell);
+
         this.turretAimSpeed = 0.02;
         this.enableLookingAtTargetEnemy = false;
         this.cooldownBase = 200;
         this.cooldownRandom = 100;
-        this.bullet.bounces = 0;
         this.aimAccuracyOffset = 0;
-        this.bullet.name = "Artillery shell";
 
         if (Game.tankTextures)
         {

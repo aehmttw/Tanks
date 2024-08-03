@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.DefaultBullets;
 
 /**
  * A tank which shoots fast rocket bullets
@@ -17,14 +18,13 @@ public class TankMint extends TankAIControlled
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.enableDefensiveFiring = true;
-		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 240;
 		this.turretAimSpeed = 0.02;
-		this.bullet.bounces = 0;
-		this.bullet.effect = Bullet.BulletEffect.fire;
-		this.bullet.speed = 25.0 / 4;
-		this.bullet.name = "Fire bullet";
+
+		this.setBullet(DefaultBullets.rocket);
+		this.bullet.maxLiveBullets = 1;
+
 		this.enableLookingAtTargetEnemy = false;
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;

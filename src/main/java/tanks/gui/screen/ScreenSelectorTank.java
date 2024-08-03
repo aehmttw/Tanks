@@ -7,7 +7,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;

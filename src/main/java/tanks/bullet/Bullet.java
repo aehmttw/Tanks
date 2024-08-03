@@ -1,47 +1,50 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.bullet.legacy.BulletAir;
 import tanks.bullet.legacy.BulletFlame;
+import tanks.bullet.legacy2.BulletHealing;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.ItemBullet2;
+import tanks.item.legacy.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
+import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@TanksONable("bullet")
 public class Bullet extends Movable implements IDrawableLightSource
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
 	public static HashMap<Integer, Bullet> idMap = new HashMap<>();
 
-	public static String bullet_name = "normal";
+	public static String bullet_name = "bullet";
 
 	public int networkID;
 
 	public enum BulletEffect {none, fire, darkFire, fireTrail, ice, trail, ember}
 
 	public static double bullet_size = 10;
-
-	@BulletProperty(id = "name", name = "Bullet name", category = BulletProperty.Category.appearance)
-	public String name;
+//
+//	@BulletProperty(id = "name", name = "Bullet name", category = BulletProperty.Category.appearance)
+//	public String name = "basic_bullet";
 
 	public boolean playPopSound = true;
 	public boolean playBounceSound = true;
 	public double age = 0;
 
 	@BulletProperty(id = "size", name = "Size", category = BulletProperty.Category.appearance)
-	public double size;
+	public double size = bullet_size;
 
 	public boolean canBeCanceled = true;
 	public boolean moveOut = true;
@@ -93,6 +96,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	@BulletProperty(id = "damage", name = "Damage", category = BulletProperty.Category.impact)
 	public double damage = 1;
+
+	@BulletProperty(id = "max_extra_health", name = "Max extra health", category = BulletProperty.Category.impact)
+	public double maxExtraHealth = 1;
 
 	@BulletProperty(id = "knockback_tank", name = "Tank knockback", category = BulletProperty.Category.impact)
 	public double tankHitKnockback = 0;
@@ -146,10 +152,10 @@ public class Bullet extends Movable implements IDrawableLightSource
 	public double speed = 0;
 
 	@BulletProperty(id = "lifespan", name = "Lifespan", category = BulletProperty.Category.travel)
-	public double life = 0;
+	public double lifespan = 0;
 
 	@BulletProperty(id = "effect", name = "Effect", category = BulletProperty.Category.appearance)
-	public BulletEffect effect = BulletEffect.none;
+	public BulletEffect effect = BulletEffect.trail;
 
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
@@ -164,13 +170,10 @@ public class Bullet extends Movable implements IDrawableLightSource
 	public Tank homingPrevTarget = null;
 	public double homingTargetTime = 0;
 
-	public ItemBullet item;
+	public ItemBullet2.ItemStackBullet item;
 
 	@BulletProperty(id = "max_live_bullets", name = "Max live bullets", category = BulletProperty.Category.firing)
 	public int maxLiveBullets = 5;
-
-	@BulletProperty(id = "cooldown", name = "Cooldown", category = BulletProperty.Category.firing)
-	public double cooldown = 20;
 
 	@BulletProperty(id = "recoil", name = "Recoil", category = BulletProperty.Category.firing)
 	public double recoil = 1.0;
@@ -183,8 +186,6 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	@BulletProperty(id = "multishot_spread_angle", name = "Multishot spread angle", category = BulletProperty.Category.firing)
 	public double multishotSpread = 0;
-
-	public boolean shouldDodge = true;
 
 	public boolean canMultiDamage = false;
 
@@ -220,19 +221,32 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
-	public Bullet(double x, double y, int bounces, Tank t, ItemBullet item)
+	public final boolean isTemplate;
+
+	/**
+	 * Do not use if you plan to place this bullet in the game field. Only for templates.
+	 * Use another constructor if you want to add the bullet to the game field.
+	 */
+	public Bullet()
+	{
+		super(0, 0);
+		this.isTemplate = true;
+	}
+
+	public Bullet(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet item)
 	{
 		this(x, y, bounces, t, true, item);
 	}
 
-	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet item)
+	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet item)
 	{
 		super(x, y);
+
+		this.isTemplate = false;
 
 		this.item = item;
 		this.vX = 0;
 		this.vY = 0;
-		this.size = bullet_size;
 		this.baseColorR = t.colorR;
 		this.baseColorG = t.colorG;
 		this.baseColorB = t.colorB;
@@ -245,7 +259,6 @@ public class Bullet extends Movable implements IDrawableLightSource
 		this.bounces = bounces;
 		this.tank = t;
 		this.team = t.team;
-		this.name = bullet_name;
 
 		this.iPosZ = this.tank.size / 2 + this.tank.turretSize / 2;
 
@@ -298,7 +311,12 @@ public class Bullet extends Movable implements IDrawableLightSource
 		}
 	}
 
-	public void cloneProperties(Bullet b)
+	/**
+	 * Clone this bullet's properties to another bullet
+	 * @param b the another bullet
+	 * @return the same bullet passed to it, for convenience
+	 */
+	public Bullet cloneProperties(Bullet b)
 	{
 		try
 		{
@@ -315,7 +333,30 @@ public class Bullet extends Movable implements IDrawableLightSource
 		{
 			Game.exitToCrash(e);
 		}
+
+		return b;
 	}
+
+	/**
+	 * Gets a template copy of a bullet, not to be added to the game field but to be used as a template
+	 * @return a template bullet copy
+	 */
+	public Bullet getCopy()
+	{
+		try
+		{
+			Bullet b = this.getClass().getConstructor().newInstance();
+			this.cloneProperties(b);
+			return b;
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		return null;
+	}
+
 
 	public void moveOut(double amount)
 	{
@@ -406,12 +447,14 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 			if (this.damage < 0)
 			{
-				t.health = Math.max(healthBefore, Math.min(t.health, t.baseHealth + 1));
+				if (this.maxExtraHealth > 0)
+					t.health = Math.max(healthBefore, Math.min(t.health, t.baseHealth + this.maxExtraHealth));
+
 				if (healthBefore == t.health)
 					t.healFlashAnimation = healFlashBefore;
 
-				float pitch = (float) ((Math.min(t.health, t.baseHealth + 1) / (t.baseHealth + 1) / 2) + 1f) / 2;
-				if (this.item.cooldownBase > 0)
+				float pitch = (float) ((Math.min(t.health, t.baseHealth + this.maxExtraHealth) / (t.baseHealth + this.maxExtraHealth) / 2) + 1f) / 2;
+				if (this.item.item.cooldownBase > 0)
 					Drawing.drawing.playGlobalSound("heal_impact_2.ogg", pitch);
 				else
 				{
@@ -1137,6 +1180,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 	@Override
 	public void update()
 	{
+		if (this.isTemplate)
+			Game.exitToCrash(new Exception("Do not add template bullets to the game field: found " + this));
+
 		if (this.delay > 0)
 		{
 			this.delay -= Panel.frameFrequency;
@@ -1212,6 +1258,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 		{
 			this.collisionX = this.posX;
 			this.collisionY = this.posY;
+			this.dealsDamage = this.damage > 0;
 
 			this.addTrail();
 		}
@@ -1398,7 +1445,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 		this.age += Panel.frameFrequency;
 
-		if (this.age > life && this.life > 0)
+		if (this.age > lifespan && this.lifespan > 0)
 			this.destroy = true;
 	}
 
@@ -1759,6 +1806,14 @@ public class Bullet extends Movable implements IDrawableLightSource
 		this.lightInfo[5] = this.outlineColorG;
 		this.lightInfo[6] = this.outlineColorB;
 		return this.lightInfo;
+	}
+
+	public double getLifespan()
+	{
+		if (this.lifespan <= 0)
+			return -1;
+		else
+			return this.lifespan;
 	}
 
 }

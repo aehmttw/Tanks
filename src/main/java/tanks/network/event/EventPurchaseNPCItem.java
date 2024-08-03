@@ -62,7 +62,7 @@ public class EventPurchaseNPCItem extends EventPurchaseItem
                         int pr = n.shopItems.get(this.item).price;
                         if (p.hotbar.coins >= pr)
                         {
-                            if (p.hotbar.itemBar.addItem(n.shopItems.get(this.item)))
+                            if (p.hotbar.itemBar.addItem(n.shopItems.get(this.item).itemStack))
                                 p.hotbar.coins -= pr;
 
                             Game.eventsOut.add(new EventUpdateCoins(p));

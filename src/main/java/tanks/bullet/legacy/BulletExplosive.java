@@ -2,7 +2,7 @@ package tanks.bullet.legacy;
 
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Explosion;
 import tanks.tank.Mine;
 import tanks.tank.Tank;

@@ -108,7 +108,7 @@ public class EventTankTransformCustom extends PersonalEvent
         this.emblemBlue = newTank.emblemB;
 
         this.bulletCount = newTank.bullet.shotCount;
-        this.bulletSpread = newTank.bullet.shotSpread;
+        this.bulletSpread = newTank.bullet.multishotSpread;
 
         this.enableTracks = newTank.enableTracks;
         this.trackSpacing = newTank.trackSpacing;
@@ -145,7 +145,7 @@ public class EventTankTransformCustom extends PersonalEvent
             t.lightSize = this.lightSize;
 
             t.bullet.shotCount = bulletCount;
-            t.bullet.shotSpread = bulletSpread;
+            t.bullet.multishotSpread = bulletSpread;
 
             t.mandatoryKill = requiredKill;
             t.musicTracks = tankMusic;

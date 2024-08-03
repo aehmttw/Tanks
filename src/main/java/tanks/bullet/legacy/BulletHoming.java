@@ -2,9 +2,8 @@ package tanks.bullet.legacy;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.network.event.EventBulletUpdateTarget;
 import tanks.tank.Ray;
 import tanks.tank.Tank;

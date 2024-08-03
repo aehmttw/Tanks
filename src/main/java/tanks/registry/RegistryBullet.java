@@ -1,7 +1,7 @@
 package tanks.registry;
 
 import tanks.bullet.Bullet;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 
 import java.util.ArrayList;
 

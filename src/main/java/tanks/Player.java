@@ -3,7 +3,8 @@ package tanks;
 import basewindow.BaseFile;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
+import tanks.item.legacy.Item;
 import tanks.network.ConnectedPlayer;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
@@ -111,7 +112,7 @@ public class Player
 
             f.stopReading();
 
-            ArrayList<Item> shop = c.getShop();
+            ArrayList<Item2.ShopItem> shop = c.getShop();
 
             for (int i = 0; i < items.length; i++)
             {
@@ -119,11 +120,11 @@ public class Player
                 String itemName = sec[0];
                 int count = Integer.parseInt(sec[1]);
 
-                for (Item it : shop)
+                for (Item2.ShopItem it : shop)
                 {
-                    if (it.name.equals(itemName))
+                    if (it.itemStack.item.name.equals(itemName))
                     {
-                        cp.itemBar.slots[i] = Item.parseItem(this, it.toString());
+                        cp.itemBar.slots[i] = Item2.ItemStack.fromString(this, it.toString());
                         cp.itemBar.slots[i].stackSize = count;
                     }
                 }

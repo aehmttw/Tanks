@@ -47,7 +47,7 @@ public class EventPurchaseItem extends PersonalEvent
                     int pr = s.shop.get(this.item).price;
                     if (p.hotbar.coins >= pr)
                     {
-                        if (p.hotbar.itemBar.addItem(s.shop.get(this.item)))
+                        if (p.hotbar.itemBar.addItem(s.shop.get(this.item).itemStack))
                             p.hotbar.coins -= pr;
 
                         for (Movable m: Game.movables)

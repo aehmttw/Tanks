@@ -7,8 +7,8 @@ import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
+import tanks.item.ItemBullet2;
+import tanks.item.ItemMine2;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
@@ -151,14 +151,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankProperty(category = appearanceTracks, id = "track_spacing", name = "Track spacing")
 	public double trackSpacing = 0.4;
 
-	//public int liveBulletMax;
-	//public int liveMinesMax;
-
+	/** The bullet a tank uses. If you want to change this, make sure to use setBullet() because it also updates the bulletItem. */
 	@TankProperty(category = firingGeneral, id = "bullet", name = "Bullet")
-	public ItemBullet bullet = (ItemBullet) TankPlayer.default_bullet.clone();
+	public Bullet bullet = TankPlayer.default_bullet.cloneProperties(new Bullet());
+	public ItemBullet2.ItemStackBullet bulletItem = new ItemBullet2.ItemStackBullet(null, new ItemBullet2(this.bullet), -1);
 
+	/** The mine a tank uses. If you want to change this, make sure to use setMine() because it also updates the mineItem. */
 	@TankProperty(category = mines, id = "mine", name = "Mine")
-	public ItemMine mine = (ItemMine) TankPlayer.default_mine.clone();
+	public Mine mine = TankPlayer.default_mine.cloneProperties(new Mine());
+	public ItemMine2.ItemStackMine mineItem = new ItemMine2.ItemStackMine(null, new ItemMine2(this.mine), -1);
 
 	/** Age in frames*/
 	protected double age = 0;
@@ -232,9 +233,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, this.name);
 
 		this.drawLevel = 4;
-
-		this.bullet.unlimitedStack = true;
-		this.mine.unlimitedStack = true;
 	}
 
 	public void unregisterNetworkID()
@@ -272,6 +270,26 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.networkID = id;
 		idMap.put(id, this);
+	}
+
+	/**
+	 * Always use this to change a tank's bullet
+	 * @param b the bullet to set the tank to use
+	 */
+	public void setBullet(Bullet b)
+	{
+		this.bullet = b.getCopy();
+		this.bulletItem.item.bullet = this.bullet;
+	}
+
+	/**
+	 * Always use this to change a tank's mine
+	 * @param m the mine to set the tank to use
+	 */
+	public void setMine(Mine m)
+	{
+		this.mine = m;
+		this.mineItem.item.mine = m;
 	}
 
 	public void fireBullet(Bullet b, double speed, double offset)
@@ -1029,7 +1047,12 @@ public abstract class Tank extends Movable implements ISolidObject
 				}
 
 				if (cp != null && (source instanceof Bullet || source instanceof Explosion))
-					cp.addItemHit(source);
+				{
+					if (source instanceof Bullet)
+						cp.addItemHit(((Bullet) source).item);
+					else
+						cp.addItemHit(((Explosion) source).item);
+				}
 			}
 
 			if (owner != null && this instanceof IServerPlayerTank && this.health <= 0)
@@ -1137,8 +1160,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void setBufferCooldown(double value)
 	{
-		this.bullet.cooldown = Math.max(this.bullet.cooldown, value);
-		this.mine.cooldown = Math.max(this.mine.cooldown, value);
+		this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
+		this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
 	}
 
 	public Tank getTopLevelPossessor()

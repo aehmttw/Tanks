@@ -2,7 +2,8 @@ package tanks.generator;
 
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
+import tanks.item.legacy.Item;
 import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
@@ -109,12 +110,13 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 		for (String si: items)
 		{
-			Item i = Item.parseItem(null, si);
+			Item2.ItemStack<?> i = Item2.ItemStack.fromString(null, si);
 
-			if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name) || i.name.equals("Laser"))
+			// TODO
+			if (i.item.name.equals("Basic bullet") || i.item.name.equals("Basic mine") || i.item.name.equals("Laser"))
 				continue;
 
-			i.name = Translation.translate(i.name);
+			i.item.name = Translation.translate(i.item.name);
 			itemsString.append(i.toString()).append("\n");
 		}
 

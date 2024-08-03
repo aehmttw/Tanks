@@ -3,8 +3,8 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
+import tanks.item.ItemBullet2;
+import tanks.item.ItemMine2;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
@@ -149,18 +149,18 @@ public class Hotbar
 			int max = 1;
 			double cooldownFrac = 0;
 
-			ItemBullet ib = null;
+			ItemBullet2.ItemStackBullet ib = null;
 			if (Game.playerTank != null && !Game.playerTank.destroy)
-				ib = Game.playerTank.bullet;
+				ib = Game.playerTank.bulletItem;
 
-			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet)
-				ib = (ItemBullet) this.itemBar.slots[this.itemBar.selected];
+			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet2.ItemStackBullet)
+				ib = (ItemBullet2.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
 
 			if (ib != null)
 			{
 				live = ib.liveBullets;
-				max = ib.maxLiveBullets;
-				cooldownFrac = ib.cooldown / ib.cooldownBase;
+				max = ib.item.bullet.maxLiveBullets;
+				cooldownFrac = ib.cooldown / ib.item.cooldownBase;
 			}
 
 			double ammo = live * 1.0 / max;
@@ -189,12 +189,12 @@ public class Hotbar
 
 			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
-				int mines = Game.playerTank.mine.maxLiveMines - Game.playerTank.mine.liveMines;
+				int mines = Game.playerTank.mine.maxLiveMines - Game.playerTank.mineItem.liveMines;
 
-				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine)
+				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine2.ItemStackMine)
 				{
-					ItemMine im = (ItemMine) this.itemBar.slots[this.itemBar.selected];
-					mines = im.maxLiveMines - im.liveMines;
+					ItemMine2.ItemStackMine im = (ItemMine2.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
+					mines = im.item.mine.maxLiveMines - im.liveMines;
 				}
 
 				if (mines > 0)

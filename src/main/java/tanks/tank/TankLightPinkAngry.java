@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.DefaultBullets;
 
 import java.util.HashSet;
 
@@ -20,8 +21,6 @@ public class TankLightPinkAngry extends TankAIControlled
         this.turnChance = 0.001;
         this.coinValue = 10;
         this.enablePredictiveFiring = true;
-        this.bullet.cooldownBase = 1;
-        this.bullet.maxLiveBullets = 0;
 
         this.maxSpeed = 2.0;
         this.enablePathfinding = true;
@@ -29,9 +28,9 @@ public class TankLightPinkAngry extends TankAIControlled
 
         this.cooldownBase = 150;
         this.cooldownRandom = 0;
-        this.bullet.speed = 25.0 / 4;
-        this.bullet.bounces = 0;
-        this.bullet.effect = Bullet.BulletEffect.fire;
+
+        this.setBullet(DefaultBullets.rocket);
+        this.bullet.maxLiveBullets = 0;
 
         this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
         this.targetEnemySightBehavior = TargetEnemySightBehavior.sidewind;

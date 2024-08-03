@@ -5,7 +5,7 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletBoost extends Bullet

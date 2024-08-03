@@ -6,7 +6,7 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.screen.*;
-import tanks.hotbar.item.Item;
+import tanks.item.legacy.Item;
 import tanks.registry.RegistryItem;
 
 import java.util.ArrayList;

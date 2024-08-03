@@ -3,7 +3,8 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.ItemDrop;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
+import tanks.item.legacy.Item;
 import tanks.network.NetworkUtils;
 
 public class EventItemDrop extends PersonalEvent
@@ -50,7 +51,7 @@ public class EventItemDrop extends PersonalEvent
     {
         if (this.clientID == null)
         {
-            ItemDrop id = new ItemDrop(this.posX, this.posY, Item.parseItem(null, this.item));
+            ItemDrop id = new ItemDrop(this.posX, this.posY, Item2.ItemStack.fromString(null, this.item));
             id.setNetworkID(this.id);
             Game.movables.add(id);
         }

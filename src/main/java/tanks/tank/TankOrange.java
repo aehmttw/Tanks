@@ -1,9 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletFlame2;
-import tanks.bullet.legacy.BulletFlame;
+import tanks.bullet.DefaultBullets;
 
 /**
  * A short-range tank which shoots fire
@@ -16,27 +14,20 @@ public class TankOrange extends TankAIControlled
 
 		this.enableMovement = true;
 		this.maxSpeed = 1.0;
-
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
 		this.turretAimSpeed = 0.01;
 		this.enablePathfinding = true;
 		this.aimAccuracyOffset = 0;
-
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;
 		this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
 		this.avoidanceSeekOpenSpaces = true;
-
-		this.bullet.maxLiveBullets = 0;
-		this.bullet.bulletClass = BulletFlame2.class;
-		this.bullet.cooldownBase = 0;
 		this.cooldownBase = 0;
 		this.cooldownRandom = 0;
-		this.bullet.effect = Bullet.BulletEffect.none;
-		this.bullet.bounces = 0;
-		this.bullet.damage = 0.1;
-		this.bullet.name = "Flamethrower";
+
+		this.setBullet(DefaultBullets.flamethrower);
+		this.bulletItem.item.cooldownBase = 0;
 
 		this.coinValue = 4;
 

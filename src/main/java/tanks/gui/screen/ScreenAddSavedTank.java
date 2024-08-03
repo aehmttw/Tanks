@@ -7,7 +7,7 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;

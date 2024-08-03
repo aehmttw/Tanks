@@ -43,7 +43,7 @@ public class EventLayMine extends PersonalEvent
 			if (t == null)
 				return;
 
-			Mine m = new Mine(this.posX, this.posY, this.timer, t, t.mine);
+			Mine m = new Mine(this.posX, this.posY, this.timer, t, t.mineItem);
 			m.networkID = id;
 			m.size = size;
 			Game.movables.add(m);

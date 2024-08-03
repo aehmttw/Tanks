@@ -5,7 +5,10 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Selector;
 import tanks.gui.SpeedrunTimer;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
+import tanks.item.ItemBullet2;
+import tanks.item.ItemMine2;
+import tanks.item.legacy.Item;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
@@ -390,12 +393,17 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItems()
     {
-        this.addItem(TankPlayer.default_bullet);
-        this.addItem(TankPlayer.default_mine);
+        //TODO
+        ItemBullet2 b = new ItemBullet2(TankPlayer.default_bullet);
+        b.name = TankPlayer.default_bullet_name;
+        ItemMine2 m = new ItemMine2(TankPlayer.default_mine);
+        m.name = TankPlayer.default_mine_name;
+        this.addItem(b);
+        this.addItem(m);
 
-        for (Item i: crusade.getShop())
+        for (Item2.ShopItem i: crusade.getShop())
         {
-            this.addItem(i);
+            this.addItem(i.itemStack.item);
         }
 
         ArrayList<Entry> copy = new ArrayList<>(this.items);
@@ -419,7 +427,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.misc.add(new MiscEntry("Coins remaining", this.player.coins + ""));
     }
 
-    public void addItem(Item i)
+    public void addItem(Item2 i)
     {
         int uses = this.player.getItemUses(i.name);
         int hits = this.player.getItemHits(i.name);
@@ -1646,7 +1654,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public static class ItemEntry extends Entry
     {
-        public Item item;
+        public Item2 item;
         public int uses;
         public int hits;
 
@@ -1654,7 +1662,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         public double hitRank;
         public double accuracyRank;
 
-        public ItemEntry(Item i, int uses, int hits)
+        public ItemEntry(Item2 i, int uses, int hits)
         {
             this.item = i;
             this.uses = uses;

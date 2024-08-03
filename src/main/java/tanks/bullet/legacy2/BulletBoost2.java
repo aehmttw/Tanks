@@ -1,10 +1,7 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.AttributeModifier;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.hotbar.item.ItemBullet;
+import tanks.bullet.Bullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletBoost2 extends Bullet

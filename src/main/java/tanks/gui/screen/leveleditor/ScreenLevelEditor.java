@@ -6,7 +6,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
-import tanks.hotbar.item.Item;
+import tanks.item.legacy.Item;
 import tanks.network.event.INetworkEvent;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;

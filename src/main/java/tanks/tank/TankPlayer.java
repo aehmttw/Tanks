@@ -4,7 +4,6 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.bullet.legacy.BulletElectric;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -13,7 +12,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenTitle;
 import tanks.hotbar.Hotbar;
-import tanks.hotbar.item.*;
+import tanks.item.*;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
 
@@ -22,8 +21,11 @@ import tanks.network.event.EventShootBullet;
  */
 public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank, IDrawableLightSource
 {
-	public static ItemBullet default_bullet;
-	public static ItemMine default_mine;
+	public static Bullet default_bullet;
+	public static Mine default_mine;
+
+	public static String default_bullet_name;
+	public static String default_mine_name;
 
 	public static Joystick controlStick;
 	public static Joystick shootStick;
@@ -58,6 +60,8 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		this.angle = angle;
 		this.orientation = angle;
 		this.player.tank = this;
+		this.bulletItem.item.name = default_bullet_name;
+		this.mineItem.item.name = default_mine_name;
 
 		this.colorR = Game.player.colorR;
 		this.colorG = Game.player.colorG;
@@ -225,15 +229,15 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
-		this.bullet.updateCooldown(reload);
-		this.mine.updateCooldown(reload);
+		this.bulletItem.updateCooldown(reload);
+		this.mineItem.updateCooldown(reload);
 
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
 		{
-			for (Item i: h.itemBar.slots)
+			for (Item2.ItemStack<?> i: h.itemBar.slots)
 			{
-				if (i != null && !(i instanceof ItemEmpty))
+				if (i != null && !i.isEmpty)
 				{
 					i.updateCooldown(reload);
 				}
@@ -247,12 +251,13 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		boolean showRange = false;
 		if (h.enabledItemBar && h.itemBar.selected >= 0)
 		{
-			Item i = h.itemBar.slots[h.itemBar.selected];
+			Item2.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
 
-			if (i instanceof ItemBullet)
-				showRange = ((ItemBullet) i).getRange() >= 0;
-			else if (i instanceof ItemRemote)
-				showRange = ((ItemRemote) i).range >= 0;
+			//TODO
+//			if (i.item instanceof ItemBullet2)
+//				showRange = ((ItemBullet) i).getRange() >= 0;
+//			else if (i instanceof ItemRemote)
+//				showRange = ((ItemRemote) i).range >= 0;
 		}
 
 		TankPlayer.shootStickHidden = showRange;
@@ -381,22 +386,23 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 			if (h.enabledItemBar && h.itemBar.selected >= 0)
 			{
-				Item i = h.itemBar.slots[h.itemBar.selected];
-				if (i instanceof ItemBullet)
-				{
-					r.bounces = ((ItemBullet) i).bounces;
-					range = ((ItemBullet) i).getRange();
-
-					if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
-						r.bounces = 0;
-				}
-				else if (i instanceof ItemRemote)
-				{
-					if (((ItemRemote)i).bounces >= 0)
-						r.bounces = ((ItemRemote)i).bounces;
-
-					range = ((ItemRemote) i).range;
-				}
+				// TODO
+//				Item i = h.itemBar.slots[h.itemBar.selected];
+//				if (i instanceof ItemBullet)
+//				{
+//					r.bounces = ((ItemBullet) i).bounces;
+//					range = ((ItemBullet) i).getRange();
+//
+//					if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
+//						r.bounces = 0;
+//				}
+//				else if (i instanceof ItemRemote)
+//				{
+//					if (((ItemRemote)i).bounces >= 0)
+//						r.bounces = ((ItemRemote)i).bounces;
+//
+//					range = ((ItemRemote) i).range;
+//				}
 			}
 
 			r.vX /= 2;
@@ -414,18 +420,18 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		super.update();
 	}
 
-	public Item getItem(boolean rightClick)
+	public Item2.ItemStack<?> getItem(boolean rightClick)
 	{
-		Item i;
+		Item2.ItemStack<?> i;
 
 		if (rightClick)
-			i = this.mine;
+			i = this.mineItem;
 		else
-			i = this.bullet;
+			i = this.bulletItem;
 
 		if (Game.player.hotbar.enabledItemBar)
 		{
-			Item i2 = Game.player.hotbar.itemBar.getSelectedItem(rightClick);
+			Item2.ItemStack<?> i2 = Game.player.hotbar.itemBar.getSelectedItem(rightClick);
 			if (i2 != null)
 				i = i2;
 		}
@@ -444,7 +450,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				return;
 		}
 
-		this.bullet.attemptUse(this);
+		this.bulletItem.attemptUse(this);
 	}
 
 	public void layMine()
@@ -458,7 +464,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				return;
 		}
 
-		this.mine.attemptUse(this);
+		this.mineItem.attemptUse(this);
 	}
 
 	public void fireBullet(Bullet b, double speed, double offset)
@@ -489,12 +495,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
-
-		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
-		{
-			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-			cp.addItemUse(b.item);
-		}
 	}
 
 	public void layMine(Mine m)
@@ -506,12 +506,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		Game.eventsOut.add(new EventLayMine(m));
 		Game.movables.add(m);
-
-		if (Crusade.crusadeMode && Crusade.currentCrusade != null)
-		{
-			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-			cp.addItemUse(m.item);
-		}
 	}
 
 
@@ -590,9 +584,9 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
 		{
-			for (Item i: h.itemBar.slots)
+			for (Item2.ItemStack<?> i: h.itemBar.slots)
 			{
-				if (i != null && !(i instanceof ItemEmpty))
+				if (i != null && !i.isEmpty)
 				{
 					i.cooldown = Math.max(i.cooldown, value);
 				}

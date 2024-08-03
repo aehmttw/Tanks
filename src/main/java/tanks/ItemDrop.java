@@ -1,7 +1,7 @@
 package tanks;
 
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
 import tanks.network.event.EventItemDropDestroy;
 import tanks.network.event.EventItemPickup;
 import tanks.tank.IServerPlayerTank;
@@ -16,7 +16,7 @@ public class ItemDrop extends Movable
     public static ArrayList<Integer> freeIDs = new ArrayList<>();
     public static HashMap<Integer, ItemDrop> idMap = new HashMap<>();
 
-    public Item item;
+    public Item2.ItemStack<?> item;
     public double height;
     public double size = Game.tile_size * 1.5;
     public double destroyTime = 0;
@@ -25,7 +25,7 @@ public class ItemDrop extends Movable
 
     public int networkID = -1;
 
-    public ItemDrop(double x, double y, Item item)
+    public ItemDrop(double x, double y, Item2.ItemStack<?> item)
     {
         super(x, y);
 
@@ -117,13 +117,13 @@ public class ItemDrop extends Movable
                 Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height + i, size, size);
             }
 
-            Drawing.drawing.drawImage(this.item.icon, px, py, pz, s / 2, s / 2);
+            Drawing.drawing.drawImage(this.item.item.icon, px, py, pz, s / 2, s / 2);
         }
         else
         {
             Drawing.drawing.setColor(255, 255, 255, 255, 0.5);
             Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height, size, size);
-            Drawing.drawing.drawImage(this.item.icon, px, py, s / 2, s / 2);
+            Drawing.drawing.drawImage(this.item.item.icon, px, py, s / 2, s / 2);
         }
 
         if (Game.showTankIDs)

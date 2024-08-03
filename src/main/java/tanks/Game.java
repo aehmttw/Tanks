@@ -2,7 +2,6 @@ package tanks;
 
 import basewindow.*;
 import tanks.bullet.*;
-import tanks.bullet.legacy.BulletElectric;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
 import tanks.generator.LevelGenerator;
@@ -16,10 +15,11 @@ import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemMine;
-import tanks.hotbar.item.ItemShield;
+import tanks.item.Item2;
+import tanks.item.ItemBullet2;
+import tanks.item.ItemMine2;
+import tanks.item.ItemShield2;
+import tanks.item.legacy.ItemBullet;
 import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;
 import tanks.network.Client;
@@ -34,7 +34,6 @@ import tanks.rendering.ShaderGroundIntro;
 import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
-import tanks.translation.Translation;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -432,7 +431,7 @@ public class Game
 		new RegistryBullet.BulletEntry(Game.registryBullet, bullet, name, icon);
 	}
 
-	public static void registerItem(Class<? extends Item> item, String name, String image)
+	public static void registerItem(Class<? extends Item2> item, String name, String image)
 	{
 		new RegistryItem.ItemEntry(Game.registryItem, item, name, image);
 	}
@@ -529,26 +528,18 @@ public class Game
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
 		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
-		registerBullet(BulletFlame2.class, BulletFlame2.bullet_name, "bullet_flame.png");
-		registerBullet(BulletLaser.class, BulletLaser.bullet_name, "bullet_laser.png");
-		registerBullet(BulletFreeze2.class, BulletFreeze2.bullet_name, "bullet_freeze.png");
-		registerBullet(BulletElectric2.class, BulletElectric2.bullet_name, "bullet_electric.png");
-		registerBullet(BulletHealing.class, BulletHealing.bullet_name, "bullet_healing.png");
+		registerBullet(BulletInstant.class, BulletInstant.bullet_name, "bullet_laser.png");
+		registerBullet(BulletGas.class, BulletGas.bullet_name, "bullet_flame.png");
 		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
-		registerBullet(BulletExplosive2.class, BulletExplosive2.bullet_name, "bullet_explosive.png");
-		registerBullet(BulletBoost2.class, BulletBoost2.bullet_name, "bullet_boost.png");
-		registerBullet(BulletAir2.class, BulletAir2.bullet_name, "bullet_air.png");
-		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_name, "bullet_fire.png");
-		registerBullet(BulletHoming2.class, BulletHoming2.bullet_name, "bullet_homing.png");
 
-		registerItem(ItemBullet.class, ItemBullet.item_name, "bullet_normal.png");
-		registerItem(ItemMine.class, ItemMine.item_name, "mine.png");
-		registerItem(ItemShield.class, ItemShield.item_name, "shield.png");
+		registerItem(ItemBullet2.class, ItemBullet2.item_class_name, "bullet_normal.png");
+		registerItem(ItemMine2.class, ItemMine2.item_class_name, "mine.png");
+		registerItem(ItemShield2.class, ItemShield2.item_class_name, "shield.png");
 
 		registerMinigame(Arcade.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 
-		TankPlayer.default_bullet = (ItemBullet) Item.parseItem(null, Translation.translate("Basic bullet") + ",bullet_normal.png,1,0,1,100,bullet,normal,trail,3.125,1,1.0,5,20.0,10.0,1.0,false");
-		TankPlayer.default_mine = (ItemMine) Item.parseItem(null, Translation.translate("Basic mine") + ",mine.png,1,0,1,100,mine,1000.0,50.0,125.0,2.0,2,50.0,30.0,true");
+		TankPlayer.default_bullet = new Bullet();
+		TankPlayer.default_mine = new Mine();
 
 		homedir = System.getProperty("user.home");
 

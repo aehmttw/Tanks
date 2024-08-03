@@ -3,15 +3,14 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.bullet.legacy.BulletBoost;
-import tanks.bullet.legacy.BulletExplosive;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.Item2;
+import tanks.item.legacy.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
+import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -21,6 +20,7 @@ import static tanks.tank.TankProperty.Category.*;
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
+@TanksONable("tank")
 public class TankAIControlled extends Tank
 {
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
@@ -497,9 +497,7 @@ public class TankAIControlled extends Tank
 		this.angle = angle;
 		this.orientation = angle;
 
-		this.bullet.maxLiveBullets = 5;
-		this.bullet.recoil = 0;
-		this.bullet.cooldownBase = 1;
+		this.bulletItem.item.cooldownBase = 1;
 
 		this.shootAIType = ai;
 
@@ -639,8 +637,8 @@ public class TankAIControlled extends Tank
 				this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 		}
 
-		this.bullet.updateCooldown(1);
-		this.mine.updateCooldown(1);
+		this.bulletItem.updateCooldown(1);
+		this.mineItem.updateCooldown(1);
 		this.updateVisibility();
 		super.update();
 	}
@@ -657,19 +655,20 @@ public class TankAIControlled extends Tank
 		if (!chargeUp)
 			this.aim = false;
 
-		boolean arc = BulletArc.class.isAssignableFrom(this.bullet.bulletClass);
+		boolean arc = BulletArc.class.isAssignableFrom(this.bullet.getClass());
 
-		if ((this.bullet.liveBullets < this.bullet.maxLiveBullets || this.bullet.maxLiveBullets <= 0) && !this.disabled && !this.destroy)
+		if ((this.bulletItem.liveBullets < this.bullet.maxLiveBullets || this.bullet.maxLiveBullets <= 0) && !this.disabled && !this.destroy)
 		{
 			if (this.cooldown <= 0)
 			{
 				this.aim = false;
-				double range = this.bullet.getRange();
+				// TODO
+				double range = 0; //this.bullet.getRange();
 
 				if (arc && this.distance <= range)
 				{
 					if (this.shotRoundCount <= 1)
-						this.bullet.attemptUse(this);
+						this.bulletItem.attemptUse(this);
 					else
 					{
 						this.shootingInFan = true;
@@ -773,7 +772,7 @@ public class TankAIControlled extends Tank
 		if (this.isSupportTank() || (!Team.isAllied(this, m) && this.isTargetSafe(a.posX, a.posY)))
 		{
 			this.shotOffset = offset;
-			this.bullet.attemptUse(this);
+			this.bulletItem.attemptUse(this);
 		}
 	}
 
@@ -809,8 +808,7 @@ public class TankAIControlled extends Tank
 
 	public boolean isTargetSafe(double posX, double posY)
 	{
-		//TODO
-		if (BulletExplosive.class.isAssignableFrom(this.bullet.bulletClass))
+		if (this.bullet.hitExplosion != null)
 		{
 			for (Movable m2 : Game.movables)
 			{
@@ -871,10 +869,11 @@ public class TankAIControlled extends Tank
 			boolean correctTeam = (this.isSupportTank() && Team.isAllied(this, m)) || (!this.isSupportTank() && !Team.isAllied(this, m));
 			if (m instanceof Tank && correctTeam && !((Tank) m).hidden && ((Tank) m).targetable && m != this)
 			{
-				if (BulletHealing.class.isAssignableFrom(this.bullet.bulletClass) && ((Tank) m).health - ((Tank) m).baseHealth >= 1)
+				// TODO fix max health
+				if (this.bullet.damage < 0 && ((Tank) m).health - ((Tank) m).baseHealth >= this.bullet.maxExtraHealth && this.bullet.maxExtraHealth > 0)
 					continue;
 
-				boolean lowP = (BulletBoost.class.isAssignableFrom(this.bullet.bulletClass) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement));
+				boolean lowP = ((this.bullet.damage == 0 && this.bullet.boosting) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement));
 				if (!lowPriority && lowP)
 					continue;
 
@@ -1294,7 +1293,7 @@ public class TankAIControlled extends Tank
 
 			if (this.path.get(0).type == Tile.Type.destructible)
 			{
-				this.mine.attemptUse(this);
+				this.mineItem.attemptUse(this);
 				this.seekTimer = this.seekTimerBase * 2;
 				this.seekPause = this.mine.timer;
 			}
@@ -1341,7 +1340,7 @@ public class TankAIControlled extends Tank
 
 				double distBox = this.enableMovement ? 10 : 20;
 				if (!(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire)
-						&& b.shouldDodge && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox
+						&& (b.damage > 0 || b.hitStun > 0 || b.freezing || b.hitExplosion != null) && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox
 						&& (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3))
 				{
 					int c = enableMovement ? 1 : 0;
@@ -1546,7 +1545,7 @@ public class TankAIControlled extends Tank
 		else
 			this.updateTurretReflect();
 
-		if (!BulletArc.class.isAssignableFrom(this.bullet.bulletClass))
+		if (!(this.bullet instanceof BulletArc))
 			this.pitch -= Movable.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
 
 		if (!this.chargeUp)
@@ -1608,7 +1607,7 @@ public class TankAIControlled extends Tank
 			int s = (int) Math.round(this.shootTimer * this.shotRoundCount / this.shootRoundTime);
 			if (this.shots < s)
 			{
-				this.bullet.attemptUse(this);
+				this.bulletItem.attemptUse(this);
 				this.shots = s;
 			}
 
@@ -1636,7 +1635,7 @@ public class TankAIControlled extends Tank
 			if (this.cooldown <= 0)
 			{
 				if (this.shotRoundCount <= 1)
-					this.bullet.attemptUse(this);
+					this.bulletItem.attemptUse(this);
 				else
 				{
 					this.shootingInFan = true;
@@ -1691,7 +1690,7 @@ public class TankAIControlled extends Tank
 		{
 			if (this.hasTarget && this.targetEnemy != null)
 			{
-				if (BulletArc.class.isAssignableFrom(this.bullet.bulletClass))
+				if (this.bullet instanceof BulletArc)
 					this.setAimAngleArc();
 				else
 					this.setAimAngleStraight();
@@ -1701,7 +1700,7 @@ public class TankAIControlled extends Tank
 		if (!this.hasTarget || this.targetEnemy == null)
 			return;
 
-		if (BulletArc.class.isAssignableFrom(this.bullet.bulletClass))
+		if (this.bullet instanceof BulletArc)
 		{
 			double pitch = Math.atan(this.distance / this.bullet.speed * 0.5 * BulletArc.gravity / this.bullet.speed);
 			this.pitch -= Movable.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
@@ -1824,7 +1823,7 @@ public class TankAIControlled extends Tank
 	{
 		Movable m = null;
 
-		boolean arc = BulletArc.class.isAssignableFrom(this.bullet.bulletClass);
+		boolean arc = this.bullet instanceof BulletArc;
 
 		if (this.targetEnemy != null && !arc)
 		{
@@ -1852,7 +1851,7 @@ public class TankAIControlled extends Tank
 
 		this.search();
 
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDist <= this.bulletThreatCount * Math.max(Math.max(Math.max(this.cooldownBase, this.bullet.cooldownBase), this.bullet.cooldownBase), 50) * 1.5))
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDist <= this.bulletThreatCount * Math.max(Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
 			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
 			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
@@ -2066,7 +2065,7 @@ public class TankAIControlled extends Tank
 			return m instanceof Tank && !(m.getClass().equals(this.getClass())) && ((Tank) m).size == this.size;
 		else if (this.isSupportTank())
 			return m instanceof Tank && Team.isAllied(m, this) && m != this
-					&& (((Tank) m).health - ((Tank) m).baseHealth < 1 || !BulletHealing.class.isAssignableFrom(this.bullet.bulletClass))
+					&& (((Tank) m).health - ((Tank) m).baseHealth < this.bullet.maxExtraHealth || this.bullet.damage >= 0 || this.bullet.maxExtraHealth <= 0)
 					&& !(m.getClass().equals(this.getClass()));
 		else
 			return m instanceof Tank && !Team.isAllied(m, this)
@@ -2161,7 +2160,7 @@ public class TankAIControlled extends Tank
 
 				if (layMine)
 				{
-					this.mine.attemptUse(this);
+					this.mineItem.attemptUse(this);
 				}
 			}
 
@@ -2590,7 +2589,6 @@ public class TankAIControlled extends Tank
 			{
 				t = (Tank) c.getConstructor(String.class, double.class, double.class, double.class).newInstance(this.name, this.posX, this.posY, this.angle);
 				t.fromRegistry = true;
-				t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
 				t.musicTracks = Game.registryTank.tankMusics.get(ct.name);
 
 				if (t.musicTracks == null)
@@ -2793,7 +2791,7 @@ public class TankAIControlled extends Tank
 
 	public boolean isSupportTank()
 	{
-		return !this.suicidal && (BulletHealing.class.isAssignableFrom(this.bullet.bulletClass) || BulletBoost.class.isAssignableFrom(this.bullet.bulletClass));
+		return !this.suicidal && this.bullet.damage <= 0;
 	}
 
 	public void setPolarAcceleration(double angle, double acceleration)
@@ -3041,10 +3039,11 @@ public class TankAIControlled extends Tank
 						}
 						else if (f.getType().isEnum())
 							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
-						else if (Item.class.isAssignableFrom(f.getType()))
+						else if (Item2.ItemStack.class.isAssignableFrom(f.getType()))
 						{
-							Item i = Item.parseItem(null, s);
-							i.unlimitedStack = true;
+							Item2.ItemStack<?> i = Item2.ItemStack.fromString(null, s);
+							i.unlimited = true;
+							i.stackSize = -1;
 							f.set(t, i);
 							s = s.substring(s.indexOf("]") + 1);
 						}

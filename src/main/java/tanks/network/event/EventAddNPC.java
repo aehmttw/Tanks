@@ -2,7 +2,8 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
+import tanks.item.legacy.Item;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankNPC;
 
@@ -13,7 +14,7 @@ public class EventAddNPC extends EventTankCustomCreate
     public String messages = "";
     public String tag;
 
-    public ArrayList<Item> shop;
+    public ArrayList<Item2.ShopItem> shop;
 
     public EventAddNPC()
     {
@@ -56,7 +57,7 @@ public class EventAddNPC extends EventTankCustomCreate
 
         StringBuilder shopItems = new StringBuilder();
 
-        for (Item i : shop)
+        for (Item2.ShopItem i : shop)
             shopItems.append(i.toString()).append("\n");
 
         NetworkUtils.writeString(b, shopItems.toString());
@@ -73,6 +74,6 @@ public class EventAddNPC extends EventTankCustomCreate
         this.shop = new ArrayList<>();
         String[] shopItems = NetworkUtils.readString(b).split("\n");
         for (String item : shopItems)
-            this.shop.add(Item.parseItem(null, item));
+            this.shop.add(Item2.CrusadeShopItem.fromString(item));
     }
 }

@@ -110,7 +110,7 @@ public class TankRemote extends Tank
 		this.glowSize = t.glowSize;
 		this.lightSize = t.lightSize;
 		this.lightIntensity = t.lightIntensity;
-		this.bullet = t.bullet;
+		this.setBullet(t.bullet);
 		this.mine = t.mine;
 		this.musicTracks = t.musicTracks;
 		this.fromRegistry = t.fromRegistry;

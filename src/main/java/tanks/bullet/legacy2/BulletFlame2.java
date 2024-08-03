@@ -1,6 +1,8 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.hotbar.item.ItemBullet;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletGas;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletFlame2 extends BulletGas
@@ -29,7 +31,7 @@ public class BulletFlame2 extends BulletGas
         this.glowIntensity = 1;
         this.glowSize = 3;
         this.maxLiveBullets = 0;
-        this.cooldown = 0;
+        this.cooldownBase = 0;
         this.effect = BulletEffect.none;
         this.bounces = 0;
         this.damage = 0.1;
@@ -37,7 +39,7 @@ public class BulletFlame2 extends BulletGas
         this.burnsBushes = true;
         this.bulletCollision = false;
 
-        this.life = 100;
+        this.lifespan = 100;
         this.endSize = Bullet.bullet_size * 10;
     }
 }

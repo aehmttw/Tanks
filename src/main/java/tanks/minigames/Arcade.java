@@ -6,8 +6,9 @@ import tanks.gui.screen.IDarkScreen;
 import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemShield;
+import tanks.item.Item2;
+import tanks.item.ItemShield2;
+import tanks.item.legacy.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
@@ -55,7 +56,7 @@ public class Arcade extends Minigame
 
     public HashMap<Player, Double> playerDeathTimes = new HashMap<>();
 
-    public HashMap<String, Item> itemsMap = new HashMap<>();
+    public HashMap<String, Item2.ItemStack<?>> itemsMap = new HashMap<>();
     public HashMap<String, String> tankItemsMap = new HashMap<>();
 
     public double chainOpacity = 1;
@@ -89,13 +90,10 @@ public class Arcade extends Minigame
             ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
             for (String si : items)
             {
-                Item i = Item.parseItem(null, si);
+                Item2.ItemStack<?> i = Item2.ItemStack.fromString(null, si);
 
-                if (i.name.equals(TankPlayer.default_bullet.name) || i.name.equals(TankPlayer.default_mine.name))
-                    continue;
-
-                itemsMap.put(i.name, i);
-                i.name = Translation.translate(i.name);
+                itemsMap.put(i.item.name, i);
+                i.item.name = Translation.translate(i.item.name);
             }
 
             tankItemsMap.put("mint", "Fire bullet");
@@ -161,10 +159,11 @@ public class Arcade extends Minigame
 
         if (tankItemsMap.get(target.name) != null)
         {
-            Item i = Item.parseItem(Game.player, itemsMap.get(tankItemsMap.get(target.name)).toString());
+            Item2.ItemStack<?> i = itemsMap.get(tankItemsMap.get(target.name)).getCopy();
             i.stackSize *= target.coinValue / 2;
+            i.unlimited = false;
 
-            if (i instanceof ItemShield)
+            if (i instanceof ItemShield2.ItemStackShield)
                 i.stackSize /= 2;
 
             ItemDrop d = new ItemDrop(target.posX, target.posY, i);

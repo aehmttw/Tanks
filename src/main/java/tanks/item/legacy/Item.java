@@ -1,9 +1,10 @@
-package tanks.hotbar.item;
+package tanks.item.legacy;
 
 import tanks.*;
 import tanks.gui.property.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
+import tanks.tankson.TanksONable;
 
 import java.util.ArrayList;
 import java.util.Arrays;

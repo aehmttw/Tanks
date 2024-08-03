@@ -1,10 +1,9 @@
 package tanks.bullet;
 
 import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.ItemBullet2;
 import tanks.network.event.EventBulletBounce;
 import tanks.tank.Tank;
 
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 
 public class BulletAirStrike extends Bullet
 {
-    public static String bullet_name = "airstrike";
+    public static String bullet_name = "air_strike";
 
     public ArrayList<Double> pastPosX = new ArrayList<>();
     public ArrayList<Double> pastPosY = new ArrayList<>();
@@ -22,13 +21,25 @@ public class BulletAirStrike extends Bullet
     public double finalX;
     public double finalY;
 
-    public BulletAirStrike(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
+    public BulletAirStrike()
+    {
+        this.init();
+    }
+
+    public BulletAirStrike(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet ib)
     {
         super(x, y, bounces, t, affectsMaxLiveBullets, ib);
-        this.name = bullet_name;
-        this.effect = BulletEffect.fireTrail;
+        this.init();
+    }
+
+    public BulletAirStrike(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet item)
+    {
+        this(x, y, bounces, t, false, item);
+    }
+
+    protected void init()
+    {
         this.trail3d = true;
-        this.itemSound = "boost.ogg";
 
         this.enableExternalCollisions = false;
         this.playPopSound = false;
@@ -40,14 +51,7 @@ public class BulletAirStrike extends Bullet
         this.canBeCanceled = false;
         this.moveOut = false;
         this.vZ = 0.1;
-        this.homingSharpness = 1.0 / 5.5;
-
         this.autoZ = false;
-    }
-
-    public BulletAirStrike(double x, double y, int bounces, Tank t, ItemBullet item)
-    {
-        this(x, y, bounces, t, false, item);
     }
 
     @Override

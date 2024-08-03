@@ -2,26 +2,35 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.ItemBullet2;
 import tanks.tank.Tank;
-
-import java.util.ArrayList;
 
 public class BulletArc extends Bullet
 {
-    public static String bullet_name = "arc";
+    public static String bullet_name = "artillery";
 
     public double maxAge;
     public double angle;
     public static final double gravity = 0.1;
 
+    public BulletArc()
+    {
+        this.init();
+    }
 
-    public BulletArc(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
+    public BulletArc(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet ib)
     {
         super(x, y, bounces, t, affectsMaxLiveBullets, ib);
-        this.name = bullet_name;
-        this.itemSound = "arc.ogg";
+        this.init();
+    }
 
+    public BulletArc(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet ib)
+    {
+        this(x, y, bounces, t, true, ib);
+    }
+
+    protected void init()
+    {
         this.enableExternalCollisions = false;
         this.playPopSound = false;
         this.playBounceSound = false;
@@ -31,15 +40,9 @@ public class BulletArc extends Bullet
         this.obstacleCollision = false;
         this.canBeCanceled = false;
         this.moveOut = false;
-        this.effect = BulletEffect.trail;
         this.trail3d = true;
 
         this.autoZ = false;
-    }
-
-    public BulletArc(double x, double y, int bounces, Tank t, ItemBullet ib)
-    {
-        this(x, y, bounces, t, true, ib);
     }
 
     @Override

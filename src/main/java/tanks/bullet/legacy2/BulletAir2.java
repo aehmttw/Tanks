@@ -1,6 +1,8 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.hotbar.item.ItemBullet;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletGas;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletAir2 extends BulletGas
@@ -40,7 +42,7 @@ public class BulletAir2 extends BulletGas
 
         this.lowersBushes = false;
 
-        this.life = 200;
+        this.lifespan = 200;
         this.endSize = Bullet.bullet_size * 40;
     }
 }

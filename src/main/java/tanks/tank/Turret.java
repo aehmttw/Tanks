@@ -58,11 +58,11 @@ public class Turret extends Movable
 
 			int n = 0;
 
-			if (this.tank.bullet.shotSpread < 360)
+			if (this.tank.bullet.multishotSpread < 360)
 				n = 1;
 
 			for (int i = 0; i < q; i++)
-				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(this.tank.bullet.shotSpread) * ((i * 1.0 / (q - n)) - n / 2.0), vAngle);
+				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(this.tank.bullet.multishotSpread) * ((i * 1.0 / (q - n)) - n / 2.0), vAngle);
 		}
 		else
 			this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation, vAngle);

@@ -1,9 +1,7 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.AreaEffectFreeze;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.hotbar.item.ItemBullet;
+import tanks.bullet.Bullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletFreeze2 extends Bullet

@@ -1,4 +1,4 @@
-package tanks.hotbar.item;
+package tanks.item.legacy;
 
 import tanks.*;
 import tanks.gui.property.UIPropertyDouble;

@@ -1,9 +1,7 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.*;
-import tanks.AttributeModifier.Operation;
-import tanks.hotbar.item.ItemBullet;
-import tanks.network.event.EventTankUpdateHealth;
+import tanks.bullet.BulletInstant;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletHealing extends BulletInstant

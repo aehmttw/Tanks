@@ -1,7 +1,6 @@
 package tanks.registry;
 
 import tanks.Game;
-import tanks.hotbar.item.ItemBullet;
 import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
 
@@ -75,7 +74,6 @@ public class RegistryTank
 				Constructor<? extends Tank> c = tank.getConstructor(String.class, double.class, double.class, double.class);
 				Tank t = c.newInstance(this.name, x, y, a);
 				t.fromRegistry = true;
-				t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
 				t.musicTracks = Game.registryTank.tankMusics.get(this.name);
 
 				if (t.musicTracks == null)

@@ -5,7 +5,7 @@ import tanks.Movable;
 import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
 import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderExplosive;
 import tanks.tank.*;
@@ -14,7 +14,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
 {
     public double timer = 25;
     public Tank trigger = Game.dummyTank;
-    public Item itemTrigger = null;
+    public Item2.ItemStack<?> itemTrigger = null;
 
     public ObstacleExplosive(String name, double posX, double posY)
     {
@@ -59,9 +59,6 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
             {
                 this.trigger = ((Bullet) m).tank;
                 this.itemTrigger = ((Bullet) m).item;
-
-                if (((Bullet) m).item == null)
-                    this.itemTrigger = TankPlayer.default_bullet;
             }
             else
                 this.trigger = (Tank) m;
@@ -83,9 +80,6 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
         {
             this.trigger = ((Explosion) m).tank;
             this.itemTrigger = ((Explosion) m).item;
-
-            if (((Explosion) m).item == null)
-                this.itemTrigger = TankPlayer.default_mine;
         }
     }
 

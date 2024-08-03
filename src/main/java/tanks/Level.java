@@ -6,7 +6,8 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
+import tanks.item.legacy.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
@@ -81,8 +82,8 @@ public class Level
 	public ArrayList<Player> includedPlayers = new ArrayList<>();
 
 	public int startingCoins;
-	public ArrayList<Item> shop = new ArrayList<>();
-	public ArrayList<Item> startingItems = new ArrayList<>();
+	public ArrayList<Item2.ShopItem> shop = new ArrayList<>();
+	public ArrayList<Item2.ItemStack<?>> startingItems = new ArrayList<>();
 	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
 
 	public double startTime = 400;
@@ -153,9 +154,9 @@ public class Level
 					else if (!ScreenPartyLobby.isClient)
 					{
 						if (parsing == 1)
-							this.startingItems.add(Item.parseItem(null, s));
+							this.startingItems.add(Item2.ItemStack.fromString(null, s));
 						else if (parsing == 2)
-							this.shop.add(Item.parseItem(null, s));
+							this.shop.add(Item2.ShopItem.fromString(s));
 						else if (parsing == 3)
 							this.startingCoins = Integer.parseInt(s);
 					}
@@ -297,12 +298,6 @@ public class Level
 			light = Integer.parseInt(screen[9]) / 100.0;
 			shadow = Integer.parseInt(screen[10]) / 100.0;
 		}
-
-		for (Item i: this.shop)
-			i.importProperties();
-
-		for (Item i: this.startingItems)
-			i.importProperties();
 
 		if (sc instanceof ScreenLevelEditor)
 		{

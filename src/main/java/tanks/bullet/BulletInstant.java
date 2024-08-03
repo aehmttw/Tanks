@@ -2,7 +2,7 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.ItemBullet2;
 import tanks.network.event.EventBulletDestroyed;
 import tanks.network.event.EventBulletInstantWaypoint;
 import tanks.network.event.EventShootBullet;
@@ -10,8 +10,10 @@ import tanks.tank.Tank;
 
 import java.util.ArrayList;
 
-public abstract class BulletInstant extends Bullet
+public class BulletInstant extends Bullet
 {
+	public static String bullet_name = "laser";
+
 	public ArrayList<Double> xTargets = new ArrayList<>();
 	public ArrayList<Double> yTargets = new ArrayList<>();
 
@@ -23,9 +25,19 @@ public abstract class BulletInstant extends Bullet
 
 	public boolean expired = false;
 
-	public BulletInstant(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet ib)
+	public BulletInstant()
+	{
+		this.init();
+	}
+
+	public BulletInstant(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet ib)
 	{
 		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
+		this.init();
+	}
+
+	public void init()
+	{
 		this.enableExternalCollisions = false;
 		this.playPopSound = false;
 		this.playBounceSound = false;
@@ -43,7 +55,7 @@ public abstract class BulletInstant extends Bullet
 		if (Game.effectsEnabled)
 		{
 			double mul = 4;
-			if (this.item.cooldownBase <= 0)
+			if (this.item.item.cooldownBase <= 0)
 				mul = 0.25;
 
 			for (int i = 0; i < this.size * mul * Game.effectMultiplier; i++)
@@ -172,7 +184,7 @@ public abstract class BulletInstant extends Bullet
 	{
 		if (this.damage < 0)
 		{
-			if (this.item.cooldownBase > 0)
+			if (this.item.item.cooldownBase > 0)
 				Drawing.drawing.playGlobalSound("heal_impact_1.ogg");
 			else
 			{

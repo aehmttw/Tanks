@@ -1,6 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.hotbar.item.Item;
+import tanks.item.legacy.Item;
 
 public interface IItemScreen
 {

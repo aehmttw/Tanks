@@ -4,39 +4,62 @@ import tanks.*;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.ItemMine;
+import tanks.item.ItemMine2;
 import tanks.network.event.EventMineChangeTimer;
 import tanks.network.event.EventMineRemove;
+import tanks.tankson.TanksONable;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@TanksONable("mine")
 public class Mine extends Movable implements IAvoidObject, IDrawableLightSource
 {
     public static double mine_size = 30;
     public static double mine_radius = Game.tile_size * 2.5;
 
-    public double timer;
+    @MineProperty(id = "timer", name = "Fuse length")
+    public double timer = 1000;
+
+    @MineProperty(id = "size", name = "Size")
     public double size = mine_size;
+
     public double outlineColorR;
     public double outlineColorG;
     public double outlineColorB;
     public double height = 0;
 
+    @MineProperty(id = "triggered_timer", name = "Triggered fuse length")
     public double triggeredTimer = 50;
+
+    @MineProperty(id = "damage", name = "Damage")
     public double damage = 2;
+
+    @MineProperty(id = "destroys_obstacles", name = "Destroys blocks")
     public boolean destroysObstacles = true;
+
+    @MineProperty(id = "destroys_bullets", name = "Destroys bullets")
     public boolean destroysBullets = true;
 
+    @MineProperty(id = "damage_radius", name = "Damage radius")
     public double radius = mine_radius;
+
     public Tank tank;
-    public ItemMine item;
-    public double cooldown = 0;
+    public ItemMine2.ItemStackMine item;
     public int lastBeep = Integer.MAX_VALUE;
 
+    @MineProperty(id = "knockback_radius", name = "Knockback radius")
     public double knockbackRadius = this.radius * 2;
+
+    @MineProperty(id = "bullet_knockback", name = "Bullet knockback")
     public double bulletKnockback = 0;
+
+    @MineProperty(id = "tank_knockback", name = "Tank knockback")
     public double tankKnockback = 0;
+
+    @MineProperty(id = "max_live_mines", name = "Max live mines")
+    public int maxLiveMines = 2;
 
     public int networkID = -1;
 
@@ -46,7 +69,16 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource
 
     public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
-    public Mine(double x, double y, double timer, Tank t, ItemMine item)
+    /**
+     * Do not use if you plan to place this mine in the game field. Only for templates.
+     * Use another constructor if you want to add the mine to the game field.
+     */
+    public Mine()
+    {
+        super(0, 0);
+    }
+
+    public Mine(double x, double y, double timer, Tank t, ItemMine2.ItemStackMine item)
     {
         super(x, y);
 
@@ -99,9 +131,35 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource
         }
     }
 
-    public Mine(double x, double y, Tank t, ItemMine im)
+    public Mine(double x, double y, Tank t, ItemMine2.ItemStackMine im)
     {
         this(x, y, 1000, t, im);
+    }
+
+    /**
+     * Clone this mine's properties to another mine
+     * @param m the another mine
+     * @return the same mine passed to it, for convenience
+     */
+    public Mine cloneProperties(Mine m)
+    {
+        try
+        {
+            for (Field f : m.getClass().getFields())
+            {
+                MineProperty p = f.getAnnotation(MineProperty.class);
+                if (p != null)
+                {
+                    f.set(m, f.get(this));
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
+
+        return m;
     }
 
     @Override

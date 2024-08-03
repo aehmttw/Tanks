@@ -5,7 +5,7 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
 import tanks.bullet.Laser;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.network.event.EventBulletDestroyed;
 import tanks.network.event.EventBulletInstantWaypoint;
 import tanks.network.event.EventShootBullet;

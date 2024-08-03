@@ -1,12 +1,10 @@
 package tanks;
 
 import basewindow.BaseFile;
-import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.Item;
-import tanks.tank.Explosion;
+import tanks.item.Item2;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
@@ -59,12 +57,13 @@ public class CrusadePlayer
         }
     }
 
-    public void addItemUse(IGameObject i)
+    public void addItemUse(Item2.ItemStack<?> i)
     {
         this.addItemStat(this.itemUses, i);
     }
 
-    public void addItemHit(IGameObject i)
+    //TODO: find out a way to support fractional numbers...
+    public void addItemHit(Item2.ItemStack<?> i)
     {
         this.addItemStat(this.itemHits, i);
     }
@@ -89,30 +88,9 @@ public class CrusadePlayer
         return n;
     }
 
-    public void addItemStat(HashMap<String, Integer> stat, IGameObject i)
+    public void addItemStat(HashMap<String, Integer> stat, Item2.ItemStack<?> i)
     {
-        Item item;
-
-        if (i instanceof Item)
-            item = (Item) i;
-        else if (i instanceof Bullet)
-        {
-            item = ((Bullet) i).item;
-
-            if (item == null)
-                item = TankPlayer.default_bullet;
-        }
-        else if (i instanceof Explosion)
-        {
-            item = ((Explosion) i).item;
-
-            if (item == null)
-                item = TankPlayer.default_mine;
-        }
-        else
-            return;
-
-        String name = item.name;
+        String name = i.item.name;
 
         if (Crusade.currentCrusade != null)
         {
@@ -169,9 +147,9 @@ public class CrusadePlayer
             f.println(this.coins + "");
 
             StringBuilder items = new StringBuilder();
-            for (Item i : this.itemBar.slots)
+            for (Item2.ItemStack<?> i : this.itemBar.slots)
             {
-                items.append(i.name).append(",").append(i.stackSize).append("|");
+                items.append(i.item.name).append(",").append(i.unlimited ? -1 : i.stackSize).append("|");
             }
 
             f.println(items.substring(0, items.length() - 1));

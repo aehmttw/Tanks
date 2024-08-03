@@ -7,10 +7,9 @@ import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemEmpty;
-import tanks.hotbar.item.ItemMine;
+import tanks.item.Item2;
+import tanks.item.ItemBullet2;
+import tanks.item.ItemMine2;
 import tanks.network.event.*;
 
 public class TankPlayerRemote extends Tank implements IServerPlayerTank
@@ -152,15 +151,15 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
-        this.bullet.updateCooldown(reload);
-        this.mine.updateCooldown(reload);
+        this.bulletItem.updateCooldown(reload);
+        this.mineItem.updateCooldown(reload);
 
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item i: h.itemBar.slots)
+            for (Item2.ItemStack<?> i: h.itemBar.slots)
             {
-                if (i != null && !(i instanceof ItemEmpty))
+                if (i != null && !(i.isEmpty))
                 {
                     i.updateCooldown(reload);
                 }
@@ -212,24 +211,24 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public void refreshAmmo()
     {
         ItemBar b = this.player.hotbar.itemBar;
-        ItemBullet ib = this.bullet;
-        ItemMine im = this.mine;
+        ItemBullet2.ItemStackBullet ib = this.bulletItem;
+        ItemMine2.ItemStackMine im = this.mineItem;
 
         if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1)
         {
-            if (b.slots[b.selected] instanceof ItemBullet)
-                ib = (ItemBullet) b.slots[b.selected];
-            else if (b.slots[b.selected] instanceof ItemMine)
-                im = (ItemMine) b.slots[b.selected];
+            if (b.slots[b.selected] instanceof ItemBullet2.ItemStackBullet)
+                ib = (ItemBullet2.ItemStackBullet) b.slots[b.selected];
+            else if (b.slots[b.selected] instanceof ItemMine2.ItemStackMine)
+                im = (ItemMine2.ItemStackMine) b.slots[b.selected];
         }
 
-        if (lastLiveBullets != ib.liveBullets || ib.maxLiveBullets != lastMaxLiveBullets || im.liveMines != lastLiveMines || im.maxLiveMines != lastMaxLiveMines)
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.maxLiveBullets, im.liveMines, im.maxLiveMines, ib.cooldown, ib.cooldownBase));
+        if (lastLiveBullets != ib.liveBullets || ib.item.bullet.maxLiveBullets != lastMaxLiveBullets || im.liveMines != lastLiveMines || im.item.mine.maxLiveMines != lastMaxLiveMines)
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.item.bullet.maxLiveBullets, im.liveMines, im.item.mine.maxLiveMines, ib.cooldown, ib.item.cooldownBase));
 
         lastLiveBullets = ib.liveBullets;
         lastLiveMines = im.liveMines;
-        lastMaxLiveBullets = ib.maxLiveBullets;
-        lastMaxLiveMines = im.maxLiveMines;
+        lastMaxLiveBullets = ib.item.bullet.maxLiveBullets;
+        lastMaxLiveMines = im.item.mine.maxLiveMines;
     }
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)
@@ -430,7 +429,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 return;
         }
 
-        this.bullet.attemptUse(this);
+        this.bulletItem.attemptUse(this);
     }
 
     public void layMine()
@@ -444,7 +443,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 return;
         }
 
-        this.mine.attemptUse(this);
+        this.mineItem.attemptUse(this);
     }
 
     public void fireBullet(Bullet b, double speed, double offset)
@@ -530,9 +529,9 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item i: h.itemBar.slots)
+            for (Item2.ItemStack<?> i: h.itemBar.slots)
             {
-                if (i != null && !(i instanceof ItemEmpty))
+                if (i != null && !(i.isEmpty))
                 {
                     i.cooldown = Math.max(i.cooldown, value);
                 }

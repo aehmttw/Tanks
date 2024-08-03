@@ -1,6 +1,7 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.hotbar.item.ItemBullet;
+import tanks.bullet.BulletInstant;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletElectric2 extends BulletInstant

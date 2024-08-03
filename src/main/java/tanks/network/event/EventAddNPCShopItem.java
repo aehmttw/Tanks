@@ -5,7 +5,9 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.item.ItemRemote;
+import tanks.item.Item2;
+import tanks.item.ItemRemote2;
+import tanks.item.legacy.ItemRemote;
 import tanks.tank.TankNPC;
 
 public class EventAddNPCShopItem extends EventAddShopItem
@@ -42,13 +44,13 @@ public class EventAddNPCShopItem extends EventAddShopItem
     {
         if (clientID == null && Game.screen instanceof ScreenGame)
         {
-            ItemRemote i = new ItemRemote();
-            i.name = name;
-            i.icon = icon;
+            Item2.ShopItem i = new Item2.ShopItem(new ItemRemote2.ItemStackRemote(null, new ItemRemote2(), 0));
+            i.itemStack.item.name = name;
+            i.itemStack.item.icon = icon;
 
             Button b = new Button(0, 0, 350, 40, name, () -> Game.eventsOut.add(new EventPurchaseItem(item)));
             b.subtext = description;
-            b.image = i.icon;
+            b.image = i.itemStack.item.icon;
             b.imageXOffset = -145;
             b.imageSizeX = 30;
             b.imageSizeY = 30;

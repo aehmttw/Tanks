@@ -8,8 +8,8 @@ import tanks.Level;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.Item;
+import tanks.item.legacy.ItemBullet;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
 import tanks.translation.Translation;
@@ -512,7 +512,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
             this.preview.glowSize = this.screen.tank.glowSize;
             this.preview.lightSize = this.screen.tank.lightSize;
             this.preview.lightIntensity = this.screen.tank.lightIntensity;
-            this.preview.bullet = this.screen.tank.bullet;
+            this.preview.setBullet(this.screen.tank.bullet);
             this.preview.multipleTurrets = this.screen.tank.multipleTurrets;
 
             if (this.preview.size > Game.tile_size * 2)

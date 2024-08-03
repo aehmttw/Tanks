@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.IDrawableWithGlow;
 import tanks.Panel;
 import tanks.bullet.Bullet;
-import tanks.hotbar.item.ItemBullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletFlame extends Bullet implements IDrawableWithGlow

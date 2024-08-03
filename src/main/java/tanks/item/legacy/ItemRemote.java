@@ -1,5 +1,6 @@
-package tanks.hotbar.item;
+package tanks.item.legacy;
 
+import tanks.item.legacy.Item;
 import tanks.tank.Tank;
 
 public class ItemRemote extends Item

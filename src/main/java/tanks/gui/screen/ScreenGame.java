@@ -12,8 +12,10 @@ import tanks.gui.Minimap;
 import tanks.gui.SpeedrunTimer;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemRemote;
+import tanks.item.Item2;
+import tanks.item.ItemRemote2;
+import tanks.item.legacy.Item;
+import tanks.item.legacy.ItemRemote;
 import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
@@ -50,7 +52,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public static boolean newItemsNotification = false;
 	public static String lastShop = "";
-	public ArrayList<Item> shop = new ArrayList<>();
+	public ArrayList<Item2.ShopItem> shop = new ArrayList<>();
 	public boolean screenshotMode = false;
 
 	public Tutorial tutorial;
@@ -617,7 +619,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (startingItems)
 				{
-					for (Item i: Game.currentLevel.startingItems)
+					for (Item2.ItemStack<?> i: Game.currentLevel.startingItems)
 						p.hotbar.itemBar.addItem(i);
 				}
 
@@ -653,29 +655,29 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.name = s;
 	}
 
-	public ScreenGame(ArrayList<Item> shop)
+	public ScreenGame(ArrayList<Item2.ShopItem> shop)
 	{
 		this();
 		this.initShop(shop);
 	}
 
-	public void initShop(ArrayList<Item> shop)
+	public void initShop(ArrayList<Item2.ShopItem> shop)
 	{
 		this.shop = shop;
 
 		for (int i = 0; i < this.shop.size(); i++)
 		{
 			final int j = i;
-			Item item = this.shop.get(j);
-			if (item instanceof ItemRemote)
+			Item2.ShopItem item = this.shop.get(j);
+			if (item.itemStack.item instanceof ItemRemote2)
 				continue;
 
-			Button b = new Button(0, 0, 350, 40, item.name, () ->
+			Button b = new Button(0, 0, 350, 40, item.itemStack.item.name, () ->
 			{
 				int pr = shop.get(j).price;
 				if (Game.player.hotbar.coins >= pr)
 				{
-					if (Game.player.hotbar.itemBar.addItem(shop.get(j)))
+					if (Game.player.hotbar.itemBar.addItem(shop.get(j).itemStack))
 						Game.player.hotbar.coins -= pr;
 				}
 			}
@@ -692,7 +694,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			this.shopItemButtons.add(b);
 
-			Game.eventsOut.add(new EventAddShopItem(i, item.name, b.rawSubtext, p, item.icon));
+			Game.eventsOut.add(new EventAddShopItem(i, item.itemStack.item.name, b.rawSubtext, p, item.itemStack.item.icon));
 		}
 
 		this.initializeShopList();
@@ -2275,7 +2277,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Button b = this.shopItemButtons.get(i);
 					b.draw();
 					Drawing.drawing.setColor(255, 255, 255);
-					Drawing.drawing.drawInterfaceImage(this.shop.get(i).icon, b.posX - 135, b.posY, 40, 40);
+					Drawing.drawing.drawInterfaceImage(this.shop.get(i).itemStack.item.icon, b.posX - 135, b.posY, 40, 40);
 				}
 			}
 			else

@@ -7,9 +7,11 @@ import tanks.Panel;
 import tanks.bullet.legacy.BulletElectric;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemBullet;
-import tanks.hotbar.item.ItemRemote;
+import tanks.item.Item2;
+import tanks.item.ItemBullet2;
+import tanks.item.legacy.Item;
+import tanks.item.legacy.ItemBullet;
+import tanks.item.legacy.ItemRemote;
 import tanks.network.event.EventTankControllerUpdateC;
 
 import java.util.UUID;
@@ -60,7 +62,7 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
     @Override
     public void update()
     {
-        this.bullet.cooldown = Math.max(0, this.bullet.cooldown - Panel.frameFrequency);
+        this.bulletItem.cooldown = Math.max(0, this.bulletItem.cooldown - Panel.frameFrequency);
         this.interpolatedProgress = Math.min(this.interpolatedProgress + Panel.frameFrequency, interpolationTime);
 
         this.posX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
@@ -184,11 +186,12 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
         Hotbar h = Game.player.hotbar;
         if (h.enabledItemBar && h.itemBar.selected >= 0)
         {
-            Item i = h.itemBar.slots[h.itemBar.selected];
-            if (i instanceof ItemBullet)
-                showRange = ((ItemBullet) i).getRange() >= 0;
-            else if (i instanceof ItemRemote)
-                showRange = ((ItemRemote) i).range >= 0;
+            // TODO
+//            Item2.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
+//            if (i.item instanceof ItemBullet2)
+//                showRange = ((ItemBullet) i).getRange() >= 0;
+//            else if (i.item instanceof ItemRemote)
+//                showRange = ((ItemRemote) i).range >= 0;
         }
 
         TankPlayer.shootStickHidden = showRange;
@@ -303,22 +306,23 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
 
             if (h.enabledItemBar && h.itemBar.selected >= 0)
             {
-                Item i = h.itemBar.slots[h.itemBar.selected];
-                if (i instanceof ItemBullet)
-                {
-                    r.bounces = ((ItemBullet) i).bounces;
-                    range = ((ItemBullet) i).getRange();
-
-                    if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
-                        r.bounces = 0;
-                }
-                else if (i instanceof ItemRemote)
-                {
-                    if (((ItemRemote)i).bounces >= 0)
-                        r.bounces = ((ItemRemote)i).bounces;
-
-                    range = ((ItemRemote) i).range;
-                }
+                // TODO
+//                Item i = h.itemBar.slots[h.itemBar.selected];
+//                if (i instanceof ItemBullet)
+//                {
+//                    r.bounces = ((ItemBullet) i).bounces;
+//                    range = ((ItemBullet) i).getRange();
+//
+//                    if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
+//                        r.bounces = 0;
+//                }
+//                else if (i instanceof ItemRemote)
+//                {
+//                    if (((ItemRemote)i).bounces >= 0)
+//                        r.bounces = ((ItemRemote)i).bounces;
+//
+//                    range = ((ItemRemote) i).range;
+//                }
             }
 
             r.vX /= 2;

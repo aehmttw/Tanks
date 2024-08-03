@@ -11,8 +11,7 @@ import tanks.gui.input.InputBinding;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemRemote;
+import tanks.item.Item2;
 import tanks.network.event.EventAddNPCShopItem;
 import tanks.network.event.EventClearNPCShop;
 import tanks.network.event.EventPurchaseNPCItem;
@@ -34,7 +33,7 @@ public class TankNPC extends TankDummy
     public String tagName;
     public boolean draw = false;
     public ButtonList npcShopList;
-    public ArrayList<Item> shopItems;
+    public ArrayList<Item2.ShopItem> shopItems;
     private double counter = 0;
     private String currentLine = "";
     private boolean isChatting = false;
@@ -53,22 +52,22 @@ public class TankNPC extends TankDummy
         this(name, x, y, angle, messages, tagName, r, g, b, r, g, b, Game.currentLevel.shop);
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, Item... shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, Item2.ShopItem... shop)
     {
         this(name, x, y, angle, messages, tagName, r, g, b, r, g, b, new ArrayList<>(Arrays.asList(shop)));
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, Item... shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, Item2.ShopItem... shop)
     {
         this(name, x, y, angle, messages, tagName, r, g, b, nameR, nameG, nameB, new ArrayList<>(Arrays.asList(shop)));
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, ArrayList<Item> shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, ArrayList<Item2.ShopItem> shop)
     {
         this(name, x, y, angle, messages, tagName, r, g, b, r, g, b, shop);
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, ArrayList<Item> shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, ArrayList<Item2.ShopItem> shop)
     {
         super(name, x, y * 50 + 25, angle);
 
@@ -98,7 +97,7 @@ public class TankNPC extends TankDummy
         icon.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
     }
 
-    public void initShop(ArrayList<Item> shop)
+    public void initShop(ArrayList<Item2.ShopItem> shop)
     {
         Game.eventsOut.add(new EventClearNPCShop(this.networkID));
         ArrayList<Button> shopItemButtons = new ArrayList<>();
@@ -106,9 +105,9 @@ public class TankNPC extends TankDummy
         for (int i = 0; i < shop.size(); i++)
         {
             final int j = i;
-            Item item = shop.get(j);
-            if (item instanceof ItemRemote)
-                continue;
+            Item2.ShopItem item = shop.get(j);
+//            if (item instanceof ItemRemote)
+//                continue;
 
             String price = item.price + " ";
             if (item.price == 0)
@@ -118,14 +117,14 @@ public class TankNPC extends TankDummy
             else
                 price += "coins";
 
-            Button b = new Button(0, 0, Drawing.drawing.objWidth, 40, item.name, () ->
+            Button b = new Button(0, 0, Drawing.drawing.objWidth, 40, item.itemStack.item.name, () ->
             {
                 if (!ScreenPartyLobby.isClient)
                 {
                     int pr = shop.get(j).price;
                     if (Game.player.hotbar.coins >= pr)
                     {
-                        if (Game.player.hotbar.itemBar.addItem(shop.get(j)))
+                        if (Game.player.hotbar.itemBar.addItem(shop.get(j).itemStack))
                             Game.player.hotbar.coins -= pr;
                     }
                 }
@@ -135,7 +134,7 @@ public class TankNPC extends TankDummy
                 Game.game.window.pressedButtons.remove(InputCodes.MOUSE_BUTTON_1);
             });
 
-            b.image = item.icon;
+            b.image = item.itemStack.item.icon;
             b.imageXOffset = -145;
             b.imageSizeX = 30;
             b.imageSizeY = 30;
@@ -143,7 +142,7 @@ public class TankNPC extends TankDummy
 
             shopItemButtons.add(b);
 
-            Game.eventsOut.add(new EventAddNPCShopItem(i, item.name, price, item.price, item.icon, this.networkID));
+            Game.eventsOut.add(new EventAddNPCShopItem(i, item.itemStack.item.name, price, item.price, item.itemStack.item.icon, this.networkID));
         }
 
         this.npcShopList = new ButtonList(shopItemButtons, 0, 0, (int) shopOffset, -30);

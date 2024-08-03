@@ -1,6 +1,7 @@
-package tanks.bullet;
+package tanks.bullet.legacy2;
 
-import tanks.hotbar.item.ItemBullet;
+import tanks.bullet.Bullet;
+import tanks.item.legacy.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletHoming2 extends Bullet

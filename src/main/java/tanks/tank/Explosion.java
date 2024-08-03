@@ -8,26 +8,26 @@ import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.hotbar.item.Item;
+import tanks.item.Item2;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 
 public class Explosion extends Movable
 {
-    public double damage;
-    public boolean destroysObstacles;
+    public double damage = 2;
+    public boolean destroysObstacles = true;
     public boolean destroysBullets = true;
 
-    public double radius;
+    public double radius = Game.tile_size * 2.5;
     public Tank tank;
-    public Item item;
+    public Item2.ItemStack<?> item;
 
-    public double knockbackRadius;
-    public double bulletKnockback;
-    public double tankKnockback;
+    public double knockbackRadius = 0;
+    public double bulletKnockback = 0;
+    public double tankKnockback = 0;
 
-    public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item item)
+    public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item2.ItemStack<?> item)
     {
         super(x, y);
 
@@ -42,7 +42,7 @@ public class Explosion extends Movable
 
     public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank)
     {
-        this(x, y, radius, damage, destroysObstacles, tank, null);
+        this(x, y, radius, damage, destroysObstacles, tank, tank.mineItem);
     }
 
     public Explosion(Mine m)
@@ -52,6 +52,11 @@ public class Explosion extends Movable
         this.bulletKnockback = m.bulletKnockback;
         this.tankKnockback = m.tankKnockback;
         this.destroysBullets = m.destroysBullets;
+    }
+
+    public Explosion()
+    {
+        super(0, 0);
     }
 
     public void explode()

@@ -1,4 +1,4 @@
-package tanks.hotbar.item;
+package tanks.item.legacy;
 
 import tanks.AttributeModifier;
 import tanks.Game;

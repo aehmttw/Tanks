@@ -250,8 +250,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                         double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
                         addEffect(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
                     }
-                    Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
                 }
+
+                Game.game.window.soundPlayer.setMusicVolume(Game.musicVolume * (0.25f + 0.25f * bonusCount));
             }
         }
 

@@ -1,7 +1,7 @@
 package tanks.registry;
 
-import tanks.hotbar.item.Item;
-import tanks.hotbar.item.ItemEmpty;
+import tanks.item.Item2;
+import tanks.item.ItemEmpty2;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ public class RegistryItem
 
 	public static class ItemEntry
 	{
-		public final Class<? extends Item> item;
+		public final Class<? extends Item2> item;
 		public final String name;
 		public final String image;
 
-		public ItemEntry(RegistryItem r, Class<? extends Item> item, String name, String image)
+		public ItemEntry(RegistryItem r, Class<? extends Item2> item, String name, String image)
 		{
 			this.item = item;
 			this.name = name;
@@ -26,19 +26,19 @@ public class RegistryItem
 
 		protected ItemEntry()
 		{
-			this.item = ItemEmpty.class;
+			this.item = ItemEmpty2.class;
 			this.name = "unknown";
 			this.image = "item.png";
 		}
 
 		protected ItemEntry(String name)
 		{
-			this.item = ItemEmpty.class;
+			this.item = ItemEmpty2.class;
 			this.name = name;
 			this.image = "item.png";
 		}
 
-		public Item getItem()
+		public Item2 getItem()
 		{
 			try 
 			{

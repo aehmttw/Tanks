@@ -11,6 +11,9 @@ public class GameWindowHandler implements IWindowHandler
 	@Override
 	public boolean attemptCloseWindow()
 	{
+		if (Panel.panel.continuation != null)
+			return true;
+
 		if (!Game.warnBeforeClosing)
 			return true;
 

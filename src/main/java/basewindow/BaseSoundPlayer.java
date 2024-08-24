@@ -27,13 +27,15 @@ public abstract class BaseSoundPlayer
 
     public abstract void setMusicSpeed(float speed);
 
+    public abstract float getMusicPos();
+
+    public abstract void setMusicPos(float pos);
+
     public abstract void addSyncedMusic(String path, float volume, boolean looped, long fadeTime);
 
     public abstract void removeSyncedMusic(String path, long fadeTime);
 
     public abstract void stopMusic();
-
-    public abstract void registerCombinedMusic(String path, String id);
 
     public abstract void exit();
 

@@ -3,7 +3,7 @@ package tanks.bullet;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.item.ItemBullet2;
+import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
 import tanks.tank.Tank;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class BulletAirStrike extends Bullet
 {
-    public static String bullet_name = "air_strike";
+    public static String bullet_class_name = "air_strike";
 
     public ArrayList<Double> pastPosX = new ArrayList<>();
     public ArrayList<Double> pastPosY = new ArrayList<>();
@@ -26,19 +26,16 @@ public class BulletAirStrike extends Bullet
         this.init();
     }
 
-    public BulletAirStrike(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet ib)
+    public BulletAirStrike(double x, double y, Tank t, boolean affectsMaxLiveBullets, ItemBullet.ItemStackBullet ib)
     {
-        super(x, y, bounces, t, affectsMaxLiveBullets, ib);
+        super(x, y, t, affectsMaxLiveBullets, ib);
         this.init();
-    }
-
-    public BulletAirStrike(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet item)
-    {
-        this(x, y, bounces, t, false, item);
     }
 
     protected void init()
     {
+        this.typeName = bullet_class_name;
+
         this.trail3d = true;
 
         this.enableExternalCollisions = false;

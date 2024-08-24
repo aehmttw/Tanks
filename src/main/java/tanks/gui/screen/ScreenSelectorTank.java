@@ -7,7 +7,6 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.item.legacy.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
@@ -95,11 +94,11 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
 
                     for (RegistryBullet.BulletEntry e: Game.registryBullet.bulletEntries)
                     {
-                        if (e.bullet.equals(t.bullet.bulletClass))
-                        {
-                            t.bullet.icon = e.image;
-                            t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
-                        }
+//                        if (e.bullet.equals(t.bullet.bulletClass))
+//                        {
+//                            t.bullet.icon = e.image;
+//                            t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
+//                        }
                     }
                 }
                 else

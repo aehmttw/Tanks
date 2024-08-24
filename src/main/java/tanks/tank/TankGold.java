@@ -23,7 +23,7 @@ public class TankGold extends TankAIControlled
 		this.setBullet(DefaultBullets.booster_bullet);
 		this.enableSuicide = true;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.keep_distance;
-		this.mine.radius *= 1.5;
+		this.mine.explosion.radius *= 1.5;
 
 		if (Game.tankTextures)
 		{

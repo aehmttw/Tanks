@@ -51,6 +51,10 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
 	public Class<? extends ShaderGroup> tileRenderer = ShaderGroundObstacle.class;
 
+	/** Obstacles with different render numbers can have different values for their uniforms */
+	public int rendererNumber = 0;
+	public int tileRendererNumber = 0;
+
 	public double posX;
 	public double posY;
 	public double startHeight = 0;

@@ -5,13 +5,15 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
-import tanks.gui.screen.*;
-import tanks.item.legacy.Item;
+import tanks.gui.screen.IItemStackScreen;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenSelector;
+import tanks.item.Item;
 import tanks.registry.RegistryItem;
 
 import java.util.ArrayList;
 
-public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay implements IItemScreen
+public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay implements IItemStackScreen
 {
     public ButtonList startingItemsList;
     public Selector itemSelector;
@@ -63,17 +65,17 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
-            if (itemSelector.selectedOption == itemSelector.options.length - 1)
-            {
-                ScreenAddSavedItem s = new ScreenAddSavedItem((IItemScreen) Game.screen, this.addItem);
-                s.drawBehindScreen = true;
-                Game.screen = s;
-            }
-            else
-            {
-                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-                addItem(i);
-            }
+//            if (itemSelector.selectedOption == itemSelector.options.length - 1)
+//            {
+//                ScreenAddSavedItem s = new ScreenAddSavedItem((IItemScreen) Game.screen, this.addItem);
+//                s.drawBehindScreen = true;
+//                Game.screen = s;
+//            }
+//            else
+//            {
+//                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
+//                addItem(i);
+//            }
         });
 
         itemSelector.images = itemImages;
@@ -88,10 +90,10 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
         startingItemsList.reorderBehavior = (i, j) ->
         {
             screenLevelEditor.level.startingItems.add(j, screenLevelEditor.level.startingItems.remove((int)i));
-            ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, startingItemsList, true);
+            ScreenLevelEditor.refreshStartingItemButtons(screenLevelEditor.level.startingItems, startingItemsList);
         };
 
-        ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, startingItemsList, true);
+        ScreenLevelEditor.refreshStartingItemButtons(screenLevelEditor.level.startingItems, startingItemsList);
     }
 
     public void update()
@@ -127,26 +129,26 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
     }
 
     @Override
-    public void addItem(Item i)
+    public void addItem(Item.ItemStack<?> i)
     {
         screenLevelEditor.level.startingItems.add(i);
 
-        ScreenItemEditor s = new ScreenItemEditor(i, this, true, true);
-        s.drawBehindScreen = true;
-        Game.screen = s;
+//        ScreenItemEditor s = new ScreenItemEditor(i, this, true, true);
+//        s.drawBehindScreen = true;
+//        Game.screen = s;
     }
 
     @Override
-    public void removeItem(Item i)
+    public void removeItem(Item.ItemStack<?> i)
     {
         screenLevelEditor.level.startingItems.remove(i);
-        ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, this.startingItemsList, true);
+        ScreenLevelEditor.refreshStartingItemButtons(screenLevelEditor.level.startingItems, this.startingItemsList);
     }
 
     @Override
     public void refreshItems()
     {
-        ScreenLevelEditor.refreshItemButtons(screenLevelEditor.level.startingItems, this.startingItemsList, true);
+        ScreenLevelEditor.refreshStartingItemButtons(screenLevelEditor.level.startingItems, this.startingItemsList);
     }
 
 }

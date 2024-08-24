@@ -4,7 +4,7 @@ import basewindow.BaseFile;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item2;
+import tanks.item.Item;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
@@ -57,13 +57,13 @@ public class CrusadePlayer
         }
     }
 
-    public void addItemUse(Item2.ItemStack<?> i)
+    public void addItemUse(Item.ItemStack<?> i)
     {
         this.addItemStat(this.itemUses, i);
     }
 
     //TODO: find out a way to support fractional numbers...
-    public void addItemHit(Item2.ItemStack<?> i)
+    public void addItemHit(Item.ItemStack<?> i)
     {
         this.addItemStat(this.itemHits, i);
     }
@@ -88,7 +88,7 @@ public class CrusadePlayer
         return n;
     }
 
-    public void addItemStat(HashMap<String, Integer> stat, Item2.ItemStack<?> i)
+    public void addItemStat(HashMap<String, Integer> stat, Item.ItemStack<?> i)
     {
         String name = i.item.name;
 
@@ -147,7 +147,7 @@ public class CrusadePlayer
             f.println(this.coins + "");
 
             StringBuilder items = new StringBuilder();
-            for (Item2.ItemStack<?> i : this.itemBar.slots)
+            for (Item.ItemStack<?> i : this.itemBar.slots)
             {
                 items.append(i.item.name).append(",").append(i.unlimited ? -1 : i.stackSize).append("|");
             }

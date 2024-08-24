@@ -17,6 +17,8 @@ public class TankGreen extends TankAIControlled
 		this.cooldownRandom = 20;
 		this.cooldownBase = 80;
 		this.turretAimSpeed = 0.03;
+		this.turretIdleSpeed = 0.01;
+		this.turretIdleTimerRandom = 250;
 
 		this.setBullet(DefaultBullets.sniper_rocket);
 

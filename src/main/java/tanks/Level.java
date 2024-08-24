@@ -6,16 +6,13 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.item.Item2;
-import tanks.item.legacy.Item;
+import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleBeatBlock;
 import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Level 
 {
@@ -82,12 +79,15 @@ public class Level
 	public ArrayList<Player> includedPlayers = new ArrayList<>();
 
 	public int startingCoins;
-	public ArrayList<Item2.ShopItem> shop = new ArrayList<>();
-	public ArrayList<Item2.ItemStack<?>> startingItems = new ArrayList<>();
+	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
+	public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
 	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
 
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
+
+	public boolean synchronizeMusic = false;
+	public int beatBlocks = 0;
 
 	/**
 	 * A level string is structured like this:
@@ -154,9 +154,9 @@ public class Level
 					else if (!ScreenPartyLobby.isClient)
 					{
 						if (parsing == 1)
-							this.startingItems.add(Item2.ItemStack.fromString(null, s));
+							this.startingItems.add(Item.ItemStack.fromString(null, s));
 						else if (parsing == 2)
-							this.shop.add(Item2.ShopItem.fromString(s));
+							this.shop.add(Item.ShopItem.fromString(s));
 						else if (parsing == 3)
 							this.startingCoins = Integer.parseInt(s);
 					}
@@ -365,6 +365,12 @@ public class Level
 
 						if (meta != null)
 							o.setMetadata(meta);
+
+						if (o instanceof ObstacleBeatBlock)
+						{
+							this.synchronizeMusic = true;
+							this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
+						}
 
 						Game.obstacles.add(o);
 					}

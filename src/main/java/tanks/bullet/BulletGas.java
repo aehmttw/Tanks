@@ -4,16 +4,19 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawableWithGlow;
 import tanks.Movable;
-import tanks.item.ItemBullet2;
+import tanks.item.ItemBullet;
 import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
+import tanks.tankson.Property;
 
 public class BulletGas extends Bullet implements IDrawableWithGlow
 {
-    public static String bullet_name = "Gas";
+    public static String bullet_class_name = "gas";
 
     public double startSize;
+
+    @Property(id = "end_size", name = "End size", category = BulletPropertyCategory.appearance)
     public double endSize;
 
     public double startR;
@@ -23,14 +26,18 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     public double endG;
     public double endB;
 
+    @Property(id = "color_noise_r", name = "Noise red")
     public double noiseR;
+    @Property(id = "color_noise_g", name = "Noise green")
     public double noiseG;
+    @Property(id = "color_noise_b", name = "Noise blue")
     public double noiseB;
 
     public double baseDamage;
     public double baseBulletKB;
     public double baseTankKB;
 
+    @Property(id = "opacity", name = "Opacity", category = BulletPropertyCategory.appearance)
     public double opacity = 1;
 
     public BulletGas()
@@ -38,19 +45,15 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         this.init();
     }
 
-    public BulletGas(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet ib)
+    public BulletGas(double x, double y, Tank t, boolean affectsLiveBulletCount, ItemBullet.ItemStackBullet ib)
     {
-        this(x, y, bounces, t, false, ib);
-    }
-
-    public BulletGas(double x, double y, int bounces, Tank t, boolean affectsLiveBulletCount, ItemBullet2.ItemStackBullet ib)
-    {
-        super(x, y, bounces, t, affectsLiveBulletCount, ib);
+        super(x, y, t, affectsLiveBulletCount, ib);
         this.init();
     }
 
     protected void init()
     {
+        this.typeName = bullet_class_name;
         this.useCustomWallCollision = true;
         this.playPopSound = false;
         this.playBounceSound = false;
@@ -88,7 +91,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         if (this.lifespan > 0)
             frac = Math.pow(this.startSize, 2) / Math.pow(this.size, 2);
 
-        this.damage = this.baseDamage * frac;
+        this.damage = this.baseDamage * Math.max(0, 1.0 - this.age / this.lifespan);
         this.tankHitKnockback = this.baseTankKB * frac;
         this.bulletHitKnockback = this.baseBulletKB * frac;
 

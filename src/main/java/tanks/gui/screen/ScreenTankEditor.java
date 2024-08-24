@@ -5,13 +5,16 @@ import basewindow.IModel;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
+import tanks.bullet.Bullet;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.item.legacy.Item;
-import tanks.item.legacy.ItemBullet;
+import tanks.item.Item;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
+import tanks.tankson.FieldPointer;
+import tanks.tankson.ITanksONEditable;
+import tanks.tankson.Property;
 import tanks.translation.Translation;
 
 import java.io.IOException;
@@ -21,7 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackgroundScreen
+public class ScreenTankEditor extends Screen implements IItemStackScreen, IBlankBackgroundScreen
 {
     public Tab currentTab;
     public ArrayList<Tab> topLevelMenus = new ArrayList<>();
@@ -30,7 +33,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
     public TankAIControlled tank;
     public Field[] fields;
 
-    public Item lastItem;
+    public Item.ItemStack<?> lastItem;
     public Field lastItemField;
     public ScreenItemEditor lastItemScreen;
     public SelectorDrawable lastItemButton;
@@ -129,8 +132,6 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
         this.music = ((Screen)screen).music;
         this.musicID = ((Screen)screen).musicID;
 
-        t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
-
         this.fields = TankAIControlled.class.getFields();
 
         if (Game.framework == Game.Framework.libgdx)
@@ -156,35 +157,35 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 return 1;
         });
 
-        Tab general = new TabGeneral(this, "General", TankProperty.Category.general);
-        Tab appearance = new TabAppearance(this, "Appearance", TankProperty.Category.appearanceGeneral);
-        Tab movement = new Tab(this, "Movement", TankProperty.Category.movementGeneral);
-        Tab firing = new Tab(this, "Firing", TankProperty.Category.firingGeneral);
-        Tab mines = new Tab(this, "Mines", TankProperty.Category.mines);
-        Tab spawning = new Tab(this, "Spawning", TankProperty.Category.spawning);
-        Tab transformation = new Tab(this, "Transformation", TankProperty.Category.transformationGeneral);
-        Tab lastStand = new Tab(this, "Last stand", TankProperty.Category.lastStand);
+        Tab general = new TabGeneral(this, "General", TankPropertyCategory.general);
+        Tab appearance = new TabAppearance(this, "Appearance", TankPropertyCategory.appearanceGeneral);
+        Tab movement = new Tab(this, "Movement", TankPropertyCategory.movementGeneral);
+        Tab firing = new Tab(this, "Firing", TankPropertyCategory.firingGeneral);
+        Tab mines = new Tab(this, "Mines", TankPropertyCategory.mines);
+        Tab spawning = new Tab(this, "Spawning", TankPropertyCategory.spawning);
+        Tab transformation = new Tab(this, "Transformation", TankPropertyCategory.transformationGeneral);
+        Tab lastStand = new Tab(this, "Last stand", TankPropertyCategory.lastStand);
 
-        new TabPartPicker(this, appearance, "Emblem", TankProperty.Category.appearanceEmblem, 4);
-        new TabPartPicker(this, appearance, "Turret base", TankProperty.Category.appearanceTurretBase, 3);
-        new TabPartPicker(this, appearance, "Turret barrel", TankProperty.Category.appearanceTurretBarrel, 2);
-        new TabPartPicker(this, appearance, "Tank body", TankProperty.Category.appearanceBody, 1);
-        new TabPartPicker(this, appearance, "Tank treads", TankProperty.Category.appearanceTreads, 2);
-        new TabGlow(this, appearance, "Glow", TankProperty.Category.appearanceGlow);
-        new Tab(this, appearance, "Tracks", TankProperty.Category.appearanceTracks);
+        new TabPartPicker(this, appearance, "Emblem", TankPropertyCategory.appearanceEmblem, 4);
+        new TabPartPicker(this, appearance, "Turret base", TankPropertyCategory.appearanceTurretBase, 3);
+        new TabPartPicker(this, appearance, "Turret barrel", TankPropertyCategory.appearanceTurretBarrel, 2);
+        new TabPartPicker(this, appearance, "Tank body", TankPropertyCategory.appearanceBody, 1);
+        new TabPartPicker(this, appearance, "Tank treads", TankPropertyCategory.appearanceTreads, 2);
+        new TabGlow(this, appearance, "Glow", TankPropertyCategory.appearanceGlow);
+        new Tab(this, appearance, "Tracks", TankPropertyCategory.appearanceTracks);
 
 
-        Tab idle = new Tab(this, movement, "Idle movement", TankProperty.Category.movementIdle);
-        Tab avoid = new Tab(this, movement, "Threat avoidance", TankProperty.Category.movementAvoid);
-        Tab pathfinding = new Tab(this, movement, "Pathfinding", TankProperty.Category.movementPathfinding);
-        Tab onSight = new Tab(this, movement, "Movement on sight", TankProperty.Category.movementOnSight);
+        Tab idle = new Tab(this, movement, "Idle movement", TankPropertyCategory.movementIdle);
+        Tab avoid = new Tab(this, movement, "Threat avoidance", TankPropertyCategory.movementAvoid);
+        Tab pathfinding = new Tab(this, movement, "Pathfinding", TankPropertyCategory.movementPathfinding);
+        Tab onSight = new Tab(this, movement, "Movement on sight", TankPropertyCategory.movementOnSight);
 
-        Tab fireBehavior = new Tab(this, firing, "Firing behavior", TankProperty.Category.firingBehavior);
-        Tab firePattern = new Tab(this, firing, "Firing pattern", TankProperty.Category.firingPattern);
+        Tab fireBehavior = new Tab(this, firing, "Firing behavior", TankPropertyCategory.firingBehavior);
+        Tab firePattern = new Tab(this, firing, "Firing pattern", TankPropertyCategory.firingPattern);
 
-        new Tab(this, transformation, "On line of sight", TankProperty.Category.transformationOnSight);
-        new Tab(this, transformation, "On low hitpoints", TankProperty.Category.transformationOnHealth);
-        new Tab(this, transformation, "Mimic", TankProperty.Category.transformationMimic);
+        new Tab(this, transformation, "On line of sight", TankPropertyCategory.transformationOnSight);
+        new Tab(this, transformation, "On low hitpoints", TankPropertyCategory.transformationOnHealth);
+        new Tab(this, transformation, "Mimic", TankPropertyCategory.transformationMimic);
 
         this.currentTab = general;
 
@@ -192,11 +193,10 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
     }
 
     @Override
-    public void addItem(Item i)
+    public void addItem(Item.ItemStack<?> i)
     {
         try
         {
-            i.exportProperties();
             this.lastItem = i;
             this.lastItemField.set(this.tank, i);
             final Field itemField = this.lastItemField;
@@ -205,10 +205,10 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
             {
                 this.lastItem = i;
                 this.lastItemField = itemField;
-                ScreenItemEditor editItem = new ScreenItemEditor(i, this, true, true);
-                editItem.delete.setText("Load from template");
-                Game.screen = editItem;
-                this.lastItemScreen = editItem;
+//                ScreenItemEditor editItem = new ScreenItemEditor(i, this, true, true);
+//                editItem.delete.setText("Load from template");
+//                Game.screen = editItem;
+//                this.lastItemScreen = editItem;
                 this.lastItemButton = ib;
             };
             this.lastItemButton.function.run();
@@ -220,19 +220,19 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
     }
 
     @Override
-    public void removeItem(Item i)
+    public void removeItem(Item.ItemStack<?> i)
     {
-        Game.screen = new ScreenAddSavedItem(this, this.lastItemButton, (Class<? extends Item>) this.lastItemField.getType());
+        //Game.screen = new ScreenAddSavedItem(this, this.lastItemButton, (Class<? extends Item>) this.lastItemField.getType());
     }
 
     @Override
     public void refreshItems()
     {
-        this.lastItemButton.image = this.lastItem.icon;
+        this.lastItemButton.image = this.lastItem.item.icon;
         this.lastItemButton.imageXOffset = - this.lastItemButton.sizeX / 2 + this.lastItemButton.sizeY / 2 + 10;
         this.lastItemButton.imageSizeX = this.lastItemButton.sizeY;
         this.lastItemButton.imageSizeY = this.lastItemButton.sizeY;
-        this.lastItemButton.optionText = this.lastItem.name;
+        this.lastItemButton.optionText = this.lastItem.item.name;
     }
 
     public static class Tab
@@ -241,7 +241,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
         public ArrayList<Tab> subMenus = new ArrayList<>();
         public ArrayList<ITrigger> uiElements = new ArrayList<>();
         public String name;
-        public TankProperty.Category category;
+        public String category;
         public Tab parent;
 
         public int rows = 4;
@@ -254,12 +254,12 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
 
         public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", () -> {screen.setTab(screen.currentTab.parent);});
 
-        public Tab(ScreenTankEditor screen, String name, TankProperty.Category category)
+        public Tab(ScreenTankEditor screen, String name, String category)
         {
             this(screen, null, name, category);
         }
 
-        public Tab(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        public Tab(ScreenTankEditor screen, Tab parent, String name, String category)
         {
             if (parent == null)
                 screen.topLevelMenus.add(this);
@@ -293,10 +293,10 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
         {
             for (Field f: this.screen.fields)
             {
-                TankProperty p = f.getAnnotation(TankProperty.class);
-                if (p != null && p.category() == this.category && p.miscType() != TankProperty.MiscType.color)
+                Property p = f.getAnnotation(Property.class);
+                if (p != null && p.category().equals(this.category) && p.miscType() != Property.MiscType.color)
                 {
-                    if (p.miscType() == TankProperty.MiscType.description)
+                    if (p.miscType() == Property.MiscType.description)
                     {
                         TextBox t = (TextBox) screen.getUIElementForField(f, p, screen.tank);
                         t.posX = this.screen.centerX;
@@ -431,12 +431,12 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
     {
         public TextBox description;
 
-        public TabGeneral(ScreenTankEditor screen, String name, TankProperty.Category category)
+        public TabGeneral(ScreenTankEditor screen, String name, String category)
         {
             super(screen, name, category);
         }
 
-        public TabGeneral(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        public TabGeneral(ScreenTankEditor screen, Tab parent, String name, String category)
         {
             super(screen, parent, name, category);
         }
@@ -460,12 +460,12 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
     {
         public TankPlayer preview;
 
-        public TabWithPreview(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        public TabWithPreview(ScreenTankEditor screen, Tab parent, String name, String category)
         {
             super(screen, parent, name, category);
         }
 
-        public TabWithPreview(ScreenTankEditor screen, String name, TankProperty.Category category)
+        public TabWithPreview(ScreenTankEditor screen, String name, String category)
         {
             super(screen, name, category);
         }
@@ -533,12 +533,12 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
 
     public static class TabGlow extends TabWithPreview
     {
-        public TabGlow(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        public TabGlow(ScreenTankEditor screen, Tab parent, String name, String category)
         {
             super(screen, parent, name, category);
         }
 
-        public TabGlow(ScreenTankEditor screen, String name, TankProperty.Category category)
+        public TabGlow(ScreenTankEditor screen, String name, String category)
         {
             super(screen, name, category);
         }
@@ -597,7 +597,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 enableColor.setText(enableColorText, ScreenOptions.offText);
         }
 
-        public TabPartPicker(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category, int colorIndex)
+        public TabPartPicker(ScreenTankEditor screen, Tab parent, String name, String category, int colorIndex)
         {
             super(screen, parent, name, category);
             this.colorIndex = colorIndex;
@@ -678,7 +678,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
             colorBlue.integer = true;
         }
 
-        public TabPartPicker(ScreenTankEditor screen, String name, TankProperty.Category category, int colorIndex)
+        public TabPartPicker(ScreenTankEditor screen, String name, String category, int colorIndex)
         {
             this(screen, null, name, category, colorIndex);
         }
@@ -856,12 +856,12 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
 
         double space = 60;
 
-        public TabAppearance(ScreenTankEditor screen, Tab parent, String name, TankProperty.Category category)
+        public TabAppearance(ScreenTankEditor screen, Tab parent, String name, String category)
         {
             super(screen, parent, name, category);
         }
 
-        public TabAppearance(ScreenTankEditor screen, String name, TankProperty.Category category)
+        public TabAppearance(ScreenTankEditor screen, String name, String category)
         {
             super(screen, name, category);
         }
@@ -956,14 +956,14 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
         }
     }
 
-    public String[] formatDescription(TankProperty p)
+    public String[] formatDescription(Property p)
     {
         ArrayList<String> text = Drawing.drawing.wrapText(p.desc(), 300, 12);
         String[] s = new String[text.size()];
         return text.toArray(s);
     }
 
-    public ITrigger getUIElementForField(Field f, TankProperty p, TankAIControlled tank)
+    public ITrigger getUIElementForField(Field f, Property p, TankAIControlled tank)
     {
         try
         {
@@ -1028,7 +1028,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
 
                 return t;
             }
-            else if (p.miscType().equals(TankProperty.MiscType.emblem))
+            else if (p.miscType().equals(Property.MiscType.emblem))
             {
                 final String[] emblems = RegistryModelTank.toStringArray(Game.registryModelTank.tankEmblems);
                 SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, p.name(), emblems, () -> {}, "");
@@ -1075,7 +1075,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 {
                     try
                     {
-                        if (t.inputText.length() == 0 && p.miscType() != TankProperty.MiscType.description)
+                        if (t.inputText.length() == 0 && p.miscType() != Property.MiscType.description)
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, t.inputText);
@@ -1096,25 +1096,21 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
             }
             else if (f.getType().equals(boolean.class))
             {
-                Selector t = new Selector(0, 0, this.objWidth, this.objHeight, p.name(), new String[]{"Yes", "No"}, () -> {}, "");
-
-                if ((boolean) f.get(tank))
-                    t.selectedOption = 0;
-                else
-                    t.selectedOption = 1;
+                SelectorDrawable t = new SelectorDrawable(0, 0, this.objWidth, this.objHeight, p.name(), () -> {}, "");
 
                 t.function = () ->
                 {
                     try
                     {
-                        f.set(tank, t.selectedOption == 0);
+                        f.set(tank, !(boolean) f.get(tank));
+                        t.optionText = (boolean) f.get(tank) ? "Yes" : "No";
                     }
                     catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
                 };
-
+                t.optionText = (boolean) f.get(tank) ? "Yes" : "No";
                 t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
                 return t;
@@ -1148,29 +1144,46 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 t.hoverText = formatDescription(p);
                 return t;
             }
-            else if (Item.class.isAssignableFrom(f.getType()))
+            else if (ITanksONEditable.class.isAssignableFrom(f.getType()))
             {
-                Item i = (Item) f.get(tank);
-                i.importProperties();
                 SelectorDrawable b = new SelectorDrawable(0, 0, 350, 40, p.name(), () -> {});
                 b.function = () ->
                 {
-                    this.lastItem = i;
-                    this.lastItemField = f;
                     this.resetLayout();
-                    ScreenItemEditor editItem = new ScreenItemEditor(i, this);
-                    editItem.delete.setText("Load from template");
-                    Game.screen = editItem;
-                    this.lastItemScreen = editItem;
-                    this.lastItemButton = b;
+
+                    ScreenEditorTanksONable<?> s = null;
+                    FieldPointer<?> fp = new FieldPointer<>(this.tank, f);
+                    if (f.getType().isAssignableFrom(Bullet.class))
+                        s = new ScreenEditorBullet((FieldPointer<Bullet>) fp, Game.screen);
+                    else if (f.getType().isAssignableFrom(Mine.class))
+                        s = new ScreenEditorMine((FieldPointer<Mine>) fp, Game.screen);
+                    else if (f.getType().isAssignableFrom(Explosion.class))
+                        s = new ScreenEditorExplosion((FieldPointer<Explosion>) fp, Game.screen);
+
+                    Game.screen = s;
+                    s.onComplete = () ->
+                    {
+                        try
+                        {
+                            ITanksONEditable o = (ITanksONEditable) f.get(this.tank);
+                            if (o == null)
+                                b.optionText = "\u00A7127000000255none";
+                            else
+                                b.optionText = Game.formatString(o.getName());
+                        }
+                        catch (IllegalAccessException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+                    };
                 };
                 b.enableHover = !p.desc().equals("");
                 b.hoverText = formatDescription(p);
-                b.image = i.icon;
-                b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-                b.imageSizeX = b.sizeY;
-                b.imageSizeY = b.sizeY;
-                b.optionText = i.name;
+                ITanksONEditable o = (ITanksONEditable) f.get(this.tank);
+                if (o == null)
+                    b.optionText = "\u00A7127000000255none";
+                else
+                    b.optionText = Game.formatString(o.getName());
 
                 return b;
             }
@@ -1224,13 +1237,13 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 IModel[] models = null;
                 String[] modelDirs;
 
-                if (p.miscType().equals(TankProperty.MiscType.baseModel))
+                if (p.miscType().equals(Property.MiscType.baseModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.tankBaseModels);
-                else if (p.miscType().equals(TankProperty.MiscType.colorModel))
+                else if (p.miscType().equals(Property.MiscType.colorModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.tankColorModels);
-                else if (p.miscType().equals(TankProperty.MiscType.turretBaseModel))
+                else if (p.miscType().equals(Property.MiscType.turretBaseModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.turretBaseModels);
-                else if (p.miscType().equals(TankProperty.MiscType.turretModel))
+                else if (p.miscType().equals(Property.MiscType.turretModel))
                     models = RegistryModelTank.toModelArray(Game.registryModelTank.turretModels);
 
                 String selected = f.get(tank).toString();
@@ -1266,7 +1279,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
 
                 return t;
             }
-            else if (p.miscType() == TankProperty.MiscType.music)
+            else if (p.miscType() == Property.MiscType.music)
             {
                 HashSet<String> a = ((HashSet<String>) f.get(tank));
                 ArrayList<String> musics = new ArrayList<>();
@@ -1309,7 +1322,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 s.selectedOptions = selectedMusicsArray;
                 return s;
             }
-            else if (p.miscType() == TankProperty.MiscType.spawnedTanks)
+            else if (p.miscType() == Property.MiscType.spawnedTanks)
             {
                 SelectorDrawable s = new SelectorDrawable(0, 0, 350, 40, p.name());
                 ArrayList<TankAIControlled.SpawnedTankEntry> a = ((ArrayList<TankAIControlled.SpawnedTankEntry>) f.get(tank));
@@ -1317,7 +1330,7 @@ public class ScreenTankEditor extends Screen implements IItemScreen, IBlankBackg
                 s.function = () ->
                 {
                     this.resetLayout();
-                    ScreenArrayListSelector sc = new ScreenArrayListSelector(this, "Select " + p.name().toLowerCase());
+                    ScreenArrayListSelector sc = new ScreenArrayListSelector(this, "Edit " + p.name().toLowerCase());
                     Game.screen = sc;
 
                     ArrayList<ScreenArrayListSelector.Entry> entries = new ArrayList<>();

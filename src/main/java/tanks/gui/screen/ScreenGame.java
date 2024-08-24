@@ -12,10 +12,8 @@ import tanks.gui.Minimap;
 import tanks.gui.SpeedrunTimer;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item2;
-import tanks.item.ItemRemote2;
-import tanks.item.legacy.Item;
-import tanks.item.legacy.ItemRemote;
+import tanks.item.Item;
+import tanks.item.ItemRemote;
 import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
@@ -52,7 +50,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public static boolean newItemsNotification = false;
 	public static String lastShop = "";
-	public ArrayList<Item2.ShopItem> shop = new ArrayList<>();
+	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
 	public boolean screenshotMode = false;
 
 	public Tutorial tutorial;
@@ -97,6 +95,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public HashSet<String> prevTankMusics = new HashSet<>();
 	public HashSet<String> tankMusics = new HashSet<>();
 	protected boolean musicStarted = false;
+	protected float pausedMusicPos = 0;
 
 	public boolean zoomPressed = false;
 	public boolean zoomScrolled = false;
@@ -170,12 +169,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	}, "New items available in shop!"
 	);
 
-	Button pause = new Button(0, -1000, 70, 70, "", () ->
-	{
-		paused = true;
-		Game.playerTank.setBufferCooldown(20);
-	}
-	);
+	Button pause = new Button(0, -1000, 70, 70, "", this::pause);
 
 	Button zoom = new Button(0, -1000, 70, 70, "", () ->
 	{
@@ -191,40 +185,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Panel.zoomTarget = -1;
 	});
 
-	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Resume", () ->
-	{
-		paused = false;
-		Game.playerTank.setBufferCooldown(20);
-	}
-	);
+	Button resume = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Resume", this::unpause);
 
-	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Resume", () ->
-	{
-		paused = false;
-		Game.playerTank.setBufferCooldown(20);
-	}
-	);
+	Button resumeLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Resume", this::unpause);
 
-	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Close menu", () ->
-	{
-		paused = false;
-		Game.playerTank.setBufferCooldown(20);
-	}
-	);
+	Button closeMenu = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Close menu", this::unpause);
 
-	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Close menu", () ->
-	{
-		paused = false;
-		Game.playerTank.setBufferCooldown(20);
-	}
-	);
+	Button closeMenuLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace, this.objWidth, this.objHeight, "Close menu", this::unpause);
 
-	Button closeMenuClient = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace / 2, this.objWidth, this.objHeight, "Close menu", () ->
-	{
-		paused = false;
-		Game.playerTank.setBufferCooldown(20);
-	}
-	);
+	Button closeMenuClient = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace / 2, this.objWidth, this.objHeight, "Close menu", this::unpause);
 
 	Button newLevel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace / 2, this.objWidth, this.objHeight, "Generate new level", () ->
 	{
@@ -619,7 +588,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (startingItems)
 				{
-					for (Item2.ItemStack<?> i: Game.currentLevel.startingItems)
+					for (Item.ItemStack<?> i: Game.currentLevel.startingItems)
 						p.hotbar.itemBar.addItem(i);
 				}
 
@@ -655,21 +624,36 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.name = s;
 	}
 
-	public ScreenGame(ArrayList<Item2.ShopItem> shop)
+	public ScreenGame(ArrayList<Item.ShopItem> shop)
 	{
 		this();
 		this.initShop(shop);
 	}
 
-	public void initShop(ArrayList<Item2.ShopItem> shop)
+	public void pause()
+	{
+		this.paused = true;
+		this.pausedMusicPos = Game.game.window.soundPlayer.getMusicPos();
+	}
+
+	public void unpause()
+	{
+		this.paused = false;
+		Game.playerTank.setBufferCooldown(20);
+
+		if (Game.currentLevel.synchronizeMusic)
+			Game.game.window.soundPlayer.setMusicPos(this.pausedMusicPos);
+	}
+
+	public void initShop(ArrayList<Item.ShopItem> shop)
 	{
 		this.shop = shop;
 
 		for (int i = 0; i < this.shop.size(); i++)
 		{
 			final int j = i;
-			Item2.ShopItem item = this.shop.get(j);
-			if (item.itemStack.item instanceof ItemRemote2)
+			Item.ShopItem item = this.shop.get(j);
+			if (item.itemStack.item instanceof ItemRemote)
 				continue;
 
 			Button b = new Button(0, 0, 350, 40, item.itemStack.item.name, () ->
@@ -895,6 +879,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Drawing.drawing.playSound("battle_night_intro.ogg", 1f, true);
 				else
 					Drawing.drawing.playSound("battle_intro.ogg", 1f, true);
+
+				if (Game.currentLevel.beatBlocks > 0)
+				{
+					Drawing.drawing.playSound("beatblocks/beat_blocks_intro.ogg", 1f, true);
+
+					if ((Game.currentLevel.beatBlocks & 1) != 0)
+						Drawing.drawing.playSound("beatblocks/beat_beeps_1_intro.ogg", 1f, true);
+
+					if ((Game.currentLevel.beatBlocks & 2) != 0)
+						Drawing.drawing.playSound("beatblocks/beat_beeps_2_intro.ogg", 1f, true);
+				}
 			}
 
 			this.playCounter += Panel.frameFrequency;
@@ -903,7 +898,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (this.playCounter * 10 >= introBattleMusicEnd)
 		{
 			Panel.forceRefreshMusic = true;
-			this.playCounter = -1;
+			this.playCounter = -2;
 		}
 
 		if (this.playCounter < 0 && !finishedQuick)
@@ -949,6 +944,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 								this.tankMusics.addAll(((Tank) m).musicTracks);
 							}
 						}
+
+						if (Game.currentLevel.beatBlocks > 0)
+						{
+							this.tankMusics.add("beatblocks/beat_blocks.ogg");
+
+							if ((Game.currentLevel.beatBlocks & 1) != 0)
+								this.tankMusics.add("beatblocks/beat_beeps_1.ogg");
+
+							if ((Game.currentLevel.beatBlocks & 2) != 0)
+								this.tankMusics.add("beatblocks/beat_beeps_2.ogg");
+
+							if ((Game.currentLevel.beatBlocks & 4) != 0)
+								this.tankMusics.add("beatblocks/beat_beeps_4.ogg");
+						}
 					}
 
 					for (String m : this.prevTankMusics)
@@ -960,8 +969,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					for (String m : this.tankMusics)
 					{
 						if (!this.prevTankMusics.contains(m))
-							Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 500);
+						{
+							if (this.playCounter == -2 && m.startsWith("beatblocks/"))
+								Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 0);
+							else
+								Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 500);
+						}
 					}
+
+					this.playCounter = -1;
 				}
 			}
 		}
@@ -990,7 +1006,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				npcShopScreen = false;
 			}
 			else
-				this.paused = !this.paused;
+			{
+				if (this.paused)
+					this.unpause();
+				else
+					this.pause();
+			}
 
 			if (Game.followingCam)
 				Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);

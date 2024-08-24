@@ -413,7 +413,7 @@ public class Tutorial extends Minigame
                 if (m instanceof Mine)
                 {
                     Drawing.drawing.setColor(255, 0, 0, 127 * this.stepAnimation);
-                    Drawing.drawing.fillOval(m.posX, m.posY, ((Mine) m).radius * 2 * this.stepAnimation, ((Mine) m).radius * 2 * this.stepAnimation);
+                    Drawing.drawing.fillOval(m.posX, m.posY, ((Mine) m).explosion.radius * 2 * this.stepAnimation, ((Mine) m).explosion.radius * 2 * this.stepAnimation);
 
                     Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
                     Drawing.drawing.drawText(m.posX, m.posY + 50 * this.stepAnimation, "Stand back!");

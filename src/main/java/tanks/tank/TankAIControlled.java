@@ -4,18 +4,19 @@ import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item2;
-import tanks.item.legacy.Item;
+import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
+import tanks.tankson.Property;
+import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static tanks.tank.TankProperty.Category.*;
+import static tanks.tank.TankPropertyCategory.*;
 
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
@@ -24,7 +25,7 @@ import static tanks.tank.TankProperty.Category.*;
 public class TankAIControlled extends Tank
 {
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
-	protected enum RotationPhase {clockwise, counter_clockwise, aiming}
+	protected enum RotationPhase {clockwise, counter_clockwise, aiming, recalculating}
 
 	// The following are properties which are used externally to determine the behavior settings of the tank.
 	// Simple modifications of tanks can just change these values to produce a desired behavior.
@@ -32,32 +33,32 @@ public class TankAIControlled extends Tank
 	// These values do not change normally along the course of the game.
 
 	/** When set to true, the tank will vanish when the level begins*/
-	@TankProperty(category = appearanceGeneral, id = "invisible", name = "Invisible")
+	@Property(category = appearanceGeneral, id = "invisible", name = "Invisible")
 	public boolean invisible = false;
 
-	@TankProperty(category = movementGeneral, id = "enable_movement", name = "Can move")
+	@Property(category = movementGeneral, id = "enable_movement", name = "Can move")
 	public boolean enableMovement = true;
 
 	/** Chance per frame to change direction*/
-	@TankProperty(category = movementIdle, id = "motion_change_chance", name = "Turn chance", desc = "Chance of the tank to change the direction in which it is moving")
+	@Property(category = movementIdle, id = "motion_change_chance", name = "Turn chance", desc = "Chance of the tank to change the direction in which it is moving")
 	public double turnChance = 0.01;
 	/** Time waited when changing direction of motion*/
-	@TankProperty(category = movementIdle, id = "turn_pause_time", name = "Turn pause time", desc = "Time the tank pauses when changing directions \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementIdle, id = "turn_pause_time", name = "Turn pause time", desc = "Time the tank pauses when changing directions \n \n 1 time unit = 0.01 seconds")
 	public double turnPauseTime = 15;
 	/** Multiplier of time the tank will hide in a shrub*/
-	@TankProperty(category = movementIdle, id = "bush_hide_time", name = "Bush hide time", desc = "Time the tank will stop moving to hide in bushes \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementIdle, id = "bush_hide_time", name = "Bush hide time", desc = "Time the tank will stop moving to hide in bushes \n \n 1 time unit = 0.01 seconds")
 	public double bushHideTime = 350;
 
-	@TankProperty(category = movementIdle, id = "stay_near_parent", name = "Stay near parent", desc = "If spawned by another tank, whether this tank should try to stay near the tank that spawned it")
+	@Property(category = movementIdle, id = "stay_near_parent", name = "Stay near parent", desc = "If spawned by another tank, whether this tank should try to stay near the tank that spawned it")
 	public boolean stayNearParent = false;
-	@TankProperty(category = movementIdle, id = "max_distance_from_parent", name = "Parent boundary", desc = "If stay near parent is set and this tank strays farther than this distance from the tank that spawned it, it will return to that tank \n \n 1 tile = 50 units")
+	@Property(category = movementIdle, id = "max_distance_from_parent", name = "Parent boundary", desc = "If stay near parent is set and this tank strays farther than this distance from the tank that spawned it, it will return to that tank \n \n 1 tile = 50 units")
 	public double maxDistanceFromParent = 300;
 
-	@TankProperty(category = movementAvoid, id = "enable_bullet_avoidance", name = "Avoid bullets")
+	@Property(category = movementAvoid, id = "enable_bullet_avoidance", name = "Avoid bullets")
 	public boolean enableBulletAvoidance = true;
-	@TankProperty(category = movementAvoid, id = "enable_mine_avoidance", name = "Avoid mines")
+	@Property(category = movementAvoid, id = "enable_mine_avoidance", name = "Avoid mines")
 	public boolean enableMineAvoidance = true;
-	@TankProperty(category = movementAvoid, id = "avoid_seek_open_spaces", name = "Seek open spaces", desc = "If enabled, when this tank avoids farther bullets, it will seek out open spaces around it to make it harder to corner")
+	@Property(category = movementAvoid, id = "avoid_seek_open_spaces", name = "Seek open spaces", desc = "If enabled, when this tank avoids farther bullets, it will seek out open spaces around it to make it harder to corner")
 	public boolean avoidanceSeekOpenSpaces = false;
 
 	/** The method used to avoid bullets
@@ -68,30 +69,30 @@ public class TankAIControlled extends Tank
 	public enum BulletAvoidBehavior
 	{intersect, back_off, dodge, aggressive_dodge}
 
-	@TankProperty(category = movementAvoid, id = "bullet_avoid_behavior", name = "Bullet avoid behavior", desc = "Method the tank will use to avoid bullets \n " +
+	@Property(category = movementAvoid, id = "bullet_avoid_behavior", name = "Bullet avoid behavior", desc = "Method the tank will use to avoid bullets \n " +
 			"\n Intersect: move away from where the bullet will hit the tank (less accurate) " +
 			"\n Back off: move away from the bullet (may back into corners) " +
 			"\n Dodge: move at an angle away from the bullet (more accurate) " +
 			"\n Aggressive dodge: move at an angle toward the bullet")
 	public BulletAvoidBehavior bulletAvoidBehvavior = BulletAvoidBehavior.intersect;
 	/** How close the tank needs to get to a mine to avoid it*/
-	@TankProperty(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius", desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
+	@Property(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius", desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
 	public double mineAvoidSensitivity = 1.5;
 	/** Time which the tank will avoid a bullet after the bullet is no longer aiming at the tank*/
-	@TankProperty(category = movementAvoid, id = "bullet_avoid_timer_base", name = "Bullet flee time", desc = "Time the tank will continue fleeing from a bullet until after it is no longer deemed a threat \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementAvoid, id = "bullet_avoid_timer_base", name = "Bullet flee time", desc = "Time the tank will continue fleeing from a bullet until after it is no longer deemed a threat \n \n 1 time unit = 0.01 seconds")
 	public double bulletAvoidTimerBase = 30;
 
 	/** If enabled, the tank may actively seek out enemies*/
-	@TankProperty(category = movementPathfinding, id = "enable_pathfinding", name = "Seek targets", desc = "If enabled, the tank may decide to navigate through the level towards its target. If this tank can lay mines, it may also use them to get to the target.")
+	@Property(category = movementPathfinding, id = "enable_pathfinding", name = "Seek targets", desc = "If enabled, the tank may decide to navigate through the level towards its target. If this tank can lay mines, it may also use them to get to the target.")
 	public boolean enablePathfinding = false;
 	/** Chance per frame to seek the target enemy*/
-	@TankProperty(category = movementPathfinding, id = "seek_chance", name = "Seek chance", desc = "Chance for this tank to decide to start navigating to its target")
+	@Property(category = movementPathfinding, id = "seek_chance", name = "Seek chance", desc = "Chance for this tank to decide to start navigating to its target")
 	public double seekChance = 0.001;
 	/** If set to true, when enters line of sight of target enemy, will stop pathfinding to it*/
-	@TankProperty(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight \n \n 1 time unit = 0.01 seconds")
 	public boolean stopSeekingOnSight = false;
 	/** Increasing this value increases how stubborn the tank is in following a path*/
-	@TankProperty(category = movementPathfinding, id = "seek_timer_base", name = "Seek patience", desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementPathfinding, id = "seek_timer_base", name = "Seek patience", desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
 	public double seekTimerBase = 200;
 
 	/** Type of behavior tank should have if its target enemy is in line of sight
@@ -104,12 +105,12 @@ public class TankAIControlled extends Tank
 	public enum TargetEnemySightBehavior {approach, flee, strafe, sidewind, backwind, keep_distance}
 
 	/** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight*/
-	@TankProperty(category = movementOnSight, id = "enable_looking_at_target_enemy", name = "Test sight", desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
+	@Property(category = movementOnSight, id = "enable_looking_at_target_enemy", name = "Test sight", desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
 	public boolean enableLookingAtTargetEnemy = true;
 	/** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
 	public boolean enableTargetEnemyReaction = true;
 	/** Type of behavior tank should have if its target enemy is in line of sight*/
-	@TankProperty(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight \n " +
+	@Property(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight \n " +
 			"Approach - move directly toward the target \n " +
 			"Flee - move directly away from the target \n " +
 			"Strafe around it - move perpendicular to the target \n " +
@@ -119,61 +120,61 @@ public class TankAIControlled extends Tank
 			" \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
 	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
 	/** If set to strafe upon seeing the target enemy, chance to change orbit direction*/
-	@TankProperty(category = movementOnSight, id = "strafe_direction_change_chance", name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
+	@Property(category = movementOnSight, id = "strafe_direction_change_chance", name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
 	public double strafeDirectionChangeChance = 0.01;
 	/** If set to keep a distance, the tank will maintain that distance from its target upon sight*/
-	@TankProperty(category = movementOnSight, id = "target_sight_distance", name = "Target distance", desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target \n \n 1 tile = 50 units")
+	@Property(category = movementOnSight, id = "target_sight_distance", name = "Target distance", desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target \n \n 1 tile = 50 units")
 	public double targetSightDistance = Game.tile_size * 6;
 
 	/** Tank to transform into*/
-	@TankProperty(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target")
+	@Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target")
 	public TankAIControlled sightTransformTank = null;
 	/** Time for tank to revert after losing line of sight */
-	@TankProperty(category = transformationOnSight, id = "sight_transformation_revert_time", name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
+	@Property(category = transformationOnSight, id = "sight_transformation_revert_time", name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
 	public double sightTransformRevertTime = 500;
 
 	/** Tank to transform into*/
-	@TankProperty(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold")
+	@Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold")
 	public TankAIControlled healthTransformTank = null;
 	/** Health threshold to transform */
-	@TankProperty(category = transformationOnHealth, id = "transform_health_threshold", name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
+	@Property(category = transformationOnHealth, id = "transform_health_threshold", name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
 	public double transformHealthThreshold = 0;
 	/** If set, the tank will seek and transform into other tanks in line of sight */
-	@TankProperty(category = transformationMimic, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
+	@Property(category = transformationMimic, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
 	public boolean transformMimic = false;
 
 	/** Time for tank to revert after losing line of sight */
-	@TankProperty(category = transformationMimic, id = "mimic_revert_time", name = "Mimic revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
+	@Property(category = transformationMimic, id = "mimic_revert_time", name = "Mimic revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
 	public double mimicRevertTime = 200;
 	/** Range tanks must be in to be mimicked */
-	@TankProperty(category = transformationMimic, id = "mimic_range", name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
+	@Property(category = transformationMimic, id = "mimic_range", name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
 	public double mimicRange = Game.tile_size * 12;
 
-	@TankProperty(category = mines, id = "enable_mine_laying", name = "Can lay mines")
+	@Property(category = mines, id = "enable_mine_laying", name = "Can lay mines")
 	public boolean enableMineLaying = true;
 
 	//public double mineFuseLength = 1000;
 	/** Minimum time to lay a mine, added to mineTimerRandom * this.random.nextDouble()*/
-	@TankProperty(category = mines, id = "mine_timer_base", name = "Base cooldown", desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
+	@Property(category = mines, id = "mine_timer_base", name = "Base cooldown", desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
 	public double mineTimerBase = 2000;
 	/** Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase*/
-	@TankProperty(category = mines, id = "mine_timer_random", name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
+	@Property(category = mines, id = "mine_timer_random", name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
 	public double mineTimerRandom = 4000;
 
 	/** Minimum time in between shooting bullets, added to cooldownRandom * this.random.nextDouble()*/
-	@TankProperty(category = firingGeneral, id = "cooldown_base", name = "Base cooldown", desc = "Minimum time between firing bullets \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
+	@Property(category = firingGeneral, id = "cooldown_base", name = "Base cooldown", desc = "Minimum time between firing bullets \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
 	public double cooldownBase = 60;
 	/** Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase*/
-	@TankProperty(category = firingGeneral, id = "cooldown_random", name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
+	@Property(category = firingGeneral, id = "cooldown_random", name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
 	public double cooldownRandom = 20;
 	/** After every successive shot, cooldown will go down by this fraction */
-	@TankProperty(category = firingGeneral, id = "cooldown_speedup", name = "Cooldown speedup", desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
+	@Property(category = firingGeneral, id = "cooldown_speedup", name = "Cooldown speedup", desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
 	public double cooldownSpeedup = 0;
 	/** Cooldown resets after no shots for this much time */
-	@TankProperty(category = firingGeneral, id = "cooldown_revert_time", name = "Revert time", desc = "If the tank is unable to fire for this much time, the effects of cooldown speedup will reset \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingGeneral, id = "cooldown_revert_time", name = "Revert time", desc = "If the tank is unable to fire for this much time, the effects of cooldown speedup will reset \n \n 1 time unit = 0.01 seconds")
 	public double cooldownRevertTime = 300;
 	/** If set, the tank will charge a shot and wait its cooldown on the spot as it prepares to shoot */
-	@TankProperty(category = firingGeneral, id = "charge_up", name = "Charge up", desc = "If enabled, the tank will only wait its cooldown while aiming at an enemy tank, playing a charge up animation")
+	@Property(category = firingGeneral, id = "charge_up", name = "Charge up", desc = "If enabled, the tank will only wait its cooldown while aiming at an enemy tank, playing a charge up animation")
 	public boolean chargeUp = false;
 
 	/** Determines which type of AI the tank will use when shooting.
@@ -187,7 +188,7 @@ public class TankAIControlled extends Tank
 	public enum ShootAI {none, sprinkler, wander, straight, homing, alternate, reflect}
 
 	/** Type of shooting AI to use*/
-	@TankProperty(category = firingBehavior, id = "shoot_ai_type", name = "Aiming behavior", desc = "Behavior for aiming and firing at targets \n \n " +
+	@Property(category = firingBehavior, id = "shoot_ai_type", name = "Aiming behavior", desc = "Behavior for aiming and firing at targets \n \n " +
 			"None: do not shoot at all \n " +
 			"Sprinkler: rotate randomly and continuously shoot \n " +
 			"Wander: randomly rotate and shoot if target enemy falls in the trajectory \n " +
@@ -198,43 +199,43 @@ public class TankAIControlled extends Tank
 	public ShootAI shootAIType;
 
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
-	@TankProperty(category = firingBehavior, id = "aim_accuracy_offset", name = "Inaccuracy", desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
+	@Property(category = firingBehavior, id = "aim_accuracy_offset", name = "Inaccuracy", desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
 	public double aimAccuracyOffset = 0.2;
 	/** Threshold angle difference needed between angle and aimAngle to count as touching the target enemy*/
 	public double aimThreshold = 0.05;
 
 	/** Minimum time to randomly change idle direction, added to turretIdleTimerRandom * this.random.nextDouble()*/
-	@TankProperty(category = firingBehavior, id = "turret_idle_timer_base", name = "Turret base timer", desc = "Minimum time the turret will idly rotate in one direction before changing direction \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingBehavior, id = "turret_idle_timer_base", name = "Turret base timer", desc = "Minimum time the turret will idly rotate in one direction before changing direction \n \n 1 time unit = 0.01 seconds")
 	public double turretIdleTimerBase = 25;
 	/** Random factor in calculating time to randomly change idle direction, multiplied by this.random.nextDouble() and added to turretIdleTimerBase*/
-	@TankProperty(category = firingBehavior, id = "turret_idle_timer_random", name = "Turret random timer", desc = "A random percentage between 0% and 100% of this time value is added to the turret base rotation timer to get the time between changing idle rotation direction \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingBehavior, id = "turret_idle_timer_random", name = "Turret random timer", desc = "A random percentage between 0% and 100% of this time value is added to the turret base rotation timer to get the time between changing idle rotation direction \n \n 1 time unit = 0.01 seconds")
 	public double turretIdleTimerRandom = 500;
 
 	/** Speed at which the turret moves while idle*/
-	@TankProperty(category = firingBehavior, id = "turret_idle_speed", name = "Idle turret speed", desc = "Speed the turret turns at when not actively aiming at a target")
+	@Property(category = firingBehavior, id = "turret_idle_speed", name = "Idle turret speed", desc = "Speed the turret turns at when not actively aiming at a target")
 	public double turretIdleSpeed = 0.005;
 	/** Speed at which the turret moves while aiming at a target enemy*/
-	@TankProperty(category = firingBehavior, id = "turret_aim_speed", name = "Aim turret speed", desc = "Speed the turret turns at when actively aiming toward a target")
+	@Property(category = firingBehavior, id = "turret_aim_speed", name = "Aim turret speed", desc = "Speed the turret turns at when actively aiming toward a target")
 	public double turretAimSpeed = 0.03;
 
 	/** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!*/
-	@TankProperty(category = firingBehavior, id = "enable_predictive_firing", name = "Predictive", desc = "When enabled, will use the current velocity of the target to predict and fire towards its future position \n \n Only works with straight aiming behavior!")
+	@Property(category = firingBehavior, id = "enable_predictive_firing", name = "Predictive", desc = "When enabled, will use the current velocity of the target to predict and fire towards its future position \n \n Only works with straight aiming behavior!")
 	public boolean enablePredictiveFiring = true;
 	/** When set to true, will shoot at bullets aiming towards the tank*/
-	@TankProperty(category = firingBehavior, id = "enable_defensive_firing", name = "Deflect bullets", desc = "When enabled, will shoot at incoming bullet threats to deflect them \n \n Does not work with wander or sprinkler aiming behavior!")
+	@Property(category = firingBehavior, id = "enable_defensive_firing", name = "Deflect bullets", desc = "When enabled, will shoot at incoming bullet threats to deflect them \n \n Does not work with wander or sprinkler aiming behavior!")
 	public boolean enableDefensiveFiring = false;
 	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
-	@TankProperty(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls", desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
+	@Property(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls", desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
 	public boolean aimIgnoreDestructible = false;
 
 	/** Number of bullets in bullet fan*/
-	@TankProperty(category = firingPattern, id = "shot_round_count", name = "Shots per round", desc = "Number of bullets to fire per round")
+	@Property(category = firingPattern, id = "shot_round_count", name = "Shots per round", desc = "Number of bullets to fire per round")
 	public int shotRoundCount = 1;
 	/** Time to fire a full fan*/
-	@TankProperty(category = firingPattern, id = "shot_round_time", name = "Round time", desc = "Amount of time it takes to fire a full round of bullets \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingPattern, id = "shot_round_time", name = "Round time", desc = "Amount of time it takes to fire a full round of bullets \n \n 1 time unit = 0.01 seconds")
 	public double shootRoundTime = 60;
 	/** Spread of a round*/
-	@TankProperty(category = firingPattern, id = "shot_round_spread", name = "Round spread", desc = "Total angle of spread of a round")
+	@Property(category = firingPattern, id = "shot_round_spread", name = "Round spread", desc = "Total angle of spread of a round")
 	public double shotRoundSpread = 36;
 
 	public static class SpawnedTankEntry
@@ -260,29 +261,29 @@ public class TankAIControlled extends Tank
 		}
 	}
 
-	@TankProperty(category = spawning, id = "spawned_tanks", name = "Spawned tanks", desc = "Tanks which will be spawned by this tank as support", miscType = TankProperty.MiscType.spawnedTanks)
+	@Property(category = spawning, id = "spawned_tanks", name = "Spawned tanks", desc = "Tanks which will be spawned by this tank as support", miscType = Property.MiscType.spawnedTanks)
 	public ArrayList<SpawnedTankEntry> spawnedTankEntries = new ArrayList<>();
 	/** Tanks spawned on initial load*/
-	@TankProperty(category = spawning, id = "spawned_initial_count", name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
+	@Property(category = spawning, id = "spawned_initial_count", name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
 	public int spawnedInitialCount = 4;
 	/** Max number of spawned tanks*/
-	@TankProperty(category = spawning, id = "spawned_max_count", name = "Max count", desc = "Maximum number of spawned tanks from this tank that can be on the field at once")
+	@Property(category = spawning, id = "spawned_max_count", name = "Max count", desc = "Maximum number of spawned tanks from this tank that can be on the field at once")
 	public int spawnedMaxCount = 6;
 	/** Chance for this tank to spawn another tank*/
-	@TankProperty(category = spawning, id = "spawn_chance", name = "Spawn chance", desc = "Chance for this tank to spawn another tank")
+	@Property(category = spawning, id = "spawn_chance", name = "Spawn chance", desc = "Chance for this tank to spawn another tank")
 	public double spawnChance = 0.003;
 
 	/** Whether the tank should commit suicide when there are no allied tanks on the field */
-	@TankProperty(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and explode. The explosion will use the properties of the tank's mine.")
+	@Property(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and explode. The explosion will use the properties of the tank's mine.")
 	public boolean enableSuicide = false;
 	/** Base factor in calculating suicide timer: base + random * Math.random()*/
-	@TankProperty(category = lastStand, id = "suicide_timer_base", name = "Base timer", desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
+	@Property(category = lastStand, id = "suicide_timer_base", name = "Base timer", desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
 	public double suicideTimerBase = 500;
 	/** Random factor in calculating suicide timer: base + random * Math.random() */
-	@TankProperty(category = lastStand, id = "suicide_timer_random", name = "Random timer", desc = "A random fraction of this value is added to the base timer to get the time this tank will charge before exploding \n \n 1 time unit = 0.01 seconds")
+	@Property(category = lastStand, id = "suicide_timer_random", name = "Random timer", desc = "A random fraction of this value is added to the base timer to get the time this tank will charge before exploding \n \n 1 time unit = 0.01 seconds")
 	public double suicideTimerRandom = 250;
 	/** Suicidal mode maximum speed increase*/
-	@TankProperty(category = lastStand, id = "suicide_speed_boost", name = "Speed boost", desc = "Maximum increase in speed while charging as a last stand")
+	@Property(category = lastStand, id = "suicide_speed_boost", name = "Speed boost", desc = "Maximum increase in speed while charging as a last stand")
 	public double suicideSpeedBoost = 3;
 
 	/** Range which rays will be used to detect a tank after being locked on to it. Larger values detect motion better but are less accurate.*/
@@ -548,6 +549,13 @@ public class TankAIControlled extends Tank
 	{
 		if (this.age <= 0)
 		{
+			this.bulletItem.cooldown = Math.min(1, this.cooldownBase);
+			this.bulletItem.item.bullet = this.bullet;
+			this.mineItem.item.mine = this.mine;
+
+			if (!this.enableMovement)
+				this.bullet.recoil = 0;
+
 			this.baseMaxSpeed = this.maxSpeed;
 			this.dealsDamage = !this.isSupportTank();
 			this.baseColorR = this.colorR;
@@ -655,17 +663,16 @@ public class TankAIControlled extends Tank
 		if (!chargeUp)
 			this.aim = false;
 
-		boolean arc = BulletArc.class.isAssignableFrom(this.bullet.getClass());
+		boolean arc = this.bullet instanceof BulletArc;
 
 		if ((this.bulletItem.liveBullets < this.bullet.maxLiveBullets || this.bullet.maxLiveBullets <= 0) && !this.disabled && !this.destroy)
 		{
 			if (this.cooldown <= 0)
 			{
 				this.aim = false;
-				// TODO
-				double range = 0; //this.bullet.getRange();
+				double range = this.bullet.range * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
 
-				if (arc && this.distance <= range)
+				if (arc && (this.distance <= range || range <= 0))
 				{
 					if (this.shotRoundCount <= 1)
 						this.bulletItem.attemptUse(this);
@@ -680,7 +687,14 @@ public class TankAIControlled extends Tank
 				}
 				else if (!arc)
 				{
-					boolean inRange = (range < 0) || (Movable.distanceBetween(this, this.targetEnemy) <= range);
+					double extra = this.bullet.size / 2;
+					if (this.bullet instanceof BulletGas)
+						extra = ((BulletGas) this.bullet).endSize / 2;
+
+					if (this.targetEnemy instanceof Tank)
+						extra += ((Tank) this.targetEnemy).size / 2;
+
+					boolean inRange = (range <= 0) || (Movable.distanceBetween(this, this.targetEnemy) <= range + extra);
 					if (!inRange)
 						return;
 
@@ -823,8 +837,8 @@ public class TankAIControlled extends Tank
 	/** Actually fire a bullet*/
 	public void fireBullet(Bullet b, double speed, double offset)
 	{
-		if (b.itemSound != null)
-			Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / this.bullet.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
+		if (b.shotSound != null)
+			Drawing.drawing.playGlobalSound(b.shotSound, (float) ((Bullet.bullet_size / this.bullet.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
 
 		if (this.shotSound != null)
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
@@ -869,7 +883,6 @@ public class TankAIControlled extends Tank
 			boolean correctTeam = (this.isSupportTank() && Team.isAllied(this, m)) || (!this.isSupportTank() && !Team.isAllied(this, m));
 			if (m instanceof Tank && correctTeam && !((Tank) m).hidden && ((Tank) m).targetable && m != this)
 			{
-				// TODO fix max health
 				if (this.bullet.damage < 0 && ((Tank) m).health - ((Tank) m).baseHealth >= this.bullet.maxExtraHealth && this.bullet.maxExtraHealth > 0)
 					continue;
 
@@ -1329,6 +1342,7 @@ public class TankAIControlled extends Tank
 		ArrayList<Bullet> toAvoid = new ArrayList<>();
 		ArrayList<Double> toAvoidDist = new ArrayList<>();
 		ArrayList<Bullet> toAvoidDeflect = new ArrayList<>();
+		ArrayList<Double> toAvoidDeflectDist = new ArrayList<>();
 		ArrayList<Ray> toAvoidTargets = new ArrayList<>();
 
 		for (int i = 0; i < Game.movables.size(); i++)
@@ -1359,7 +1373,10 @@ public class TankAIControlled extends Tank
 								toAvoidTargets.add(b.getRay());
 							}
 							else
+							{
 								toAvoidDeflect.add(b);
+								toAvoidDeflectDist.add(dist);
+							}
 						}
 						else
 						{
@@ -1377,7 +1394,10 @@ public class TankAIControlled extends Tank
 									toAvoidTargets.add(r);
 								}
 								else
+								{
 									toAvoidDeflect.add(b);
+									toAvoidDeflectDist.add(dist);
+								}
 							}
 						}
 					}
@@ -1385,7 +1405,7 @@ public class TankAIControlled extends Tank
 			}
 		}
 
-		this.bulletThreatCount = toAvoid.size();
+		this.bulletThreatCount = toAvoidDeflect.size();
 
 		if (avoid)
 		{
@@ -1393,10 +1413,6 @@ public class TankAIControlled extends Tank
 			Ray nearestTarget = null;
 			double nearestDist = Double.MAX_VALUE;
 
-			Bullet nearestDeflectable = null;
-			double nearestDeflectableDist = Double.MAX_VALUE;
-
-			int j = 0;
 			for (int i = 0; i < toAvoid.size(); i++)
 			{
 				Bullet b = toAvoid.get(i);
@@ -1407,18 +1423,26 @@ public class TankAIControlled extends Tank
 					nearestTarget = toAvoidTargets.get(i);
 					nearestDist = dist;
 				}
+			}
 
-				if (j < toAvoidDeflect.size() && toAvoidDeflect.get(j) == b)
+			Bullet nearestDeflectable = null;
+			double nearestDeflectableDist = Double.MAX_VALUE;
+			for (int i = 0; i < toAvoidDeflect.size(); i++)
+			{
+				Bullet b = toAvoidDeflect.get(i);
+				double dist = toAvoidDeflectDist.get(i) / b.getSpeed();
+				if (!b.heavy && b.canBeCanceled && (!Team.isAllied(this, b) || !this.enableMovement) && dist < nearestDeflectableDist)
 				{
-					if (!b.heavy && b.canBeCanceled && (!Team.isAllied(this, b) || !this.enableMovement) && dist < nearestDeflectableDist)
-					{
-						nearestDeflectable = b;
-						nearestDeflectableDist = dist;
-					}
-
-					j++;
+					nearestDeflectable = b;
+					nearestDeflectableDist = dist;
 				}
 			}
+
+			this.nearestBulletDeflect = nearestDeflectable;
+			this.nearestBulletDeflectDist = nearestDeflectableDist;
+
+			if (nearestDeflectable != null || nearest != null)
+				this.avoidTimer = this.bulletAvoidTimerBase;
 
 			if (nearest == null)
 				return;
@@ -1496,7 +1520,6 @@ public class TankAIControlled extends Tank
 						double targetX = nearestTarget.targetX;
 						double targetY = nearestTarget.targetY;
 
-						this.avoidTimer = this.bulletAvoidTimerBase;
 						this.avoidDirection = this.getAngleInDirection(targetX, targetY) + Math.PI;
 						diff = Movable.angleBetween(this.avoidDirection, direction);
 
@@ -1513,12 +1536,8 @@ public class TankAIControlled extends Tank
 				}
 			}
 
-			this.avoidTimer = this.bulletAvoidTimerBase;
 			this.nearestBullet = nearest;
 			this.nearestBulletDist = nearestDist;
-
-			this.nearestBulletDeflect = nearestDeflectable;
-			this.nearestBulletDeflectDist = nearestDeflectableDist;
 		}
 	}
 
@@ -1671,7 +1690,7 @@ public class TankAIControlled extends Tank
 
 	public void updateTurretStraight()
 	{
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(this.cooldownBase, 50) * 1.5))
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
 			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
 			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
@@ -1851,7 +1870,7 @@ public class TankAIControlled extends Tank
 
 		this.search();
 
-		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDist <= this.bulletThreatCount * Math.max(Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), this.bulletItem.item.cooldownBase), 50) * 1.5))
+		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
 			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
 			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
@@ -1892,6 +1911,18 @@ public class TankAIControlled extends Tank
 		{
 			searchAngle -= this.random.nextDouble() * 0.1 * Panel.frameFrequency;
 		}
+		else if (this.searchPhase == RotationPhase.aiming)
+		{
+			searchAngle = this.lockedAngle;
+			if (this.aimTimer <= 0)
+			{
+				this.aimTimer = 0;
+				if (this.random.nextDouble() < 0.5)
+					this.searchPhase = RotationPhase.clockwise;
+				else
+					this.searchPhase = RotationPhase.counter_clockwise;
+			}
+		}
 		else
 		{
 			searchAngle = this.lockedAngle + this.random.nextDouble() * this.searchRange - this.searchRange / 2;
@@ -1906,7 +1937,15 @@ public class TankAIControlled extends Tank
 			}
 		}
 
-		Ray ray = new Ray(this.posX, this.posY, this.searchAngle, this.bullet.bounces, this);
+		this.testSearch(this.searchAngle);
+
+		if (this.searchPhase != RotationPhase.aiming)
+			this.testSearch(this.angle);
+	}
+
+	public void testSearch(double searchAngle)
+	{
+		Ray ray = new Ray(this.posX, this.posY, searchAngle, this.bullet.bounces, this);
 		ray.moveOut(this.size / 10);
 		ray.size = this.bullet.size;
 		ray.ignoreDestructible = this.aimIgnoreDestructible;
@@ -1925,24 +1964,16 @@ public class TankAIControlled extends Tank
 			target = ray2.getTarget();
 		}
 
-		if (target != null && !(target instanceof TankNPC))
+		if (target != null && !(target instanceof TankNPC) && target.equals(this.targetEnemy) || (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this)))
 		{
-			if (target.equals(this.targetEnemy))
-			{
-				this.lockedAngle = this.angle;
-				this.searchPhase = RotationPhase.aiming;
-				this.aim = true;
-				this.aimAngle = this.searchAngle % (Math.PI * 2);
-			}
-			else if (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this))
-			{
-				this.targetEnemy = target;
-				this.lockedAngle = this.angle;
-				this.searchPhase = RotationPhase.aiming;
-				this.aim = true;
-				this.aimAngle = this.searchAngle % (Math.PI * 2);
-			}
+			this.targetEnemy = target;
+			this.lockedAngle = searchAngle;
+			this.searchPhase = RotationPhase.aiming;
+			this.aim = true;
+			this.aimAngle = searchAngle % (Math.PI * 2);
 		}
+		else if (this.searchPhase == RotationPhase.aiming)
+			this.searchPhase = RotationPhase.recalculating;
 	}
 
 	public void lookAtTargetEnemy()
@@ -2177,7 +2208,7 @@ public class TankAIControlled extends Tank
 
 	public void layMine(Mine m)
 	{
-		Drawing.drawing.playGlobalSound("lay_mine.ogg");
+		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
 		Game.eventsOut.add(new EventLayMine(m));
 		Game.movables.add(m);
@@ -2388,7 +2419,8 @@ public class TankAIControlled extends Tank
 
 		if (this.timeUntilDeath <= 0)
 		{
-			Explosion e = new Explosion(this.posX, this.posY, this.mine.radius, this.mine.damage, this.mine.destroysObstacles, this);
+			Explosion e = new Explosion(this.posX, this.posY, this, this.mineItem);
+			this.mine.explosion.clonePropertiesTo(e);
 			e.explode();
 			this.destroy = true;
 			this.health = 0;
@@ -2791,7 +2823,7 @@ public class TankAIControlled extends Tank
 
 	public boolean isSupportTank()
 	{
-		return !this.suicidal && this.bullet.damage <= 0;
+		return !this.suicidal && this.bullet.damage <= 0 && this.bullet.bulletHitKnockback == 0 && this.bullet.tankHitKnockback == 0 && this.bullet.hitStun <= 0;
 	}
 
 	public void setPolarAcceleration(double angle, double acceleration)
@@ -2887,220 +2919,222 @@ public class TankAIControlled extends Tank
 		if (fromRegistry)
 			return "<" + this.name + ">";
 
-		try
-		{
-			StringBuilder s = new StringBuilder("[");
-
-			for (Field f : this.getClass().getFields())
-			{
-				TankProperty a = f.getAnnotation(TankProperty.class);
-				if (a != null)
-				{
-					s.append(a.id());
-					s.append("=");
-
-					if (f.get(this) != null)
-					{
-						if (a.miscType() == TankProperty.MiscType.description)
-						{
-							String desc = (String) f.get(this);
-							s.append("<").append(desc.length()).append(">").append(desc);
-						}
-						else
-							s.append(f.get(this));
-					}
-					else
-						s.append("*");
-
-					s.append(";");
-				}
-			}
-
-			return s.append("]").toString();
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
-
-		return null;
+		return TanksON.objectToString(this);
+//		try
+//		{
+//			StringBuilder s = new StringBuilder("[");
+//
+//			for (Field f : this.getClass().getFields())
+//			{
+//				Property a = f.getAnnotation(Property.class);
+//				if (a != null)
+//				{
+//					s.append(a.id());
+//					s.append("=");
+//
+//					if (f.get(this) != null)
+//					{
+//						if (a.miscType() == Property.MiscType.description)
+//						{
+//							String desc = (String) f.get(this);
+//							s.append("<").append(desc.length()).append(">").append(desc);
+//						}
+//						else
+//							s.append(f.get(this));
+//					}
+//					else
+//						s.append("*");
+//
+//					s.append(";");
+//				}
+//			}
+//
+//			return s.append("]").toString();
+//		}
+//		catch (Exception e)
+//		{
+//			Game.exitToCrash(e);
+//		}
+//
+//		return null;
 	}
 
 	public static TankAIControlled fromString(String s)
 	{
-		return fromString(s, null);
+		return (TankAIControlled) TanksON.parseObject(s);
+		//return fromString(s, null);
 	}
 
-	public static TankAIControlled fromString(String s, String[] remainder)
-	{
-		String original = s;
-		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
-
-		try
-		{
-			s = s.substring(s.indexOf("[") + 1);
-			while (s.charAt(0) != ']')
-			{
-				int equals = s.indexOf("=");
-				String value = s.substring(equals + 1, s.indexOf(";"));
-				String propname = s.substring(0, equals);
-
-				for (Field f : TankAIControlled.class.getFields())
-				{
-					boolean found = true;
-
-					TankProperty a = f.getAnnotation(TankProperty.class);
-					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank"))))
-					{
-						if (f.getType().equals(int.class))
-							f.set(t, Integer.parseInt(value));
-						else if (f.getType().equals(double.class))
-							f.set(t, Double.parseDouble(value));
-						else if (f.getType().equals(boolean.class))
-							f.set(t, Boolean.parseBoolean(value));
-						else if (f.getType().equals(String.class))
-						{
-							if (value.equals("*"))
-								f.set(t, null);
-							else if (value.startsWith("\u00A7"))
-							{
-								s = s.substring(equals + 2);
-								int end = s.indexOf("\u00A7");
-								value = s.substring(0, end);
-								s = s.substring(end + 1);
-								f.set(t, value);
-							}
-							else if (value.startsWith("<"))
-							{
-								s = s.substring(equals + 2);
-								int end = s.indexOf(">");
-								int length = Integer.parseInt(s.substring(0, end));
-								value = s.substring(end + 1, end + 1 + length);
-								s = s.substring(end + 1 + length);
-								f.set(t, value);
-							}
-							else
-								f.set(t, value);
-						}
-						else if (a.miscType() == TankProperty.MiscType.music)
-						{
-							int end = s.indexOf("]");
-							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
-							HashSet<String> hashSet;
-							if (csv[0].equals(""))
-								hashSet = new HashSet<>();
-							else
-								hashSet = new HashSet<>(Arrays.asList(csv));
-
-							f.set(t, hashSet);
-						}
-						else if (a.miscType() == TankProperty.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
-						{
-							s = s.substring(s.indexOf("[") + 1);
-							ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
-
-							TankAIControlled target;
-							while (!s.startsWith("]"))
-							{
-								int x = s.indexOf("x");
-								String s1 = s.substring(0, x);
-								s = s.substring(x + 1);
-								if (s.equals("*"))
-									target = null;
-								else if (s.startsWith("<"))
-								{
-									String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
-									s = s.substring(s.indexOf(">") + 1);
-									target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
-								}
-								else
-								{
-									String[] r = new String[1];
-									TankAIControlled t2 = TankAIControlled.fromString(s, r);
-
-									s = r[0];
-									target = t2;
-									s = s.substring(s.indexOf("]") + 1);
-								}
-
-								if (s.startsWith(", "))
-									s = s.substring(2);
-								entries.add(new SpawnedTankEntry(target, Double.parseDouble(s1)));
-							}
-
-							s = s.substring(1);
-						}
-						else if (IModel.class.isAssignableFrom(f.getType()))
-						{
-							if (value.equals("*"))
-								f.set(t, null);
-							else
-								f.set(t, Drawing.drawing.createModel(value));
-						}
-						else if (f.getType().isEnum())
-							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
-						else if (Item2.ItemStack.class.isAssignableFrom(f.getType()))
-						{
-							Item2.ItemStack<?> i = Item2.ItemStack.fromString(null, s);
-							i.unlimited = true;
-							i.stackSize = -1;
-							f.set(t, i);
-							s = s.substring(s.indexOf("]") + 1);
-						}
-						else if (Tank.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
-						{
-							TankAIControlled target;
-
-							if (value.equals("*"))
-								target = null;
-							else if (value.startsWith("<"))
-							{
-								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
-								s = s.substring(s.indexOf(">") + 1);
-								target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
-								target.fromRegistry = true;
-							}
-							else
-							{
-								String[] r = new String[1];
-								TankAIControlled t2 = TankAIControlled.fromString(s, r);
-
-								s = r[0];
-								target = t2;
-								s = s.substring(s.indexOf("]") + 1);
-							}
-
-							if (propname.equals("spawned_tank"))
-							{
-								if (target != null)
-									t.spawnedTankEntries.add(new SpawnedTankEntry(target, 1));
-							}
-							else
-								f.set(t, target);
-						}
-					}
-					else
-						found = false;
-
-					if (found)
-						break;
-				}
-
-				s = s.substring(s.indexOf(";") + 1);
-			}
-		}
-		catch (Exception e)
-		{
-			Game.logger.println("Failed to load tank: " + original);
-			System.err.println("Failed to load tank: " + original);
-			Game.exitToCrash(e);
-		}
-
-		if (remainder != null)
-			remainder[0] = s;
-
-		return t;
-	}
+//	public static TankAIControlled fromString(String s, String[] remainder)
+//	{
+//		String original = s;
+//		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
+//
+//		try
+//		{
+//			s = s.substring(s.indexOf("[") + 1);
+//			while (s.charAt(0) != ']')
+//			{
+//				int equals = s.indexOf("=");
+//				String value = s.substring(equals + 1, s.indexOf(";"));
+//				String propname = s.substring(0, equals);
+//
+//				for (Field f : TankAIControlled.class.getFields())
+//				{
+//					boolean found = true;
+//
+//					Property a = f.getAnnotation(Property.class);
+//					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank"))))
+//					{
+//						if (f.getType().equals(int.class))
+//							f.set(t, Integer.parseInt(value));
+//						else if (f.getType().equals(double.class))
+//							f.set(t, Double.parseDouble(value));
+//						else if (f.getType().equals(boolean.class))
+//							f.set(t, Boolean.parseBoolean(value));
+//						else if (f.getType().equals(String.class))
+//						{
+//							if (value.equals("*"))
+//								f.set(t, null);
+//							else if (value.startsWith("\u00A7"))
+//							{
+//								s = s.substring(equals + 2);
+//								int end = s.indexOf("\u00A7");
+//								value = s.substring(0, end);
+//								s = s.substring(end + 1);
+//								f.set(t, value);
+//							}
+//							else if (value.startsWith("<"))
+//							{
+//								s = s.substring(equals + 2);
+//								int end = s.indexOf(">");
+//								int length = Integer.parseInt(s.substring(0, end));
+//								value = s.substring(end + 1, end + 1 + length);
+//								s = s.substring(end + 1 + length);
+//								f.set(t, value);
+//							}
+//							else
+//								f.set(t, value);
+//						}
+//						else if (a.miscType() == Property.MiscType.music)
+//						{
+//							int end = s.indexOf("]");
+//							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
+//							HashSet<String> hashSet;
+//							if (csv[0].equals(""))
+//								hashSet = new HashSet<>();
+//							else
+//								hashSet = new HashSet<>(Arrays.asList(csv));
+//
+//							f.set(t, hashSet);
+//						}
+//						else if (a.miscType() == Property.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
+//						{
+//							s = s.substring(s.indexOf("[") + 1);
+//							ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
+//
+//							TankAIControlled target;
+//							while (!s.startsWith("]"))
+//							{
+//								int x = s.indexOf("x");
+//								String s1 = s.substring(0, x);
+//								s = s.substring(x + 1);
+//								if (s.equals("*"))
+//									target = null;
+//								else if (s.startsWith("<"))
+//								{
+//									String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
+//									s = s.substring(s.indexOf(">") + 1);
+//									target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
+//								}
+//								else
+//								{
+//									String[] r = new String[1];
+//									TankAIControlled t2 = TankAIControlled.fromString(s, r);
+//
+//									s = r[0];
+//									target = t2;
+//									s = s.substring(s.indexOf("]") + 1);
+//								}
+//
+//								if (s.startsWith(", "))
+//									s = s.substring(2);
+//								entries.add(new SpawnedTankEntry(target, Double.parseDouble(s1)));
+//							}
+//
+//							s = s.substring(1);
+//						}
+//						else if (IModel.class.isAssignableFrom(f.getType()))
+//						{
+//							if (value.equals("*"))
+//								f.set(t, null);
+//							else
+//								f.set(t, Drawing.drawing.createModel(value));
+//						}
+//						else if (f.getType().isEnum())
+//							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
+//						else if (Item.ItemStack.class.isAssignableFrom(f.getType()))
+//						{
+//							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
+//							i.unlimited = true;
+//							i.stackSize = -1;
+//							f.set(t, i);
+//							s = s.substring(s.indexOf("]") + 1);
+//						}
+//						else if (Tank.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
+//						{
+//							TankAIControlled target;
+//
+//							if (value.equals("*"))
+//								target = null;
+//							else if (value.startsWith("<"))
+//							{
+//								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
+//								s = s.substring(s.indexOf(">") + 1);
+//								target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
+//								target.fromRegistry = true;
+//							}
+//							else
+//							{
+//								String[] r = new String[1];
+//								TankAIControlled t2 = TankAIControlled.fromString(s, r);
+//
+//								s = r[0];
+//								target = t2;
+//								s = s.substring(s.indexOf("]") + 1);
+//							}
+//
+//							if (propname.equals("spawned_tank"))
+//							{
+//								if (target != null)
+//									t.spawnedTankEntries.add(new SpawnedTankEntry(target, 1));
+//							}
+//							else
+//								f.set(t, target);
+//						}
+//					}
+//					else
+//						found = false;
+//
+//					if (found)
+//						break;
+//				}
+//
+//				s = s.substring(s.indexOf(";") + 1);
+//			}
+//		}
+//		catch (Exception e)
+//		{
+//			Game.logger.println("Failed to load tank: " + original);
+//			System.err.println("Failed to load tank: " + original);
+//			Game.exitToCrash(e);
+//		}
+//
+//		if (remainder != null)
+//			remainder[0] = s;
+//
+//		return t;
+//	}
 
 	public TankAIControlled instantiate(String name, double x, double y, double angle)
 	{
@@ -3116,13 +3150,19 @@ public class TankAIControlled extends Tank
 		{
 			for (Field f : TankAIControlled.class.getFields())
 			{
-				TankProperty a = f.getAnnotation(TankProperty.class);
+				Property a = f.getAnnotation(Property.class);
 				if (a != null)
 				{
-					if (Item.class.isAssignableFrom(f.getType()))
+					if (Bullet.class.isAssignableFrom(f.getType()))
 					{
-						Item i1 = (Item) f.get(this);
-						Item i2 = i1.clone();
+						Bullet i1 = (Bullet) f.get(this);
+						Bullet i2 = i1.getCopy();
+						f.set(t, i2);
+					}
+					else if (Mine.class.isAssignableFrom(f.getType()))
+					{
+						Mine i1 = (Mine) f.get(this);
+						Mine i2 = i1.getCopy();
 						f.set(t, i2);
 					}
 					else if (Tank.class.isAssignableFrom(f.getType()))
@@ -3139,7 +3179,7 @@ public class TankAIControlled extends Tank
 						else
 							f.set(t, null);
 					}
-					else if (a.miscType() == TankProperty.MiscType.spawnedTanks)
+					else if (a.miscType() == Property.MiscType.spawnedTanks)
 					{
 						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
 
@@ -3151,7 +3191,7 @@ public class TankAIControlled extends Tank
 
 						f.set(t, al);
 					}
-					else if (a.miscType() == TankProperty.MiscType.music)
+					else if (a.miscType() == Property.MiscType.music)
 					{
 						f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
 					}

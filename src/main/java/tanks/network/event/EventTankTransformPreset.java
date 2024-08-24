@@ -70,7 +70,7 @@ public class EventTankTransformPreset extends PersonalEvent
             t.lightSize = target.lightSize;
 
             t.bullet.shotCount = target.bullet.shotCount;
-            t.bullet.shotSpread = target.bullet.shotSpread;
+            t.bullet.multishotSpread = target.bullet.multishotSpread;
 
             t.mandatoryKill = target.mandatoryKill;
             t.musicTracks = target.musicTracks;

@@ -6,6 +6,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.minigames.Arcade;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.TrackRenderer;
+import tanks.tank.Mine;
 import tanks.tank.Turret;
 
 public class Effect extends Movable implements IDrawableWithGlow, IDrawableLightSource, IBatchRenderableObject
@@ -102,6 +103,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         else if (type == EffectType.explosion)
         {
             this.maxAge = 20;
+            this.colR = 255;
+            this.colG = 0;
+            this.colB = 0;
             this.force = true;
         }
         else if (type == EffectType.laser)
@@ -285,9 +289,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         {
             double size = (radius * 2);
             double opacity = (100 - this.age * 5);
-            drawing.setColor(255, 0, 0, opacity, 1);
-            drawing.fillForcedOval(this.posX, this.posY, size, size);
-            drawing.setColor(255, 255, 255);
+            drawing.setColor(this.colR, this.colG, this.colB, opacity, 1);
+            Mine.drawRange2D(this.posX, this.posY, size / 2);
         }
         else if (this.type == EffectType.laser)
         {

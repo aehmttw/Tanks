@@ -11,7 +11,7 @@ import tanks.gui.input.InputBinding;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.Item2;
+import tanks.item.Item;
 import tanks.network.event.EventAddNPCShopItem;
 import tanks.network.event.EventClearNPCShop;
 import tanks.network.event.EventPurchaseNPCItem;
@@ -33,7 +33,7 @@ public class TankNPC extends TankDummy
     public String tagName;
     public boolean draw = false;
     public ButtonList npcShopList;
-    public ArrayList<Item2.ShopItem> shopItems;
+    public ArrayList<Item.ShopItem> shopItems;
     private double counter = 0;
     private String currentLine = "";
     private boolean isChatting = false;
@@ -52,22 +52,22 @@ public class TankNPC extends TankDummy
         this(name, x, y, angle, messages, tagName, r, g, b, r, g, b, Game.currentLevel.shop);
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, Item2.ShopItem... shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, Item.ShopItem... shop)
     {
         this(name, x, y, angle, messages, tagName, r, g, b, r, g, b, new ArrayList<>(Arrays.asList(shop)));
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, Item2.ShopItem... shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, Item.ShopItem... shop)
     {
         this(name, x, y, angle, messages, tagName, r, g, b, nameR, nameG, nameB, new ArrayList<>(Arrays.asList(shop)));
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, ArrayList<Item2.ShopItem> shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, ArrayList<Item.ShopItem> shop)
     {
         this(name, x, y, angle, messages, tagName, r, g, b, r, g, b, shop);
     }
 
-    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, ArrayList<Item2.ShopItem> shop)
+    public TankNPC(String name, double x, double y, double angle, String messages, String tagName, double r, double g, double b, double nameR, double nameG, double nameB, ArrayList<Item.ShopItem> shop)
     {
         super(name, x, y * 50 + 25, angle);
 
@@ -97,7 +97,7 @@ public class TankNPC extends TankDummy
         icon.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
     }
 
-    public void initShop(ArrayList<Item2.ShopItem> shop)
+    public void initShop(ArrayList<Item.ShopItem> shop)
     {
         Game.eventsOut.add(new EventClearNPCShop(this.networkID));
         ArrayList<Button> shopItemButtons = new ArrayList<>();
@@ -105,7 +105,7 @@ public class TankNPC extends TankDummy
         for (int i = 0; i < shop.size(); i++)
         {
             final int j = i;
-            Item2.ShopItem item = shop.get(j);
+            Item.ShopItem item = shop.get(j);
 //            if (item instanceof ItemRemote)
 //                continue;
 

@@ -1,7 +1,7 @@
 package tanks;
 
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.Item2;
+import tanks.item.Item;
 import tanks.network.event.EventItemDropDestroy;
 import tanks.network.event.EventItemPickup;
 import tanks.tank.IServerPlayerTank;
@@ -16,7 +16,7 @@ public class ItemDrop extends Movable
     public static ArrayList<Integer> freeIDs = new ArrayList<>();
     public static HashMap<Integer, ItemDrop> idMap = new HashMap<>();
 
-    public Item2.ItemStack<?> item;
+    public Item.ItemStack<?> item;
     public double height;
     public double size = Game.tile_size * 1.5;
     public double destroyTime = 0;
@@ -25,7 +25,7 @@ public class ItemDrop extends Movable
 
     public int networkID = -1;
 
-    public ItemDrop(double x, double y, Item2.ItemStack<?> item)
+    public ItemDrop(double x, double y, Item.ItemStack<?> item)
     {
         super(x, y);
 

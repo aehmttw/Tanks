@@ -9,14 +9,14 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.TextBox;
-import tanks.item.legacy.Item;
+import tanks.item.Item;
 import tanks.registry.RegistryItem;
 import tanks.tank.TankAIControlled;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ScreenCrusadeEditor extends Screen implements IItemScreen
+public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScreen
 {
     public enum Mode {options, levels, items}
 
@@ -164,11 +164,6 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
 
         this.crusade = c;
 
-        for (Item i: c.crusadeShopItems)
-        {
-            i.importProperties();
-        }
-
         String[] itemNames = new String[Game.registryItem.itemEntries.size() + 1];
         String[] itemImages = new String[Game.registryItem.itemEntries.size() + 1];
 
@@ -184,15 +179,15 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
-            if (itemSelector.selectedOption == itemSelector.options.length - 1)
-            {
-                Game.screen = new ScreenAddSavedItem(this, this.addItem);
-            }
-            else
-            {
-                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-                addItem(i);
-            }
+//            if (itemSelector.selectedOption == itemSelector.options.length - 1)
+//            {
+//                Game.screen = new ScreenAddSavedItem(this, this.addItem);
+//            }
+//            else
+//            {
+//                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
+//                addItem(i);
+//            }
         });
 
         itemSelector.images = itemImages;
@@ -333,23 +328,23 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
         {
             int j = i;
 
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeShopItems.get(i).name, () -> Game.screen = new ScreenItemEditor(crusade.crusadeShopItems.get(j), (IItemScreen) Game.screen));
-
-            b.image = crusade.crusadeShopItems.get(j).icon;
-            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-            b.imageSizeX = b.sizeY;
-            b.imageSizeY = b.sizeY;
-
-            int p = crusade.crusadeShopItems.get(i).price;
-
-            if (p == 0)
-                b.setSubtext("Free!");
-            else if (p == 1)
-                b.setSubtext("1 coin");
-            else
-                b.setSubtext("%d coins", p);
-
-            this.itemButtons.buttons.add(b);
+//            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeShopItems.get(i).itemStack.item.name, () -> Game.screen = new ScreenItemEditor(crusade.crusadeShopItems.get(j), (IItemScreen) Game.screen));
+//
+//            b.image = crusade.crusadeShopItems.get(j).itemStack.item.icon;
+//            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+//            b.imageSizeX = b.sizeY;
+//            b.imageSizeY = b.sizeY;
+//
+//            int p = crusade.crusadeShopItems.get(i).price;
+//
+//            if (p == 0)
+//                b.setSubtext("Free!");
+//            else if (p == 1)
+//                b.setSubtext("1 coin");
+//            else
+//                b.setSubtext("%d coins", p);
+//
+//            this.itemButtons.buttons.add(b);
         }
 
         this.itemButtons.sortButtons();
@@ -449,14 +444,14 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
     }
 
     @Override
-    public void addItem(Item i)
+    public void addItem(Item.CrusadeShopItem i)
     {
         crusade.crusadeShopItems.add(i);
-        Game.screen = new ScreenItemEditor(i, instance);
+        //Game.screen = new ScreenItemEditor(i, instance);
     }
 
     @Override
-    public void removeItem(Item i)
+    public void removeItem(Item.CrusadeShopItem i)
     {
         this.crusade.crusadeShopItems.remove(i);
         this.refreshItemButtons();
@@ -470,9 +465,6 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
 
     public void save()
     {
-        for (Item i: this.crusade.crusadeShopItems)
-            i.exportProperties();
-
         BaseFile f = Game.game.fileManager.getFile(crusade.fileName);
 
         try
@@ -482,7 +474,7 @@ public class ScreenCrusadeEditor extends Screen implements IItemScreen
             f.println(this.crusade.startingLives + "," + this.crusade.bonusLifeFrequency + "," + this.crusade.showNames + "," + this.crusade.respawnTanks);
             f.println("items");
 
-            for (Item i: this.crusade.crusadeShopItems)
+            for (Item.CrusadeShopItem i: this.crusade.crusadeShopItems)
                 f.println(i.toString());
 
             f.println("tanks");

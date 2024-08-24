@@ -3,14 +3,10 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
-import tanks.item.Item2;
-import tanks.item.ItemBullet2;
-import tanks.item.ItemEmpty2;
-import tanks.item.ItemRemote2;
-import tanks.item.legacy.Item;
-import tanks.item.legacy.ItemBullet;
-import tanks.item.legacy.ItemEmpty;
-import tanks.item.legacy.ItemRemote;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemEmpty;
+import tanks.item.ItemRemote;
 import tanks.network.NetworkUtils;
 
 import java.util.UUID;
@@ -30,7 +26,7 @@ public class EventSetItem extends PersonalEvent
 
     }
 
-    public EventSetItem(Player p, int slot, Item2.ItemStack<?> item)
+    public EventSetItem(Player p, int slot, Item.ItemStack<?> item)
     {
         this.playerID = p.clientID;
         this.slot = slot;
@@ -43,11 +39,11 @@ public class EventSetItem extends PersonalEvent
         this.count = item.stackSize;
         this.name = item.item.name;
 
-        if (item.item instanceof ItemBullet2)
+        if (item.item instanceof ItemBullet)
         {
-            ItemBullet2 i = (ItemBullet2) item.item;
+            ItemBullet i = (ItemBullet) item.item;
             bounces = i.bullet.bounces;
-            range = i.bullet.getLifespan();
+            range = i.bullet.range;
         }
 
     }
@@ -81,17 +77,17 @@ public class EventSetItem extends PersonalEvent
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))
         {
-            ItemRemote2 i = new ItemRemote2();
+            ItemRemote i = new ItemRemote();
             i.icon = this.texture;
             i.name = this.name;
             i.bounces = this.bounces;
-            i.lifeSpan = this.range;
+            i.range = this.range;
 
-            Item2.ItemStack<?> s = new ItemRemote2.ItemStackRemote(Game.player, i, 0);
+            Item.ItemStack<?> s = new ItemRemote.ItemStackRemote(Game.player, i, 0);
             s.stackSize = this.count;
 
             if (s.stackSize == 0)
-                s = new ItemEmpty2.ItemStackEmpty();
+                s = new ItemEmpty.ItemStackEmpty();
 
             Game.player.hotbar.itemBar.slots[slot] = s;
         }

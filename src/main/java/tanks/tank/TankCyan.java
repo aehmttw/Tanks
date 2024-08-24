@@ -1,9 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
 import tanks.bullet.DefaultBullets;
-import tanks.bullet.legacy2.BulletFreeze2;
 
 /**
  * A support tank which shoots freezing bullets that deal low damage

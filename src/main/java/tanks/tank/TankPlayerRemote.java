@@ -7,9 +7,9 @@ import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item2;
-import tanks.item.ItemBullet2;
-import tanks.item.ItemMine2;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.network.event.*;
 
 public class TankPlayerRemote extends Tank implements IServerPlayerTank
@@ -157,7 +157,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item2.ItemStack<?> i: h.itemBar.slots)
+            for (Item.ItemStack<?> i: h.itemBar.slots)
             {
                 if (i != null && !(i.isEmpty))
                 {
@@ -211,15 +211,15 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public void refreshAmmo()
     {
         ItemBar b = this.player.hotbar.itemBar;
-        ItemBullet2.ItemStackBullet ib = this.bulletItem;
-        ItemMine2.ItemStackMine im = this.mineItem;
+        ItemBullet.ItemStackBullet ib = this.bulletItem;
+        ItemMine.ItemStackMine im = this.mineItem;
 
         if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1)
         {
-            if (b.slots[b.selected] instanceof ItemBullet2.ItemStackBullet)
-                ib = (ItemBullet2.ItemStackBullet) b.slots[b.selected];
-            else if (b.slots[b.selected] instanceof ItemMine2.ItemStackMine)
-                im = (ItemMine2.ItemStackMine) b.slots[b.selected];
+            if (b.slots[b.selected] instanceof ItemBullet.ItemStackBullet)
+                ib = (ItemBullet.ItemStackBullet) b.slots[b.selected];
+            else if (b.slots[b.selected] instanceof ItemMine.ItemStackMine)
+                im = (ItemMine.ItemStackMine) b.slots[b.selected];
         }
 
         if (lastLiveBullets != ib.liveBullets || ib.item.bullet.maxLiveBullets != lastMaxLiveBullets || im.liveMines != lastLiveMines || im.item.mine.maxLiveMines != lastMaxLiveMines)
@@ -451,9 +451,9 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (speed <= 0)
             speed = Double.MIN_NORMAL;
 
-        if (b.itemSound != null)
+        if (b.shotSound != null)
         {
-            Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
+            Drawing.drawing.playGlobalSound(b.shotSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
         }
 
         b.addPolarMotion(this.angle + offset, speed);
@@ -529,7 +529,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item2.ItemStack<?> i: h.itemBar.slots)
+            for (Item.ItemStack<?> i: h.itemBar.slots)
             {
                 if (i != null && !(i.isEmpty))
                 {

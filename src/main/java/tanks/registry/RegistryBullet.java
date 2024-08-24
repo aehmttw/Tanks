@@ -1,7 +1,6 @@
 package tanks.registry;
 
 import tanks.bullet.Bullet;
-import tanks.item.legacy.ItemBullet;
 
 import java.util.ArrayList;
 
@@ -21,7 +20,6 @@ public class RegistryBullet
 			this.name = name;
 			this.image = icon;
 
-			ItemBullet.addToMaps(ItemBullet.classMap1, ItemBullet.classMap2, name, bullet);
 			r.bulletEntries.add(this);
 		}
 

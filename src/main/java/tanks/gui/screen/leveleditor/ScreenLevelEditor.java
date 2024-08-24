@@ -6,9 +6,10 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
-import tanks.item.legacy.Item;
+import tanks.item.Item;
 import tanks.network.event.INetworkEvent;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleBeatBlock;
 import tanks.obstacle.ObstacleUnknown;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
@@ -1921,12 +1922,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		level.append("}");
 
-		for (Item i: this.level.shop)
-			i.exportProperties();
-
-		for (Item i: this.level.startingItems)
-			i.exportProperties();
-
 		if (this.level.startingCoins > 0)
 			level.append("\ncoins\n").append(this.level.startingCoins);
 
@@ -1934,7 +1929,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			level.append("\nshop");
 
-			for (Item i : this.level.shop)
+			for (Item.ShopItem i : this.level.shop)
 				level.append("\n").append(i.toString());
 		}
 
@@ -1942,7 +1937,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			level.append("\nitems");
 
-			for (Item i : this.level.startingItems)
+			for (Item.ItemStack<?> i : this.level.startingItems)
 				level.append("\n").append(i.toString());
 		}
 
@@ -1990,22 +1985,25 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		else
 			this.fontBrightness = 0;
 
-		for (Obstacle o: Game.obstacles)
+		if (Panel.panel.continuation == null)
 		{
-			o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
+			for (Obstacle o : Game.obstacles)
+			{
+				o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
+			}
+
+			if (Game.enable3d)
+				Game.recomputeHeightGrid();
+
+			Drawing.drawing.setColor(174, 92, 16);
+
+			double mul = 1;
+			if (Game.angledView)
+				mul = 2;
+
+			Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+					mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 		}
-
-		if (Game.enable3d)
-			Game.recomputeHeightGrid();
-
-		Drawing.drawing.setColor(174, 92, 16);
-
-		double mul = 1;
-		if (Game.angledView)
-			mul = 2;
-
-		Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-				mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
 		this.drawDefaultBackground();
 
@@ -2374,6 +2372,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
+		Game.currentLevel = new Level(Game.currentLevelString);
+		Game.currentLevel.timed = level.timer > 0;
+		Game.currentLevel.timer = level.timer;
+
 		for (Obstacle o: Game.obstacles)
 		{
 			int x = (int) (o.posX / Game.tile_size);
@@ -2386,11 +2388,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (!o.shouldShootThrough)
 					Game.game.unbreakableGrid[x][y] = true;
 			}
-		}
 
-		Game.currentLevel = new Level(Game.currentLevelString);
-		Game.currentLevel.timed = level.timer > 0;
-		Game.currentLevel.timer = level.timer;
+			if (o instanceof ObstacleBeatBlock)
+			{
+				Game.currentLevel.synchronizeMusic = true;
+				Game.currentLevel.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
+			}
+		}
 
 		Game.resetNetworkIDs();
 		for (Movable m: Game.movables)
@@ -2693,7 +2697,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		return Drawing.drawing.unzoomedScale * zoom;
 	}
 
-	public static void refreshItemButtons(ArrayList<Item> items, ButtonList buttons, boolean omitPrice)
+	public static void refreshShopItemButtons(ArrayList<Item.ShopItem> items, ButtonList buttons)
 	{
 		buttons.buttons.clear();
 
@@ -2701,29 +2705,52 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			int j = i;
 
-			Button b = new Button(0, 0, 350, 40, items.get(i).name, () ->
+			Button b = new Button(0, 0, 350, 40, items.get(i).itemStack.item.name, () ->
 			{
-				ScreenItemEditor s = new ScreenItemEditor(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
-				s.drawBehindScreen = true;
-				Game.screen = s;
+//				ScreenItemEditor s = new ScreenItemEditor(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
+//				s.drawBehindScreen = true;
+//				Game.screen = s;
 			});
 
-			b.image = items.get(j).icon;
-			b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+			b.image = items.get(j).itemStack.item.icon;
+			b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
 			b.imageSizeX = b.sizeY;
 			b.imageSizeY = b.sizeY;
 
-			if (!omitPrice)
-			{
-				int p = items.get(i).price;
+			int p = items.get(i).price;
 
-				if (p == 0)
-					b.setSubtext("Free!");
-				else if (p == 1)
-					b.setSubtext("1 coin");
-				else
-					b.setSubtext("%d coins", p);
-			}
+			if (p == 0)
+				b.setSubtext("Free!");
+			else if (p == 1)
+				b.setSubtext("1 coin");
+			else
+				b.setSubtext("%d coins", p);
+
+			buttons.buttons.add(b);
+		}
+
+		buttons.sortButtons();
+	}
+
+	public static void refreshStartingItemButtons(ArrayList<Item.ItemStack<?>> items, ButtonList buttons)
+	{
+		buttons.buttons.clear();
+
+		for (int i = 0; i < items.size(); i++)
+		{
+			int j = i;
+
+			Button b = new Button(0, 0, 350, 40, items.get(i).item.name, () ->
+			{
+//				ScreenItemEditor s = new ScreenItemEditor(items.get(j), (IItemScreen) Game.screen, omitPrice, true);
+//				s.drawBehindScreen = true;
+//				Game.screen = s;
+			});
+
+			b.image = items.get(j).item.icon;
+			b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+			b.imageSizeX = b.sizeY;
+			b.imageSizeY = b.sizeY;
 
 			buttons.buttons.add(b);
 		}

@@ -432,6 +432,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
     {
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
+
         this.populateTiles();
 
         for (int i = 0; i < Game.obstacles.size(); i++)
@@ -455,6 +456,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
                 this.drawTile(i, j);
             }
         }
+
         Obstacle.draw_size = s;
     }
 

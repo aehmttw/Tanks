@@ -34,8 +34,8 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
 
         sizeX.allowLetters = false;
         sizeX.allowSpaces = false;
-        sizeX.maxChars = 3;
-        sizeX.maxValue = 400;
+        sizeX.maxChars = 4;
+        sizeX.maxValue = 10000;
         sizeX.minValue = 1;
         sizeX.checkMaxValue = true;
         sizeX.checkMinValue = true;
@@ -57,8 +57,8 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
 
         sizeY.allowLetters = false;
         sizeY.allowSpaces = false;
-        sizeY.maxChars = 3;
-        sizeY.maxValue = 400;
+        sizeY.maxChars = 4;
+        sizeY.maxValue = 10000;
         sizeY.minValue = 1;
         sizeY.checkMaxValue = true;
         sizeY.checkMinValue = true;

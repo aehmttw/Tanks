@@ -4,10 +4,9 @@ import basewindow.BaseFile;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item2;
-import tanks.item.ItemBullet2;
-import tanks.item.ItemMine2;
-import tanks.item.legacy.Item;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.network.event.*;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
@@ -56,7 +55,7 @@ public class Crusade
 	public boolean showNames = false;
 
 	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
-	public ArrayList<Item2.CrusadeShopItem> crusadeShopItems = new ArrayList<>();
+	public ArrayList<Item.CrusadeShopItem> crusadeShopItems = new ArrayList<>();
 
 	public String name = "";
 	public String fileName = "";
@@ -170,7 +169,7 @@ public class Crusade
 					}
 					else if (parsing == 1)
 					{
-						this.crusadeShopItems.add(Item2.CrusadeShopItem.fromString(s));
+						this.crusadeShopItems.add(Item.CrusadeShopItem.fromString(s));
 					}
 					else if (parsing == 2)
 					{
@@ -278,7 +277,7 @@ public class Crusade
 						cp.itemBar.player = player;
 						crusadePlayers.put(player, cp);
 
-						for (Item2.ItemStack<?> i: cp.itemBar.slots)
+						for (Item.ItemStack<?> i: cp.itemBar.slots)
 						{
 							i.player = player;
 						}
@@ -327,14 +326,14 @@ public class Crusade
 
 			if (player.hotbar.enabledItemBar)
 			{
-				for (Item2.ItemStack<?> item: player.hotbar.itemBar.slots)
+				for (Item.ItemStack<?> item: player.hotbar.itemBar.slots)
 				{
 					item.cooldown = 0;
 
-					if (item instanceof ItemBullet2.ItemStackBullet)
-						((ItemBullet2.ItemStackBullet) item).liveBullets = 0;
-					else if (item instanceof ItemMine2.ItemStackMine)
-						((ItemMine2.ItemStackMine) item).liveMines = 0;
+					if (item instanceof ItemBullet.ItemStackBullet)
+						((ItemBullet.ItemStackBullet) item).liveBullets = 0;
+					else if (item instanceof ItemMine.ItemStackMine)
+						((ItemMine.ItemStackMine) item).liveMines = 0;
 				}
 			}
 		}
@@ -442,13 +441,13 @@ public class Crusade
 		return true;
 	}
 
-	public ArrayList<Item2.ShopItem> getShop()
+	public ArrayList<Item.ShopItem> getShop()
 	{
-		ArrayList<Item2.ShopItem> shop = new ArrayList<>();
+		ArrayList<Item.ShopItem> shop = new ArrayList<>();
 		
 		for (int i = 0; i < this.crusadeShopItems.size(); i++)
 		{
-			Item2.CrusadeShopItem item = this.crusadeShopItems.get(i);
+			Item.CrusadeShopItem item = this.crusadeShopItems.get(i);
 			if (item.levelUnlock <= this.currentLevel)
 				shop.add(item);
 		}

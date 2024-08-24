@@ -33,6 +33,12 @@ public class TerrainRenderer
     protected ShaderGroundOutOfBounds outsideShader;
     protected ShaderGroundIntro introShader;
 
+    public boolean allowPartialLoading = false;
+    public int stagedCount = 0;
+    protected boolean bgStaged = false;
+    public int totalObjectsCount = 0;
+    public boolean hasContinuationed = false;
+
     public static int f(int i)
     {
         return 1664525 * i + 1013904223;
@@ -91,11 +97,9 @@ public class TerrainRenderer
     public static class RegionRenderer
     {
         public BaseShapeBatchRenderer renderer;
-
         public int posX;
-
         public int posY;
-
+        public int num = 0;
         public ShaderGroup shader;
 
         public RegionRenderer(int x, int y, ShaderGroup s)
@@ -119,10 +123,17 @@ public class TerrainRenderer
             sg = ShaderGroundIntro.class;
         }
 
+        int num = 0;
         if (o instanceof Obstacle)
+        {
             sg = ((Obstacle) o).renderer;
+            num = ((Obstacle) o).rendererNumber;
+        }
         else if (o instanceof Tile && ((Tile) o).obstacleAbove != null)
+        {
             sg = ((Tile) o).obstacleAbove.tileRenderer;
+            num = ((Tile) o).obstacleAbove.tileRendererNumber;
+        }
 
         if (!outOfBounds)
         {
@@ -135,10 +146,12 @@ public class TerrainRenderer
 
         if (s == null)
         {
-            int key = f((int) (f((int) (x / section_size)) + y / section_size));
+            int key = f( f((int) (f((int) (x / section_size)) + y / section_size)) + num);
             if (renderers.get(key) == null)
             {
-                renderers.put(key, new RegionRenderer((int) (x / section_size), (int) (y / section_size), getShader(sg)));
+                RegionRenderer r = new RegionRenderer((int) (x / section_size), (int) (y / section_size), getShader(sg));
+                r.num = num;
+                renderers.put(key, r);
             }
 
             s = renderers.get(key);
@@ -154,6 +167,12 @@ public class TerrainRenderer
     {
         if (shader instanceof IObstacleVertexCoordShader)
             s.setAttribute(((IObstacleVertexCoordShader) shader).getVertexCoord(), f);
+    }
+
+    public void addCenterCoord(BaseShapeBatchRenderer s, ShaderGroup shader, float x, float y, float z)
+    {
+        if (shader instanceof IObstacleCenterCoordShader)
+            s.setAttribute(((IObstacleCenterCoordShader) shader).getCenterCoord(), x, y, z);
     }
 
     public void addBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean out)
@@ -307,6 +326,161 @@ public class TerrainRenderer
         }
     }
 
+    /**
+     * Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower
+     */
+    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy, float cz)
+    {
+        x -= sX / 2;
+        y -= sY / 2;
+
+        RegionRenderer r = this.getRenderer(o, x, y, false);
+        BaseShapeBatchRenderer s = r.renderer;
+        s.beginAdd(o);
+        ShaderGroup shader = r.shader;
+
+        if (shader instanceof IGroundHeightShader)
+        {
+            if (!Game.enable3dBg && Game.screen instanceof ScreenIntro)
+                s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) (Math.random() * 10.0));
+            else
+                s.setAttribute(((IGroundHeightShader) shader).getGroundHeight(), (float) currentDepth);
+        }
+
+        float x0 = (float) x;
+        float y0 = (float) y;
+        float z0 = (float) z;
+
+        float x1 = (float) (x + sX);
+        float y1 = (float) (y + sY);
+        float z1 = (float) (z + sZ);
+
+        float r1 = (float) Drawing.drawing.currentColorR;
+        float g1 = (float) Drawing.drawing.currentColorG;
+        float b1 = (float) Drawing.drawing.currentColorB;
+        float a = (float) Drawing.drawing.currentColorA;
+        float g = (float) Drawing.drawing.currentGlow;
+
+        float r2 = r1 * 0.8f;
+        float g2 = g1 * 0.8f;
+        float b2 = b1 * 0.8f;
+
+        float r3 = r1 * 0.6f;
+        float g3 = g1 * 0.6f;
+        float b3 = b1 * 0.6f;
+
+        if (alternate)
+            cz = -cz;
+
+        if (options % 2 == 0)
+        {
+            s.setColor(r1, g1, b1, a, g);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z0);
+
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z0);
+        }
+
+        if ((options >> 2) % 2 == 0)
+        {
+            s.setColor(r2, g2, b2, a, g);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z0);
+
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z0);
+        }
+
+        if ((options >> 3) % 2 == 0)
+        {
+            s.setColor(r2, g2, b2, a, g);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z0);
+
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z0);
+        }
+
+        if ((options >> 4) % 2 == 0)
+        {
+            s.setColor(r3, g3, b3, a, g);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z0);
+
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z0);
+        }
+
+        if ((options >> 5) % 2 == 0)
+        {
+            s.setColor(r3, g3, b3, a, g);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z1);
+
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z0);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z1);
+        }
+
+        if ((options >> 1) % 2 == 0)
+        {
+            s.setColor(r1, g1, b1, a, g);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z1);
+
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y1, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x1, y0, z1);
+            addCenterCoord(s, shader, cx, cy, cz);
+            s.addPoint(x0, y0, z1);
+        }
+    }
+
     public void remove(IBatchRenderableObject o)
     {
         this.getRenderer(o, 0, 0, false).renderer.delete(o);
@@ -316,6 +490,8 @@ public class TerrainRenderer
     public void populateTiles()
     {
         this.tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
+        this.totalObjectsCount = this.tiles.length * this.tiles[0].length + Game.obstacles.size();
+
         for (int i = 0; i < Game.currentSizeX; i++)
         {
             for (int j = 0; j < Game.currentSizeY; j++)
@@ -345,6 +521,7 @@ public class TerrainRenderer
         this.renderersByObj.clear();
         this.outOfBoundsRenderers.clear();
         this.staged = false;
+        this.stagedCount = 0;
     }
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
@@ -360,6 +537,7 @@ public class TerrainRenderer
             boolean in = Game.followingCam || asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
 
             s.renderer.endModification();
+
             if (in)
             {
                 if (s.shader instanceof RendererShader)
@@ -373,6 +551,9 @@ public class TerrainRenderer
                 if (s.shader instanceof IGlowShader)
                     s.renderer.setGlow(((IGlowShader) s.shader).getGlow());
 
+                if (s.shader instanceof IUpdatedShader)
+                    ((IUpdatedShader) s.shader).update(s.num);
+
                 s.renderer.draw();
             }
         }
@@ -383,8 +564,24 @@ public class TerrainRenderer
         if (!staged)
         {
             this.stageBackground();
-            this.stageObstacles();
-            this.staged = true;
+
+            if (bgStaged)
+                this.stageObstacles();
+
+            if (this.stagedCount >= this.totalObjectsCount)
+            {
+                this.staged = true;
+                if (this.hasContinuationed)
+                {
+                    this.hasContinuationed = false;
+                    throw new LoadingTerrainContinuation(this);
+                }
+            }
+            else
+            {
+                this.hasContinuationed = true;
+                throw new LoadingTerrainContinuation(this);
+            }
         }
         else
         {
@@ -520,6 +717,7 @@ public class TerrainRenderer
         double g = Game.tilesG[i][j];
         double b = Game.tilesB[i][j];
         double depth = Game.tilesDepth[i][j];
+
         this.currentDepth = depth;
         currentColor[0] = (float) (r / 255.0);
         currentColor[1] = (float) (g / 255.0);
@@ -594,29 +792,43 @@ public class TerrainRenderer
     {
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
-        this.populateTiles();
 
-        for (int i = 0; i < Game.obstacles.size(); i++)
+        if (this.stagedCount <= 0)
         {
-            Obstacle o = Game.obstacles.get(i);
+            this.populateTiles();
 
-            if (o.replaceTiles)
-                o.postOverride();
+            for (int i = 0; i < Game.obstacles.size(); i++)
+            {
+                Obstacle o = Game.obstacles.get(i);
 
-            int x = (int) (o.posX / Game.tile_size);
-            int y = (int) (o.posY / Game.tile_size);
+                if (o.replaceTiles)
+                    o.postOverride();
 
-            if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-                Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
+                int x = (int) (o.posX / Game.tile_size);
+                int y = (int) (o.posY / Game.tile_size);
+
+                if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
+                    Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
+            }
         }
 
-        for (int i = 0; i < this.tiles.length; i++)
+        long startTime = System.currentTimeMillis();
+        int i = stagedCount / this.tiles[0].length;
+        for (; i < this.tiles.length; i++)
         {
             for (int j = 0; j < this.tiles[i].length; j++)
             {
                 this.drawTile(i, j);
             }
+
+            if (System.currentTimeMillis() - startTime > 50 && allowPartialLoading)
+            {
+                i++;
+                break;
+            }
         }
+        stagedCount = i * this.tiles[0].length;
+        bgStaged = i >= this.tiles.length;
         Obstacle.draw_size = s;
     }
 
@@ -624,8 +836,12 @@ public class TerrainRenderer
     {
         double d = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
-        for (Obstacle o: Game.obstacles)
+        int oi = stagedCount - (this.tiles.length * this.tiles[0].length);
+
+        long startTime = System.currentTimeMillis();
+        for (; oi < Game.obstacles.size(); oi++)
         {
+            Obstacle o = Game.obstacles.get(oi);
             int i = Math.max(0, Math.min(Game.currentSizeX - 1, (int) (o.posX / Game.tile_size)));
             int j = Math.max(0, Math.min(Game.currentSizeY - 1, (int) (o.posY / Game.tile_size)));
             double r = Game.tilesR[i][j];
@@ -638,7 +854,15 @@ public class TerrainRenderer
 
             if (o.batchDraw)
                 o.draw();
+
+            if (System.currentTimeMillis() - startTime > 50 && allowPartialLoading)
+            {
+                oi++;
+                break;
+            }
         }
+        stagedCount = oi + (this.tiles.length * this.tiles[0].length);
+
         Obstacle.draw_size = d;
     }
 

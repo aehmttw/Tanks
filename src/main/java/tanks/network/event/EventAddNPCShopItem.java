@@ -5,9 +5,8 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item2;
-import tanks.item.ItemRemote2;
-import tanks.item.legacy.ItemRemote;
+import tanks.item.Item;
+import tanks.item.ItemRemote;
 import tanks.tank.TankNPC;
 
 public class EventAddNPCShopItem extends EventAddShopItem
@@ -44,7 +43,7 @@ public class EventAddNPCShopItem extends EventAddShopItem
     {
         if (clientID == null && Game.screen instanceof ScreenGame)
         {
-            Item2.ShopItem i = new Item2.ShopItem(new ItemRemote2.ItemStackRemote(null, new ItemRemote2(), 0));
+            Item.ShopItem i = new Item.ShopItem(ItemRemote.getRemoteItem());
             i.itemStack.item.name = name;
             i.itemStack.item.icon = icon;
 

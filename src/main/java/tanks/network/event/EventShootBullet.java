@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
-import tanks.item.legacy.ItemBullet;
+import tanks.item.ItemBullet;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
@@ -41,7 +41,7 @@ public class EventShootBullet extends PersonalEvent
 		this.vX = b.vX;
 		this.vY = b.vY;
 		this.vZ = b.vZ;
-		this.name = b.name;
+		this.name = b.typeName;
 		this.effect = b.effect.name();
 		this.bounces = b.bounces;
 		this.damage = b.damage;
@@ -65,7 +65,7 @@ public class EventShootBullet extends PersonalEvent
 
 		try
 		{
-			bullet = Game.registryBullet.getEntry(this.name).bullet.getConstructor(double.class, double.class, int.class, Tank.class, ItemBullet.class).newInstance(0.0, 0.0, 0, t, t.bullet);
+			bullet = Game.registryBullet.getEntry(this.name).bullet.getConstructor(double.class, double.class, int.class, Tank.class, ItemBullet.ItemStackBullet.class).newInstance(0.0, 0.0, 0, t, t.bulletItem);
 		}
 		catch (Exception e)
 		{
@@ -79,7 +79,7 @@ public class EventShootBullet extends PersonalEvent
 		bullet.vX = this.vX;
 		bullet.vY = this.vY;
 		bullet.vZ = this.vZ;
-		bullet.name = this.name;
+		bullet.typeName = this.name;
 
 		switch (this.type)
 		{
@@ -93,10 +93,10 @@ public class EventShootBullet extends PersonalEvent
 				bullet.effect = Bullet.BulletEffect.fire;
 				break;
 			case "fireTrail":
-				bullet.effect = Bullet.BulletEffect.fireTrail;
+				bullet.effect = Bullet.BulletEffect.fire_trail;
 				break;
 			case "darkFire":
-				bullet.effect = Bullet.BulletEffect.darkFire;
+				bullet.effect = Bullet.BulletEffect.dark_fire;
 				break;
 			case "ice":
 				bullet.effect = Bullet.BulletEffect.ice;

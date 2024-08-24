@@ -2,14 +2,13 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.ItemBullet2;
+import tanks.item.ItemBullet;
 import tanks.tank.Tank;
 
 public class BulletArc extends Bullet
 {
-    public static String bullet_name = "artillery";
+    public static String bullet_class_name = "artillery";
 
-    public double maxAge;
     public double angle;
     public static final double gravity = 0.1;
 
@@ -18,19 +17,15 @@ public class BulletArc extends Bullet
         this.init();
     }
 
-    public BulletArc(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet ib)
+    public BulletArc(double x, double y, Tank t, boolean affectsMaxLiveBullets, ItemBullet.ItemStackBullet ib)
     {
-        super(x, y, bounces, t, affectsMaxLiveBullets, ib);
+        super(x, y, t, affectsMaxLiveBullets, ib);
         this.init();
-    }
-
-    public BulletArc(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet ib)
-    {
-        this(x, y, bounces, t, true, ib);
     }
 
     protected void init()
     {
+        this.typeName = bullet_class_name;
         this.enableExternalCollisions = false;
         this.playPopSound = false;
         this.playBounceSound = false;
@@ -41,6 +36,7 @@ public class BulletArc extends Bullet
         this.canBeCanceled = false;
         this.moveOut = false;
         this.trail3d = true;
+        this.edgeCollision = false;
 
         this.autoZ = false;
     }

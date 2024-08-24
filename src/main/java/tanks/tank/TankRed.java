@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
+import tanks.bullet.DefaultBullets;
 
 /**
  * A stationary tank which shoots lasers.
@@ -23,6 +24,8 @@ public class TankRed extends TankAIControlled
 		this.cooldownSpeedup = 0.25;
 		this.chargeUp = true;
 		this.coinValue = 6;
+
+		this.setBullet(DefaultBullets.laser);
 
 		if (Game.tankTextures)
 		{

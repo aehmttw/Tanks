@@ -5,7 +5,7 @@ import tanks.Movable;
 import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.Item2;
+import tanks.item.Item;
 import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderExplosive;
 import tanks.tank.*;
@@ -14,7 +14,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
 {
     public double timer = 25;
     public Tank trigger = Game.dummyTank;
-    public Item2.ItemStack<?> itemTrigger = null;
+    public Item.ItemStack<?> itemTrigger = null;
 
     public ObstacleExplosive(String name, double posX, double posY)
     {

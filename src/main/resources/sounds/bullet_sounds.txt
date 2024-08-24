@@ -1,0 +1,6 @@
+shoot.ogg
+shoot_power.ogg
+laser.ogg
+arc.ogg
+flame.ogg
+wind.ogg

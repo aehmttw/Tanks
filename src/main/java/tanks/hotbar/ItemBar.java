@@ -6,8 +6,8 @@ import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.Item2;
-import tanks.item.ItemEmpty2;
+import tanks.item.Item;
+import tanks.item.ItemEmpty;
 import tanks.minigames.Arcade;
 import tanks.network.ServerHandler;
 import tanks.network.event.EventSetItem;
@@ -31,7 +31,7 @@ public class ItemBar
 	public static double itemCountG = 255;
 	public static double itemCountB = 255;
 
-	public Item2.ItemStack<?>[] slots = new Item2.ItemStack[5];
+	public Item.ItemStack<?>[] slots = new Item.ItemStack[5];
 	public Button[] slotButtons = new Button[5];
 
 	public double selectedTimer = 0;
@@ -43,12 +43,12 @@ public class ItemBar
 
 	public Player player;
 
-	protected ItemEmpty2.ItemStackEmpty defaultItemEmpty = new ItemEmpty2.ItemStackEmpty();
+	protected ItemEmpty.ItemStackEmpty defaultItemEmpty = new ItemEmpty.ItemStackEmpty();
 
 	public ItemBar(Player p)
 	{
 		for (int i = 0; i < slots.length; i++)
-			slots[i] = new ItemEmpty2.ItemStackEmpty();
+			slots[i] = new ItemEmpty.ItemStackEmpty();
 
 		this.player = p;
 
@@ -59,11 +59,11 @@ public class ItemBar
 		}
 	}
 
-	public boolean addItem(Item2.ItemStack<?> item)
+	public boolean addItem(Item.ItemStack<?> item)
 	{
-		Item2.ItemStack<?> i = item.getCopy();
+		Item.ItemStack<?> i = item.getCopy();
 		int emptyAmount = 0;
-		for (Item2.ItemStack<?> slot : this.slots)
+		for (Item.ItemStack<?> slot : this.slots)
 		{
 			if (slot.item.name.equals(i.item.name) || slot.isEmpty)
 				emptyAmount += i.maxStackSize - slot.stackSize;
@@ -151,7 +151,7 @@ public class ItemBar
 		if (slots[selected].destroy)
 		{
 			destroy = true;
-			slots[selected] = new ItemEmpty2.ItemStackEmpty();
+			slots[selected] = new ItemEmpty.ItemStackEmpty();
 			this.lastItemSwitch = this.age;
 		}
 
@@ -175,7 +175,7 @@ public class ItemBar
 		return true;
 	}
 
-	public Item2.ItemStack<?> getSelectedItem(boolean rightClick)
+	public Item.ItemStack<?> getSelectedItem(boolean rightClick)
 	{
 		if (selected == -1)
 			return null;
@@ -287,7 +287,7 @@ public class ItemBar
 
 			if (slots[i + 2] != null)
 			{
-				Item2.ItemStack<?> item = slots[i + 2];
+				Item.ItemStack<?> item = slots[i + 2];
 				if (item.stackSize > 1)
 				{
 					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.player.hotbar.percentHidden) * 2.55);
@@ -366,7 +366,7 @@ public class ItemBar
 	{
 		if (this.age - lastItemSwitch < 200)
 		{
-			Item2.ItemStack<?> i = defaultItemEmpty;
+			Item.ItemStack<?> i = defaultItemEmpty;
 			if (selected >= 0)
 				i = this.slots[this.selected];
 

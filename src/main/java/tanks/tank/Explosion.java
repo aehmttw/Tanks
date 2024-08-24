@@ -5,29 +5,45 @@ import tanks.bullet.Bullet;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.Item2;
+import tanks.gui.screen.*;
+import tanks.item.Item;
+import tanks.item.ItemMine;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
+import tanks.tankson.ICopyable;
+import tanks.tankson.ITanksONEditable;
+import tanks.tankson.Property;
+import tanks.tankson.TanksONable;
 
-public class Explosion extends Movable
+@TanksONable("explosion")
+public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable
 {
+    @Property(id = "damage", name = "Damage")
     public double damage = 2;
+
+    @Property(id = "destroys_obstacles", name = "Destroys blocks")
     public boolean destroysObstacles = true;
+
+    @Property(id = "destroys_bullets", name = "Destroys bullets")
     public boolean destroysBullets = true;
 
-    public double radius = Game.tile_size * 2.5;
-    public Tank tank;
-    public Item2.ItemStack<?> item;
+    @Property(id = "damage_radius", name = "Damage radius")
+    public double radius = Mine.mine_radius;
 
-    public double knockbackRadius = 0;
+    public Tank tank;
+    public Item.ItemStack<?> item;
+
+    @Property(id = "knockback_radius", name = "Knockback radius")
+    public double knockbackRadius = this.radius * 2;
+
+    @Property(id = "bullet_knockback", name = "Bullet knockback")
     public double bulletKnockback = 0;
+
+    @Property(id = "tank_knockback", name = "Tank knockback")
     public double tankKnockback = 0;
 
-    public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item2.ItemStack<?> item)
+    public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item.ItemStack<?> item)
     {
         super(x, y);
 
@@ -45,13 +61,17 @@ public class Explosion extends Movable
         this(x, y, radius, damage, destroysObstacles, tank, tank.mineItem);
     }
 
+    public Explosion(double x, double y, Tank tank, Item.ItemStack<?> item)
+    {
+        super(x, y);
+        this.tank = tank;
+        this.item = item;
+    }
+
     public Explosion(Mine m)
     {
-        this(m.posX, m.posY, m.radius, m.damage, m.destroysObstacles, m.tank, m.item);
-        this.knockbackRadius = m.knockbackRadius;
-        this.bulletKnockback = m.bulletKnockback;
-        this.tankKnockback = m.tankKnockback;
-        this.destroysBullets = m.destroysBullets;
+        this(m.posX, m.posY, m.tank, m.item);
+        m.explosion.clonePropertiesTo(this);
     }
 
     public Explosion()
@@ -162,7 +182,7 @@ public class Explosion extends Movable
                                     }
                                 }
 
-                                if (this.tank.equals(Game.playerTank))
+                                if (this.tank == Game.playerTank)
                                 {
                                     if (Game.currentLevel instanceof Minigame && (t instanceof TankPlayer || t instanceof TankPlayerRemote))
                                         Game.player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
@@ -217,11 +237,25 @@ public class Explosion extends Movable
         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
         e.radius = Math.max(this.radius, 0);
         Game.effects.add(e);
+
+        if (this.tankKnockback > 0 || this.bulletKnockback > 0)
+        {
+            Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
+            e1.radius = Math.max(this.knockbackRadius, 0);
+            e1.colB = 255;
+            Game.effects.add(e1);
+        }
     }
 
     @Override
     public void draw()
     {
 
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Explosion";
     }
 }

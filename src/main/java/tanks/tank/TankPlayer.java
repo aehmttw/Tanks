@@ -235,7 +235,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
 		{
-			for (Item2.ItemStack<?> i: h.itemBar.slots)
+			for (Item.ItemStack<?> i: h.itemBar.slots)
 			{
 				if (i != null && !i.isEmpty)
 				{
@@ -251,13 +251,12 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		boolean showRange = false;
 		if (h.enabledItemBar && h.itemBar.selected >= 0)
 		{
-			Item2.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
+			Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
 
-			//TODO
-//			if (i.item instanceof ItemBullet2)
-//				showRange = ((ItemBullet) i).getRange() >= 0;
-//			else if (i instanceof ItemRemote)
-//				showRange = ((ItemRemote) i).range >= 0;
+			if (i.item instanceof ItemBullet)
+				showRange = ((ItemBullet) i.item).bullet.range > 0;
+			else if (i.item instanceof ItemRemote)
+				showRange = ((ItemRemote) i.item).range > 0;
 		}
 
 		TankPlayer.shootStickHidden = showRange;
@@ -386,23 +385,24 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 			if (h.enabledItemBar && h.itemBar.selected >= 0)
 			{
-				// TODO
-//				Item i = h.itemBar.slots[h.itemBar.selected];
-//				if (i instanceof ItemBullet)
-//				{
-//					r.bounces = ((ItemBullet) i).bounces;
-//					range = ((ItemBullet) i).getRange();
-//
-//					if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
-//						r.bounces = 0;
-//				}
-//				else if (i instanceof ItemRemote)
-//				{
-//					if (((ItemRemote)i).bounces >= 0)
-//						r.bounces = ((ItemRemote)i).bounces;
-//
-//					range = ((ItemRemote) i).range;
-//				}
+				Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
+				if (i instanceof ItemBullet.ItemStackBullet)
+				{
+					Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
+					r.bounces = b.bounces;
+					range = b.range;
+
+					if (range > 0)
+						range *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				}
+				else if (i instanceof ItemRemote.ItemStackRemote)
+				{
+					ItemRemote ir = (ItemRemote) i.item;
+					if (ir.bounces >= 0)
+						r.bounces = ir.bounces;
+
+					range = ir.range * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				}
 			}
 
 			r.vX /= 2;
@@ -420,9 +420,9 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		super.update();
 	}
 
-	public Item2.ItemStack<?> getItem(boolean rightClick)
+	public Item.ItemStack<?> getItem(boolean rightClick)
 	{
-		Item2.ItemStack<?> i;
+		Item.ItemStack<?> i;
 
 		if (rightClick)
 			i = this.mineItem;
@@ -431,7 +431,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		if (Game.player.hotbar.enabledItemBar)
 		{
-			Item2.ItemStack<?> i2 = Game.player.hotbar.itemBar.getSelectedItem(rightClick);
+			Item.ItemStack<?> i2 = Game.player.hotbar.itemBar.getSelectedItem(rightClick);
 			if (i2 != null)
 				i = i2;
 		}
@@ -472,13 +472,14 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		if (speed <= 0)
 			speed = Double.MIN_NORMAL;
 
-		if (b.itemSound != null)
+		if (b.shotSound != null)
 		{
-			Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
+			Drawing.drawing.playGlobalSound(b.shotSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
 		}
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = speed;
+		b.range *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		this.recoilSpeed = this.getSpeed();
@@ -584,7 +585,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
 		{
-			for (Item2.ItemStack<?> i: h.itemBar.slots)
+			for (Item.ItemStack<?> i: h.itemBar.slots)
 			{
 				if (i != null && !i.isEmpty)
 				{

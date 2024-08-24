@@ -15,11 +15,10 @@ import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item2;
-import tanks.item.ItemBullet2;
-import tanks.item.ItemMine2;
-import tanks.item.ItemShield2;
-import tanks.item.legacy.ItemBullet;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
+import tanks.item.ItemShield;
 import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;
 import tanks.network.Client;
@@ -431,7 +430,7 @@ public class Game
 		new RegistryBullet.BulletEntry(Game.registryBullet, bullet, name, icon);
 	}
 
-	public static void registerItem(Class<? extends Item2> item, String name, String image)
+	public static void registerItem(Class<? extends Item> item, String name, String image)
 	{
 		new RegistryItem.ItemEntry(Game.registryItem, item, name, image);
 	}
@@ -480,8 +479,7 @@ public class Game
 		steamNetworkHandler.load();
 
 		registerEvents();
-
-		ItemBullet.initializeMaps();
+		DefaultBullets.initialize();
 
 		registerObstacle(Obstacle.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
@@ -495,9 +493,10 @@ public class Game
 		registerObstacle(ObstacleMud.class, "mud");
 		registerObstacle(ObstacleIce.class, "ice");
 		registerObstacle(ObstacleSnow.class, "snow");
-		//registerObstacle(ObstacleLava.class, "lava");
+		registerObstacle(ObstacleLava.class, "lava");
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
+		registerObstacle(ObstacleBeatBlock.class, "beat");
 
 		registerTank(TankDummy.class, "dummy", 0);
 		registerTank(TankBrown.class, "brown", 1);
@@ -527,14 +526,14 @@ public class Game
 		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
-		registerBullet(Bullet.class, Bullet.bullet_name, "bullet_normal.png");
-		registerBullet(BulletInstant.class, BulletInstant.bullet_name, "bullet_laser.png");
-		registerBullet(BulletGas.class, BulletGas.bullet_name, "bullet_flame.png");
-		registerBullet(BulletArc.class, BulletArc.bullet_name, "bullet_arc.png");
+		registerBullet(Bullet.class, Bullet.bullet_class_name, "bullet_normal.png");
+		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, "bullet_laser.png");
+		registerBullet(BulletGas.class, BulletGas.bullet_class_name, "bullet_flame.png");
+		registerBullet(BulletArc.class, BulletArc.bullet_class_name, "bullet_arc.png");
 
-		registerItem(ItemBullet2.class, ItemBullet2.item_class_name, "bullet_normal.png");
-		registerItem(ItemMine2.class, ItemMine2.item_class_name, "mine.png");
-		registerItem(ItemShield2.class, ItemShield2.item_class_name, "shield.png");
+		registerItem(ItemBullet.class, ItemBullet.item_class_name, "bullet_normal.png");
+		registerItem(ItemMine.class, ItemMine.item_class_name, "mine.png");
+		registerItem(ItemShield.class, ItemShield.item_class_name, "shield.png");
 
 		registerMinigame(Arcade.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 
@@ -906,6 +905,11 @@ public class Game
 
 	public static String timeInterval(long time1, long time2)
 	{
+		return timeInterval(time1, time2, false);
+	}
+
+	public static String timeInterval(long time1, long time2, boolean seconds)
+	{
 		long secs = (time2 - time1) / 1000;
 		long mins = secs / 60;
 		long hours = mins / 60;
@@ -919,6 +923,8 @@ public class Game
 			return hours % 24 + "h " + mins % 60 + "m";
 		else if (mins > 0)
 			return mins % 60 + "m";
+		else if (seconds)
+			return secs + "s";
 		else
 			return "less than 1m";
 	}

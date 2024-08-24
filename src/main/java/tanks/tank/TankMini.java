@@ -24,7 +24,6 @@ public class TankMini extends TankAIControlled
 		this.bullet.effect = Bullet.BulletEffect.trail;
 		this.bullet.damage = 0.25;
 		this.bullet.size /= 2;
-		this.bullet.name = "Mini bullet";
 		this.enableLookingAtTargetEnemy = true;
 		this.turnChance = 0.001;
 		this.enableBulletAvoidance = false;

@@ -247,13 +247,25 @@ public class SoundPlayer extends BaseSoundPlayer
 
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcef(sourcePointer, AL_LOOPING, loop);
-        alSourcef(sourcePointer, AL_GAIN, 0f);
         alSourcef(sourcePointer, AL_PITCH, musicSpeed);
         alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET));
         this.syncedTracks.put(path, sourcePointer);
-        this.syncedTrackCurrentVolumes.put(path, 0f);
-        this.syncedTrackMaxVolumes.put(path, volume);
-        this.syncedTrackFadeRate.put(path, volume / fadeTime * 10);
+
+        if (fadeTime <= 0)
+        {
+            this.syncedTrackCurrentVolumes.put(path, volume);
+            this.syncedTrackMaxVolumes.put(path, volume);
+            this.syncedTrackFadeRate.put(path, 0f);
+            alSourcef(sourcePointer, AL_GAIN, volume);
+        }
+        else
+        {
+            this.syncedTrackCurrentVolumes.put(path, 0f);
+            this.syncedTrackMaxVolumes.put(path, volume);
+            this.syncedTrackFadeRate.put(path, volume / fadeTime * 10);
+            alSourcef(sourcePointer, AL_GAIN, 0f);
+        }
+
         playMusicSource(sourcePointer);
 
         musicSources.add(sourcePointer);
@@ -301,6 +313,22 @@ public class SoundPlayer extends BaseSoundPlayer
     }
 
     @Override
+    public float getMusicPos()
+    {
+        return alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET);
+    }
+
+    @Override
+    public void setMusicPos(float pos)
+    {
+        alSourcef(this.currentMusic, EXTOffset.AL_SEC_OFFSET, pos);
+        alSourcef(this.prevMusic, EXTOffset.AL_SEC_OFFSET, pos);
+
+        for (int i: this.syncedTracks.values())
+            alSourcef(i, EXTOffset.AL_SEC_OFFSET, pos);
+    }
+
+    @Override
     public void stopMusic()
     {
         stopMusicSource(currentMusic);
@@ -319,12 +347,6 @@ public class SoundPlayer extends BaseSoundPlayer
         this.syncedTrackMaxVolumes.clear();
         this.syncedTrackCurrentVolumes.clear();
         this.syncedTrackFadeRate.clear();
-    }
-
-    @Override
-    public void registerCombinedMusic(String path, String id)
-    {
-
     }
 
     protected void createSound(String path)

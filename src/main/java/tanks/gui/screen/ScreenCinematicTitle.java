@@ -28,9 +28,9 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         Game.movables.add(logo);
         ScreenGame.finished = false;
 
-        mine = new Mine(this.centerX + 200, this.centerY, this.logo, this.logo.mine);
+        mine = new Mine(this.centerX + 200, this.centerY, this.logo, this.logo.mineItem);
         mine.size *= 2;
-        mine.radius *= 2;
+        mine.explosion.radius *= 2;
         mine.timer = 100000;
     }
 

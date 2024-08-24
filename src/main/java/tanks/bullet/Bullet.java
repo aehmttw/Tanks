@@ -1,89 +1,84 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.bullet.legacy.BulletFlame;
-import tanks.bullet.legacy2.BulletHealing;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.ItemBullet2;
-import tanks.item.legacy.ItemBullet;
+import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 @TanksONable("bullet")
-public class Bullet extends Movable implements IDrawableLightSource
+public class Bullet extends Movable implements IDrawableLightSource, ICopyable<Bullet>, ITanksONEditable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
 	public static HashMap<Integer, Bullet> idMap = new HashMap<>();
 
-	public static String bullet_name = "bullet";
+	public static String bullet_class_name = "bullet";
 
 	public int networkID;
 
-	public enum BulletEffect {none, fire, darkFire, fireTrail, ice, trail, ember}
+	public enum BulletEffect {none, trail, fire, dark_fire, fire_trail, ice, ember}
 
 	public static double bullet_size = 10;
-//
-//	@BulletProperty(id = "name", name = "Bullet name", category = BulletProperty.Category.appearance)
-//	public String name = "basic_bullet";
+
+	public String typeName = "bullet";
 
 	public boolean playPopSound = true;
 	public boolean playBounceSound = true;
 	public double age = 0;
 
-	@BulletProperty(id = "size", name = "Size", category = BulletProperty.Category.appearance)
+	@Property(id = "size", name = "Size", category = BulletPropertyCategory.appearance)
 	public double size = bullet_size;
 
 	public boolean canBeCanceled = true;
 	public boolean moveOut = true;
 
-	@BulletProperty(id = "bounces", name = "Bounces", category = BulletProperty.Category.travel)
-	public int bounces;
+	@Property(id = "bounces", name = "Bounces", category = BulletPropertyCategory.travel)
+	public int bounces = 1;
 	public int bouncyBounces = 100;
 
 	public double ageFrac = 0;
 	public double quarterAgeFrac = 0;
 	public double halfAgeFrac = 0;
 
-	@BulletProperty(id = "override_color", name = "Custom primary color", category = BulletProperty.Category.appearance)
+	@Property(id = "override_color", name = "Custom primary color")
 	public boolean overrideBaseColor;
-	@BulletProperty(id = "color_r", name = "Primary red", category = BulletProperty.Category.appearance)
+	@Property(id = "color_r", name = "Primary red")
 	public double baseColorR;
-	@BulletProperty(id = "color_g", name = "Primary green", category = BulletProperty.Category.appearance)
+	@Property(id = "color_g", name = "Primary green")
 	public double baseColorG;
-	@BulletProperty(id = "color_b", name = "Primary blue", category = BulletProperty.Category.appearance)
+	@Property(id = "color_b", name = "Primary blue")
 	public double baseColorB;
 
-	@BulletProperty(id = "override_color2", name = "Custom secondary color", category = BulletProperty.Category.appearance)
+	@Property(id = "override_color2", name = "Custom secondary color")
 	public boolean overrideOutlineColor;
-	@BulletProperty(id = "color_r2", name = "Secondary red", category = BulletProperty.Category.appearance)
+	@Property(id = "color_r2", name = "Secondary red")
 	public double outlineColorR;
-	@BulletProperty(id = "color_g2", name = "Secondary green", category = BulletProperty.Category.appearance)
+	@Property(id = "color_g2", name = "Secondary green")
 	public double outlineColorG;
-	@BulletProperty(id = "color_b2", name = "Secondary blue", category = BulletProperty.Category.appearance)
+	@Property(id = "color_b2", name = "Secondary blue")
 	public double outlineColorB;
 
-	@BulletProperty(id = "luminance", name = "Luminance", category = BulletProperty.Category.appearance)
+	@Property(id = "luminance", name = "Luminance", category = BulletPropertyCategory.appearanceGlow)
 	public double luminance = 0.5;
 
-	//@BulletProperty(id = "trails", name = "Trail", category = BulletProperty.Category.appearance)
+	//@Property(id = "trails", name = "Trail", category = BulletPropertyCategory.appearance)
 	public ArrayList<Trail> trailEffects = new ArrayList<>();
 
-	@BulletProperty(category = BulletProperty.Category.appearance, id = "glow_intensity", name = "Aura intensity")
+	@Property(id = "glow_intensity", name = "Glow intensity", category = BulletPropertyCategory.appearanceGlow)
 	public double glowIntensity = 1;
-	@BulletProperty(category = BulletProperty.Category.appearance, id = "glow_size", name = "Aura size")
+	@Property(id = "glow_size", name = "Glow size", category = BulletPropertyCategory.appearanceGlow)
 	public double glowSize = 4;
 
 	public double iPosZ;
@@ -94,38 +89,32 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public Tank tank;
 
-	@BulletProperty(id = "damage", name = "Damage", category = BulletProperty.Category.impact)
+	@Property(id = "damage", name = "Damage", category = BulletPropertyCategory.impact)
 	public double damage = 1;
 
-	@BulletProperty(id = "max_extra_health", name = "Max extra health", category = BulletProperty.Category.impact)
+	@Property(id = "max_extra_health", name = "Max extra health", category = BulletPropertyCategory.impact)
 	public double maxExtraHealth = 1;
 
-	@BulletProperty(id = "knockback_tank", name = "Tank knockback", category = BulletProperty.Category.impact)
+	@Property(id = "knockback_tank", name = "Tank knockback", category = BulletPropertyCategory.impact)
 	public double tankHitKnockback = 0;
 
-	@BulletProperty(id = "knockback_bullet", name = "Bullet knockback", category = BulletProperty.Category.impact)
+	@Property(id = "knockback_bullet", name = "Bullet knockback", category = BulletPropertyCategory.impact)
 	public double bulletHitKnockback = 0;
 
-	@BulletProperty(id = "explosion", name = "Explosion", category = BulletProperty.Category.impact)
+	@Property(id = "explosion", name = "Explosion", category = BulletPropertyCategory.impact, nullable = true)
 	public Explosion hitExplosion = null;
 
-	@BulletProperty(id = "stun", name = "Stun duration", category = BulletProperty.Category.impact)
+	@Property(id = "stun", name = "Stun duration", category = BulletPropertyCategory.impact)
 	public double hitStun = 0;
 
-	@BulletProperty(id = "freezing", name = "Freezing", category = BulletProperty.Category.impact)
+	@Property(id = "freezing", name = "Freezing", category = BulletPropertyCategory.impact)
 	public boolean freezing = false;
 
-	@BulletProperty(id = "boosting", name = "Boosting", category = BulletProperty.Category.impact)
+	@Property(id = "boosting", name = "Boosting", category = BulletPropertyCategory.impact)
 	public boolean boosting = false;
 
-	@BulletProperty(id = "area_effect", name = "Area effect", category = BulletProperty.Category.impact)
+	//@Property(id = "area_effect", name = "Area effect", category = BulletPropertyCategory.impact)
 	public AreaEffect hitAreaEffect = null;
-
-	@BulletProperty(id = "rebounds", name = "Max rebounds", category = BulletProperty.Category.travel)
-	public int rebounds = 0;
-
-	@BulletProperty(id = "rebound_delay", name = "Rebound delay", category = BulletProperty.Category.travel)
-	public double reboundDelay = 10;
 
 	protected double delay = 0;
 	protected ArrayList<Movable> previousRebounds = new ArrayList<>();
@@ -134,58 +123,67 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public boolean enableExternalCollisions = true;
 
-	@BulletProperty(id = "collide_obstacles", name = "Obstacle collision", category = BulletProperty.Category.travel)
-	public boolean obstacleCollision = true;
+	@Property(id = "speed", name = "Speed", category = BulletPropertyCategory.travel)
+	public double speed = 25.0 / 8;
 
-	@BulletProperty(id = "collide_bullets", name = "Bullet collision", category = BulletProperty.Category.travel)
+	@Property(id = "range", name = "Range", category = BulletPropertyCategory.travel)
+	public double range = 0;
+
+	@Property(id = "heavy", name = "Heavy", category = BulletPropertyCategory.travel)
+	public boolean heavy = false;
+
+	@Property(id = "collide_obstacles", name = "Obstacle collision", category = BulletPropertyCategory.travel)
+	public boolean obstacleCollision = true;
+	public boolean edgeCollision = true;
+
+	@Property(id = "collide_bullets", name = "Bullet collision", category = BulletPropertyCategory.travel)
 	public boolean bulletCollision = true;
 
 	public boolean destroyBullets = true;
 
-	@BulletProperty(id = "bush_burn", name = "Burns shrubbery", category = BulletProperty.Category.travel)
-	public boolean burnsBushes = false;
+	protected double lifespan;
 
-	@BulletProperty(id = "bush_lower", name = "Lowers shrubbery", category = BulletProperty.Category.travel)
-	public boolean lowersBushes = true;
-
-	@BulletProperty(id = "speed", name = "Speed", category = BulletProperty.Category.travel)
-	public double speed = 0;
-
-	@BulletProperty(id = "lifespan", name = "Lifespan", category = BulletProperty.Category.travel)
-	public double lifespan = 0;
-
-	@BulletProperty(id = "effect", name = "Effect", category = BulletProperty.Category.appearance)
+	@Property(id = "effect", name = "Effect", category = BulletPropertyCategory.appearance)
 	public BulletEffect effect = BulletEffect.trail;
 
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
 
-	@BulletProperty(id = "heavy", name = "Heavy", category = BulletProperty.Category.travel)
-	public boolean heavy = false;
+	@Property(id = "bush_burn", name = "Burns shrubbery", category = BulletPropertyCategory.travel)
+	public boolean burnsBushes = false;
 
-	@BulletProperty(id = "homing_sharpness", name = "Homing strength", category = BulletProperty.Category.travel)
+	@Property(id = "bush_lower", name = "Lowers shrubbery", category = BulletPropertyCategory.travel)
+	public boolean lowersBushes = true;
+
+	@Property(id = "homing_sharpness", name = "Homing strength", category = BulletPropertyCategory.travel)
 	public double homingSharpness = 0;
+
+	@Property(id = "rebounds", name = "Max rebounds", category = BulletPropertyCategory.travel)
+	public int rebounds = 0;
+
+	@Property(id = "rebound_delay", name = "Rebound delay", category = BulletPropertyCategory.travel)
+	public double reboundDelay = 10;
 
 	public Tank homingTarget = null;
 	public Tank homingPrevTarget = null;
 	public double homingTargetTime = 0;
 
-	public ItemBullet2.ItemStackBullet item;
+	public ItemBullet.ItemStackBullet item;
 
-	@BulletProperty(id = "max_live_bullets", name = "Max live bullets", category = BulletProperty.Category.firing)
+	@Property(id = "max_live_bullets", name = "Max live bullets", category = BulletPropertyCategory.firing)
 	public int maxLiveBullets = 5;
 
-	@BulletProperty(id = "recoil", name = "Recoil", category = BulletProperty.Category.firing)
+	@Property(id = "recoil", name = "Recoil", category = BulletPropertyCategory.firing)
 	public double recoil = 1.0;
 
-	@BulletProperty(id = "accuracy_spread_angle", name = "Accuracy spread angle", category = BulletProperty.Category.firing)
-	public double accuracySpread = 0;
-
-	@BulletProperty(id = "shot_count", name = "Shot count", category = BulletProperty.Category.firing)
+	@Property(id = "shot_count", name = "Shot count", category = BulletPropertyCategory.firing)
 	public int shotCount = 1;
 
-	@BulletProperty(id = "multishot_spread_angle", name = "Multishot spread angle", category = BulletProperty.Category.firing)
+	@Property(id = "multishot_spread_angle", name = "Multishot spread angle", category = BulletPropertyCategory.firing)
 	public double multishotSpread = 0;
+
+	@Property(id = "accuracy_spread_angle", name = "Accuracy spread angle", category = BulletPropertyCategory.firing)
+	public double accuracySpread = 0;
 
 	public boolean canMultiDamage = false;
 
@@ -206,9 +204,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 	public ArrayList<Movable> inside = new ArrayList<>();
 	public ArrayList<Movable> insideOld = new ArrayList<>();
 
-	@BulletProperty(id = "sound", name = "Shot sound", category = BulletProperty.Category.firing)
-	public String itemSound = "shoot.ogg";
-	@BulletProperty(id = "sound_pitch_variation", name = "Sound pitch variation", category = BulletProperty.Category.firing)
+	@Property(id = "sound", name = "Shot sound", category = BulletPropertyCategory.firing)
+	public String shotSound = "shoot.ogg";
+	@Property(id = "sound_pitch_variation", name = "Sound pitch variation", category = BulletPropertyCategory.firing)
 	public double pitchVariation = 0;
 
 	protected ArrayList<Trail>[] trails;
@@ -231,41 +229,26 @@ public class Bullet extends Movable implements IDrawableLightSource
 	{
 		super(0, 0);
 		this.isTemplate = true;
+		this.typeName = bullet_class_name;
 	}
 
-	public Bullet(double x, double y, int bounces, Tank t, ItemBullet2.ItemStackBullet item)
-	{
-		this(x, y, bounces, t, true, item);
-	}
-
-	public Bullet(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet item)
+	public Bullet(double x, double y, Tank t, boolean affectsMaxLiveBullets, ItemBullet.ItemStackBullet item)
 	{
 		super(x, y);
+		this.typeName = bullet_class_name;
 
 		this.isTemplate = false;
 
 		this.item = item;
 		this.vX = 0;
 		this.vY = 0;
-		this.baseColorR = t.colorR;
-		this.baseColorG = t.colorG;
-		this.baseColorB = t.colorB;
 
-		double[] oc = Team.getObjectColor(t.secondaryColorR, t.secondaryColorG, t.secondaryColorB, t);
-		this.outlineColorR = oc[0];
-		this.outlineColorG = oc[1];
-		this.outlineColorB = oc[2];
-
-		this.bounces = bounces;
 		this.tank = t;
 		this.team = t.team;
 
 		this.iPosZ = this.tank.size / 2 + this.tank.turretSize / 2;
 
 		this.isRemote = t.isRemote;
-
-		//if (!t.isRemote && fireEvent)
-		//	Game.eventsOut.add(new EventShootBullet(this));
 
 		this.affectsMaxLiveBullets = affectsMaxLiveBullets;
 
@@ -292,71 +275,42 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 		this.drawLevel = 8;
 
-		for (IFixedMenu m : ModAPI.menuGroup)
-		{
-			if (m instanceof Scoreboard)
-			{
-				if (((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired) ||
-						(((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired_no_multiple_fire)
-								&& !(this instanceof BulletHealing || this instanceof BulletFlame)))
-				{
-					if (((Scoreboard) m).players.isEmpty())
-						((Scoreboard) m).addTeamScore(this.team, 1);
-					else if (this.tank instanceof TankPlayer)
-						((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-					else if (this.tank instanceof TankPlayerRemote)
-						((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-				}
-			}
-		}
+//		for (IFixedMenu m : ModAPI.menuGroup)
+//		{
+//			if (m instanceof Scoreboard)
+//			{
+//				if (((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired) ||
+//						(((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired_no_multiple_fire)
+//								&& !(this instanceof BulletHealing || this instanceof BulletFlame)))
+//				{
+//					if (((Scoreboard) m).players.isEmpty())
+//						((Scoreboard) m).addTeamScore(this.team, 1);
+//					else if (this.tank instanceof TankPlayer)
+//						((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
+//					else if (this.tank instanceof TankPlayerRemote)
+//						((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+//				}
+//			}
+//		}
 	}
 
-	/**
-	 * Clone this bullet's properties to another bullet
-	 * @param b the another bullet
-	 * @return the same bullet passed to it, for convenience
-	 */
-	public Bullet cloneProperties(Bullet b)
+	public void setColorFromTank()
 	{
-		try
+		if (!this.overrideBaseColor)
 		{
-			for (Field f : b.getClass().getFields())
-			{
-				BulletProperty p = f.getAnnotation(BulletProperty.class);
-				if (p != null)
-				{
-					f.set(b, f.get(this));
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
+			this.baseColorR = this.tank.colorR;
+			this.baseColorG = this.tank.colorG;
+			this.baseColorB = this.tank.colorB;
 		}
 
-		return b;
+		if (!this.overrideOutlineColor)
+		{
+			double[] oc = Team.getObjectColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, this.tank);
+			this.outlineColorR = oc[0];
+			this.outlineColorG = oc[1];
+			this.outlineColorB = oc[2];
+		}
 	}
-
-	/**
-	 * Gets a template copy of a bullet, not to be added to the game field but to be used as a template
-	 * @return a template bullet copy
-	 */
-	public Bullet getCopy()
-	{
-		try
-		{
-			Bullet b = this.getClass().getConstructor().newInstance();
-			this.cloneProperties(b);
-			return b;
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
-
-		return null;
-	}
-
 
 	public void moveOut(double amount)
 	{
@@ -378,9 +332,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 	{
 		try
 		{
-			Bullet b = this.getClass().getConstructor(double.class, double.class, int.class, Tank.class, boolean.class, ItemBullet.class)
-					.newInstance(m.posX, m.posY, 0, this.tank, false, this.item);
-			this.cloneProperties(b);
+			Bullet b = this.getClass().getConstructor(double.class, double.class, Tank.class, boolean.class, ItemBullet.ItemStackBullet.class)
+					.newInstance(m.posX, m.posY, this.tank, false, this.item);
+			this.clonePropertiesTo(b);
 			b.iPosZ = this.posZ;
 			b.posZ = this.posZ;
 			if (b instanceof BulletArc || b instanceof BulletAirStrike)
@@ -857,7 +811,10 @@ public class Bullet extends Movable implements IDrawableLightSource
 					}
 				}
 			}
+		}
 
+		if (this.edgeCollision)
+		{
 			if (this.posX + this.size / 2 > Drawing.drawing.sizeX)
 			{
 				collided = true;
@@ -1156,19 +1113,19 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 	public void initTrails()
 	{
-		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.darkFire)
+		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.dark_fire)
 			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0,1, 1, 15, 0, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
 
-		if (this.effect == BulletEffect.fireTrail)
+		if (this.effect == BulletEffect.fire_trail)
 		{
 			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 7,2, 2, 50, 0, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
 			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 3,2, 2, 4, 0, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
 		}
 
-		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
+		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fire_trail)
 			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0, 5, 1, 5, 0, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
 
-		if (this.effect == BulletEffect.darkFire)
+		if (this.effect == BulletEffect.dark_fire)
 			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0, 5, 1, 5, 0,  64, 0, 128, 255, 0, 0, 0, 0, false, 1, true, true));
 
 		this.trails = (ArrayList<Trail>[])(new ArrayList[this.trailEffects.size()]);
@@ -1259,6 +1216,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 			this.collisionX = this.posX;
 			this.collisionY = this.posY;
 			this.dealsDamage = this.damage > 0;
+			this.lifespan = this.range / this.speed;
 
 			this.addTrail();
 		}
@@ -1373,7 +1331,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 						Game.effects.add(e);
 					}
-					else if (Game.fancyBulletTrails && this.effect.equals(BulletEffect.darkFire))
+					else if (Game.fancyBulletTrails && this.effect.equals(BulletEffect.dark_fire))
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 						double var = 50;
@@ -1391,7 +1349,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 						Game.effects.add(e);
 					}
-					else if (Game.fancyBulletTrails && (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fireTrail)))
+					else if (Game.fancyBulletTrails && (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fire_trail)))
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 						double var = 50;
@@ -1445,8 +1403,13 @@ public class Bullet extends Movable implements IDrawableLightSource
 
 		this.age += Panel.frameFrequency;
 
-		if (this.age > lifespan && this.lifespan > 0)
-			this.destroy = true;
+		if (this.age > lifespan && this.lifespan > 0 && !this.destroy)
+		{
+			this.pop();
+			this.collisionX = this.posX;
+			this.collisionY = this.posY;
+			this.collided();
+		}
 	}
 
 	public void addTrail()
@@ -1587,12 +1550,12 @@ public class Bullet extends Movable implements IDrawableLightSource
 			double sizeMul = 1;
 			boolean shade = false;
 
-			if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fireTrail)
+			if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fire_trail)
 			{
 				Drawing.drawing.setColor(255, 180, 0, 200, 1);
 				sizeMul = 4;
 			}
-			else if (this.effect == BulletEffect.darkFire)
+			else if (this.effect == BulletEffect.dark_fire)
 			{
 				Drawing.drawing.setColor(0, 0, 0, 127);
 				sizeMul = 1.5;
@@ -1808,12 +1771,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 		return this.lightInfo;
 	}
 
-	public double getLifespan()
+	@Override
+	public String getName()
 	{
-		if (this.lifespan <= 0)
-			return -1;
-		else
-			return this.lifespan;
+		return Game.formatString(this.typeName);
 	}
-
 }

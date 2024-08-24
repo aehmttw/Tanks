@@ -10,6 +10,7 @@ import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventPlaySound;
 import tanks.obstacle.Obstacle;
+import tanks.rendering.StaticTerrainRenderer;
 import tanks.rendering.TerrainRenderer;
 import tanks.rendering.TrackRenderer;
 import tanks.tank.TankPlayer;
@@ -69,8 +70,6 @@ public class Drawing
 
 	public TerrainRenderer terrainRenderer;
 	public TrackRenderer trackRenderer;
-
-	public static ModelPart rotatedRect;
 
 	public HashMap<String, Model> modelsByDir = new HashMap<>();
 
@@ -622,6 +621,11 @@ public class Drawing
 	}
 
 	public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double angle)
+	{
+		drawModel(m, x, y, z, width, height, depth, angle, true);
+	}
+
+	public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double angle, boolean depthTest)
 	{
 		double drawX = gameToAbsoluteX(x, 0);
 		double drawY = gameToAbsoluteY(y, 0);

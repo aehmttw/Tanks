@@ -1,17 +1,16 @@
 package tanks.tank;
 
 import basewindow.InputPoint;
+import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.bullet.legacy.BulletElectric;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
-import tanks.item.Item2;
-import tanks.item.ItemBullet2;
-import tanks.item.legacy.Item;
-import tanks.item.legacy.ItemBullet;
-import tanks.item.legacy.ItemRemote;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemRemote;
 import tanks.network.event.EventTankControllerUpdateC;
 
 import java.util.UUID;
@@ -186,12 +185,12 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
         Hotbar h = Game.player.hotbar;
         if (h.enabledItemBar && h.itemBar.selected >= 0)
         {
-            // TODO
-//            Item2.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
-//            if (i.item instanceof ItemBullet2)
-//                showRange = ((ItemBullet) i).getRange() >= 0;
-//            else if (i.item instanceof ItemRemote)
-//                showRange = ((ItemRemote) i).range >= 0;
+            Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
+
+            if (i.item instanceof ItemBullet)
+                showRange = ((ItemBullet) i.item).bullet.range > 0;
+            else if (i.item instanceof ItemRemote)
+                showRange = ((ItemRemote) i.item).range > 0;
         }
 
         TankPlayer.shootStickHidden = showRange;
@@ -306,23 +305,24 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
 
             if (h.enabledItemBar && h.itemBar.selected >= 0)
             {
-                // TODO
-//                Item i = h.itemBar.slots[h.itemBar.selected];
-//                if (i instanceof ItemBullet)
-//                {
-//                    r.bounces = ((ItemBullet) i).bounces;
-//                    range = ((ItemBullet) i).getRange();
-//
-//                    if (((ItemBullet) i).bulletClass.equals(BulletElectric.class))
-//                        r.bounces = 0;
-//                }
-//                else if (i instanceof ItemRemote)
-//                {
-//                    if (((ItemRemote)i).bounces >= 0)
-//                        r.bounces = ((ItemRemote)i).bounces;
-//
-//                    range = ((ItemRemote) i).range;
-//                }
+                Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
+                if (i instanceof ItemBullet.ItemStackBullet)
+                {
+                    Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
+                    r.bounces = b.bounces;
+                    range = b.range;
+
+                    if (range > 0)
+                        range *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+                }
+                else if (i instanceof ItemRemote.ItemStackRemote)
+                {
+                    ItemRemote ir = (ItemRemote) i.item;
+                    if (ir.bounces >= 0)
+                        r.bounces = ir.bounces;
+
+                    range = ir.range * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+                }
             }
 
             r.vX /= 2;

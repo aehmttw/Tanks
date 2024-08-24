@@ -51,13 +51,14 @@ public class DefaultBullets
         sniper_rocket.speed *= 2;
         sniper_rocket.bounces = 2;
         sniper_rocket.maxLiveBullets = 4;
-        sniper_rocket.effect = Bullet.BulletEffect.fireTrail;
+        sniper_rocket.effect = Bullet.BulletEffect.fire_trail;
+        sniper_rocket.shotSound = "shoot_power.ogg";
 
         void_rocket = new Bullet();
         void_rocket.speed *= 2;
         void_rocket.bounces = 0;
         void_rocket.maxLiveBullets = 5;
-        void_rocket.effect = Bullet.BulletEffect.darkFire;
+        void_rocket.effect = Bullet.BulletEffect.dark_fire;
 
         homing_rocket = new Bullet();
         homing_rocket.speed *= 2;
@@ -107,7 +108,7 @@ public class DefaultBullets
         laser.outlineColorR = 255;
         laser.outlineColorG = 200;
         laser.outlineColorB = 200;
-        laser.itemSound = "laser.ogg";
+        laser.shotSound = "laser.ogg";
 
         zap = new BulletInstant();
         zap.maxLiveBullets = 1;
@@ -123,7 +124,7 @@ public class DefaultBullets
         zap.outlineColorR = 200;
         zap.outlineColorG = 255;
         zap.outlineColorB = 255;
-        zap.itemSound = "laser.ogg";
+        zap.shotSound = "laser.ogg";
 
         healing_ray = new BulletInstant();
         healing_ray.maxLiveBullets = 1;
@@ -138,10 +139,11 @@ public class DefaultBullets
         healing_ray.outlineColorR = 200;
         healing_ray.outlineColorG = 255;
         healing_ray.outlineColorB = 200;
+        healing_ray.shotSound = null;
         
         flamethrower = new BulletGas();
         flamethrower.bounces = 0;
-        flamethrower.damage = 0.1;
+        flamethrower.damage = 0.2;
         flamethrower.maxLiveBullets = 0;
         flamethrower.overrideBaseColor = true;
         flamethrower.overrideOutlineColor = true;
@@ -156,12 +158,12 @@ public class DefaultBullets
         flamethrower.lowersBushes = false;
         flamethrower.burnsBushes = true;
         flamethrower.bulletCollision = false;
-        flamethrower.itemSound = "flame.ogg";
-        flamethrower.lifespan = 100;
-        flamethrower.endSize = flamethrower.size * 10;
-        
+        flamethrower.shotSound = "flame.ogg";
+        flamethrower.range = 312.5;
+        flamethrower.endSize = Bullet.bullet_size * 10;
+
         air = new BulletGas();
-        air.itemSound = "wind.ogg";
+        air.shotSound = "wind.ogg";
         air.pitchVariation = 1.0;
         air.overrideBaseColor = true;
         air.overrideOutlineColor = true;
@@ -180,10 +182,10 @@ public class DefaultBullets
         air.bulletHitKnockback = 0.04;
         air.tankHitKnockback = 0.1;
         air.lowersBushes = false;
-        air.lifespan = 200;
+        air.range = 1250;
         air.endSize = Bullet.bullet_size * 40;
         air.maxLiveBullets = 0;
-        air.speed = 6.25;
+        air.speed *= 2;
         air.accuracySpread = 20;
         air.bounces = 0;
         air.effect = Bullet.BulletEffect.none;
@@ -194,5 +196,7 @@ public class DefaultBullets
         artillery_shell.maxLiveBullets = 5;
         artillery_shell.size = 25;
         artillery_shell.bounces = 0;
+        artillery_shell.lifespan = 1000 / 3.125;
+        artillery_shell.shotSound = "arc.ogg";
     }
 }

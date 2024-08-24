@@ -4,7 +4,8 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.legacy.ItemRemote;
+import tanks.item.Item;
+import tanks.item.ItemRemote;
 import tanks.network.NetworkUtils;
 
 public class EventAddShopItem extends PersonalEvent
@@ -60,9 +61,9 @@ public class EventAddShopItem extends PersonalEvent
 
             ((ScreenGame) Game.screen).shopItemButtons.add(b);
 
-            ItemRemote i = new ItemRemote();
-            i.name = name;
-            i.icon = icon;
+            Item.ShopItem i = new Item.ShopItem(ItemRemote.getRemoteItem());
+            i.itemStack.item.name = name;
+            i.itemStack.item.icon = icon;
 
             ((ScreenGame) Game.screen).shop.add(i);
         }

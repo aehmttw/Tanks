@@ -1,18 +1,17 @@
 package tanks.tankson;
 
+import basewindow.IModel;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletProperty;
-import tanks.item.Item2;
-import tanks.item.ItemProperty;
+import tanks.item.Item;
+import tanks.tank.Explosion;
 import tanks.tank.Mine;
-import tanks.tank.MineProperty;
 import tanks.tank.TankAIControlled;
-import tanks.tank.TankProperty;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Tanks: The Crusades Object Notation
@@ -21,8 +20,15 @@ import java.util.HashMap;
 public class TanksON
 {
     protected static TankAIControlled defaultTank = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
-    protected static Mine defaultMine = new Mine();
-    protected static Bullet defaultBullet = new Bullet();
+    protected static HashMap<Class<?>, Object> defaults = new HashMap<>();
+
+    protected static Object getDefault(Class<?> c) throws InstantiationException, IllegalAccessException
+    {
+        if (!defaults.containsKey(c))
+            defaults.put(c, c.newInstance());
+
+        return defaults.get(c);
+    }
 
     public static Object parseObject(String s)
     {
@@ -68,7 +74,7 @@ public class TanksON
         }
     }
 
-    public static HashMap<String, Object> parseMap(String s, int[] index)
+    public static Object parseMap(String s, int[] index)
     {
         HashMap<String, Object> map = new HashMap<>();
 
@@ -84,7 +90,7 @@ public class TanksON
             if (next == '}')
             {
                 index[0]++;
-                return map;
+                return toTanksONable(map);
             }
             if (next != '"')
                 error("Failed to parse map key", s, index[0]);
@@ -106,12 +112,12 @@ public class TanksON
 
     public static Object toTanksONable(HashMap<String, Object> map)
     {
-        Object o = null;
+        Object o;
 
         try
         {
             if (!map.containsKey("obj_type"))
-                return null;
+                return map;
 
             String name = (String) map.get("obj_type");
 
@@ -137,17 +143,22 @@ public class TanksON
                 }
                 case "item_stack":
                 {
-                    o = ((Item2) map.get("item")).getStack(null);
+                    o = ((Item) map.get("item")).getStack(null);
                     break;
                 }
                 case "shop_item":
                 {
-                    o = new Item2.ShopItem();
+                    o = new Item.ShopItem();
                     break;
                 }
                 case "crusade_shop_item":
                 {
-                    o = new Item2.CrusadeShopItem();
+                    o = new Item.CrusadeShopItem();
+                    break;
+                }
+                case "explosion":
+                {
+                    o = new Explosion();
                     break;
                 }
                 default:
@@ -156,30 +167,25 @@ public class TanksON
 
             for (Field f: o.getClass().getFields())
             {
-                String id = "";
+                String id = null;
 
-                ID i = f.getAnnotation(ID.class);
+                Property i = f.getAnnotation(Property.class);
                 if (i != null)
-                    id = i.value();
+                    id = i.id();
 
-                TankProperty tp = f.getAnnotation(TankProperty.class);
-                if (tp != null && f.get(o) != f.get(defaultTank))
-                    id = tp.id();
-
-                BulletProperty bp = f.getAnnotation(BulletProperty.class);
-                if (bp != null && f.get(o) != f.get(defaultBullet))
-                    id = bp.id();
-
-                MineProperty mp = f.getAnnotation(MineProperty.class);
-                if (mp != null && f.get(o) != f.get(defaultMine))
-                    id = mp.id();
-
-                ItemProperty ip = f.getAnnotation(ItemProperty.class);
-                if (ip != null)
-                    id = ip.id();
-
-                if (id != null)
-                    f.set(o, map.get(id));
+                if (id != null && map.containsKey(id))
+                {
+                    if (HashSet.class.isAssignableFrom(f.getType()))
+                        f.set(o, new HashSet<>((ArrayList<?>) map.get(id)));
+                    else if (IModel.class.isAssignableFrom(f.getType()) && map.get(id) != null)
+                        f.set(o, Drawing.drawing.createModel((String) map.get(id)));
+                    else if (f.getType().isEnum())
+                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) map.get(id)));
+                    else if (f.getType() == int.class)
+                        f.set(o, ((Double) map.get(id)).intValue());
+                    else
+                        f.set(o, map.get(id));
+                }
             }
         }
         catch (Exception e)
@@ -272,7 +278,7 @@ public class TanksON
 
     public static String objectToString(Object o)
     {
-        if (o instanceof String)
+        if (o instanceof String || o instanceof Enum || o instanceof IModel)
             return "\"" + o.toString() + "\"";
         else if (o instanceof Number)
             return o.toString();
@@ -280,10 +286,10 @@ public class TanksON
             return o.toString();
         else if (o == null)
             return "null";
-        else if (o instanceof ArrayList)
+        else if (o instanceof AbstractCollection)
         {
             StringBuilder s = new StringBuilder("[");
-            for (Object el: (ArrayList<?>) o)
+            for (Object el: (AbstractCollection<?>) o)
             {
                 s.append(objectToString(el)).append(",");
             }
@@ -294,49 +300,51 @@ public class TanksON
         {
             StringBuilder s = new StringBuilder("{");
             HashMap<?, ?> h = ((HashMap<?, ?>) o);
-            for (Object el: h.keySet())
+
+            ArrayList<String> keys = new ArrayList<String>((Collection<? extends String>) h.keySet());
+            if (keys.contains("name"))
+            {
+                keys.remove("name");
+                keys.add(0, "name");
+            }
+
+            if (keys.contains("obj_type"))
+            {
+                keys.remove("obj_type");
+                keys.add(0, "obj_type");
+            }
+
+            for (String el: keys)
             {
                 s.append("\"").append(el.toString()).append("\":").append(objectToString(h.get(el))).append(",");
             }
             s.append("}");
             return s.toString();
         }
-        else if (o.getClass().getAnnotation(TanksONable.class) != null)
+        else if (getAnnotation(o.getClass(), TanksONable.class) != null)
         {
             try
             {
                 HashMap<String, Object> h = new HashMap<>();
 
-                h.put("obj_type", o.getClass().getAnnotation(TanksONable.class).value());
+                h.put("obj_type", getAnnotation(o.getClass(), TanksONable.class).value());
                 if (o instanceof Bullet)
-                    h.put("bullet_type", ((Bullet) o).getClass().getField("bullet_name").get(null));
-                else if (o instanceof Item2)
-                    h.put("item_type", ((Item2) o).getClass().getField("item_class_name").get(null));
+                    h.put("bullet_type", ((Bullet) o).typeName);
+                else if (o instanceof Item)
+                    h.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
 
                 for (Field f : o.getClass().getFields())
                 {
+                    String id = null;
 
-                    String id = "";
-
-                    ID i = f.getAnnotation(ID.class);
+                    Property i = f.getAnnotation(Property.class);
                     if (i != null)
-                        id = i.value();
+                        id = i.id();
 
-                    TankProperty tp = f.getAnnotation(TankProperty.class);
-                    if (tp != null && f.get(o) != f.get(defaultTank))
-                        id = tp.id();
-
-                    BulletProperty bp = f.getAnnotation(BulletProperty.class);
-                    if (bp != null && f.get(o) != f.get(defaultBullet))
-                        id = bp.id();
-
-                    MineProperty mp = f.getAnnotation(MineProperty.class);
-                    if (mp != null && f.get(o) != f.get(defaultMine))
-                        id = mp.id();
-
-                    ItemProperty ip = f.getAnnotation(ItemProperty.class);
-                    if (ip != null)
-                        id = ip.id();
+                    if (o instanceof TankAIControlled && equals(f.get(o), f.get(defaultTank)))
+                        id = null;
+                    else if ((o instanceof Bullet || o instanceof Mine) && equals(f.get(o), f.get(getDefault(o.getClass()))))
+                        id = null;
 
                     if (id != null)
                         h.put(id, f.get(o));
@@ -355,5 +363,28 @@ public class TanksON
     public static Object error(String error, String s, int index)
     {
         throw new RuntimeException(error + ": " + s.substring(0, index) + ">>> Error location <<<" + s.substring(index));
+    }
+
+    public static <A extends Annotation> A getAnnotation(Class<?> target, Class<A> a)
+    {
+        while (target != null)
+        {
+            A r = target.getAnnotation(a);
+
+            if (r != null)
+                return r;
+
+            target = target.getSuperclass();
+        }
+
+        return null;
+    }
+
+    public static boolean equals(Object a, Object b)
+    {
+        if (a == null && b == null)
+            return true;
+        else
+            return a != null && a.equals(b);
     }
 }

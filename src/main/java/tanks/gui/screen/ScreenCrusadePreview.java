@@ -8,13 +8,13 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.TextBox;
-import tanks.item.legacy.Item;
+import tanks.item.Item;
 import tanks.network.event.EventShareCrusade;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ScreenCrusadePreview extends Screen implements IItemScreen
+public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScreen
 {
     public enum Mode {options, levels, items}
 
@@ -120,11 +120,6 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
 
         this.crusade = c;
 
-        for (Item i: c.crusadeShopItems)
-        {
-            i.importProperties();
-        }
-
         if (Drawing.drawing.interfaceScaleZoom > 1)
         {
             this.levelButtons = new ButtonList(new ArrayList<>(), 0, this.centerX - Drawing.drawing.interfaceSizeX / 2, this.centerY - Drawing.drawing.interfaceSizeY / 2);
@@ -190,9 +185,9 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
 
         for (int i = 0; i < this.crusade.crusadeShopItems.size(); i++)
         {
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeShopItems.get(i).name);
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeShopItems.get(i).itemStack.item.name);
 
-            b.image = crusade.crusadeShopItems.get(i).icon;
+            b.image = crusade.crusadeShopItems.get(i).itemStack.item.icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
             b.imageSizeX = b.sizeY;
             b.imageSizeY = b.sizeY;
@@ -312,14 +307,14 @@ public class ScreenCrusadePreview extends Screen implements IItemScreen
     }
 
     @Override
-    public void addItem(Item i)
+    public void addItem(Item.CrusadeShopItem i)
     {
         crusade.crusadeShopItems.add(i);
-        Game.screen = new ScreenItemEditor(i, instance);
+        //Game.screen = new ScreenItemEditor(i, instance);
     }
 
     @Override
-    public void removeItem(Item i)
+    public void removeItem(Item.CrusadeShopItem i)
     {
         this.crusade.crusadeShopItems.remove(i);
         this.refreshItemButtons();

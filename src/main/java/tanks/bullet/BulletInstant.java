@@ -2,7 +2,7 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.ItemBullet2;
+import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletDestroyed;
 import tanks.network.event.EventBulletInstantWaypoint;
 import tanks.network.event.EventShootBullet;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class BulletInstant extends Bullet
 {
-	public static String bullet_name = "laser";
+	public static String bullet_class_name = "laser";
 
 	public ArrayList<Double> xTargets = new ArrayList<>();
 	public ArrayList<Double> yTargets = new ArrayList<>();
@@ -30,14 +30,15 @@ public class BulletInstant extends Bullet
 		this.init();
 	}
 
-	public BulletInstant(double x, double y, int bounces, Tank t, boolean affectsMaxLiveBullets, ItemBullet2.ItemStackBullet ib)
+	public BulletInstant(double x, double y, Tank t, boolean affectsMaxLiveBullets, ItemBullet.ItemStackBullet ib)
 	{
-		super(x, y, bounces, t, affectsMaxLiveBullets, ib);
+		super(x, y, t, affectsMaxLiveBullets, ib);
 		this.init();
 	}
 
 	public void init()
 	{
+		this.typeName = bullet_class_name;
 		this.enableExternalCollisions = false;
 		this.playPopSound = false;
 		this.playBounceSound = false;
@@ -119,6 +120,9 @@ public class BulletInstant extends Bullet
 
 		freeIDs.add(this.networkID);
 		idMap.remove(this.networkID);
+
+		if (this.affectsMaxLiveBullets)
+			this.item.liveBullets--;
 
 		this.addDestroyEffect();
 		this.expired = true;

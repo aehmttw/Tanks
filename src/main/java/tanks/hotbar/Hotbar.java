@@ -3,8 +3,8 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.ItemBullet2;
-import tanks.item.ItemMine2;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
@@ -149,12 +149,12 @@ public class Hotbar
 			int max = 1;
 			double cooldownFrac = 0;
 
-			ItemBullet2.ItemStackBullet ib = null;
+			ItemBullet.ItemStackBullet ib = null;
 			if (Game.playerTank != null && !Game.playerTank.destroy)
 				ib = Game.playerTank.bulletItem;
 
-			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet2.ItemStackBullet)
-				ib = (ItemBullet2.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
+			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
+				ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
 
 			if (ib != null)
 			{
@@ -191,9 +191,9 @@ public class Hotbar
 			{
 				int mines = Game.playerTank.mine.maxLiveMines - Game.playerTank.mineItem.liveMines;
 
-				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine2.ItemStackMine)
+				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
 				{
-					ItemMine2.ItemStackMine im = (ItemMine2.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
+					ItemMine.ItemStackMine im = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
 					mines = im.item.mine.maxLiveMines - im.liveMines;
 				}
 

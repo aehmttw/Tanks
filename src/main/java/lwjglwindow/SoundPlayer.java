@@ -248,7 +248,8 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcef(sourcePointer, AL_LOOPING, loop);
         alSourcef(sourcePointer, AL_PITCH, musicSpeed);
-        alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET));
+        float pos = alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET);
+        alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, pos);
         this.syncedTracks.put(path, sourcePointer);
 
         if (fadeTime <= 0)

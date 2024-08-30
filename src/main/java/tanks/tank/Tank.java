@@ -70,7 +70,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = general, id = "coin_value", name = "Coin value")
 	public int coinValue = 0;
 
-	@Property(category = general, id = "base_health", name = "Hitpoints", desc = "The default bullet does one hitpoint of damage")
+	@Property(category = general, minValue = 0.0, id = "base_health", name = "Hitpoints", desc = "The default bullet does one hitpoint of damage")
 	public double baseHealth = 1;
 	public double health = 1;
 
@@ -87,20 +87,20 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = general, id = "description", name = "Tank description", miscType = Property.MiscType.description)
 	public String description = "";
 
-	@Property(category = movementGeneral, id = "max_speed", name = "Top speed")
+	@Property(category = movementGeneral, id = "max_speed", name = "Top speed", minValue = 0.0)
 	public double maxSpeed = 1.5;
 
-	@Property(category = movementGeneral, id = "acceleration", name = "Acceleration")
+	@Property(category = movementGeneral, id = "acceleration", name = "Acceleration", minValue = 0.0)
 	public double acceleration = 0.05;
 
-	@Property(category = movementGeneral, id = "friction", name = "Friction")
+	@Property(category = movementGeneral, id = "friction", name = "Friction", minValue = 0.0, maxValue = 1.0)
 	public double friction = 0.05;
 
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
 
-	@Property(category = appearanceGeneral, id = "size", name = "Tank size")
+	@Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0)
 	public double size;
 
 	@Property(category = appearanceBody, id = "color_r", name = "Red", miscType = Property.MiscType.color)
@@ -110,15 +110,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = appearanceBody, id = "color_b", name = "Blue", miscType = Property.MiscType.color)
 	public double colorB;
 
-	@Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity")
+	@Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
 	public double glowIntensity = 1;
-	@Property(category = appearanceGlow, id = "glow_size", name = "Aura size")
+	@Property(category = appearanceGlow, id = "glow_size", name = "Aura size", minValue = 0.0)
 	public double glowSize = 4;
-	@Property(category = appearanceGlow, id = "light_intensity", name = "Light intensity")
+	@Property(category = appearanceGlow, id = "light_intensity", name = "Light intensity", minValue = 0.0)
 	public double lightIntensity = 1;
-	@Property(category = appearanceGlow, id = "light_size", name = "Light size")
+	@Property(category = appearanceGlow, id = "light_size", name = "Light size", minValue = 0.0)
 	public double lightSize = 0;
-	@Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
+	@Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0, desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
 	public double luminance = 0.5;
 
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
@@ -130,9 +130,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double secondaryColorG;
 	@Property(category = appearanceTurretBarrel, id = "color_b2", name = "Blue", miscType = Property.MiscType.color)
 	public double secondaryColorB;
-	@Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness")
+	@Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
 	public double turretSize = 8;
-	@Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length")
+	@Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
 	public double turretLength = Game.tile_size;
 	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet count")
 	public boolean multipleTurrets = true;
@@ -149,7 +149,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	@Property(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
 	public boolean enableTracks = true;
-	@Property(category = appearanceTracks, id = "track_spacing", name = "Track spacing")
+	@Property(category = appearanceTracks, id = "track_spacing", name = "Track spacing", minValue = 0.0)
 	public double trackSpacing = 0.4;
 
 	/** The bullet a tank uses. If you want to change this, make sure to use setBullet() because it also updates the bulletItem. */

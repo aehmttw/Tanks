@@ -399,7 +399,24 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					this.tankMusics.addAll(((Tank) m).musicTracks);
 				}
 			}
+
+			Game.currentLevel.beatBlocks = 0;
+			for (Obstacle o: Game.obstacles)
+			{
+				if (o instanceof ObstacleBeatBlock)
+				{
+					Game.currentLevel.synchronizeMusic = true;
+					Game.currentLevel.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
+					break;
+				}
+			}
+
+			if (Game.currentLevel.beatBlocks > 0)
+			{
+				this.tankMusics.add("beatblocks/beat_blocks.ogg");
+			}
 		}
+
 
 		for (String m : this.prevTankMusics)
 		{

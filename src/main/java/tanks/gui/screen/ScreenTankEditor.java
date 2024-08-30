@@ -977,7 +977,10 @@ public class ScreenTankEditor extends Screen implements IItemStackScreen, IBlank
                         if (t.inputText.length() == 0)
                             t.inputText = f.get(tank) + "";
                         else
-                            f.set(tank, Integer.parseInt(t.inputText));
+                            f.set(tank, (int) Double.parseDouble(t.inputText));
+
+                        System.out.println(t.inputText + " " + Double.parseDouble(t.inputText) + " " + (int) Double.parseDouble(t.inputText));
+                        t.inputText = f.get(tank).toString();
                     }
                     catch (Exception e)
                     {
@@ -987,10 +990,14 @@ public class ScreenTankEditor extends Screen implements IItemStackScreen, IBlank
 
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
-                t.maxChars = 9;
-                t.allowNegatives = true;
+                t.maxChars = 11;
                 t.allowLetters = false;
                 t.allowSpaces = false;
+                t.minValue = (int) p.minValue();
+                t.maxValue = (int) p.maxValue();
+                t.checkMinValue = true;
+                t.checkMaxValue = true;
+                t.allowNegatives = t.minValue < 0;
 
                 return t;
             }
@@ -1005,6 +1012,8 @@ public class ScreenTankEditor extends Screen implements IItemStackScreen, IBlank
                             t.inputText = f.get(tank) + "";
                         else
                             f.set(tank, Double.parseDouble(t.inputText));
+
+                        t.inputText = f.get(tank).toString();
                     }
                     catch (Exception e)
                     {
@@ -1022,9 +1031,13 @@ public class ScreenTankEditor extends Screen implements IItemStackScreen, IBlank
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
                 t.allowDoubles = true;
-                t.allowNegatives = true;
                 t.allowLetters = false;
                 t.allowSpaces = false;
+                t.minValue = p.minValue();
+                t.maxValue = p.maxValue();
+                t.checkMinValue = true;
+                t.checkMaxValue = true;
+                t.allowNegatives = t.minValue < 0;
 
                 return t;
             }

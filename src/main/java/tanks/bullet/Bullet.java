@@ -38,13 +38,13 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public boolean playBounceSound = true;
 	public double age = 0;
 
-	@Property(id = "size", name = "Size", category = BulletPropertyCategory.appearance)
+	@Property(id = "size", minValue = 0.0, name = "Size", category = BulletPropertyCategory.appearance)
 	public double size = bullet_size;
 
 	public boolean canBeCanceled = true;
 	public boolean moveOut = true;
 
-	@Property(id = "bounces", name = "Bounces", category = BulletPropertyCategory.travel)
+	@Property(id = "bounces", minValue = 0.0, name = "Bounces", category = BulletPropertyCategory.travel)
 	public int bounces = 1;
 	public int bouncyBounces = 100;
 
@@ -70,15 +70,15 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "color_b2", name = "Secondary blue")
 	public double outlineColorB;
 
-	@Property(id = "luminance", name = "Luminance", category = BulletPropertyCategory.appearanceGlow)
+	@Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletPropertyCategory.appearanceGlow)
 	public double luminance = 0.5;
 
 	//@Property(id = "trails", name = "Trail", category = BulletPropertyCategory.appearance)
 	public ArrayList<Trail> trailEffects = new ArrayList<>();
 
-	@Property(id = "glow_intensity", name = "Glow intensity", category = BulletPropertyCategory.appearanceGlow)
+	@Property(id = "glow_intensity", minValue = 0.0, name = "Glow intensity", category = BulletPropertyCategory.appearanceGlow)
 	public double glowIntensity = 1;
-	@Property(id = "glow_size", name = "Glow size", category = BulletPropertyCategory.appearanceGlow)
+	@Property(id = "glow_size", minValue = 0.0, name = "Glow size", category = BulletPropertyCategory.appearanceGlow)
 	public double glowSize = 4;
 
 	public double iPosZ;
@@ -92,7 +92,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "damage", name = "Damage", category = BulletPropertyCategory.impact)
 	public double damage = 1;
 
-	@Property(id = "max_extra_health", name = "Max extra health", category = BulletPropertyCategory.impact)
+	@Property(id = "max_extra_health", minValue = 0.0, name = "Max extra health", category = BulletPropertyCategory.impact)
 	public double maxExtraHealth = 1;
 
 	@Property(id = "knockback_tank", name = "Tank knockback", category = BulletPropertyCategory.impact)
@@ -104,7 +104,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "explosion", name = "Explosion", category = BulletPropertyCategory.impact, nullable = true)
 	public Explosion hitExplosion = null;
 
-	@Property(id = "stun", name = "Stun duration", category = BulletPropertyCategory.impact)
+	@Property(id = "stun", minValue = 0.0, name = "Stun duration", category = BulletPropertyCategory.impact)
 	public double hitStun = 0;
 
 	@Property(id = "freezing", name = "Freezing", category = BulletPropertyCategory.impact)
@@ -126,7 +126,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "speed", name = "Speed", category = BulletPropertyCategory.travel)
 	public double speed = 25.0 / 8;
 
-	@Property(id = "range", name = "Range", category = BulletPropertyCategory.travel)
+	@Property(id = "range", minValue = 0.0, name = "Range", category = BulletPropertyCategory.travel)
 	public double range = 0;
 
 	@Property(id = "heavy", name = "Heavy", category = BulletPropertyCategory.travel)
@@ -158,10 +158,10 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "homing_sharpness", name = "Homing strength", category = BulletPropertyCategory.travel)
 	public double homingSharpness = 0;
 
-	@Property(id = "rebounds", name = "Max rebounds", category = BulletPropertyCategory.travel)
+	@Property(id = "rebounds", minValue = 0.0, name = "Max rebounds", category = BulletPropertyCategory.travel)
 	public int rebounds = 0;
 
-	@Property(id = "rebound_delay", name = "Rebound delay", category = BulletPropertyCategory.travel)
+	@Property(id = "rebound_delay", minValue = 0.0, name = "Rebound delay", category = BulletPropertyCategory.travel)
 	public double reboundDelay = 10;
 
 	public Tank homingTarget = null;
@@ -170,19 +170,19 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public ItemBullet.ItemStackBullet item;
 
-	@Property(id = "max_live_bullets", name = "Max live bullets", category = BulletPropertyCategory.firing)
+	@Property(id = "max_live_bullets", minValue = 0.0, name = "Max live bullets", category = BulletPropertyCategory.firing)
 	public int maxLiveBullets = 5;
 
 	@Property(id = "recoil", name = "Recoil", category = BulletPropertyCategory.firing)
 	public double recoil = 1.0;
 
-	@Property(id = "shot_count", name = "Shot count", category = BulletPropertyCategory.firing)
+	@Property(id = "shot_count", minValue = 1.0, name = "Shot count", category = BulletPropertyCategory.firing)
 	public int shotCount = 1;
 
-	@Property(id = "multishot_spread_angle", name = "Multishot spread angle", category = BulletPropertyCategory.firing)
+	@Property(id = "multishot_spread_angle", minValue = 0.0, name = "Multishot spread angle", category = BulletPropertyCategory.firing)
 	public double multishotSpread = 0;
 
-	@Property(id = "accuracy_spread_angle", name = "Accuracy spread angle", category = BulletPropertyCategory.firing)
+	@Property(id = "accuracy_spread_angle", minValue = 0.0, name = "Accuracy spread angle", category = BulletPropertyCategory.firing)
 	public double accuracySpread = 0;
 
 	public boolean canMultiDamage = false;
@@ -204,9 +204,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public ArrayList<Movable> inside = new ArrayList<>();
 	public ArrayList<Movable> insideOld = new ArrayList<>();
 
-	@Property(id = "sound", name = "Shot sound", category = BulletPropertyCategory.firing)
+	@Property(id = "sound", name = "Shot sound", category = BulletPropertyCategory.firing, miscType = Property.MiscType.bulletSound)
 	public String shotSound = "shoot.ogg";
-	@Property(id = "sound_pitch_variation", name = "Sound pitch variation", category = BulletPropertyCategory.firing)
+	@Property(id = "sound_pitch_variation", minValue = 0.0, name = "Sound pitch variation", category = BulletPropertyCategory.firing)
 	public double pitchVariation = 0;
 
 	protected ArrayList<Trail>[] trails;

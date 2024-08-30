@@ -157,7 +157,7 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
     {
         super(350, 40, 380, 60);
 
-        this.music = "menu_4.ogg";
+        this.music = "menu_editor.ogg";
         this.musicID = "menu";
 
         this.allowClose = false;

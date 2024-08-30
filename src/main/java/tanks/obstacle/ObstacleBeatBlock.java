@@ -3,6 +3,9 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.leveleditor.OverlayEditorMenu;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.rendering.ShaderBeatBlocks;
 import tanks.rendering.ShaderGroundObstacleBeatBlock;
 
@@ -34,6 +37,8 @@ public class ObstacleBeatBlock extends Obstacle
         double pos = Game.screen.screenAge;
         if (Game.screen instanceof ScreenGame)
             pos = ScreenGame.lastTimePassed - ((ScreenGame) Game.screen).introBattleMusicEnd / 10.0;
+        else if (Game.screen instanceof ScreenLevelEditorOverlay || Game.screen instanceof ScreenLevelEditor)
+            pos = Game.game.window.soundPlayer.getMusicPos() * 100;
 
         pos /= 100.0;
         return ((int) ((pos + 6.0) / (6.0 / freq)) % 2 == (alt ? 1 : 0));
@@ -44,6 +49,8 @@ public class ObstacleBeatBlock extends Obstacle
         double pos = Game.screen.screenAge;
         if (Game.screen instanceof ScreenGame)
             pos = ScreenGame.lastTimePassed - ((ScreenGame) Game.screen).introBattleMusicEnd / 10.0;
+        else if (Game.screen instanceof ScreenLevelEditorOverlay || Game.screen instanceof ScreenLevelEditor)
+            pos = Game.game.window.soundPlayer.getMusicPos() * 100;
 
         return 600 / freq - pos % (600.0 / freq);
     }
@@ -175,10 +182,10 @@ public class ObstacleBeatBlock extends Obstacle
             this.stackColorB[i] = this.colorB;
         }
 
-        col = Game.getRainbowColor((f + 0.9) % 1.0);
-        this.outlineColorR = col[0] * 0.5 + 255 * 0.5;
-        this.outlineColorG = col[1] * 0.5 + 255 * 0.5;
-        this.outlineColorB = col[2] * 0.5 + 255 * 0.5;
+        col = Game.getRainbowColor((f + 0.1) % 1.0);
+        this.outlineColorR = col[0] * 0.75 + 0 * 0.25;
+        this.outlineColorG = col[1] * 0.75 + 0 * 0.25;
+        this.outlineColorB = col[2] * 0.75 + 0 * 0.25;
     }
 
     @Override

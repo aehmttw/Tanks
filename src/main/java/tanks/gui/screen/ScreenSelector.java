@@ -89,6 +89,9 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
                     Drawing.drawing.addSyncedMusic(selector.options[j], 1, true, 500);
                 }
 
+                if (selector.sounds != null)
+                    Drawing.drawing.playSound(selector.options[selector.selectedOption]);
+
                 selector.selectedOption = j;
 
                 if (selector.quick)

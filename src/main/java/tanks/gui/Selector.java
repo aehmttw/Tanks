@@ -50,6 +50,7 @@ public class Selector implements IDrawable, ITrigger
     public double effectTimer;
     public ArrayList<Effect> glowEffects = new ArrayList<>();
 
+    public String[] sounds;
     public String[] images;
     public IModel[] models;
 

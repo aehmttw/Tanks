@@ -191,6 +191,7 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_1.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_2.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_4.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_8.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
 
 			for (int i = 1; i <= 8; i++)

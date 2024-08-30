@@ -7,6 +7,7 @@ import tanks.gui.screen.ScreenInfo;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class TextBox implements IDrawable, ITrigger
 {
@@ -159,7 +160,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (selected)
 		{
-			if (this.inputText.length() >= this.maxChars)
+			if (this.inputText.length() >= this.maxChars || (allowDoubles && inputText.toLowerCase(Locale.ROOT).contains("infinity")))
 			{
 				drawing.setColor(this.selectedFullColorR * (1 - this.flashAnimation) + this.selectedFullFlashColorR * flashAnimation,
 						this.selectedFullColorG * (1 - this.flashAnimation) + this.selectedFullFlashColorG * flashAnimation,
@@ -555,13 +556,33 @@ public class TextBox implements IDrawable, ITrigger
 	{
 		try
 		{
+			if (allowDoubles && this.inputText.toLowerCase(Locale.ROOT).endsWith("e-"))
+				this.inputText = this.inputText.substring(0, this.inputText.length() - 2);
+
+			if (allowDoubles && this.inputText.toLowerCase(Locale.ROOT).endsWith("e"))
+				this.inputText = this.inputText.substring(0, this.inputText.length() - 1);
+
 			if (checkMaxValue)
-				if (Integer.parseInt(inputText) > this.maxValue)
-					inputText = (int) this.maxValue + "";
+			{
+				if (Double.parseDouble(inputText) > this.maxValue)
+				{
+					if (this.allowDoubles)
+						inputText = this.maxValue + "";
+					else
+						inputText = (int) this.maxValue + "";
+				}
+			}
 
 			if (checkMinValue)
-				if (Integer.parseInt(inputText) < this.minValue)
-					inputText = (int) this.minValue + "";
+			{
+				if (Double.parseDouble(inputText) < this.minValue)
+				{
+					if (this.allowDoubles)
+						inputText = this.minValue + "";
+					else
+						inputText = (int) this.minValue + "";
+				}
+			}
 		}
 		catch (Exception ignored) {}
 	}
@@ -569,8 +590,13 @@ public class TextBox implements IDrawable, ITrigger
 	public void inputKey(char key)
 	{
 		if (key == '\b')
-			inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
-		else if (this.inputText.length() < this.maxChars)
+		{
+			if (allowDoubles && inputText.toLowerCase(Locale.ROOT).contains("infinity"))
+				inputText = inputText.toLowerCase(Locale.ROOT).replace("infinity", "");
+			else
+				inputText = inputText.substring(0, Math.max(0, inputText.length() - 1));
+		}
+		else if (this.inputText.length() < this.maxChars && !(allowDoubles && inputText.toLowerCase(Locale.ROOT).contains("infinity")))
 		{
 			if (key == ' ')
 			{
@@ -596,16 +622,27 @@ public class TextBox implements IDrawable, ITrigger
 						inputText += key;
 				}
 
-				if (allowNegatives && inputText.length() == 0)
+				if (allowNegatives && inputText.length() == 0 || inputText.toLowerCase(Locale.ROOT).endsWith("e"))
 				{
 					if ('-' == key)
 						inputText += key;
 				}
 
-				if (allowDoubles && !inputText.contains("."))
+				if (allowDoubles && !inputText.contains(".") && !inputText.toLowerCase(Locale.ROOT).contains("e"))
 				{
 					if ('.' == key)
 						inputText += key;
+				}
+
+				if (allowDoubles && (inputText.length() == 0 || inputText.equals("-")) && 'i' == Character.toLowerCase(key))
+				{
+					inputText += "Infinity";
+				}
+
+				if (allowDoubles && !inputText.toLowerCase(Locale.ROOT).contains("e") && (this.inputText.length() >= 1 && !this.inputText.equals("-")))
+				{
+					if ('e' == Character.toLowerCase(key))
+						inputText += "E";
 				}
 
 				if (enablePunctuation)

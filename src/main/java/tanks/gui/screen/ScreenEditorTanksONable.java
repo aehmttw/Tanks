@@ -357,7 +357,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         if (t.inputText.length() == 0)
                             t.inputText = f.get(target) + "";
                         else
-                            f.set(target, Integer.parseInt(t.inputText));
+                            f.set(target, (int) Double.parseDouble(t.inputText));
+
+                        t.inputText = f.get(target).toString();
                     }
                     catch (Exception e)
                     {
@@ -367,10 +369,14 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
-                t.maxChars = 9;
-                t.allowNegatives = true;
+                t.maxChars = 11;
                 t.allowLetters = false;
                 t.allowSpaces = false;
+                t.minValue = (int) p.minValue();
+                t.maxValue = (int) p.maxValue();
+                t.checkMinValue = true;
+                t.checkMaxValue = true;
+                t.allowNegatives = t.minValue < 0;
 
                 return t;
             }
@@ -387,6 +393,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                             t.inputText = f.get(target) + "";
                         else
                             f.set(target, Double.parseDouble(t.inputText));
+
+                        t.inputText = f.get(target).toString();
                     }
                     catch (Exception e)
                     {
@@ -404,10 +412,45 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
                 t.allowDoubles = true;
-                t.allowNegatives = true;
                 t.allowLetters = false;
                 t.allowSpaces = false;
+                t.minValue = p.minValue();
+                t.maxValue = p.maxValue();
+                t.checkMinValue = true;
+                t.checkMaxValue = true;
+                t.allowNegatives = t.minValue < 0;
 
+                return t;
+            }
+            else if (p.miscType() == Property.MiscType.bulletSound)
+            {
+                ArrayList<String> sounds = Game.game.fileManager.getInternalFileContents("sounds/bullet_sounds.txt");
+                String[] soundsFormatted = new String[sounds.size()];
+
+                for (int i = 0; i < sounds.size(); i++)
+                {
+                    soundsFormatted[i] = Game.formatString(sounds.get(i).replace(".ogg", ""));
+                }
+
+                Selector t = new Selector(0, 0, this.objWidth, this.objHeight, p.name(), soundsFormatted, () -> {}, "");
+                t.selectedOption = ((Enum<?>) f.get(target)).ordinal();
+                t.sounds = new String[sounds.size()];
+                sounds.toArray(t.sounds);
+
+                t.function = () ->
+                {
+                    try
+                    {
+                        f.set(target, sounds.get(t.selectedOption));
+                    }
+                    catch (Exception ex)
+                    {
+                        Game.exitToCrash(ex);
+                    }
+                };
+
+                t.enableHover = !p.desc().equals("");
+                t.hoverText = formatDescription(p);
                 return t;
             }
             else if (f.getType().equals(String.class))

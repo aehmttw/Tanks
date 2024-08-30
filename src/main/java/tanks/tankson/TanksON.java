@@ -45,7 +45,7 @@ public class TanksON
             return parseMap(s, index);
         else if (next == '[')
             return parseArray(s, index);
-        else if ("1234567890-".indexOf(next) >= 0)
+        else if ("1234567890-Ii".indexOf(next) >= 0)
             return parseNumber(s, index);
         else if (tokenMatches(s, index, "true"))
             return true;
@@ -63,6 +63,11 @@ public class TanksON
         int start = index[0];
         while ("+-0123456789.eE".indexOf(s.charAt(index[0])) >= 0)
             index[0]++;
+
+        String infinity = "infinity";
+        if (s.length() - index[0] > infinity.length())
+            if (s.substring(index[0], index[0] + infinity.length()).toLowerCase(Locale.ROOT).equals(infinity))
+                index[0] += infinity.length();
 
         try
         {
@@ -182,7 +187,9 @@ public class TanksON
                     else if (f.getType().isEnum())
                         f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) map.get(id)));
                     else if (f.getType() == int.class)
-                        f.set(o, ((Double) map.get(id)).intValue());
+                        f.set(o, (int) Math.max(i.minValue(), Math.min(i.maxValue(), ((Double) map.get(id)).intValue())));
+                    else if (f.getType() == double.class)
+                        f.set(o, Math.max(i.minValue(), Math.min(i.maxValue(), ((double) map.get(id)))));
                     else
                         f.set(o, map.get(id));
                 }

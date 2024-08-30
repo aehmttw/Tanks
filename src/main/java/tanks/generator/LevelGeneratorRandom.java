@@ -87,6 +87,41 @@ public class LevelGeneratorRandom extends LevelGenerator
 		boolean explosives = random.nextDouble() < 0.2;
 		int numExplosives = (int) (walls / 5 + random.nextDouble() * 4 + 1);
 
+		boolean beatBlocks = random.nextDouble() < 0.2;
+		double beatBlocksWeight = random.nextDouble() * 0.5 + 0.2;
+		ArrayList<Integer> beatBlocksKinds = new ArrayList<>();
+		double br = random.nextDouble();
+		if (br < 0.5)
+			beatBlocksKinds.add(0);
+		else if (br < 0.7)
+			beatBlocksKinds.add(1);
+		else if (br < 0.8)
+			beatBlocksKinds.add(2);
+		else if (br < 0.85)
+		{
+			beatBlocksKinds.add(0);
+			beatBlocksKinds.add(1);
+		}
+		else if (br < 0.9)
+		{
+			beatBlocksKinds.add(0);
+			beatBlocksKinds.add(2);
+		}
+		else if (br < 0.95)
+		{
+			beatBlocksKinds.add(1);
+			beatBlocksKinds.add(2);
+		}
+		else
+		{
+			beatBlocksKinds.add(0);
+			beatBlocksKinds.add(1);
+			beatBlocksKinds.add(2);
+		}
+
+		if (random.nextDouble() < 0.05)
+			beatBlocksKinds.add(3);
+
 		int time = (int) (randomNum * amountTanks + 4) * 5;
 
 		if (random.nextDouble() > 0.2)
@@ -153,6 +188,11 @@ public class LevelGeneratorRandom extends LevelGenerator
 
 			if (bouncy && random.nextDouble() < bouncyWeight)
 				type = "-bouncy";
+			else if (beatBlocks && random.nextDouble() < beatBlocksWeight)
+			{
+				type = "-beat-" + (int) ((beatBlocksKinds.get((int) (random.nextDouble() * beatBlocksKinds.size())) + random.nextDouble()) * 2);
+				passable = true;
+			}
 			else if (nobounce && random.nextDouble() < noBounceWeight)
 			{
 				type = "-nobounce";

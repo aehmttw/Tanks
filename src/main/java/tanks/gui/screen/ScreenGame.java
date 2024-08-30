@@ -880,7 +880,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				else
 					Drawing.drawing.playSound("battle_intro.ogg", 1f, true);
 
-				if (Game.currentLevel.beatBlocks > 0)
+				if (Game.currentLevel.beatBlocks > 0 && Game.enableLayeredMusic)
 				{
 					Drawing.drawing.playSound("beatblocks/beat_blocks_intro.ogg", 1f, true);
 
@@ -889,9 +889,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if ((Game.currentLevel.beatBlocks & 2) != 0)
 						Drawing.drawing.playSound("beatblocks/beat_beeps_2_intro.ogg", 1f, true);
+
+					if ((Game.currentLevel.beatBlocks & 8) != 0)
+						Drawing.drawing.playSound("beatblocks/beat_beeps_8_intro.ogg", 1f, true);
 				}
 			}
 
+			if (!(Game.currentLevel.synchronizeMusic && paused))
 			this.playCounter += Panel.frameFrequency;
 		}
 
@@ -925,61 +929,68 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (Level.isDark())
 					this.musicID = "battle_night";
+			}
 
+			if (!this.musicStarted)
+			{
+				this.musicStarted = true;
+				prevMusic = this.music;
+				Panel.panel.playScreenMusic(0);
+			}
 
-				if (!this.musicStarted)
-					this.musicStarted = true;
-				else
+			this.prevTankMusics.clear();
+			this.prevTankMusics.addAll(this.tankMusics);
+			this.tankMusics.clear();
+
+			if (!this.paused)
+			{
+				if (!Game.currentLevel.timed)
 				{
-					this.prevTankMusics.clear();
-					this.prevTankMusics.addAll(this.tankMusics);
-					this.tankMusics.clear();
-
-					if (!this.paused)
+					for (Movable m : Game.movables)
 					{
-						for (Movable m : Game.movables)
+						if (m instanceof Tank && !m.destroy)
 						{
-							if (m instanceof Tank && !m.destroy)
-							{
-								this.tankMusics.addAll(((Tank) m).musicTracks);
-							}
-						}
-
-						if (Game.currentLevel.beatBlocks > 0)
-						{
-							this.tankMusics.add("beatblocks/beat_blocks.ogg");
-
-							if ((Game.currentLevel.beatBlocks & 1) != 0)
-								this.tankMusics.add("beatblocks/beat_beeps_1.ogg");
-
-							if ((Game.currentLevel.beatBlocks & 2) != 0)
-								this.tankMusics.add("beatblocks/beat_beeps_2.ogg");
-
-							if ((Game.currentLevel.beatBlocks & 4) != 0)
-								this.tankMusics.add("beatblocks/beat_beeps_4.ogg");
+							this.tankMusics.addAll(((Tank) m).musicTracks);
 						}
 					}
+				}
 
-					for (String m : this.prevTankMusics)
-					{
-						if (!this.tankMusics.contains(m))
-							Drawing.drawing.removeSyncedMusic(m, 500);
-					}
+				if (Game.currentLevel.beatBlocks > 0)
+				{
+					this.tankMusics.add("beatblocks/beat_blocks.ogg");
 
-					for (String m : this.tankMusics)
-					{
-						if (!this.prevTankMusics.contains(m))
-						{
-							if (this.playCounter == -2 && m.startsWith("beatblocks/"))
-								Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 0);
-							else
-								Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 500);
-						}
-					}
+					if ((Game.currentLevel.beatBlocks & 1) != 0)
+						this.tankMusics.add("beatblocks/beat_beeps_1.ogg");
 
-					this.playCounter = -1;
+					if ((Game.currentLevel.beatBlocks & 2) != 0)
+						this.tankMusics.add("beatblocks/beat_beeps_2.ogg");
+
+					if ((Game.currentLevel.beatBlocks & 4) != 0)
+						this.tankMusics.add("beatblocks/beat_beeps_4.ogg");
+
+					if ((Game.currentLevel.beatBlocks & 8) != 0)
+						this.tankMusics.add("beatblocks/beat_beeps_8.ogg");
 				}
 			}
+
+			for (String m : this.prevTankMusics)
+			{
+				if (!this.tankMusics.contains(m))
+					Drawing.drawing.removeSyncedMusic(m, 500);
+			}
+
+			for (String m : this.tankMusics)
+			{
+				if (!this.prevTankMusics.contains(m))
+				{
+					if (this.playCounter == -2 && m.startsWith("beatblocks/"))
+						Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 0);
+					else
+						Drawing.drawing.addSyncedMusic(m, Game.musicVolume, true, 500);
+				}
+			}
+
+			this.playCounter = -1;
 		}
 
 		if (finishedQuick)
@@ -1404,11 +1415,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			Game.verticalFaces.add(this.verticalFaces[0]);
 			Game.verticalFaces.add(this.verticalFaces[1]);
 
-			for (Movable m: Game.movables)
+			for (int i = 0; i < Game.movables.size(); i++)
 			{
+				Movable m = Game.movables.get(i);
+
 				if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
 				{
-					throw new RuntimeException("Movable with NaN position: " + m.toString() + " " + m.lastPosX + " " + m.lastPosY);
+					Game.removeMovables.add(m);
+					Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
 				}
 
 				if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).targetable))

@@ -40,18 +40,18 @@ public class TankAIControlled extends Tank
 	public boolean enableMovement = true;
 
 	/** Chance per frame to change direction*/
-	@Property(category = movementIdle, id = "motion_change_chance", name = "Turn chance", desc = "Chance of the tank to change the direction in which it is moving")
+	@Property(category = movementIdle, id = "motion_change_chance", name = "Turn chance", minValue = 0.0, desc = "Chance of the tank to change the direction in which it is moving")
 	public double turnChance = 0.01;
 	/** Time waited when changing direction of motion*/
-	@Property(category = movementIdle, id = "turn_pause_time", name = "Turn pause time", desc = "Time the tank pauses when changing directions \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementIdle, id = "turn_pause_time", name = "Turn pause time", minValue = 0.0, desc = "Time the tank pauses when changing directions \n \n 1 time unit = 0.01 seconds")
 	public double turnPauseTime = 15;
 	/** Multiplier of time the tank will hide in a shrub*/
-	@Property(category = movementIdle, id = "bush_hide_time", name = "Bush hide time", desc = "Time the tank will stop moving to hide in bushes \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementIdle, id = "bush_hide_time", name = "Bush hide time", minValue = 0.0, desc = "Time the tank will stop moving to hide in bushes \n \n 1 time unit = 0.01 seconds")
 	public double bushHideTime = 350;
 
 	@Property(category = movementIdle, id = "stay_near_parent", name = "Stay near parent", desc = "If spawned by another tank, whether this tank should try to stay near the tank that spawned it")
 	public boolean stayNearParent = false;
-	@Property(category = movementIdle, id = "max_distance_from_parent", name = "Parent boundary", desc = "If stay near parent is set and this tank strays farther than this distance from the tank that spawned it, it will return to that tank \n \n 1 tile = 50 units")
+	@Property(category = movementIdle, id = "max_distance_from_parent", name = "Parent boundary", minValue = 0.0, desc = "If stay near parent is set and this tank strays farther than this distance from the tank that spawned it, it will return to that tank \n \n 1 tile = 50 units")
 	public double maxDistanceFromParent = 300;
 
 	@Property(category = movementAvoid, id = "enable_bullet_avoidance", name = "Avoid bullets")
@@ -86,13 +86,13 @@ public class TankAIControlled extends Tank
 	@Property(category = movementPathfinding, id = "enable_pathfinding", name = "Seek targets", desc = "If enabled, the tank may decide to navigate through the level towards its target. If this tank can lay mines, it may also use them to get to the target.")
 	public boolean enablePathfinding = false;
 	/** Chance per frame to seek the target enemy*/
-	@Property(category = movementPathfinding, id = "seek_chance", name = "Seek chance", desc = "Chance for this tank to decide to start navigating to its target")
+	@Property(category = movementPathfinding, id = "seek_chance", minValue = 0.0, maxValue = 1.0, name = "Seek chance", desc = "Chance for this tank to decide to start navigating to its target")
 	public double seekChance = 0.001;
 	/** If set to true, when enters line of sight of target enemy, will stop pathfinding to it*/
 	@Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight \n \n 1 time unit = 0.01 seconds")
 	public boolean stopSeekingOnSight = false;
 	/** Increasing this value increases how stubborn the tank is in following a path*/
-	@Property(category = movementPathfinding, id = "seek_timer_base", name = "Seek patience", desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementPathfinding, id = "seek_timer_base", minValue = 0.0, name = "Seek patience", desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
 	public double seekTimerBase = 200;
 
 	/** Type of behavior tank should have if its target enemy is in line of sight
@@ -120,34 +120,34 @@ public class TankAIControlled extends Tank
 			" \n \n Requires 'Test sight' in 'Movement on sight' to take effect")
 	public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
 	/** If set to strafe upon seeing the target enemy, chance to change orbit direction*/
-	@Property(category = movementOnSight, id = "strafe_direction_change_chance", name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
+	@Property(category = movementOnSight, id = "strafe_direction_change_chance", minValue = 0.0, maxValue = 1.0, name = "Strafe frequency", desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
 	public double strafeDirectionChangeChance = 0.01;
 	/** If set to keep a distance, the tank will maintain that distance from its target upon sight*/
-	@Property(category = movementOnSight, id = "target_sight_distance", name = "Target distance", desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target \n \n 1 tile = 50 units")
+	@Property(category = movementOnSight, id = "target_sight_distance", minValue = 0.0, name = "Target distance", desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target \n \n 1 tile = 50 units")
 	public double targetSightDistance = Game.tile_size * 6;
 
 	/** Tank to transform into*/
 	@Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target")
 	public TankAIControlled sightTransformTank = null;
 	/** Time for tank to revert after losing line of sight */
-	@Property(category = transformationOnSight, id = "sight_transformation_revert_time", name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
+	@Property(category = transformationOnSight, id = "sight_transformation_revert_time", minValue = 0.0, name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
 	public double sightTransformRevertTime = 500;
 
 	/** Tank to transform into*/
 	@Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold")
 	public TankAIControlled healthTransformTank = null;
 	/** Health threshold to transform */
-	@Property(category = transformationOnHealth, id = "transform_health_threshold", name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
+	@Property(category = transformationOnHealth, id = "transform_health_threshold", minValue = 0.0, name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
 	public double transformHealthThreshold = 0;
 	/** If set, the tank will seek and transform into other tanks in line of sight */
 	@Property(category = transformationMimic, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
 	public boolean transformMimic = false;
 
 	/** Time for tank to revert after losing line of sight */
-	@Property(category = transformationMimic, id = "mimic_revert_time", name = "Mimic revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
+	@Property(category = transformationMimic, id = "mimic_revert_time", minValue = 0.0, name = "Mimic revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
 	public double mimicRevertTime = 200;
 	/** Range tanks must be in to be mimicked */
-	@Property(category = transformationMimic, id = "mimic_range", name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
+	@Property(category = transformationMimic, id = "mimic_range", minValue = 0.0, name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
 	public double mimicRange = Game.tile_size * 12;
 
 	@Property(category = mines, id = "enable_mine_laying", name = "Can lay mines")
@@ -155,23 +155,23 @@ public class TankAIControlled extends Tank
 
 	//public double mineFuseLength = 1000;
 	/** Minimum time to lay a mine, added to mineTimerRandom * this.random.nextDouble()*/
-	@Property(category = mines, id = "mine_timer_base", name = "Base cooldown", desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
+	@Property(category = mines, id = "mine_timer_base", minValue = 0.0, name = "Base cooldown", desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
 	public double mineTimerBase = 2000;
 	/** Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase*/
-	@Property(category = mines, id = "mine_timer_random", name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
+	@Property(category = mines, id = "mine_timer_random", minValue = 0.0, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
 	public double mineTimerRandom = 4000;
 
 	/** Minimum time in between shooting bullets, added to cooldownRandom * this.random.nextDouble()*/
-	@Property(category = firingGeneral, id = "cooldown_base", name = "Base cooldown", desc = "Minimum time between firing bullets \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
+	@Property(category = firingGeneral, id = "cooldown_base", minValue = 0.0, name = "Base cooldown", desc = "Minimum time between firing bullets \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
 	public double cooldownBase = 60;
 	/** Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase*/
-	@Property(category = firingGeneral, id = "cooldown_random", name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
+	@Property(category = firingGeneral, id = "cooldown_random", minValue = 0.0, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
 	public double cooldownRandom = 20;
 	/** After every successive shot, cooldown will go down by this fraction */
-	@Property(category = firingGeneral, id = "cooldown_speedup", name = "Cooldown speedup", desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
+	@Property(category = firingGeneral, id = "cooldown_speedup", minValue = 0.0, name = "Cooldown speedup", desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
 	public double cooldownSpeedup = 0;
 	/** Cooldown resets after no shots for this much time */
-	@Property(category = firingGeneral, id = "cooldown_revert_time", name = "Revert time", desc = "If the tank is unable to fire for this much time, the effects of cooldown speedup will reset \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingGeneral, id = "cooldown_revert_time", minValue = 0.0, name = "Revert time", desc = "If the tank is unable to fire for this much time, the effects of cooldown speedup will reset \n \n 1 time unit = 0.01 seconds")
 	public double cooldownRevertTime = 300;
 	/** If set, the tank will charge a shot and wait its cooldown on the spot as it prepares to shoot */
 	@Property(category = firingGeneral, id = "charge_up", name = "Charge up", desc = "If enabled, the tank will only wait its cooldown while aiming at an enemy tank, playing a charge up animation")
@@ -199,23 +199,23 @@ public class TankAIControlled extends Tank
 	public ShootAI shootAIType;
 
 	/** Larger values decrease accuracy but make the tank behavior more unpredictable*/
-	@Property(category = firingBehavior, id = "aim_accuracy_offset", name = "Inaccuracy", desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
+	@Property(category = firingBehavior, id = "aim_accuracy_offset", minValue = 0.0, name = "Inaccuracy", desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
 	public double aimAccuracyOffset = 0.2;
 	/** Threshold angle difference needed between angle and aimAngle to count as touching the target enemy*/
 	public double aimThreshold = 0.05;
 
 	/** Minimum time to randomly change idle direction, added to turretIdleTimerRandom * this.random.nextDouble()*/
-	@Property(category = firingBehavior, id = "turret_idle_timer_base", name = "Turret base timer", desc = "Minimum time the turret will idly rotate in one direction before changing direction \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingBehavior, id = "turret_idle_timer_base", minValue = 0.0, name = "Turret base timer", desc = "Minimum time the turret will idly rotate in one direction before changing direction \n \n 1 time unit = 0.01 seconds")
 	public double turretIdleTimerBase = 25;
 	/** Random factor in calculating time to randomly change idle direction, multiplied by this.random.nextDouble() and added to turretIdleTimerBase*/
-	@Property(category = firingBehavior, id = "turret_idle_timer_random", name = "Turret random timer", desc = "A random percentage between 0% and 100% of this time value is added to the turret base rotation timer to get the time between changing idle rotation direction \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingBehavior, id = "turret_idle_timer_random", minValue = 0.0, name = "Turret random timer", desc = "A random percentage between 0% and 100% of this time value is added to the turret base rotation timer to get the time between changing idle rotation direction \n \n 1 time unit = 0.01 seconds")
 	public double turretIdleTimerRandom = 500;
 
 	/** Speed at which the turret moves while idle*/
-	@Property(category = firingBehavior, id = "turret_idle_speed", name = "Idle turret speed", desc = "Speed the turret turns at when not actively aiming at a target")
+	@Property(category = firingBehavior, id = "turret_idle_speed", minValue = 0.0, name = "Idle turret speed", desc = "Speed the turret turns at when not actively aiming at a target")
 	public double turretIdleSpeed = 0.005;
 	/** Speed at which the turret moves while aiming at a target enemy*/
-	@Property(category = firingBehavior, id = "turret_aim_speed", name = "Aim turret speed", desc = "Speed the turret turns at when actively aiming toward a target")
+	@Property(category = firingBehavior, id = "turret_aim_speed", minValue = 0.0, name = "Aim turret speed", desc = "Speed the turret turns at when actively aiming toward a target")
 	public double turretAimSpeed = 0.03;
 
 	/** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!*/
@@ -229,13 +229,13 @@ public class TankAIControlled extends Tank
 	public boolean aimIgnoreDestructible = false;
 
 	/** Number of bullets in bullet fan*/
-	@Property(category = firingPattern, id = "shot_round_count", name = "Shots per round", desc = "Number of bullets to fire per round")
+	@Property(category = firingPattern, id = "shot_round_count", minValue = 1.0, name = "Shots per round", desc = "Number of bullets to fire per round")
 	public int shotRoundCount = 1;
 	/** Time to fire a full fan*/
-	@Property(category = firingPattern, id = "shot_round_time", name = "Round time", desc = "Amount of time it takes to fire a full round of bullets \n \n 1 time unit = 0.01 seconds")
+	@Property(category = firingPattern, id = "shot_round_time", minValue = 0.0, name = "Round time", desc = "Amount of time it takes to fire a full round of bullets \n \n 1 time unit = 0.01 seconds")
 	public double shootRoundTime = 60;
 	/** Spread of a round*/
-	@Property(category = firingPattern, id = "shot_round_spread", name = "Round spread", desc = "Total angle of spread of a round")
+	@Property(category = firingPattern, id = "shot_round_spread", minValue = 0.0, name = "Round spread", desc = "Total angle of spread of a round")
 	public double shotRoundSpread = 36;
 
 	public static class SpawnedTankEntry
@@ -264,23 +264,23 @@ public class TankAIControlled extends Tank
 	@Property(category = spawning, id = "spawned_tanks", name = "Spawned tanks", desc = "Tanks which will be spawned by this tank as support", miscType = Property.MiscType.spawnedTanks)
 	public ArrayList<SpawnedTankEntry> spawnedTankEntries = new ArrayList<>();
 	/** Tanks spawned on initial load*/
-	@Property(category = spawning, id = "spawned_initial_count", name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
+	@Property(category = spawning, id = "spawned_initial_count", minValue = 0.0, name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
 	public int spawnedInitialCount = 4;
 	/** Max number of spawned tanks*/
-	@Property(category = spawning, id = "spawned_max_count", name = "Max count", desc = "Maximum number of spawned tanks from this tank that can be on the field at once")
+	@Property(category = spawning, id = "spawned_max_count", minValue = 0.0, name = "Max count", desc = "Maximum number of spawned tanks from this tank that can be on the field at once")
 	public int spawnedMaxCount = 6;
 	/** Chance for this tank to spawn another tank*/
-	@Property(category = spawning, id = "spawn_chance", name = "Spawn chance", desc = "Chance for this tank to spawn another tank")
+	@Property(category = spawning, id = "spawn_chance", minValue = 0.0, maxValue = 1.0, name = "Spawn chance", desc = "Chance for this tank to spawn another tank")
 	public double spawnChance = 0.003;
 
 	/** Whether the tank should commit suicide when there are no allied tanks on the field */
 	@Property(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and explode. The explosion will use the properties of the tank's mine.")
 	public boolean enableSuicide = false;
 	/** Base factor in calculating suicide timer: base + random * Math.random()*/
-	@Property(category = lastStand, id = "suicide_timer_base", name = "Base timer", desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
+	@Property(category = lastStand, id = "suicide_timer_base", minValue = 0.0, name = "Base timer", desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
 	public double suicideTimerBase = 500;
 	/** Random factor in calculating suicide timer: base + random * Math.random() */
-	@Property(category = lastStand, id = "suicide_timer_random", name = "Random timer", desc = "A random fraction of this value is added to the base timer to get the time this tank will charge before exploding \n \n 1 time unit = 0.01 seconds")
+	@Property(category = lastStand, id = "suicide_timer_random", minValue = 0.0, name = "Random timer", desc = "A random fraction of this value is added to the base timer to get the time this tank will charge before exploding \n \n 1 time unit = 0.01 seconds")
 	public double suicideTimerRandom = 250;
 	/** Suicidal mode maximum speed increase*/
 	@Property(category = lastStand, id = "suicide_speed_boost", name = "Speed boost", desc = "Maximum increase in speed while charging as a last stand")

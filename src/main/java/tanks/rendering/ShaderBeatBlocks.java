@@ -43,7 +43,7 @@ public class ShaderBeatBlocks extends RendererShader implements IUpdatedShader, 
         double timeTillChange = ObstacleBeatBlock.timeTillChange(freq) % (600 / freq);
 
         double beatTime = 37.5;
-        int warningBeats = freq == 1 ? 3 : freq == 2 ? 2 : 0;
+        int warningBeats = freq == 1 ? 3 : freq == 2 ? 2 : freq == 4 ? 1 : 0;
         float flash = 0f;
 
         if (timeTillChange < beatTime * warningBeats)

@@ -424,7 +424,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             }
             else if (p.miscType() == Property.MiscType.bulletSound)
             {
-                ArrayList<String> sounds = Game.game.fileManager.getInternalFileContents("sounds/bullet_sounds.txt");
+                ArrayList<String> sounds = Game.game.fileManager.getInternalFileContents("/sounds/bullet_sounds.txt");
                 String[] soundsFormatted = new String[sounds.size()];
 
                 for (int i = 0; i < sounds.size(); i++)
@@ -433,7 +433,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 }
 
                 Selector t = new Selector(0, 0, this.objWidth, this.objHeight, p.name(), soundsFormatted, () -> {}, "");
-                t.selectedOption = ((Enum<?>) f.get(target)).ordinal();
+                t.selectedOption = sounds.indexOf(f.get(target));
                 t.sounds = new String[sounds.size()];
                 sounds.toArray(t.sounds);
 

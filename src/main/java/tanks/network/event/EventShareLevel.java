@@ -9,6 +9,7 @@ import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
+import tanks.network.ServerHandler;
 
 public class EventShareLevel extends PersonalEvent
 {
@@ -45,15 +46,28 @@ public class EventShareLevel extends PersonalEvent
 
 			this.username = p.username;
 
-			ScreenPartyHost.activeScreen.sharedLevels.add(new ScreenPartyHost.SharedLevel(this.level, this.name, this.username));
+			if (!EventChat.isStringValid(name))
+			{
+				for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
+				{
+					ServerHandler s = ScreenPartyHost.server.connections.get(i);
 
-			Game.eventsOut.add(this);
+					if (s.clientID != null && s.clientID.equals(this.clientID))
+						s.sendEventAndClose(new EventKick("Invalid level name received!"));
+				}
+			}
+			else
+			{
+				ScreenPartyHost.activeScreen.sharedLevels.add(new ScreenPartyHost.SharedLevel(this.level, this.name, this.username));
 
-			String s = "\u00A7200000200255" + p.username + " has shared the level " + this.name.replace("_", " ") + "\u00A7000000000255";
+				Game.eventsOut.add(this);
 
-			Drawing.drawing.playGlobalSound("join.ogg", 1.5f);
-			ScreenPartyHost.chat.add(0, new ChatMessage(s));
-			Game.eventsOut.add(new EventChat(s));
+				String s = "\u00A7200000200255" + p.username + " has shared the level " + this.name.replace("_", " ") + "\u00A7000000000255";
+
+				Drawing.drawing.playGlobalSound("join.ogg", 1.5f);
+				ScreenPartyHost.chat.add(0, new ChatMessage(s));
+				Game.eventsOut.add(new EventChat(s));
+			}
 		}
 		else
 		{

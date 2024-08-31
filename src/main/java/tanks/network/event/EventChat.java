@@ -25,16 +25,11 @@ public class EventChat extends PersonalEvent
 	@Override
 	public void execute() 
 	{
-
 		if (this.clientID == null)
 			ScreenPartyLobby.chat.add(0, new ChatMessage(this.message));
 		else
 		{
-			for (int i = 0; i < this.message.length(); i++)
-			{
-				if (" `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?".indexOf(this.message.charAt(i)) == -1)
-					return;
-			}
+			boolean invalid = !isStringValid(this.message);
 
 			for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
 			{
@@ -42,8 +37,13 @@ public class EventChat extends PersonalEvent
 
 				if (s.clientID != null && s.clientID.equals(this.clientID))
 				{
-					ScreenPartyHost.chat.add(0, new ChatMessage(s.player, this.message));
-					Game.eventsOut.add(new EventPlayerChat(s.player, this.message));
+					if (invalid)
+						s.sendEventAndClose(new EventKick("Invalid chat message received!"));
+					else
+					{
+						ScreenPartyHost.chat.add(0, new ChatMessage(s.player, this.message));
+						Game.eventsOut.add(new EventPlayerChat(s.player, this.message));
+					}
 				}
 			}
 		}
@@ -60,5 +60,16 @@ public class EventChat extends PersonalEvent
 	public void read(ByteBuf b) 
 	{
 		this.message = NetworkUtils.readString(b);
+	}
+
+	public static boolean isStringValid(String s)
+	{
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (" `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?".indexOf(s.charAt(i)) == -1)
+				return false;
+		}
+
+		return true;
 	}
 }

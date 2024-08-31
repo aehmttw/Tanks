@@ -3,7 +3,7 @@ all: package run
 first: init package
 
 run:
-	java -jar target/Tanks.jar
+	java -jar target/Tanks.jar&
 
 clean:
 	mvn clean

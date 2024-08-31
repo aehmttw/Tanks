@@ -325,12 +325,6 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
     }
 
     @Override
-    public String toString()
-    {
-        return TanksON.objectToString(this);
-    }
-
-    @Override
     public String getName()
     {
         return "Mine";

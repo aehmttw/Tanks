@@ -10,6 +10,7 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.Property;
+import tanks.tankson.TanksJson;
 import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
 
@@ -2919,7 +2920,7 @@ public class TankAIControlled extends Tank
 		if (fromRegistry)
 			return "<" + this.name + ">";
 
-		return TanksON.objectToString(this);
+		return TanksJson.toJson(this).toString();
 //		try
 //		{
 //			StringBuilder s = new StringBuilder("[");
@@ -2961,7 +2962,7 @@ public class TankAIControlled extends Tank
 
 	public static TankAIControlled fromString(String s)
 	{
-		return (TankAIControlled) TanksON.parseObject(s);
+		return (TankAIControlled) TanksJson.parseObject(s);
 		//return fromString(s, null);
 	}
 

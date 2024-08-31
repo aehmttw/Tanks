@@ -11,10 +11,7 @@ import tanks.item.ItemMine;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 @TanksONable("explosion")
 public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable

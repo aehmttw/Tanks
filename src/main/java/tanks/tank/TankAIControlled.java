@@ -238,9 +238,13 @@ public class TankAIControlled extends Tank
 	@Property(category = firingPattern, id = "shot_round_spread", minValue = 0.0, name = "Round spread", desc = "Total angle of spread of a round")
 	public double shotRoundSpread = 36;
 
+	@TanksONable("spawned_tank")
 	public static class SpawnedTankEntry
 	{
+		@Property(id = "tank")
 		public TankAIControlled tank;
+
+		@Property(id = "weight")
 		public double weight;
 
 		public SpawnedTankEntry(TankAIControlled t, double weight)
@@ -249,15 +253,9 @@ public class TankAIControlled extends Tank
 			this.weight = weight;
 		}
 
-		public SpawnedTankEntry(TankAIControlled t, double weight, boolean noDelete)
-		{
-			this.tank = t;
-			this.weight = weight;
-		}
-
 		public String toString()
 		{
-			return this.weight + "x" + this.tank.toString();
+			return TanksON.objectToString(this);
 		}
 	}
 
@@ -549,7 +547,7 @@ public class TankAIControlled extends Tank
 	{
 		if (this.age <= 0)
 		{
-			this.bulletItem.cooldown = Math.min(1, this.cooldownBase);
+			this.bulletItem.item.cooldownBase = Math.min(1, this.cooldownBase);
 			this.bulletItem.item.bullet = this.bullet;
 			this.mineItem.item.mine = this.mine;
 
@@ -2961,8 +2959,11 @@ public class TankAIControlled extends Tank
 
 	public static TankAIControlled fromString(String s)
 	{
-		return (TankAIControlled) TanksON.parseObject(s);
-		//return fromString(s, null);
+		if (s.startsWith("{"))
+			return (TankAIControlled) TanksON.parseObject(s);
+		else
+			throw new RuntimeException("The old tank format isn't yet supported");
+			//return fromString(s, null);
 	}
 
 //	public static TankAIControlled fromString(String s, String[] remainder)
@@ -3186,7 +3187,7 @@ public class TankAIControlled extends Tank
 						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
 						for (SpawnedTankEntry o: a1)
 						{
-							al.add(new SpawnedTankEntry(o.tank, o.weight, true));
+							al.add(new SpawnedTankEntry(o.tank, o.weight));
 						}
 
 						f.set(t, al);

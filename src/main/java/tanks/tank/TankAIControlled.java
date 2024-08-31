@@ -11,7 +11,6 @@ import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.Property;
 import tanks.tankson.TanksJson;
-import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;

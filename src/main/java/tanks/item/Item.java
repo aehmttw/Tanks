@@ -4,7 +4,7 @@ import tanks.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.Property;
-import tanks.tankson.TanksON;
+import tanks.tankson.TanksJson;
 import tanks.tankson.TanksONable;
 
 import java.util.ArrayList;
@@ -55,12 +55,12 @@ public abstract class Item implements IGameObject
 
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return TanksJson.toJson(this).toString();
 		}
 
 		public static ShopItem fromString(String s)
 		{
-			return (ShopItem) TanksON.parseObject(s);
+			return (ShopItem) TanksJson.parseObject(s);
 		}
 	}
 
@@ -82,7 +82,7 @@ public abstract class Item implements IGameObject
 
 		public static CrusadeShopItem fromString(String s)
 		{
-			return (CrusadeShopItem) TanksON.parseObject(s);
+			return (CrusadeShopItem) TanksJson.parseObject(s);
 		}
 	}
 
@@ -220,7 +220,7 @@ public abstract class Item implements IGameObject
 
 		public static ItemStack<?> fromString(Player p, String s)
 		{
-			ItemStack<?> i = (ItemStack<?>) TanksON.parseObject(s);
+			ItemStack<?> i = (ItemStack<?>) TanksJson.parseObject(s);
 			i.player = p;
 			return i;
 		}
@@ -261,11 +261,11 @@ public abstract class Item implements IGameObject
 //
 //		return null;
 
-		return TanksON.objectToString(this);
+		return TanksJson.toJson(this).toString();
 	}
 
 	public static Item fromString(String s)
 	{
-		return (Item) TanksON.parseObject(s);
+		return (Item) TanksJson.parseObject(s);
 	}
 }

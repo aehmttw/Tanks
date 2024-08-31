@@ -56,12 +56,12 @@ public class TanksJson {
                         id = null;
 
                     if (id != null) {
-                        if (id.equals("color_model")) {
-                            h.put(id, f.get(o).toString());
+                        Object obj = f.get(o);
+                        if (getAnnotation(obj.getClass(), TanksONable.class) != null) {
+                            h.put(id, toJson(obj));
                         } else {
-                            Object obj = f.get(o);
-                            if (getAnnotation(obj.getClass(), TanksONable.class) != null) {
-                                h.put(id, toJson(obj));
+                            if (obj instanceof IModel) {
+                                h.put(id, obj.toString());
                             } else {
                                 h.put(id, obj);
                             }

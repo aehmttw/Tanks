@@ -51,6 +51,41 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 Game.exitToCrash(e);
             }
         };
+
+        this.title = "Edit %s";
+        this.objName = "bullet";
+    }
+
+    public class TabFiring extends ScreenEditorTanksONable<Bullet>.Tab
+    {
+        public TabFiring(ScreenEditorTanksONable<Bullet> screen, String name, String category)
+        {
+            super(screen, name, category);
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.uiElements.clear();
+            for (Field f: this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger el = screen.getUIElementForField(f, p, screen.target);
+
+                    if (p.id().equals("sound_pitch") || p.id().equals("sound_pitch_variation"))
+                    {
+                        ((TextBox) el).silent = true;
+                        Runnable func = ((TextBox) el).function;
+                        Bullet t = target.get();
+                        ((TextBox) el).function = () -> { func.run(); Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation)); };
+                    }
+
+                    this.uiElements.add(el);
+                }
+            }
+        }
     }
 
     public class TabAppearance extends ScreenEditorTanksONable<Bullet>.Tab
@@ -215,9 +250,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 Drawing.drawing.setColor(bullet.outlineColorR, bullet.outlineColorG, bullet.outlineColorB);
             else
                 Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
-
-            //Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
-            //Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.lightSize / 4, s * 1.5 * preview.lightSize / 4, false, true);
         }
     }
 
@@ -496,7 +528,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         col2 = new TabColorPicker(this, appearance, "", "color", 2);
         col3 = new TabColorPicker(this, appearance, "Color noise", "color", 3);
 
-        new Tab(this, "Firing", BulletPropertyCategory.firing);
+        new TabFiring(this, "Firing", BulletPropertyCategory.firing);
         new Tab(this, "Movement", BulletPropertyCategory.travel);
         new Tab(this, "Impact", BulletPropertyCategory.impact);
         glow = new TabGlow(this, appearance, "Glow", BulletPropertyCategory.appearanceGlow);
@@ -516,7 +548,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     @Override
     public void draw()
     {
-        this.title = "Edit bullet";
         this.objName = target.get().typeName;
 
         super.draw();

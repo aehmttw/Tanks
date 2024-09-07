@@ -41,7 +41,7 @@ public class ObstacleBeatBlock extends Obstacle
             pos = Game.game.window.soundPlayer.getMusicPos() * 100;
 
         pos /= 100.0;
-        return ((int) ((pos + 6.0) / (6.0 / freq)) % 2 == (alt ? 1 : 0));
+        return ((int) (6.0 + pos / (6.0 / freq)) % 2 == (alt ? 1 : 0));
     }
 
     public static double timeTillChange(double freq)
@@ -68,17 +68,20 @@ public class ObstacleBeatBlock extends Obstacle
             int y = (int) (this.posY / Game.tile_size);
 
             if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-            {
                 Game.game.solidGrid[x][y] = this.tankCollision;
-            }
+
             this.verticalFaces = null;
             this.horizontalFaces = null;
             this.allowBounce = false;
+            this.shouldClip = true;
 
             this.lastOn = this.tankCollision;
         }
         else
+        {
             this.allowBounce = true;
+            this.shouldClip = false;
+        }
     }
 
     @Override
@@ -97,7 +100,6 @@ public class ObstacleBeatBlock extends Obstacle
 
         drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA, this.glow);
 
-        double size = this.tankCollision ? draw_size : 10;
         if (Game.enable3d)
         {
             for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
@@ -127,8 +129,46 @@ public class ObstacleBeatBlock extends Obstacle
                 }
             }
         }
-        else //TODO
-            drawing.fillRect(this, this.posX, this.posY, size, size);
+        else
+        {
+            int freq = (int) this.beatFrequency;
+            boolean alt = this.alternate;
+
+            double timeTillChange = ObstacleBeatBlock.timeTillChange(freq) % (600 / freq);
+
+            double beatTime = 37.5;
+            int warningBeats = freq == 1 ? 3 : freq == 2 ? 2 : freq == 4 ? 1 : 0;
+            float flash = 0f;
+
+            if (timeTillChange < beatTime * warningBeats)
+                flash = (float) Math.max(0, ((timeTillChange + 600.0) % beatTime) / beatTime - 0.5);
+
+            boolean on = ObstacleBeatBlock.isOn(freq, alt);
+            float f = (float) (Obstacle.draw_size);
+
+            float small = 0.25f;
+            float large = 1.0f;
+
+            float size;
+            if (warningBeats > 0)
+            {
+                if (on)
+                    size = (float) (small + (large - small) * Math.min(1, timeTillChange / 8));
+                else
+                    size = (float) (small + (large - small) * (1.0 - Math.min(1, timeTillChange / 8)));
+            }
+            else
+                size = (on ? large : small);
+
+            if (!on)
+                flash *= 2;
+
+            drawing.setColor(this.outlineColorR * (1 - flash), this.outlineColorG * (1 - flash), this.outlineColorB * (1 - flash), this.colorA, this.glow);
+            drawing.fillRect(this, this.posX, this.posY, f * size, f * size);
+
+            drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash) + 255 * flash, this.colorB * (1 - flash) + 255 * flash, this.colorA, this.glow);
+            drawing.fillRect(this, this.posX, this.posY, f * size * 0.9, f * size * 0.9);
+        }
     }
 
     public void drawBox(double z, byte o)
@@ -136,9 +176,9 @@ public class ObstacleBeatBlock extends Obstacle
         float cx = (float) this.posX;
         float cy = (float) this.posY;
         float h = (float) (Game.sampleGroundHeight(this.posX, this.posY));
-        float cz = (float) (z + h);
+        float cz = (float) (h);
 
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z, Game.tile_size, Game.tile_size, Game.tile_size, o, false, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
 
         Drawing.drawing.setColor(outlineColorR, outlineColorG, outlineColorB);
         double thickness = 2;
@@ -162,7 +202,7 @@ public class ObstacleBeatBlock extends Obstacle
 
     public void initialize()
     {
-        double f = (Math.log(beatFrequency) / 6.0 + (alternate ? 0.5 : 0) + 0.4) % 1.0;
+        double f = (Math.log(beatFrequency) / Math.log(2) / 8.0 + (alternate ? 0.5 : 0) + 0.4) % 1.0;
         double[] col = Game.getRainbowColor(f);
         this.colorR = col[0] * 0.75 + 255 * 0.25;
         this.colorG = col[1] * 0.75 + 255 * 0.25;
@@ -186,6 +226,16 @@ public class ObstacleBeatBlock extends Obstacle
         this.outlineColorR = col[0] * 0.75 + 0 * 0.25;
         this.outlineColorG = col[1] * 0.75 + 0 * 0.25;
         this.outlineColorB = col[2] * 0.75 + 0 * 0.25;
+    }
+
+    @Override
+    public void drawForInterface(double x, double y)
+    {
+        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, this.colorA);
+        Drawing.drawing.fillInterfaceRect(x, y, draw_size, draw_size);
+
+        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
+        Drawing.drawing.fillInterfaceRect(x, y, draw_size * 0.9, draw_size * 0.9);
     }
 
     @Override

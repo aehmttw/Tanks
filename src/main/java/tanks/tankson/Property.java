@@ -27,6 +27,7 @@ public @interface Property
         description,
         music,
         spawnedTanks,
-        bulletSound
+        bulletSound,
+        itemIcon
     }
 }

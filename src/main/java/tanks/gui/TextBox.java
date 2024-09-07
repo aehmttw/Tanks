@@ -79,6 +79,7 @@ public class TextBox implements IDrawable, ITrigger
 	public ArrayList<Effect> glowEffects = new ArrayList<>();
 
 	public boolean enabled = true;
+	public boolean silent = false;
 
 	/** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
 	public boolean wait = false;
@@ -476,7 +477,10 @@ public class TextBox implements IDrawable, ITrigger
 		this.performValueCheck();
 		function.run();
 		this.previousInputText = this.inputText;
-		Drawing.drawing.playSound("destroy.ogg", 2f);
+
+		if (!this.silent)
+			Drawing.drawing.playSound("destroy.ogg", 2f);
+
 		Drawing.drawing.playVibration("click");
 		selected = false;
 		Game.game.window.showKeyboard = false;

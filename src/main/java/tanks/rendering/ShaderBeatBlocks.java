@@ -70,7 +70,7 @@ public class ShaderBeatBlocks extends RendererShader implements IUpdatedShader, 
             flash *= 2;
 
         this.flashFrac.set(flash);
-        this.obstacleSizeFrac.set(f * (size * 0.95f));
+        this.obstacleSizeFrac.set(f * (size));
         this.outlineSizeFrac.set(f * size);
     }
 }

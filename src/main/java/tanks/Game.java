@@ -21,6 +21,7 @@ import tanks.item.ItemMine;
 import tanks.item.ItemShield;
 import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;
+import tanks.minigames.TeamDeathmatch;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SteamNetworkHandler;
@@ -122,6 +123,7 @@ public class Game
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
+	public static boolean drawAutoZoom = false;
 	public static final boolean cinematic = false;
 
 	public static String lastVersion = "Tanks v0";
@@ -536,6 +538,7 @@ public class Game
 		registerItem(ItemShield.class, ItemShield.item_class_name, "shield.png");
 
 		registerMinigame(Arcade.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 
 		TankPlayer.default_bullet = new Bullet();
 		TankPlayer.default_mine = new Mine();

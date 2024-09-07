@@ -149,7 +149,7 @@ public class CrusadePlayer
             StringBuilder items = new StringBuilder();
             for (Item.ItemStack<?> i : this.itemBar.slots)
             {
-                items.append(i.item.name).append(",").append(i.unlimited ? -1 : i.stackSize).append("|");
+                items.append(i.item.name).append(",").append(i.stackSize).append("|");
             }
 
             f.println(items.substring(0, items.length() - 1));

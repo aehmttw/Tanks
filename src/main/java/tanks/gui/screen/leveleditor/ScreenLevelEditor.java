@@ -43,6 +43,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public boolean stagger = false;
 	public boolean oddStagger = false;
 	public int mouseObstacleGroup = 0;
+	public int mouseObstacleBeatPattern = 0;
 	public boolean paused = false;
 	public boolean objectMenu = false;
 
@@ -96,6 +97,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public HashSet<String> prevTankMusics = new HashSet<>();
 	public HashSet<String> tankMusics = new HashSet<>();
+	public HashSet<String> overlayMusics = new HashSet<>();
 
 	public ArrayList<Object> clipboard = new ArrayList<>();
 
@@ -243,6 +245,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	}, "Block group ID (%s)", Game.game.input.editorGroupID.getInputs()
 	);
 
+	Button beatPatternShortcut = new Button(0, -1000, 70, 70, "", () ->
+	{
+		paused = true;
+		Game.screen = new OverlayBeatBlockPattern(Game.screen, (ScreenLevelEditor) Game.screen);
+	}, "Beat pattern (%s)", Game.game.input.editorGroupID.getInputs()
+	);
+
 	Button selectSquareToggle = new Button(0, -1000, 70, 70, "", () ->
 	{
 		Game.game.window.pressedKeys.clear();
@@ -336,6 +345,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		groupShortcut.sizeY *= controlsSizeMultiplier;
 		groupShortcut.fullInfo = true;
 
+		beatPatternShortcut.sizeX *= controlsSizeMultiplier;
+		beatPatternShortcut.sizeY *= controlsSizeMultiplier;
+		beatPatternShortcut.fullInfo = true;
+
 		teamShortcut.sizeX *= controlsSizeMultiplier;
 		teamShortcut.sizeY *= controlsSizeMultiplier;
 		teamShortcut.fullInfo = true;
@@ -390,6 +403,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.prevTankMusics.addAll(this.tankMusics);
 		this.tankMusics.clear();
 
+		this.tankMusics.addAll(this.overlayMusics);
+		this.overlayMusics.clear();
+
 		if (tanks)
 		{
 			for (Movable m : Game.movables)
@@ -416,7 +432,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				this.tankMusics.add("beatblocks/beat_blocks.ogg");
 			}
 		}
-
 
 		for (String m : this.prevTankMusics)
 		{
@@ -559,6 +574,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			teamShortcut.posX = heightShortcut.posX - hStep;
 			teamShortcut.posY = heightShortcut.posY - vStep;
 
+			beatPatternShortcut.posX = teamShortcut.posX;
+			beatPatternShortcut.posY = teamShortcut.posY;
+
 			selectSquareToggle.posX = heightShortcut.posX;
 			selectSquareToggle.posY = heightShortcut.posY;
 
@@ -601,8 +619,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (currentPlaceable == Placeable.obstacle && mouseObstacle.enableStacking)
 					heightShortcut.update();
 
-				if (currentPlaceable == Placeable.obstacle && mouseObstacle.enableGroupID)
+				if (currentPlaceable == Placeable.obstacle && mouseObstacle.enableGroupID && !(mouseObstacle instanceof ObstacleBeatBlock))
 					groupShortcut.update();
+
+				if (currentPlaceable == Placeable.obstacle && mouseObstacle instanceof ObstacleBeatBlock)
+					beatPatternShortcut.update();
 
 				if (currentPlaceable == Placeable.playerTank || currentPlaceable == Placeable.enemyTank)
 					rotateShortcut.update();
@@ -725,7 +746,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 
 				if (mouseObstacle.enableGroupID)
-					mouseObstacle.setMetadata(mouseObstacleGroup + "");
+					mouseObstacle.setMetadata((mouseObstacle instanceof ObstacleBeatBlock ? mouseObstacleBeatPattern : mouseObstacleGroup) + "");
 			}
 
 			if (up && currentPlaceable == Placeable.enemyTank)
@@ -739,7 +760,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 
 				if (mouseObstacle.enableGroupID)
-					mouseObstacle.setMetadata(mouseObstacleGroup + "");
+					mouseObstacle.setMetadata((mouseObstacle instanceof ObstacleBeatBlock ? mouseObstacleBeatPattern : mouseObstacleGroup) + "");
 			}
 
 			if ((up || down) && !(up && down))
@@ -808,7 +829,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					playerTeamNum = (playerTeamNum - 1 + this.teams.size() + 1) % (this.teams.size() + 1);
 				else if (currentPlaceable == Placeable.obstacle)
 				{
-					if (mouseObstacle.enableStacking)
+					if (mouseObstacle instanceof ObstacleBeatBlock)
+					{
+						mouseObstacleBeatPattern = Math.max(mouseObstacleBeatPattern - 1, 0);
+						mouseObstacle.setMetadata(mouseObstacleBeatPattern + "");
+					}
+					else if (mouseObstacle.enableStacking)
 					{
 						mouseObstacleHeight = Math.max(mouseObstacleHeight - 0.5, 0.5);
 
@@ -833,7 +859,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					playerTeamNum = (playerTeamNum + 1) % (this.teams.size() + 1);
 				else if (currentPlaceable == Placeable.obstacle)
 				{
-					if (mouseObstacle.enableStacking)
+					if (mouseObstacle instanceof ObstacleBeatBlock)
+					{
+						mouseObstacleBeatPattern = Math.min(mouseObstacleBeatPattern + 1, 8);
+						mouseObstacle.setMetadata(mouseObstacleBeatPattern + "");
+					}
+					else if (mouseObstacle.enableStacking)
 						mouseObstacleHeight = Math.min(mouseObstacleHeight + 0.5, Obstacle.default_max_height);
 					else if (mouseObstacle.enableGroupID)
 					{
@@ -1039,7 +1070,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (Game.game.input.editorGroupID.isValid() && mouseObstacle.enableGroupID && currentPlaceable == Placeable.obstacle)
 		{
 			Game.game.input.editorGroupID.invalidate();
-			this.groupShortcut.function.run();
+
+			if (mouseObstacle instanceof ObstacleBeatBlock)
+				this.beatPatternShortcut.function.run();
+			else
+				this.groupShortcut.function.run();
 		}
 
 		if (Game.game.input.editorTeam.isValid() && (currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank))
@@ -1633,12 +1668,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 								}
 							}
 							else if (o.enableGroupID)
-								o.setMetadata(mouseObstacleGroup + "");
+								o.setMetadata((o instanceof ObstacleBeatBlock ? mouseObstacleBeatPattern : mouseObstacleGroup) + "");
 
 							mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(o.posX, o.posY);
 
 							if (mouseObstacle.enableGroupID)
-								mouseObstacle.setMetadata(mouseObstacleGroup + "");
+								mouseObstacle.setMetadata((o instanceof ObstacleBeatBlock ? mouseObstacleBeatPattern : mouseObstacleGroup) + "");
 
 							this.actions.add(new Action.ActionObstacle(o, true));
 							Game.addObstacle(o);
@@ -1689,6 +1724,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					mouseObstacleHeight = n.stackHeight;
 					mouseObstacleStartHeight = n.startHeight;
 					mouseObstacleGroup = n.groupID;
+
+					if (n instanceof ObstacleBeatBlock)
+						mouseObstacleBeatPattern = n.groupID;
+
 					mouseTank.posX = mouseObstacle.posX;
 					mouseTank.posY = mouseObstacle.posY;
 
@@ -2362,6 +2401,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				if (currentPlaceable == Placeable.obstacle && mouseObstacle.enableGroupID)
 					groupShortcut.draw();
+
+				if (currentPlaceable == Placeable.obstacle && mouseObstacle instanceof ObstacleBeatBlock)
+					beatPatternShortcut.draw();
 
 				if (currentPlaceable == Placeable.playerTank || currentPlaceable == Placeable.enemyTank)
 					rotateShortcut.draw();

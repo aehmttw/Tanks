@@ -9,6 +9,7 @@ import tanks.gui.screen.ITankScreen;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenAddSavedTank;
 import tanks.gui.screen.ScreenTankEditor;
+import tanks.obstacle.ObstacleBeatBlock;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
@@ -47,6 +48,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public Button editHeight = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBlockHeight(Game.screen, screenLevelEditor));
 
     public Button editGroupID = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBlockGroupID(Game.screen, screenLevelEditor));
+
+    public Button editBeatPattern = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBeatBlockPattern(Game.screen, screenLevelEditor));
 
     public Button selectTeam = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlaySelectTeam(Game.screen, screenLevelEditor));
 
@@ -102,6 +105,10 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         editGroupID.imageSizeX = 30;
         editGroupID.imageSizeY = 30;
         editGroupID.image = "icons/id.png";
+
+        editBeatPattern.imageXOffset = -155;
+        editBeatPattern.imageSizeX = 30;
+        editBeatPattern.imageSizeY = 30;
 
         int count = Game.registryTank.tankEntries.size() + this.screenLevelEditor.level.customTanks.size();
 
@@ -281,7 +288,10 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
             else if (screenLevelEditor.mouseObstacle.enableGroupID)
             {
-                this.editGroupID.update();
+                if (screenLevelEditor.mouseObstacle instanceof ObstacleBeatBlock)
+                    this.editBeatPattern.update();
+                else
+                    this.editGroupID.update();
             }
         }
 
@@ -387,8 +397,16 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
             else if (screenLevelEditor.mouseObstacle.enableGroupID)
             {
-                this.editGroupID.setText("Group ID: %d", screenLevelEditor.mouseObstacleGroup);
-                this.editGroupID.draw();
+                if (screenLevelEditor.mouseObstacle instanceof ObstacleBeatBlock)
+                {
+                    this.editBeatPattern.setText("Beat pattern: %s", (Object) ((int) Math.pow(2, (screenLevelEditor.mouseObstacle.groupID) / 2) + ((screenLevelEditor.mouseObstacle.groupID % 2 == 0) ? "a" : "b")));
+                    this.editBeatPattern.draw();
+                }
+                else
+                {
+                    this.editGroupID.setText("Group ID: %d", screenLevelEditor.mouseObstacleGroup);
+                    this.editGroupID.draw();
+                }
             }
 
             this.drawMobileTooltip(this.obstacleButtons.get(this.screenLevelEditor.obstacleNum).hoverTextRawTranslated);

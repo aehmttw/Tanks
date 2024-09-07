@@ -55,7 +55,7 @@ public class ScreenCrashed extends Screen
 
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, this.objWidth, this.objHeight, "Return to title", Game::exitToTitle);
 
-	Button chatroom = new Button(Drawing.drawing.interfaceSizeX / 2 + 100, 290, this.objWidth, this.objHeight, "Get help on Discord", () ->
+	Button chatroom = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Get help on Discord", () ->
 	{
 		try
 		{
@@ -114,8 +114,11 @@ public class ScreenCrashed extends Screen
 		drawing.setInterfaceFontSize(24 * scale2);
 		drawing.drawInterfaceText(50, 410, Game.crashLine, false);
 
+		int extensions = Game.extensionRegistry.extensions.size();
+		String extText = extensions == 0 ? "" : extensions == 1 ? " (with 1 extension)" : " (with " + extensions + " extensions)";
+
 		drawing.setInterfaceFontSize(24);
-		drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version);
+		drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version + extText);
 
 		drawing.displayInterfaceText(50, 500,  false, "Check the crash report file for more information: ");
 		drawing.drawInterfaceText(50, 530, Game.homedir.replace("\\", "/") + Game.crashesPath + Game.crashTime + ".crash", false);

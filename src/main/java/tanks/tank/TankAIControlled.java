@@ -835,9 +835,6 @@ public class TankAIControlled extends Tank
 	/** Actually fire a bullet*/
 	public void fireBullet(Bullet b, double speed, double offset)
 	{
-		if (b.shotSound != null)
-			Drawing.drawing.playGlobalSound(b.shotSound, (float) ((Bullet.bullet_size / this.bullet.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
-
 		if (this.shotSound != null)
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
 

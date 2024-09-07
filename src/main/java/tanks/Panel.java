@@ -371,7 +371,7 @@ public class Panel
 		{
 			if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 ||
 					((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) || !((ScreenGame) Game.screen).playing)
-				this.zoomTimer -= 0.02 * Panel.frameFrequency;
+				this.zoomTimer -= 0.01 * Panel.frameFrequency;
 		}
 
 		if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) && !ScreenGame.finished
@@ -410,10 +410,10 @@ public class Panel
 
 			if (Drawing.drawing.movingCamera)
 			{
-				if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 ||
+				if (!(Game.screen instanceof ScreenGame) || (Panel.zoomTarget < 0 && !Panel.autoZoom) ||
 						((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) ||
 						!((ScreenGame) Game.screen).playing)
-					this.zoomTimer += 0.04 * Panel.frameFrequency;
+					this.zoomTimer += 0.02 * Panel.frameFrequency;
 
 				double mul = Panel.zoomTarget;
 				if (mul < 0)
@@ -433,12 +433,13 @@ public class Panel
 		if (Game.screen instanceof ScreenGame && Drawing.drawing.enableMovingCamera && Panel.zoomTarget >= 0 && (((ScreenGame) Game.screen).spectatingTank != null || (Game.playerTank != null && !Game.playerTank.destroy)) && ((ScreenGame) Game.screen).playing)
 		{
 			double speed = 0.3 * Drawing.drawing.unzoomedScale;
-			double accel = 0.0003 * Drawing.drawing.unzoomedScale;
-			double distDampen = 2;
+			double accel = 0.00003 * Drawing.drawing.unzoomedScale;
+			double distDampen = 0.4;
 
 			if (Panel.autoZoom)
 			{
 				speed /= 4;
+				speed *= Math.signum(Panel.zoomTarget - this.zoomTimer);
 
 				if (speed - Panel.lastAutoZoomSpeed > accel * Panel.frameFrequency)
 					speed = Panel.lastAutoZoomSpeed + accel * Panel.frameFrequency;
@@ -452,15 +453,10 @@ public class Panel
 
 				Panel.lastAutoZoomSpeed = speed;
 
-				if (Math.abs(Panel.zoomTarget - this.zoomTimer) < speed)
-				{
+				if (Math.abs(Panel.zoomTarget - this.zoomTimer) < Math.abs(speed))
 					this.zoomTimer = Panel.zoomTarget;
-				}
 				else
-				{
-					speed *= Math.signum(Panel.zoomTarget - this.zoomTimer);
 					this.zoomTimer = this.zoomTimer + speed * Panel.frameFrequency;
-				}
 			}
 			else
 			{
@@ -636,7 +632,8 @@ public class Panel
 
 			Game.screen.setupLights();
 
-			Game.game.window.createLights(this.lights, Drawing.drawing.scale);
+			if (Game.fancyLights)
+				Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
 			if (!Game.game.window.drawingShadow)
 			{

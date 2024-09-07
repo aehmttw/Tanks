@@ -206,7 +206,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	@Property(id = "sound", name = "Shot sound", category = BulletPropertyCategory.firing, miscType = Property.MiscType.bulletSound)
 	public String shotSound = "shoot.ogg";
-	@Property(id = "sound_pitch_variation", minValue = 0.0, name = "Sound pitch variation", category = BulletPropertyCategory.firing)
+	@Property(id = "sound_pitch", minValue = 0.0, maxValue = 10.0, name = "Sound pitch", category = BulletPropertyCategory.firing)
+	public double pitch = 1;
+	@Property(id = "sound_pitch_variation", minValue = 0.0, maxValue = 10.0, name = "Sound pitch variation", category = BulletPropertyCategory.firing)
 	public double pitchVariation = 0;
 
 	protected ArrayList<Trail>[] trails;
@@ -779,32 +781,44 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 					if (!left && dx <= 0 && dx > 0 - bound && horizontalDist > verticalDist)
 					{
-						this.posX += 2 * (horizontalDist - bound);
-						this.vX = -Math.abs(this.vX);
+						if (allowBounce)
+						{
+							this.posX += 2 * (horizontalDist - bound);
+							this.vX = -Math.abs(this.vX);
+						}
 
 						this.collisionX = this.posX - (horizontalDist - bound);
 						this.collisionY = this.posY - (horizontalDist - bound) / vX * vY;
 					}
 					else if (!up && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 					{
-						this.posY += 2 * (verticalDist - bound);
-						this.vY = -Math.abs(this.vY);
+						if (allowBounce)
+						{
+							this.posY += 2 * (verticalDist - bound);
+							this.vY = -Math.abs(this.vY);
+						}
 
 						this.collisionX = this.posX - (verticalDist - bound) / vY * vX;
 						this.collisionY = this.posY - (verticalDist - bound);
 					}
 					else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
 					{
-						this.posX -= 2 * (horizontalDist - bound);
-						this.vX = Math.abs(this.vX);
+						if (allowBounce)
+						{
+							this.posX -= 2 * (horizontalDist - bound);
+							this.vX = Math.abs(this.vX);
+						}
 
 						this.collisionX = this.posX + (horizontalDist - bound);
 						this.collisionY = this.posY + (horizontalDist - bound) / vX * vY;
 					}
 					else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
 					{
-						this.posY -= 2 * (verticalDist - bound);
-						this.vY = Math.abs(this.vY);
+						if (allowBounce)
+						{
+							this.posY -= 2 * (verticalDist - bound);
+							this.vY = Math.abs(this.vY);
+						}
 
 						this.collisionX = this.posX + (verticalDist - bound) / vY * vX;
 						this.collisionY = this.posY + (verticalDist - bound);
@@ -1687,6 +1701,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			{
 				this.hitExplosion.posX = this.posX;
 				this.hitExplosion.posY = this.posY;
+				this.hitExplosion.tank = this.tank;
+				this.hitExplosion.item = this.item;
 				this.hitExplosion.explode();
 			}
 

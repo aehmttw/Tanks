@@ -26,8 +26,8 @@ public abstract class Item implements IGameObject
 	@Property(id = "name", name = "Item name")
 	public String name = System.currentTimeMillis() + "";
 
-	@Property(id = "icon", name = "Icon")
-	public String icon;
+	@Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
+	public String icon = "item.png";
 
 	@Property(id = "cooldown", name = "Cooldown")
 	public double cooldownBase = 20;
@@ -67,6 +67,9 @@ public abstract class Item implements IGameObject
 	@TanksONable("crusade_shop_item")
 	public static class CrusadeShopItem extends ShopItem
 	{
+		@Property(id = "unlock_level")
+		public int levelUnlock;
+
 		public CrusadeShopItem(ItemStack<?> itemStack)
 		{
 			super(itemStack);
@@ -77,9 +80,6 @@ public abstract class Item implements IGameObject
 
 		}
 
-		@Property(id = "unlock_level")
-		public int levelUnlock;
-
 		public static CrusadeShopItem fromString(String s)
 		{
 			return (CrusadeShopItem) TanksON.parseObject(s);
@@ -89,17 +89,14 @@ public abstract class Item implements IGameObject
 	@TanksONable("item_stack")
 	public static abstract class ItemStack<T extends Item>
 	{
-		@Property(id = "item")
 		public T item;
 
-		@Property(id = "amount")
+		@Property(id = "amount", name = "Amount")
 		public int stackSize;
 
-		@Property(id = "max")
+		@Property(id = "max", name = "Max stack size")
 		public int maxStackSize;
 
-		@Property(id = "unlimited")
-		public boolean unlimited = false;
 		public boolean isEmpty = false;
 
 		public double cooldown = 0;
@@ -119,16 +116,13 @@ public abstract class Item implements IGameObject
 			this.player = p;
 			this.item = item;
 			this.maxStackSize = max;
-
-			if (max <= 0)
-				this.unlimited = true;
 		}
 
 		public ItemStack<?> getCopy()
 		{
 			try
 			{
-				return (ItemStack<?>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, unlimited ? -1 : this.maxStackSize);
+				return (ItemStack<?>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
 			}
 			catch (Exception e)
 			{
@@ -211,11 +205,13 @@ public abstract class Item implements IGameObject
 
 		public void subtractItem()
 		{
-			if (!this.unlimited)
+			if (this.stackSize > 0)
+			{
 				this.stackSize--;
 
-			if (this.stackSize <= 0)
-				this.destroy = true;
+				if (this.stackSize <= 0)
+					this.destroy = true;
+			}
 		}
 
 		public static ItemStack<?> fromString(Player p, String s)

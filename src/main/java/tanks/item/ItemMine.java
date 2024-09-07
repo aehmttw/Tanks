@@ -53,8 +53,7 @@ public class ItemMine extends Item
         {
             return t != null
                     && (this.item.mine.maxLiveMines <= 0 || this.liveMines < this.item.mine.maxLiveMines)
-                    && !(this.cooldown > 0)
-                    && (this.stackSize > 0 || this.unlimited);
+                    && !(this.cooldown > 0);
         }
     }
 }

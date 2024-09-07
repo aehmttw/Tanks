@@ -160,7 +160,6 @@ public class Arcade extends Minigame
         {
             Item.ItemStack<?> i = itemsMap.get(tankItemsMap.get(target.name)).getCopy();
             i.stackSize *= target.coinValue / 2;
-            i.unlimited = false;
 
             if (i instanceof ItemShield.ItemStackShield)
                 i.stackSize /= 2;

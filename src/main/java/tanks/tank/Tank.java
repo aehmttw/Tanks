@@ -19,10 +19,7 @@ import tanks.tankson.Property;
 
 import static tanks.tank.TankPropertyCategory.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -60,6 +57,9 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean tookRecoil = false;
 	public double recoilSpeed = 0;
+
+	public HashSet<ClippedTile> clippedTiles = new HashSet<>();
+	public HashSet<ClippedTile> stillClippedTiles = new HashSet<>();
 
 	/** If spawned by another tank, set to the tank that spawned this tank*/
 	protected Tank parent = null;
@@ -388,6 +388,10 @@ public abstract class Tank extends Movable implements ISolidObject
 			hasCollided = true;
 		}
 
+		this.clippedTiles.clear();
+		this.clippedTiles.addAll(this.stillClippedTiles);
+		this.stillClippedTiles.clear();
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
@@ -412,7 +416,17 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (!o.tankCollision)
 					continue;
 
-				if (!o.hasLeftNeighbor() && dx <= 0 && dx >= -bound && horizontalDist >= verticalDist)
+				if (this.stillClips(o.posX, o.posY))
+					continue;
+				if (o.shouldClip)
+				{
+					ClippedTile c = new ClippedTile((int) (o.posX / Game.tile_size), (int) (o.posY / Game.tile_size));
+					this.stillClippedTiles.add(c);
+					this.clippedTiles.add(c);
+					continue;
+				}
+
+				if ((!o.hasLeftNeighbor() || this.clips(o.posX - Game.tile_size, o.posY)) && dx <= 0 && dx >= -bound && horizontalDist >= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -421,7 +435,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vX = 0;
 					this.posX += horizontalDist - bound;
 				}
-				else if (!o.hasUpperNeighbor() && dy <= 0 && dy >= -bound && horizontalDist <= verticalDist)
+				else if ((!o.hasUpperNeighbor() || this.clips(o.posX, o.posY - Game.tile_size)) && dy <= 0 && dy >= -bound && horizontalDist <= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -430,7 +444,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vY = 0;
 					this.posY += verticalDist - bound;
 				}
-				else if (!o.hasRightNeighbor() && dx >= 0 && dx <= bound && horizontalDist >= verticalDist)
+				else if ((!o.hasRightNeighbor() || this.clips(o.posX + Game.tile_size, o.posY))&& dx >= 0 && dx <= bound && horizontalDist >= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -439,7 +453,7 @@ public abstract class Tank extends Movable implements ISolidObject
 						this.vX = 0;
 					this.posX -= horizontalDist - bound;
 				}
-				else if (!o.hasLowerNeighbor() && dy >= 0 && dy <= bound && horizontalDist <= verticalDist)
+				else if ((!o.hasLowerNeighbor() || this.clips(o.posX, o.posY + Game.tile_size)) && dy >= 0 && dy <= bound && horizontalDist <= verticalDist)
 				{
 					hasCollided = true;
 					if (bouncy)
@@ -1117,6 +1131,10 @@ public abstract class Tank extends Movable implements ISolidObject
 		double nearest = Double.MAX_VALUE;
 
 		double farthestInSight = -1;
+		boolean farthestIsInSight = false;
+
+		Movable nearestM = null;
+		Movable farthestM = null;
 
 		for (Movable m: Game.movables)
 		{
@@ -1134,22 +1152,54 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (dist < nearest)
 				{
 					nearest = dist;
+					nearestM = m;
 				}
 
-				if (dist <= 3.5 && dist > farthestInSight)
+				if (dist > farthestInSight)
 				{
 					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
 					r.vY = m.posY - this.posY;
 
-					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000)
-							|| r.getTarget() == m)
+					boolean isInSight = r.getTarget() == m;
+					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000) || isInSight)
 					{
+						farthestM = m;
 						farthestInSight = dist;
-						this.lastFarthestInSight = (Tank) m;
-						this.lastFarthestInSightUpdate = System.currentTimeMillis();
+						farthestIsInSight = false;
+
+						if (isInSight)
+						{
+							farthestIsInSight = true;
+							this.lastFarthestInSight = (Tank) m;
+							this.lastFarthestInSightUpdate = System.currentTimeMillis();
+						}
 					}
 				}
+			}
+		}
+
+		if (Game.drawAutoZoom)
+		{
+			if (farthestM != null)
+			{
+				Effect e = Effect.createNewEffect(farthestM.posX, farthestM.posY, 50, Effect.EffectType.explosion);
+				e.colR = 0;
+
+				if (farthestIsInSight)
+					e.colG = 255;
+				else
+					e.colB = 255;
+
+				e.radius = 100;
+				Game.effects.add(e);
+			}
+
+			if (nearestM != null)
+			{
+				Effect e = Effect.createNewEffect(nearestM.posX, nearestM.posY, 50, Effect.EffectType.explosion);
+				e.radius = 100;
+				Game.effects.add(e);
 			}
 		}
 
@@ -1276,5 +1326,53 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		Drawing.drawing.setColor(r3, g3, b3);
 		Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
+	}
+
+	protected static class ClippedTile
+	{
+		public final int x;
+		public final int y;
+
+		public ClippedTile(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public boolean equals(Object c)
+		{
+			return c instanceof ClippedTile && ((ClippedTile) c).x == this.x && ((ClippedTile) c).y == this.y;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(x, y);
+		}
+	}
+
+	public boolean clips(double x, double y)
+	{
+		if (this.clippedTiles.isEmpty())
+			return false;
+		else
+			return this.clippedTiles.contains(new ClippedTile((int) (x / Game.tile_size), (int) (y / Game.tile_size)));
+	}
+
+	public boolean stillClips(double x, double y)
+	{
+		if (this.clippedTiles.isEmpty())
+			return false;
+		else
+		{
+			ClippedTile c = new ClippedTile((int) (x / Game.tile_size), (int) (y / Game.tile_size));
+			if (this.clippedTiles.contains(c))
+			{
+				this.stillClippedTiles.add(c);
+				return true;
+			}
+			return false;
+		}
 	}
 }

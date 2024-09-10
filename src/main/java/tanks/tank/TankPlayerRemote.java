@@ -451,11 +451,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (speed <= 0)
             speed = Double.MIN_NORMAL;
 
-        if (b.shotSound != null)
-        {
-            Drawing.drawing.playGlobalSound(b.shotSound, (float) ((Bullet.bullet_size / b.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
-        }
-
         b.addPolarMotion(this.angle + offset, speed);
         b.speed = speed;
 

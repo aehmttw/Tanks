@@ -59,7 +59,7 @@ public class ItemShield extends Item
         @Override
         public boolean usable(Tank t)
         {
-            return (this.item.max <= 0 || t.health < this.item.max) && (this.stackSize > 0 || this.unlimited) && this.cooldown <= 0;
+            return (this.item.max <= 0 || t.health < this.item.max) && this.cooldown <= 0;
         }
     }
 }

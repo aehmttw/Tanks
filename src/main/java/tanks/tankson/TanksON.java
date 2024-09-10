@@ -22,6 +22,44 @@ public class TanksON
     protected static TankAIControlled defaultTank = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
     protected static HashMap<Class<?>, Object> defaults = new HashMap<>();
 
+    protected static class ParserState
+    {
+        public String s;
+        public int index = 0;
+        
+        protected ParserState(String s)
+        {
+            this.s = s;
+        }
+        
+        protected char nextChar()
+        {
+            return s.charAt(index);
+        }
+
+        public boolean tokenMatches(String token)
+        {
+            if (s.startsWith(token, index))
+            {
+                index += token.length();
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void skipWhitespace()
+        {
+            while (true)
+            {
+                if (" \t\n\r".startsWith(this.nextChar() + ""))
+                    index++;
+                else
+                    return;
+            }
+        }
+    }
+
     protected static Object getDefault(Class<?> c) throws InstantiationException, IllegalAccessException
     {
         if (!defaults.containsKey(c))
@@ -32,86 +70,88 @@ public class TanksON
 
     public static Object parseObject(String s)
     {
-        return parseObject(s + " ", new int[]{0});
+        return parseObject(new ParserState(s));
     }
 
-    public static Object parseObject(String s, int[] index)
+    public static Object parseObject(ParserState s)
     {
-        skipWhitespace(s, index);
-        char next = s.charAt(index[0]);
+        s.skipWhitespace();
+        char next = s.nextChar();
         if (next == '"')
-            return parseString(s, index);
+            return parseString(s, false);
         else if (next == '{')
-            return parseMap(s, index);
+            return parseMap(s);
         else if (next == '[')
-            return parseArray(s, index);
+            return parseArray(s);
         else if ("1234567890-Ii".indexOf(next) >= 0)
-            return parseNumber(s, index);
-        else if (tokenMatches(s, index, "true"))
+            return parseNumber(s);
+        else if (s.tokenMatches("true"))
             return true;
-        else if (tokenMatches(s, index, "false"))
+        else if (s.tokenMatches("false"))
             return false;
-        else if (tokenMatches(s, index, "null"))
+        else if (s.tokenMatches("null"))
             return null;
         else
-            return error("Failed to parse object", s, index[0]);
+            return error("Failed to parse object", s);
     }
 
-    public static double parseNumber(String s, int[] index)
+    public static double parseNumber(ParserState s)
     {
-        skipWhitespace(s, index);
-        int start = index[0];
-        while ("+-0123456789.eE".indexOf(s.charAt(index[0])) >= 0)
-            index[0]++;
+        s.skipWhitespace();
+        int start = s.index;
+        while ("+-0123456789.eE".indexOf(s.nextChar()) >= 0)
+            s.index++;
 
         String infinity = "infinity";
-        if (s.length() - index[0] > infinity.length())
-            if (s.substring(index[0], index[0] + infinity.length()).toLowerCase(Locale.ROOT).equals(infinity))
-                index[0] += infinity.length();
+        if (s.s.length() - s.index > infinity.length())
+            if (s.s.substring(s.index, s.index + infinity.length()).toLowerCase(Locale.ROOT).equals(infinity))
+                s.index += infinity.length();
 
         try
         {
-            return Double.parseDouble(s.substring(start, index[0]));
+            return Double.parseDouble(s.s.substring(start, s.index));
         }
         catch (Exception e)
         {
-            return (double) error(e.toString(), s, index[0]);
+            return (double) error(e.toString(), s);
         }
     }
 
-    public static Object parseMap(String s, int[] index)
+    public static Object parseMap(ParserState s)
     {
         HashMap<String, Object> map = new HashMap<>();
 
-        skipWhitespace(s, index);
-        if (s.charAt(index[0]) != '{')
-            error("Failed to start parsing map", s, index[0]);
-        index[0]++;
+        s.skipWhitespace();
+        if (s.nextChar() != '{')
+            error("Failed to start parsing map", s);
+        s.index++;
 
         while (true)
         {
-            skipWhitespace(s, index);
-            char next = s.charAt(index[0]);
+            s.skipWhitespace();
+            char next = s.nextChar();
             if (next == '}')
             {
-                index[0]++;
+                s.index++;
                 return toTanksONable(map);
             }
+            String key;
             if (next != '"')
-                error("Failed to parse map key", s, index[0]);
-            String key = parseString(s, index);
-            skipWhitespace(s, index);
-            next = s.charAt(index[0]);
+                key = parseString(s, true);
+            else
+                key = parseString(s);
+            s.skipWhitespace();
+            next = s.nextChar();
             if (next != ':' && next != '=')
-                error("Failed to parse map key-value", s, index[0]);
-            index[0]++;
-            skipWhitespace(s, index);
-            map.put(key, parseObject(s, index));
-            skipWhitespace(s, index);
-            if (s.charAt(index[0]) == ',')
-                index[0]++;
-            else if (s.charAt(index[0]) != '}')
-                error("Failed to parse map object", s, index[0]);
+                error("Failed to parse map key-value", s);
+            s.index++;
+            s.skipWhitespace();
+            map.put(key, parseObject(s));
+            s.skipWhitespace();
+            if (s.nextChar() == ',')
+                s.index++;
+            else if (s.nextChar() != '}')
+                error("Failed to parse map object", s);
         }
     }
 
@@ -143,7 +183,7 @@ public class TanksON
                 case "item":
                 {
                     String type = (String) map.get("item_type");
-                    o = Game.registryItem.getEntry(type).item.newInstance();
+                    o = Game.registryItem.getEntry(type).item.getConstructor().newInstance();
                     break;
                 }
                 case "item_stack":
@@ -164,6 +204,11 @@ public class TanksON
                 case "explosion":
                 {
                     o = new Explosion();
+                    break;
+                }
+                case "spawned_tank":
+                {
+                    o = new TankAIControlled.SpawnedTankEntry(null, 0);
                     break;
                 }
                 default:
@@ -203,90 +248,83 @@ public class TanksON
         return o;
     }
 
-    public static ArrayList<Object> parseArray(String s, int[] index)
+    public static ArrayList<Object> parseArray(ParserState s)
     {
         ArrayList<Object> array = new ArrayList<>();
 
-        skipWhitespace(s, index);
-        if (s.charAt(index[0]) != '[')
-            error("Failed to start parsing array", s, index[0]);
-        index[0]++;
+        s.skipWhitespace();
+        if (s.nextChar() != '[')
+            error("Failed to start parsing array", s);
+        s.index++;
 
         while (true)
         {
-            skipWhitespace(s, index);
-            char next = s.charAt(index[0]);
+            s.skipWhitespace();
+            char next = s.nextChar();
             if (next == ']')
             {
-                index[0]++;
+                s.index++;
                 return array;
             }
-            array.add(parseObject(s, index));
-            skipWhitespace(s, index);
-            if (s.charAt(index[0]) == ',')
-                index[0]++;
-            else if (s.charAt(index[0]) != ']')
-                error("Failed to parse array object", s, index[0]);
+            array.add(parseObject(s));
+            s.skipWhitespace();
+            if (s.nextChar() == ',')
+                s.index++;
+            else if (s.nextChar() != ']')
+                error("Failed to parse array object", s);
         }
     }
 
-    public static String parseString(String s, int[] index)
+    public static String convertString(String s)
     {
-        skipWhitespace(s, index);
-        int start = s.indexOf('"', index[0]);
-        StringBuilder b = new StringBuilder();
-        for (index[0] = start + 1;; index[0]++)
-        {
-            if (s.charAt(index[0]) == '\\')
-            {
-                if (s.charAt(index[0] + 1) == '"')
-                    b.append("\"");
-                else if (s.charAt(index[0] + 1) == 'n')
-                    b.append('\n');
-                else if (s.charAt(index[0] + 1) == '&')
-                    b.append('\u00A7');
-                else
-                    error("Failed to parse escape sequence", s, index[0]);
+        return s.replace("\\", "\\\\")
+                .replace("\n", "\\n")
+                .replace("\u00A7", "\\&")
+                .replace("\"", "\\\"");
+    }
 
-                index[0]++;
+    public static String parseString(ParserState s)
+    {
+        return parseString(s, false);
+    }
+
+    public static String parseString(ParserState s, boolean unquotedKey)
+    {
+        s.skipWhitespace();
+        int start = unquotedKey ? s.index - 1 : s.s.indexOf('"', s.index);
+        StringBuilder b = new StringBuilder();
+        for (s.index = start + 1;; s.index++)
+        {
+            if (s.nextChar() == '\\')
+            {
+                if (s.s.charAt(s.index + 1) == '"')
+                    b.append("\"");
+                else if (s.s.charAt(s.index + 1) == 'n')
+                    b.append('\n');
+                else if (s.s.charAt(s.index + 1) == '&')
+                    b.append('\u00A7');
+                else if (s.s.charAt(s.index + 1) == '\\')
+                    b.append("\\");
+                else
+                    error("Failed to parse escape sequence", s);
+
+                s.index++;
             }
-            else if (s.charAt(index[0]) != '"')
-                b.append(s.charAt(index[0]));
+            else if (s.nextChar() != '"' && !(unquotedKey && (s.nextChar() == '=' || s.nextChar() == ':')))
+                b.append(s.nextChar());
             else
             {
-                index[0]++;
+                if (s.nextChar() == '"')
+                   s.index++;
                 return b.toString();
             }
         }
     }
 
-    public static void skipWhitespace(String s, int[] index)
-    {
-        while (true)
-        {
-            char c = s.charAt(index[0]);
-            if (" \t\n\r".startsWith(c + ""))
-                index[0]++;
-            else
-                return;
-        }
-    }
-
-    public static boolean tokenMatches(String s, int[] index, String token)
-    {
-        if (s.startsWith(token, index[0]))
-        {
-            index[0] += token.length();
-            return true;
-        }
-        else
-            return false;
-    }
-
     public static String objectToString(Object o)
     {
         if (o instanceof String || o instanceof Enum || o instanceof IModel)
-            return "\"" + o.toString() + "\"";
+            return "\"" + convertString(o.toString()) + "\"";
         else if (o instanceof Number)
             return o.toString();
         else if (o instanceof Boolean)
@@ -300,6 +338,10 @@ public class TanksON
             {
                 s.append(objectToString(el)).append(",");
             }
+
+            if (s.charAt(s.length() - 1) == ',')
+                s.deleteCharAt(s.length() - 1);
+
             s.append("]");
             return s.toString();
         }
@@ -309,22 +351,20 @@ public class TanksON
             HashMap<?, ?> h = ((HashMap<?, ?>) o);
 
             ArrayList<String> keys = new ArrayList<String>((Collection<? extends String>) h.keySet());
-            if (keys.contains("name"))
-            {
-                keys.remove("name");
+            if (keys.remove("name"))
                 keys.add(0, "name");
-            }
 
-            if (keys.contains("obj_type"))
-            {
-                keys.remove("obj_type");
+            if (keys.remove("obj_type"))
                 keys.add(0, "obj_type");
-            }
 
             for (String el: keys)
             {
-                s.append("\"").append(el.toString()).append("\":").append(objectToString(h.get(el))).append(",");
+                s.append("\"").append(convertString(el)).append("\":").append(objectToString(h.get(el))).append(",");
             }
+
+            if (s.charAt(s.length() - 1) == ',')
+                s.deleteCharAt(s.length() - 1);
+
             s.append("}");
             return s.toString();
         }
@@ -367,9 +407,9 @@ public class TanksON
             throw new RuntimeException("Failed to turn object to string: " + o);
     }
 
-    public static Object error(String error, String s, int index)
+    public static Object error(String error, ParserState s)
     {
-        throw new RuntimeException(error + ": " + s.substring(0, index) + ">>> Error location <<<" + s.substring(index));
+        throw new RuntimeException(error + ": " + s.s.substring(0, s.index) + ">>> Error location <<<" + s.s.substring(s.index));
     }
 
     public static <A extends Annotation> A getAnnotation(Class<?> target, Class<A> a)

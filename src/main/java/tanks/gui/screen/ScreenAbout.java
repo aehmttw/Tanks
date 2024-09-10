@@ -8,6 +8,8 @@ import java.net.URL;
 
 public class ScreenAbout extends Screen
 {
+    public static final String discord_link = "https://discord.gg/aWPaJD3";
+
     Button link = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "GitHub", () ->
     {
         try
@@ -25,7 +27,7 @@ public class ScreenAbout extends Screen
     {
         try
         {
-            Game.game.window.openLink(new URL("https://discord.gg/aWPaJD3"));
+            Game.game.window.openLink(new URL(discord_link));
         }
         catch (Exception e)
         {

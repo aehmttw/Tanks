@@ -86,6 +86,8 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public double baseGroundHeight;
 
+	public boolean shouldClip = false;
+
 	public Obstacle(String name, double posX, double posY)
 	{
 		this.name = name;

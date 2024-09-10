@@ -15,9 +15,17 @@ public class FieldPointer<T>
 
         Property p = f.getAnnotation(Property.class);
         if (p != null)
-            nullable = p.nullable();
+            this.nullable = p.nullable();
         else
-            nullable = true;
+            this.nullable = true;
+    }
+
+    public FieldPointer(Object o, Field f, boolean nullable)
+    {
+        this.object = o;
+        this.field = f;
+
+        this.nullable = nullable;
     }
 
     public void set(T val)

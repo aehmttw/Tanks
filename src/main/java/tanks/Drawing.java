@@ -1309,20 +1309,13 @@ public class Drawing
 		if (!enableMovingCameraX && !Game.followingCam)
 			return 0;
 
-		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - getTrackOffset())
-		{
-			Panel.panel.pastPlayerX.remove(0);
-			Panel.panel.pastPlayerY.remove(0);
-			Panel.panel.pastPlayerTime.remove(0);
-		}
-
 		double x = playerX;
 
 		if (Panel.panel.pastPlayerTime.size() == 1)
 			x = Panel.panel.pastPlayerX.get(0);
 		else if (Panel.panel.pastPlayerTime.size() > 1)
 		{
-			double frac = (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
+			double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
 			x = Panel.panel.pastPlayerX.get(0) * (1 - frac) + Panel.panel.pastPlayerX.get(1) * frac;
 		}
 
@@ -1370,7 +1363,7 @@ public class Drawing
 			y = Panel.panel.pastPlayerY.get(0);
 		else if (Panel.panel.pastPlayerTime.size() > 1)
 		{
-			double frac = (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0));
+			double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) / (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
 			y = Panel.panel.pastPlayerY.get(0) * (1 - frac) + Panel.panel.pastPlayerY.get(1) * frac;
 		}
 

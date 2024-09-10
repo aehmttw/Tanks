@@ -46,9 +46,13 @@ public class ItemBullet extends Item
 			{
 				double remainingQty = this.stackSize - this.fractionUsed;
 				double useAmt = 1;
+				boolean unlimited = false;
 
-				if (this.unlimited)
+				if (this.stackSize <= 0)
+				{
 					remainingQty = Double.MAX_VALUE;
+					unlimited = true;
+				}
 
 				if (this.item.cooldownBase <= 0)
 					useAmt = Panel.frameFrequency;
@@ -56,6 +60,9 @@ public class ItemBullet extends Item
 				int q = (int) Math.min(this.item.bullet.shotCount, Math.ceil(remainingQty / useAmt));
 
 				double speedmul = m.getAttributeValue(AttributeModifier.bullet_speed, 1);
+
+				if (this.item.bullet.shotSound != null)
+					Drawing.drawing.playGlobalSound(this.item.bullet.shotSound, (float) ((Bullet.bullet_size / this.item.bullet.size) * this.item.bullet.pitch * (1 - (Math.random() * 0.5) * this.item.bullet.pitchVariation)));
 
 				for (int i = 0; i < q; i++)
 				{
@@ -93,7 +100,7 @@ public class ItemBullet extends Item
 						((Minigame) Game.currentLevel).onBulletFire(b);
 					}
 
-					while (this.fractionUsed >= 1 && !this.unlimited)
+					while (this.fractionUsed >= 1 && this.stackSize > 0)
 					{
 						this.stackSize--;
 						this.fractionUsed--;
@@ -103,7 +110,7 @@ public class ItemBullet extends Item
 					if (Crusade.crusadeMode && Crusade.currentCrusade != null && this.player != null)
 						Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this);
 
-					if (this.stackSize <= 0)
+					if (this.stackSize <= 0 && !unlimited)
 						this.destroy = true;
 				}
 			}
@@ -118,7 +125,7 @@ public class ItemBullet extends Item
 		{
 			return t != null
 					&& (this.item.bullet.maxLiveBullets <= 0 || this.liveBullets <= this.item.bullet.maxLiveBullets - this.item.bullet.shotCount)
-					&& !(this.cooldown > 0) && (this.stackSize > 0 || this.unlimited);
+					&& !(this.cooldown > 0);
 		}
 	}
 }

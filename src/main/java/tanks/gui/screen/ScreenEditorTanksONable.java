@@ -340,11 +340,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         return text.toArray(s);
     }
 
-    public ITrigger getUIElementForField(Field f, Property p, FieldPointer<T> tp)
+    public ITrigger getUIElementForField(Field f, Property p, FieldPointer<?> tp)
     {
         try
         {
-            T target = tp.get();
+            Object target = tp.get();
             if (f.getType().equals(int.class))
             {
                 TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, p.name(), () ->
@@ -424,7 +424,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             }
             else if (p.miscType() == Property.MiscType.bulletSound)
             {
-                ArrayList<String> sounds = Game.game.fileManager.getInternalFileContents("sounds/bullet_sounds.txt");
+                ArrayList<String> sounds = Game.game.fileManager.getInternalFileContents("/sounds/bullet_sounds.txt");
                 String[] soundsFormatted = new String[sounds.size()];
 
                 for (int i = 0; i < sounds.size(); i++)
@@ -433,7 +433,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 }
 
                 Selector t = new Selector(0, 0, this.objWidth, this.objHeight, p.name(), soundsFormatted, () -> {}, "");
-                t.selectedOption = ((Enum<?>) f.get(target)).ordinal();
+                t.selectedOption = sounds.indexOf(f.get(target));
                 t.sounds = new String[sounds.size()];
                 sounds.toArray(t.sounds);
 
@@ -451,6 +451,33 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
                 t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p);
+                return t;
+            }
+            else if (p.miscType() == Property.MiscType.itemIcon)
+            {
+                ArrayList<String> icons = new ArrayList<>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
+                        "bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png", "bullet_air.png", "bullet_homing.png",
+                        "mine.png",
+                        "shield.png", "shield_gold.png"));
+                String[] iconsArray = new String[icons.size()];
+                icons.toArray(iconsArray);
+
+                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, p.name(), iconsArray, () -> {});
+                t.drawImages = true;
+                t.selectedOption = icons.indexOf(f.get(target));
+
+                t.function = () ->
+                {
+                    try
+                    {
+                        f.set(target, icons.get(t.selectedOption));
+                    }
+                    catch (IllegalAccessException e)
+                    {
+                        Game.exitToCrash(e);
+                    }
+                };
+
                 return t;
             }
             else if (f.getType().equals(String.class))
@@ -637,7 +664,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             {
                 for (Button b : this.topLevelButtons)
                 {
-                    b.enabled = !currentTab.getRoot().name.equals(b.text);
+                    b.enabled = currentTab == null || !currentTab.getRoot().name.equals(b.text);
                     b.update();
                 }
             }
@@ -647,7 +674,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             else if (this.target.nullable)
                 this.delete.update();
 
-            this.currentTab.update();
+            if (this.currentTab != null)
+                this.currentTab.update();
 
             this.quit.update();
 
@@ -669,7 +697,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         create.setText("Create new %s", (Object) objName);
         delete.setText("Remove %s", (Object) objName);
 
-        if (Game.screen != this)
+        if (Game.screen != this && !(Game.screen instanceof ScreenEditorItem))
             return;
         else
             this.setupLayoutParameters();
@@ -716,7 +744,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
             if (this.target.get() != null)
             {
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
+                if (this.currentTab != null)
+                    Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
 
                 if (this.topLevelButtons.size() > 1)
                 {
@@ -726,7 +755,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 }
 
-                this.currentTab.draw();
+                if (this.currentTab != null)
+                    this.currentTab.draw();
             }
 
             this.quit.draw();

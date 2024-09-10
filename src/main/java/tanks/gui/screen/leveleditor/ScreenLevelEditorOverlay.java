@@ -31,6 +31,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 
     public void escape()
     {
+        this.onExitScreen();
         Game.screen = previous;
 
         if (previous instanceof ScreenLevelEditorOverlay)
@@ -41,6 +42,11 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
             screenLevelEditor.clickCooldown = 20;
             screenLevelEditor.paused = false;
         }
+    }
+
+    public void onExitScreen()
+    {
+
     }
 
     public void load()
@@ -62,6 +68,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 
         if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
         {
+            this.onExitScreen();
             Game.game.input.editorObjectMenu.invalidate();
             Game.screen = screenLevelEditor;
             screenLevelEditor.clickCooldown = 20;

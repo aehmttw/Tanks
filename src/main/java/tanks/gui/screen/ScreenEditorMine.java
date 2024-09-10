@@ -8,6 +8,7 @@ public class ScreenEditorMine extends ScreenEditorTanksONable<Mine>
     public ScreenEditorMine(FieldPointer<Mine> mine, Screen screen)
     {
         super(mine, screen);
+
         this.title = "Edit %s";
         this.objName = "mine";
     }

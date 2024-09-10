@@ -7,9 +7,12 @@ import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.screen.IItemStackScreen;
 import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenEditorItem;
 import tanks.gui.screen.ScreenSelector;
 import tanks.item.Item;
+import tanks.item.ItemBullet;
 import tanks.registry.RegistryItem;
+import tanks.tankson.FieldPointer;
 
 import java.util.ArrayList;
 
@@ -23,11 +26,14 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
         @Override
         public void run()
         {
-            ScreenSelector s = new ScreenSelector(itemSelector, Game.screen);
-            s.drawBehindScreen = true;
-            s.images = itemSelector.images;
-            s.drawImages = true;
-            Game.screen = s;
+            try
+            {
+                Game.screen = new ScreenEditorItem(new FieldPointer<>(Game.playerTank, Game.playerTank.getClass().getField("bulletItem")), Game.screen);
+            }
+            catch (NoSuchFieldException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
     );

@@ -238,9 +238,13 @@ public class TankAIControlled extends Tank
 	@Property(category = firingPattern, id = "shot_round_spread", minValue = 0.0, name = "Round spread", desc = "Total angle of spread of a round")
 	public double shotRoundSpread = 36;
 
+	@TanksONable("spawned_tank")
 	public static class SpawnedTankEntry
 	{
+		@Property(id = "tank")
 		public TankAIControlled tank;
+
+		@Property(id = "weight")
 		public double weight;
 
 		public SpawnedTankEntry(TankAIControlled t, double weight)
@@ -249,15 +253,9 @@ public class TankAIControlled extends Tank
 			this.weight = weight;
 		}
 
-		public SpawnedTankEntry(TankAIControlled t, double weight, boolean noDelete)
-		{
-			this.tank = t;
-			this.weight = weight;
-		}
-
 		public String toString()
 		{
-			return this.weight + "x" + this.tank.toString();
+			return TanksJson.toJson(this).toString();
 		}
 	}
 
@@ -3186,7 +3184,7 @@ public class TankAIControlled extends Tank
 						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
 						for (SpawnedTankEntry o: a1)
 						{
-							al.add(new SpawnedTankEntry(o.tank, o.weight, true));
+							al.add(new SpawnedTankEntry(o.tank, o.weight));
 						}
 
 						f.set(t, al);

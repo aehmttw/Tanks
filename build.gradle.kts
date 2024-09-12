@@ -53,6 +53,7 @@ dependencies {
     api(libs.org.l33tlabs.twl.pngdecoder)
     api(libs.org.apache.commons.commons.io)
     implementation("io.netty:netty-all:4.1.68.Final")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     //Steamworks
     api(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))

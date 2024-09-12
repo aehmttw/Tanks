@@ -10,12 +10,14 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.Property;
+import tanks.tankson.Serializer;
 import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static java.lang.System.exit;
 import static tanks.tank.TankPropertyCategory.*;
 
 /** This class is the 'skeleton' tank class.
@@ -2914,6 +2916,7 @@ public class TankAIControlled extends Tank
 		if (fromRegistry)
 			return "<" + this.name + ">";
 
+		System.out.println(Serializer.toJson(this));
 		return TanksON.objectToString(this);
 //		try
 //		{

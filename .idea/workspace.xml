@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca5e3031-1134-454c-9706-0481233e5cef" name="Changes" comment="" />
+    <list default="true" id="ca5e3031-1134-454c-9706-0481233e5cef" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tanks/tank/TankAIControlled.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tanks/tank/TankAIControlled.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,18 +60,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Run.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Tanks [clean,package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/pi/Sandbox/tanks/settings.gradle.kts&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Run.executor": "Run",
+    "Gradle.tanks [:tanks.tankson.Serializer.main()].executor": "Run",
+    "Maven.Tanks [clean,package].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/pi/Sandbox/tanks/settings.gradle.kts",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
   }
-}</component>
-  <component name="RunManager" selected="Gradle.Build">
+}]]></component>
+  <component name="RunManager" selected="Gradle.Run">
     <configuration name="Build" type="GradleRunConfiguration" factoryName="Gradle">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -105,8 +110,8 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Gradle.Run" />
       <item itemvalue="Gradle.Build" />
+      <item itemvalue="Gradle.Run" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

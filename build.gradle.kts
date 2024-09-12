@@ -60,7 +60,7 @@ dependencies {
 }
 
 group = "com.aehmttw"
-version = "1.6.1a"
+version = rootProject.file("version.txt").readText().toString().trim()
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

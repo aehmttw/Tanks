@@ -92,3 +92,21 @@ tasks.jar {
     // If you have dependencies that need to be included in the JAR
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }
+
+tasks.register<JavaExec>("run") {
+    description = "Runs the JAR file"
+    group = "application" // This puts the task in the "application" group in Gradle tasks list
+
+    // Ensure the JAR is built before trying to run it
+    dependsOn(tasks.jar)
+
+    // Use the JAR file as the classpath
+    classpath(tasks.jar.get().outputs.files)
+
+    // Set the main class to run
+    // Replace "com.aehmttw.tanks.Main" with your actual main class
+    mainClass.set("main.Tanks")
+
+    // If your application needs working directory to be set
+    workingDir = project.projectDir
+}

@@ -1,4 +1,6 @@
 /target/
+/build/
+/.gradle
 .project
 .classpath
 .settings
@@ -6,4 +8,3 @@
 /.vscode
 Tanks.jar
 steam_app_id.txt
-dependency-reduced-pom.xml

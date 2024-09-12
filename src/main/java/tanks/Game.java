@@ -35,10 +35,7 @@ import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class Game
@@ -118,8 +115,10 @@ public class Game
 	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
-	public static final String version = "Tanks v1.6.a";
-	public static final int network_protocol = 55;
+	//Versioning has moved to version.txt
+	public static final String version = "Tanks " + readVersionFromFile();
+
+    public static final int network_protocol = 55;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -1425,5 +1424,12 @@ public class Game
 		level.loadLevel();
 	}
 
+	public static String readVersionFromFile() {
+		try (BufferedReader br = new BufferedReader(new FileReader("version.txt"))) {
+			return br.readLine().trim();
+		} catch (Exception ignored) {
+		}
+		return "-1.-1.-1";
+	}
 
 }

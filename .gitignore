@@ -1,16 +1,11 @@
 /target/
 /build/
 /.gradle
+/.idea
 .project
 .classpath
 .settings
 .DS_Store
 /.vscode
-.idea/compiler.xml
-.idea/gradle.xml
-.idea/jarRepositories.xml
-.idea/misc.xml
-.idea/vcs.xml
-.idea/workspace.xml
 Tanks.jar
 steam_app_id.txt

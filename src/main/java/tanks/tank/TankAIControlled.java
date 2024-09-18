@@ -257,7 +257,8 @@ public class TankAIControlled extends Tank
 
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toJson(this);
+//			return TanksON.objectToString(this);
 		}
 	}
 
@@ -2916,8 +2917,8 @@ public class TankAIControlled extends Tank
 		if (fromRegistry)
 			return "<" + this.name + ">";
 
-		System.out.println(Serializer.toJson(this));
-		return TanksON.objectToString(this);
+		return Serializer.toJson(this);
+//		return TanksON.objectToString(this);
 //		try
 //		{
 //			StringBuilder s = new StringBuilder("[");
@@ -2960,7 +2961,8 @@ public class TankAIControlled extends Tank
 	public static TankAIControlled fromString(String s)
 	{
 		if (s.startsWith("{"))
-			return (TankAIControlled) TanksON.parseObject(s);
+			return (TankAIControlled) Serializer.fromJson(s);
+//			return (TankAIControlled) TanksON.parseObject(s);
 		else
 			throw new RuntimeException("The old tank format isn't yet supported");
 			//return fromString(s, null);

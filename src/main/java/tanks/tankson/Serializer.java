@@ -15,12 +15,27 @@ import java.util.Map;
 
 public final class Serializer {
 
+    public static HashMap<String, Tank>userTanks = new HashMap<>();
+
     //Debugging GSON
     private static final Gson gson = new Gson();
 
     public static boolean isTanksONable(Object o) {
         if (o != null) {
             Class c = o.getClass();
+            while (c != null) {
+                if (c.isAnnotationPresent(TanksONable.class))
+                    return true;
+                else
+                    c = c.getSuperclass();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isTanksONable(Field f) {
+        if (f != null) {
+            Class c = f.getType();
             while (c != null) {
                 if (c.isAnnotationPresent(TanksONable.class))
                     return true;
@@ -54,15 +69,21 @@ public final class Serializer {
     public static Map<String, Object> toMap(Object o) {
         if (isTanksONable(o)) {
             HashMap<String, Object> p = new HashMap<>();
-            HashMap<String, Object> types = new HashMap<>();
             p.put("obj_type", getAnnotation(o, TanksONable.class).value());
             for (Field f : o.getClass().getFields()){
                 if (f.isAnnotationPresent(Property.class)) {
                     try {
                         Object o2 = f.get(o);
-                        if (isTanksONable(o2)) {
+                        if (o2 instanceof Tank) {
+                            if (((Tank) o2).fromRegistry) {
+                                //Link all default tanks by object
+                                p.put(getid(f), "<" + ((Tank) o2).name + ">");
+                            } else {
+                                //Link all User Tanks at some point (awaiting thinking)
+                                p.put(getid(f), toMap(o2));
+                            }
+                        }else if (isTanksONable(f)) {
                             p.put(getid(f), toMap(o2));
-                            types.put(getid(f), toMap(o2));
                         } else if (o2 instanceof ArrayList) {
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0))){
                                 ArrayList<Map<String,Object>> o3s = new ArrayList<>();
@@ -70,19 +91,14 @@ public final class Serializer {
                                     o3s.add(toMap(o3));
                                 }
                                 p.put(getid(f), o3s);
-                                types.put(getid(f),o3s);
                             } else {
                                 p.put(getid(f), f.get(o));
-                                types.put(getid(f), f.getClass().getName());
                             }
                         } else if (o2 instanceof Enum) {
                             p.put(getid(f), ((Enum) o2).name());
-                            types.put(getid(f), o2.getClass().getName());
                         } else if (o2 instanceof Serializable) {
                             p.put(getid(f), ((Serializable) o2).serialize());
-                            types.put(getid(f), o2.getClass().getName());
                         } else {
-                            types.put(getid(f), f.getClass().getName());
                             p.put(getid(f), f.get(o));
                         }
                     } catch (Exception e) {
@@ -149,7 +165,7 @@ public final class Serializer {
             }
             case "spawned_tank":
             {
-                o = new TankAIControlled.SpawnedTankEntry(new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none), 0);
+                o = new TankAIControlled.SpawnedTankEntry(null, 0);
                 break;
             }
             default:
@@ -159,8 +175,13 @@ public final class Serializer {
             if (f.isAnnotationPresent(Property.class)) {
                 try {
                     Object o2 = f.get(o);
-                    if (isTanksONable(o2)) {
-                        f.set(o, parseObject((Map) m.get(getid(f))));
+                    if (isTanksONable(f)) {
+                        Object o3 = m.get(getid(f));
+                        if (o3 instanceof String) {
+                            f.set(o, include((String) o3));
+                        } else {
+                            f.set(o, parseObject((Map) o3));
+                        }
                     } else if (o2 instanceof ArrayList) {
                         if (((ArrayList) m.get(getid(f))).get(0) instanceof Map){
                             ArrayList o3s = new ArrayList();
@@ -181,6 +202,103 @@ public final class Serializer {
                 } catch (Exception ignore) {
                 }
             }
+        }
+        return o;
+    }
+
+    public static Object include(String s) {
+        Object o = null;
+        if (s.startsWith("<") && s.endsWith(">")) {
+            s = s.replace("<","").replace(">","");
+            switch (s) {
+                case ("dummy"):
+                    o = (Object) new TankDummy(s,0,0,0);
+                    break;
+                case ("brown"):
+                    o = (Object) new TankBrown(s,0,0,0);
+                    break;
+                case ("gray"):
+                    o = (Object) new TankGray(s,0,0,0);
+                    break;
+                case ("mint"):
+                    o = (Object) new TankMint(s,0,0,0);
+                    break;
+                case ("yellow"):
+                    o = (Object) new TankYellow(s,0,0,0);
+                    break;
+                case ("magenta"):
+                    o = (Object) new TankMagenta(s,0,0,0);
+                    break;
+                case ("red"):
+                    o = (Object) new TankRed(s,0,0,0);
+                    break;
+                case ("green"):
+                    o = (Object) new TankGreen(s,0,0,0);
+                    break;
+                case ("purple"):
+                    o = (Object) new TankPurple(s,0,0,0);
+                    break;
+                case ("blue"):
+                    o = (Object) new TankBlue(s,0,0,0);
+                    break;
+                case ("white"):
+                    o = (Object) new TankWhite(s,0,0,0);
+                    break;
+                case ("cyan"):
+                    o = (Object) new TankCyan(s,0,0,0);
+                    break;
+                case ("orange"):
+                    o = (Object) new TankOrange(s,0,0,0);
+                    break;
+                case ("maroon"):
+                    o = (Object) new TankMaroon(s,0,0,0);
+                    break;
+                case ("mustard"):
+                    o = (Object) new TankMustard(s,0,0,0);
+                    break;
+                case ("medic"):
+                    o = (Object) new TankMedic(s,0,0,0);
+                    break;
+                case ("orangered"):
+                    o = (Object) new TankOrangeRed(s,0,0,0);
+                    break;
+                case ("gold"):
+                    o = (Object) new TankGold(s,0,0,0);
+                    break;
+                case ("darkgreen"):
+                    o = (Object) new TankDarkGreen(s,0,0,0);
+                    break;
+                case ("black"):
+                    o = (Object) new TankBlack(s,0,0,0);
+                    break;
+                case ("mimic"):
+                    o = (Object) new TankMimic(s,0,0,0);
+                    break;
+                case ("lightblue"):
+                    o = (Object) new TankLightBlue(s,0,0,0);
+                    break;
+                case ("pink"):
+                    o = (Object) new TankPink(s,0,0,0);
+                    break;
+                case ("mini"):
+                    o = (Object) new TankMini(s,0,0,0);
+                    break;
+                case ("salmon"):
+                    o = (Object) new TankSalmon(s,0,0,0);
+                    break;
+                case ("lightpink"):
+                    o = (Object) new TankLightPink(s,0,0,0);
+                    break;
+                case ("boss"):
+                    o = (Object) new TankBoss(s,0,0,0);
+                    break;
+                default:
+                    throw new RuntimeException("Invalid Default Tank Linked Use Parenthesis for a custom tank: (customTank)");
+            }
+        } else if (s.startsWith("(") && s.endsWith(")")) {
+            throw new RuntimeException("Linking non-default tanks non supported yet!");
+        } else {
+            throw new RuntimeException("Corrupted Tank Reference!");
         }
         return o;
     }

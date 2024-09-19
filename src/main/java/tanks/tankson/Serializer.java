@@ -2,10 +2,12 @@ package tanks.tankson;
 
 import basewindow.Model;
 import com.google.gson.Gson;
+import tanks.Game;
+import tanks.item.Item;
+import tanks.tank.*;
 import tanks.bullet.Bullet;
-import tanks.tank.Explosion;
-import tanks.tank.TankAIControlled;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,40 +19,75 @@ public final class Serializer {
     private static final Gson gson = new Gson();
 
     public static boolean isTanksONable(Object o) {
-        if (o != null)
-            return o.getClass().isAnnotationPresent(TanksONable.class);
-        else
-            return false;
+        if (o != null) {
+            Class c = o.getClass();
+            while (c != null) {
+                if (c.isAnnotationPresent(TanksONable.class))
+                    return true;
+                else
+                    c = c.getSuperclass();
+            }
+        }
+        return false;
+    }
+
+    public static <A extends Annotation> A getAnnotation(Object o, Class<A> a)
+    {
+        Class<?> target = o.getClass();
+        while (target != null)
+        {
+            A r = target.getAnnotation(a);
+
+            if (r != null)
+                return r;
+
+            target = target.getSuperclass();
+        }
+
+        return null;
+    }
+
+    public static String getid(Field f) {
+        return f.getAnnotation(Property.class).id();
     }
 
     public static Map<String, Object> toMap(Object o) {
         if (isTanksONable(o)) {
             HashMap<String, Object> p = new HashMap<>();
-            p.put("obj_type", o.getClass().getName());
+            HashMap<String, Object> types = new HashMap<>();
+            p.put("obj_type", getAnnotation(o, TanksONable.class).value());
             for (Field f : o.getClass().getFields()){
                 if (f.isAnnotationPresent(Property.class)) {
                     try {
                         Object o2 = f.get(o);
                         if (isTanksONable(o2)) {
-                            p.put(f.getName(), toMap(o2));
+                            p.put(getid(f), toMap(o2));
+                            types.put(getid(f), toMap(o2));
                         } else if (o2 instanceof ArrayList) {
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0))){
                                 ArrayList<Map<String,Object>> o3s = new ArrayList<>();
                                 for (Object o3 : ((ArrayList) o2)) {
                                     o3s.add(toMap(o3));
                                 }
-                                p.put(f.getName(), o3s);
+                                p.put(getid(f), o3s);
+                                types.put(getid(f),o3s);
                             } else {
-                                p.put(f.getName(), f.get(o));
+                                p.put(getid(f), f.get(o));
+                                types.put(getid(f), f.getClass().getName());
                             }
                         } else if (o2 instanceof Enum) {
-                            p.put(f.getName(), ((Enum) o2).name());
+                            p.put(getid(f), ((Enum) o2).name());
+                            types.put(getid(f), o2.getClass().getName());
                         } else if (o2 instanceof Serializable) {
-                            p.put(f.getName(), ((Serializable) o2).serialize());
+                            p.put(getid(f), ((Serializable) o2).serialize());
+                            types.put(getid(f), o2.getClass().getName());
                         } else {
-                            p.put(f.getName(), f.get(o));
+                            types.put(getid(f), f.getClass().getName());
+                            p.put(getid(f), f.get(o));
                         }
-                    } catch (Exception ignore) {
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
                     }
                 }
             }
@@ -68,38 +105,78 @@ public final class Serializer {
     }
 
     public static Object parseObject(Map m) {
-        Object o;
-        if (m.get("obj_type").equals("tanks.tank.TankAIControlled")) {
-            o = (Object) new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
-        } else if (m.get("obj_type").equals("tanks.tank.Explosion")) {
-            o = (Object) new Explosion();
-        } else if (m.get("obj_type").equals("")) {
-            o = (Object) new Bullet();
-        } else {
-            o = null;
+        Object o = null;
+        switch ((String) m.get("obj_type")) {
+            case "tank":
+                o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
+                break;
+            case "bullet":
+            {
+                try {
+                    o = Game.registryBullet.getEntry((String) m.get("bullet_type")).bullet.newInstance();
+                } catch (Exception ignore){}
+                break;
+            }
+            case "mine":
+                o = new Mine();
+                break;
+            case "item":
+            {
+                try {
+                    o = Game.registryItem.getEntry((String) m.get("item_type")).item.getConstructor().newInstance();
+                } catch (Exception ignore){}
+                break;
+            }
+            case "item_stack":
+            {
+                o = ((Item) m.get("item")).getStack(null);
+                break;
+            }
+            case "shop_item":
+            {
+                o = new Item.ShopItem();
+                break;
+            }
+            case "crusade_shop_item":
+            {
+                o = new Item.CrusadeShopItem();
+                break;
+            }
+            case "explosion":
+            {
+                o = new Explosion();
+                break;
+            }
+            case "spawned_tank":
+            {
+                o = new TankAIControlled.SpawnedTankEntry(new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none), 0);
+                break;
+            }
+            default:
+                throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
-        for (Field f : TankAIControlled.class.getFields()){
+        for (Field f : o.getClass().getFields()){
             if (f.isAnnotationPresent(Property.class)) {
                 try {
                     Object o2 = f.get(o);
                     if (isTanksONable(o2)) {
-                        f.set(o2, parseObject((Map) m.get(f.getName())));
+                        f.set(o, parseObject((Map) m.get(getid(f))));
                     } else if (o2 instanceof ArrayList) {
-                        if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0))){
+                        if (((ArrayList) m.get(getid(f))).get(0) instanceof Map){
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(f.getName()))) {
+                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f)))) {
                                 o3s.add(parseObject(o3));
                             }
-                            f.set(o2,o3s);
+                            f.set(o,o3s);
                         } else {
-                            f.set(o2,m.get(f.getName()));
+                            f.set(o,m.get(getid(f)));
                         }
                     } else if (o2 instanceof Enum) {
-                        f.set(o2,Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(f.getName())));
+                        f.set(o,Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
                     } else if (o2 instanceof Serializable) {
-                        f.set(o2,((Serializable) o2).deserialize((String) m.get(f.getName())));
+                        f.set(o,((Serializable) o2).deserialize((String) m.get(getid(f))));
                     } else {
-                        f.set(o2,m.get(f.getName()));
+                        f.set(o,m.get(getid(f)));
                     }
                 } catch (Exception ignore) {
                 }

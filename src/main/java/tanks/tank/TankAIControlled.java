@@ -2914,9 +2914,6 @@ public class TankAIControlled extends Tank
 	@Override
 	public String toString()
 	{
-		if (fromRegistry)
-			return "<" + this.name + ">";
-
 		return Serializer.toJson(this);
 //		return TanksON.objectToString(this);
 //		try

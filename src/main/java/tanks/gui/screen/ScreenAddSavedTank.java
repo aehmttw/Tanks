@@ -317,6 +317,10 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         else
             this.drawDefaultBackground();
 
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 600);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 580);
+
         if ((tankButtons.size() - 1) / (objectButtonRows * objectButtonCols) > tankPage)
             nextTankPage.draw();
 
@@ -344,10 +348,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             }
         }
 
-        if (Level.isDark())
-            Drawing.drawing.setColor(255, 255, 255);
-        else
-            Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setColor(255, 255, 255);
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Tank templates");

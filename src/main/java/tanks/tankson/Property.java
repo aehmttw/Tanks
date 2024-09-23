@@ -25,6 +25,7 @@ public @interface Property
         emblem,
         color,
         description,
+        complexString,
         music,
         spawnedTanks,
         bulletSound,

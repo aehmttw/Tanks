@@ -55,9 +55,9 @@ public class ButtonObject extends Button
 	public void initialize(IDrawableForInterface d)
 	{
 		this.object = d;
-		this.disabledColR = 0;
-		this.disabledColG = 0;
-		this.disabledColB = 0;
+		this.disabledColR = 255;
+		this.disabledColG = 255;
+		this.disabledColB = 255;
 
 		if (Game.game.window.touchscreen)
 			this.enableHover = false;
@@ -73,11 +73,15 @@ public class ButtonObject extends Button
 		if (!enabled)
 			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB, 127);	
 		else if (selected && !Game.game.window.touchscreen)
-			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB, 127);
+			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB, 64);
 		else
 			drawing.setColor(0, 0, 0, 0);
 
-		drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
+		double thickness = sizeX * 0.2;
+		drawing.fillInterfaceRect(posX - sizeX / 2 + thickness / 2, posY, thickness, sizeY);
+		drawing.fillInterfaceRect(posX + sizeX / 2 - thickness / 2, posY, thickness, sizeY);
+		drawing.fillInterfaceRect(posX, posY - sizeY / 2 + thickness / 2, sizeX - thickness * 2, thickness);
+		drawing.fillInterfaceRect(posX, posY + sizeY / 2 - thickness / 2, sizeX - thickness * 2, thickness);
 
 		if (this.drawBeforeTooltip != null)
 			this.drawBeforeTooltip.run();

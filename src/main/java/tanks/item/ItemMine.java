@@ -3,17 +3,20 @@ package tanks.item;
 import tanks.Player;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
+import tanks.tankson.Property;
 
 public class ItemMine extends Item
 {
     public static final String item_class_name = "mine";
 
-    public Mine mine;
+    @Property(id="mine", category = "none")
+    public Mine mine = new Mine();
 
     public ItemMine()
     {
         this.rightClick = true;
         this.supportsHits = true;
+        this.icon = "mine.png";
     }
 
     public ItemMine(Mine m)

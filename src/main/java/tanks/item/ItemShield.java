@@ -9,15 +9,16 @@ public class ItemShield extends Item
 {
     public static final String item_class_name = "shield";
 
-    @Property(id = "health_boost", name = "Health boost")
+    @Property(id = "health_boost", name = "Hitpoint boost", desc = "This item will instantly add this many hitpoints to the tank using it \n \n The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double amount;
 
-    @Property(id = "max_extra_health", name = "Max extra health")
+    @Property(id = "max_extra_health", name = "Max extra hitpoints", desc = "This item will not heal a tank to more than its default hitpoints plus 'max extra hitpoints' \n \n The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double max;
 
     public ItemShield()
     {
         this.rightClick = true;
+        this.icon = "shield.png";
     }
 
     @Override
@@ -38,8 +39,8 @@ public class ItemShield extends Item
         {
             t.health += this.item.amount;
 
-            if (t.health > this.item.max)
-                t.health = this.item.max;
+            if (t.health > this.item.max + t.baseHealth)
+                t.health = this.item.max + t.baseHealth;
 
             Game.eventsOut.add(new EventTankUpdateHealth(t));
 

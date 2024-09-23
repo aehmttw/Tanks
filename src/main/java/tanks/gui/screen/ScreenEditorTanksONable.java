@@ -32,6 +32,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
     public Screen prevScreen;
     public FieldPointer<T> target;
+    public boolean forceDisplayTabs = false;
 
     public Field[] fields;
 
@@ -499,9 +500,17 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
                 t.hoverText = formatDescription(p);
                 t.enableHover = !p.desc().equals("");
-                t.lowerCase = true;
-                t.allowSpaces = true;
-                t.enableSpaces = false;
+
+                if (p.miscType() == Property.MiscType.complexString)
+                {
+                    t.allowAll = true;
+                }
+                else
+                {
+                    t.lowerCase = true;
+                    t.allowSpaces = true;
+                    t.enableSpaces = false;
+                }
 
                 return t;
             }
@@ -660,7 +669,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             this.dismissMessage.update();
         else
         {
-            if (this.topLevelMenus.size() > 1)
+            if (this.topLevelMenus.size() > 1 || this.forceDisplayTabs)
             {
                 for (Button b : this.topLevelButtons)
                 {
@@ -730,7 +739,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             Drawing.drawing.setColor(255, 255, 255);
 
             double pos = 60;
-            if (topLevelButtons.size() <= 1)
+            if (topLevelButtons.size() <= 1 && !this.forceDisplayTabs)
                 pos = 100;
             else if (topLevelButtons.size() >= 5)
                 pos = 30;
@@ -747,7 +756,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 if (this.currentTab != null)
                     Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
 
-                if (this.topLevelButtons.size() > 1)
+                if (this.topLevelButtons.size() > 1 || this.forceDisplayTabs)
                 {
                     for (Button b : this.topLevelButtons)
                     {

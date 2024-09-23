@@ -35,6 +35,9 @@ public class ScreenFailedToLoadLevel extends Screen
 			if (!dir.exists())
 				dir.mkdirs();
 
+			this.music = "ready_music_3.ogg";
+			Drawing.drawing.playSound("leave.ogg");
+
 			this.path = Game.homedir + Game.crashesPath + lvl + "-" + hashcode + ".crash";
 			BaseFile f = Game.game.fileManager.getFile(path);
 			f.create();

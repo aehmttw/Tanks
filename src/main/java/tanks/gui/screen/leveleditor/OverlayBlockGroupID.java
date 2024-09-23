@@ -9,7 +9,7 @@ public class OverlayBlockGroupID extends ScreenLevelEditorOverlay
 {
     public TextBox groupID;
 
-    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", this::escape
+    public Button back = new Button(this.centerX, this.centerY + 240, 350, 40, "Done", this::escape
     );
 
     public Button increaseID = new Button(this.centerX + 250, this.centerY, 60, 60, "+", new Runnable()
@@ -59,6 +59,8 @@ public class OverlayBlockGroupID extends ScreenLevelEditorOverlay
         groupID.minValue = 0;
         groupID.checkMaxValue = true;
         groupID.checkMinValue = true;
+
+        this.musicInstruments = true;
     }
 
     public void update()
@@ -79,7 +81,11 @@ public class OverlayBlockGroupID extends ScreenLevelEditorOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 800, 600);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 780, 580);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Group ID");
 

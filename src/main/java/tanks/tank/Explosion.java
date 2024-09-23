@@ -19,7 +19,7 @@ import tanks.tankson.TanksONable;
 @TanksONable("explosion")
 public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable
 {
-    @Property(id = "damage", name = "Damage")
+    @Property(id = "damage", name = "Damage", desc = "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double damage = 2;
 
     @Property(id = "destroys_obstacles", name = "Destroys blocks")
@@ -28,19 +28,19 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
     @Property(id = "destroys_bullets", name = "Destroys bullets")
     public boolean destroysBullets = true;
 
-    @Property(id = "damage_radius", name = "Damage radius")
+    @Property(id = "damage_radius", name = "Damage radius", desc = "The radius used for bullet and obstacle destruction and tank damage \n \n 1 tile = 50 units")
     public double radius = Mine.mine_radius;
 
     public Tank tank;
     public Item.ItemStack<?> item;
 
-    @Property(id = "knockback_radius", name = "Knockback radius")
+    @Property(id = "knockback_radius", name = "Knockback radius", desc = "1 tile = 50 units")
     public double knockbackRadius = this.radius * 2;
 
-    @Property(id = "bullet_knockback", name = "Bullet knockback")
+    @Property(id = "bullet_knockback", name = "Bullet knockback", desc = "The amount of knockback done to bullets, scaled by bullet size and distance from explosion")
     public double bulletKnockback = 0;
 
-    @Property(id = "tank_knockback", name = "Tank knockback")
+    @Property(id = "tank_knockback", name = "Tank knockback", desc = "The amount of knockback done to tanks, scaled by tank size and distance from explosion")
     public double tankKnockback = 0;
 
     public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item.ItemStack<?> item)

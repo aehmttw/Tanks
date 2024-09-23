@@ -49,7 +49,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button editGroupID = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBlockGroupID(Game.screen, screenLevelEditor));
 
-    public Button editBeatPattern = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBeatBlockPattern(Game.screen, screenLevelEditor));
+    public Button editBeatPattern = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayBeatBlockPattern(Game.screen, screenLevelEditor));
 
     public Button selectTeam = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlaySelectTeam(Game.screen, screenLevelEditor));
 
@@ -109,6 +109,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         editBeatPattern.imageXOffset = -155;
         editBeatPattern.imageSizeX = 30;
         editBeatPattern.imageSizeY = 30;
+        editBeatPattern.image = "icons/obstacle_beat.png";
 
         int count = Game.registryTank.tankEntries.size() + this.screenLevelEditor.level.customTanks.size();
 
@@ -283,10 +284,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 previousObstaclePage.update();
 
             if (screenLevelEditor.mouseObstacle.enableStacking)
-            {
                 this.editHeight.update();
-            }
-            else if (screenLevelEditor.mouseObstacle.enableGroupID)
+
+            if (screenLevelEditor.mouseObstacle.enableGroupID)
             {
                 if (screenLevelEditor.mouseObstacle instanceof ObstacleBeatBlock)
                     this.editBeatPattern.update();
@@ -313,7 +313,11 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (Game.screen != this)
             return;
 
-        Drawing.drawing.setColor(this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 600);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 580);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 240, "Object menu");
 
@@ -395,7 +399,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 this.editHeight.setText("Block height: %.1f", screenLevelEditor.mouseObstacleHeight);
                 this.editHeight.draw();
             }
-            else if (screenLevelEditor.mouseObstacle.enableGroupID)
+
+            if (screenLevelEditor.mouseObstacle.enableGroupID)
             {
                 if (screenLevelEditor.mouseObstacle instanceof ObstacleBeatBlock)
                 {

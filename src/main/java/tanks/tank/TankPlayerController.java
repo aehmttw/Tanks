@@ -188,7 +188,7 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
             Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
 
             if (i.item instanceof ItemBullet)
-                showRange = ((ItemBullet) i.item).bullet.range > 0;
+                showRange = ((ItemBullet) i.item).bullet.lifespan > 0;
             else if (i.item instanceof ItemRemote)
                 showRange = ((ItemRemote) i.item).range > 0;
         }
@@ -310,7 +310,7 @@ public class TankPlayerController extends Tank implements ILocalPlayerTank
                 {
                     Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
                     r.bounces = b.bounces;
-                    range = b.range;
+                    range = b.lifespan * b.speed;
 
                     if (range > 0)
                         range *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);

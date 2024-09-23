@@ -27,6 +27,8 @@ public abstract class BaseSoundPlayer
 
     public abstract void setMusicSpeed(float speed);
 
+    public abstract long getMusicStartTime();
+
     public abstract float getMusicPos();
 
     public abstract void setMusicPos(float pos);

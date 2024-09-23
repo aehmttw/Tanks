@@ -2,10 +2,8 @@ package tanks.obstacle;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.leveleditor.OverlayEditorMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.rendering.ShaderBeatBlocks;
 import tanks.rendering.ShaderGroundObstacleBeatBlock;
 
@@ -34,11 +32,9 @@ public class ObstacleBeatBlock extends Obstacle
 
     public static boolean isOn(double freq, boolean alt)
     {
-        double pos = Game.screen.screenAge;
+        double pos = (Panel.panel.frameStartTime - Game.game.window.soundPlayer.getMusicStartTime()) / 10.0;
         if (Game.screen instanceof ScreenGame)
-            pos = ScreenGame.lastTimePassed - ((ScreenGame) Game.screen).introBattleMusicEnd / 10.0;
-        else if (Game.screen instanceof ScreenLevelEditorOverlay || Game.screen instanceof ScreenLevelEditor)
-            pos = Game.game.window.soundPlayer.getMusicPos() * 100;
+            pos = 600 + ScreenGame.lastTimePassed - ((ScreenGame) Game.screen).introBattleMusicEnd / 10.0;
 
         pos /= 100.0;
         return ((int) (6.0 + pos / (6.0 / freq)) % 2 == (alt ? 1 : 0));
@@ -46,13 +42,11 @@ public class ObstacleBeatBlock extends Obstacle
 
     public static double timeTillChange(double freq)
     {
-        double pos = Game.screen.screenAge;
+        double pos = (Panel.panel.frameStartTime - Game.game.window.soundPlayer.getMusicStartTime()) / 10.0;
         if (Game.screen instanceof ScreenGame)
-            pos = ScreenGame.lastTimePassed - ((ScreenGame) Game.screen).introBattleMusicEnd / 10.0;
-        else if (Game.screen instanceof ScreenLevelEditorOverlay || Game.screen instanceof ScreenLevelEditor)
-            pos = Game.game.window.soundPlayer.getMusicPos() * 100;
+            pos = 600 + ScreenGame.lastTimePassed - ((ScreenGame) Game.screen).introBattleMusicEnd / 10.0;
 
-        return 600 / freq - pos % (600.0 / freq);
+        return (600 / freq - pos % (600.0 / freq));
     }
 
     @Override
@@ -213,7 +207,7 @@ public class ObstacleBeatBlock extends Obstacle
         this.bulletCollision = false;
 
         this.enableGroupID = true;
-        this.enableStacking = false;
+        this.enableStacking = true;
 
         for (int i = 0; i < default_max_height; i++)
         {
@@ -241,7 +235,15 @@ public class ObstacleBeatBlock extends Obstacle
     @Override
     public void setMetadata(String s)
     {
-        this.groupID = (int) Double.parseDouble(s);
+        if (s.contains("#"))
+        {
+            String[] p = s.split("#");
+            this.groupID = (int) Double.parseDouble(p[0]);
+            this.stackHeight = Double.parseDouble(p[1]);
+        }
+        else
+            this.groupID = (int) Double.parseDouble(s);
+
         this.rendererNumber = this.groupID;
         this.tileRendererNumber = this.groupID;
         this.alternate = this.groupID % 2 == 1;

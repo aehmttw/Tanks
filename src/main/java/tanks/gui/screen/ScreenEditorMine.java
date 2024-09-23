@@ -19,4 +19,13 @@ public class ScreenEditorMine extends ScreenEditorTanksONable<Mine>
         Tab tab = new Tab(this, "Mine properties", "");
         this.setTab(tab);
     }
+
+    @Override
+    public void sortTopLevelTabs()
+    {
+        super.sortTopLevelTabs();
+        this.topLevelButtons.get(0).image = "mine.png";
+        this.topLevelButtons.get(0).imageSizeX *= 0.8;
+        this.topLevelButtons.get(0).imageSizeY *= 0.8;
+    }
 }

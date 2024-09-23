@@ -155,17 +155,17 @@ public class TankAIControlled extends Tank
 
 	//public double mineFuseLength = 1000;
 	/** Minimum time to lay a mine, added to mineTimerRandom * this.random.nextDouble()*/
-	@Property(category = mines, id = "mine_timer_base", minValue = 0.0, name = "Base cooldown", desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
+	@Property(category = mines, id = "mine_timer_base", minValue = 0.0, name = "Base cooldown", desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds")
 	public double mineTimerBase = 2000;
 	/** Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase*/
-	@Property(category = mines, id = "mine_timer_random", minValue = 0.0, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not lay mines faster than their mine's base cooldown allows!")
+	@Property(category = mines, id = "mine_timer_random", minValue = 0.0, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds")
 	public double mineTimerRandom = 4000;
 
 	/** Minimum time in between shooting bullets, added to cooldownRandom * this.random.nextDouble()*/
-	@Property(category = firingGeneral, id = "cooldown_base", minValue = 0.0, name = "Base cooldown", desc = "Minimum time between firing bullets \n \n 1 time unit = 0.01 seconds \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
+	@Property(category = firingGeneral, id = "cooldown_base", minValue = 0.0, name = "Base cooldown", desc = "Minimum time between firing bullets \n \n 1 time unit = 0.01 seconds")
 	public double cooldownBase = 60;
 	/** Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase*/
-	@Property(category = firingGeneral, id = "cooldown_random", minValue = 0.0, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets \n \n Note - tanks will not fire faster than their bullet's base cooldown allows!")
+	@Property(category = firingGeneral, id = "cooldown_random", minValue = 0.0, name = "Random cooldown", desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets")
 	public double cooldownRandom = 20;
 	/** After every successive shot, cooldown will go down by this fraction */
 	@Property(category = firingGeneral, id = "cooldown_speedup", minValue = 0.0, name = "Cooldown speedup", desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
@@ -668,7 +668,7 @@ public class TankAIControlled extends Tank
 			if (this.cooldown <= 0)
 			{
 				this.aim = false;
-				double range = this.bullet.range * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				double range = this.bullet.lifespan * this.bullet.speed * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 				if (arc && (this.distance <= range || range <= 0))
 				{

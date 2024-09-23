@@ -641,7 +641,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.paused = false;
 		Game.playerTank.setBufferCooldown(20);
 
-		if (Game.currentLevel.synchronizeMusic)
+		if (Game.currentLevel.synchronizeMusic && !(ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && playing)
 			Game.game.window.soundPlayer.setMusicPos(this.pausedMusicPos);
 	}
 
@@ -896,7 +896,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			if (!(Game.currentLevel.synchronizeMusic && paused))
-			this.playCounter += Panel.frameFrequency;
+				this.playCounter += Panel.frameFrequency;
 		}
 
 		if (this.playCounter * 10 >= introBattleMusicEnd)

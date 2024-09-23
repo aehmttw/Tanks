@@ -36,6 +36,7 @@ public class OverlaySelectTeam extends ScreenLevelEditorOverlay
         teamSelectButtons.add(button);
 
         this.teamSelectList = new ButtonList(teamSelectButtons, 0, 0, -30);
+        this.musicInstruments = true;
     }
 
     public void update()
@@ -60,7 +61,11 @@ public class OverlaySelectTeam extends ScreenLevelEditorOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
         String teamSelectTitle = null;

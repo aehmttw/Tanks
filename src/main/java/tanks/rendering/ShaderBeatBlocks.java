@@ -40,7 +40,7 @@ public class ShaderBeatBlocks extends RendererShader implements IUpdatedShader, 
         int freq = (int) Math.pow(2, num / 2);
         boolean alt = num % 2 == 1;
 
-        double timeTillChange = ObstacleBeatBlock.timeTillChange(freq) % (600 / freq);
+        double timeTillChange = ObstacleBeatBlock.timeTillChange(freq);
 
         double beatTime = 37.5;
         int warningBeats = freq == 1 ? 3 : freq == 2 ? 2 : freq == 4 ? 1 : 0;

@@ -19,12 +19,12 @@ import java.util.HashMap;
 public class Mine extends Movable implements IAvoidObject, IDrawableLightSource, ICopyable<Mine>, ITanksONEditable
 {
     public static double mine_size = 30;
-    public static double mine_radius = Game.tile_size * 2.5;
+    public static double mine_radius = Game.tile_size * 2;
 
     @Property(id = "explosion", name = "Explosion")
     public Explosion explosion = new Explosion();
 
-    @Property(id = "timer", name = "Fuse length")
+    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds")
     public double timer = 1000;
 
     @Property(id = "size", name = "Size")
@@ -35,14 +35,14 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
     public double outlineColorB;
     public double height = 0;
 
-    @Property(id = "triggered_timer", name = "Triggered fuse length")
+    @Property(id = "triggered_timer", name = "Triggered fuse length", desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds")
     public double triggeredTimer = 50;
 
     public Tank tank;
     public ItemMine.ItemStackMine item;
     public int lastBeep = Integer.MAX_VALUE;
 
-    @Property(id = "max_live_mines", name = "Max live mines")
+    @Property(id = "max_live_mines", name = "Max live mines", desc = "The maximum number of this mine placed by one tank that can be onscreen at a time")
     public int maxLiveMines = 2;
 
     public int networkID = -1;

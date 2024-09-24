@@ -70,18 +70,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", () ->
 	{
 		Game.silentCleanUp();
-
-		if (Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT) && Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_ALT) && Game.game.window.pressedKeys.contains(InputCodes.KEY_TAB))
-			Game.screen = new ScreenPlay();
-		else
-		{
-			ScreenCrashed c = new ScreenCrashed();
-			Game.crashMessage = "===== ! UNAUTHORIZED ACCESS DETECTED ! =====";
-			Game.crashLine = "This incident will be reported!";
-			c.hmm = Math.random() < 0.1 ? 2 : 1;
-			c.music = "ready_music_" + (3 + c.hmm) + ".ogg";
-			Game.screen = c;
-		}
+		Game.screen = new ScreenPlay();
 	}
 	);
 

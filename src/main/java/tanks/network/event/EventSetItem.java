@@ -19,7 +19,7 @@ public class EventSetItem extends PersonalEvent
     public String texture;
     public int count;
     public int bounces = -1;
-    public double range = -1;
+    public double lifespan = -1;
 
     public EventSetItem()
     {
@@ -43,7 +43,7 @@ public class EventSetItem extends PersonalEvent
         {
             ItemBullet i = (ItemBullet) item.item;
             bounces = i.bullet.bounces;
-            range = i.bullet.range;
+            lifespan = i.bullet.lifespan;
         }
 
     }
@@ -57,7 +57,7 @@ public class EventSetItem extends PersonalEvent
         b.writeInt(this.count);
         NetworkUtils.writeString(b, this.name);
         b.writeInt(this.bounces);
-        b.writeDouble(this.range);
+        b.writeDouble(this.lifespan);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class EventSetItem extends PersonalEvent
         this.count = b.readInt();
         this.name = NetworkUtils.readString(b);
         this.bounces = b.readInt();
-        this.range = b.readDouble();
+        this.lifespan = b.readDouble();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class EventSetItem extends PersonalEvent
             i.icon = this.texture;
             i.name = this.name;
             i.bounces = this.bounces;
-            i.range = this.range;
+            i.range = this.lifespan;
 
             Item.ItemStack<?> s = new ItemRemote.ItemStackRemote(Game.player, i, 0);
             s.stackSize = this.count;

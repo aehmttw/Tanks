@@ -100,6 +100,10 @@ public class ScreenChangelog extends Screen
     {
         this.drawDefaultBackground();
 
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1100, 700);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1080, 680);
+
         if (pageContents == null)
             pageContents = pages.get(currentPage).split("\n");
 
@@ -114,7 +118,7 @@ public class ScreenChangelog extends Screen
 
         quit.draw();
 
-        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setColor(255, 255, 255);
 
         if (pageContents != null)
         {

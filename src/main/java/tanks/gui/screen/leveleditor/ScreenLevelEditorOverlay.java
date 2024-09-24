@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
 import tanks.tank.TankSpawnMarker;
@@ -12,6 +13,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     public Screen previous;
     public ScreenLevelEditor screenLevelEditor;
     public boolean musicInstruments = false;
+    public InputBindingGroup triggerKeybind = null;
 
     public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -66,10 +68,14 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
             this.escape();
         }
 
-        if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
+        if (Game.game.input.editorObjectMenu.isValid() || (triggerKeybind != null && triggerKeybind.isValid()))
         {
             this.onExitScreen();
             Game.game.input.editorObjectMenu.invalidate();
+
+            if (triggerKeybind != null)
+                triggerKeybind.invalidate();
+
             Game.screen = screenLevelEditor;
             screenLevelEditor.clickCooldown = 20;
             screenLevelEditor.paused = false;

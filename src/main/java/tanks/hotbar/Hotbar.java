@@ -181,10 +181,13 @@ public class Hotbar
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
-			for (int i = 1; i < max; i++)
+			if (max <= 100)
 			{
-				double frac = i * 1.0 / max;
-				Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
+				for (int i = 1; i < max; i++)
+				{
+					double frac = i * 1.0 / max;
+					Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
+				}
 			}
 
 			if (Game.playerTank != null && !Game.playerTank.destroy)

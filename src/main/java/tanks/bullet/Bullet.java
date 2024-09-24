@@ -32,19 +32,19 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public static double bullet_size = 10;
 
-	public String typeName = "bullet";
+	public String typeName;
 
 	public boolean playPopSound = true;
 	public boolean playBounceSound = true;
 	public double age = 0;
 
-	@Property(id = "size", minValue = 0.0, name = "Size", category = BulletPropertyCategory.appearance)
+	@Property(id = "size", minValue = 0.0, name = "Size", category = BulletPropertyCategory.appearance, desc = "1 tile = 50 units")
 	public double size = bullet_size;
 
 	public boolean canBeCanceled = true;
 	public boolean moveOut = true;
 
-	@Property(id = "bounces", minValue = 0.0, name = "Bounces", category = BulletPropertyCategory.travel)
+	@Property(id = "bounces", minValue = 0.0, name = "Bounces", category = BulletPropertyCategory.travel, desc = "The bullet will bounce off blocks this many times before being destroyed on impact")
 	public int bounces = 1;
 	public int bouncyBounces = 100;
 
@@ -52,7 +52,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public double quarterAgeFrac = 0;
 	public double halfAgeFrac = 0;
 
-	@Property(id = "override_color", name = "Custom primary color")
+	@Property(id = "override_color", name = "Custom primary color", desc = "If disabled, the bullet will use the color of the tank which fired it")
 	public boolean overrideBaseColor;
 	@Property(id = "color_r", name = "Primary red")
 	public double baseColorR;
@@ -61,7 +61,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "color_b", name = "Primary blue")
 	public double baseColorB;
 
-	@Property(id = "override_color2", name = "Custom secondary color")
+	@Property(id = "override_color2", name = "Custom secondary color", desc = "If disabled, the bullet will use the color of the tank which fired it")
 	public boolean overrideOutlineColor;
 	@Property(id = "color_r2", name = "Secondary red")
 	public double outlineColorR;
@@ -70,7 +70,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "color_b2", name = "Secondary blue")
 	public double outlineColorB;
 
-	@Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletPropertyCategory.appearanceGlow)
+	@Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletPropertyCategory.appearanceGlow, desc = "How bright the bullet will be in dark lighting. At 0, the bullet will be shaded like terrain by lighting. At 1, the bullet will always be fully bright.")
 	public double luminance = 0.5;
 
 	//@Property(id = "trails", name = "Trail", category = BulletPropertyCategory.appearance)
@@ -89,28 +89,30 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public Tank tank;
 
-	@Property(id = "damage", name = "Damage", category = BulletPropertyCategory.impact)
+	@Property(id = "damage", name = "Damage", category = BulletPropertyCategory.impact, desc = "A damage of 1.0 will destroy the default player tank. Set to negative to heal tanks.")
 	public double damage = 1;
 
-	@Property(id = "max_extra_health", minValue = 0.0, name = "Max extra health", category = BulletPropertyCategory.impact)
+	@Property(id = "max_extra_health", minValue = 0.0, name = "Max extra hitpoints", category = BulletPropertyCategory.impact, desc = "Applicable if damage is negative: this bullet will not heal a tank to more than its default hitpoints plus 'max extra hitpoints'")
 	public double maxExtraHealth = 1;
 
-	@Property(id = "knockback_tank", name = "Tank knockback", category = BulletPropertyCategory.impact)
+	@Property(id = "knockback_tank", name = "Tank knockback", category = BulletPropertyCategory.impact, desc = "The amount this bullet will knock back tanks it hits. Knockback is automatically scaled by this bullet's velocity and the tank's size. \n \n " +
+			"A knockback value of 1 means the bullet will add its velocity to a tank of standard size. Knockback scales inversely to tank size squared.")
 	public double tankHitKnockback = 0;
 
-	@Property(id = "knockback_bullet", name = "Bullet knockback", category = BulletPropertyCategory.impact)
+	@Property(id = "knockback_bullet", name = "Bullet knockback", category = BulletPropertyCategory.impact, desc = "The amount this bullet will knock back other bullets it collides with, instead of destroying them. Knockback is automatically scaled by this bullet's velocity both bullets' sizes. \n \n " +
+			"A bullet with a knockback value of 1 will stop another bullet in a head-on collision if both bullets have the same size and speed. Knockback scales by ratio of bullet size squared.")
 	public double bulletHitKnockback = 0;
 
-	@Property(id = "explosion", name = "Explosion", category = BulletPropertyCategory.impact, nullable = true)
+	@Property(id = "explosion", name = "Explosion", category = BulletPropertyCategory.impact, nullable = true, desc = "The explosion produced when this bullet is destroyed")
 	public Explosion hitExplosion = null;
 
-	@Property(id = "stun", minValue = 0.0, name = "Stun duration", category = BulletPropertyCategory.impact)
+	@Property(id = "stun", minValue = 0.0, name = "Stun duration", category = BulletPropertyCategory.impact, desc = "Will prevent a tank from moving for this much time on impact \n \n 1 time unit = 0.01 seconds")
 	public double hitStun = 0;
 
-	@Property(id = "freezing", name = "Freezing", category = BulletPropertyCategory.impact)
+	@Property(id = "freezing", name = "Freezing", category = BulletPropertyCategory.impact, desc = "If set, will create a circle of freezing when this bullet is destroyed")
 	public boolean freezing = false;
 
-	@Property(id = "boosting", name = "Boosting", category = BulletPropertyCategory.impact)
+	@Property(id = "boosting", name = "Boosting", category = BulletPropertyCategory.impact, desc = "If set, will boost the speed of tanks hit. Boost duration scales with bullet size.")
 	public boolean boosting = false;
 
 	//@Property(id = "area_effect", name = "Area effect", category = BulletPropertyCategory.impact)
@@ -126,13 +128,13 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "speed", name = "Speed", category = BulletPropertyCategory.travel)
 	public double speed = 25.0 / 8;
 
-	@Property(id = "range", minValue = 0.0, name = "Range", category = BulletPropertyCategory.travel)
-	public double range = 0;
+	@Property(id = "lifespan", minValue = 0.0, name = "Lifespan", category = BulletPropertyCategory.travel, desc = "After this long, the bullet will destroy itself automatically. Set to 0 for unlimited lifespan. \n \n 1 time unit = 0.01 seconds")
+	public double lifespan = 0;
 
-	@Property(id = "heavy", name = "Heavy", category = BulletPropertyCategory.travel)
+	@Property(id = "heavy", name = "Heavy", category = BulletPropertyCategory.travel, desc = "Heavy bullets will pass through tanks and non-heavy bullets without being destroyed")
 	public boolean heavy = false;
 
-	@Property(id = "collide_obstacles", name = "Obstacle collision", category = BulletPropertyCategory.travel)
+	@Property(id = "collide_obstacles", name = "Block collision", category = BulletPropertyCategory.travel, desc = "If disabled, the bullet will pass through blocks but still collide with the edges of the level")
 	public boolean obstacleCollision = true;
 	public boolean edgeCollision = true;
 
@@ -141,27 +143,25 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public boolean destroyBullets = true;
 
-	protected double lifespan;
-
-	@Property(id = "effect", name = "Effect", category = BulletPropertyCategory.appearance)
+	@Property(id = "effect", name = "Effect", category = BulletPropertyCategory.appearance, desc = "Defines the bullet's trail, glow, and particle effects")
 	public BulletEffect effect = BulletEffect.trail;
 
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
 
-	@Property(id = "bush_burn", name = "Burns shrubbery", category = BulletPropertyCategory.travel)
+	@Property(id = "bush_burn", name = "Burns shrubbery", category = BulletPropertyCategory.travel, desc = "If enabled, the bullet will remove shrubbery it passes through")
 	public boolean burnsBushes = false;
 
-	@Property(id = "bush_lower", name = "Lowers shrubbery", category = BulletPropertyCategory.travel)
+	@Property(id = "bush_lower", name = "Lowers shrubbery", category = BulletPropertyCategory.travel, desc = "If enabled, the bullet will lower shrubbery it passes through, revealing their contents \n If disabled, the bullet will make leaf particle effects as it exits shrubbery")
 	public boolean lowersBushes = true;
 
-	@Property(id = "homing_sharpness", name = "Homing strength", category = BulletPropertyCategory.travel)
+	@Property(id = "homing_sharpness", name = "Homing strength", category = BulletPropertyCategory.travel, desc = "If nonzero, the bullet will change direction when a nearby enemy tank is in line of sight. Greater values will result in sharper turns. Negative values result in the bullet moving away from the tank.")
 	public double homingSharpness = 0;
 
-	@Property(id = "rebounds", minValue = 0.0, name = "Max rebounds", category = BulletPropertyCategory.travel)
+	@Property(id = "chain_count", minValue = 0.0, name = "Max chain", category = BulletPropertyCategory.travel, desc = "Once this bullet hits a tank or bullet, it will fire again from the hit target towards another nearby enemy up to this many times")
 	public int rebounds = 0;
 
-	@Property(id = "rebound_delay", minValue = 0.0, name = "Rebound delay", category = BulletPropertyCategory.travel)
+	@Property(id = "chain_delay", minValue = 0.0, name = "Chain delay", category = BulletPropertyCategory.travel, desc = "The time between hitting a tank or bullet and firing itself again \n \n 1 time unit = 0.01 seconds")
 	public double reboundDelay = 10;
 
 	public Tank homingTarget = null;
@@ -170,19 +170,19 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public ItemBullet.ItemStackBullet item;
 
-	@Property(id = "max_live_bullets", minValue = 0.0, name = "Max live bullets", category = BulletPropertyCategory.firing)
+	@Property(id = "max_live_bullets", minValue = 0.0, name = "Max live bullets", category = BulletPropertyCategory.firing, desc = "The maximum number of this bullet fired by one tank that can be onscreen at a time")
 	public int maxLiveBullets = 5;
 
 	@Property(id = "recoil", name = "Recoil", category = BulletPropertyCategory.firing)
 	public double recoil = 1.0;
 
-	@Property(id = "shot_count", minValue = 1.0, name = "Shot count", category = BulletPropertyCategory.firing)
+	@Property(id = "shot_count", minValue = 1.0, name = "Shot count", category = BulletPropertyCategory.firing, desc = "The number of bullets fired at once")
 	public int shotCount = 1;
 
-	@Property(id = "multishot_spread_angle", minValue = 0.0, name = "Multishot spread angle", category = BulletPropertyCategory.firing)
+	@Property(id = "multishot_spread_angle", minValue = 0.0, maxValue = 360, name = "Multishot spread angle", category = BulletPropertyCategory.firing, desc = "The angle spread in degrees of multiple bullets fired at once")
 	public double multishotSpread = 0;
 
-	@Property(id = "accuracy_spread_angle", minValue = 0.0, name = "Accuracy spread angle", category = BulletPropertyCategory.firing)
+	@Property(id = "accuracy_spread_angle", minValue = 0.0, name = "Accuracy spread angle", category = BulletPropertyCategory.firing, desc = "The size of the random inaccuracy angle variation of a bullet when fired, in degrees. Larger values are less accurate.")
 	public double accuracySpread = 0;
 
 	public boolean canMultiDamage = false;
@@ -210,6 +210,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public double pitch = 1;
 	@Property(id = "sound_pitch_variation", minValue = 0.0, maxValue = 10.0, name = "Sound pitch variation", category = BulletPropertyCategory.firing)
 	public double pitchVariation = 0;
+	@Property(id = "sound_volume", minValue = 0.0, maxValue = 1.0, name = "Sound volume", category = BulletPropertyCategory.firing)
+	public double soundVolume = 1;
 
 	protected ArrayList<Trail>[] trails;
 	protected boolean addedTrail = false;
@@ -368,6 +370,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public void collidedWithTank(Tank t)
 	{
+		double vX = this.vX;
+		double vY = this.vY;
+
 		if (!heavy)
 		{
 			boolean pop = this.playPopSound;
@@ -381,8 +386,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			if (this.tankHitKnockback > 0)
 			{
 				double mul = Game.tile_size * Game.tile_size / Math.max(1, Math.pow(t.size, 2)) * this.tankHitKnockback;
-				t.vX += this.vX * mul;
-				t.vY += this.vY * mul;
+				t.vX += vX * mul;
+				t.vY += vY * mul;
 
 				t.recoilSpeed = t.getSpeed();
 				if (t.recoilSpeed > t.maxSpeed)
@@ -556,8 +561,10 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public void push(Bullet b)
 	{
-		b.vX += this.vX * Math.pow(this.size, 2) / Math.max(1, Math.pow(b.size, 2)) * this.bulletHitKnockback * Panel.frameFrequency;
-		b.vY += this.vY * Math.pow(this.size, 2) / Math.max(1, Math.pow(b.size, 2)) * this.bulletHitKnockback * Panel.frameFrequency;
+		b.vX += this.vX * Math.pow(this.size, 2) / Math.max(1, Math.pow(b.size, 2)) * this.bulletHitKnockback * this.frameDamageMultipler;
+		b.vY += this.vY * Math.pow(this.size, 2) / Math.max(1, Math.pow(b.size, 2)) * this.bulletHitKnockback * this.frameDamageMultipler;
+		b.collisionX = b.posX;
+		b.collisionY = b.posY;
 		b.addTrail();
 	}
 
@@ -1230,7 +1237,6 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			this.collisionX = this.posX;
 			this.collisionY = this.posY;
 			this.dealsDamage = this.damage > 0;
-			this.lifespan = this.range / this.speed;
 
 			this.addTrail();
 		}

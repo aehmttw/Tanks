@@ -100,7 +100,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
 
-	@Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0)
+	@Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
 	public double size;
 
 	@Property(category = appearanceBody, id = "color_r", name = "Red", miscType = Property.MiscType.color)
@@ -134,7 +134,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double turretSize = 8;
 	@Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
 	public double turretLength = Game.tile_size;
-	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet count")
+	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count")
 	public boolean multipleTurrets = true;
 
 	/** Important: tertiary color values will not be used unless this option is set to true! */

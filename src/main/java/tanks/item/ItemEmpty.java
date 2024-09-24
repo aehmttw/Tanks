@@ -8,6 +8,7 @@ public class ItemEmpty extends Item
 	public ItemEmpty()
 	{
 		this.name = "";
+		this.icon = null;
 	}
 
 	@Override

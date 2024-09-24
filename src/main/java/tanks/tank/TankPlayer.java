@@ -254,7 +254,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 			Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
 
 			if (i.item instanceof ItemBullet)
-				showRange = ((ItemBullet) i.item).bullet.range > 0;
+				showRange = ((ItemBullet) i.item).bullet.lifespan > 0;
 			else if (i.item instanceof ItemRemote)
 				showRange = ((ItemRemote) i.item).range > 0;
 		}
@@ -390,7 +390,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				{
 					Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
 					r.bounces = b.bounces;
-					range = b.range;
+					range = b.lifespan * b.speed;
 
 					if (range > 0)
 						range *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
@@ -474,7 +474,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = speed;
-		b.range *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		this.recoilSpeed = this.getSpeed();

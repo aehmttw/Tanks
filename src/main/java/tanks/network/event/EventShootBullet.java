@@ -65,7 +65,7 @@ public class EventShootBullet extends PersonalEvent
 
 		try
 		{
-			bullet = Game.registryBullet.getEntry(this.name).bullet.getConstructor(double.class, double.class, int.class, Tank.class, ItemBullet.ItemStackBullet.class).newInstance(0.0, 0.0, 0, t, t.bulletItem);
+			bullet = Game.registryBullet.getEntry(this.name).bullet.getConstructor(double.class, double.class, Tank.class, boolean.class, ItemBullet.ItemStackBullet.class).newInstance(0.0, 0.0, t, false, t.bulletItem);
 		}
 		catch (Exception e)
 		{

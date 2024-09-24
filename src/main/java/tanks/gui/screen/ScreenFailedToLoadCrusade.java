@@ -27,6 +27,9 @@ public class ScreenFailedToLoadCrusade extends Screen
 		Game.cleanUp();
 		e.printStackTrace();
 
+		this.music = "ready_music_3.ogg";
+		Drawing.drawing.playSound("leave.ogg");
+
 		hashcode = contents.hashCode();
 
 		try

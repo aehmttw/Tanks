@@ -48,7 +48,15 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 ((ScreenEditorBullet) this.objectEditorScreen).bulletTypes.posX += 20;
             }
             else if (is instanceof ItemMine.ItemStackMine)
+            {
                 this.objectEditorScreen = new ScreenEditorMine(new FieldPointer<>(item, item.getClass().getField("mine"), false), Game.screen);
+                this.objectEditorScreen.forceDisplayTabs = true;
+                Button b = this.objectEditorScreen.topLevelButtons.get(0);
+                b.posX = this.itemTabButton.posX;
+                b.posY = this.itemTabButton.posY - 60;
+                b.sizeX = this.itemTabButton.sizeX;
+                b.imageXOffset = this.itemTabButton.imageXOffset;
+            }
 
             if (this.objectEditorScreen != null)
             {
@@ -60,6 +68,12 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         {
             Game.exitToCrash(e);
         }
+
+        this.delete.function = () ->
+        {
+            setTarget(null);
+            this.quit.function.run();
+        };
     }
 
     public class TabItemProperties extends Tab
@@ -77,7 +91,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 for (Field f : this.screen.fields)
                 {
                     Property p = f.getAnnotation(Property.class);
-                    if (p != null && p.category().equals(this.category))
+                    if (p != null && p.category().equals(this.category) && !p.id().equals("item"))
                     {
                         this.uiElements.add(screen.getUIElementForField(f, p, screen.target));
                     }
@@ -133,6 +147,8 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         else
             super.draw();
 
+        this.delete.setText("Delete item");
+        this.delete.draw();
     }
 
     @Override
@@ -150,5 +166,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         }
         else
             super.update();
+
+        this.delete.update();
     }
 }

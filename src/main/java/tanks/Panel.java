@@ -18,6 +18,7 @@ import tanks.network.event.INetworkEvent;
 import tanks.network.event.IStackableEvent;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleBeatBlock;
 import tanks.rendering.*;
 import tanks.tank.*;
 
@@ -205,6 +206,8 @@ public class Panel
 
 	public void update()
 	{
+		this.frameStartTime = System.currentTimeMillis();
+
 		if (firstFrame)
 			this.setUp();
 

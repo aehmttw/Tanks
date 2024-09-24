@@ -45,6 +45,8 @@ public class OverlayRotateTank extends ScreenLevelEditorOverlay
         rotateRight.imageSizeX = 50;
         rotateRight.imageSizeY = 50;
         rotateRight.imageXOffset = 5;
+
+        this.musicInstruments = true;
     }
 
     public void update()
@@ -77,7 +79,11 @@ public class OverlayRotateTank extends ScreenLevelEditorOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 600, 450);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 580, 430);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select tank orientation");
 

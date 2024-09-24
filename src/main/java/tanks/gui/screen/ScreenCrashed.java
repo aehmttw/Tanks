@@ -11,6 +11,7 @@ public class ScreenCrashed extends Screen
 {
 	public String sadFace = ":(";
 	public String ohNoes = "Oh noes!";
+	public int hmm = 0;
 
 	public ScreenCrashed()
 	{
@@ -42,6 +43,18 @@ public class ScreenCrashed extends Screen
 		}
 
 		this.music = "ready_music_3.ogg";
+		this.musicID = "crash";
+		if (Math.random() < 0.01)
+		{
+			this.music = "ready_music_4.ogg";
+			this.hmm = 1;
+		}
+		else if (Math.random() < 0.01)
+		{
+			this.music = "ready_music_5.ogg";
+			this.hmm = 2;
+		}
+
 		Panel.forceRefreshMusic = true;
 
 		double imgsize = 25 * Drawing.drawing.interfaceScaleZoom;
@@ -81,9 +94,20 @@ public class ScreenCrashed extends Screen
 	{
 		Drawing drawing = Drawing.drawing;
 		drawing.setColor(0, 0, 255);
+
+		if (hmm == 1)
+			drawing.setColor(255, 0, 0);
+		else if (hmm == 2)
+			drawing.setColor(0, 0, 0);
+
 		Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 
 		drawing.setColor(255, 255, 255);
+		if (hmm == 1)
+			drawing.setColor(0, 0, 0);
+		else if (hmm == 2)
+			drawing.setColor(255, 255 * (Math.sin(this.screenAge / 100 * 60 / 130 * Math.PI * 2) / 2 + 0.5), 0);
+
 		drawing.setInterfaceFontSize(100);
 
 		if (Drawing.drawing.interfaceScaleZoom > 1)

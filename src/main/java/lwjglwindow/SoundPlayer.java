@@ -58,6 +58,8 @@ public class SoundPlayer extends BaseSoundPlayer
     public static final int total_sounds = 255;
     public static final int max_music = 50;
 
+    public long musicStart = 0;
+
     protected void playMusicSource(int i)
     {
         alSourcePlay(i);
@@ -208,6 +210,7 @@ public class SoundPlayer extends BaseSoundPlayer
             for (int i: this.syncedTracks.values())
                 stopMusicSource(i);
 
+            this.musicStart = System.currentTimeMillis();
             musicSpeed = 1;
             this.syncedTracks.clear();
             this.stoppingSyncedTracks.clear();
@@ -320,10 +323,17 @@ public class SoundPlayer extends BaseSoundPlayer
     }
 
     @Override
+    public long getMusicStartTime()
+    {
+        return this.musicStart;
+    }
+
+    @Override
     public void setMusicPos(float pos)
     {
         alSourcef(this.currentMusic, EXTOffset.AL_SEC_OFFSET, pos);
         alSourcef(this.prevMusic, EXTOffset.AL_SEC_OFFSET, pos);
+        this.musicStart = System.currentTimeMillis() - (long) (pos * 1000);
 
         for (int i: this.syncedTracks.values())
             alSourcef(i, EXTOffset.AL_SEC_OFFSET, pos);

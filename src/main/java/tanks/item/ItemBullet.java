@@ -4,17 +4,20 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.minigames.Minigame;
 import tanks.tank.Tank;
+import tanks.tankson.Property;
 
 public class ItemBullet extends Item
 {
 	public static final String item_class_name = "bullet";
 
-	public Bullet bullet;
+	@Property(id="bullet", category = "none")
+	public Bullet bullet = new Bullet();
 
 	public ItemBullet()
 	{
 		this.rightClick = false;
 		this.supportsHits = true;
+		this.icon = "bullet_normal.png";
 	}
 
 	public ItemBullet(Bullet b)
@@ -62,7 +65,9 @@ public class ItemBullet extends Item
 				double speedmul = m.getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 				if (this.item.bullet.shotSound != null)
-					Drawing.drawing.playGlobalSound(this.item.bullet.shotSound, (float) ((Bullet.bullet_size / this.item.bullet.size) * this.item.bullet.pitch * (1 - (Math.random() * 0.5) * this.item.bullet.pitchVariation)));
+					Drawing.drawing.playGlobalSound(this.item.bullet.shotSound,
+							(float) ((Bullet.bullet_size / this.item.bullet.size) * this.item.bullet.pitch * (1 - (Math.random() * 0.5) * this.item.bullet.pitchVariation)),
+							(float) this.item.bullet.soundVolume);
 
 				for (int i = 0; i < q; i++)
 				{

@@ -15,7 +15,7 @@ public class TankPurple extends TankAIControlled
 		this.cooldownRandom = 40;
 		this.enablePathfinding = true;
 
-		this.turretAimSpeed = 0.045;
+		this.turretAimSpeed = 0.03;
 		this.turretIdleSpeed = 0.001;
 		this.avoidanceSeekOpenSpaces = true;
 		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;

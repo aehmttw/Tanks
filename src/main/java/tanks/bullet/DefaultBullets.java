@@ -159,7 +159,7 @@ public class DefaultBullets
         flamethrower.burnsBushes = true;
         flamethrower.bulletCollision = false;
         flamethrower.shotSound = "flame.ogg";
-        flamethrower.range = 312.5;
+        flamethrower.lifespan = 100;
         flamethrower.endSize = Bullet.bullet_size * 10;
 
         air = new BulletGas();
@@ -182,7 +182,7 @@ public class DefaultBullets
         air.bulletHitKnockback = 0.04;
         air.tankHitKnockback = 0.1;
         air.lowersBushes = false;
-        air.range = 1250;
+        air.lifespan = 200;
         air.endSize = Bullet.bullet_size * 40;
         air.maxLiveBullets = 0;
         air.speed *= 2;

@@ -62,6 +62,7 @@ public class ItemBar
 	public boolean addItem(Item.ItemStack<?> item)
 	{
 		Item.ItemStack<?> i = item.getCopy();
+		i.player = this.player;
 		int emptyAmount = 0;
 		for (Item.ItemStack<?> slot : this.slots)
 		{
@@ -288,7 +289,7 @@ public class ItemBar
 			if (slots[i + 2] != null)
 			{
 				Item.ItemStack<?> item = slots[i + 2];
-				if (item.stackSize > 1)
+				if (item.stackSize > 0)
 				{
 					Drawing.drawing.setColor(itemCountR, itemCountG, itemCountB, (100 - this.player.hotbar.percentHidden) * 2.55);
 

@@ -3,6 +3,7 @@ package tanks.item;
 import tanks.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
@@ -23,13 +24,13 @@ public abstract class Item implements IGameObject
 	// Items like bullets and mines can hit enemies, so this will be shown on the stats screen
 	public boolean supportsHits = false;
 
-	@Property(id = "name", name = "Item name")
+	@Property(id = "name", name = "Item name", miscType = Property.MiscType.complexString)
 	public String name = System.currentTimeMillis() + "";
 
 	@Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
 	public String icon = "item.png";
 
-	@Property(id = "cooldown", name = "Cooldown")
+	@Property(id = "cooldown", name = "Cooldown", desc = "Minimum time between uses of this item \n \n 1 time unit = 0.01 seconds")
 	public double cooldownBase = 20;
 
 	public boolean rightClick = false;
@@ -40,7 +41,7 @@ public abstract class Item implements IGameObject
 		@Property(id = "stack")
 		public ItemStack<?> itemStack;
 
-		@Property(id = "price")
+		@Property(id = "price", name = "Price")
 		public int price;
 
 		public ShopItem(ItemStack<?> itemStack)
@@ -87,14 +88,15 @@ public abstract class Item implements IGameObject
 	}
 
 	@TanksONable("item_stack")
-	public static abstract class ItemStack<T extends Item>
+	public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>
 	{
+		@Property(id = "item", name = "Item")
 		public T item;
 
-		@Property(id = "amount", name = "Amount")
+		@Property(id = "amount", name = "Amount", desc = "Set to 0 for unlimited")
 		public int stackSize;
 
-		@Property(id = "max", name = "Max stack size")
+		@Property(id = "max", name = "Max stack size", desc = "Set to 0 for unlimited")
 		public int maxStackSize;
 
 		public boolean isEmpty = false;
@@ -118,11 +120,14 @@ public abstract class Item implements IGameObject
 			this.maxStackSize = max;
 		}
 
-		public ItemStack<?> getCopy()
+		@Override
+		public ItemStack<T> getCopy()
 		{
 			try
 			{
-				return (ItemStack<?>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
+				ItemStack<T> i = (ItemStack<T>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
+				this.clonePropertiesTo(i);
+				return i;
 			}
 			catch (Exception e)
 			{
@@ -219,6 +224,12 @@ public abstract class Item implements IGameObject
 			ItemStack<?> i = (ItemStack<?>) TanksON.parseObject(s);
 			i.player = p;
 			return i;
+		}
+
+		@Override
+		public String toString()
+		{
+			return TanksON.objectToString(this);
 		}
 	}
 

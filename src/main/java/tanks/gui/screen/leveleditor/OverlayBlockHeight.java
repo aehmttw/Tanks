@@ -11,7 +11,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 
     public Button decreaseHeight = new Button(this.centerX - 100, this.centerY, 60, 60, "-", () -> screenLevelEditor.mouseObstacleHeight -= 0.5);
 
-    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", this::escape);
+    public Button back = new Button(this.centerX, this.centerY + 240, 350, 40, "Done", this::escape);
 
     public Button staggering = new Button(this.centerX + 200, this.centerY, 60, 60, "", () ->
     {
@@ -40,6 +40,8 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
         staggering.imageSizeX = 40;
         staggering.imageSizeY = 40;
         staggering.fullInfo = true;
+
+        this.musicInstruments = true;
     }
 
     public void update()
@@ -78,7 +80,11 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
     public void draw()
     {
         super.draw();
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 800, 600);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 780, 580);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Block height");
 

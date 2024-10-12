@@ -3,10 +3,7 @@ package tanks.item;
 import tanks.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
-import tanks.tankson.ICopyable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksON;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +53,7 @@ public abstract class Item implements IGameObject
 
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toTanksON(this);
 		}
 
 		public static ShopItem fromString(String s)
@@ -229,7 +226,7 @@ public abstract class Item implements IGameObject
 		@Override
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toTanksON(this);
 		}
 	}
 
@@ -268,7 +265,7 @@ public abstract class Item implements IGameObject
 //
 //		return null;
 
-		return TanksON.objectToString(this);
+		return Serializer.toTanksON(this);
 	}
 
 	public static Item fromString(String s)

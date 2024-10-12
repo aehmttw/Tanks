@@ -19,9 +19,6 @@ import java.util.*;
  */
 public class TanksON
 {
-    protected static TankAIControlled defaultTank = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
-    protected static HashMap<Class<?>, Object> defaults = new HashMap<>();
-
     protected static class ParserState
     {
         public String s;
@@ -58,14 +55,6 @@ public class TanksON
                     return;
             }
         }
-    }
-
-    protected static Object getDefault(Class<?> c) throws InstantiationException, IllegalAccessException
-    {
-        if (!defaults.containsKey(c))
-            defaults.put(c, c.newInstance());
-
-        return defaults.get(c);
     }
 
     public static Object parseObject(String s)
@@ -133,7 +122,7 @@ public class TanksON
             if (next == '}')
             {
                 s.index++;
-                return toTanksONable(map);
+                return map;
             }
             String key;
             if (next != '"')
@@ -153,99 +142,6 @@ public class TanksON
             else if (s.nextChar() != '}')
                 error("Failed to parse map object", s);
         }
-    }
-
-    public static Object toTanksONable(HashMap<String, Object> map)
-    {
-        Object o;
-
-        try
-        {
-            if (!map.containsKey("obj_type"))
-                return map;
-
-            String name = (String) map.get("obj_type");
-
-            switch (name)
-            {
-                case "tank":
-                    o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
-                    break;
-                case "bullet":
-                {
-                    String type = (String) map.get("bullet_type");
-                    o = Game.registryBullet.getEntry(type).bullet.newInstance();
-                    break;
-                }
-                case "mine":
-                    o = new Mine();
-                    break;
-                case "item":
-                {
-                    String type = (String) map.get("item_type");
-                    o = Game.registryItem.getEntry(type).item.getConstructor().newInstance();
-                    break;
-                }
-                case "item_stack":
-                {
-                    o = ((Item) map.get("item")).getStack(null);
-                    break;
-                }
-                case "shop_item":
-                {
-                    o = new Item.ShopItem();
-                    break;
-                }
-                case "crusade_shop_item":
-                {
-                    o = new Item.CrusadeShopItem();
-                    break;
-                }
-                case "explosion":
-                {
-                    o = new Explosion();
-                    break;
-                }
-                case "spawned_tank":
-                {
-                    o = new TankAIControlled.SpawnedTankEntry(null, 0);
-                    break;
-                }
-                default:
-                    throw new RuntimeException("Bad object type: " + name);
-            }
-
-            for (Field f: o.getClass().getFields())
-            {
-                String id = null;
-
-                Property i = f.getAnnotation(Property.class);
-                if (i != null)
-                    id = i.id();
-
-                if (id != null && map.containsKey(id))
-                {
-                    if (HashSet.class.isAssignableFrom(f.getType()))
-                        f.set(o, new HashSet<>((ArrayList<?>) map.get(id)));
-                    else if (IModel.class.isAssignableFrom(f.getType()) && map.get(id) != null)
-                        f.set(o, Drawing.drawing.createModel((String) map.get(id)));
-                    else if (f.getType().isEnum())
-                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) map.get(id)));
-                    else if (f.getType() == int.class)
-                        f.set(o, (int) Math.max(i.minValue(), Math.min(i.maxValue(), ((Double) map.get(id)).intValue())));
-                    else if (f.getType() == double.class)
-                        f.set(o, Math.max(i.minValue(), Math.min(i.maxValue(), ((double) map.get(id)))));
-                    else
-                        f.set(o, map.get(id));
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        return o;
     }
 
     public static ArrayList<Object> parseArray(ParserState s)
@@ -321,7 +217,7 @@ public class TanksON
         }
     }
 
-    public static String objectToString(Object o)
+    public static String toString(Object o)
     {
         if (o instanceof String || o instanceof Enum || o instanceof IModel)
             return "\"" + convertString(o.toString()) + "\"";
@@ -336,7 +232,7 @@ public class TanksON
             StringBuilder s = new StringBuilder("[");
             for (Object el: (AbstractCollection<?>) o)
             {
-                s.append(objectToString(el)).append(",");
+                s.append(toString(el)).append(",");
             }
 
             if (s.charAt(s.length() - 1) == ',')
@@ -359,7 +255,7 @@ public class TanksON
 
             for (String el: keys)
             {
-                s.append("\"").append(convertString(el)).append("\":").append(objectToString(h.get(el))).append(",");
+                s.append("\"").append(convertString(el)).append("\":").append(toString(h.get(el))).append(",");
             }
 
             if (s.charAt(s.length() - 1) == ',')
@@ -367,41 +263,6 @@ public class TanksON
 
             s.append("}");
             return s.toString();
-        }
-        else if (getAnnotation(o.getClass(), TanksONable.class) != null)
-        {
-            try
-            {
-                HashMap<String, Object> h = new HashMap<>();
-
-                h.put("obj_type", getAnnotation(o.getClass(), TanksONable.class).value());
-                if (o instanceof Bullet)
-                    h.put("bullet_type", ((Bullet) o).typeName);
-                else if (o instanceof Item)
-                    h.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
-
-                for (Field f : o.getClass().getFields())
-                {
-                    String id = null;
-
-                    Property i = f.getAnnotation(Property.class);
-                    if (i != null)
-                        id = i.id();
-
-                    if (o instanceof TankAIControlled && equals(f.get(o), f.get(defaultTank)))
-                        id = null;
-                    else if ((o instanceof Bullet || o instanceof Mine) && equals(f.get(o), f.get(getDefault(o.getClass()))))
-                        id = null;
-
-                    if (id != null)
-                        h.put(id, f.get(o));
-                }
-                return objectToString(h);
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
         }
         else
             throw new RuntimeException("Failed to turn object to string: " + o);

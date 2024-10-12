@@ -112,6 +112,14 @@ public final class Serializer {
         return null;
     }
 
+    public static String toTanksON(Object o) {
+        return TanksON.toString(toMap(o));
+    }
+
+    public static Object fromTanksON(String s) {
+        return parseObject((Map<String,Object>)TanksON.parseObject(s));
+    }
+
     public static String toJson(Object o) {
         return gson.toJsonTree(toMap(o)).toString();
     }

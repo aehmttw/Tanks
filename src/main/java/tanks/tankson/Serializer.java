@@ -1,11 +1,8 @@
 package tanks.tankson;
 
-import basewindow.Model;
-import com.google.gson.Gson;
 import tanks.Game;
 import tanks.item.Item;
 import tanks.tank.*;
-import tanks.bullet.Bullet;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -16,9 +13,6 @@ import java.util.Map;
 public final class Serializer {
 
     public static HashMap<String, Tank>userTanks = new HashMap<>();
-
-    //Debugging GSON
-    private static final Gson gson = new Gson();
 
     public static boolean isTanksONable(Object o) {
         if (o != null) {
@@ -118,14 +112,6 @@ public final class Serializer {
 
     public static Object fromTanksON(String s) {
         return parseObject((Map<String,Object>)TanksON.parseObject(s));
-    }
-
-    public static String toJson(Object o) {
-        return gson.toJsonTree(toMap(o)).toString();
-    }
-
-    public static Object fromJson(String s) {
-        return parseObject(gson.fromJson(s,Map.class));
     }
 
     public static Object parseObject(Map m) {

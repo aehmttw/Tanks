@@ -229,7 +229,6 @@ public class Level
 		{
 			customTanksMap.put(t.name, t);
 		}
-
 		ArrayList<EventTankPlayerCreate> playerEvents = new ArrayList<>();
 
 		Tank.currentID = 0;

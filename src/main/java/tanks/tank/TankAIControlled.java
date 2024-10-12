@@ -10,12 +10,14 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.Property;
+import tanks.tankson.Serializer;
 import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static java.lang.System.exit;
 import static tanks.tank.TankPropertyCategory.*;
 
 /** This class is the 'skeleton' tank class.
@@ -255,7 +257,8 @@ public class TankAIControlled extends Tank
 
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toTanksON(this);
+//			return TanksON.objectToString(this);
 		}
 	}
 
@@ -2911,10 +2914,8 @@ public class TankAIControlled extends Tank
 	@Override
 	public String toString()
 	{
-		if (fromRegistry)
-			return "<" + this.name + ">";
-
-		return TanksON.objectToString(this);
+		return Serializer.toTanksON(this);
+//		return TanksON.objectToString(this);
 //		try
 //		{
 //			StringBuilder s = new StringBuilder("[");
@@ -2957,7 +2958,8 @@ public class TankAIControlled extends Tank
 	public static TankAIControlled fromString(String s)
 	{
 		if (s.startsWith("{"))
-			return (TankAIControlled) TanksON.parseObject(s);
+			return (TankAIControlled) Serializer.fromTanksON(s);
+//			return (TankAIControlled) TanksON.parseObject(s);
 		else
 			throw new RuntimeException("The old tank format isn't yet supported");
 			//return fromString(s, null);

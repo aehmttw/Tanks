@@ -9,6 +9,8 @@ import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
+import tanks.tankson.Pointer;
+import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,9 +37,13 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
     public Runnable drawDelete = () -> this.delete.draw();
 
-    public Button nextTankPage = new Button(this.centerX + 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> tankPage++);
+    public Button nextTankPage = new Button(this.centerX + 290, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> tankPage++);
 
-    public Button previousTankPage = new Button(this.centerX - 190, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> tankPage--);
+    public Button previousTankPage = new Button(this.centerX - 290, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> tankPage--);
+
+    public Button firstTankPage = new Button(this.centerX - 500, this.centerY + this.objYSpace * 3, 40, 40, "", () -> tankPage = 0);
+
+    public Button lastTankPage = new Button(this.centerX + 500, this.centerY + this.objYSpace * 3, 40, 40, "", () -> tankPage = (tankButtons.size() - 1) / objectButtonRows / objectButtonCols);
 
     public Button quit = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -101,15 +107,6 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
                     if (m != null)
                         t.musicTracks.addAll(m);
-
-//                    for (RegistryBullet.BulletEntry e: Game.registryBullet.bulletEntries)
-//                    {
-//                        if (e.bullet.equals(t.bullet.bulletClass))
-//                        {
-//                            t.bullet.icon = e.image;
-//                            t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
-//                        }
-//                    }
                 }
                 else
                     continue;
@@ -121,10 +118,20 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             {
                 TankAIControlled clone = tt.instantiate(tt.name, tt.posX, tt.posY, tt.angle);
                 clone.name = System.currentTimeMillis() + "";
-                ScreenTankEditor s = new ScreenTankEditor(clone, tankScreen);
+                Pointer<TankAIControlled> p = tankScreen.addTank(clone);
+                ScreenEditorTank s = new ScreenEditorTank(p, (Screen) tankScreen);
+                s.onComplete = () ->
+                {
+                    if (p.get() == null)
+                    {
+                        this.tankScreen.removeTank(clone);
+                        this.tankScreen.refreshTanks(clone);
+                    }
+                    else
+                        this.tankScreen.refreshTanks(p.get());
+                };
                 s.drawBehindScreen = true;
                 Game.screen = s;
-                tankScreen.addTank(clone);
             }
                 , t.description);
 
@@ -139,10 +146,23 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         this.nextTankPage.imageSizeY = 25;
         this.nextTankPage.imageXOffset = 145;
 
+        this.nextTankPage.enabled = false;
+        this.previousTankPage.enabled = false;
+
         this.previousTankPage.image = "icons/back.png";
         this.previousTankPage.imageSizeX = 25;
         this.previousTankPage.imageSizeY = 25;
         this.previousTankPage.imageXOffset = -145;
+
+        this.lastTankPage.image = "icons/last.png";
+        this.lastTankPage.imageSizeX = 20;
+        this.lastTankPage.imageSizeY = 20;
+        this.lastTankPage.imageXOffset = 0;
+
+        this.firstTankPage.image = "icons/first.png";
+        this.firstTankPage.imageSizeX = 20;
+        this.firstTankPage.imageSizeY = 20;
+        this.firstTankPage.imageXOffset = 0;
 
         delete.textOffsetY = -2.5;
 
@@ -204,10 +224,17 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 {
                     TankAIControlled clone = t.instantiate(t.name, t.posX, t.posY, t.angle);
                     clone.name = System.currentTimeMillis() + "";
-                    ScreenTankEditor s = new ScreenTankEditor(clone, tankScreen);
+                    Pointer<TankAIControlled> p = tankScreen.addTank(clone);
+                    ScreenEditorTank s = new ScreenEditorTank(p, (Screen) tankScreen);
+                    s.onComplete = () ->
+                    {
+                        if (p.get() == null)
+                            this.tankScreen.removeTank(clone);
+                        else
+                            this.tankScreen.refreshTanks(p.get());
+                    };
                     s.drawBehindScreen = true;
                     Game.screen = s;
-                    tankScreen.addTank(clone);
                 }
                         , desc);
 
@@ -243,10 +270,17 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
                 {
                     TankAIControlled clone = tt.instantiate(tt.name, tt.posX, tt.posY, tt.angle);
-                    ScreenTankEditor s = new ScreenTankEditor(clone, tankScreen);
+                    Pointer<TankAIControlled> p = tankScreen.addTank(clone);
+                    ScreenEditorTank s = new ScreenEditorTank(p, (Screen) tankScreen);
+                    s.onComplete = () ->
+                    {
+                        if (p.get() == null)
+                            this.tankScreen.removeTank(clone);
+                        else
+                            this.tankScreen.refreshTanks(p.get());
+                    };
                     s.drawBehindScreen = true;
                     Game.screen = s;
-                    tankScreen.addTank(clone);
                 }
                         , desc);
                 b.text = l;
@@ -296,11 +330,22 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             }
         }
 
-        if ((this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > tankPage)
-            nextTankPage.update();
+        this.nextTankPage.enabled = ((this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > tankPage);
+        this.previousTankPage.enabled = (tankPage > 0);
+        this.lastTankPage.enabled = this.nextTankPage.enabled;
+        this.firstTankPage.enabled = this.previousTankPage.enabled;
 
-        if (tankPage > 0)
+        if (nextTankPage.enabled || previousTankPage.enabled)
+        {
+            nextTankPage.update();
             previousTankPage.update();
+
+            if ((tankButtons.size() - 1) / objectButtonRows / objectButtonCols >= 2)
+            {
+                lastTankPage.update();
+                firstTankPage.update();
+            }
+        }
 
         deleteMode.update();
         quit.update();
@@ -321,11 +366,23 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 600);
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 580);
 
-        if ((tankButtons.size() - 1) / (objectButtonRows * objectButtonCols) > tankPage)
+        if (nextTankPage.enabled || previousTankPage.enabled)
+        {
             nextTankPage.draw();
-
-        if (tankPage > 0)
             previousTankPage.draw();
+
+            if ((tankButtons.size() - 1) / objectButtonRows / objectButtonCols >= 2)
+            {
+                lastTankPage.draw();
+                firstTankPage.draw();
+            }
+
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
+                    Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
+
+        }
 
         for (int i = tankButtons.size() - 1; i >= 0; i--)
         {

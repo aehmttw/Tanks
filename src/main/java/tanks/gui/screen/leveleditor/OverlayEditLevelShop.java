@@ -7,10 +7,12 @@ import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.screen.IConditionalOverlayScreen;
 import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenEditorItem;
 import tanks.gui.screen.ScreenEditorShopItem;
 import tanks.item.Item;
 import tanks.registry.RegistryItem;
 import tanks.tankson.FieldPointer;
+import tanks.tankson.MonitoredArrayListIndexPointer;
 
 import java.util.ArrayList;
 
@@ -18,10 +20,6 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
 {
     public ButtonList shopList;
     public Selector itemSelector;
-
-    public Item.ShopItem editingStack;
-    public int editingItemIndex = -1;
-    public boolean addingItem = false;
 
     public Button addItem = new Button(this.centerX + 380, this.centerY + 300, 350, 40, "Add item", new Runnable()
     {
@@ -66,9 +64,10 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
             try
             {
                 Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-                editingStack = new Item.ShopItem(i.getStack(null));
-                addingItem = true;
-                Game.screen = new ScreenEditorShopItem(new FieldPointer<>(this, this.getClass().getField("editingStack"), false), Game.screen);
+                screenLevelEditor.level.shop.add(new Item.ShopItem(i.getStack(null)));
+                ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.shop, screenLevelEditor.level.shop.size() - 1, false, this::refreshItems), Game.screen);
+                s.onComplete = this::refreshItems;
+                Game.screen = s;
             }
             catch (NoSuchFieldException e)
             {
@@ -96,24 +95,6 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
 
     public void update()
     {
-        if (this.addingItem && this.editingStack != null)
-        {
-            this.addItem(this.editingStack);
-            this.editingStack = null;
-            this.addingItem = false;
-        }
-        else if (this.editingItemIndex >= 0)
-        {
-            if (this.editingStack == null)
-                screenLevelEditor.level.shop.remove(this.editingItemIndex);
-            else
-                screenLevelEditor.level.shop.set(this.editingItemIndex, this.editingStack);
-
-            this.editingStack = null;
-            this.editingItemIndex = -1;
-            this.refreshItems();
-        }
-
         this.shopList.update();
         this.back.update();
         this.addItem.update();
@@ -171,9 +152,9 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
             {
                 try
                 {
-                    editingItemIndex = j;
-                    editingStack = screenLevelEditor.level.shop.get(j);
-                    Game.screen = new ScreenEditorShopItem(new FieldPointer<>(this, this.getClass().getField("editingStack"), false), Game.screen);
+                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.shop, j, false, this::refreshItems), Game.screen);
+                    s.onComplete = this::refreshItems;
+                    Game.screen = s;
                 }
                 catch (NoSuchFieldException e)
                 {

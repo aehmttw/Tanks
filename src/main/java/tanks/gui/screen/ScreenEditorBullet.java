@@ -9,6 +9,7 @@ import tanks.gui.*;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Turret;
 import tanks.tankson.FieldPointer;
+import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
@@ -27,7 +28,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Button col3Button;
     public Button glowButton;
 
-    public ScreenEditorBullet(FieldPointer<Bullet> bullet, Screen screen)
+    public ScreenEditorBullet(Pointer<Bullet> bullet, Screen screen)
     {
         super(bullet, screen);
         bulletTypes.images = Game.registryBullet.getImageNames();

@@ -9,6 +9,7 @@ import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.tank.Explosion;
 import tanks.tankson.FieldPointer;
+import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
@@ -23,7 +24,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         this.objectEditorScreen.currentTab = null;
     });
 
-    public ScreenEditorItem(FieldPointer<Item.ItemStack<?>> itemStack, Screen screen)
+    public ScreenEditorItem(Pointer<Item.ItemStack<?>> itemStack, Screen screen)
     {
         super(itemStack, screen);
 
@@ -74,6 +75,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             setTarget(null);
             this.quit.function.run();
         };
+        this.delete.setText("Delete item");
     }
 
     public class TabItemProperties extends Tab
@@ -147,7 +149,6 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         else
             super.draw();
 
-        this.delete.setText("Delete item");
         this.delete.draw();
     }
 
@@ -156,6 +157,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     {
         if (this.objectEditorScreen != null)
         {
+            this.objectEditorScreen.onComplete = this.onComplete;
             this.objectEditorScreen.update();
 
             if (this.objectEditorScreen.currentTab == null)

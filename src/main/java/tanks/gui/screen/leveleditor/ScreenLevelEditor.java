@@ -4,7 +4,6 @@ import basewindow.BaseFile;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.ButtonList;
 import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.network.event.INetworkEvent;
@@ -15,7 +14,6 @@ import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankSpawnMarker;
-import tanks.tankson.FieldPointer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -229,7 +227,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	Button teamShortcut = new Button(0, -1000, 70, 70, "", () ->
 	{
 		paused = true;
-		Game.screen = new OverlaySelectTeam(Game.screen, (ScreenLevelEditor) Game.screen);
+		Game.screen = new OverlayTeams(Game.screen, (ScreenLevelEditor) Game.screen);
 	}, "Tank team (%s)", Game.game.input.editorTeam.getInputs()
 	);
 
@@ -2748,6 +2746,22 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.playerTeamNum = i;
 		else
 			this.teamNum = i;
+	}
+
+	public int getEditorTeamNum()
+	{
+		if (this.currentPlaceable == Placeable.playerTank)
+			return this.playerTeamNum;
+		else
+			return this.teamNum;
+	}
+
+	public Team getEditorTeam()
+	{
+		if (this.currentPlaceable == Placeable.playerTank)
+			return this.teams.get(this.playerTeamNum);
+		else
+			return this.teams.get(this.teamNum);
 	}
 
 	@Override

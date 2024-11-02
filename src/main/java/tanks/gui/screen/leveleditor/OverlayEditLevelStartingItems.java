@@ -9,17 +9,14 @@ import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.registry.RegistryItem;
 import tanks.tankson.FieldPointer;
+import tanks.tankson.MonitoredArrayListIndexPointer;
 
 import java.util.ArrayList;
 
-public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay implements IItemStackScreen, IConditionalOverlayScreen
+public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay implements IConditionalOverlayScreen
 {
     public ButtonList startingItemsList;
     public Selector itemSelector;
-
-    public Item.ItemStack<?> editingStack;
-    public int editingItemIndex = -1;
-    public boolean addingItem = false;
 
     public Button addItem = new Button(this.centerX + 380, this.centerY + 300, 350, 40, "Add item", new Runnable()
     {
@@ -61,17 +58,11 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
-            try
-            {
-                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-                editingStack = i.getStack(null);
-                addingItem = true;
-                Game.screen = new ScreenEditorItem(new FieldPointer<>(this, this.getClass().getField("editingStack"), false), Game.screen);
-            }
-            catch (NoSuchFieldException e)
-            {
-                e.printStackTrace();
-            }
+            Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
+            screenLevelEditor.level.startingItems.add(i.getStack(null));
+            ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.startingItems, screenLevelEditor.level.startingItems.size() - 1, false, this::refreshItems), Game.screen);
+            s.onComplete = this::refreshItems;
+            Game.screen = s;
         });
 
         itemSelector.images = itemImages;
@@ -94,24 +85,6 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
 
     public void update()
     {
-        if (this.addingItem && this.editingStack != null)
-        {
-            this.addItem(this.editingStack);
-            this.editingStack = null;
-            this.addingItem = false;
-        }
-        else if (this.editingItemIndex >= 0)
-        {
-            if (this.editingStack == null)
-                screenLevelEditor.level.startingItems.remove(this.editingItemIndex);
-            else
-                screenLevelEditor.level.startingItems.set(this.editingItemIndex, this.editingStack);
-
-            this.editingStack = null;
-            this.editingItemIndex = -1;
-            this.refreshItems();
-        }
-
         this.startingItemsList.update();
         this.back.update();
         this.addItem.update();
@@ -142,21 +115,6 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
         this.reorderItems.draw();
     }
 
-    @Override
-    public void addItem(Item.ItemStack<?> i)
-    {
-        screenLevelEditor.level.startingItems.add(i);
-        this.refreshItems();
-    }
-
-    @Override
-    public void removeItem(Item.ItemStack<?> i)
-    {
-        screenLevelEditor.level.startingItems.remove(i);
-        this.refreshItems();
-    }
-
-    @Override
     public void refreshItems()
     {
         ButtonList buttons = this.startingItemsList;
@@ -170,16 +128,9 @@ public class OverlayEditLevelStartingItems extends ScreenLevelEditorOverlay impl
 
             Button b = new Button(0, 0, 350, 40, items.get(i).item.name, () ->
             {
-                try
-                {
-                    editingItemIndex = j;
-                    editingStack = screenLevelEditor.level.startingItems.get(j);
-                    Game.screen = new ScreenEditorItem(new FieldPointer<>(this, this.getClass().getField("editingStack"), false), Game.screen);
-                }
-                catch (NoSuchFieldException e)
-                {
-                    Game.exitToCrash(e);
-                }
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.startingItems, j, false, this::refreshItems), Game.screen);
+                s.onComplete = this::refreshItems;
+                Game.screen = s;
             });
 
             b.image = items.get(j).item.icon;

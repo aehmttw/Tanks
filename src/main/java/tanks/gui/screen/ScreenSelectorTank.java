@@ -89,18 +89,7 @@ public class ScreenSelectorTank extends Screen implements IConditionalOverlayScr
             {
                 Tank tt = Game.registryTank.tankEntries.get(i - 1).getTank(x, y, 0);
                 if (tt instanceof TankAIControlled)
-                {
                     t = (TankAIControlled) tt;
-
-                    for (RegistryBullet.BulletEntry e: Game.registryBullet.bulletEntries)
-                    {
-//                        if (e.bullet.equals(t.bullet.bulletClass))
-//                        {
-//                            t.bullet.icon = e.image;
-//                            t.bullet.className = ItemBullet.classMap2.get(t.bullet.bulletClass);
-//                        }
-                    }
-                }
                 else
                     continue;
             }

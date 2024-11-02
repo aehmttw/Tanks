@@ -20,7 +20,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
 
         this.team = team;
 
-        teamName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Team name", () ->
+        teamName = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Team name", () ->
         {
             boolean duplicate = false;
 
@@ -42,6 +42,12 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
         }
                 , team.name);
 
+        teamFriendlyFire.image = "shield.png";
+        teamFriendlyFire.imageXOffset = -teamFriendlyFire.sizeX / 2 + teamFriendlyFire.sizeY / 2;
+        teamFriendlyFire.imageYOffset = 1;
+        teamFriendlyFire.imageSizeX = 30;
+        teamFriendlyFire.imageSizeY = 30;
+
         teamName.lowerCase = true;
 
         if (team.friendlyFire)
@@ -53,10 +59,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             this.deleteTeam.enabled = false;
     }
 
-    public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", this::escape
-    );
+    public Button back = new Button(this.centerX, this.centerY + 300, this.objWidth, this.objHeight, "Back", this::escape);
 
-    public Button deleteTeam = new Button(this.centerX, this.centerY + 300 - this.objYSpace, this.objWidth, this.objHeight, "Delete team", new Runnable()
+    public Button deleteTeam = new Button(this.centerX - this.objXSpace, this.centerY + 300, this.objWidth, this.objHeight, "Delete team", new Runnable()
     {
         @Override
         public void run()
@@ -74,7 +79,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     }
     );
 
-    public Button teamFriendlyFire = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
+    public Button teamFriendlyFire = new Button(this.centerX, this.centerY , this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
     {
         @Override
         public void run()
@@ -85,10 +90,10 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             else
                 teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.offText);
         }
-    }
+    }, "If a team has friendly fire disabled---no tanks on that team will be able to---damage each other"
     );
 
-    public Button teamColor = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Team color", () ->
+    public Button teamColor = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Team color", () ->
         {
             Game.screen = new OverlayEditTeamColor(Game.screen, screenLevelEditor, team);
         }
@@ -108,14 +113,29 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     public void draw()
     {
         super.draw();
+
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+
         back.draw();
         teamName.draw();
         teamColor.draw();
         deleteTeam.draw();
         teamFriendlyFire.draw();
 
+        if (team.enableColor)
+        {
+            Drawing.drawing.setColor(team.teamColorR, team.teamColorG, team.teamColorB);
+            Drawing.drawing.fillOval(teamColor.posX - teamColor.sizeX / 2 + teamColor.sizeY / 2, teamColor.posY, teamColor.sizeY * 0.8, teamColor.sizeY * 0.8);
+        }
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, this.team.name);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Edit team");
+
+        if (team.enableColor)
+            Drawing.drawing.setColor(team.teamColorR, team.teamColorG, team.teamColorB);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, this.team.name);
     }
 }

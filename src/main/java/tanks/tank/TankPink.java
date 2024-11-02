@@ -35,7 +35,7 @@ public class TankPink extends TankAIControlled
 			this.emblemB = this.secondaryColorB;
 		}
 
-		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankMini("mini", 0, 0, 0), 1));
+		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankReference("mini"), 1));
 
 		this.coinValue = 12;
 

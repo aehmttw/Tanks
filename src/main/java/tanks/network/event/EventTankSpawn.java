@@ -53,9 +53,9 @@ public class EventTankSpawn extends PersonalEvent
         {
             for (TankAIControlled.SpawnedTankEntry e: ((TankAIControlled) ((TankRemote) parent).tank).spawnedTankEntries)
             {
-                if (e.tank.name.equals(type))
+                if (e.tank.getName().equals(type))
                 {
-                    t = e.tank.instantiate(e.tank.name, posX, posY, angle);
+                    t = ((TankAIControlled) e.tank.resolve()).instantiate(e.tank.getName(), posX, posY, angle);
                     break;
                 }
             }

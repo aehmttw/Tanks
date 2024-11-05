@@ -116,7 +116,7 @@ public class Game
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	//Versioning has moved to version.txt
-	public static final String version = "Tanks " + readVersionFromFile();
+	public static final String version = "Tanks v" + readVersionFromFile();
 
     public static final int network_protocol = 55;
 	public static boolean debug = false;

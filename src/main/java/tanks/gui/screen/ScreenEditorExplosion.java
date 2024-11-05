@@ -2,10 +2,11 @@ package tanks.gui.screen;
 
 import tanks.tank.Explosion;
 import tanks.tankson.FieldPointer;
+import tanks.tankson.Pointer;
 
 public class ScreenEditorExplosion extends ScreenEditorTanksONable<Explosion>
 {
-    public ScreenEditorExplosion(FieldPointer<Explosion> explosion, Screen screen)
+    public ScreenEditorExplosion(Pointer<Explosion> explosion, Screen screen)
     {
         super(explosion, screen);
 

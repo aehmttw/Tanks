@@ -71,7 +71,19 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
 
         for (int i = 0; i < groups.length; i++)
         {
+            double sx = groups[i].sizeX;;
+            double sy = groups[i].sizeY;
+
+            if (!groups[i].enabled)
+            {
+                groups[i].sizeX *= 1.2;
+                groups[i].sizeY *= 1.2;
+            }
+
             groups[i].draw();
+
+            groups[i].sizeX = sx;
+            groups[i].sizeY = sy;
         }
 
         for (int i = 0; i < 8; i++)

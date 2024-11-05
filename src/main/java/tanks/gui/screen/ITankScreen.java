@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
 import tanks.tank.TankAIControlled;
+import tanks.tankson.Pointer;
 
 public interface ITankScreen
 {
-    void addTank(TankAIControlled t);
+    Pointer<TankAIControlled> addTank(TankAIControlled t);
 
     void removeTank(TankAIControlled t);
 

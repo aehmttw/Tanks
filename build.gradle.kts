@@ -97,3 +97,30 @@ tasks.register<JavaExec>("run") {
     // If your application needs working directory to be set
     workingDir = project.projectDir
 }
+
+task("BuildMacApp", Exec::class) {
+    dependsOn(tasks.jar)
+
+    val distributions = file("build/distributions")
+    val jpackage = org.gradle.internal.jvm.Jvm.current().javaHome.resolve("bin/jpackage")
+    val libsDir = file("${layout.buildDirectory.get()}").resolve("libs")
+    val jarName = tasks.named<Jar>("jar").get().archiveFileName.get()
+    val baseName = tasks.named<Jar>("jar").get().archiveBaseName.get()
+    val resourcesDir = sourceSets.main.get().resources.srcDirs.first()
+
+    workingDir = projectDir
+
+    delete(distributions.resolve("Tanks.app"))
+
+    commandLine(
+        jpackage,
+        "--type", "app-image",
+        "--input", libsDir,
+        "--main-jar", jarName,
+        "--name", baseName,
+        "--resource-dir", resourcesDir,
+        "--java-options", "-XstartOnFirstThread",
+        "--arguments", "mac",
+        "--dest", distributions,
+    )
+}

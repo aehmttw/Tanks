@@ -25,6 +25,7 @@ public class SelectorDrawable extends Button
     public double hoverColorB = 255;
     public String optionText = "";
     public Tank tank;
+    public Object value;
     public ArrayList<Tank> multiTanks = new ArrayList<>();
 
     public SelectorDrawable(double x, double y, double sX, double sY, String text, Runnable f)

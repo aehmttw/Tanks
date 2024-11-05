@@ -1,15 +1,13 @@
 package tanks;
 
-import tanks.gui.screen.ILevelPreviewScreen;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
+import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
 import java.util.*;
@@ -88,6 +86,8 @@ public class Level
 
 	public boolean synchronizeMusic = false;
 	public int beatBlocks = 0;
+
+	public HashMap<String, Tank> tankLookupTable = null;
 
 	/**
 	 * A level string is structured like this:
@@ -792,5 +792,44 @@ public class Level
 	public static boolean isDark()
 	{
 		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || currentLightIntensity <= 0.5;
+	}
+
+	public Tank lookupTank(String name)
+	{
+		if (Game.screen instanceof ScreenGame)
+		{
+			if (this.tankLookupTable == null)
+			{
+				this.tankLookupTable = new HashMap<>();
+
+				for (RegistryTank.TankEntry e : Game.registryTank.tankEntries)
+				{
+					this.tankLookupTable.put(e.name, e.getTank(0, 0, 0));
+				}
+
+				for (TankAIControlled t : this.customTanks)
+				{
+					this.tankLookupTable.put(t.name, t);
+				}
+			}
+
+			return this.tankLookupTable.get(name);
+		}
+		else
+		{
+			RegistryTank.TankEntry e = Game.registryTank.getEntry(name);
+			if (TankUnknown.class.isAssignableFrom(e.tank))
+			{
+				for (TankAIControlled t : this.customTanks)
+				{
+					if (t.name.equals(name))
+						return t;
+				}
+
+				return null;
+			}
+			else
+				return e.getTank(0, 0, 0);
+		}
 	}
 }

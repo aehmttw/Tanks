@@ -8,7 +8,7 @@ import tanks.gui.SelectorDrawable;
 
 import java.util.ArrayList;
 
-public class ScreenArrayListSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen
+public class ScreenSelectorArraylist extends Screen implements IConditionalOverlayScreen, IDarkScreen, IScreenWithCompletion
 {
     public Screen screen;
 
@@ -22,6 +22,8 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
 
     public Consumer<Entry> saveEntry;
     public Producer<Entry> defaultEntry;
+
+    public Runnable onComplete = () -> {};
 
     public Button create = new Button(this.centerX, 0, 60, 60, "+", () ->
     {
@@ -46,6 +48,7 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
     public Button done = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Done", () ->
     {
         this.apply();
+        this.onComplete.run();
         Game.screen = screen;
     });
 
@@ -69,18 +72,30 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
     }
     );
 
+    @Override
+    public Runnable getOnComplete()
+    {
+        return this.onComplete;
+    }
+
+    @Override
+    public void setOnComplete(Runnable r)
+    {
+        this.onComplete = r;
+    }
+
     public static class Entry
     {
         public ITrigger element1;
         public ITrigger element2;
-        public ScreenArrayListSelector screen;
+        public ScreenSelectorArraylist screen;
         public Button delete = new Button(0, 0, 60, 60, "x", () ->
         {
             screen.entries.remove(this);
             screen.arrangeEntries();
         });
 
-        public Entry(ITrigger e1, ITrigger e2, ScreenArrayListSelector screen)
+        public Entry(ITrigger e1, ITrigger e2, ScreenSelectorArraylist screen)
         {
             this.element1 = e1;
             this.element2 = e2;
@@ -135,7 +150,7 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
         }
     }
 
-    public ScreenArrayListSelector(Screen prev, String title)
+    public ScreenSelectorArraylist(Screen prev, String title)
     {
         super(350, 40, 380, 60);
 
@@ -178,6 +193,9 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
     @Override
     public void update()
     {
+        if (screen instanceof ScreenEditorTanksONable)
+            ((ScreenEditorTanksONable<?>) screen).updateMusic();
+
         for (int i = this.page * this.entriesPerPage; i < Math.min((this.page + 1) * this.entriesPerPage, this.entries.size() + 1); i++)
         {
             if (i >= this.entries.size())
@@ -196,6 +214,15 @@ public class ScreenArrayListSelector extends Screen implements IConditionalOverl
         }
 
         done.update();
+
+        if (Game.game.input.editorPause.isValid())
+        {
+            Game.game.input.editorPause.invalidate();
+            this.done.function.run();
+        }
+
+        if (Game.screen != this && screen instanceof ScreenEditorTanksONable)
+            ((ScreenEditorTanksONable<?>) screen).clearMusicTracks();
     }
 
     @Override

@@ -8,6 +8,7 @@ import tanks.item.Item;
 import tanks.tank.Explosion;
 import tanks.tank.Mine;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankReference;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -170,6 +171,9 @@ public class TanksON
             {
                 case "tank":
                     o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
+                    break;
+                case "tank_ref":
+                    o = new TankReference("");
                     break;
                 case "bullet":
                 {

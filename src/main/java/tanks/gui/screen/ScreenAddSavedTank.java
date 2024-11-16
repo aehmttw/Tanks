@@ -1,14 +1,13 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
+import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
@@ -237,6 +236,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     Game.screen = s;
                 }
                         , desc);
+                b.disabledColR = 127;
 
                 this.tankButtons.add(b);
             }
@@ -244,6 +244,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
         levelTankCount = count;
 
+        final ArrayList<TankAIControlled> savedTanks = new ArrayList<>();
         for (String l: files)
         {
             BaseFile file = Game.game.fileManager.getFile(l);
@@ -260,6 +261,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 file.stopReading();
                 TankAIControlled t = TankAIControlled.fromString(tankStr);
                 final TankAIControlled tt = t;
+                savedTanks.add(t);
 
                 String desc = t.description;
                 if (!t.description.equals(""))
@@ -269,20 +271,95 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
                 ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
                 {
-                    TankAIControlled clone = tt.instantiate(tt.name, tt.posX, tt.posY, tt.angle);
-                    Pointer<TankAIControlled> p = tankScreen.addTank(clone);
-                    ScreenEditorTank s = new ScreenEditorTank(p, (Screen) tankScreen);
-                    s.onComplete = () ->
+                    BiConsumer<TankAIControlled, Pointer<TankAIControlled>> resolve = (TankAIControlled tank, Pointer<TankAIControlled> p1) ->
                     {
-                        if (p.get() == null)
-                            this.tankScreen.removeTank(clone);
+                        ArrayList<TankAIControlled> tanks = Game.currentLevel.customTanks;
+                        Game.currentLevel.customTanks = savedTanks;
+
+                        HashSet<String> linkedTanks = new HashSet<>();
+                        tank.getAllLinkedTankNames(linkedTanks);
+                        Game.currentLevel.customTanks = tanks;
+
+                        ArrayList<TankAIControlled> inLevel = new ArrayList<>();
+                        ArrayList<TankAIControlled> notInLevel = new ArrayList<>();
+
+                        for (TankAIControlled ta : tanks)
+                        {
+                            if (ta.name.equals(tank.name))
+                                continue;
+
+                            if (linkedTanks.contains(ta.name))
+                            {
+                                linkedTanks.remove(ta.name);
+                                inLevel.add(ta);
+                            }
+                        }
+
+                        for (TankAIControlled ta : savedTanks)
+                        {
+                            if (ta.name.equals(tank.name))
+                                continue;
+
+                            if (linkedTanks.contains(ta.name))
+                                notInLevel.add(ta);
+                        }
+
+                        TankAIControlled clone = tank.instantiate(tank.name, tank.posX, tank.posY, tank.angle);
+                        if (p1 != null)
+                            p1.set(clone);
+
+                        final Pointer<TankAIControlled> p = p1 == null ? tankScreen.addTank(clone) : p1;
+
+                        for (TankAIControlled ta : notInLevel)
+                        {
+                            tankScreen.addTank(ta.instantiate(ta.name, ta.posX, ta.posY, ta.angle), false);
+                        }
+
+                        clone.removeBrokenLinks();
+
+                        ScreenEditorTank s = new ScreenEditorTank(p, (Screen) tankScreen);
+                        s.onComplete = () ->
+                        {
+                            if (p.get() == null)
+                            {
+                                this.tankScreen.removeTank(clone);
+                                this.tankScreen.refreshTanks(clone);
+                            }
+                            else
+                                this.tankScreen.refreshTanks(p.get());
+                        };
+                        s.drawBehindScreen = true;
+
+                        if (inLevel.size() > 0 || notInLevel.size() > 0)
+                        {
+                            ScreenTankSavedInfo sc = new ScreenTankSavedInfo(s, clone, new ArrayList<>(notInLevel), new ArrayList<>(inLevel));
+                            sc.copiedToTemplate = false;
+                            Game.screen = sc;
+                        }
                         else
-                            this.tankScreen.refreshTanks(p.get());
+                            Game.screen = s;
                     };
-                    s.drawBehindScreen = true;
-                    Game.screen = s;
+
+                    Pointer<TankAIControlled> duplicate = null;
+                    for (int i = 0; i < Game.currentLevel.customTanks.size(); i++)
+                    {
+                        TankAIControlled t1 = Game.currentLevel.customTanks.get(i);
+                        if (t1.name.equals(tt.name))
+                        {
+                            duplicate = new ArrayListIndexPointer<>(Game.currentLevel.customTanks, i);
+                            break;
+                        }
+                    }
+
+                    if (duplicate == null)
+                        resolve.accept(tt, null);
+                    else
+                        Game.screen = new ScreenTankLoadOverwrite((OverlayObjectMenu) this.tankScreen, tt, duplicate, resolve, Game.currentLevel.customTanks, savedTanks);
                 }
                         , desc);
+                b.disabledColR = 60;
+                b.disabledColB = 60;
+                b.disabledColG = 160;
                 b.text = l;
 
                 this.tankButtons.add(b);
@@ -303,6 +380,10 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             Game.game.input.editorPause.invalidate();
             Game.screen = (Screen) tankScreen;
         }
+
+        int pageCount = (this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols);
+        if (tankPage > pageCount)
+            tankPage = pageCount;
 
         for (int i = 0; i < this.tankButtons.size(); i++)
         {
@@ -325,6 +406,14 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         s.drawBehindScreen = true;
                         s.deleteMode.function.run();
                         Game.screen = s;
+
+                        if (tankPage > ((s.tankButtons.size() - 1) / (objectButtonCols * objectButtonRows)))
+                            tankPage--;
+
+                        s.nextTankPage.enabled = this.nextTankPage.enabled;
+                        s.previousTankPage.enabled = this.previousTankPage.enabled;
+                        s.lastTankPage.enabled = this.lastTankPage.enabled;
+                        s.firstTankPage.enabled = this.firstTankPage.enabled;
                     }
                 }
             }

@@ -17,43 +17,71 @@ import tanks.translation.Translation;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 {
-    public Item.ItemStack<?> lastItem;
-    public Field lastItemField;
-    public ScreenItemEditor lastItemScreen;
-    public SelectorDrawable lastItemButton;
-    public String message = null;
+    public boolean writeTank(Tank t)
+    {
+        return this.writeTank(t, false);
+    }
 
-//    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", new Runnable()
-//    {
-//        @Override
-//        public void run()
-//        {
-//            BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tankDir + "/" + tank.name.replace(" ", "_") + ".tanks");
-//
-//            if (!f.exists())
-//            {
-//                try
-//                {
-//                    f.create();
-//                    f.startWriting();
-//                    f.println(tank.toString());
-//                    f.stopWriting();
-//
-//                    message = "Tank added to templates!";
-//                }
-//                catch (IOException e)
-//                {
-//                    Game.exitToCrash(e);
-//                }
-//            }
-//            else
-//                message = "A tank template with this name already exists!";
-//        }
-//    }
-//    );
+    public boolean writeTank(Tank t, boolean overwrite)
+    {
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tankDir + "/" + t.name.replace(" ", "_") + ".tanks");
+
+        if (!f.exists() || overwrite)
+        {
+            try
+            {
+                if (!f.exists())
+                    f.create();
+
+                f.startWriting();
+                f.println(t.toString());
+                f.stopWriting();
+
+                return true;
+            }
+            catch (IOException e)
+            {
+                Game.exitToCrash(e);
+            }
+        }
+
+        return false;
+    }
+
+    public void writeTankAndShowConfirmation(TankAIControlled t, boolean overwrite)
+    {
+        if (this.writeTank(t, overwrite))
+        {
+            HashSet<String> linked = new HashSet<>();
+            t.getAllLinkedTankNames(linked);
+            ArrayList<Tank> copied = new ArrayList<>();
+            ArrayList<Tank> notCopied = new ArrayList<>();
+
+            for (String s: linked)
+            {
+                Tank t1 = Game.currentLevel.lookupTank(s);
+                if (writeTank(t1))
+                    copied.add(t1);
+                else
+                    notCopied.add(t1);
+            }
+
+            Game.screen = new ScreenTankSavedInfo(this, t, copied, notCopied);
+        }
+        else
+            Game.screen = new ScreenTankSaveOverwrite(this, t);
+    }
+
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
+    {
+        TankAIControlled t = target.get();
+        this.writeTankAndShowConfirmation(t, false);
+    }
+    );
 
     public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
 
@@ -745,6 +773,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
     {
         if (!this.target.nullable)
             this.delete.update();
+
+        this.save.update();
     }
 
     @Override
@@ -752,6 +782,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
     {
         if (!this.target.nullable)
             this.delete.draw();
+
+        this.save.draw();
     }
 }
 

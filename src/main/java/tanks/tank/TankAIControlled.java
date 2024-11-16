@@ -861,14 +861,17 @@ public class TankAIControlled extends Tank implements ITankField
 		if (this.shotSound != null)
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
 
+		if (speed == 0)
+			speed = Double.MIN_VALUE;
+
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
-		b.speed = speed;
+		b.speed = Math.abs(speed);
 
 		if (b instanceof BulletArc)
-			b.vZ = this.distance / speed * 0.5 * BulletArc.gravity;
+			b.vZ = this.distance / b.speed * 0.5 * BulletArc.gravity;
 		else
-			b.moveOut(50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
+			b.moveOut(Math.signum(speed) * 50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
 
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
@@ -3290,6 +3293,52 @@ public class TankAIControlled extends Tank implements ITankField
 						}
 						else if (t instanceof TankAIControlled)
 							((TankAIControlled) t).getAllLinkedTankNames(explored);
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+	}
+
+	/**
+	 * Removes linked tanks that do not link to any existing tank
+	 */
+	//TODO: There's probably a much better way to do this involving tankson traversal, but that is kind of its own can of worms...
+	public void removeBrokenLinks()
+	{
+		try
+		{
+			for (Field f : this.getClass().getFields())
+			{
+				if (ITankField.class.isAssignableFrom(f.getType()) && f.getAnnotation(Property.class) != null)
+				{
+					ITankField t = (ITankField) f.get(this);
+					if (t instanceof TankReference && TankUnknown.class.isAssignableFrom(Game.registryTank.getEntry(t.getName()).tank))
+					{
+						Tank ta = t.resolve();
+						if (ta == null)
+							f.set(this, null);
+					}
+				}
+				else if (f.getAnnotation(Property.class) != null && f.getAnnotation(Property.class).miscType() == Property.MiscType.spawnedTanks)
+				{
+					ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(this);
+					for (int i = 0; i < entries.size(); i++)
+					{
+						SpawnedTankEntry e = entries.get(i);
+						ITankField t = e.tank;
+						if (t instanceof TankReference && TankUnknown.class.isAssignableFrom(Game.registryTank.getEntry(t.getName()).tank))
+						{
+							Tank ta = t.resolve();
+							if (ta == null)
+							{
+								entries.remove(i);
+								i--;
+							}
+						}
 					}
 				}
 			}

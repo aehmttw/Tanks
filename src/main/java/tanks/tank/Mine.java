@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class Mine extends Movable implements IAvoidObject, IDrawableLightSource, ICopyable<Mine>, ITanksONEditable
 {
     public static double mine_size = 30;
-    public static double mine_radius = Game.tile_size * 2;
+    public static double mine_radius = Game.tile_size * 2.25;
 
     @Property(id = "explosion", name = "Explosion")
     public Explosion explosion = new Explosion();

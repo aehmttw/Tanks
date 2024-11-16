@@ -26,6 +26,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
     public ArrayList<Button> topLevelButtons = new ArrayList<>();
 
     public String message = null;
+    public String[] messageParams = new String[0];
 
     public boolean drawBehindScreen;
 
@@ -1010,7 +1011,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.setInterfaceFontSize(Drawing.drawing.textSize);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.message);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, this.message, this.messageParams);
         }
         else
         {

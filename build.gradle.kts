@@ -1,36 +1,20 @@
-import org.gradle.internal.os.OperatingSystem
-
 plugins {
     `java-library`
     `maven-publish`
 }
 
 val lwjglVersion = "3.3.4"
-val lwjglNatives = when (OperatingSystem.current()) {
-    OperatingSystem.LINUX -> {
-        val osArch = System.getProperty("os.arch")
-        when {
-            osArch.startsWith("arm") || osArch.startsWith("aarch64") ->
-                "natives-linux${if (osArch.contains("64") || osArch.startsWith("armv8")) "-arm64" else "-arm32"}"
-            osArch.startsWith("ppc") -> "natives-linux-ppc64le"
-            osArch.startsWith("riscv") -> "natives-linux-riscv64"
-            else -> "natives-linux"
-        }
-    }
-    OperatingSystem.MAC_OS -> if (System.getProperty("os.arch").startsWith("aarch64")) "natives-macos-arm64" else "natives-macos"
-    OperatingSystem.WINDOWS -> {
-        val osArch = System.getProperty("os.arch")
-        if (osArch.contains("64")) {
-            if (osArch.startsWith("aarch64")) "natives-windows-arm64" else "natives-windows"
-        } else "natives-windows-x86"
-    }
-    OperatingSystem.FREE_BSD -> "natives-freebsd"
-    else -> throw Error("Unrecognized or unsupported Operating system. Please set \"lwjglNatives\" manually")
-}
+val lwjglNatives = listOf(
+    "natives-freebsd",
+    "natives-linux-arm32", "natives-linux-arm64", "natives-linux-ppc64le", "natives-linux-riscv64", "natives-linux",
+    "natives-macos", "natives-macos-arm64",
+    "natives-windows-x86", "natives-windows", "natives-windows-arm64",
+)
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
+
 }
 
 dependencies {
@@ -42,12 +26,15 @@ dependencies {
     implementation("org.lwjgl", "lwjgl-openal")
     implementation("org.lwjgl", "lwjgl-opengl")
     implementation("org.lwjgl", "lwjgl-stb")
-    runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
+
+    for (native in lwjglNatives) {
+        runtimeOnly("org.lwjgl", "lwjgl", classifier = native)
+        runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = native)
+        runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = native)
+        runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = native)
+        runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = native)
+        runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = native)
+    }
 
     // Your other existing dependencies
     api(libs.org.l33tlabs.twl.pngdecoder)
@@ -60,7 +47,7 @@ dependencies {
 }
 
 group = "com.aehmttw"
-version = rootProject.file("version.txt").readText().toString().trim()
+version = rootProject.file("src/main/resources/version.txt").readText().toString().trim()
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -109,4 +96,31 @@ tasks.register<JavaExec>("run") {
 
     // If your application needs working directory to be set
     workingDir = project.projectDir
+}
+
+task("BuildMacApp", Exec::class) {
+    dependsOn(tasks.jar)
+
+    val distributions = file("build/distributions")
+    val jpackage = org.gradle.internal.jvm.Jvm.current().javaHome.resolve("bin/jpackage")
+    val libsDir = file("${layout.buildDirectory.get()}").resolve("libs")
+    val jarName = tasks.named<Jar>("jar").get().archiveFileName.get()
+    val baseName = tasks.named<Jar>("jar").get().archiveBaseName.get()
+    val resourcesDir = sourceSets.main.get().resources.srcDirs.first()
+
+    workingDir = projectDir
+
+    delete(distributions.resolve("Tanks.app"))
+
+    commandLine(
+        jpackage,
+        "--type", "app-image",
+        "--input", libsDir,
+        "--main-jar", jarName,
+        "--name", baseName,
+        "--resource-dir", resourcesDir,
+        "--java-options", "-XstartOnFirstThread",
+        "--arguments", "mac",
+        "--dest", distributions,
+    )
 }

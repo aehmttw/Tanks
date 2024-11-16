@@ -463,7 +463,11 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         b.setTargetLocation(this.mouseX, this.mouseY);
 
-        Game.eventsOut.add(new EventShootBullet(b));
+        Integer num = 0;
+        if (Game.currentLevel != null)
+            num = Game.currentLevel.itemNumbers.get(b.item.item.name);
+
+        Game.eventsOut.add(new EventShootBullet(b, num == null ? 0 : num));
         Game.movables.add(b);
 
 //        if (b.recoil != 0)

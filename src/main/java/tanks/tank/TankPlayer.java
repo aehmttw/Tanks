@@ -24,8 +24,8 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 	public static Bullet default_bullet;
 	public static Mine default_mine;
 
-	public static String default_bullet_name;
-	public static String default_mine_name;
+	public static String default_bullet_name = "Basic bullet";
+	public static String default_mine_name = "Basic mine";
 
 	public static Joystick controlStick;
 	public static Joystick shootStick;
@@ -35,7 +35,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 	public static boolean controlStickMobile = true;
 
 	public Player player = Game.player;
-	public static boolean enableDestroyCheat = false;
+	public static boolean enableDestroyCheat = true;
 
 	public boolean drawTouchCircle = false;
 	public double touchCircleSize = 400;
@@ -62,6 +62,8 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		this.player.tank = this;
 		this.bulletItem.item.name = default_bullet_name;
 		this.mineItem.item.name = default_mine_name;
+		this.bulletItem.player = this.player;
+		this.mineItem.player = this.player;
 
 		this.colorR = Game.player.colorR;
 		this.colorG = Game.player.colorG;
@@ -469,11 +471,11 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 	public void fireBullet(Bullet b, double speed, double offset)
 	{
-		if (speed <= 0)
-			speed = Double.MIN_NORMAL;
+		if (speed == 0)
+			speed = Double.MIN_VALUE;
 
 		b.setPolarMotion(this.angle + offset, speed);
-		b.speed = speed;
+		b.speed = Math.abs(speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		this.recoilSpeed = this.getSpeed();
@@ -484,11 +486,15 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		}
 
 		if (b.moveOut)
-			b.moveOut(50 * this.size / Game.tile_size);
+			b.moveOut(Math.signum(speed) * 50 * this.size / Game.tile_size);
 
 		b.setTargetLocation(this.mouseX, this.mouseY);
 
-		Game.eventsOut.add(new EventShootBullet(b));
+		Integer num = 0;
+		if (Game.currentLevel != null)
+			num = Game.currentLevel.itemNumbers.get(b.item.item.name);
+
+		Game.eventsOut.add(new EventShootBullet(b, num == null ? 0 : num));
 		Game.movables.add(b);
 	}
 

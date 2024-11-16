@@ -383,7 +383,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)
 		{
-			if (this.tankHitKnockback > 0)
+			if (this.tankHitKnockback != 0)
 			{
 				double mul = Game.tile_size * Game.tile_size / Math.max(1, Math.pow(t.size, 2)) * this.tankHitKnockback;
 				t.vX += vX * mul;
@@ -631,19 +631,19 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	{
 		if (this.heavy == b.heavy && b.enableExternalCollisions)
 		{
-			if (this.bulletHitKnockback <= 0 && b.bulletHitKnockback <= 0)
+			if (this.bulletHitKnockback == 0 && b.bulletHitKnockback == 0)
 			{
 				this.pop();
 				if (this.destroyBullets)
 					b.pop();
 			}
-			else if (this.bulletHitKnockback > 0 && b.bulletHitKnockback <= 0)
+			else if (this.bulletHitKnockback != 0 && b.bulletHitKnockback == 0)
 			{
 				this.push(b);
 				if (b.destroyBullets)
 					this.pop();
 			}
-			else if (this.bulletHitKnockback <= 0)
+			else if (this.bulletHitKnockback == 0)
 			{
 				b.push(this);
 				if (this.destroyBullets)
@@ -670,7 +670,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				l = this;
 			}
 
-			if (h.bulletHitKnockback > 0)
+			if (h.bulletHitKnockback != 0)
 			{
 				h.push(l);
 				if (this.playBounceSound)
@@ -1623,7 +1623,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			}
 
 
-			if (this.bulletHitKnockback > 0 || this.tankHitKnockback > 0)
+			if (this.bulletHitKnockback != 0 || this.tankHitKnockback != 0)
 			{
 				Drawing.drawing.setColor(255, 0, 255, opacity * opacity * opacity * 255.0, glow);
 				double bumper = (1 + Math.sin(this.age / 100.0 * Math.PI * 4)) * 0.25 + 1.2;

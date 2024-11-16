@@ -1221,6 +1221,8 @@ public class Game
 
 	public static double[] getRainbowColor(double fraction)
     {
+		fraction = ((fraction % 1.0) + 1) % 1.0;
+
         double col = fraction * 255 * 6;
 
         double r = 0;

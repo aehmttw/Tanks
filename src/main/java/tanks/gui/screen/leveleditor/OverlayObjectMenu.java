@@ -262,6 +262,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public void update()
     {
+        if (screenLevelEditor.tankNum >= Game.registryTank.tankEntries.size() + Game.currentLevel.customTanks.size())
+            screenLevelEditor.tankNum = Game.registryTank.tankEntries.size() + Game.currentLevel.customTanks.size() - 1;
+
         this.placePlayer.enabled = (screenLevelEditor.currentPlaceable != ScreenLevelEditor.Placeable.playerTank);
         this.placeEnemy.enabled = (screenLevelEditor.currentPlaceable != ScreenLevelEditor.Placeable.enemyTank);
         this.placeObstacle.enabled = (screenLevelEditor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle);
@@ -301,6 +304,10 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         }
         else if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
         {
+            int pageCount = (this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols);
+            if (screenLevelEditor.tankPage > pageCount)
+                screenLevelEditor.tankPage = pageCount;
+
             for (int i = 0; i < this.tankButtons.size(); i++)
             {
                 this.tankButtons.get(i).enabled = screenLevelEditor.tankNum != i;
@@ -309,7 +316,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                     this.tankButtons.get(i).update();
             }
 
-            this.nextTankPage.enabled = ((this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols) > screenLevelEditor.tankPage);
+            this.nextTankPage.enabled = (pageCount > screenLevelEditor.tankPage);
             this.previousTankPage.enabled = (screenLevelEditor.tankPage > 0);
             this.lastTankPage.enabled = this.nextTankPage.enabled;
             this.firstTankPage.enabled = this.previousTankPage.enabled;
@@ -379,6 +386,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         if (Game.screen != this)
             return;
+
+        if (screenLevelEditor.tankNum >= Game.registryTank.tankEntries.size() + Game.currentLevel.customTanks.size())
+            screenLevelEditor.tankNum = Game.registryTank.tankEntries.size() + Game.currentLevel.customTanks.size() - 1;
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 600);
@@ -523,11 +533,16 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }
 
     @Override
-    public Pointer<TankAIControlled> addTank(TankAIControlled t)
+    public Pointer<TankAIControlled> addTank(TankAIControlled t, boolean select)
     {
         this.screenLevelEditor.level.customTanks.add(t);
-        this.screenLevelEditor.tankNum = this.screenLevelEditor.level.customTanks.size() + Game.registryTank.tankEntries.size() - 1;
-        this.screenLevelEditor.refreshMouseTank();
+
+        if (select)
+        {
+            this.screenLevelEditor.tankNum = this.screenLevelEditor.level.customTanks.size() + Game.registryTank.tankEntries.size() - 1;
+            this.screenLevelEditor.refreshMouseTank();
+        }
+
         return new ArrayListIndexPointer<>(this.screenLevelEditor.level.customTanks, this.screenLevelEditor.level.customTanks.size() - 1);
     }
 

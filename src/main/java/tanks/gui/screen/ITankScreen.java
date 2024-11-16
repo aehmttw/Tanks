@@ -5,7 +5,12 @@ import tanks.tankson.Pointer;
 
 public interface ITankScreen
 {
-    Pointer<TankAIControlled> addTank(TankAIControlled t);
+    default Pointer<TankAIControlled> addTank(TankAIControlled t)
+    {
+        return addTank(t, true);
+    }
+
+    Pointer<TankAIControlled> addTank(TankAIControlled t, boolean select);
 
     void removeTank(TankAIControlled t);
 

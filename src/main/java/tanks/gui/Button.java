@@ -546,4 +546,11 @@ public class Button implements IDrawable, ITrigger
 		this.hoverTextRawTranslated = Translation.translate(hoverText, objects);
 		this.hoverText = this.hoverTextRawTranslated.split("---");
 	}
+
+	public void setHoverTextUntranslated(String hoverText)
+	{
+		this.enableHover = true;
+		this.hoverTextRaw = hoverText;
+		this.hoverText = this.hoverTextRaw.split("---");
+	}
 }

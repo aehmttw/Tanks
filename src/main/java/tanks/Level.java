@@ -79,7 +79,15 @@ public class Level
 	public int startingCoins;
 	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
 	public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
+
+	// Saved on the client to keep track of what each item is
+	public int clientStartingCoins;
+	public ArrayList<Item.ShopItem> clientShop = new ArrayList<>();
+	public ArrayList<Item.ItemStack<?>> clientStartingItems = new ArrayList<>();
+
 	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
+
+	public HashMap<String, Integer> itemNumbers = new HashMap<>();
 
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
@@ -151,7 +159,7 @@ public class Level
 						TankAIControlled t = TankAIControlled.fromString(s);
 						this.customTanks.add(t);
 					}
-					else if (!ScreenPartyLobby.isClient)
+					else
 					{
 						if (parsing == 1)
 							this.startingItems.add(Item.ItemStack.fromString(null, s));
@@ -182,6 +190,27 @@ public class Level
 				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
 				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
 			}
+		}
+
+		for (int i = 0; i < this.shop.size(); i++)
+		{
+			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
+		}
+
+		for (int i = 0; i < this.startingItems.size(); i++)
+		{
+			this.itemNumbers.put(this.startingItems.get(i).item.name, -i - 1);
+		}
+
+		if (ScreenPartyLobby.isClient)
+		{
+			this.clientStartingCoins = this.startingCoins;
+			this.clientStartingItems = this.startingItems;
+			this.clientShop = this.shop;
+
+			this.startingCoins = 0;
+			this.startingItems = new ArrayList<>();
+			this.shop = new ArrayList<>();
 		}
 	}
 

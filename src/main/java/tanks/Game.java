@@ -532,13 +532,14 @@ public class Game
 		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, "bullet_laser.png");
 		registerBullet(BulletGas.class, BulletGas.bullet_class_name, "bullet_flame.png");
 		registerBullet(BulletArc.class, BulletArc.bullet_class_name, "bullet_arc.png");
+//		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, "bullet_fire.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_class_name, "bullet_normal.png");
 		registerItem(ItemMine.class, ItemMine.item_class_name, "mine.png");
 		registerItem(ItemShield.class, ItemShield.item_class_name, "shield.png");
 
 		registerMinigame(Arcade.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
-		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
+//		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 
 		TankPlayer.default_bullet = new Bullet();
 		TankPlayer.default_mine = new Mine();

@@ -169,7 +169,7 @@ public class Crusade
 					}
 					else if (parsing == 1)
 					{
-						//this.crusadeShopItems.add(Item.CrusadeShopItem.fromString(s));
+						this.crusadeShopItems.add(Item.CrusadeShopItem.fromString(s));
 					}
 					else if (parsing == 2)
 					{

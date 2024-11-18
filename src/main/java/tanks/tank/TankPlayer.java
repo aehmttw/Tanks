@@ -35,7 +35,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 	public static boolean controlStickMobile = true;
 
 	public Player player = Game.player;
-	public static boolean enableDestroyCheat = true;
+	public static boolean enableDestroyCheat = false;
 
 	public boolean drawTouchCircle = false;
 	public double touchCircleSize = 400;
@@ -413,7 +413,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 			r.dotted = true;
 			r.moveOut(10 * this.size / Game.tile_size);
 
-			if (range >= 0)
+			if (range > 0)
 				this.drawRange = range;
 			else
 				r.getTarget();

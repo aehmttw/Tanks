@@ -65,6 +65,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
     {
         super(x, y);
         this.tank = tank;
+        this.team = this.tank.team;
         this.item = item;
     }
 
@@ -133,6 +134,8 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                     else if (m instanceof Tank)
                     {
                         double angle = this.getAngleInDirection(m.posX, m.posY);
+                        double vX = tank.vX;
+                        double vY = tank.vY;
                         m.addPolarMotion(angle, power * this.tankKnockback * Math.pow(Game.tile_size, 2) / Math.max(1, Math.pow(((Tank) m).size, 2)));
                         Tank t = (Tank) m;
                         t.recoilSpeed = m.getSpeed();
@@ -141,6 +144,9 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                             t.inControlOfMotion = false;
                             t.tookRecoil = true;
                         }
+
+                        if (t instanceof TankPlayerRemote)
+                            Game.eventsOut.add(new EventTankControllerAddVelocity(t, t.vX - vX, t.vY - vY, true));
                     }
                 }
 

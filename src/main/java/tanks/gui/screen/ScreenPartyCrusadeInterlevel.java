@@ -13,10 +13,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     public String msg1;
     public String msg2;
 
-    boolean odd = false;
-
-    ArrayList<Firework> fireworks1 = new ArrayList<>();
-    ArrayList<Firework> fireworks2 = new ArrayList<>();
+    public FireworksDisplay fireworksDisplay = new FireworksDisplay();
 
     Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", () ->
     {
@@ -171,17 +168,6 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         //if (lose)
          //   this.music = "lose_crusade.ogg";
 
-        if (Panel.win && Game.effectsEnabled)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, getFireworkArray());
-                f.setRandomColor();
-                f.setVelocity();
-                getFireworkArray().add(f);
-            }
-        }
-
         save.posX = Drawing.drawing.interfaceSizeX - Drawing.drawing.interfaceScaleZoom * 40;
         save.posY = Drawing.drawing.interfaceSizeY - 50 - Drawing.drawing.interfaceScaleZoom * 40;
         save.image = "icons/save.png";
@@ -232,39 +218,10 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         this.drawDefaultBackground();
 
         if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
-        {
-            ArrayList<Firework> fireworks = getFireworkArray();
-            if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency * Game.effectMultiplier)
-            {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
-                f.setRandomColor();
-                f.setVelocity();
-                getFireworkArray().add(f);
-            }
-
-            for (int i = 0; i < getFireworkArray().size(); i++)
-            {
-                fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
-            }
-
-            if (Game.glowEnabled)
-            {
-                for (int i = 0; i < getFireworkArray().size(); i++)
-                {
-                    fireworks.get(i).drawGlow();
-                }
-            }
-
-            //A fix to some glitchiness on ios
-            Drawing.drawing.setColor(0, 0, 0, 0);
-            Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
-
-            fireworks.clear();
-            odd = !odd;
-        }
-
-        if (Panel.win && Game.effectsEnabled)
             Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+
+        if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+            this.fireworksDisplay.draw();
 
         if (ScreenPartyLobby.isClient)
         {
@@ -313,23 +270,6 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 25 / 6, msg2);
 
         save.draw();
-    }
-
-
-    public ArrayList<Firework> getFireworkArray()
-    {
-        if (odd)
-            return fireworks2;
-        else
-            return fireworks1;
-    }
-
-    public ArrayList<Firework> getOtherFireworkArray()
-    {
-        if (odd)
-            return fireworks1;
-        else
-            return fireworks2;
     }
 
     public boolean checkCrusadeEnd()

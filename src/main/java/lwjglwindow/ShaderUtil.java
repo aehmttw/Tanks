@@ -97,11 +97,20 @@ public class ShaderUtil extends BaseShaderUtil
                 }
             }
 
-            ARBShaderObjects.glShaderSourceARB(shader, header + this.window.readFileAsString(filename));
+            String text = header + this.window.readFileAsString(filename);
+            ARBShaderObjects.glShaderSourceARB(shader, text);
             ARBShaderObjects.glCompileShaderARB(shader);
 
             if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
+            {
+                System.err.println("Failed to compile shader! Shader source:");
+                String[] lines = text.split("\n");
+                for (int i = 0; i < lines.length; i++)
+                {
+                    System.err.printf("%3d | %s\n", i + 1, lines[i]);
+                }
                 throw new RuntimeException("Error creating shader " + filename + ": " + getLogInfo(shader));
+            }
 
             return shader;
         }

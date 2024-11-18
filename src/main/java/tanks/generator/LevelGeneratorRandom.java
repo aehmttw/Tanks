@@ -26,7 +26,7 @@ public class LevelGeneratorRandom extends LevelGenerator
 
 		double randomNum = random.nextDouble();
 
-		//if (random.nextDouble() < 0.3)
+		if (random.nextDouble() < 0.3)
 			size *= 2;
 
 		int height = (int)(18 * size);
@@ -87,10 +87,10 @@ public class LevelGeneratorRandom extends LevelGenerator
 		boolean explosives = random.nextDouble() < 0.2;
 		int numExplosives = (int) (walls / 5 + random.nextDouble() * 4 + 1);
 
-		boolean beatBlocks = true;//random.nextDouble() < 0.2;
+		boolean beatBlocks = random.nextDouble() < 0.2;
 		double beatBlocksWeight = random.nextDouble() * 0.5 + 0.2;
 		ArrayList<Integer> beatBlocksKinds = new ArrayList<>();
-		double br = 1;//random.nextDouble();
+		double br = random.nextDouble();
 		if (br < 0.5)
 			beatBlocksKinds.add(0);
 		else if (br < 0.7)

@@ -19,7 +19,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
     {
         super(previous, screenLevelEditor);
 
-        colorRed = new TextBoxSlider(this.centerX - objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red", () ->
+        colorRed = new TextBoxSlider(this.centerX - objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Red", () ->
         {
             if (colorRed.inputText.length() <= 0)
                 colorRed.inputText = colorRed.previousInputText;
@@ -42,7 +42,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         colorRed.checkMaxValue = true;
         colorRed.integer = true;
 
-        colorGreen = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green", () ->
+        colorGreen = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Green", () ->
         {
             if (colorGreen.inputText.length() <= 0)
                 colorGreen.inputText = colorGreen.previousInputText;
@@ -65,7 +65,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         colorGreen.checkMaxValue = true;
         colorGreen.integer = true;
 
-        colorBlue = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue", () ->
+        colorBlue = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Blue", () ->
         {
             if (colorBlue.inputText.length() <= 0)
                 colorBlue.inputText = colorBlue.previousInputText;
@@ -88,7 +88,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         colorBlue.checkMaxValue = true;
         colorBlue.integer = true;
 
-        colorVarRed = new TextBox(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Red noise", () ->
+        colorVarRed = new TextBox(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Red noise", () ->
         {
             if (colorVarRed.inputText.length() <= 0)
                 colorVarRed.inputText = colorVarRed.previousInputText;
@@ -105,7 +105,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         colorVarRed.maxChars = 3;
         colorVarRed.checkMaxValue = true;
 
-        colorVarGreen = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Green noise", () ->
+        colorVarGreen = new TextBox(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Green noise", () ->
         {
             if (colorVarGreen.inputText.length() <= 0)
                 colorVarGreen.inputText = colorVarGreen.previousInputText;
@@ -122,7 +122,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         colorVarGreen.maxChars = 3;
         colorVarGreen.checkMaxValue = true;
 
-        colorVarBlue = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Blue noise", () ->
+        colorVarBlue = new TextBox(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Blue noise", () ->
         {
             if (colorVarBlue.inputText.length() <= 0)
                 colorVarBlue.inputText = colorVarBlue.previousInputText;
@@ -144,7 +144,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
     }
 
-    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 3), this.objWidth, this.objHeight, "Back", this::escape);
+    public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape);
 
     public void update()
     {
@@ -193,7 +193,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
         Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Background colors");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Background colors");
         this.back.draw();
     }
 }

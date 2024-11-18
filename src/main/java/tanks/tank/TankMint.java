@@ -29,6 +29,9 @@ public class TankMint extends TankAIControlled
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;
 
+		this.avoidanceSeekOpenSpaces = true;
+		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+
 		if (Game.tankTextures)
 		{
 			this.baseModel = TankModels.diagonalStripes.base;

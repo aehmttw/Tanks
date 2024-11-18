@@ -8,6 +8,7 @@ import tanks.item.Item;
 import tanks.tank.Explosion;
 import tanks.tank.Mine;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankReference;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

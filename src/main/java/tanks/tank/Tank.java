@@ -64,7 +64,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** If spawned by another tank, set to the tank that spawned this tank*/
 	protected Tank parent = null;
 
-	@Property(category = general, id = "name", name = "Tank name")
+	@Property(category = general, id = "name", name = "Tank name", miscType = Property.MiscType.name)
 	public String name;
 
 	@Property(category = general, id = "coin_value", name = "Coin value")
@@ -164,6 +164,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	/** Age in frames*/
 	protected double age = 0;
+	/** A tank will spawn other tanks on the second frame it updates if it was spawned by another tank, to prevent infinite loop for recursively spawning tanks*/
+	protected boolean readyForInitialSpawn = true;
 
 	public double drawAge = 0;
 	public double destroyTimer = 0;

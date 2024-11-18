@@ -12,7 +12,11 @@ public class ButtonObject extends Button
 	public IDrawableForInterface object;
 	public boolean tempDisableHover = false;
 	public Runnable drawBeforeTooltip = null;
-	
+
+	public double disabledColA = 127;
+	public double selectedColA = 64;
+
+
 	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f)
 	{
 		super(x, y, sX, sY, "", f);
@@ -45,7 +49,7 @@ public class ButtonObject extends Button
 		this.initialize(d);
 	}
 
-	public String[] formatDescription(String desc)
+	public static String[] formatDescription(String desc)
 	{
 		ArrayList<String> text = Drawing.drawing.wrapText(desc, 300, 12);
 		String[] s = new String[text.size()];
@@ -71,9 +75,9 @@ public class ButtonObject extends Button
 		this.object.drawForInterface(this.posX, this.posY);
 		
 		if (!enabled)
-			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB, 127);	
+			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB, this.disabledColA);
 		else if (selected && !Game.game.window.touchscreen)
-			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB, 64);
+			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB, this.selectedColA);
 		else
 			drawing.setColor(0, 0, 0, 0);
 
@@ -92,5 +96,13 @@ public class ButtonObject extends Button
 			drawing.drawTooltip(this.hoverText);
 
 		this.tempDisableHover = false;
+	}
+
+	@Override
+	public void setHoverTextUntranslated(String hoverText)
+	{
+		this.enableHover = true;
+		this.hoverTextRaw = hoverText;
+		this.hoverText = formatDescription(hoverTextRaw.replace("---", " \n "));
 	}
 }

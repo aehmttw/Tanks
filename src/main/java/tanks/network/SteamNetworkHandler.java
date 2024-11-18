@@ -215,19 +215,22 @@ public class SteamNetworkHandler
 
 		toClose.put(remoteID, System.currentTimeMillis());
 
-		SteamID steamIDRemote = null;
-
-		if (remoteUserIDs.containsKey(remoteID))
-			steamIDRemote = remoteUserIDs.get(remoteID);
-
-		if (steamIDRemote != null)
+		synchronized (serverHandlersBySteamID)
 		{
-			if (ScreenPartyHost.isServer)
-				serverHandlersBySteamID.get(remoteID).channelInactive(null);
-			else if (ScreenPartyLobby.isClient)
-				Client.handler.channelInactive(null);
+			SteamID steamIDRemote = null;
 
-			unregisterRemoteSteamID(steamIDRemote);
+			if (remoteUserIDs.containsKey(remoteID))
+				steamIDRemote = remoteUserIDs.get(remoteID);
+
+			if (steamIDRemote != null)
+			{
+				if (ScreenPartyHost.isServer)
+					serverHandlersBySteamID.get(remoteID).channelInactive(null);
+				else if (ScreenPartyLobby.isClient)
+					Client.handler.channelInactive(null);
+
+				unregisterRemoteSteamID(steamIDRemote);
+			}
 		}
 	}
 
@@ -252,42 +255,48 @@ public class SteamNetworkHandler
 
 	protected void registerRemoteSteamID(SteamID steamIDUser)
 	{
-		if (!remoteUserIDs.containsKey(steamIDUser.getAccountID()))
+		synchronized (serverHandlersBySteamID)
 		{
-			if (ScreenPartyHost.isServer)
+			if (!remoteUserIDs.containsKey(steamIDUser.getAccountID()))
 			{
-				ServerHandler s = new ServerHandler(ScreenPartyHost.server);
-				s.steamID = steamIDUser;
-				s.reader.useQueue = false;
-				serverHandlersBySteamID.put(steamIDUser.getAccountID(), s);
-				s.channelActive(null);
-
-				synchronized (ScreenPartyHost.server.connections)
+				if (ScreenPartyHost.isServer)
 				{
-					ScreenPartyHost.server.connections.add(s);
-				}
-			}
-			else if (Game.screen instanceof ScreenConnecting || ScreenPartyLobby.isClient)
-			{
-				Client.handler = new ClientHandler(false, Client.connectionID);
-				Client.handler.steamID = steamIDUser;
-				Client.handler.reader.useQueue = false;
-				Client.handler.channelActive(null);
-			}
-			else
-			{
-				networking.closeP2PSessionWithUser(steamIDUser);
-				return;
-			}
+					ServerHandler s = new ServerHandler(ScreenPartyHost.server);
+					s.steamID = steamIDUser;
+					s.reader.useQueue = false;
+					serverHandlersBySteamID.put(steamIDUser.getAccountID(), s);
+					s.channelActive(null);
 
-			remoteUserIDs.put(steamIDUser.getAccountID(), steamIDUser);
+					synchronized (ScreenPartyHost.server.connections)
+					{
+						ScreenPartyHost.server.connections.add(s);
+					}
+				}
+				else if (Game.screen instanceof ScreenConnecting || ScreenPartyLobby.isClient)
+				{
+					Client.handler = new ClientHandler(false, Client.connectionID);
+					Client.handler.steamID = steamIDUser;
+					Client.handler.reader.useQueue = false;
+					Client.handler.channelActive(null);
+				}
+				else
+				{
+					networking.closeP2PSessionWithUser(steamIDUser);
+					return;
+				}
+
+				remoteUserIDs.put(steamIDUser.getAccountID(), steamIDUser);
+			}
 		}
 	}
 
 	protected void unregisterRemoteSteamID(SteamID steamIDUser)
 	{
-		serverHandlersBySteamID.remove(steamIDUser.getAccountID());
-		remoteUserIDs.remove(steamIDUser.getAccountID());
+		synchronized (serverHandlersBySteamID)
+		{
+			serverHandlersBySteamID.remove(steamIDUser.getAccountID());
+			remoteUserIDs.remove(steamIDUser.getAccountID());
+		}
 	}
 
 	public boolean load()

@@ -2,16 +2,16 @@ package tanks.gui;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.gui.screen.ScreenEditorTanksONable;
 import tanks.gui.screen.ScreenSelectorMusic;
-import tanks.gui.screen.ScreenTankEditor;
 import tanks.translation.Translation;
 
 public class SelectorMusic extends Selector
 {
     public boolean[] selectedOptions;
-    public ScreenTankEditor screen;
+    public ScreenEditorTanksONable<?> screen;
 
-    public SelectorMusic(double x, double y, double sX, double sY, String text, String[] o, Runnable f, ScreenTankEditor screen)
+    public SelectorMusic(double x, double y, double sX, double sY, String text, String[] o, Runnable f, ScreenEditorTanksONable<?> screen)
     {
         super(x, y, sX, sY, text, o, f);
         this.selectedOptions = new boolean[o.length];
@@ -58,15 +58,12 @@ public class SelectorMusic extends Selector
     {
         this.resetLayout();
 
-        if (this.screen != null)
-        {
-            this.screen.tank.musicTracks.clear();
-            this.screen.updateMusic();
-        }
-
         ScreenSelectorMusic s = new ScreenSelectorMusic(this, Game.screen);
         s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;
+
+        if (this.screen != null)
+            this.screen.updateMusic();
     }
 
 }

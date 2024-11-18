@@ -22,6 +22,8 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
 
     public String title;
 
+    public boolean firstUpdate = true;
+
     Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
         @Override
@@ -98,17 +100,21 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
         this.musicID = sc.musicID;
 
         this.title = Translation.translate("Select ") + s.translatedText.toLowerCase();
-
-        for (int i = 0; i < selector.options.length; i++)
-        {
-            if (selector.selectedOptions[i])
-                Drawing.drawing.addSyncedMusic(selector.options[i], Game.musicVolume, true, 500);
-        }
     }
 
     @Override
     public void update()
     {
+        if (firstUpdate)
+        {
+            for (int i = 0; i < selector.options.length; i++)
+            {
+                if (selector.selectedOptions[i])
+                    Drawing.drawing.addSyncedMusic(selector.options[i], Game.musicVolume, true, 500);
+            }
+            firstUpdate = false;
+        }
+
         for (int i = 0; i < buttonList.buttons.size(); i++)
         {
             Button b = buttonList.buttons.get(i);

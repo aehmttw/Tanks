@@ -120,7 +120,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     else
                     {
                         if (p.id().equals("effect"))
-                            ((Selector) el).images = new String[]{"bullet_large.png", "bullet_normal.png", "bullet_fire.png", "bullet_dark_fire.png", "bullet_fire_trail.png", "bullet_freeze.png", "bullet_boost.png"};
+                            ((Selector) el).images = new String[]{"bullet_large.png", "bullet_normal.png", "bullet_air.png", "bullet_fire.png", "bullet_dark_fire.png", "bullet_fire_trail.png", "bullet_freeze.png", "bullet_boost.png"};
                     }
 
                     this.uiElements.add(el);

@@ -70,19 +70,22 @@ public class ItemBar
 				emptyAmount += i.maxStackSize - slot.stackSize;
 		}
 
-		if (emptyAmount < i.stackSize)
+		if (emptyAmount < i.stackSize && i.maxStackSize > 0)
 			return false;
 
 		for (int x = 0; x < this.slots.length; x++)
 		{
-			if (this.slots[x].item.name.equals(i.item.name) && this.slots[x].stackSize >= this.slots[x].maxStackSize)
+			if (this.slots[x].item.name.equals(i.item.name) && ((this.slots[x].stackSize >= this.slots[x].maxStackSize && this.slots[x].maxStackSize > 0) || this.slots[x].stackSize == 0))
 				continue;
 
 			if (this.slots[x].item.name.equals(i.item.name))
 			{
-				if (this.slots[x].stackSize + i.stackSize <= this.slots[x].maxStackSize)
+				if (this.slots[x].stackSize + i.stackSize <= this.slots[x].maxStackSize || this.slots[x].maxStackSize <= 0)
 				{
-					this.slots[x].stackSize += i.stackSize;
+					if (i.stackSize == 0)
+						this.slots[x].stackSize = 0;
+					else
+						this.slots[x].stackSize += i.stackSize;
 
 					if (this.player != Game.player)
 						Game.eventsOut.add(new EventSetItem(this.player, x, this.slots[x]));
@@ -108,7 +111,7 @@ public class ItemBar
 		{
 			if (this.slots[x].isEmpty)
 			{
-				if (i.stackSize <= i.maxStackSize)
+				if (i.stackSize <= i.maxStackSize || i.maxStackSize <= 0)
 				{
 					this.slots[x] = i;
 

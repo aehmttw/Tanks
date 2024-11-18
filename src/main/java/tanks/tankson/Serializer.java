@@ -14,7 +14,8 @@ public final class Serializer {
 
     public static HashMap<String, Tank>userTanks = new HashMap<>();
 
-    public static boolean isTanksONable(Object o) {
+    public static boolean isTanksONable(Object o)
+    {
         if (o != null) {
             Class c = o.getClass();
             while (c != null) {
@@ -27,7 +28,8 @@ public final class Serializer {
         return false;
     }
 
-    public static boolean isTanksONable(Field f) {
+    public static boolean isTanksONable(Field f)
+    {
         if (f != null) {
             Class c = f.getType();
             while (c != null) {
@@ -60,7 +62,8 @@ public final class Serializer {
         return f.getAnnotation(Property.class).id();
     }
 
-    public static Map<String, Object> toMap(Object o) {
+    public static Map<String, Object> toMap(Object o)
+    {
         if (isTanksONable(o)) {
             HashMap<String, Object> p = new HashMap<>();
             p.put("obj_type", getAnnotation(o, TanksONable.class).value());
@@ -114,7 +117,8 @@ public final class Serializer {
         return parseObject((Map<String,Object>)TanksON.parseObject(s));
     }
 
-    public static Object parseObject(Map m) {
+    public static Object parseObject(Map m)
+    {
         Object o = null;
         switch ((String) m.get("obj_type")) {
             case "tank":
@@ -200,95 +204,12 @@ public final class Serializer {
         return o;
     }
 
-    public static Object include(String s) {
+    public static Object include(String s)
+    {
         Object o = null;
         if (s.startsWith("<") && s.endsWith(">")) {
             s = s.replace("<","").replace(">","");
-            switch (s) {
-                case ("dummy"):
-                    o = (Object) new TankDummy(s,0,0,0);
-                    break;
-                case ("brown"):
-                    o = (Object) new TankBrown(s,0,0,0);
-                    break;
-                case ("gray"):
-                    o = (Object) new TankGray(s,0,0,0);
-                    break;
-                case ("mint"):
-                    o = (Object) new TankMint(s,0,0,0);
-                    break;
-                case ("yellow"):
-                    o = (Object) new TankYellow(s,0,0,0);
-                    break;
-                case ("magenta"):
-                    o = (Object) new TankMagenta(s,0,0,0);
-                    break;
-                case ("red"):
-                    o = (Object) new TankRed(s,0,0,0);
-                    break;
-                case ("green"):
-                    o = (Object) new TankGreen(s,0,0,0);
-                    break;
-                case ("purple"):
-                    o = (Object) new TankPurple(s,0,0,0);
-                    break;
-                case ("blue"):
-                    o = (Object) new TankBlue(s,0,0,0);
-                    break;
-                case ("white"):
-                    o = (Object) new TankWhite(s,0,0,0);
-                    break;
-                case ("cyan"):
-                    o = (Object) new TankCyan(s,0,0,0);
-                    break;
-                case ("orange"):
-                    o = (Object) new TankOrange(s,0,0,0);
-                    break;
-                case ("maroon"):
-                    o = (Object) new TankMaroon(s,0,0,0);
-                    break;
-                case ("mustard"):
-                    o = (Object) new TankMustard(s,0,0,0);
-                    break;
-                case ("medic"):
-                    o = (Object) new TankMedic(s,0,0,0);
-                    break;
-                case ("orangered"):
-                    o = (Object) new TankOrangeRed(s,0,0,0);
-                    break;
-                case ("gold"):
-                    o = (Object) new TankGold(s,0,0,0);
-                    break;
-                case ("darkgreen"):
-                    o = (Object) new TankDarkGreen(s,0,0,0);
-                    break;
-                case ("black"):
-                    o = (Object) new TankBlack(s,0,0,0);
-                    break;
-                case ("mimic"):
-                    o = (Object) new TankMimic(s,0,0,0);
-                    break;
-                case ("lightblue"):
-                    o = (Object) new TankLightBlue(s,0,0,0);
-                    break;
-                case ("pink"):
-                    o = (Object) new TankPink(s,0,0,0);
-                    break;
-                case ("mini"):
-                    o = (Object) new TankMini(s,0,0,0);
-                    break;
-                case ("salmon"):
-                    o = (Object) new TankSalmon(s,0,0,0);
-                    break;
-                case ("lightpink"):
-                    o = (Object) new TankLightPink(s,0,0,0);
-                    break;
-                case ("boss"):
-                    o = (Object) new TankBoss(s,0,0,0);
-                    break;
-                default:
-                    throw new RuntimeException("Invalid Default Tank Linked Use Parenthesis for a custom tank: (customTank)");
-            }
+            o = Game.registryTank.getEntry(s);
         } else if (s.startsWith("(") && s.endsWith(")")) {
             throw new RuntimeException("Linking non-default tanks non supported yet!");
         } else {

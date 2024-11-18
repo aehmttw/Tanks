@@ -28,7 +28,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public int networkID;
 
-	public enum BulletEffect {none, trail, fire, dark_fire, fire_trail, ice, ember}
+	public enum BulletEffect {none, trail, long_trail, fire, dark_fire, fire_trail, ice, ember}
 
 	public static double bullet_size = 10;
 
@@ -381,9 +381,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			this.playPopSound = pop;
 		}
 
-		if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && !ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)
+		if (!ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)
 		{
-			if (this.tankHitKnockback != 0)
+			if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && this.tankHitKnockback != 0)
 			{
 				double mul = Game.tile_size * Game.tile_size / Math.max(1, Math.pow(t.size, 2)) * this.tankHitKnockback;
 				t.vX += vX * mul;
@@ -398,11 +398,19 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 				if (this.damage <= 0 && this.playBounceSound)
 					Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size));
+
+				if (t instanceof TankPlayerRemote)
+					Game.eventsOut.add(new EventTankControllerAddVelocity(t, vX * mul, vY * mul, true));
 			}
+
+			double dmg = this.damage;
+
+			if (Team.isAllied(this, t) && !this.team.friendlyFire)
+				dmg = Math.min(0, dmg);
 
 			double healthBefore = t.health;
 			double healFlashBefore = t.healFlashAnimation;
-			boolean kill = t.damage(this.damage * this.frameDamageMultipler, this);
+			boolean kill = t.damage(dmg * this.frameDamageMultipler, this);
 			if (!t.destroy && this.hitStun > 0)
 				this.applyStun(t);
 
@@ -430,6 +438,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 			if (kill)
 			{
+				t.vX = 0;
+				t.vY = 0;
+
 				if (Game.currentLevel instanceof Minigame)
 				{
 					((Minigame) Game.currentLevel).onKill(this.tank, t);
@@ -494,7 +505,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			}
 			else
 			{
-				if (this.playPopSound && this.damage > 0)
+				if (this.playPopSound && dmg > 0)
 					Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
 
 				if (this.boosting)
@@ -1134,8 +1145,10 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public void initTrails()
 	{
-		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.dark_fire)
-			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0,1, 1, 15, 0, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
+		double mul = this.effect == BulletEffect.long_trail ? 2 : 1;
+
+		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.long_trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.dark_fire)
+			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0,1, 1, 15 * mul, 0, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
 
 		if (this.effect == BulletEffect.fire_trail)
 		{

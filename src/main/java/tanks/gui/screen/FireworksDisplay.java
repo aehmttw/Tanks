@@ -15,6 +15,8 @@ public class FireworksDisplay
     public static double crusade_win_firework_multiplier = 2;
     public static boolean debug = false;
 
+    public boolean addOwnFireworks;
+
     ArrayList<Firework> fireworks1 = new ArrayList<>();
     ArrayList<Firework> fireworks2 = new ArrayList<>();
 
@@ -24,7 +26,13 @@ public class FireworksDisplay
 
     public FireworksDisplay()
     {
-        if (Panel.win && Game.effectsEnabled)
+        this(true);
+    }
+
+    public FireworksDisplay(boolean addOwnFireworks)
+    {
+        this.addOwnFireworks = addOwnFireworks;
+        if (Panel.win && Game.effectsEnabled && addOwnFireworks)
         {
             for (int i = 0; i < initial_fireworks * fireworkMultiplier; i++)
             {
@@ -41,10 +49,9 @@ public class FireworksDisplay
 
     public void draw()
     {
-
         ArrayList<Firework> fireworks = getFireworkArray();
 
-        if ((!debug && Math.random() < firework_frequency * fireworkMultiplier * Panel.frameFrequency * Game.effectMultiplier) || (debug && Game.game.input.shoot.isValid()))
+        if (addOwnFireworks && ((!debug && Math.random() < firework_frequency * fireworkMultiplier * Panel.frameFrequency * Game.effectMultiplier) || (debug && Game.game.input.shoot.isValid())))
         {
             if (debug)
                 Game.game.input.shoot.invalidate();

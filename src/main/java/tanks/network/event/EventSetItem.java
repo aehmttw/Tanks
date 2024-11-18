@@ -39,6 +39,9 @@ public class EventSetItem extends PersonalEvent
         this.count = item.stackSize;
         this.name = item.item.name;
 
+        if (item.destroy)
+            this.count = -1;
+
         if (item.item instanceof ItemBullet)
         {
             ItemBullet i = (ItemBullet) item.item;
@@ -78,7 +81,7 @@ public class EventSetItem extends PersonalEvent
         if (this.clientID == null && this.playerID.equals(Game.clientID))
         {
             ItemRemote i = new ItemRemote();
-            i.icon = this.texture;
+            i.icon = this.texture.equals("") ? null : this.texture;
             i.name = this.name;
             i.bounces = this.bounces;
             i.range = this.lifespan;
@@ -86,7 +89,7 @@ public class EventSetItem extends PersonalEvent
             Item.ItemStack<?> s = new ItemRemote.ItemStackRemote(Game.player, i, 0);
             s.stackSize = this.count;
 
-            if (s.stackSize == 0)
+            if (s.stackSize < 0)
                 s = new ItemEmpty.ItemStackEmpty();
 
             Game.player.hotbar.itemBar.slots[slot] = s;

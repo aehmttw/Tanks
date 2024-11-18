@@ -23,10 +23,7 @@ import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGameScreen
 {
@@ -101,6 +98,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean zoomScrolled = false;
 
 	public boolean playedIntro = false;
+
+	protected static String[] ready_musics =
+			{"piano.ogg", "synth.ogg", "bass-guitar.ogg", "drum.ogg", "beep.ogg",
+					"bass.ogg", "cello.ogg", "chime.ogg", "drum2.ogg", "drum3.ogg",
+					"drum4.ogg", "echo-piano.ogg", "pizzicato-violin.ogg", "strings.ogg", "viola-beep.ogg",
+					"violin.ogg", "violin-beep.ogg"};
+	protected static int[][] intro_order = {{0, 1, 2, 3, 4},  {6, 8, 12, 14},  {5, 9, 11, 13, 16},  {7, 10, 15}};
+	protected ArrayList<Integer> playingReadyMusics = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
+	protected float lastReadyMusicTime = -2;
+	protected int readyMusicIterations = 0;
+	protected int specialReadyMusicIterationsLeft = 0;
+	public String specialReadyMusic = null;
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
@@ -1257,7 +1266,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 				else
 				{
-					this.music = "ready_music_1.ogg";
+					this.music = "ready/silence.ogg";
 					this.musicID = "ready";
 				}
 			}
@@ -1288,7 +1297,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						{
 							if (this.readyPanelCounter * 10 >= introMusicEnd)
 							{
-								this.music = "ready_music_1.ogg";
+								this.music = "ready/silence.ogg";
 								this.musicID = "ready";
 							}
 							else
@@ -1335,7 +1344,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					{
 						if (this.readyPanelCounter * 10 >= introMusicEnd)
 						{
-							this.music = "ready_music_2.ogg";
+							this.music = "ready/shaker.ogg";
 							this.musicID = "ready";
 						}
 						else
@@ -1886,6 +1895,117 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (this.music != null && !this.music.equals(prevMusic))
 			Panel.forceRefreshMusic = true;
+
+		if (this.musicID != null && this.musicID.equals("ready"))
+		{
+			float pos = Game.game.window.soundPlayer.getMusicPos();
+			if (this.lastReadyMusicTime == -1)
+			{
+				for (int m: this.playingReadyMusics)
+				{
+					Drawing.drawing.addSyncedMusic("ready/" + ready_musics[m], Game.musicVolume, true, 0);
+				}
+			}
+
+			int fadeTime = 6000;
+
+			// ready music loops
+			if (pos < this.lastReadyMusicTime)
+			{
+				int toAdd = (int) (Math.random() * 6) + 4;
+				int toRemove = (int) (Math.random() * this.playingReadyMusics.size() * 0.8);
+
+				if (readyMusicIterations + 1 < intro_order.length)
+				{
+					toAdd = intro_order[readyMusicIterations + 1].length;
+					toRemove = 0;
+				}
+
+				if (Math.random() < 0.01 && specialReadyMusicIterationsLeft <= 0)
+				{
+					specialReadyMusicIterationsLeft = 3;
+					for (int m: this.playingReadyMusics)
+					{
+						Drawing.drawing.removeSyncedMusic("ready/" + ready_musics[m], fadeTime);
+					}
+
+					int num = 1;
+					int r = (int) (Math.random() * 10);
+					if (r == 0)
+						num = 4;
+					else if (r == 1)
+						num = 5;
+					else if (r < 10)
+						num = 3;
+
+					this.specialReadyMusic = "ready_music_" + num + ".ogg";
+					Drawing.drawing.addSyncedMusic(this.specialReadyMusic, Game.musicVolume, true, fadeTime);
+				}
+
+				this.readyMusicIterations++;
+
+				if (specialReadyMusicIterationsLeft > 0)
+				{
+					this.specialReadyMusicIterationsLeft--;
+
+					if (this.specialReadyMusicIterationsLeft == 0)
+					{
+						Drawing.drawing.removeSyncedMusic(this.specialReadyMusic, fadeTime);
+						for (int m: this.playingReadyMusics)
+						{
+							Drawing.drawing.addSyncedMusic("ready/" + ready_musics[m], Game.musicVolume, true, fadeTime);
+						}
+					}
+				}
+				else
+				{
+//					if (!addingMusic)
+//						toAdd /= 2;
+
+//					if (addingMusic)
+//					{
+//						if (added > 0)
+//							toRemove = 0;
+//						else
+//							addingMusic = false;
+//					}
+
+					int added = 0;
+					for (int i = 0; i < toAdd; i++)
+					{
+						int m = (int) (Math.random() * ready_musics.length);
+						if (readyMusicIterations < intro_order.length)
+							m = intro_order[readyMusicIterations][i];
+
+						if (!playingReadyMusics.contains(m) && (m < 15 || this.playingReadyMusics.size() > 8))
+						{
+							added++;
+							playingReadyMusics.add(m);
+							Drawing.drawing.addSyncedMusic("ready/" + ready_musics[m], Game.musicVolume, true, fadeTime);
+						}
+					}
+
+					for (int i = 0; i < toRemove; i++)
+					{
+						int m = Math.max(0, (int) (Math.random() * playingReadyMusics.size() - added));
+
+						if (playingReadyMusics.get(m) < 5 && Math.random() < 0.5)
+							continue;
+
+						Drawing.drawing.removeSyncedMusic("ready/" + ready_musics[playingReadyMusics.get(m)], fadeTime);
+						playingReadyMusics.remove(m);
+					}
+
+//					if (playingReadyMusics.size() < Math.random() * 8 + 2)
+//						addingMusic = true;
+				}
+			}
+
+			if (this.lastReadyMusicTime == -2)
+				this.lastReadyMusicTime = -1;
+			else
+				this.lastReadyMusicTime = pos;
+		}
 	}
 
 	public void updateSingleplayerWaitingMusic()
@@ -1895,11 +2015,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (this.readyPanelCounter * 10 >= introMusicEnd)
 		{
-			this.music = "ready_music_2.ogg";
+			this.music = "ready/shaker.ogg";
 			this.musicID = "ready";
 
 			if (this.paused)
-				this.music = "ready_music_1.ogg";
+				this.music = "ready/silence.ogg";
 		}
 		else
 		{

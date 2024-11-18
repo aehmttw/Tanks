@@ -86,32 +86,32 @@ public class Arcade extends Minigame
 
         if (!ScreenPartyLobby.isClient)
         {
-            ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
-            for (String si : items)
-            {
-                Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
-
-                itemsMap.put(i.item.name, i);
-                i.item.name = Translation.translate(i.item.name);
-            }
-
-            tankItemsMap.put("mint", "Fire bullet");
-            tankItemsMap.put("yellow", "Mega mine");
-            tankItemsMap.put("red", "Laser");
-            tankItemsMap.put("green", "Bouncy fire bullet");
-            tankItemsMap.put("blue", "Zap");
-            tankItemsMap.put("medic", "Shield");
-            tankItemsMap.put("cyan", "Freezing bullet");
-            tankItemsMap.put("orange", "Flamethrower");
-            tankItemsMap.put("maroon", "Mega bullet");
-            tankItemsMap.put("mustard", "Artillery shell");
-            tankItemsMap.put("orangered", "Explosive bullet");
-            tankItemsMap.put("darkgreen", "Mini bullet");
-            tankItemsMap.put("black", "Dark fire bullet");
-            tankItemsMap.put("salmon", "Homing bullet");
-            tankItemsMap.put("lightblue", "Air");
-            tankItemsMap.put("lightpink", "Laser");
-            tankItemsMap.put("gold", "Zap");
+//            ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
+//            for (String si : items)
+//            {
+//                Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
+//
+//                itemsMap.put(i.item.name, i);
+//                i.item.name = Translation.translate(i.item.name);
+//            }
+//
+//            tankItemsMap.put("mint", "Fire bullet");
+//            tankItemsMap.put("yellow", "Mega mine");
+//            tankItemsMap.put("red", "Laser");
+//            tankItemsMap.put("green", "Bouncy fire bullet");
+//            tankItemsMap.put("blue", "Zap");
+//            tankItemsMap.put("medic", "Shield");
+//            tankItemsMap.put("cyan", "Freezing bullet");
+//            tankItemsMap.put("orange", "Flamethrower");
+//            tankItemsMap.put("maroon", "Mega bullet");
+//            tankItemsMap.put("mustard", "Artillery shell");
+//            tankItemsMap.put("orangered", "Explosive bullet");
+//            tankItemsMap.put("darkgreen", "Mini bullet");
+//            tankItemsMap.put("black", "Dark fire bullet");
+//            tankItemsMap.put("salmon", "Homing bullet");
+//            tankItemsMap.put("lightblue", "Air");
+//            tankItemsMap.put("lightpink", "Laser");
+//            tankItemsMap.put("gold", "Zap");
         }
     }
 

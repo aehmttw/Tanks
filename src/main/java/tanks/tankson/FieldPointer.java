@@ -2,11 +2,10 @@ package tanks.tankson;
 
 import java.lang.reflect.Field;
 
-public class FieldPointer<T>
+public class FieldPointer<T> extends Pointer<T>
 {
     protected final Object object;
     protected final Field field;
-    public final boolean nullable;
 
     public FieldPointer(Object o, Field f)
     {
@@ -28,6 +27,7 @@ public class FieldPointer<T>
         this.nullable = nullable;
     }
 
+    @Override
     public void set(T val)
     {
         try
@@ -40,6 +40,7 @@ public class FieldPointer<T>
         }
     }
 
+    @Override
     public T get()
     {
         try
@@ -52,8 +53,15 @@ public class FieldPointer<T>
         }
     }
 
+    @Override
     public Class<T> getType()
     {
         return (Class<T>) field.getType();
+    }
+
+    @Override
+    public <U> Pointer<U> cast()
+    {
+        return new FieldPointer<U>(object, field, nullable);
     }
 }

@@ -116,7 +116,7 @@ public class Game
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	//Versioning has moved to version.txt
-	public static final String version = "Tanks " + readVersionFromFile();
+	public static String version = "Tanks v-1.-1.-1";
 
     public static final int network_protocol = 55;
 	public static boolean debug = false;
@@ -466,6 +466,7 @@ public class Game
 
 	public static void initScript()
 	{
+		version = "Tanks v" + game.readVersionFromFile();
 		player = new Player(clientID, "");
 		Game.players.add(player);
 
@@ -1221,6 +1222,8 @@ public class Game
 
 	public static double[] getRainbowColor(double fraction)
     {
+		fraction = ((fraction % 1.0) + 1) % 1.0;
+
         double col = fraction * 255 * 6;
 
         double r = 0;
@@ -1425,11 +1428,12 @@ public class Game
 	}
 
 	public static String readVersionFromFile() {
-		try (BufferedReader br = new BufferedReader(new FileReader("version.txt"))) {
-			return br.readLine().trim();
-		} catch (Exception ignored) {
+		ArrayList<String> version = Game.game.fileManager.getInternalFileContents("/version.txt");
+		if (version == null) {
+			return "-1.-1.-1";
+		} else {
+			return version.get(0);
 		}
-		return "-1.-1.-1";
 	}
 
 }

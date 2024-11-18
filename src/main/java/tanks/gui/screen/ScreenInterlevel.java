@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Firework;
@@ -18,13 +19,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public static boolean tutorial = false;
 
 	public boolean showCrusadeResultsNow = false;
-
-	boolean odd = false;
-
-	ArrayList<Firework> fireworks1 = new ArrayList<>();
-	ArrayList<Firework> fireworks2 = new ArrayList<>();
-
-	public static double firework_frequency = 0.08;
+	public FireworksDisplay fireworksDisplay = new FireworksDisplay();
 
 	Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
 	{
@@ -301,7 +296,6 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 		if (Panel.win)
 		{
-			//Drawing.drawing.playSound("win.ogg");
 			this.music = "win_music.ogg";
 
 			if (Crusade.crusadeMode && Crusade.currentCrusade.win)
@@ -315,26 +309,13 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		}
 		else
 		{
-			//Drawing.drawing.playSound("lose.ogg");
 			this.music = "lose_music.ogg";
 
 			if (!(Crusade.crusadeMode && Crusade.currentCrusade.replay))
 				quitCrusade.posY -= this.objYSpace / 2;
-
-			//if (Crusade.crusadeMode && Crusade.currentCrusade.lose)
-			//	this.music = "lose_crusade.ogg";
 		}
 
-		if (Panel.win && Game.effectsEnabled)
-		{
-			for (int i = 0; i < 5; i++)
-			{
-				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, getFireworkArray());
-				f.setRandomColor();
-				f.setVelocity();
-				getFireworkArray().add(f);
-			}
-		}
+
 
 		if (Crusade.crusadeMode)
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
@@ -360,37 +341,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 				+ Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
 		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
-		{
-			ArrayList<Firework> fireworks = getFireworkArray();
-
-			if (Math.random() < ScreenInterlevel.firework_frequency * Panel.frameFrequency * Game.effectMultiplier)
-			{
-				Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, fireworks);
-				f.setRandomColor();
-				f.setVelocity();
-				getFireworkArray().add(f);
-			}
-
-			for (int i = 0; i < getFireworkArray().size(); i++)
-			{
-				fireworks.get(i).drawUpdate(fireworks, getOtherFireworkArray());
-			}
-
-			if (Game.glowEnabled)
-			{
-				for (int i = 0; i < getFireworkArray().size(); i++)
-				{
-					fireworks.get(i).drawGlow();
-				}
-			}
-
-			//A fix to some glitchiness on ios
-			Drawing.drawing.setColor(0, 0, 0, 0);
-			Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
-
-			fireworks.clear();
-			odd = !odd;
-		}
+			this.fireworksDisplay.draw();
 
 		boolean skip = false;
 		if (Crusade.crusadeMode)
@@ -505,23 +456,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
-		if (Panel.win && Game.effectsEnabled)
+		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
-	}
-
-	public ArrayList<Firework> getFireworkArray()
-	{
-		if (odd)
-			return fireworks2;
-		else
-			return fireworks1;
-	}
-
-	public ArrayList<Firework> getOtherFireworkArray()
-	{
-		if (odd)
-			return fireworks1;
-		else
-			return fireworks2;
 	}
 }

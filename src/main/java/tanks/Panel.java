@@ -2,6 +2,7 @@ package tanks;
 
 import basewindow.InputCodes;
 import tanks.extension.Extension;
+import tanks.gui.Firework;
 import tanks.gui.IFixedMenu;
 import tanks.gui.ScreenIntro;
 import tanks.gui.TextBox;
@@ -115,12 +116,16 @@ public class Panel
 		Game.game.shaderIntro = new ShaderGroundIntro(Game.game.window);
 		Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
  		Game.game.shaderTracks = new ShaderTracks(Game.game.window);
+		Firework.shader = new ShaderFireworkExplosion(Game.game.window);
+		Firework.trailShader = new ShaderFireworkExplosionTrail(Game.game.window);
 
 		try
 		{
 			Game.game.shaderIntro.initialize();
 			Game.game.shaderOutOfBounds.initialize();
 			Game.game.shaderTracks.initialize();
+			Firework.shader.initialize();
+			Firework.trailShader.initialize();
 		}
 		catch (Exception e)
 		{

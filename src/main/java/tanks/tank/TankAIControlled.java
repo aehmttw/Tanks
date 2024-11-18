@@ -1,10 +1,11 @@
 package tanks.tank;
 
-import basewindow.IModel;
 import tanks.*;
-import tanks.bullet.*;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletArc;
+import tanks.bullet.BulletGas;
+import tanks.bullet.Laser;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
@@ -24,7 +25,7 @@ import static tanks.tank.TankPropertyCategory.*;
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
 @TanksONable("tank")
-public class TankAIControlled extends Tank
+public class TankAIControlled extends Tank implements ITankField
 {
 	/** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.*/
 	protected enum RotationPhase {clockwise, counter_clockwise, aiming, recalculating}
@@ -67,7 +68,8 @@ public class TankAIControlled extends Tank
 	 *  Back off = move away from the bullet directly
 	 *  Dodge = move at an angle from the bullet
 	 *  Aggressive Dodge = move at an angle toward the bullet
-	 *  Intersect = move away from where bullet path will intersect tank; less accurate */
+	 *  Intersect = move away
+	 *  from where bullet path will intersect tank; less accurate */
 	public enum BulletAvoidBehavior
 	{intersect, back_off, dodge, aggressive_dodge}
 
@@ -129,15 +131,19 @@ public class TankAIControlled extends Tank
 	public double targetSightDistance = Game.tile_size * 6;
 
 	/** Tank to transform into*/
-	@Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target")
-	public TankAIControlled sightTransformTank = null;
+	@Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target", nullable = true)
+	public ITankField sightTransformTankField = null;
+	/** Don't set this. It's automatically set by resolving "sightTransformTankField" which may be a reference! */
+	private TankAIControlled sightTransformTank = null;
 	/** Time for tank to revert after losing line of sight */
 	@Property(category = transformationOnSight, id = "sight_transformation_revert_time", minValue = 0.0, name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
 	public double sightTransformRevertTime = 500;
 
 	/** Tank to transform into*/
-	@Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold")
-	public TankAIControlled healthTransformTank = null;
+	@Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold", nullable = true)
+	public ITankField healthTransformTankField = null;
+	/** Don't set this. It's automatically set by resolving "healthTransformTankField" which may be a reference! */
+	private TankAIControlled healthTransformTank = null;
 	/** Health threshold to transform */
 	@Property(category = transformationOnHealth, id = "transform_health_threshold", minValue = 0.0, name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
 	public double transformHealthThreshold = 0;
@@ -244,12 +250,13 @@ public class TankAIControlled extends Tank
 	public static class SpawnedTankEntry
 	{
 		@Property(id = "tank")
-		public TankAIControlled tank;
+		public ITankField tank;
+		public Tank resolvedTank;
 
 		@Property(id = "weight")
 		public double weight;
 
-		public SpawnedTankEntry(TankAIControlled t, double weight)
+		public SpawnedTankEntry(ITankField t, double weight)
 		{
 			this.tank = t;
 			this.weight = weight;
@@ -486,6 +493,11 @@ public class TankAIControlled extends Tank
 
 	protected double lastCooldown = this.cooldown;
 
+	public TankAIControlled()
+	{
+		this("" + System.currentTimeMillis(), 0, 0, Game.tile_size, 0, 0, 0, 0, ShootAI.none);
+	}
+
 	public TankAIControlled(String name, double x, double y, double size, double r, double g, double b, double angle, ShootAI ai)
 	{
 		super(name, x, y, size, r, g, b);
@@ -507,6 +519,8 @@ public class TankAIControlled extends Tank
 		{
 			fleeDirections[i] = Math.PI / 4 + (i * 2 / fleeDirections.length) * Math.PI / 2 + i * Math.PI / fleeDirections.length;
 		}
+
+		this.fromRegistry = !this.getClass().equals(TankAIControlled.class);
 	}
 
 	public void updateVisibility()
@@ -545,33 +559,42 @@ public class TankAIControlled extends Tank
 			this.timeInvisible = 0;
 	}
 
+	public void initialize()
+	{
+		this.bulletItem.item.cooldownBase = Math.min(1, this.cooldownBase);
+		this.bulletItem.item.bullet = this.bullet;
+		this.mineItem.item.mine = this.mine;
+
+		if (!this.enableMovement)
+			this.bullet.recoil = 0;
+
+		this.baseMaxSpeed = this.maxSpeed;
+		this.dealsDamage = !this.isSupportTank();
+		this.baseColorR = this.colorR;
+		this.baseColorG = this.colorG;
+		this.baseColorB = this.colorB;
+		this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
+
+		if (this.targetEnemySightBehavior == TargetEnemySightBehavior.sidewind)
+			this.strafeDirection /= 2;
+		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.backwind)
+			this.strafeDirection *= 1.5;
+
+		if (this.random.nextDouble() < 0.5)
+			this.strafeDirection = -this.strafeDirection;
+
+		if (this.sightTransformTankField != null)
+			this.sightTransformTank = ((TankAIControlled) this.sightTransformTankField.resolve()).instantiate(this.name, 0, 0, 0);
+
+		if (this.healthTransformTankField != null)
+			this.healthTransformTank = ((TankAIControlled) this.healthTransformTankField.resolve()).instantiate(this.name, 0, 0, 0);
+	}
+
 	@Override
 	public void update()
 	{
 		if (this.age <= 0)
-		{
-			this.bulletItem.item.cooldownBase = Math.min(1, this.cooldownBase);
-			this.bulletItem.item.bullet = this.bullet;
-			this.mineItem.item.mine = this.mine;
-
-			if (!this.enableMovement)
-				this.bullet.recoil = 0;
-
-			this.baseMaxSpeed = this.maxSpeed;
-			this.dealsDamage = !this.isSupportTank();
-			this.baseColorR = this.colorR;
-			this.baseColorG = this.colorG;
-			this.baseColorB = this.colorB;
-			this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
-
-			if (this.targetEnemySightBehavior == TargetEnemySightBehavior.sidewind)
-				this.strafeDirection /= 2;
-			else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.backwind)
-				this.strafeDirection *= 1.5;
-
-			if (this.random.nextDouble() < 0.5)
-				this.strafeDirection = -this.strafeDirection;
-		}
+			this.initialize();
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 
@@ -841,14 +864,17 @@ public class TankAIControlled extends Tank
 		if (this.shotSound != null)
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
 
+		if (speed == 0)
+			speed = Double.MIN_VALUE;
+
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
-		b.speed = speed;
+		b.speed = Math.abs(speed);
 
 		if (b instanceof BulletArc)
-			b.vZ = this.distance / speed * 0.5 * BulletArc.gravity;
+			b.vZ = this.distance / b.speed * 0.5 * BulletArc.gravity;
 		else
-			b.moveOut(50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
+			b.moveOut(Math.signum(speed) * 50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
 
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
@@ -2250,8 +2276,11 @@ public class TankAIControlled extends Tank
 
 	public void updateSpawningAI()
 	{
-		if (this.age <= 0 && !this.destroy && !ScreenGame.finishedQuick)
+		if (this.age <= 0 && !this.readyForInitialSpawn)
+			this.readyForInitialSpawn = true;
+		else if (this.readyForInitialSpawn && !this.destroy && !ScreenGame.finishedQuick)
 		{
+			this.readyForInitialSpawn = false;
 			for (int i = 0; i < this.spawnedInitialCount; i++)
 			{
 				spawnTank();
@@ -2335,14 +2364,17 @@ public class TankAIControlled extends Tank
 
 				if (selected <= 0)
 				{
-					if (s.tank.getClass().equals(TankAIControlled.class))
+					if (s.resolvedTank == null)
+						s.resolvedTank = s.tank.resolve();
+
+					if (s.resolvedTank.getClass().equals(TankAIControlled.class))
 					{
 						t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
-						s.tank.cloneProperties((TankAIControlled) t2);
+						((TankAIControlled)(s.resolvedTank)).cloneProperties((TankAIControlled) t2);
 					}
 					else
 					{
-						t2 = Game.registryTank.getEntry(s.tank.name).getTank(this.posX + x, this.posY + y, 0);
+						t2 = Game.registryTank.getEntry(s.resolvedTank.name).getTank(this.posX + x, this.posY + y, 0);
 					}
 
 					break;
@@ -2354,6 +2386,7 @@ public class TankAIControlled extends Tank
 			t.team = this.team;
 			t.crusadeID = this.crusadeID;
 			t.parent = this;
+			t.readyForInitialSpawn = false;
 
 			this.spawnedTanks.add(t);
 
@@ -3144,6 +3177,19 @@ public class TankAIControlled extends Tank
 		return t;
 	}
 
+	public static ITankField cloneTankField(ITankField t1)
+	{
+		if (t1 instanceof TankAIControlled)
+		{
+			TankAIControlled t2 = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
+
+			((TankAIControlled) t1).cloneProperties(t2);
+			return t2;
+		}
+		else
+			return t1;
+	}
+
 	public void cloneProperties(TankAIControlled t)
 	{
 		try
@@ -3165,19 +3211,10 @@ public class TankAIControlled extends Tank
 						Mine i2 = i1.getCopy();
 						f.set(t, i2);
 					}
-					else if (Tank.class.isAssignableFrom(f.getType()))
+					else if (ITankField.class.isAssignableFrom(f.getType()))
 					{
-						Tank t1 = (Tank) f.get(this);
-						if (t1 != null)
-						{
-							TankAIControlled t2 = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
-
-							if (t1 instanceof TankAIControlled)
-								((TankAIControlled) t1).cloneProperties(t2);
-							f.set(t, t2);
-						}
-						else
-							f.set(t, null);
+						ITankField t1 = (ITankField) f.get(this);
+						f.set(t, cloneTankField(t1));
 					}
 					else if (a.miscType() == Property.MiscType.spawnedTanks)
 					{
@@ -3186,7 +3223,7 @@ public class TankAIControlled extends Tank
 						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
 						for (SpawnedTankEntry o: a1)
 						{
-							al.add(new SpawnedTankEntry(o.tank, o.weight));
+							al.add(new SpawnedTankEntry(cloneTankField(o.tank), o.weight));
 						}
 
 						f.set(t, al);
@@ -3206,5 +3243,180 @@ public class TankAIControlled extends Tank
 		}
 
 		t.health = t.baseHealth;
+	}
+
+	@Override
+	public String getName()
+	{
+		return this.name;
+	}
+
+	@Override
+	public Tank resolve()
+	{
+		return this;
+	}
+
+	/**
+	 * Populates a given (empty) hashset with the names of all tanks included as links by this tank or other tanks it uses (spawns, transforms into)
+	 */
+	//TODO: There's probably a much better way to do this involving tankson traversal, but that is kind of its own can of worms...
+	public void getAllLinkedTankNames(HashSet<String> explored)
+	{
+		try
+		{
+			for (Field f : this.getClass().getFields())
+			{
+				if (ITankField.class.isAssignableFrom(f.getType()) && f.getAnnotation(Property.class) != null)
+				{
+					ITankField t = (ITankField) f.get(this);
+					if (t instanceof TankReference && !explored.contains(t.getName()) && TankUnknown.class.isAssignableFrom(Game.registryTank.getEntry(t.getName()).tank))
+					{
+						explored.add(t.getName());
+						Tank ta = t.resolve();
+						if (ta instanceof TankAIControlled)
+							((TankAIControlled) ta).getAllLinkedTankNames(explored);
+					}
+					else if (t instanceof TankAIControlled)
+						((TankAIControlled) t).getAllLinkedTankNames(explored);
+				}
+				else if (f.getAnnotation(Property.class) != null && f.getAnnotation(Property.class).miscType() == Property.MiscType.spawnedTanks)
+				{
+					ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(this);
+					for (SpawnedTankEntry e: entries)
+					{
+						ITankField t = e.tank;
+						if (t instanceof TankReference && !explored.contains(t.getName()) && TankUnknown.class.isAssignableFrom(Game.registryTank.getEntry(t.getName()).tank))
+						{
+							explored.add(t.getName());
+							Tank ta = t.resolve();
+							if (ta instanceof TankAIControlled)
+								((TankAIControlled) ta).getAllLinkedTankNames(explored);
+						}
+						else if (t instanceof TankAIControlled)
+							((TankAIControlled) t).getAllLinkedTankNames(explored);
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+	}
+
+	/**
+	 * Removes linked tanks that do not link to any existing tank
+	 */
+	//TODO: There's probably a much better way to do this involving tankson traversal, but that is kind of its own can of worms...
+	public void removeBrokenLinks()
+	{
+		try
+		{
+			for (Field f : this.getClass().getFields())
+			{
+				if (ITankField.class.isAssignableFrom(f.getType()) && f.getAnnotation(Property.class) != null)
+				{
+					ITankField t = (ITankField) f.get(this);
+					if (t instanceof TankReference && TankUnknown.class.isAssignableFrom(Game.registryTank.getEntry(t.getName()).tank))
+					{
+						Tank ta = t.resolve();
+						if (ta == null)
+							f.set(this, null);
+					}
+				}
+				else if (f.getAnnotation(Property.class) != null && f.getAnnotation(Property.class).miscType() == Property.MiscType.spawnedTanks)
+				{
+					ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(this);
+					for (int i = 0; i < entries.size(); i++)
+					{
+						SpawnedTankEntry e = entries.get(i);
+						ITankField t = e.tank;
+						if (t instanceof TankReference && TankUnknown.class.isAssignableFrom(Game.registryTank.getEntry(t.getName()).tank))
+						{
+							Tank ta = t.resolve();
+							if (ta == null)
+							{
+								entries.remove(i);
+								i--;
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+	}
+
+	/**
+	 * Replaces all tank references in this tank which have the old name with the new name, recursively across all included (not-linked) tanks
+	 * @param originalName Old name of the linked tank
+	 * @param newName New name of the linked tank, or null to delete the old links entirely
+	 * @return if anything changed
+	 */
+	//TODO: There's probably a much better way to do this involving tankson traversal, but that is kind of its own can of worms...
+	public boolean renameLinkedTank(String originalName, String newName)
+	{
+		boolean edited = false;
+
+		try
+		{
+			for (Field f : this.getClass().getFields())
+			{
+				if (ITankField.class.isAssignableFrom(f.getType()) && f.getAnnotation(Property.class) != null)
+				{
+					ITankField t = (ITankField) f.get(this);
+					if (t instanceof TankAIControlled)
+						edited |= ((TankAIControlled) t).renameLinkedTank(originalName, newName);
+					else if (t instanceof TankReference)
+					{
+						if (t.getName().equals(originalName))
+						{
+							if (newName == null)
+								f.set(this, null);
+							else
+								((TankReference) t).tankName = newName;
+
+							edited = true;
+						}
+					}
+				}
+				else if (f.getAnnotation(Property.class) != null && f.getAnnotation(Property.class).miscType() == Property.MiscType.spawnedTanks)
+				{
+					ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(this);
+					for (int i = 0; i < entries.size(); i++)
+					{
+						SpawnedTankEntry e = entries.get(i);
+						ITankField t = e.tank;
+						if (t instanceof TankAIControlled)
+							edited |= ((TankAIControlled) t).renameLinkedTank(originalName, newName);
+						else if (t instanceof TankReference)
+						{
+							if (t.getName().equals(originalName))
+							{
+								if (newName == null)
+								{
+									entries.remove(i);
+									i--;
+								}
+								else
+									((TankReference) t).tankName = newName;
+
+								edited = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		return edited;
 	}
 }

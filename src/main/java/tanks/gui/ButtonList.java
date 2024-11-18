@@ -17,6 +17,12 @@ public class ButtonList
     public boolean arrowsEnabled = false;
     public boolean reorder = false;
 
+    /** This many elements at the start cannot be reordered */
+    public int fixedFirstElements = 0;
+
+    /** This many elements at the end cannot be reordered */
+    public int fixedLastElements = 0;
+
     public int page;
 
     public int rows = 6;
@@ -37,6 +43,12 @@ public class ButtonList
     public double imageR = 255;
     public double imageG = 255;
     public double imageB = 255;
+
+    /** If set, text will be white if the level is dark */
+    public boolean defaultDarkMode = true;
+
+    /** If set, text will be white unconditionally */
+    public boolean manualDarkMode = false;
 
     public boolean translate = false;
 
@@ -216,12 +228,14 @@ public class ButtonList
 
         for (int i = page * rows * columns; i < Math.min(page * rows * columns + rows * columns, buttons.size()); i++)
         {
-            if (this.arrowsEnabled)
-                buttons.get(i).enabled = !this.reorder;
+            boolean e = this.buttons.get(i).enabled;
+            if (this.arrowsEnabled && this.reorder)
+                this.buttons.get(i).enabled = false;
 
             buttons.get(i).update();
+            this.buttons.get(i).enabled = e;
 
-            if (this.reorder)
+            if (this.reorder && i >= this.fixedFirstElements && this.buttons.size() - i > this.fixedLastElements)
             {
                 upButtons.get(i).update();
                 downButtons.get(i).update();
@@ -254,15 +268,15 @@ public class ButtonList
 
         if (this.arrowsEnabled && this.buttons.size() > 0)
         {
-            upButtons.get(0).enabled = false;
-            downButtons.get(downButtons.size() - 1).enabled = false;
+            upButtons.get(fixedFirstElements).enabled = false;
+            downButtons.get(downButtons.size() - fixedLastElements - 1).enabled = false;
         }
 
         if (rows * columns < buttons.size())
         {
             Drawing.drawing.setInterfaceFontSize(objHeight * 0.6);
 
-            if (Level.isDark())
+            if (Level.isDark() && defaultDarkMode || manualDarkMode)
                 Drawing.drawing.setColor(255, 255, 255);
             else
                 Drawing.drawing.setColor(0, 0, 0);
@@ -285,8 +299,9 @@ public class ButtonList
             Button b = buttons.get(i);
             String n = b.text;
 
-            if (this.arrowsEnabled)
-                buttons.get(i).enabled = !this.reorder;
+            boolean e = b.enabled;
+            if (this.arrowsEnabled && this.reorder)
+                b.enabled = false;
 
             if (indexPrefix)
                 b.text = (i + 1) + ". " + n;
@@ -296,11 +311,13 @@ public class ButtonList
             if (indexPrefix)
                 b.text = n;
 
-            if (this.reorder)
+            if (this.reorder && i >= this.fixedFirstElements && this.buttons.size() - i > this.fixedLastElements)
             {
                 upButtons.get(i).draw();
                 downButtons.get(i).draw();
             }
+
+            b.enabled = e;
         }
     }
 

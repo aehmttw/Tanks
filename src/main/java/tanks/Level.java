@@ -1,15 +1,13 @@
 package tanks;
 
-import tanks.gui.screen.ILevelPreviewScreen;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
+import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
 import java.util.*;
@@ -81,13 +79,23 @@ public class Level
 	public int startingCoins;
 	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
 	public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
+
+	// Saved on the client to keep track of what each item is
+	public int clientStartingCoins;
+	public ArrayList<Item.ShopItem> clientShop = new ArrayList<>();
+	public ArrayList<Item.ItemStack<?>> clientStartingItems = new ArrayList<>();
+
 	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
+
+	public HashMap<String, Integer> itemNumbers = new HashMap<>();
 
 	public double startTime = 400;
 	public boolean disableFriendlyFire = false;
 
 	public boolean synchronizeMusic = false;
 	public int beatBlocks = 0;
+
+	public HashMap<String, Tank> tankLookupTable = null;
 
 	/**
 	 * A level string is structured like this:
@@ -151,7 +159,7 @@ public class Level
 						TankAIControlled t = TankAIControlled.fromString(s);
 						this.customTanks.add(t);
 					}
-					else if (!ScreenPartyLobby.isClient)
+					else
 					{
 						if (parsing == 1)
 							this.startingItems.add(Item.ItemStack.fromString(null, s));
@@ -182,6 +190,27 @@ public class Level
 				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
 				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
 			}
+		}
+
+		for (int i = 0; i < this.shop.size(); i++)
+		{
+			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
+		}
+
+		for (int i = 0; i < this.startingItems.size(); i++)
+		{
+			this.itemNumbers.put(this.startingItems.get(i).item.name, -i - 1);
+		}
+
+		if (ScreenPartyLobby.isClient)
+		{
+			this.clientStartingCoins = this.startingCoins;
+			this.clientStartingItems = this.startingItems;
+			this.clientShop = this.shop;
+
+			this.startingCoins = 0;
+			this.startingItems = new ArrayList<>();
+			this.shop = new ArrayList<>();
 		}
 	}
 
@@ -791,5 +820,44 @@ public class Level
 	public static boolean isDark()
 	{
 		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || currentLightIntensity <= 0.5;
+	}
+
+	public Tank lookupTank(String name)
+	{
+		if (Game.screen instanceof ScreenGame)
+		{
+			if (this.tankLookupTable == null)
+			{
+				this.tankLookupTable = new HashMap<>();
+
+				for (RegistryTank.TankEntry e : Game.registryTank.tankEntries)
+				{
+					this.tankLookupTable.put(e.name, e.getTank(0, 0, 0));
+				}
+
+				for (TankAIControlled t : this.customTanks)
+				{
+					this.tankLookupTable.put(t.name, t);
+				}
+			}
+
+			return this.tankLookupTable.get(name);
+		}
+		else
+		{
+			RegistryTank.TankEntry e = Game.registryTank.getEntry(name);
+			if (TankUnknown.class.isAssignableFrom(e.tank))
+			{
+				for (TankAIControlled t : this.customTanks)
+				{
+					if (t.name.equals(name))
+						return t;
+				}
+
+				return null;
+			}
+			else
+				return e.getTank(0, 0, 0);
+		}
 	}
 }

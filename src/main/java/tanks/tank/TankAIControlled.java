@@ -3230,7 +3230,10 @@ public class TankAIControlled extends Tank implements ITankField
 					}
 					else if (a.miscType() == Property.MiscType.music)
 					{
-						f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
+						if (f.get(this) != null)
+							f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
+						else
+							f.set(t, new HashSet<>());
 					}
 					else
 						f.set(t, f.get(this));

@@ -109,11 +109,13 @@ public final class Serializer {
         return null;
     }
 
-    public static String toTanksON(Object o) {
+    public static String toTanksON(Object o)
+    {
         return TanksON.toString(toMap(o));
     }
 
-    public static Object fromTanksON(String s) {
+    public static Object fromTanksON(String s)
+    {
         return parseObject((Map<String,Object>)TanksON.parseObject(s));
     }
 
@@ -142,30 +144,23 @@ public final class Serializer {
                 break;
             }
             case "item_stack":
-            {
                 o = ((Item) m.get("item")).getStack(null);
                 break;
-            }
             case "shop_item":
-            {
                 o = new Item.ShopItem();
                 break;
-            }
             case "crusade_shop_item":
-            {
                 o = new Item.CrusadeShopItem();
                 break;
-            }
             case "explosion":
-            {
                 o = new Explosion();
                 break;
-            }
             case "spawned_tank":
-            {
-                o = new TankAIControlled.SpawnedTankEntry(null, 0);
+                o = new TankAIControlled.SpawnedTankEntry((TankReference) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
                 break;
-            }
+            case "tank_ref":
+                o = new TankReference((String) m.get("tank"));
+                break;
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
@@ -175,11 +170,7 @@ public final class Serializer {
                     Object o2 = f.get(o);
                     if (isTanksONable(f)) {
                         Object o3 = m.get(getid(f));
-                        if (o3 instanceof String) {
-                            f.set(o, include((String) o3));
-                        } else {
-                            f.set(o, parseObject((Map) o3));
-                        }
+                        f.set(o, parseObject((Map) o3));
                     } else if (o2 instanceof ArrayList) {
                         if (((ArrayList) m.get(getid(f))).get(0) instanceof Map){
                             ArrayList o3s = new ArrayList();
@@ -204,17 +195,4 @@ public final class Serializer {
         return o;
     }
 
-    public static Object include(String s)
-    {
-        Object o = null;
-        if (s.startsWith("<") && s.endsWith(">")) {
-            s = s.replace("<","").replace(">","");
-            o = Game.registryTank.getEntry(s);
-        } else if (s.startsWith("(") && s.endsWith(")")) {
-            throw new RuntimeException("Linking non-default tanks non supported yet!");
-        } else {
-            throw new RuntimeException("Corrupted Tank Reference!");
-        }
-        return o;
-    }
 }

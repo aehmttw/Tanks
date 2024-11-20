@@ -549,8 +549,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     @Override
     public void draw()
     {
-        this.objName = target.get().typeName;
-
         super.draw();
 
         if (this.target.get() != null)

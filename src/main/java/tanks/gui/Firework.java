@@ -444,16 +444,18 @@ public class Firework extends Movable
 			if (star)
 			{
 				double starRandom = Math.random();
-				if (starRandom < 0.2)
+				if (starRandom < 0.1)
 					starPoints = 4;
-				else if (starRandom < 0.8)
+				else if (starRandom < 0.7)
 					starPoints = 5;
-				else if (starRandom < 0.85)
+				else if (starRandom < 0.8)
 					starPoints = 6;
-				else if (starRandom < 0.9)
+				else if (starRandom < 0.85)
 					starPoints = 7;
-				else if (starRandom < 0.95)
+				else if (starRandom < 0.9)
 					starPoints = 8;
+				else if (starRandom < 0.95)
+					starPoints = 9;
 				else
 					starPoints = 10;
 

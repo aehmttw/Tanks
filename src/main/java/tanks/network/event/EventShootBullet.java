@@ -29,11 +29,6 @@ public class EventShootBullet extends PersonalEvent
 
 	public EventShootBullet(Bullet b)
 	{
-		this(b, 0);
-	}
-
-	public EventShootBullet(Bullet b, int item)
-	{
 		this.id = b.networkID;
 		this.tank = b.tank.networkID;
 		this.posX = b.posX;
@@ -42,7 +37,7 @@ public class EventShootBullet extends PersonalEvent
 		this.vX = b.vX;
 		this.vY = b.vY;
 		this.vZ = b.vZ;
-		this.item = item;
+		this.item = b.item.networkIndex;
 	}
 
 	@Override

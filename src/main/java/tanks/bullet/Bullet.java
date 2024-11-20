@@ -277,6 +277,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			idMap.put(this.networkID, this);
 		}
 
+		this.previousRebounds.add(this.tank);
+
 		this.drawLevel = 8;
 
 //		for (IFixedMenu m : ModAPI.menuGroup)

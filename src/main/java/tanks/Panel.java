@@ -934,7 +934,13 @@ public class Panel
 		if (Game.framework == Game.Framework.libgdx)
 			boundary += 40;
 
-		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.version);
+		String v = Game.version;
+		if ("0123456789".indexOf(v.charAt(v.length() - 1)) == -1 && !(ScreenPartyLobby.isClient && !Game.connectedToOnline))
+			v = Game.version + " \u00A7255227186064(" + Game.game.window.buildDate + ")";
+
+		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, v);
+		Drawing.drawing.setColor(255, 227, 186);
+
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
 
 		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);

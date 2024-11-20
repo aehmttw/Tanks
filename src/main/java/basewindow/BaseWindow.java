@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 public abstract class BaseWindow
 {
+    public String buildDate = "";
     protected ArrayList<String> overrideLocations = new ArrayList<>();
 
     public BaseShapeRenderer shapeRenderer;

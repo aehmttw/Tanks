@@ -244,7 +244,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         e.radius = Math.max(this.radius, 0);
         Game.effects.add(e);
 
-        if (this.tankKnockback > 0 || this.bulletKnockback > 0)
+        if (this.tankKnockback != 0 || this.bulletKnockback != 0)
         {
             Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
             e1.radius = Math.max(this.knockbackRadius, 0);

@@ -493,8 +493,9 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		Integer num = 0;
 		if (Game.currentLevel != null)
 			num = Game.currentLevel.itemNumbers.get(b.item.item.name);
+		b.item.networkIndex = num == null ? 0 : num;
 
-		Game.eventsOut.add(new EventShootBullet(b, num == null ? 0 : num));
+		Game.eventsOut.add(new EventShootBullet(b));
 		Game.movables.add(b);
 	}
 

@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
+import tanks.gui.ITrigger;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
@@ -45,12 +46,12 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 
             if (is instanceof ItemBullet.ItemStackBullet)
             {
-                this.objectEditorScreen = new ScreenEditorBullet(new FieldPointer<>(item, item.getClass().getField("bullet"), false), Game.screen);
+                this.objectEditorScreen = new ScreenEditorBullet(new FieldPointer<>(item, item.getClass().getField("bullet"), false), this.prevScreen);
                 ((ScreenEditorBullet) this.objectEditorScreen).bulletTypes.posX += 20;
             }
             else if (is instanceof ItemMine.ItemStackMine)
             {
-                this.objectEditorScreen = new ScreenEditorMine(new FieldPointer<>(item, item.getClass().getField("mine"), false), Game.screen);
+                this.objectEditorScreen = new ScreenEditorMine(new FieldPointer<>(item, item.getClass().getField("mine"), false), this.prevScreen);
                 this.objectEditorScreen.forceDisplayTabs = true;
                 Button b = this.objectEditorScreen.topLevelButtons.get(0);
                 b.posX = this.itemTabButton.posX;
@@ -75,6 +76,9 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             setTarget(null);
             this.quit.function.run();
         };
+
+        this.deleteText = "Delete item";
+        this.showDeleteObj = false;
         this.delete.setText("Delete item");
     }
 
@@ -90,6 +94,25 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             try
             {
                 this.uiElements.clear();
+
+                Item i = this.screen.target.get().item;
+
+                // Item name, icon, cooldown
+                FieldPointer<Item> ip = new FieldPointer<>(screen.target.get(), screen.target.getType().getField("item"));
+                for (Field f : i.getClass().getFields())
+                {
+                    if (f.getDeclaringClass().equals(Item.class))
+                    {
+                        Property p = f.getAnnotation(Property.class);
+                        if (p != null && p.category().equals(this.category))
+                        {
+                            this.uiElements.add(screen.getUIElementForField(f, p, ip));
+                        }
+                    }
+                }
+
+                // Move the cooldown to be after stack size and max stack size
+                ITrigger cooldown = this.uiElements.remove(this.uiElements.size() - 1);
                 for (Field f : this.screen.fields)
                 {
                     Property p = f.getAnnotation(Property.class);
@@ -98,15 +121,18 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                         this.uiElements.add(screen.getUIElementForField(f, p, screen.target));
                     }
                 }
+                this.uiElements.add(cooldown);
 
-                Item i = this.screen.target.get().item;
-                FieldPointer<Item> ip = new FieldPointer<>(screen.target.get(), screen.target.getType().getField("item"));
+                // Other per-item settings
                 for (Field f : i.getClass().getFields())
                 {
-                    Property p = f.getAnnotation(Property.class);
-                    if (p != null && p.category().equals(this.category))
+                    if (!f.getDeclaringClass().equals(Item.class))
                     {
-                        this.uiElements.add(screen.getUIElementForField(f, p, ip));
+                        Property p = f.getAnnotation(Property.class);
+                        if (p != null && p.category().equals(this.category))
+                        {
+                            this.uiElements.add(screen.getUIElementForField(f, p, ip));
+                        }
                     }
                 }
             }

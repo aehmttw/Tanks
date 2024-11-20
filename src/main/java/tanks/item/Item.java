@@ -70,6 +70,7 @@ public abstract class Item implements IGameObject
 			return (ShopItem) TanksON.parseObject(s);
 		}
 
+		@Deprecated
 		public static ShopItem fromStringLegacy(String s)
 		{
 			String[] p = s.split(",");
@@ -108,6 +109,7 @@ public abstract class Item implements IGameObject
 			return (CrusadeShopItem) TanksON.parseObject(s);
 		}
 
+		@Deprecated
 		public static CrusadeShopItem fromStringLegacy(String s)
 		{
 			String[] p = s.split(",");
@@ -266,6 +268,7 @@ public abstract class Item implements IGameObject
 			return i;
 		}
 
+		@Deprecated
 		public static ItemStack<?> fromStringLegacy(Player pl, String s)
 		{
 			if (s.contains("[") && s.contains("]"))

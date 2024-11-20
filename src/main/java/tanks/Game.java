@@ -466,7 +466,7 @@ public class Game
 
 	public static void initScript()
 	{
-		version = "Tanks v" + game.readVersionFromFile();
+		version = "Tanks v" + Game.readVersionFromFile();
 		player = new Player(clientID, "");
 		Game.players.add(player);
 
@@ -1428,13 +1428,13 @@ public class Game
 		level.loadLevel();
 	}
 
-	public static String readVersionFromFile() {
+	public static String readVersionFromFile()
+	{
 		ArrayList<String> version = Game.game.fileManager.getInternalFileContents("/version.txt");
-		if (version == null) {
+		if (version == null)
 			return "-1.-1.-1";
-		} else {
+		else
 			return version.get(0);
-		}
 	}
 
 }

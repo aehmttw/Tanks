@@ -83,8 +83,6 @@ public class BulletInstant extends Bullet
 		if (this.expired)
 			return;
 
-		Game.eventsOut.add(new EventShootBullet(this));
-
 		if (!this.tank.isRemote)
 		{
 			this.collisionX = this.posX;
@@ -209,15 +207,26 @@ public class BulletInstant extends Bullet
 			double dX = xTargets.get(i + 1) - iX;
 			double dY = yTargets.get(i + 1) - iY;
 
-			this.posX = iX;
-			this.posY = iY;
+			this.posX = iX + dX;
+			this.posY = iY + dY;
 
 			double z = Game.tile_size / 4;
 			if (i == 0)
 				z = this.iPosZ;
 
-			this.segments.add(new Laser(iX + dX, iY + dY, z, iX, iY, Game.tile_size / 4, this.size / 2, this.getAngleInDirection(iX + dX, iY + dY), this.baseColorR, this.baseColorG, this.baseColorB));
+			this.segments.add(new Laser(iX, iY, z, iX + dX, iY + dY, Game.tile_size / 4, this.size / 2, this.getAngleInDirection(iX, iY), this.baseColorR, this.baseColorG, this.baseColorB));
 			this.expired = true;
+
+			if (this.hitStun > 0)
+			{
+				this.lastX = iX;
+				this.lastY = iY;
+				this.lastZ = z;
+				this.collisionX = iX + dX;
+				this.collisionY = iY + dY;
+				this.posZ = Game.tile_size / 4;
+				this.addElectricEffect();
+			}
 		}
 
 		Game.movables.add(this);

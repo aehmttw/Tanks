@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
 
 public class Tanks
@@ -50,13 +51,14 @@ public class Tanks
         {
             try
             {
+                File f = new File(Tanks.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                String path = f.getPath();
+
                 if (relaunch && Game.framework == Game.Framework.lwjgl)
                 {
                     // Attempts to relaunch from the .jar file.
                     try
                     {
-                        String path = new File(Tanks.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-
                         if (path.endsWith(".jar"))
                         {
                             String[] command = new String[]{"java", "-XstartOnFirstThread", "-jar", path, "mac"};
@@ -87,6 +89,11 @@ public class Tanks
                             Game.vsync, !Panel.showMouseTarget
                     );
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
+
+                    if (!path.endsWith(".jar"))
+                        Game.game.window.buildDate = "Running from source";
+                    else if (f.exists())
+                        Game.game.window.buildDate = new Date(f.lastModified()).toString();
                 }
 
                 Game.postInitScript();

@@ -1,24 +1,21 @@
 package tanks.gui.screen.leveleditor;
 
+import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
-import tanks.gui.screen.IConditionalOverlayScreen;
-import tanks.gui.screen.Screen;
-import tanks.gui.screen.ScreenEditorItem;
-import tanks.gui.screen.ScreenEditorShopItem;
+import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.registry.RegistryItem;
-import tanks.tankson.FieldPointer;
 import tanks.tankson.MonitoredArrayListIndexPointer;
 
 import java.util.ArrayList;
 
-public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IConditionalOverlayScreen
+public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IConditionalOverlayScreen
 {
-    public ButtonList shopList;
+    public ButtonList startingItemsList;
     public Selector itemSelector;
 
     public Button addItem = new Button(this.centerX + 380, this.centerY + 300, 350, 40, "Add item", new Runnable()
@@ -36,7 +33,7 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
         @Override
         public void run()
         {
-            shopList.reorder = !shopList.reorder;
+            startingItemsList.reorder = !startingItemsList.reorder;
         }
     }
     );
@@ -44,7 +41,7 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
     public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Back", this::escape
     );
 
-    public OverlayEditLevelShop(Screen previous, ScreenLevelEditor screenLevelEditor)
+    public OverlayStartingItems(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
         this.load();
@@ -61,18 +58,15 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
-            try
+            Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
             {
-                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-                screenLevelEditor.level.shop.add(new Item.ShopItem(i.getStack(null)));
-                ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.shop, screenLevelEditor.level.shop.size() - 1, false, this::refreshItems), Game.screen);
+                screenLevelEditor.level.startingItems.add(i);
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.startingItems, screenLevelEditor.level.startingItems.size() - 1, false, this::refreshItems), this);
                 s.onComplete = this::refreshItems;
                 Game.screen = s;
-            }
-            catch (NoSuchFieldException e)
-            {
-                e.printStackTrace();
-            }
+            };
+
+            Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
         });
 
         itemSelector.images = itemImages;
@@ -81,12 +75,12 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
 
     public void load()
     {
-        shopList = new ButtonList(new ArrayList<>(), 0, 0, -30);
-        shopList.arrowsEnabled = true;
+        startingItemsList = new ButtonList(new ArrayList<>(), 0, 0, -30);
+        startingItemsList.arrowsEnabled = true;
 
-        shopList.reorderBehavior = (i, j) ->
+        startingItemsList.reorderBehavior = (i, j) ->
         {
-            screenLevelEditor.level.shop.add(j, screenLevelEditor.level.shop.remove((int)i));
+            screenLevelEditor.level.startingItems.add(j, screenLevelEditor.level.startingItems.remove((int)i));
             this.refreshItems();
         };
 
@@ -95,7 +89,7 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
 
     public void update()
     {
-        this.shopList.update();
+        this.startingItemsList.update();
         this.back.update();
         this.addItem.update();
         this.reorderItems.update();
@@ -110,14 +104,26 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
         if (Game.screen != this)
             return;
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Shop items");
-        this.shopList.draw();
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Starting items");
+
+        if (this.startingItemsList.buttons.size() <= 0)
+        {
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 30, "There are no starting items in this level");
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 30, "Add some with the 'Add item' button!");
+        }
+
+        this.startingItemsList.draw();
         this.back.draw();
         this.addItem.draw();
 
-        if (this.shopList.reorder)
+        if (this.startingItemsList.reorder)
             this.reorderItems.setText("Stop reordering");
         else
             this.reorderItems.setText("Reorder items");
@@ -125,22 +131,10 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
         this.reorderItems.draw();
     }
 
-    public void addItem(Item.ShopItem i)
-    {
-        screenLevelEditor.level.shop.add(i);
-        this.refreshItems();
-    }
-
-    public void removeItem(Item.ShopItem i)
-    {
-        screenLevelEditor.level.shop.remove(i);
-        this.refreshItems();
-    }
-
     public void refreshItems()
     {
-        ButtonList buttons = this.shopList;
-        ArrayList<Item.ShopItem> items = screenLevelEditor.level.shop;
+        ButtonList buttons = this.startingItemsList;
+        ArrayList<Item.ItemStack<?>> items = screenLevelEditor.level.startingItems;
 
         buttons.buttons.clear();
 
@@ -148,33 +142,17 @@ public class OverlayEditLevelShop extends ScreenLevelEditorOverlay implements IC
         {
             int j = i;
 
-            Button b = new Button(0, 0, 350, 40, items.get(i).itemStack.item.name, () ->
+            Button b = new Button(0, 0, 350, 40, items.get(i).item.name, () ->
             {
-                try
-                {
-                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.shop, j, false, this::refreshItems), Game.screen);
-                    s.onComplete = this::refreshItems;
-                    Game.screen = s;
-                }
-                catch (NoSuchFieldException e)
-                {
-                    Game.exitToCrash(e);
-                }
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.startingItems, j, false, this::refreshItems), Game.screen);
+                s.onComplete = this::refreshItems;
+                Game.screen = s;
             });
 
-            b.image = items.get(j).itemStack.item.icon;
+            b.image = items.get(j).item.icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
             b.imageSizeX = b.sizeY;
             b.imageSizeY = b.sizeY;
-
-            int p = items.get(i).price;
-
-            if (p == 0)
-                b.setSubtext("Free!");
-            else if (p == 1)
-                b.setSubtext("1 coin");
-            else
-                b.setSubtext("%d coins", p);
 
             buttons.buttons.add(b);
         }

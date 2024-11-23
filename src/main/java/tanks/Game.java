@@ -118,7 +118,7 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 55;
+    public static final int network_protocol = 56;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -874,7 +874,20 @@ public class Game
 			if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
 			{
 				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
+				Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
 				Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
+			}
+		}
+
+		for (int i = 0; i < Game.currentSizeX; i++)
+		{
+			for (int j = 0; j < Game.currentSizeY; j++)
+			{
+				if (Game.game.groundHeightGrid[i][j] <= -1000)
+					Game.game.groundHeightGrid[i][j] = Game.tilesDepth[i][j];
+
+				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
+					Game.game.groundEdgeHeightGrid[i][j] = 0;
 			}
 		}
 	}
@@ -985,7 +998,7 @@ public class Game
 			ScreenPartyHost.server.close("The party has ended because the host crashed");
 
 		if (ScreenPartyLobby.isClient || Game.connectedToOnline)
-			Client.handler.ctx.close();
+			Client.handler.close();
 
 		ScreenPartyLobby.connections.clear();
 

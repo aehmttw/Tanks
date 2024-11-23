@@ -859,18 +859,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Game.recomputeHeightGrid();
 
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.groundHeightGrid[i][j] <= -1000)
-					Game.game.groundHeightGrid[i][j] = Game.tilesDepth[i][j];
-
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
-
 		String prevMusic = this.music;
 		this.music = null;
 		this.musicID = null;
@@ -1835,9 +1823,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && Game.enable3d)
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
-				Game.redrawGroundTiles.add(new int[]{x, y});
+				if (Game.enable3d)
+					Game.redrawGroundTiles.add(new int[]{x, y});
 
 				if (o.bulletCollision)
 				{
@@ -2126,31 +2115,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		long start = System.nanoTime();
 		this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
 
-		if (Game.enable3d)
-			for (Obstacle o: Game.obstacles)
-			{
-				if (o.replaceTiles)
-					o.postOverride();
-
-				int x = (int) (o.posX / Game.tile_size);
-				int y = (int) (o.posY / Game.tile_size);
-
-				if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-				{
-					Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-					Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
-					Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
-				}
-
-				if (!Game.game.window.drawingShadow)
-				{
-					Effect e = o.getCompanionEffect();
-					if (e != null)
-					{
-						this.drawables[9].add(e);
-					}
-				}
-			}
+		Game.recomputeHeightGrid();
 
 		if (Game.game.lastHeightGrid == null || Game.game.heightGrid.length != Game.game.lastHeightGrid.length || Game.game.heightGrid[0].length != Game.game.lastHeightGrid[0].length)
 		{
@@ -2263,17 +2228,23 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						((ILocalPlayerTank) Game.playerTank).getTouchCircleSize(), ((ILocalPlayerTank) Game.playerTank).getTouchCircleSize());
 			}
 
-			if (i == 9 && (Game.playerTank instanceof ILocalPlayerTank && ((ILocalPlayerTank) Game.playerTank).getDrawRange() >= 0) && !Game.game.window.drawingShadow)
+			if (i == 9 && Game.playerTank instanceof ILocalPlayerTank && !Game.game.window.drawingShadow)
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 50);
 				else
 					Drawing.drawing.setColor(0, 0, 0, 50);
 
-				Mine.drawRange2D(Game.playerTank.posX, Game.playerTank.posY,
-						((ILocalPlayerTank) Game.playerTank).getDrawRange());
+				if (((ILocalPlayerTank) Game.playerTank).getDrawLifespan() > 0)
+					Mine.drawRange2D(Game.playerTank.posX, Game.playerTank.posY, ((ILocalPlayerTank) Game.playerTank).getDrawLifespan());
 
-				((ILocalPlayerTank) Game.playerTank).setDrawRange(-1);
+				if (((ILocalPlayerTank) Game.playerTank).getDrawRangeMin() > 0)
+					Mine.drawRange2D(Game.playerTank.posX, Game.playerTank.posY, ((ILocalPlayerTank) Game.playerTank).getDrawRangeMin(), true);
+
+				if (((ILocalPlayerTank) Game.playerTank).getDrawRangeMax() > 0)
+					Mine.drawRange2D(Game.playerTank.posX, Game.playerTank.posY, ((ILocalPlayerTank) Game.playerTank).getDrawRangeMax());
+
+				((ILocalPlayerTank) Game.playerTank).setDrawRanges(-1, -1, -1, true);
 			}
 
 			if (i == 9 && Game.playerTank != null && !Game.playerTank.destroy

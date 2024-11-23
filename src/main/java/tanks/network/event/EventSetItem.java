@@ -19,7 +19,11 @@ public class EventSetItem extends PersonalEvent
     public String texture;
     public int count;
     public int bounces = -1;
+
     public double lifespan = -1;
+    public double rangeMin = -1;
+    public double rangeMax = -1;
+    public boolean showTrace = true;
 
     public EventSetItem()
     {
@@ -46,7 +50,10 @@ public class EventSetItem extends PersonalEvent
         {
             ItemBullet i = (ItemBullet) item.item;
             bounces = i.bullet.bounces;
-            lifespan = i.bullet.lifespan;
+            lifespan = i.bullet.lifespan * i.bullet.speed;
+            rangeMin = i.bullet.getRangeMin();
+            rangeMax = i.bullet.getRangeMax();
+            showTrace = i.bullet.showTrace;
         }
 
     }
@@ -60,7 +67,11 @@ public class EventSetItem extends PersonalEvent
         b.writeInt(this.count);
         NetworkUtils.writeString(b, this.name);
         b.writeInt(this.bounces);
+
         b.writeDouble(this.lifespan);
+        b.writeDouble(this.rangeMin);
+        b.writeDouble(this.rangeMax);
+        b.writeBoolean(this.showTrace);
     }
 
     @Override
@@ -72,7 +83,11 @@ public class EventSetItem extends PersonalEvent
         this.count = b.readInt();
         this.name = NetworkUtils.readString(b);
         this.bounces = b.readInt();
+
         this.lifespan = b.readDouble();
+        this.rangeMin = b.readDouble();
+        this.rangeMax = b.readDouble();
+        this.showTrace = b.readBoolean();
     }
 
     @Override
@@ -84,7 +99,11 @@ public class EventSetItem extends PersonalEvent
             i.icon = this.texture.equals("") ? null : this.texture;
             i.name = this.name;
             i.bounces = this.bounces;
-            i.range = this.lifespan;
+
+            i.lifespan = this.lifespan;
+            i.rangeMin = this.rangeMin;
+            i.rangeMax = this.rangeMax;
+            i.showTrace = this.showTrace;
 
             Item.ItemStack<?> s = new ItemRemote.ItemStackRemote(Game.player, i, 0);
             s.stackSize = this.count;

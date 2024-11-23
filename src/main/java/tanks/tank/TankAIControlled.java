@@ -93,7 +93,7 @@ public class TankAIControlled extends Tank implements ITankField
 	@Property(category = movementPathfinding, id = "seek_chance", minValue = 0.0, maxValue = 1.0, name = "Seek chance", desc = "Chance for this tank to decide to start navigating to its target")
 	public double seekChance = 0.001;
 	/** If set to true, when enters line of sight of target enemy, will stop pathfinding to it*/
-	@Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight")
 	public boolean stopSeekingOnSight = false;
 	/** Increasing this value increases how stubborn the tank is in following a path*/
 	@Property(category = movementPathfinding, id = "seek_timer_base", minValue = 0.0, name = "Seek patience", desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")

@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
 import tanks.tank.Tank;
+import tanks.tankson.Property;
 
 public class BulletArc extends Bullet
 {
@@ -11,6 +12,18 @@ public class BulletArc extends Bullet
 
     public double angle;
     public static final double gravity = 0.1;
+
+    @Property(id = "min_air_time", minValue = 0.0, name = "Minimum air time", category = BulletPropertyCategory.firing, desc = "The minimum time the bullet must spend in air before it lands \n \n 1 time unit = 0.01 seconds")
+    public double minAirTime = 0;
+
+    @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
+    public double minRange = 0;
+
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
+    public double maxRange = 0;
+
+    @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
+    public double accuracySpreadCircle = 0;
 
     public BulletArc()
     {
@@ -37,6 +50,7 @@ public class BulletArc extends Bullet
         this.moveOut = false;
         this.trail3d = true;
         this.edgeCollision = false;
+        this.showTrace = false;
 
         this.autoZ = false;
     }
@@ -113,7 +127,7 @@ public class BulletArc extends Bullet
         if (destroy)
             time = 0;
 
-        double limit = 50;
+        double limit = 100;
         if (time <= limit && !ScreenGame.finishedQuick)
         {
             double frac;
@@ -137,8 +151,38 @@ public class BulletArc extends Bullet
     @Override
     public void setTargetLocation(double x, double y)
     {
-        double dist = Math.min(1000 * this.getSpeed() / 3.125, Math.sqrt(Math.pow(x - this.posX, 2) + Math.pow(y - this.posY, 2)));
-        this.vZ = dist / this.getSpeed() * 0.5 * BulletArc.gravity;
+        double angle = Math.random() * Math.PI * 2;
+        double dx = x - this.posX;
+        double dy = y - this.posY;
+        double d = Math.sqrt(dx * dx + dy * dy);
+        double offset = Math.random() * this.accuracySpreadCircle * d;
+        double s = Math.abs(this.speed);
+
+        if (d > this.maxRange && this.maxRange > 0)
+        {
+            dx *= this.maxRange / d;
+            dy *= this.maxRange / d;
+            d = this.maxRange;
+        }
+
+        if (d < this.minRange)
+        {
+            dx *= this.minRange / d;
+            dy *= this.minRange / d;
+            d = this.minRange;
+        }
+
+        double f = 1;
+        if (d / s < this.minAirTime)
+            f = d / (s * this.minAirTime);
+
+        dx += Math.sin(angle) * offset;
+        dy += Math.cos(angle) * offset;
+        d = Math.sqrt(dx * dx + dy * dy);
+
+        this.setMotionInDirection(this.posX + dx, this.posY + dy, s * f);
+        this.speed *= f;
+        this.vZ = d / s * 0.5 * BulletArc.gravity / f;
     }
 
     @Override
@@ -151,5 +195,17 @@ public class BulletArc extends Bullet
 
         if (!Game.enable3d)
             this.posY += this.posZ - Game.tile_size / 4;
+    }
+
+    @Override
+    public double getRangeMin()
+    {
+        return this.minRange;
+    }
+
+    @Override
+    public double getRangeMax()
+    {
+        return this.maxRange;
     }
 }

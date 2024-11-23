@@ -2,6 +2,7 @@ package tanks.item;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
 import tanks.bullet.DefaultBullets;
 import tanks.tank.Tank;
@@ -356,9 +357,9 @@ public abstract class Item implements IGameObject
 
 				if (p[7].equals("arc"))
 				{
-					bullet.bullet.lifespan *= bullet.bullet.speed / 3.125;
+					((BulletArc)bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
 					if (bullet.bullet.effect == Bullet.BulletEffect.none)
-						bullet.bullet.effect = Bullet.BulletEffect.trail;
+						bullet.bullet.effect = Bullet.BulletEffect.long_trail;
 				}
 
 				if (p[7].equals("electric"))

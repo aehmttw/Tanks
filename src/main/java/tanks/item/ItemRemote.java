@@ -6,7 +6,13 @@ import tanks.tank.Tank;
 public class ItemRemote extends Item
 {
     public int bounces;
-    public double range;
+
+    public double lifespan;
+    public double rangeMin;
+    public double rangeMax;
+    public boolean showTrace;
+
+    public boolean hideShootStick = false;
 
     @Override
     public ItemStack<?> getStack(Player p)

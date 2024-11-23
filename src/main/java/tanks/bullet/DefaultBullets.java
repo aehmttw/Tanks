@@ -196,7 +196,7 @@ public class DefaultBullets
         artillery_shell.maxLiveBullets = 5;
         artillery_shell.size = 25;
         artillery_shell.bounces = 0;
-        artillery_shell.lifespan = 1000 / 3.125;
+        artillery_shell.maxRange = 1000;
         artillery_shell.effect = Bullet.BulletEffect.long_trail;
         artillery_shell.shotSound = "arc.ogg";
     }

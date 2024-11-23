@@ -12,10 +12,9 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     public String level;
     public Screen previous;
     public Crusade crusade;
+    public DisplayLevel levelDisplay;
 
     public int index;
-
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -61,12 +60,13 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         }
     });
 
-    @SuppressWarnings("unchecked")
-    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
+
 
     public ScreenCrusadePreviewLevel(Crusade crusade, String level, int index, Screen s)
     {
         super(350, 40, 380, 60);
+
+        this.levelDisplay = new DisplayLevel();
 
         this.music = "menu_4.ogg";
         this.musicID = "menu";
@@ -75,12 +75,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         this.crusade = crusade;
         this.level = level;
 
-        for (int i = 0; i < drawables.length; i++)
-        {
-            drawables[i] = new ArrayList<>();
-        }
-
-        Obstacle.draw_size = Game.tile_size;
         this.previous = s;
 
         next.enabled = index < crusade.levels.size() - 1;
@@ -114,58 +108,12 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         }
     }
 
-    public void drawLevel()
-    {
-        for (Effect e: Game.tracks)
-            drawables[0].add(e);
 
-        for (Movable m: Game.movables)
-            drawables[m.drawLevel].add(m);
-
-        for (Obstacle o: Game.obstacles)
-            drawables[o.drawLevel].add(o);
-
-        for (Effect e: Game.effects)
-            drawables[7].add(e);
-
-        for (int i = 0; i < this.drawables.length; i++)
-        {
-            if (i == 5 && Game.enable3d)
-            {
-                Drawing drawing = Drawing.drawing;
-                Drawing.drawing.setColor(174, 92, 16);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-            }
-
-            for (IDrawable d: this.drawables[i])
-            {
-                d.draw();
-
-                if (d instanceof Movable)
-                    ((Movable) d).drawTeam();
-            }
-
-            if (Game.glowEnabled)
-            {
-                for (IDrawable d : this.drawables[i])
-                {
-                    if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
-                        ((IDrawableWithGlow) d).drawGlow();
-                }
-            }
-
-            drawables[i].clear();
-        }
-    }
 
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
-        this.drawLevel();
+        this.levelDisplay.draw();
 
         double extraWidth = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
         double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;
@@ -212,6 +160,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     @Override
     public ArrayList<TankSpawnMarker> getSpawns()
     {
-        return this.spawns;
+        return this.levelDisplay.spawns;
     }
 }

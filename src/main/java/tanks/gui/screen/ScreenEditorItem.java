@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -13,6 +14,7 @@ import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
@@ -24,6 +26,52 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         this.setTab(itemProperties);
         this.objectEditorScreen.currentTab = null;
     });
+
+    public boolean writeItem(Item.ItemStack<?> t)
+    {
+        return this.writeItem(t, false);
+    }
+
+    public boolean writeItem(Item.ItemStack<?> t, boolean overwrite)
+    {
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.itemDir + "/" + t.item.name.replace(" ", "_") + ".tanks");
+
+        if (!f.exists() || overwrite)
+        {
+            try
+            {
+                if (!f.exists())
+                    f.create();
+
+                f.startWriting();
+                f.println(t.toString());
+                f.stopWriting();
+
+                return true;
+            }
+            catch (IOException e)
+            {
+                Game.exitToCrash(e);
+            }
+        }
+
+        return false;
+    }
+
+    public void writeItemAndConfirm(Item.ItemStack<?> i, boolean overwrite)
+    {
+        if (this.writeItem(i, overwrite))
+            Game.screen = new ScreenItemSavedInfo(this, i);
+        else
+            Game.screen = new ScreenItemSaveOverwrite(this, i);
+    }
+
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
+    {
+        Item.ItemStack<?> t = target.get();
+        this.writeItemAndConfirm(t, false);
+    }
+    );
 
     public ScreenEditorItem(Pointer<Item.ItemStack<?>> itemStack, Screen screen)
     {
@@ -176,6 +224,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             super.draw();
 
         this.delete.draw();
+        this.save.draw();
     }
 
     @Override
@@ -196,5 +245,6 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             super.update();
 
         this.delete.update();
+        this.save.update();
     }
 }

@@ -1101,7 +1101,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void setEffectHeight(Effect e)
 	{
-		if (Game.enable3d && Game.enable3dBg && Game.glowEnabled)
+		if (Game.enable3d && Game.enable3dBg)
 		{
 			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX - e.size / 2, e.posY - e.size / 2));
 			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX + e.size / 2, e.posY - e.size / 2));
@@ -1212,7 +1212,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		double dist = Math.min(4, Math.max(1, getAutoZoomRaw()));
 		double targetScale = Drawing.drawing.interfaceScale / dist;
-		return Math.max(Math.min((targetScale - Drawing.drawing.unzoomedScale) / (Drawing.drawing.interfaceScale - Drawing.drawing.unzoomedScale), 1), 0);
+		return Math.max(Math.min((targetScale - Drawing.drawing.unzoomedScale) / Math.max(0.001, Drawing.drawing.interfaceScale - Drawing.drawing.unzoomedScale), 1), 0);
 	}
 
 	public void setBufferCooldown(double value)

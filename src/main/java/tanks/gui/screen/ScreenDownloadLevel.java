@@ -15,8 +15,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     public String level;
     public TextBox levelName;
     public boolean downloaded = false;
-
-    public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
+    public DisplayLevel levelDisplay;
 
     public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Download", new Runnable()
     {
@@ -54,17 +53,11 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
         }
     });
 
-    @SuppressWarnings("unchecked")
-    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
-
     public ScreenDownloadLevel(String name, String level)
     {
         this.level = level;
 
-        for (int i = 0; i < drawables.length; i++)
-        {
-            drawables[i] = new ArrayList<>();
-        }
+        this.levelDisplay = new DisplayLevel();
 
         Obstacle.draw_size = Game.tile_size;
 
@@ -95,58 +88,10 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
             Game.recomputeHeightGrid();
     }
 
-    public void drawLevel()
-    {
-        for (Effect e: Game.tracks)
-            drawables[0].add(e);
-
-        for (Movable m: Game.movables)
-            drawables[m.drawLevel].add(m);
-
-        for (Obstacle o: Game.obstacles)
-            drawables[o.drawLevel].add(o);
-
-        for (Effect e: Game.effects)
-            drawables[7].add(e);
-
-        for (int i = 0; i < this.drawables.length; i++)
-        {
-            if (i == 5 && Game.enable3d)
-            {
-                Drawing drawing = Drawing.drawing;
-                Drawing.drawing.setColor(174, 92, 16);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-            }
-
-            for (IDrawable d: this.drawables[i])
-            {
-                d.draw();
-
-                if (d instanceof Movable)
-                    ((Movable) d).drawTeam();
-            }
-
-            if (Game.glowEnabled)
-            {
-                for (IDrawable d : this.drawables[i])
-                {
-                    if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
-                        ((IDrawableWithGlow) d).drawGlow();
-                }
-            }
-
-            drawables[i].clear();
-        }
-    }
-
     @Override
     public void draw()
     {
-        this.drawDefaultBackground();
-        this.drawLevel();
+        this.levelDisplay.draw();
 
         for (int i : this.shapes.keySet())
             this.shapes.get(i).draw();
@@ -187,6 +132,6 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     @Override
     public ArrayList<TankSpawnMarker> getSpawns()
     {
-        return this.spawns;
+        return this.levelDisplay.spawns;
     }
 }

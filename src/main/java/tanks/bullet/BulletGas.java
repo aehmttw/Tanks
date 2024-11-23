@@ -62,6 +62,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         this.canMultiDamage = true;
         this.canBeCanceled = false;
         this.effect = BulletEffect.none;
+        this.homingSilent = true;
     }
 
     @Override

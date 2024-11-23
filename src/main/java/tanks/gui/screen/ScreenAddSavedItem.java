@@ -118,7 +118,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
                         b.imageSizeX = b.sizeY;
                         b.imageSizeY = b.sizeY;
 
-                        if (!itemClass.isAssignableFrom(i.getClass()))
+                        if (!itemClass.isAssignableFrom(i.item.getClass()))
                             b.text = null;
                     }
                     catch (Exception e)

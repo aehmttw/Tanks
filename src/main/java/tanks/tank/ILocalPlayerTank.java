@@ -9,7 +9,13 @@ public interface ILocalPlayerTank
 
     boolean showTouchCircle();
 
-    double getDrawRange();
+    double getDrawRangeMin();
 
-    void setDrawRange(double range);
+    double getDrawRangeMax();
+
+    double getDrawLifespan();
+
+    boolean getShowTrace();
+
+    void setDrawRanges(double lifespan, double rangeMin, double rangeMax, boolean trace);
 }

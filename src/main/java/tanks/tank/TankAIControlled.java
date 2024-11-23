@@ -3113,7 +3113,7 @@ public class TankAIControlled extends Tank implements ITankField
 							f.set(t, i);
 							s = s.substring(s.indexOf("]") + 1);
 						}
-						else if (Tank.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
+						else if (ITankField.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
 						{
 							TankAIControlled target;
 

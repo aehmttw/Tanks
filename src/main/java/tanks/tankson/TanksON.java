@@ -395,7 +395,7 @@ public class TanksON
 
                     if (o instanceof TankAIControlled && equals(f.get(o), f.get(defaultTank)))
                         id = null;
-                    else if ((o instanceof Bullet || o instanceof Mine) && equals(f.get(o), f.get(getDefault(o.getClass()))))
+                    else if ((o instanceof Bullet || o instanceof Mine || o instanceof Explosion) && equals(f.get(o), f.get(getDefault(o.getClass()))))
                         id = null;
 
                     if (id != null)

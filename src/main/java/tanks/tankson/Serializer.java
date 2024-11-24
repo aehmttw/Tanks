@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public final class Serializer {
@@ -119,10 +120,14 @@ public final class Serializer {
         return parseObject((Map<String,Object>)TanksON.parseObject(s));
     }
 
-    public static Object parseObject(Map m)
+    public static Object parseObject(Map<String, Object> m)
     {
+        if (m == null) {
+            return null;
+        }
         Object o = null;
-        switch ((String) m.get("obj_type")) {
+        switch ((String) m.get("obj_type"))
+        {
             case "tank":
                 o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
                 break;
@@ -164,32 +169,46 @@ public final class Serializer {
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
-        for (Field f : o.getClass().getFields()){
-            if (f.isAnnotationPresent(Property.class)) {
-                try {
+        for (Field f : o.getClass().getFields())
+        {
+            if (f.isAnnotationPresent(Property.class))
+            {
+                try
+                {
                     Object o2 = f.get(o);
-                    if (isTanksONable(f)) {
+                    if (isTanksONable(f))
+                    {
                         Object o3 = m.get(getid(f));
                         f.set(o, parseObject((Map) o3));
-                    } else if (o2 instanceof ArrayList) {
-                        if (((ArrayList) m.get(getid(f))).get(0) instanceof Map){
+                    }
+                    else if (o2 instanceof ArrayList)
+                    {
+                        if (((ArrayList) m.get(getid(f))).get(0) instanceof Map)
+                        {
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f)))) {
+                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f))))
+                            {
                                 o3s.add(parseObject(o3));
                             }
-                            f.set(o,o3s);
-                        } else {
-                            f.set(o,m.get(getid(f)));
+                            f.set(o, o3s);
                         }
-                    } else if (o2 instanceof Enum) {
-                        f.set(o,Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
-                    } else if (o2 instanceof Serializable) {
-                        f.set(o,((Serializable) o2).deserialize((String) m.get(getid(f))));
-                    } else {
-                        f.set(o,m.get(getid(f)));
+                        else
+                            f.set(o, m.get(getid(f)));
                     }
-                } catch (Exception ignore) {
+                    else if (o2 instanceof HashSet)
+                        f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
+                    else if (o2 instanceof Enum)
+                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
+                    else if (o2 instanceof Serializable)
+                        f.set(o, ((Serializable) o2).deserialize((String) m.get(getid(f))));
+                    else if (o2 instanceof Integer)
+                        f.set(o, ((Double) m.get(getid(f))).intValue());
+                    else if (o2 instanceof Boolean)
+                        f.set(o, m.get(getid(f)));
+                    else
+                        f.set(o, m.get(getid(f)));
                 }
+                catch (Exception ignore) {}
             }
         }
         return o;

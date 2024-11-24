@@ -82,6 +82,7 @@ tasks.register<JavaExec>("run") {
 
     // If your application needs working directory to be set
     workingDir = project.projectDir
+    args("debug")
 }
 
 task("BuildMacApp", Exec::class) {

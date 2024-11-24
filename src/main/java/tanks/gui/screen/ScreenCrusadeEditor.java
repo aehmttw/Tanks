@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
@@ -12,6 +9,7 @@ import tanks.gui.TextBox;
 import tanks.item.Item;
 import tanks.registry.RegistryItem;
 import tanks.tank.TankAIControlled;
+import tanks.tankson.MonitoredArrayListIndexPointer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,15 +174,22 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
-//            if (itemSelector.selectedOption == itemSelector.options.length - 1)
-//            {
-//                Game.screen = new ScreenAddSavedItem(this, this.addItem);
-//            }
-//            else
-//            {
-//                Item i = Game.registryItem.getEntry(itemSelector.options[itemSelector.selectedOption]).getItem();
-//                addItem(i);
-//            }
+            Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
+            {
+                try
+                {
+                    addItem(new Item.CrusadeShopItem(i));
+                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<Item.CrusadeShopItem>(crusade.crusadeShopItems, crusade.crusadeShopItems.size() - 1, false, this::refreshItems), this);
+                    s.onComplete = this::refreshItems;
+                    Game.screen = s;
+                }
+                catch (NoSuchFieldException e)
+                {
+                    e.printStackTrace();
+                }
+            };
+
+            Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
         });
 
         itemSelector.images = itemImages;
@@ -325,23 +330,35 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
         {
             int j = i;
 
-//            Button b = new Button(0, 0, this.objWidth, this.objHeight, this.crusade.crusadeShopItems.get(i).itemStack.item.name, () -> Game.screen = new ScreenItemEditor(crusade.crusadeShopItems.get(j), (IItemScreen) Game.screen));
-//
-//            b.image = crusade.crusadeShopItems.get(j).itemStack.item.icon;
-//            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-//            b.imageSizeX = b.sizeY;
-//            b.imageSizeY = b.sizeY;
-//
-//            int p = crusade.crusadeShopItems.get(i).price;
-//
-//            if (p == 0)
-//                b.setSubtext("Free!");
-//            else if (p == 1)
-//                b.setSubtext("1 coin");
-//            else
-//                b.setSubtext("%d coins", p);
-//
-//            this.itemButtons.buttons.add(b);
+            Button b = new Button(0, 0, 350, 40, crusade.crusadeShopItems.get(i).itemStack.item.name, () ->
+            {
+                try
+                {
+                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<>(crusade.crusadeShopItems, j, false, this::refreshItems), Game.screen);
+                    s.onComplete = this::refreshItems;
+                    Game.screen = s;
+                }
+                catch (NoSuchFieldException e)
+                {
+                    Game.exitToCrash(e);
+                }
+            });
+
+            b.image = crusade.crusadeShopItems.get(j).itemStack.item.icon;
+            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+            b.imageSizeX = b.sizeY;
+            b.imageSizeY = b.sizeY;
+
+            int p = crusade.crusadeShopItems.get(i).price;
+
+            if (p == 0)
+                b.setSubtext("Free!");
+            else if (p == 1)
+                b.setSubtext("1 coin");
+            else
+                b.setSubtext("%d coins", p);
+
+            this.itemButtons.buttons.add(b);
         }
 
         this.itemButtons.sortButtons();

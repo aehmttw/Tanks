@@ -12,17 +12,15 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
 {
     public boolean showTime = false;
 
-    public Button resume = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Edit", this::escape);
+    public Button resume = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", this::escape);
 
-    public Button play = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2), this.objWidth, this.objHeight, "Play", () -> screenLevelEditor.play()
-    );
+    public Button play = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2.5), this.objWidth, this.objHeight, "Play", () -> screenLevelEditor.play());
 
-    public Button playUnavailable = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2), this.objWidth, this.objHeight, "Play", "You must add a player---spawn point to play!");
+    public Button playUnavailable = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2.5), this.objWidth, this.objHeight, "Play", "You must add a player---spawn point to play!");
 
-    public Button options = new Button(this.centerX, (int) (this.centerY + 0), this.objWidth, this.objHeight, "Options", () -> Game.screen = new OverlayLevelOptions(Game.screen, screenLevelEditor)
-    );
+    public Button options = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 0.5), this.objWidth, this.objHeight, "Level options", () -> Game.screen = new OverlayLevelOptions(Game.screen, screenLevelEditor));
 
-    public Button quit = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Exit", () ->
+    public Button quit = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2.5), this.objWidth, this.objHeight, "Exit", () ->
     {
         screenLevelEditor.save();
 
@@ -31,8 +29,9 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
     }
     );
 
-    public Button delete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "Delete level", () -> Game.screen = new OverlayConfirmDelete(Game.screen, screenLevelEditor)
-    );
+    public Button clone = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 0.5), this.objWidth, this.objHeight, "Make a copy", () -> Game.screen = new OverlayCloneLevel(Game.screen, screenLevelEditor));
+
+    public Button delete = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 1.5), this.objWidth, this.objHeight, "Delete level", () -> Game.screen = new OverlayConfirmDelete(Game.screen, screenLevelEditor));
 
     public OverlayEditorMenu(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -62,6 +61,7 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
 
         delete.update();
         quit.update();
+        clone.update();
 
         if (screenLevelEditor.spawns.size() > 0)
             play.update();
@@ -92,6 +92,7 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
 
         delete.draw();
         quit.draw();
+        clone.draw();
 
         if (screenLevelEditor.spawns.size() > 0)
             play.draw();

@@ -23,8 +23,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     public double lastPoints = -1000;
     public int fireworksToSpawn = 0;
     public double fireworkCooldown = 0;
+    public double fireworkCooldownMultiplier = 1;
     public int pointsPerFirework = 5;
-    public DisplayFireworks fireworksDisplay = new DisplayFireworks(false);
+    public DisplayFireworks fireworksDisplay = new DisplayFireworks(false, 1);
     public HashSet<Firework> spawnedFireworks = new HashSet<>();
 
     public ArrayList<Bonus> bonuses = new ArrayList<>();
@@ -229,7 +230,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 bonusCount++;
 
                 if (bonuses.get(2 - i).value > 2000000000)
+                {
                     Drawing.drawing.playSound("leave.ogg");
+                    this.music = "ready_music_3.ogg";
+                    Panel.forceRefreshMusic = true;
+                }
                 else if (bonuses.get(2 - i).value == 69)
                     Drawing.drawing.playSound("nice.ogg");
                 else
@@ -253,9 +258,14 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         if (age >= firstBonusTime + interBonusTime * 3 && bonusCount < 4)
         {
             Drawing.drawing.playSound("destroy.ogg");
-            Drawing.drawing.playSound("win.ogg", 1.0f, true);
-            this.music = "waiting_win.ogg";
-            Panel.forceRefreshMusic = true;
+
+            if (!this.music.equals("ready_music_3.ogg"))
+            {
+                Drawing.drawing.playSound("win.ogg", 1.0f, true);
+                this.music = "waiting_win.ogg";
+                Panel.forceRefreshMusic = true;
+            }
+
             bonusCount = 4;
 
             if (!Game.effectsEnabled)
@@ -265,13 +275,16 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             }
 
             long fireworks =  ( (long)pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
-            if (fireworks > 500)
+            double maxFireworks = 1000;
+            if (fireworks > maxFireworks)
             {
-                pointsPerFirework *= Math.ceil(fireworks / 200.0);
-                fireworksToSpawn = 500;
+                pointsPerFirework *= Math.ceil(fireworks / maxFireworks);
+                fireworksToSpawn = (int) maxFireworks;
             }
             else
                 fireworksToSpawn = (int) fireworks;
+
+            fireworkCooldownMultiplier *= Math.min(1, 500.0 / fireworksToSpawn);
         }
 
         if (age >= firstBonusTime + interBonusTime * 5 && this.fireworksDisplay.getFireworkArray().size() == 0)
@@ -283,6 +296,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 Game.screen = new ScreenPartyInterlevel();
             else
                 Game.screen = new ScreenInterlevel();
+
+            if (this.music.equals("ready_music_3.ogg"))
+                Game.screen.music = this.music;
         }
     }
 
@@ -366,23 +382,23 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         if (Game.effectsEnabled && !Game.game.window.drawingShadow)
         {
-            fireworkCooldown -= Panel.frameFrequency;
-            if (fireworksToSpawn > 0 && fireworkCooldown <= 0)
-            {
-                fireworksToSpawn--;
-                fireworkCooldown = (Math.random() * 5 + 2.5) / 2;
-                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 5, this.fireworksDisplay.getFireworkArray());
-                f.setRandomColor();
-                f.setVelocity();
-                f.maxAge /= 2;
-                this.spawnedFireworks.add(f);
-            }
-
             boolean spedUp = false;
             if (!Game.game.window.pressedKeys.isEmpty() || !Game.game.window.pressedButtons.isEmpty())
             {
                 Panel.frameFrequency *= 4;
                 spedUp = true;
+            }
+
+            fireworkCooldown -= Panel.frameFrequency;
+            if (fireworksToSpawn > 0 && fireworkCooldown <= 0)
+            {
+                fireworksToSpawn--;
+                fireworkCooldown = (Math.random() * 5 + 2.5) / 2 * fireworkCooldownMultiplier;
+                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 5, this.fireworksDisplay.getFireworkArray());
+                f.setRandomColor();
+                f.setVelocity();
+                f.maxAge /= 2;
+                this.spawnedFireworks.add(f);
             }
 
             Panel.frameFrequency *= 2;

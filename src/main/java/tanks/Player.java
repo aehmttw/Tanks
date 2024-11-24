@@ -123,7 +123,8 @@ public class Player
                 {
                     if (it.itemStack.item.name.equals(itemName))
                     {
-                        cp.itemBar.slots[i] = Item.ItemStack.fromString(this, it.toString());
+                        cp.itemBar.slots[i] = Item.CrusadeShopItem.fromString(it.toString()).itemStack;
+                        cp.itemBar.slots[i].player = this;
                         cp.itemBar.slots[i].stackSize = count;
                     }
                 }

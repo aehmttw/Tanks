@@ -61,7 +61,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     public void writeItemAndConfirm(Item.ItemStack<?> i, boolean overwrite)
     {
         if (this.writeItem(i, overwrite))
-            Game.screen = new ScreenItemSavedInfo(this, i);
+            Game.screen = new ScreenItemSavedInfo(this);
         else
             Game.screen = new ScreenItemSaveOverwrite(this, i);
     }

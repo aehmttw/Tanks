@@ -31,13 +31,19 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Button col3Button;
     public Button glowButton;
 
-
-    public Button load = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
+    public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
         Game.screen = new ScreenAddSavedItem(this, (b) ->
         {
             this.setTarget(((ItemBullet) b.item).bullet);
+            Game.screen = this;
         }, "Bullet", ItemBullet.class);
+    }
+    );
+
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
+    {
+        Game.screen = new ScreenSaveUnnamedItem(this);
     }
     );
 
@@ -585,6 +591,12 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 
         if (this.target.get() != null)
             this.bulletTypes.update();
+
+        if (Game.screen == this)
+        {
+            this.load.update();
+            this.save.update();
+        }
     }
 
     @Override
@@ -594,5 +606,11 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 
         if (this.target.get() != null)
             this.bulletTypes.draw();
+
+        if (Game.screen == this)
+        {
+            this.load.draw();
+            this.save.draw();
+        }
     }
 }

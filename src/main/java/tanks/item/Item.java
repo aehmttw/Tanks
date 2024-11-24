@@ -104,7 +104,7 @@ public abstract class Item implements IGameObject
 			if (!s.startsWith("{"))
 				return fromStringLegacy(s);
 
-			return (CrusadeShopItem) TanksON.parseObject(s);
+			return (CrusadeShopItem) Serializer.fromTanksON(s);
 		}
 
 		@Deprecated
@@ -261,7 +261,7 @@ public abstract class Item implements IGameObject
 			if (!s.startsWith("{"))
 				return fromStringLegacy(p, s);
 
-			ItemStack<?> i = (ItemStack<?>) TanksON.parseObject(s);
+			ItemStack<?> i = (ItemStack<?>) Serializer.fromTanksON(s);
 			i.player = p;
 			return i;
 		}
@@ -465,6 +465,6 @@ public abstract class Item implements IGameObject
 
 	public static Item fromString(String s)
 	{
-		return (Item) TanksON.parseObject(s);
+		return (Item) Serializer.fromTanksON(s);
 	}
 }

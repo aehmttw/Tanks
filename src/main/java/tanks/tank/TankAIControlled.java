@@ -14,7 +14,6 @@ import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.Property;
 import tanks.tankson.Serializer;
-import tanks.tankson.TanksON;
 import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
@@ -267,7 +266,6 @@ public class TankAIControlled extends Tank implements ITankField
 		public String toString()
 		{
 			return Serializer.toTanksON(this);
-//			return TanksON.objectToString(this);
 		}
 	}
 
@@ -2951,51 +2949,12 @@ public class TankAIControlled extends Tank implements ITankField
 	public String toString()
 	{
 		return Serializer.toTanksON(this);
-//		return TanksON.objectToString(this);
-//		try
-//		{
-//			StringBuilder s = new StringBuilder("[");
-//
-//			for (Field f : this.getClass().getFields())
-//			{
-//				Property a = f.getAnnotation(Property.class);
-//				if (a != null)
-//				{
-//					s.append(a.id());
-//					s.append("=");
-//
-//					if (f.get(this) != null)
-//					{
-//						if (a.miscType() == Property.MiscType.description)
-//						{
-//							String desc = (String) f.get(this);
-//							s.append("<").append(desc.length()).append(">").append(desc);
-//						}
-//						else
-//							s.append(f.get(this));
-//					}
-//					else
-//						s.append("*");
-//
-//					s.append(";");
-//				}
-//			}
-//
-//			return s.append("]").toString();
-//		}
-//		catch (Exception e)
-//		{
-//			Game.exitToCrash(e);
-//		}
-//
-//		return null;
 	}
 
 	public static TankAIControlled fromString(String s)
 	{
 		if (s.startsWith("{"))
 			return (TankAIControlled) Serializer.fromTanksON(s);
-//			return (TankAIControlled) TanksON.parseObject(s);
 		else
 			return fromStringLegacy(s, null);
 	}

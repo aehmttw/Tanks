@@ -6,14 +6,11 @@ import tanks.Level;
 import tanks.Panel;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
-import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
-
-import java.util.ArrayList;
 
 public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 {
-    public FireworksDisplay fireworksDisplay = new FireworksDisplay();
+    public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
     Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate new level", () ->
     {

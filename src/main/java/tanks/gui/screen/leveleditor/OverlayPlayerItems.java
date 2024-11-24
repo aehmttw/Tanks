@@ -6,17 +6,17 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsItems extends ScreenLevelEditorOverlay
+public class OverlayPlayerItems extends ScreenLevelEditorOverlay
 {
     public TextBox editCoins;
 
-    public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop", () -> Game.screen = new OverlayEditLevelShop(Game.screen, screenLevelEditor));
+    public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop", () -> Game.screen = new OverlayShop(Game.screen, screenLevelEditor));
 
-    public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items", () -> Game.screen = new OverlayEditLevelStartingItems(Game.screen, screenLevelEditor));
+    public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items", () -> Game.screen = new OverlayStartingItems(Game.screen, screenLevelEditor));
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape);
 
-    public OverlayLevelOptionsItems(Screen previous, ScreenLevelEditor screenLevelEditor)
+    public OverlayPlayerItems(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
 
@@ -48,8 +48,13 @@ public class OverlayLevelOptionsItems extends ScreenLevelEditorOverlay
     public void draw()
     {
         super.draw();
+
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 800, 550);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 780, 530);
+
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Items");
         this.editCoins.draw();
         this.editShop.draw();

@@ -383,7 +383,10 @@ public class Arcade extends Minigame
                     for (Player p : this.includedPlayers)
                     {
                         if (!totalPlayers.contains(p))
+                        {
                             this.respawnPlayer(p);
+                            totalPlayers.add(p);
+                        }
                     }
                 }
             }

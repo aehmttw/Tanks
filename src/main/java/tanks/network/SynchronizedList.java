@@ -5,33 +5,51 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class SynchronizedList<T> extends ArrayList<T>
 {
-	public synchronized boolean add(T e)
+	public boolean add(T e)
 	{
-		return super.add(e);
+		synchronized (this)
+		{
+			return super.add(e);
+		}
 	}
 	
-	public synchronized void add(int i, T e)
+	public void add(int i, T e)
 	{
-		super.add(i, e);
+		synchronized (this)
+		{
+			super.add(i, e);
+		}
 	}
 
-	public synchronized T get(int i)
+	public T get(int i)
 	{
-		return super.get(i);
+		synchronized (this)
+		{
+			return super.get(i);
+		}
 	}
 	
-	public synchronized T remove(int i)
+	public T remove(int i)
 	{
-		return super.remove(i);
+		synchronized (this)
+		{
+			return super.remove(i);
+		}
 	}
 	
-	public synchronized T set(int i, T e)
+	public T set(int i, T e)
 	{
-		return super.set(i, e);
+		synchronized (this)
+		{
+			return super.set(i, e);
+		}
 	}
 	
-	public synchronized void clear()
+	public void clear()
 	{
-		super.clear();
+		synchronized (this)
+		{
+			super.clear();
+		}
 	}
 }

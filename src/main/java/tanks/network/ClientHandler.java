@@ -143,7 +143,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 		ScreenPartyLobby.isClient = false;
 
 		if (ctx != null)
-			ctx.close();
+			close();
 
 		if (steamID != null)
 			Game.steamNetworkHandler.queueClose(steamID.getAccountID());

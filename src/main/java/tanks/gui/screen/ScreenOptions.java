@@ -330,7 +330,7 @@ public class ScreenOptions extends Screen
 					case "constrain_mouse":
 						Game.constrainMouse = Boolean.parseBoolean(optionLine[1]);
 						break;
-					case "enable_vibrations":
+					case "vibrations":
 						Game.enableVibrations = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "mobile_joystick":

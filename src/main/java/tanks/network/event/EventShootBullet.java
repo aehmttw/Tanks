@@ -20,6 +20,7 @@ public class EventShootBullet extends PersonalEvent
 	public double vX;
 	public double vY;
 	public double vZ;
+	public double speed;
 	public int item;
 	
 	public EventShootBullet()
@@ -29,11 +30,6 @@ public class EventShootBullet extends PersonalEvent
 
 	public EventShootBullet(Bullet b)
 	{
-		this(b, 0);
-	}
-
-	public EventShootBullet(Bullet b, int item)
-	{
 		this.id = b.networkID;
 		this.tank = b.tank.networkID;
 		this.posX = b.posX;
@@ -42,7 +38,8 @@ public class EventShootBullet extends PersonalEvent
 		this.vX = b.vX;
 		this.vY = b.vY;
 		this.vZ = b.vZ;
-		this.item = item;
+		this.speed = b.speed;
+		this.item = b.item.networkIndex;
 	}
 
 	@Override
@@ -89,6 +86,8 @@ public class EventShootBullet extends PersonalEvent
 			else
 				sb.clonePropertiesTo(b);
 
+			b.speed = speed;
+
 			b.setColorFromTank();
 
 			if (t.bulletItem.item.cooldownBase <= 0)
@@ -117,6 +116,7 @@ public class EventShootBullet extends PersonalEvent
 		b.writeDouble(this.vX);
 		b.writeDouble(this.vY);
 		b.writeDouble(this.vZ);
+		b.writeDouble(this.speed);
 		b.writeInt(this.item);
 	}
 
@@ -131,6 +131,7 @@ public class EventShootBullet extends PersonalEvent
 		this.vX = b.readDouble();
 		this.vY = b.readDouble();
 		this.vZ = b.readDouble();
+		this.speed = b.readDouble();
 		this.item = b.readInt();
 	}
 }

@@ -2,18 +2,15 @@ package tanks.gui.screen;
 
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
 import tanks.tank.TankAIControlled;
-
-import java.util.ArrayList;
 
 public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 {
     public String msg1;
     public String msg2;
 
-    public FireworksDisplay fireworksDisplay = new FireworksDisplay();
+    public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
     Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", () ->
     {

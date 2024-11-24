@@ -9,7 +9,7 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
 {
     public String debugFireworks = "Manual fireworks: ";
 
-    public FireworksDisplay fireworksDisplay = new FireworksDisplay();
+    public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenDebug());
 
@@ -18,9 +18,9 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
         @Override
         public void run()
         {
-            FireworksDisplay.debug = !FireworksDisplay.debug;
+            DisplayFireworks.debug = !DisplayFireworks.debug;
 
-            if (FireworksDisplay.debug)
+            if (DisplayFireworks.debug)
                 fireworksMode.setText(debugFireworks, ScreenOptions.onText);
             else
                 fireworksMode.setText(debugFireworks, ScreenOptions.offText);
@@ -29,7 +29,7 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
 
     public ScreenTestFireworks()
     {
-        if (FireworksDisplay.debug)
+        if (DisplayFireworks.debug)
             fireworksMode.setText(debugFireworks, ScreenOptions.onText);
         else
             fireworksMode.setText(debugFireworks, ScreenOptions.offText);

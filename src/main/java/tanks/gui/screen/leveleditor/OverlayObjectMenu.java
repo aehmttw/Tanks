@@ -59,7 +59,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button selectTeam = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayTeams(Game.screen, screenLevelEditor));
 
-    public Button playerItems = new Button(this.centerX, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayLevelOptionsItems(Game.screen, screenLevelEditor));
+    public Button playerItems = new Button(this.centerX, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, screenLevelEditor));
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {

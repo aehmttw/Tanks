@@ -545,7 +545,9 @@ public class TerrainRenderer
                 else
                     s.renderer.settings(true, false, true);
 
-                s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
+                double x1 = Drawing.drawing.gameToAbsoluteX(x, 0);
+                double y1 = Drawing.drawing.gameToAbsoluteY(y, 0);
+                s.renderer.setPosition(x1, y1, z * Drawing.drawing.scale);
                 s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
 
                 if (s.shader instanceof IGlowShader)

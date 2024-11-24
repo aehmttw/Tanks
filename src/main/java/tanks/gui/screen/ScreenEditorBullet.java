@@ -3,9 +3,12 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
 import tanks.bullet.BulletPropertyCategory;
 import tanks.gui.*;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Turret;
 import tanks.tankson.FieldPointer;
@@ -27,6 +30,16 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Button col2Button;
     public Button col3Button;
     public Button glowButton;
+
+
+    public Button load = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
+    {
+        Game.screen = new ScreenAddSavedItem(this, (b) ->
+        {
+            this.setTarget(((ItemBullet) b.item).bullet);
+        }, "Bullet", ItemBullet.class);
+    }
+    );
 
     public ScreenEditorBullet(Pointer<Bullet> bullet, Screen screen)
     {
@@ -82,6 +95,33 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                         Bullet t = target.get();
                         ((TextBox) el).function = () -> { func.run(); Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation)); };
                     }
+
+                    this.uiElements.add(el);
+                }
+            }
+        }
+    }
+
+    public class TabTravel extends ScreenEditorTanksONable<Bullet>.Tab
+    {
+        public TabTravel(ScreenEditorTanksONable<Bullet> screen, String name, String category)
+        {
+            super(screen, name, category);
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.uiElements.clear();
+            for (Field f: this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger el = screen.getUIElementForField(f, p, screen.target);
+
+                    if ((p.id().equals("range") || p.id().equals("lifespan")) && target.get() instanceof BulletArc)
+                        continue;
 
                     this.uiElements.add(el);
                 }
@@ -530,7 +570,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         col3 = new TabColorPicker(this, appearance, "Color noise", "color", 3);
 
         new TabFiring(this, "Firing", BulletPropertyCategory.firing);
-        new Tab(this, "Movement", BulletPropertyCategory.travel);
+        new TabTravel(this, "Movement", BulletPropertyCategory.travel);
         new Tab(this, "Impact", BulletPropertyCategory.impact);
         glow = new TabGlow(this, appearance, "Glow", BulletPropertyCategory.appearanceGlow);
 
@@ -542,6 +582,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public void update()
     {
         super.update();
+
         if (this.target.get() != null)
             this.bulletTypes.update();
     }
@@ -549,8 +590,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     @Override
     public void draw()
     {
-        this.objName = target.get().typeName;
-
         super.draw();
 
         if (this.target.get() != null)

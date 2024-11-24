@@ -98,7 +98,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public CrusadePlayer player;
 
-    public ScreenCrusadeLevels background;
+    public DisplayCrusadeLevels background;
 
     public HashMap<String, TankAIControlled> customTanks = new HashMap<>();
 
@@ -138,7 +138,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         if (Game.previewCrusades)
         {
             if (screen == null)
-                this.background = new ScreenCrusadeLevels(crusade);
+                this.background = new DisplayCrusadeLevels(crusade);
             else
                 this.background = screen.background;
         }

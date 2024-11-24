@@ -480,6 +480,20 @@ public class ScreenChangelog extends Screen
                     }
             );
 
+            new Changelog("v1.6.a", new String[]
+                    {
+                            "*What's new in Tanks v1.6.a:\n\n" +
+                                    "Added an enormous number of new bullet options\n" +
+                                    "Improved item editor\n" +
+                                    "Improved the tank editor for spawned and transformed tanks\n" +
+                                    "Level editor menu UI improvements\n" +
+                                    "Added beat blocks\n" +
+                                    "Made fireworks prettier and more performant\n" +
+                                    "Updated music\n" +
+                                    "Added third color for players\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
         }
     }
 }

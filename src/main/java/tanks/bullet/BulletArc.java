@@ -19,7 +19,7 @@ public class BulletArc extends Bullet
     @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
     public double minRange = 0;
 
-    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
     public double maxRange = 0;
 
     @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
@@ -66,6 +66,7 @@ public class BulletArc extends Bullet
         double gravMod = this.getAttributeValue(AttributeModifier.velocity, 1);
 
         this.vZ -= gravity * Panel.frameFrequency * gravMod;
+        this.posZ -= gravity * gravMod * Panel.frameFrequency * Panel.frameFrequency * 0.5;
 
         if (this.posZ < Game.tile_size / 2 && !this.destroy)
         {
@@ -155,7 +156,6 @@ public class BulletArc extends Bullet
         double dx = x - this.posX;
         double dy = y - this.posY;
         double d = Math.sqrt(dx * dx + dy * dy);
-        double offset = Math.random() * this.accuracySpreadCircle * d;
         double s = Math.abs(this.speed);
 
         if (d > this.maxRange && this.maxRange > 0)
@@ -171,6 +171,8 @@ public class BulletArc extends Bullet
             dy *= this.minRange / d;
             d = this.minRange;
         }
+
+        double offset = Math.random() * this.accuracySpreadCircle * d;
 
         double f = 1;
         if (d / s < this.minAirTime)

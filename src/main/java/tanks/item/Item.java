@@ -65,7 +65,7 @@ public abstract class Item implements IGameObject
 			if (!s.startsWith("{"))
 				return fromStringLegacy(s);
 
-			return (ShopItem) TanksON.parseObject(s);
+			return (ShopItem) Serializer.fromTanksON(s);
 		}
 
 		@Deprecated

@@ -149,8 +149,10 @@ public final class Serializer {
                 break;
             }
             case "item_stack":
-                o = ((Item) m.get("item")).getStack(null);
+            {
+                o = ((Item) parseObject((Map) m.get("item"))).getStack(null);
                 break;
+            }
             case "shop_item":
                 o = new Item.ShopItem();
                 break;

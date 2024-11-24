@@ -12,6 +12,7 @@ import tanks.tank.TankReference;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -61,10 +62,10 @@ public class TanksON
         }
     }
 
-    protected static Object getDefault(Class<?> c) throws InstantiationException, IllegalAccessException
+    protected static Object getDefault(Class<?> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
     {
         if (!defaults.containsKey(c))
-            defaults.put(c, c.newInstance());
+            defaults.put(c, c.getConstructor().newInstance());
 
         return defaults.get(c);
     }

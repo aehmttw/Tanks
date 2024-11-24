@@ -495,7 +495,7 @@ public class Game
 		registerObstacle(ObstacleMud.class, "mud");
 		registerObstacle(ObstacleIce.class, "ice");
 		registerObstacle(ObstacleSnow.class, "snow");
-		registerObstacle(ObstacleLava.class, "lava");
+//		registerObstacle(ObstacleLava.class, "lava");
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 		registerObstacle(ObstacleBeatBlock.class, "beat");

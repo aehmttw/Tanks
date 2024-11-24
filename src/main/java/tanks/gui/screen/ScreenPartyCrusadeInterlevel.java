@@ -10,7 +10,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     public String msg1;
     public String msg2;
 
-    public DisplayFireworks fireworksDisplay = new DisplayFireworks();
+    public DisplayFireworks fireworksDisplay;
 
     Button replayCrusade = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", () ->
     {
@@ -161,6 +161,8 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
         if (win)
             this.music = "win_crusade.ogg";
+
+        this.fireworksDisplay = new DisplayFireworks(true, win ? 2 : 1);
 
         //if (lose)
          //   this.music = "lose_crusade.ogg";

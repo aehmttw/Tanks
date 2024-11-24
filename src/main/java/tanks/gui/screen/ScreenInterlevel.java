@@ -16,7 +16,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public static boolean tutorial = false;
 
 	public boolean showCrusadeResultsNow = false;
-	public DisplayFireworks fireworksDisplay = new DisplayFireworks();
+	public DisplayFireworks fireworksDisplay;
 
 	Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
 	{
@@ -317,6 +317,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		if (Crusade.crusadeMode)
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
 				this.allowClose = false;
+
+		this.fireworksDisplay = new DisplayFireworks();
 	}
 
 	@Override

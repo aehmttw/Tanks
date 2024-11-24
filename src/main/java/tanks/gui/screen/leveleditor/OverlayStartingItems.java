@@ -77,6 +77,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
     {
         startingItemsList = new ButtonList(new ArrayList<>(), 0, 0, -30);
         startingItemsList.arrowsEnabled = true;
+        startingItemsList.manualDarkMode = true;
 
         startingItemsList.reorderBehavior = (i, j) ->
         {

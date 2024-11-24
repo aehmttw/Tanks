@@ -87,6 +87,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
     {
         shopList = new ButtonList(new ArrayList<>(), 0, 0, -30);
         shopList.arrowsEnabled = true;
+        shopList.manualDarkMode = true;
 
         shopList.reorderBehavior = (i, j) ->
         {

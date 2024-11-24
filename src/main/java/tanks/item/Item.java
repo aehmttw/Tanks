@@ -7,10 +7,7 @@ import tanks.bullet.BulletGas;
 import tanks.bullet.DefaultBullets;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
-import tanks.tankson.ICopyable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksON;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +57,7 @@ public abstract class Item implements IGameObject
 
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toTanksON(this);
 		}
 
 		public static ShopItem fromString(String s)
@@ -68,7 +65,7 @@ public abstract class Item implements IGameObject
 			if (!s.startsWith("{"))
 				return fromStringLegacy(s);
 
-			return (ShopItem) TanksON.parseObject(s);
+			return (ShopItem) Serializer.fromTanksON(s);
 		}
 
 		@Deprecated
@@ -107,7 +104,7 @@ public abstract class Item implements IGameObject
 			if (!s.startsWith("{"))
 				return fromStringLegacy(s);
 
-			return (CrusadeShopItem) TanksON.parseObject(s);
+			return (CrusadeShopItem) Serializer.fromTanksON(s);
 		}
 
 		@Deprecated
@@ -264,7 +261,7 @@ public abstract class Item implements IGameObject
 			if (!s.startsWith("{"))
 				return fromStringLegacy(p, s);
 
-			ItemStack<?> i = (ItemStack<?>) TanksON.parseObject(s);
+			ItemStack<?> i = (ItemStack<?>) Serializer.fromTanksON(s);
 			i.player = p;
 			return i;
 		}
@@ -424,7 +421,7 @@ public abstract class Item implements IGameObject
 		@Override
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toTanksON(this);
 		}
 	}
 
@@ -463,11 +460,11 @@ public abstract class Item implements IGameObject
 //
 //		return null;
 
-		return TanksON.objectToString(this);
+		return Serializer.toTanksON(this);
 	}
 
 	public static Item fromString(String s)
 	{
-		return (Item) TanksON.parseObject(s);
+		return (Item) Serializer.fromTanksON(s);
 	}
 }

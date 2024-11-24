@@ -338,7 +338,7 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
     @Override
     public String toString()
     {
-        return TanksON.objectToString(this);
+        return Serializer.toTanksON(this);
     }
 
     @Override

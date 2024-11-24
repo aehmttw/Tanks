@@ -13,12 +13,13 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.Property;
-import tanks.tankson.TanksON;
+import tanks.tankson.Serializer;
 import tanks.tankson.TanksONable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static java.lang.System.exit;
 import static tanks.tank.TankPropertyCategory.*;
 
 /** This class is the 'skeleton' tank class.
@@ -264,7 +265,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		public String toString()
 		{
-			return TanksON.objectToString(this);
+			return Serializer.toTanksON(this);
 		}
 	}
 
@@ -2947,53 +2948,13 @@ public class TankAIControlled extends Tank implements ITankField
 	@Override
 	public String toString()
 	{
-		if (fromRegistry)
-			return "<" + this.name + ">";
-
-		return TanksON.objectToString(this);
-//		try
-//		{
-//			StringBuilder s = new StringBuilder("[");
-//
-//			for (Field f : this.getClass().getFields())
-//			{
-//				Property a = f.getAnnotation(Property.class);
-//				if (a != null)
-//				{
-//					s.append(a.id());
-//					s.append("=");
-//
-//					if (f.get(this) != null)
-//					{
-//						if (a.miscType() == Property.MiscType.description)
-//						{
-//							String desc = (String) f.get(this);
-//							s.append("<").append(desc.length()).append(">").append(desc);
-//						}
-//						else
-//							s.append(f.get(this));
-//					}
-//					else
-//						s.append("*");
-//
-//					s.append(";");
-//				}
-//			}
-//
-//			return s.append("]").toString();
-//		}
-//		catch (Exception e)
-//		{
-//			Game.exitToCrash(e);
-//		}
-//
-//		return null;
+		return Serializer.toTanksON(this);
 	}
 
 	public static TankAIControlled fromString(String s)
 	{
 		if (s.startsWith("{"))
-			return (TankAIControlled) TanksON.parseObject(s);
+			return (TankAIControlled) Serializer.fromTanksON(s);
 		else
 			return fromStringLegacy(s, null);
 	}
@@ -3230,7 +3191,10 @@ public class TankAIControlled extends Tank implements ITankField
 					}
 					else if (a.miscType() == Property.MiscType.music)
 					{
-						f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
+						if (f.get(this) != null)
+							f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
+						else
+							f.set(t, new HashSet<>());
 					}
 					else
 						f.set(t, f.get(this));

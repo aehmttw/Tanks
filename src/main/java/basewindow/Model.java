@@ -1,11 +1,13 @@
 package basewindow;
 
 import basewindow.transformation.AxisRotation;
+import tanks.Drawing;
+import tanks.tankson.Serializable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Model implements IModel
+public class Model implements IModel, Serializable
 {
     public static Material defaultMaterial = new Material("");
 
@@ -492,5 +494,10 @@ public class Model implements IModel
     public String toString()
     {
         return this.file;
+    }
+
+    public String serialize(){ return this.toString(); }
+    public Serializable deserialize(String s) {
+        return Drawing.drawing.createModel(s);
     }
 }

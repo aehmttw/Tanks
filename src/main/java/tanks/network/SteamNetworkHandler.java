@@ -328,6 +328,17 @@ public class SteamNetworkHandler
 			this.initialized = true;
 			return true;
 		}
+		catch (SteamException e)
+		{
+			if (e.getMessage().equals("Native libraries not loaded.\n" +
+					"Ensure to call SteamAPI.loadLibraries() first!")) {
+				System.out.println("Running without SteamAPI: Non-Steam Build");
+				return false;
+			} else {
+				e.printStackTrace();
+				return false;
+			}
+		}
 		catch (Throwable e)
 		{
 			e.printStackTrace();

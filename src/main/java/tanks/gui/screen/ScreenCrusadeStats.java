@@ -7,6 +7,7 @@ import tanks.gui.Selector;
 import tanks.gui.SpeedrunTimer;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
+import tanks.item.ItemDummyBlockExplosion;
 import tanks.item.ItemMine;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
@@ -404,6 +405,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         {
             this.addItem(i.itemStack.item);
         }
+
+        this.addItem(ItemDummyBlockExplosion.dummy_explosion);
 
         ArrayList<Entry> copy = new ArrayList<>(this.items);
         assignRanks(copy, (o1, o2) -> (int) Math.signum(((ItemEntry) o2).uses - ((ItemEntry) o1).uses), (entry, rank) -> ((ItemEntry) entry).useRank = rank);
@@ -1689,7 +1692,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             Drawing.drawing.setColor(255, 255, 255, 255 * age / maxAge);
             Drawing.drawing.drawInterfaceImage(this.item.icon, this.getXOffset() + Game.screen.centerX + items_1 - 140, this.yPos, 30, 30);
             Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_1 - 105, this.yPos, this.item.name, false);
-            drawStatistic(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, this.uses + "", 1 - this.useRank, 255, 255, 255, 255 * age / maxAge, 24);
+
+            if (this.item instanceof ItemDummyBlockExplosion)
+            {
+                Drawing.drawing.setColor(255, 255, 255, 127 * age / maxAge);
+                Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, "-");
+            }
+            else
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, this.uses + "", 1 - this.useRank, 255, 255, 255, 255 * age / maxAge, 24);
 
             if (!this.item.supportsHits)
             {

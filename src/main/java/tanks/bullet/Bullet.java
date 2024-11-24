@@ -128,6 +128,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "speed", name = "Speed", category = BulletPropertyCategory.travel)
 	public double speed = 25.0 / 8;
 
+	/** If bullet should return to original speed if blown to a slower speed by something like wind */
+	public boolean revertSpeed = true;
+
 	@Property(id = "lifespan", minValue = 0.0, name = "Lifespan", category = BulletPropertyCategory.travel, desc = "After this long, the bullet will destroy itself automatically. Set to 0 for unlimited lifespan. \n \n 1 time unit = 0.01 seconds")
 	public double lifespan = 0;
 
@@ -1276,7 +1279,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			this.addTrail();
 		}
 
-		if (!this.destroy)
+		if (!this.destroy && this.revertSpeed)
 		{
 			double frac = Math.pow(0.999, Panel.frameFrequency);
 			this.setPolarMotion(this.getPolarDirection(), this.getSpeed() * frac + this.speed * (1 -frac));

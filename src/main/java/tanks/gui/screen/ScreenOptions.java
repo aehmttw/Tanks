@@ -18,6 +18,8 @@ public class ScreenOptions extends Screen
 	public static final String onText = "\u00A7000200000255on";
 	public static final String offText = "\u00A7200000000255off";
 
+	public static boolean alwaysDebug = false;
+
 	TankPlayer preview = new TankPlayer(0, 0, 0);
 
 	public ScreenOptions()
@@ -248,6 +250,7 @@ public class ScreenOptions extends Screen
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
+			f.println("debug_mode=" + alwaysDebug);
 			f.stopWriting();
 		}
 		catch (FileNotFoundException e)
@@ -496,7 +499,10 @@ public class ScreenOptions extends Screen
 					case "auto_load_extensions":
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
 						break;
-
+					case "debug_mode":
+						Game.debug = Boolean.parseBoolean(optionLine[1]);
+						alwaysDebug = Game.debug;
+						break;
 				}
 			}
 			f.stopReading();

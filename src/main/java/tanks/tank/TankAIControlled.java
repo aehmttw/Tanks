@@ -8,6 +8,8 @@ import tanks.bullet.BulletGas;
 import tanks.bullet.Laser;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
@@ -3068,11 +3070,18 @@ public class TankAIControlled extends Tank implements ITankField
 						}
 						else if (f.getType().isEnum())
 							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
-						else if (Item.ItemStack.class.isAssignableFrom(f.getType()))
+						else if (Bullet.class.isAssignableFrom(f.getType()))
 						{
 							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
 							i.stackSize = 0;
-							f.set(t, i);
+							f.set(t, ((ItemBullet)i.item).bullet);
+							s = s.substring(s.indexOf("]") + 1);
+						}
+						else if (Mine.class.isAssignableFrom(f.getType()))
+						{
+							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
+							i.stackSize = 0;
+							f.set(t, ((ItemMine)i.item).mine);
 							s = s.substring(s.indexOf("]") + 1);
 						}
 						else if (ITankField.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))

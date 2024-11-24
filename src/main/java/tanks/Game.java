@@ -532,7 +532,7 @@ public class Game
 		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, "bullet_laser.png");
 		registerBullet(BulletGas.class, BulletGas.bullet_class_name, "bullet_flame.png");
 		registerBullet(BulletArc.class, BulletArc.bullet_class_name, "bullet_arc.png");
-//		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, "bullet_fire.png");
+		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, "bullet_fire.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_class_name, "bullet_normal.png");
 		registerItem(ItemMine.class, ItemMine.item_class_name, "mine.png");

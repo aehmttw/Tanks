@@ -170,6 +170,10 @@ public class LWJGLWindow extends BaseWindow
 
 			if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
 				this.inputCodepoints.add('\b');
+
+			shift = (mods & GLFW_MOD_SHIFT) > 0;
+			capsLock = (mods & GLFW_MOD_CAPS_LOCK) > 0;
+			numLock = (mods & GLFW_MOD_NUM_LOCK) > 0;
 		});
 
 		glfwSetCharCallback(window, (window, codepoint) ->
@@ -800,6 +804,12 @@ public class LWJGLWindow extends BaseWindow
 	public void clearDepth()
 	{
 		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
+	@Override
+	public void setWindowTitle(String s)
+	{
+		glfwSetWindowTitle(window, s);
 	}
 
 	@Override

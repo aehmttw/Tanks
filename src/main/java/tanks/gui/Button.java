@@ -42,28 +42,14 @@ public class Button implements IDrawable, ITrigger
 
 	public boolean enabled = true;
 
-	public double disabledColR = 200;
-	public double disabledColG = 200;
-	public double disabledColB = 200;
+	public double bgColR = 255, bgColG = 255, bgColB = 255;
+	public double disabledColR = 200, disabledColG = 200, disabledColB = 200;
+	public double selectedColR = 240, selectedColG = 240, selectedColB = 255;
 
-	public double unselectedColR = 255;
-	public double unselectedColG = 255;
-	public double unselectedColB = 255;
+	public double textColR = 0, textColG = 0, textColB = 0;
+	public double textOffsetX = 0, textOffsetY = 0;
 
-	public double selectedColR = 240;
-	public double selectedColG = 240;
-	public double selectedColB = 255;
-
-	public double textColR = 0;
-	public double textColG = 0;
-	public double textColB = 0;
-
-	public double textOffsetX = 0;
-	public double textOffsetY = 0;
-
-	public double imageR = 255;
-	public double imageG = 255;
-	public double imageB = 255;
+	public double imageR = 255, imageG = 255, imageB = 255;
 	public boolean drawImageShadow = false;
 
 	public boolean silent = false;
@@ -72,11 +58,8 @@ public class Button implements IDrawable, ITrigger
 
 	public String image = null;
 	public IModel model = null;
-	public double imageSizeX = 0;
-	public double imageSizeY = 0;
-
-	public double imageXOffset = 0;
-	public double imageYOffset = 0;
+	public double imageSizeX = 0, imageSizeY = 0;
+	public double imageXOffset = 0, imageYOffset = 0;
 
 	public double effectTimer = 0;
 	public long lastFrame = 0;
@@ -188,7 +171,7 @@ public class Button implements IDrawable, ITrigger
 		else if (selected && !Game.game.window.touchscreen)
 			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB);
 		else
-			drawing.setColor(this.unselectedColR, this.unselectedColG, this.unselectedColB);
+			drawing.setColor(this.bgColR, this.bgColG, this.bgColB);
 
 		drawing.fillInterfaceRect(posX, posY, sizeX - sizeY, sizeY);
 		drawing.fillInterfaceOval(posX - sizeX / 2 + sizeY / 2, posY, sizeY, sizeY);

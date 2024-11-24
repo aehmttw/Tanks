@@ -40,6 +40,34 @@ public class ComputerFileManager extends BaseFileManager
         }
     }
 
+    @Override
+    public void openFileManager(String path)
+    {
+        String os = System.getProperty("os.name").toLowerCase();
+        String command;
+
+        if (os.contains("win"))
+            command = "explorer " + path;   // Windows
+        else if (os.contains("mac"))
+            command = "open " + path;   // macOS
+        else if (os.contains("nix") || os.contains("nux") || os.contains("bsd"))
+            command = "xdg-open " + path;   // Linux/Unix/BSD
+        else
+        {
+            System.err.println("Unsupported operating system: " + os);
+            return;
+        }
+
+        try
+        {
+            Runtime.getRuntime().exec(command);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public InputStream getResource(String path) throws FileNotFoundException
     {
         return getResource(this.overrideLocations, path);

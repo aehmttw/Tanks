@@ -133,8 +133,9 @@ public class OverlayTeams extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+//        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
+//        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+        Drawing.drawing.drawPopup(centerX, centerY + 15,1200, 750, 10, 5);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

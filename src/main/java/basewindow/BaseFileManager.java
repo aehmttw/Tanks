@@ -14,4 +14,6 @@ public abstract class BaseFileManager
     public abstract BaseFile getFile(String file);
 
     public abstract ArrayList<String> getInternalFileContents(String file);
+
+    public abstract void openFileManager(String path);
 }

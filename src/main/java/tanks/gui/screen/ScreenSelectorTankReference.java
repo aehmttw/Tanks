@@ -154,9 +154,9 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
                 b.fullInfo = true;
                 b.textOffsetY = -2.5;
 
-                b.unselectedColR = 160;
-                b.unselectedColG = 160;
-                b.unselectedColB = 160;
+                b.bgColR = 160;
+                b.bgColG = 160;
+                b.bgColB = 160;
 
                 b.selectedColR = 255;
                 b.selectedColG = 0;

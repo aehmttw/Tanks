@@ -166,7 +166,10 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.drawDefaultBackground();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(0, 0, 0);
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
 
         if (this.copiedToTemplate)
             Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank saved to templates!");

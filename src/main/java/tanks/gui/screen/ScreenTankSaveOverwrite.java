@@ -77,7 +77,12 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
         this.drawDefaultBackground();
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.setColor(0, 0, 0);
+
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
+
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "A tank template with this name already exists!");
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "Would you like to replace it?");
 

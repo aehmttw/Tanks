@@ -76,9 +76,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         }
     });
 
-    @SuppressWarnings("unchecked")
-    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
-
     public ScreenSaveLevel(String name, String level, Screen s)
     {
         super(350, 40, 380, 60);

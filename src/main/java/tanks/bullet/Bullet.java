@@ -563,6 +563,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 		if (o instanceof Mine)
 		{
 			this.collidedWithMisc(o);
+			o.destroy = true;
 
 			if (this.destroy && this.rebounds > 0)
 				this.rebound(o);
@@ -951,7 +952,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 					this.inside.add(t);
 				}
 			}
-			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && ((Bullet) o).delay <= 0 && (((Bullet) o).bulletCollision && ((Bullet) o).externalBulletCollision && this.bulletCollision)) || o instanceof Mine) && o != this && !o.destroy)
+			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && ((Bullet) o).delay <= 0 && (((Bullet) o).bulletCollision && ((Bullet) o).externalBulletCollision && this.bulletCollision))
+					|| o instanceof Mine) && o != this && !o.destroy)
 			{
 				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
 

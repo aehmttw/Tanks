@@ -413,7 +413,8 @@ public class Tutorial extends Minigame
                 if (m instanceof Mine)
                 {
                     Drawing.drawing.setColor(255, 0, 0, 127 * this.stepAnimation);
-                    Drawing.drawing.fillOval(m.posX, m.posY, ((Mine) m).explosion.radius * 2 * this.stepAnimation, ((Mine) m).explosion.radius * 2 * this.stepAnimation);
+                    //Drawing.drawing.fillOval(m.posX, m.posY, ((Mine) m).explosion.radius * 2 * this.stepAnimation, ((Mine) m).explosion.radius * 2 * this.stepAnimation);
+                    Mine.drawRange2D(m.posX, m.posY, ((Mine) m).explosion.radius);
 
                     Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
                     Drawing.drawing.drawText(m.posX, m.posY + 50 * this.stepAnimation, "Stand back!");
@@ -471,7 +472,7 @@ public class Tutorial extends Minigame
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Press " + Game.game.input.hotbarToggle.getInputs() + "!");
                 Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
                 Drawing.drawing.setInterfaceFontSize(24 * this.stepAnimation);
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing \u00A7255127000255" + Game.game.input.hotbarToggle.getInputs() + "\u00A7000000000255!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing \u00A7255127000255" + Game.game.input.hotbarToggle.getInputs() + "\u00A7255255255255!");
             }
 
             Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
@@ -486,7 +487,6 @@ public class Tutorial extends Minigame
 
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Now finish off the battle by destroying that gray tank,");
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "but watch out - it can move!");
-
         }
     }
 

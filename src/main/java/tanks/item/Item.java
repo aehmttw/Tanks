@@ -89,7 +89,7 @@ public abstract class Item implements IGameObject
 	@TanksONable("crusade_shop_item")
 	public static class CrusadeShopItem extends ShopItem
 	{
-		@Property(id = "unlock_level")
+		@Property(id = "unlock_level", name = "Unlocks after level")
 		public int levelUnlock;
 
 		public CrusadeShopItem(ItemStack<?> itemStack)

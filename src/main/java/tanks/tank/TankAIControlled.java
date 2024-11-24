@@ -871,7 +871,8 @@ public class TankAIControlled extends Tank implements ITankField
 		b.speed = Math.abs(speed);
 
 		if (b instanceof BulletArc)
-			b.vZ = this.distance / b.speed * 0.5 * BulletArc.gravity;
+			b.setTargetLocation(this.posX + this.distance * Math.cos(this.angle + offset + this.shotOffset), this.posY + this.distance * Math.sin(this.angle + offset + this.shotOffset));
+			//b.vZ = this.distance / b.speed * 0.5 * BulletArc.gravity;
 		else
 			b.moveOut(Math.signum(speed) * 50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
 

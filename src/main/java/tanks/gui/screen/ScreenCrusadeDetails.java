@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScreen
 {
     public Crusade crusade;
-    public ScreenCrusadeLevels background;
+    public DisplayCrusadeLevels background;
     public ArrayList<String> description = new ArrayList<>();
 
     public double bestTime = -1;
@@ -140,7 +140,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
         }
 
         if (Game.previewCrusades)
-            this.background = new ScreenCrusadeLevels(this.crusade);
+            this.background = new DisplayCrusadeLevels(this.crusade);
 
         if (crusade.description != null)
             this.description = Drawing.drawing.wrapText(crusade.description.replaceAll("---", " "), 600, 24);

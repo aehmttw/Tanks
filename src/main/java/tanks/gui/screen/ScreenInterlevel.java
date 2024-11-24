@@ -1,14 +1,11 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.Firework;
 import tanks.gui.SpeedrunTimer;
 import tanks.tank.TankAIControlled;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class ScreenInterlevel extends Screen implements IDarkScreen
@@ -19,7 +16,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public static boolean tutorial = false;
 
 	public boolean showCrusadeResultsNow = false;
-	public FireworksDisplay fireworksDisplay = new FireworksDisplay();
+	public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
 	Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
 	{

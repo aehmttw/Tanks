@@ -164,8 +164,8 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
 
         this.crusade = c;
 
-        String[] itemNames = new String[Game.registryItem.itemEntries.size() + 1];
-        String[] itemImages = new String[Game.registryItem.itemEntries.size() + 1];
+        String[] itemNames = new String[Game.registryItem.itemEntries.size()];
+        String[] itemImages = new String[Game.registryItem.itemEntries.size()];
 
         for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
         {
@@ -173,9 +173,6 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
             itemNames[i] = r.name;
             itemImages[i] = r.image;
         }
-
-        itemNames[Game.registryItem.itemEntries.size()] = "From template";
-        itemImages[Game.registryItem.itemEntries.size()] = "item.png";
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
         {
@@ -411,6 +408,14 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
             addLevel.draw();
             levelButtons.draw();
 
+            if (this.levelButtons.buttons.size() <= 0)
+            {
+                Drawing.drawing.setInterfaceFontSize(this.textSize);
+                Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 30, "There are no levels in this crusade");
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 30, "Add some with the 'Add level' button!");
+            }
+
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade levels");
@@ -434,6 +439,14 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
             reorderItems.draw();
             quit.draw();
             addItem.draw();
+
+            if (this.itemButtons.buttons.size() <= 0)
+            {
+                Drawing.drawing.setInterfaceFontSize(this.textSize);
+                Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 30, "There are no items in this crusade");
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 30, "Add some with the 'Add item' button!");
+            }
 
             itemButtons.draw();
 

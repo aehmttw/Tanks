@@ -142,7 +142,7 @@ public class ScreenCrashed extends Screen
 		String extText = extensions == 0 ? "" : extensions == 1 ? " (with 1 extension)" : " (with " + extensions + " extensions)";
 
 		drawing.setInterfaceFontSize(24);
-		drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version + extText);
+		drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version + extText + " " + Game.game.window.buildDate);
 
 		drawing.displayInterfaceText(50, 500,  false, "Check the crash report file for more information: ");
 		drawing.drawInterfaceText(50, 530, Game.homedir.replace("\\", "/") + Game.crashesPath + Game.crashTime + ".crash", false);

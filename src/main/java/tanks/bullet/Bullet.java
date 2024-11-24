@@ -131,6 +131,12 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "lifespan", minValue = 0.0, name = "Lifespan", category = BulletPropertyCategory.travel, desc = "After this long, the bullet will destroy itself automatically. Set to 0 for unlimited lifespan. \n \n 1 time unit = 0.01 seconds")
 	public double lifespan = 0;
 
+	/** If true, this selected bullet will show a ray when the aim keybind is pressed */
+	public boolean showTrace = true;
+
+	@Property(id = "range", minValue = 0.0, name = "Range", category = BulletPropertyCategory.travel, desc = "If the bullet goes farther than this distance from where it was initially fired, it will destroy itself automatically. Set to 0 for unlimited range. \n \n 1 tile = 50 units")
+	public double range = 0;
+
 	@Property(id = "heavy", name = "Heavy", category = BulletPropertyCategory.travel, desc = "Heavy bullets will pass through tanks and non-heavy bullets without being destroyed")
 	public boolean heavy = false;
 
@@ -167,6 +173,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public Tank homingTarget = null;
 	public Tank homingPrevTarget = null;
 	public double homingTargetTime = 0;
+
+	/** If true, homing won't make sounds or particles */
+	public boolean homingSilent = false;
 
 	public ItemBullet.ItemStackBullet item;
 
@@ -219,6 +228,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	protected double lastTrailPitch = -1;
 	protected boolean trail3d = false;
 
+	public double originX;
+	public double originY;
+
 	public boolean justBounced = false;
 
 	public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
@@ -250,6 +262,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 		this.tank = t;
 		this.team = t.team;
 
+		this.originX = this.tank.posX;
+		this.originY = this.tank.posY;
+
 		this.iPosZ = this.tank.size / 2 + this.tank.turretSize / 2;
 
 		this.isRemote = t.isRemote;
@@ -276,6 +291,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 			idMap.put(this.networkID, this);
 		}
+
+		this.previousRebounds.add(this.tank);
 
 		this.drawLevel = 8;
 
@@ -400,7 +417,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 					Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size));
 
 				if (t instanceof TankPlayerRemote)
-					Game.eventsOut.add(new EventTankControllerAddVelocity(t, vX * mul, vY * mul, true));
+					Game.eventsOut.add(new EventTankControllerAddVelocity(t, vX * mul, vY * mul, t.tookRecoil));
 			}
 
 			double dmg = this.damage;
@@ -628,10 +645,13 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 		this.moveInAngle(toAngle, dist - sizes);
 		b.moveInAngle(toAngle + Math.PI, dist - sizes);
 
+		Game.eventsOut.add(new EventBulletBounce(this));
+		Game.eventsOut.add(new EventBulletBounce(b));
+
 		if (this.playBounceSound && b.playBounceSound)
 		{
-			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size), 0.5f);
-			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
+			Drawing.drawing.playGlobalSound("bump.ogg", (float) (bullet_size / size), 0.5f);
+			Drawing.drawing.playGlobalSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
 		}
 
 		this.addTrail();
@@ -1081,7 +1101,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				}
 			}
 
-			if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled)
+			if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;
@@ -1145,7 +1165,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public void initTrails()
 	{
-		double mul = this.effect == BulletEffect.long_trail ? 2 : 1;
+		double mul = this.effect == BulletEffect.long_trail ? 1.5 : 1;
 
 		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.long_trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.dark_fire)
 			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0,1, 1, 15 * mul, 0, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
@@ -1436,7 +1456,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 		this.age += Panel.frameFrequency;
 
-		if (this.age > lifespan && this.lifespan > 0 && !this.destroy)
+		if (((this.age > lifespan && this.lifespan > 0) || (this.range > 0 && Math.pow(this.originX - this.posX, 2) + Math.pow(this.originY - posY, 2) > this.range * this.range)) && !this.destroy)
 		{
 			this.pop();
 			this.collisionX = this.posX;
@@ -1666,7 +1686,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 		}
 
-		if (this.homingSharpness != 0)
+		if (this.homingSharpness != 0 && !this.homingSilent)
 			this.drawHoming();
 	}
 
@@ -1788,6 +1808,16 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 			Game.effects.add(e);
 		}
+	}
+
+	public double getRangeMin()
+	{
+		return -1;
+	}
+
+	public double getRangeMax()
+	{
+		return this.range;
 	}
 
 	@Override

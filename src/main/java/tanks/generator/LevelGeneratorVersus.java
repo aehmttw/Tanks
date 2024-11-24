@@ -108,13 +108,13 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 		for (String si: items)
 		{
-			Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
+			Item.ShopItem i = Item.ShopItem.fromString(si);
 
 			// TODO
-			if (i.item.name.equals("Basic bullet") || i.item.name.equals("Basic mine") || i.item.name.equals("Laser"))
+			if (i.itemStack.item.name.equals("Basic bullet") || i.itemStack.item.name.equals("Basic mine") || i.itemStack.item.name.equals("Laser"))
 				continue;
 
-			i.item.name = Translation.translate(i.item.name);
+			i.itemStack.item.name = Translation.translate(i.itemStack.item.name);
 			itemsString.append(i.toString()).append("\n");
 		}
 

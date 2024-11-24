@@ -82,7 +82,8 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
 
     public void explode()
     {
-        Drawing.drawing.playSound("explosion.ogg", (float) (Mine.mine_radius / this.radius));
+        double r = this.radius <= 0 ? this.knockbackRadius : this.radius;
+        Drawing.drawing.playSound("explosion.ogg", (float) (Mine.mine_radius / r));
 
         if (Game.effectsEnabled)
         {
@@ -134,8 +135,8 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                     else if (m instanceof Tank)
                     {
                         double angle = this.getAngleInDirection(m.posX, m.posY);
-                        double vX = tank.vX;
-                        double vY = tank.vY;
+                        double vX = m.vX;
+                        double vY = m.vY;
                         m.addPolarMotion(angle, power * this.tankKnockback * Math.pow(Game.tile_size, 2) / Math.max(1, Math.pow(((Tank) m).size, 2)));
                         Tank t = (Tank) m;
                         t.recoilSpeed = m.getSpeed();
@@ -146,7 +147,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                         }
 
                         if (t instanceof TankPlayerRemote)
-                            Game.eventsOut.add(new EventTankControllerAddVelocity(t, t.vX - vX, t.vY - vY, true));
+                            Game.eventsOut.add(new EventTankControllerAddVelocity(t, t.vX - vX, t.vY - vY, t.tookRecoil));
                     }
                 }
 
@@ -244,7 +245,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         e.radius = Math.max(this.radius, 0);
         Game.effects.add(e);
 
-        if (this.tankKnockback > 0 || this.bulletKnockback > 0)
+        if (this.tankKnockback != 0 || this.bulletKnockback != 0)
         {
             Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
             e1.radius = Math.max(this.knockbackRadius, 0);

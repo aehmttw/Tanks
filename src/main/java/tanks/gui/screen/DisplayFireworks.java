@@ -8,7 +8,7 @@ import tanks.gui.Firework;
 
 import java.util.ArrayList;
 
-public class FireworksDisplay
+public class DisplayFireworks
 {
     public static double firework_frequency = 0.08;
     public static int initial_fireworks = 5;
@@ -24,12 +24,12 @@ public class FireworksDisplay
 
     boolean odd = false;
 
-    public FireworksDisplay()
+    public DisplayFireworks()
     {
         this(true);
     }
 
-    public FireworksDisplay(boolean addOwnFireworks)
+    public DisplayFireworks(boolean addOwnFireworks)
     {
         this.addOwnFireworks = addOwnFireworks;
         if (Panel.win && Game.effectsEnabled && addOwnFireworks)

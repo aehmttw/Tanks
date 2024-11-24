@@ -9,6 +9,7 @@ public class EventExplosion extends PersonalEvent
     public double posX;
     public double posY;
     public double radius;
+    public double kbRadius;
     public boolean destroysObstacles;
 
     public EventExplosion()
@@ -21,6 +22,11 @@ public class EventExplosion extends PersonalEvent
         this.posX = e.posX;
         this.posY = e.posY;
         this.radius = e.radius;
+        this.kbRadius = e.knockbackRadius;
+
+        if (e.tankKnockback == 0 && e.bulletKnockback == 0)
+            this.kbRadius = 0;
+
         this.destroysObstacles = e.destroysObstacles;
     }
 
@@ -30,6 +36,11 @@ public class EventExplosion extends PersonalEvent
         if (clientID == null)
         {
             Explosion e = new Explosion(this.posX, this.posY, this.radius, 0, destroysObstacles, Game.dummyTank);
+
+            if (this.kbRadius != 0)
+                e.tankKnockback = 1;
+
+            e.knockbackRadius = this.kbRadius;
             e.explode();
         }
     }
@@ -40,6 +51,7 @@ public class EventExplosion extends PersonalEvent
         b.writeDouble(this.posX);
         b.writeDouble(this.posY);
         b.writeDouble(this.radius);
+        b.writeDouble(this.kbRadius);
         b.writeBoolean(this.destroysObstacles);
     }
 
@@ -49,6 +61,7 @@ public class EventExplosion extends PersonalEvent
         this.posX = b.readDouble();
         this.posY = b.readDouble();
         this.radius = b.readDouble();
+        this.kbRadius = b.readDouble();
         this.destroysObstacles = b.readBoolean();
     }
 }

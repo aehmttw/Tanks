@@ -70,7 +70,7 @@ public class MessageReader
 							ev.clientID = null;
 							Game.eventsIn.add(ev);
 
-							Client.handler.ctx.close();
+							Client.handler.close();
 							ScreenPartyLobby.connections.clear();
 						}
 
@@ -105,7 +105,7 @@ public class MessageReader
 								ev.clientID = null;
 								Game.eventsIn.add(ev);
 
-								Client.handler.ctx.close();
+								Client.handler.close();
 								ScreenPartyLobby.connections.clear();
 							}
 
@@ -144,7 +144,7 @@ public class MessageReader
 				ev.clientID = null;
 				Game.eventsIn.add(ev);
 
-				Client.handler.ctx.close();
+				Client.handler.close();
 				ScreenPartyLobby.connections.clear();
 			}
 		}

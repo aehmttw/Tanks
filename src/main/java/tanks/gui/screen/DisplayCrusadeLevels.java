@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
+public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 {
     public static class ScreenLevel
     {
@@ -57,9 +57,9 @@ public class ScreenCrusadeLevels extends Screen implements ILevelPreviewScreen
     public double lastDG = Level.currentColorVarG;
     public double lastDB = Level.currentColorVarB;
 
-    protected static ScreenCrusadeLevels currentScreen;
+    protected static DisplayCrusadeLevels currentScreen;
 
-    public ScreenCrusadeLevels(Crusade c)
+    public DisplayCrusadeLevels(Crusade c)
     {
         if (currentScreen != null)
         {

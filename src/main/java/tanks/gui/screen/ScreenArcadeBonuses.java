@@ -24,7 +24,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     public int fireworksToSpawn = 0;
     public double fireworkCooldown = 0;
     public int pointsPerFirework = 5;
-    public FireworksDisplay fireworksDisplay = new FireworksDisplay(false);
+    public DisplayFireworks fireworksDisplay = new DisplayFireworks(false);
     public HashSet<Firework> spawnedFireworks = new HashSet<>();
 
     public ArrayList<Bonus> bonuses = new ArrayList<>();

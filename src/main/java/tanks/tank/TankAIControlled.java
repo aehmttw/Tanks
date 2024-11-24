@@ -1,11 +1,13 @@
 package tanks.tank;
 
+import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
 import tanks.bullet.Laser;
 import tanks.gui.screen.ScreenGame;
+import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
@@ -93,7 +95,7 @@ public class TankAIControlled extends Tank implements ITankField
 	@Property(category = movementPathfinding, id = "seek_chance", minValue = 0.0, maxValue = 1.0, name = "Seek chance", desc = "Chance for this tank to decide to start navigating to its target")
 	public double seekChance = 0.001;
 	/** If set to true, when enters line of sight of target enemy, will stop pathfinding to it*/
-	@Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight \n \n 1 time unit = 0.01 seconds")
+	@Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight", desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight")
 	public boolean stopSeekingOnSight = false;
 	/** Increasing this value increases how stubborn the tank is in following a path*/
 	@Property(category = movementPathfinding, id = "seek_timer_base", minValue = 0.0, name = "Seek patience", desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
@@ -2994,180 +2996,179 @@ public class TankAIControlled extends Tank implements ITankField
 			return (TankAIControlled) Serializer.fromTanksON(s);
 //			return (TankAIControlled) TanksON.parseObject(s);
 		else
-			throw new RuntimeException("The old tank format isn't yet supported");
-			//return fromString(s, null);
+			return fromStringLegacy(s, null);
 	}
 
-//	public static TankAIControlled fromString(String s, String[] remainder)
-//	{
-//		String original = s;
-//		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
-//
-//		try
-//		{
-//			s = s.substring(s.indexOf("[") + 1);
-//			while (s.charAt(0) != ']')
-//			{
-//				int equals = s.indexOf("=");
-//				String value = s.substring(equals + 1, s.indexOf(";"));
-//				String propname = s.substring(0, equals);
-//
-//				for (Field f : TankAIControlled.class.getFields())
-//				{
-//					boolean found = true;
-//
-//					Property a = f.getAnnotation(Property.class);
-//					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank"))))
-//					{
-//						if (f.getType().equals(int.class))
-//							f.set(t, Integer.parseInt(value));
-//						else if (f.getType().equals(double.class))
-//							f.set(t, Double.parseDouble(value));
-//						else if (f.getType().equals(boolean.class))
-//							f.set(t, Boolean.parseBoolean(value));
-//						else if (f.getType().equals(String.class))
-//						{
-//							if (value.equals("*"))
-//								f.set(t, null);
-//							else if (value.startsWith("\u00A7"))
-//							{
-//								s = s.substring(equals + 2);
-//								int end = s.indexOf("\u00A7");
-//								value = s.substring(0, end);
-//								s = s.substring(end + 1);
-//								f.set(t, value);
-//							}
-//							else if (value.startsWith("<"))
-//							{
-//								s = s.substring(equals + 2);
-//								int end = s.indexOf(">");
-//								int length = Integer.parseInt(s.substring(0, end));
-//								value = s.substring(end + 1, end + 1 + length);
-//								s = s.substring(end + 1 + length);
-//								f.set(t, value);
-//							}
-//							else
-//								f.set(t, value);
-//						}
-//						else if (a.miscType() == Property.MiscType.music)
-//						{
-//							int end = s.indexOf("]");
-//							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
-//							HashSet<String> hashSet;
-//							if (csv[0].equals(""))
-//								hashSet = new HashSet<>();
-//							else
-//								hashSet = new HashSet<>(Arrays.asList(csv));
-//
-//							f.set(t, hashSet);
-//						}
-//						else if (a.miscType() == Property.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
-//						{
-//							s = s.substring(s.indexOf("[") + 1);
-//							ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
-//
-//							TankAIControlled target;
-//							while (!s.startsWith("]"))
-//							{
-//								int x = s.indexOf("x");
-//								String s1 = s.substring(0, x);
-//								s = s.substring(x + 1);
-//								if (s.equals("*"))
-//									target = null;
-//								else if (s.startsWith("<"))
-//								{
-//									String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
-//									s = s.substring(s.indexOf(">") + 1);
-//									target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
-//								}
-//								else
-//								{
-//									String[] r = new String[1];
-//									TankAIControlled t2 = TankAIControlled.fromString(s, r);
-//
-//									s = r[0];
-//									target = t2;
-//									s = s.substring(s.indexOf("]") + 1);
-//								}
-//
-//								if (s.startsWith(", "))
-//									s = s.substring(2);
-//								entries.add(new SpawnedTankEntry(target, Double.parseDouble(s1)));
-//							}
-//
-//							s = s.substring(1);
-//						}
-//						else if (IModel.class.isAssignableFrom(f.getType()))
-//						{
-//							if (value.equals("*"))
-//								f.set(t, null);
-//							else
-//								f.set(t, Drawing.drawing.createModel(value));
-//						}
-//						else if (f.getType().isEnum())
-//							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
-//						else if (Item.ItemStack.class.isAssignableFrom(f.getType()))
-//						{
-//							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
-//							i.unlimited = true;
-//							i.stackSize = -1;
-//							f.set(t, i);
-//							s = s.substring(s.indexOf("]") + 1);
-//						}
-//						else if (Tank.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
-//						{
-//							TankAIControlled target;
-//
-//							if (value.equals("*"))
-//								target = null;
-//							else if (value.startsWith("<"))
-//							{
-//								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
-//								s = s.substring(s.indexOf(">") + 1);
-//								target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
-//								target.fromRegistry = true;
-//							}
-//							else
-//							{
-//								String[] r = new String[1];
-//								TankAIControlled t2 = TankAIControlled.fromString(s, r);
-//
-//								s = r[0];
-//								target = t2;
-//								s = s.substring(s.indexOf("]") + 1);
-//							}
-//
-//							if (propname.equals("spawned_tank"))
-//							{
-//								if (target != null)
-//									t.spawnedTankEntries.add(new SpawnedTankEntry(target, 1));
-//							}
-//							else
-//								f.set(t, target);
-//						}
-//					}
-//					else
-//						found = false;
-//
-//					if (found)
-//						break;
-//				}
-//
-//				s = s.substring(s.indexOf(";") + 1);
-//			}
-//		}
-//		catch (Exception e)
-//		{
-//			Game.logger.println("Failed to load tank: " + original);
-//			System.err.println("Failed to load tank: " + original);
-//			Game.exitToCrash(e);
-//		}
-//
-//		if (remainder != null)
-//			remainder[0] = s;
-//
-//		return t;
-//	}
+	@Deprecated
+	public static TankAIControlled fromStringLegacy(String s, String[] remainder)
+	{
+		String original = s;
+		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
+
+		try
+		{
+			s = s.substring(s.indexOf("[") + 1);
+			while (s.charAt(0) != ']')
+			{
+				int equals = s.indexOf("=");
+				String value = s.substring(equals + 1, s.indexOf(";"));
+				String propname = s.substring(0, equals);
+
+				for (Field f : TankAIControlled.class.getFields())
+				{
+					boolean found = true;
+
+					Property a = f.getAnnotation(Property.class);
+					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank"))))
+					{
+						if (f.getType().equals(int.class))
+							f.set(t, Integer.parseInt(value));
+						else if (f.getType().equals(double.class))
+							f.set(t, Double.parseDouble(value));
+						else if (f.getType().equals(boolean.class))
+							f.set(t, Boolean.parseBoolean(value));
+						else if (f.getType().equals(String.class))
+						{
+							if (value.equals("*"))
+								f.set(t, null);
+							else if (value.startsWith("\u00A7"))
+							{
+								s = s.substring(equals + 2);
+								int end = s.indexOf("\u00A7");
+								value = s.substring(0, end);
+								s = s.substring(end + 1);
+								f.set(t, value);
+							}
+							else if (value.startsWith("<"))
+							{
+								s = s.substring(equals + 2);
+								int end = s.indexOf(">");
+								int length = Integer.parseInt(s.substring(0, end));
+								value = s.substring(end + 1, end + 1 + length);
+								s = s.substring(end + 1 + length);
+								f.set(t, value);
+							}
+							else
+								f.set(t, value);
+						}
+						else if (a.miscType() == Property.MiscType.music)
+						{
+							int end = s.indexOf("]");
+							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
+							HashSet<String> hashSet;
+							if (csv[0].equals(""))
+								hashSet = new HashSet<>();
+							else
+								hashSet = new HashSet<>(Arrays.asList(csv));
+
+							f.set(t, hashSet);
+						}
+						else if (a.miscType() == Property.MiscType.spawnedTanks && !propname.equals("spawned_tank"))
+						{
+							s = s.substring(s.indexOf("[") + 1);
+							ArrayList<SpawnedTankEntry> entries = (ArrayList<SpawnedTankEntry>) f.get(t);
+
+							TankAIControlled target;
+							while (!s.startsWith("]"))
+							{
+								int x = s.indexOf("x");
+								String s1 = s.substring(0, x);
+								s = s.substring(x + 1);
+								if (s.equals("*"))
+									target = null;
+								else if (s.startsWith("<"))
+								{
+									String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
+									s = s.substring(s.indexOf(">") + 1);
+									target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
+								}
+								else
+								{
+									String[] r = new String[1];
+									TankAIControlled t2 = TankAIControlled.fromStringLegacy(s, r);
+
+									s = r[0];
+									target = t2;
+									s = s.substring(s.indexOf("]") + 1);
+								}
+
+								if (s.startsWith(", "))
+									s = s.substring(2);
+								entries.add(new SpawnedTankEntry(target, Double.parseDouble(s1)));
+							}
+
+							s = s.substring(1);
+						}
+						else if (IModel.class.isAssignableFrom(f.getType()))
+						{
+							if (value.equals("*"))
+								f.set(t, null);
+							else
+								f.set(t, Drawing.drawing.createModel(value));
+						}
+						else if (f.getType().isEnum())
+							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
+						else if (Item.ItemStack.class.isAssignableFrom(f.getType()))
+						{
+							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
+							i.stackSize = 0;
+							f.set(t, i);
+							s = s.substring(s.indexOf("]") + 1);
+						}
+						else if (ITankField.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
+						{
+							TankAIControlled target;
+
+							if (value.equals("*"))
+								target = null;
+							else if (value.startsWith("<"))
+							{
+								String tank = s.substring(s.indexOf("<") + 1, s.indexOf(">"));
+								s = s.substring(s.indexOf(">") + 1);
+								target = (TankAIControlled) Game.registryTank.getEntry(tank).getTank(0, 0, 0);
+								target.fromRegistry = true;
+							}
+							else
+							{
+								String[] r = new String[1];
+								TankAIControlled t2 = TankAIControlled.fromStringLegacy(s, r);
+
+								s = r[0];
+								target = t2;
+								s = s.substring(s.indexOf("]") + 1);
+							}
+
+							if (propname.equals("spawned_tank"))
+							{
+								if (target != null)
+									t.spawnedTankEntries.add(new SpawnedTankEntry(target, 1));
+							}
+							else
+								f.set(t, target);
+						}
+					}
+					else
+						found = false;
+
+					if (found)
+						break;
+				}
+
+				s = s.substring(s.indexOf(";") + 1);
+			}
+		}
+		catch (Exception e)
+		{
+			Game.logger.println("Failed to load tank: " + original);
+			System.err.println("Failed to load tank: " + original);
+			Game.exitToCrash(e);
+		}
+
+		if (remainder != null)
+			remainder[0] = s;
+
+		return t;
+	}
 
 	public TankAIControlled instantiate(String name, double x, double y, double angle)
 	{

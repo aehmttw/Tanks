@@ -285,6 +285,11 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
 
     public static void drawRange2D(double posX, double posY, double size)
     {
+        drawRange2D(posX, posY, size, false);
+    }
+
+    public static void drawRange2D(double posX, double posY, double size, boolean inverted)
+    {
         int faces = (int) (size + 5);
         double r = Drawing.drawing.currentColorR;
         double g = Drawing.drawing.currentColorG;
@@ -297,6 +302,10 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
             double angle = f * Math.PI * 2 / faces;
             double angle2 = (f + 1) * Math.PI * 2 / faces;
             double inner = Math.max(0.5, (size - Game.tile_size * 2) / size);
+
+            if (inverted)
+                inner = 2 - inner;
+
             Drawing.drawing.setColor(r, g, b, a, 1);
             Drawing.drawing.addVertex(posX + Math.cos(angle) * size, posY + Math.sin(angle) * size, 0);
             Drawing.drawing.addVertex(posX + Math.cos(angle2) * size, posY + Math.sin(angle2) * size, 0);
@@ -305,6 +314,8 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
             Drawing.drawing.addVertex(posX + Math.cos(angle) * size * inner, posY + Math.sin(angle) * size * inner, 0);
         }
         Game.game.window.shapeRenderer.setBatchMode(false, true, false);
+
+        Drawing.drawing.setColor(r, g, b, a);
     }
 
     @Override

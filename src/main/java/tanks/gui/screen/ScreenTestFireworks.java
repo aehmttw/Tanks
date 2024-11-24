@@ -11,7 +11,7 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
 
     public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenDebug());
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTestDebug());
 
     Button fireworksMode = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -50,7 +50,7 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
         this.drawDefaultBackground();
         Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
 
-        Drawing.drawing.setInterfaceFontSize(this.titleSize * 4);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize * 2);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Fireworks!!!");
 

@@ -176,7 +176,7 @@ public final class Serializer {
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
         for (Field f : o.getClass().getFields()) {
-            if (f.isAnnotationPresent(Property.class)) {
+            if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f))) {
                 try {
                     Object o2 = f.get(o);
                     if (isTanksONable(f)) {
@@ -206,7 +206,7 @@ public final class Serializer {
                         f.set(o, m.get(getid(f)));
                     else
                         f.set(o, m.get(getid(f)));
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) {ignore.printStackTrace();}
             }
         }
         return o;

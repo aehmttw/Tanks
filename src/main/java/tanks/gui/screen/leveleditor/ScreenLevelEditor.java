@@ -1762,7 +1762,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						((TankAIControlled) o).cloneProperties((TankAIControlled) n);
 					}
 					else
+					{
 						n = (Tank) o.getClass().getConstructor(String.class, double.class, double.class, double.class).newInstance(((Tank) o).name, ((Tank) o).posX + prevMouseObstacle.posX, ((Tank) o).posY + prevMouseObstacle.posY, ((Tank) o).angle);
+						n.musicTracks = Game.registryTank.tankMusics.get(n.name);
+					}
 
 					n.team = ((Tank) o).team;
 					n.destroy = ((Tank) o).destroy;
@@ -1800,6 +1803,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	}
 
 	public void save()
+	{
+		this.save(this.name);
+	}
+
+	public void save(String levelName)
 	{
 		StringBuilder level = new StringBuilder("{");
 
@@ -2014,7 +2022,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		Game.currentLevelString = level.toString();
 
-		BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name);
+		BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName);
 		if (file.exists())
 		{
 			if (!this.level.editable)

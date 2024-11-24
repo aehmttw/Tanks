@@ -22,7 +22,7 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
     }
     );
 
-    public ScreenItemSavedInfo(Screen s, Item.ItemStack<?> i)
+    public ScreenItemSavedInfo(Screen s)
     {
         this.previous = s;
         this.music = this.previous.music;
@@ -44,7 +44,11 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
         this.quit.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(0, 0, 0);
+
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "Item saved to templates!");
     }
 }

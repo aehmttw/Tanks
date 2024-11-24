@@ -26,11 +26,12 @@ public class DisplayFireworks
 
     public DisplayFireworks()
     {
-        this(true);
+        this(true, 1);
     }
 
-    public DisplayFireworks(boolean addOwnFireworks)
+    public DisplayFireworks(boolean addOwnFireworks, double multiplier)
     {
+        this.fireworkMultiplier = multiplier;
         this.addOwnFireworks = addOwnFireworks;
         if (Panel.win && Game.effectsEnabled && addOwnFireworks)
         {

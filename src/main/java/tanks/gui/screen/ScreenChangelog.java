@@ -101,8 +101,7 @@ public class ScreenChangelog extends Screen
         this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1100, 700);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1080, 680);
+        Drawing.drawing.drawPopup(centerX, centerY + 25,1100, 700, 10, 5);
 
         if (pageContents == null)
             pageContents = pages.get(currentPage).split("\n");

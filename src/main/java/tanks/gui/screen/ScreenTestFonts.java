@@ -6,7 +6,7 @@ import tanks.gui.Button;
 
 public class ScreenTestFonts extends Screen
 {
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenDebug()
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTestDebug()
     );
 
     public String boxText = "Draw box: ";

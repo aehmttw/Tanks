@@ -103,9 +103,9 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
 
             delete.textOffsetY = -2.5;
 
-            delete.unselectedColR = 160;
-            delete.unselectedColG = 160;
-            delete.unselectedColB = 160;
+            delete.bgColR = 160;
+            delete.bgColG = 160;
+            delete.bgColB = 160;
 
             delete.selectedColR = 255;
             delete.selectedColG = 0;

@@ -51,6 +51,7 @@ public class BulletArc extends Bullet
         this.trail3d = true;
         this.edgeCollision = false;
         this.showTrace = false;
+        this.revertSpeed = false;
 
         this.autoZ = false;
     }

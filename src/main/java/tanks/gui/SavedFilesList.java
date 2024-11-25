@@ -2,6 +2,7 @@ package tanks.gui;
 
 import basewindow.BaseFile;
 import tanks.BiConsumer;
+import tanks.Drawing;
 import tanks.Function;
 import tanks.Game;
 
@@ -13,10 +14,17 @@ import java.util.HashMap;
 
 public class SavedFilesList extends ButtonList
 {
+    public String directory;
     public boolean sortedByTime = false;
     public BiConsumer<BaseFile, Button> auxiliarySetup = null;
     HashMap<Button, Long> times = new HashMap<>();
     public ArrayList<Button> fileButtons = new ArrayList<>();
+    public boolean drawOpenFileButton = Game.framework == Game.Framework.lwjgl;
+
+    Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2 * 1.35, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
+    {
+        Game.game.fileManager.openFileManager(this.directory);
+    }, "Open folder in file manager");
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {
@@ -38,6 +46,12 @@ public class SavedFilesList extends ButtonList
         super(new ArrayList<>(), page, xOffset, yOffset);
 
         this.auxiliarySetup = auxiliarySetup;
+        this.directory = dir;
+
+        this.openFolder.image = "icons/folder.png";
+        this.openFolder.fullInfo = true;
+        this.openFolder.imageSizeX = 30;
+        this.openFolder.imageSizeY = 30;
 
         BaseFile directory = Game.game.fileManager.getFile(dir);
         if (!directory.exists())
@@ -97,7 +111,10 @@ public class SavedFilesList extends ButtonList
 
     protected SavedFilesList()
     {
-
+        this.openFolder.image = "icons/folder.png";
+        this.openFolder.fullInfo = true;
+        this.openFolder.imageSizeX = 30;
+        this.openFolder.imageSizeY = 30;
     }
 
     public SavedFilesList clone()
@@ -109,6 +126,7 @@ public class SavedFilesList extends ButtonList
         s.auxiliarySetup = this.auxiliarySetup;
         s.buttons = new ArrayList<>();
         s.buttons.addAll(this.buttons);
+        s.directory = this.directory;
 
         return s;
     }
@@ -124,5 +142,23 @@ public class SavedFilesList extends ButtonList
             Collections.sort(this.fileButtons, (o1, o2) -> o1.text.toLowerCase().compareTo(o2.text.toLowerCase()));
 
         this.buttons.addAll(this.fileButtons);
+    }
+
+    @Override
+    public void update()
+    {
+        if (this.drawOpenFileButton)
+            this.openFolder.update();
+
+        super.update();
+    }
+
+    @Override
+    public void draw()
+    {
+        if (this.drawOpenFileButton)
+            this.openFolder.draw();
+
+        super.draw();
     }
 }

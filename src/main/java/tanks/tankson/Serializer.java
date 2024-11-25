@@ -167,7 +167,7 @@ public final class Serializer {
                 o = new Explosion();
                 break;
             case "spawned_tank":
-                o = new TankAIControlled.SpawnedTankEntry((TankReference) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
+                o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
                 break;
             case "tank_ref":
                 o = new TankReference((String) m.get("tank"));

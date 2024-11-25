@@ -172,12 +172,12 @@ public class OverlayTeams extends ScreenLevelEditorOverlay
             if (t.enableColor)
             {
                 Drawing.drawing.setColor(t.teamColorR, t.teamColorG, t.teamColorB);
-                Drawing.drawing.fillOval(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY, b.sizeY * 0.8, b.sizeY * 0.8);
+                Drawing.drawing.fillInterfaceOval(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY, b.sizeY * 0.8, b.sizeY * 0.8);
             }
 
             Drawing.drawing.setColor(255, 255, 255, 200);
             if (!t.friendlyFire)
-                Drawing.drawing.drawImage( "shield.png", b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + 2, 25, 25);
+                Drawing.drawing.drawInterfaceImage( "shield.png", b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + 2, 25, 25);
         }
 
         reorderLevels.draw();

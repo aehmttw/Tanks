@@ -49,6 +49,7 @@ public class BulletAirStrike extends Bullet
         this.moveOut = false;
         this.vZ = 0.1;
         this.autoZ = false;
+        this.revertSpeed = false;
     }
 
     @Override

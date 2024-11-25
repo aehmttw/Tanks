@@ -61,6 +61,7 @@ public class ScreenShareLevel extends Screen
 					}
 				}, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
+		this.allLevels.drawOpenFileButton = true;
 		levels = allLevels.clone();
 		allLevels.sortedByTime = ScreenSavedLevels.sortByTime;
 		allLevels.sort(ScreenSavedLevels.sortByTime);

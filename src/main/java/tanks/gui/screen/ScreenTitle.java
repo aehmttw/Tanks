@@ -12,6 +12,8 @@ import tanks.tank.*;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static basewindow.InputCodes.*;
+
 public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
 	boolean controlPlayer = false;
@@ -27,6 +29,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 	public Face[] horizontalFaces;
 	public Face[] verticalFaces;
+	
+	protected int[] inputs = new int[11];
+	protected int inputCount = 0;
 
 	public int wave = 0;
 
@@ -79,7 +84,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		@Override
 		public void run()
 		{
-			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT))
+			if (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT))
 			{
 				Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (0) / 12.0));
 
@@ -161,6 +166,41 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			about.update();
 
 			this.music = "menu_1.ogg";
+			
+			for (Integer i: Game.game.window.validPressedKeys)
+			{
+				this.inputs[inputCount] = i;
+				inputCount = (inputCount + 1) % inputs.length;
+				
+				if (i == KEY_ENTER)
+				{
+					int[] inputs = new int[]{KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, KEY_B, KEY_A, KEY_ENTER};
+
+					boolean match = true;
+					for (int n = 0; n < inputs.length; n++)
+					{
+						if (this.inputs[(this.inputCount + n) % this.inputs.length] != inputs[n])
+						{
+							match = false;
+							break;
+						}
+					}
+
+					if (match)
+					{
+						Drawing.drawing.playSound("destroy.ogg", 2);
+						for (int c = 0; c < 100; c++)
+						{
+							Button.addEffect(debug.posX, debug.posY, debug.sizeX, debug.sizeY, debug.glowEffects);
+							debug.lastFrame = Panel.panel.ageFrames;
+						}
+
+						Game.debug = true;
+					}
+				}
+			}
+
+			Game.game.window.validPressedKeys.clear();
 		}
 
 		if (this.controlPlayer)
@@ -447,7 +487,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	@Override
 	public void drawPostMouse()
 	{
-		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
+		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
 		{
 			this.logo.draw();
 		}

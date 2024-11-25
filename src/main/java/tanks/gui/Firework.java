@@ -1,8 +1,6 @@
 package tanks.gui;
 
 import basewindow.BaseShapeBatchRenderer;
-import basewindow.ShaderGroup;
-import lwjglwindow.VBOStaticBatchRenderer;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 
 public class Firework extends Movable
 {
-	public static double trailLength = 50;
+	public static final double trail_length = 50;
 
 	public enum FireworkType {rocket, particle, particle_group, trail, flash}
 	public FireworkType type;
@@ -225,7 +223,7 @@ public class Firework extends Movable
 				e.maxAge = 25;
 			}
 
-			if (this.age < this.maxAge + trailLength)
+			if (this.age < this.maxAge + trail_length)
 				next.add(this);
 		}
 		else if (type == FireworkType.trail)
@@ -650,7 +648,7 @@ public class Firework extends Movable
 		public double oX;
 		public double oY;
 
-		public double maxAge = trailLength;
+		public double maxAge = trail_length;
 		public boolean expired = false;
 
 		public Firework firework;

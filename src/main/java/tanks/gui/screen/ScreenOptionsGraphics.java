@@ -403,13 +403,13 @@ public class ScreenOptionsGraphics extends Screen
 
         if (Game.antialiasing != Game.game.window.antialiasingEnabled)
         {
-            antialiasing.unselectedColG = 238;
-            antialiasing.unselectedColB = 220;
+            antialiasing.bgColG = 238;
+            antialiasing.bgColB = 220;
         }
         else
         {
-            antialiasing.unselectedColG = 255;
-            antialiasing.unselectedColB = 255;
+            antialiasing.bgColG = 255;
+            antialiasing.bgColB = 255;
         }
     }
 

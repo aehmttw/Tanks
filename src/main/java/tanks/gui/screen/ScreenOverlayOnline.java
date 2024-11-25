@@ -27,8 +27,8 @@ public class ScreenOverlayOnline extends Screen
 
     public ScreenOverlayOnline()
     {
-        this.disconnect.unselectedColB = 225;
-        this.disconnect.unselectedColG = 225;
+        this.disconnect.bgColB = 225;
+        this.disconnect.bgColG = 225;
 
         this.disconnect.selectedColR = 255;
         this.disconnect.selectedColB = 200;

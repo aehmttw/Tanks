@@ -3,6 +3,15 @@ plugins {
     `maven-publish`
 }
 
+fun get_hash(): String {
+    return Runtime.getRuntime()
+        .exec("git rev-parse --short HEAD")
+        .inputStream
+        .bufferedReader()
+        .readLine()
+        ?.trim() ?: ""
+}
+
 val lwjglVersion = "3.3.4"
 val lwjglNatives = listOf(
     "natives-freebsd",
@@ -48,6 +57,7 @@ dependencies {
 
 group = "com.aehmttw"
 version = rootProject.file("src/main/resources/version.txt").readText().toString().trim()
+rootProject.file("src/main/resources/hash.txt").writeText(get_hash())
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

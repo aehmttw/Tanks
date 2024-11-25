@@ -1,9 +1,7 @@
 package lwjglwindow;
 
 import basewindow.BaseShapeRenderer;
-import basewindow.IBatchRenderableObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -25,10 +23,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glBegin(GL_TRIANGLE_FAN);
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-        {
             glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
-        }
-
         glEnd();
     }
 
@@ -105,10 +100,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glBegin(GL_TRIANGLE_FAN);
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-        {
             glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
-        }
-
         glEnd();
 
         if (depthTest)
@@ -420,7 +412,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         for (int i = 0; i < 4; i++)
         {
-            for (double j = Math.PI * 2 * (order[i] / 4.); j < Math.PI * 2 * (order[i] + 1) / 4; j += Math.PI / 2 / sides)
+            for (double j = Math.PI * 2 * (order[i] / 4.); j - Math.PI * 2 * (order[i] + 1) / 4 < 1e-4; j += Math.PI / 2 / sides)
                 glVertex2d(xs[i] + Math.cos(j) * radius, ys[i] + Math.sin(j) * radius);
         }
 
@@ -433,18 +425,15 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     }
 
     /**
-     * Options byte:
-     *
-     * 0: default
-     *
-     * +1 hide behind face
-     * +2 hide front face
-     * +4 hide bottom face
-     * +8 hide top face
-     * +16 hide left face
-     * +32 hide right face
-     *
-     * +64 draw on top
+     * Options byte:<br>
+     * &nbsp;&nbsp;0 default<br>
+     * +1 hide behind face<br>
+     * +2 hide front face<br>
+     * +4 hide bottom face<br>
+     * +8 hide top face<br>
+     * +16 hide left face<br>
+     * +32 hide right face<br>
+     * +64 draw on top<br>
      * */
     public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options, String texture)
     {

@@ -82,6 +82,7 @@ public class ScreenSavedLevels extends Screen
 				},
 				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
+		fullSavedLevelsList.drawOpenFileButton = true;
 		fullSavedLevelsList.sortedByTime = sortByTime;
 		fullSavedLevelsList.sort(sortByTime);
 

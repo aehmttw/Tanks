@@ -57,6 +57,7 @@ public class ScreenShareCrusade extends Screen
 
 				}, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
+		this.allCrusades.drawOpenFileButton = true;
 		crusades = allCrusades.clone();
 
 		allCrusades.sortedByTime = ScreenCrusades.sortByTime;

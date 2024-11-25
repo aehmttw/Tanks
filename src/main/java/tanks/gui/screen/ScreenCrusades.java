@@ -110,6 +110,7 @@ public class ScreenCrusades extends Screen
 		addCrusade("castle_crusade", "Invade, defend, and demolish---10 vast castles crawling with---some of the most difficult tanks!");
 		addCrusade("beginner_crusade", "An easy crusade serving as---good practice for beginners!");
 
+		fullCrusadesList.drawOpenFileButton = true;
 		fullCrusadesList.sortedByTime = sortByTime;
 		fullCrusadesList.sort(sortByTime);
 		crusadesList = fullCrusadesList.clone();

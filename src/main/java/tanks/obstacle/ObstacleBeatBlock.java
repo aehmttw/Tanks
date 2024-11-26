@@ -1,6 +1,8 @@
 package tanks.obstacle;
 
+import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
+import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenGame;
@@ -17,6 +19,7 @@ public class ObstacleBeatBlock extends Obstacle
     public double outlineColorB;
 
     protected boolean lastOn = false;
+    protected boolean firstUpdate = true;
 
     public ObstacleBeatBlock(String name, double posX, double posY)
     {
@@ -56,8 +59,12 @@ public class ObstacleBeatBlock extends Obstacle
         this.bulletCollision = on;
         this.tankCollision = on;
 
-        if (this.tankCollision != lastOn)
+        if (this.tankCollision != lastOn || firstUpdate)
         {
+            if (firstUpdate)
+                this.postOverride();
+
+            this.firstUpdate = false;
             int x = (int) (this.posX / Game.tile_size);
             int y = (int) (this.posY / Game.tile_size);
 
@@ -250,5 +257,4 @@ public class ObstacleBeatBlock extends Obstacle
         this.beatFrequency = Math.pow(2, this.groupID / 2);
         this.initialize();
     }
-
 }

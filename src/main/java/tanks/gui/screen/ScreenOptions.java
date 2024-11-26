@@ -33,6 +33,11 @@ public class ScreenOptions extends Screen
 			soundOptions.setHoverText("Sound is disabled because there---are no sound devices connected------To use sound, connect a sound---device and restart the game");
 			soundOptions.enableHover = true;
 		}
+
+		this.openFolder.image = "icons/folder.png";
+		this.openFolder.imageSizeX = 30;
+		this.openFolder.imageSizeY = 30;
+		this.openFolder.imageXOffset = -145;
 	}
 
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
@@ -76,7 +81,13 @@ public class ScreenOptions extends Screen
 
 	Button speedrunOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
 
-	Button miscOptions = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
+	Button miscOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
+
+	Button openFolder = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Open game folder", () ->
+	{
+		Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath);
+	});
+
 
 	@Override
 	public void update()
@@ -96,6 +107,7 @@ public class ScreenOptions extends Screen
 		personalize.update();
 
 		miscOptions.update();
+		openFolder.update();
 
 		back.update();
 	}
@@ -110,6 +122,7 @@ public class ScreenOptions extends Screen
 		inputOptions.draw();
 		graphicsOptions.draw();
 		speedrunOptions.draw();
+		openFolder.draw();
 
 		if (Game.framework == Game.Framework.libgdx)
 			interfaceOptionsMobile.draw();

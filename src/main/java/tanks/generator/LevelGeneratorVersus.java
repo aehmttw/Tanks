@@ -108,14 +108,67 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 		for (String si: items)
 		{
-			Item.ShopItem i = Item.ShopItem.fromString(si);
+			Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
+			int price = 0;
 
-			// TODO
-			if (i.itemStack.item.name.equals("Basic bullet") || i.itemStack.item.name.equals("Basic mine") || i.itemStack.item.name.equals("Laser"))
-				continue;
+			switch (i.item.name)
+			{
+				case "Fire bullet":
+					price = 5;
+					break;
+				case "Bouncy fire bullet":
+					price = 10;
+					break;
+				case "Mega mine":
+					price = 25;
+					break;
+				case "Zap":
+					price = 15;
+					break;
+				case "Shield":
+					price = 50;
+					break;
+				case "Freezing bullet":
+					price = 10;
+					break;
+				case "Flamethrower":
+					price = 4;
+					break;
+				case "Mega bullet":
+					price = 15;
+					break;
+				case "Artillery shell":
+					price = 5;
+					break;
+				case "Healing ray":
+					price = 25;
+					break;
+				case "Explosive bullet":
+					price = 10;
+					break;
+				case "Booster":
+					price = 10;
+					break;
+				case "Mini bullet":
+					price = 5;
+					break;
+				case "Dark fire bullet":
+					price = 10;
+					break;
+				case "Homing bullet":
+					price = 25;
+					break;
+				case "Air":
+					price = 8;
+					break;
+				default:
+					continue;
+			}
 
-			i.itemStack.item.name = Translation.translate(i.itemStack.item.name);
-			itemsString.append(i.toString()).append("\n");
+			i.item.name = Translation.translate(i.item.name);
+			Item.ShopItem s = new Item.ShopItem(i);
+			s.price = price;
+			itemsString.append(s.toString()).append("\n");
 		}
 
 		StringBuilder s = new StringBuilder(itemsString.toString() + "level\n{" + width + "," + height + "," + r + "," + g + "," + b + ",20,20,20," + time + "," + (int) light + "," + (int) (light * shadeFactor) + "|");

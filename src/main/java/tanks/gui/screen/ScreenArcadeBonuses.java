@@ -22,6 +22,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     public int originalScore;
     public double lastPoints = -1000;
     public int fireworksToSpawn = 0;
+    public int fireworksSpawned = 0;
     public double fireworkCooldown = 0;
     public double fireworkCooldownMultiplier = 1;
     public int pointsPerFirework = 5;
@@ -373,9 +374,10 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         if (bonusCount >= 4)
         {
+            int p = bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value;
             Drawing.drawing.setColor(255, 255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Total: " + (bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Total: " + p);
         }
 
         this.drawPoints();
@@ -393,6 +395,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             if (fireworksToSpawn > 0 && fireworkCooldown <= 0)
             {
                 fireworksToSpawn--;
+                fireworksSpawned++;
                 fireworkCooldown = (Math.random() * 5 + 2.5) / 2 * fireworkCooldownMultiplier;
                 Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 5, this.fireworksDisplay.getFireworkArray());
                 f.setRandomColor();

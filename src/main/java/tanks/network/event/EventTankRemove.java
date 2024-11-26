@@ -31,6 +31,9 @@ public class EventTankRemove extends PersonalEvent
         if (t == null)
             return;
 
+        t.vX = 0;
+        t.vY = 0;
+
         if (destroyAnimation)
             t.destroy = true;
         else

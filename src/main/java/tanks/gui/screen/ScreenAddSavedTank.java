@@ -44,6 +44,12 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
     public Button lastTankPage = new Button(this.centerX + 500, this.centerY + this.objYSpace * 3, 40, 40, "", () -> tankPage = (tankButtons.size() - 1) / objectButtonRows / objectButtonCols);
 
+    Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
+    {
+        Game.game.fileManager.openFileManager(Game.homedir + Game.tankDir);
+    }, "Open folder in file manager");
+
+
     public Button quit = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", new Runnable()
     {
         @Override
@@ -83,6 +89,11 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         this.music = ((Screen) tankScreen).music;
         this.musicID = ((Screen) tankScreen).musicID;
         this.tankScreen = tankScreen;
+
+        this.openFolder.image = "icons/folder.png";
+        this.openFolder.fullInfo = true;
+        this.openFolder.imageSizeX = 30;
+        this.openFolder.imageSizeY = 30;
 
         int rows = objectButtonRows;
         int cols = objectButtonCols;
@@ -437,6 +448,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         }
 
         deleteMode.update();
+        openFolder.update();
         quit.update();
     }
 
@@ -503,6 +515,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select an existing tank to serve as the base for your new tank");
 
         deleteMode.draw();
+        openFolder.draw();
         quit.draw();
     }
 

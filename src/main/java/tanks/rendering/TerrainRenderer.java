@@ -3,6 +3,7 @@ package tanks.rendering;
 import basewindow.*;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
@@ -603,9 +604,9 @@ public class TerrainRenderer
                     o.draw();
             }
 
-            for (int[] t : Game.redrawGroundTiles)
+            for (Game.GroundTile t : Game.redrawGroundTiles)
             {
-                this.drawTile(t[0], t[1]);
+                this.drawTile(t.x, t.y);
             }
 
             Game.redrawObstacles.clear();

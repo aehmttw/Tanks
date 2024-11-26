@@ -44,6 +44,12 @@ public class EventTankUpdateHealth extends PersonalEvent
 			e.radius = t.health - 1;
 			Game.effects.add(e);
 		}
+
+		if (t.health <= 0)
+		{
+			t.vX = 0;
+			t.vY = 0;
+		}
 	}
 
 	@Override

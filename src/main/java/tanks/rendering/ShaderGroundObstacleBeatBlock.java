@@ -12,7 +12,7 @@ public class ShaderGroundObstacleBeatBlock extends RendererShader implements IOb
 
     public ShaderGroundObstacleBeatBlock(BaseWindow w)
     {
-        super(w, "ground_obstacles");
+        super(w, "ground_obstacle_beat");
     }
 
     @Override

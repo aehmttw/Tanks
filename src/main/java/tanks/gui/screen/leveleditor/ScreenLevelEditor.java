@@ -412,7 +412,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				if (m instanceof Tank && !m.destroy)
 				{
-					this.tankMusics.addAll(((Tank) m).musicTracks);
+					if (((Tank)m).musicTracks != null)
+						this.tankMusics.addAll(((Tank) m).musicTracks);
 				}
 			}
 
@@ -1139,7 +1140,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && Game.enable3d)
 			{
-				Game.redrawGroundTiles.add(new int[]{x, y});
+				Game.redrawGroundTiles.add(new Game.GroundTile(x, y));
 
 				if (o.bulletCollision)
 				{

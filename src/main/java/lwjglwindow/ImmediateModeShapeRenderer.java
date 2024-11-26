@@ -127,10 +127,13 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
 
         glBegin(GL_TRIANGLES);
-        for (double i = start; i < end; i += (end - start) / sides)
+        for (double i = 0; i < sides; i++)
         {
-            glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
-            glVertex2d(x + Math.cos(i + 1) * sX / 2, y + Math.sin(i + 1) * sY / 2);
+            double a = Math.PI * 2 * ((i / sides) * (end - start) + start);
+            double a1 = Math.PI * 2 * (((i + 1) / sides) * (end - start) + start);
+
+            glVertex2d(x + Math.cos(a) * sX / 2, y + Math.sin(a) * sY / 2);
+            glVertex2d(x + Math.cos(a1) * sX / 2, y + Math.sin(a1) * sY / 2);
             glVertex2d(x, y);
         }
 
@@ -826,7 +829,9 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             double maxJ = Math.PI * 2 * (order[i] + 1) / 4;
 
             for (double j = Math.PI * 2 * (order[i] / 4.); j <= maxJ + change / 2; j += change)
+            {
                 glVertex2d(xs[i] + Math.cos(j) * radius, ys[i] + Math.sin(j) * radius);
+            }
 
             int nextI = (i + 1) % 4;
             glVertex2d(xs[nextI] + xRadius[i], ys[nextI] + yRadius[i]);

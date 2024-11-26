@@ -19,7 +19,7 @@ public class SavedFilesList extends ButtonList
     public BiConsumer<BaseFile, Button> auxiliarySetup = null;
     HashMap<Button, Long> times = new HashMap<>();
     public ArrayList<Button> fileButtons = new ArrayList<>();
-    public boolean drawOpenFileButton = Game.framework == Game.Framework.lwjgl;
+    public boolean drawOpenFileButton = false;
 
     Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2 * 1.35, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
     {
@@ -127,6 +127,7 @@ public class SavedFilesList extends ButtonList
         s.buttons = new ArrayList<>();
         s.buttons.addAll(this.buttons);
         s.directory = this.directory;
+        s.drawOpenFileButton = this.drawOpenFileButton;
 
         return s;
     }
@@ -156,9 +157,9 @@ public class SavedFilesList extends ButtonList
     @Override
     public void draw()
     {
+        super.draw();
+
         if (this.drawOpenFileButton)
             this.openFolder.draw();
-
-        super.draw();
     }
 }

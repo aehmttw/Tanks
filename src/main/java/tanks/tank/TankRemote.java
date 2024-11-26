@@ -136,6 +136,13 @@ public class TankRemote extends Tank
 
 		super.update();
 
+		if (this.destroy)
+		{
+			this.vX = 0;
+			this.vY = 0;
+			return;
+		}
+
 		double pvx = this.prevKnownVXFinal;
 		double pvy = this.prevKnownVYFinal;
 		double cvx = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;

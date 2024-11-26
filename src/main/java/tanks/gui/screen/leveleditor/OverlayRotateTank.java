@@ -80,9 +80,9 @@ public class OverlayRotateTank extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-//        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 600, 450);
-//        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 580, 430);
-        Drawing.drawing.drawPopup(centerX, centerY - 15,550, 420, 10, 5);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 600, 450);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 580, 430);
+//        Drawing.drawing.drawPopup(centerX, centerY - 15,550, 420, 10, 5);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

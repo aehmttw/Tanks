@@ -875,6 +875,39 @@ public class Drawing
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
 
+	public void fillRoundedInterfaceRect(double x, double y, double sizeX, double sizeY, double radius)
+	{
+		double ox = Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2;
+		double oy = Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2;
+		double drawX = interfaceScale * (x - sizeX / 2 + radius) + ox;
+		double drawY = interfaceScale * (y - sizeY / 2) + oy;
+
+		double drawX2 = interfaceScale * (x - sizeX / 2) + ox;
+		double drawY2 = interfaceScale * (y - sizeY / 2 + radius) + oy;
+
+		double drawX3 = interfaceScale * (x + sizeX / 2 - radius) + ox;
+
+		double drawX4 = interfaceScale * (x + sizeX / 2 - radius * 2) + ox;
+		double drawY4 = interfaceScale * (y + sizeY / 2 - radius * 2) + oy;
+
+		double drawSizeX = ((sizeX - radius * 2) * interfaceScale);
+		double drawSizeY = ((sizeY) * interfaceScale);
+
+		double drawSizeX2 = (radius * interfaceScale);
+		double drawSizeY2 = ((sizeY - radius * 2) * interfaceScale);
+
+		double drawRadius = radius * interfaceScale * 2;
+
+		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
+		Game.game.window.shapeRenderer.fillRect(drawX2, drawY2, drawSizeX2, drawSizeY2);
+		Game.game.window.shapeRenderer.fillRect(drawX3, drawY2, drawSizeX2, drawSizeY2);
+		Game.game.window.shapeRenderer.fillPartialOval(drawX2, drawY, drawRadius, drawRadius, 0.5, 0.75);
+		Game.game.window.shapeRenderer.fillPartialOval(drawX4, drawY, drawRadius, drawRadius, 0.75, 1);
+		Game.game.window.shapeRenderer.fillPartialOval(drawX2, drawY4, drawRadius, drawRadius, 0.25, 0.5);
+		Game.game.window.shapeRenderer.fillPartialOval(drawX4, drawY4, drawRadius, drawRadius, 0, 0.25);
+
+	}
+
 	public void fillInterfaceRect(double x, double y, double sizeX, double sizeY, double borderRadius)
 	{
 		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);

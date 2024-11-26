@@ -19,9 +19,7 @@ import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.item.ItemShield;
-import tanks.minigames.Arcade;
-import tanks.minigames.Minigame;
-import tanks.minigames.TeamDeathmatch;
+import tanks.minigames.*;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SteamNetworkHandler;
@@ -76,7 +74,30 @@ public class Game
 	/**
 	 * Ground tiles that need to be redrawn due to obstacles being added/removed over them
 	 */
-	public static HashSet<int[]> redrawGroundTiles = new HashSet<>();
+	public static class GroundTile
+	{
+		public int x;
+		public int y;
+		public GroundTile(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public boolean equals(Object o)
+		{
+			return o instanceof GroundTile && ((GroundTile) o).x == this.x && ((GroundTile) o).y == this.y;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(x, y);
+		}
+	}
+
+	public static HashSet<GroundTile> redrawGroundTiles = new HashSet<>();
 
 	public static Player player;
 
@@ -538,7 +559,9 @@ public class Game
 		registerItem(ItemMine.class, ItemMine.item_class_name, "mine.png");
 		registerItem(ItemShield.class, ItemShield.item_class_name, "shield.png");
 
-		registerMinigame(Arcade.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
+
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 
 		TankPlayer.default_bullet = new Bullet();
@@ -841,14 +864,14 @@ public class Game
 		int y = (int) (o.posY / Game.tile_size);
 
 		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
-			Game.redrawGroundTiles.add(new int[]{x, y});
+			Game.redrawGroundTiles.add(new GroundTile(x, y));
 
 		if (Game.enable3d && (!Game.fancyTerrain || !Game.enable3dBg))
 		{
-			if (x > 0) Game.redrawGroundTiles.add(new int[]{x - 1, y});
-			if (x < Game.currentSizeX - 1)  Game.redrawGroundTiles.add(new int[]{x + 1, y});
-			if (y > 0) Game.redrawGroundTiles.add(new int[]{x, y - 1});
-			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new int[]{x, y + 1});
+			if (x > 0) Game.redrawGroundTiles.add(new GroundTile(x - 1, y));
+			if (x < Game.currentSizeX - 1)  Game.redrawGroundTiles.add(new GroundTile(x + 1, y));
+			if (y > 0) Game.redrawGroundTiles.add(new GroundTile(x, y - 1));
+			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new GroundTile(x, y + 1));
 		}
 	}
 

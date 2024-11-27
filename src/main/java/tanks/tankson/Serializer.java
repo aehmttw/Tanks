@@ -76,42 +76,56 @@ public final class Serializer {
         return f.getAnnotation(Property.class).id();
     }
 
-    public static Map<String, Object> toMap(Object o) {
-        if (isTanksONable(o)) {
+    public static Map<String, Object> toMap(Object o)
+    {
+        if (isTanksONable(o))
+        {
             HashMap<String, Object> p = new HashMap<>();
             p.put("obj_type", getAnnotation(o, TanksONable.class).value());
             if (o instanceof Item)
-                try {
+                try
+                {
                     p.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
-                } catch (Exception ignore){}
+                }
+                catch (Exception ignore) {}
             else if (o instanceof Bullet)
                 p.put("bullet_type", ((Bullet) o).typeName);
 
-            for (Field f : o.getClass().getFields()){
-                try {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(o.getClass())), f.get(o)))) {
+            for (Field f : o.getClass().getFields())
+            {
+                try
+                {
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(o.getClass())), f.get(o))))
+                    {
                         Object o2 = f.get(o);
-                        if (isTanksONable(f)) {
+                        if (isTanksONable(f))
                             p.put(getid(f), toMap(o2));
-                        } else if (o2 instanceof ArrayList) {
-                            if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0))){
-                                ArrayList<Map<String,Object>> o3s = new ArrayList<>();
-                                for (Object o3 : ((ArrayList) o2)) {
+                        else if (o2 instanceof ArrayList)
+                        {
+                            if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
+                            {
+                                ArrayList<Map<String, Object>> o3s = new ArrayList<>();
+                                for (Object o3 : ((ArrayList) o2))
+                                {
                                     o3s.add(toMap(o3));
                                 }
                                 p.put(getid(f), o3s);
-                            } else {
+                            }
+                            else
+                            {
                                 p.put(getid(f), f.get(o));
                             }
-                        } else if (o2 instanceof Enum) {
-                            p.put(getid(f), ((Enum) o2).name());
-                        } else if (o2 instanceof Serializable) {
-                            p.put(getid(f), ((Serializable) o2).serialize());
-                        } else {
-                            p.put(getid(f), f.get(o));
                         }
+                        else if (o2 instanceof Enum)
+                            p.put(getid(f), ((Enum) o2).name());
+                        else if (o2 instanceof Serializable)
+                            p.put(getid(f), ((Serializable) o2).serialize());
+                        else
+                            p.put(getid(f), f.get(o));
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     Game.exitToCrash(e);
                 }
             }

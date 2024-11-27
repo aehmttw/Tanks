@@ -65,6 +65,7 @@ public class EventShootBullet extends PersonalEvent
 			else if (this.item < 0)
 			{
 				Item i = Game.currentLevel.clientStartingItems.get(-this.item - 1).item;
+
 				if (i instanceof ItemBullet)
 					sb = ((ItemBullet) i).bullet;
 			}

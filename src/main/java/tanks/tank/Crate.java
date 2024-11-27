@@ -87,7 +87,7 @@ public class Crate extends Movable
         }
     }
 
-    public void fillOutlineRect(double x, double y, double size)
+    public static void fillOutlineRect(double x, double y, double size)
     {
         double border = size / 10;
 

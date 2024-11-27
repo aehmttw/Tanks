@@ -696,7 +696,15 @@ public class TankAIControlled extends Tank implements ITankField
 			if (this.cooldown <= 0)
 			{
 				this.aim = false;
-				double range = this.bullet.lifespan * this.bullet.speed * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+
+				double lifeRange = this.bullet.lifespan * this.bullet.speed * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				double limitRange = this.bullet.getRangeMax();
+				double range = Math.min(limitRange, lifeRange);
+
+				if (limitRange <= 0)
+					range = lifeRange;
+				else if (lifeRange <= 0)
+					range = limitRange;
 
 				if (arc && (this.distance <= range || range <= 0))
 				{

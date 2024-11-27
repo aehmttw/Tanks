@@ -8,6 +8,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.minigames.Arcade;
+import tanks.minigames.RampageTrial;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
 
@@ -148,7 +149,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 		t.setNetworkID(this.networkID);
 
-		if (Game.currentLevel instanceof Arcade && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
+		if ((Game.currentLevel instanceof Arcade || Game.currentLevel instanceof RampageTrial) && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
 			t.invulnerabilityTimer = 250;
 
 		Game.movables.add(t);

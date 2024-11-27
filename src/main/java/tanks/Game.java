@@ -139,7 +139,7 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 56;
+    public static final int network_protocol = 57;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -368,6 +368,7 @@ public class Game
 		NetworkEventMap.register(EventBulletStunEffect.class);
 		NetworkEventMap.register(EventBulletUpdateTarget.class);
 		NetworkEventMap.register(EventBulletReboundIndicator.class);
+		NetworkEventMap.register(EventAddObstacleBullet.class);
 		NetworkEventMap.register(EventLayMine.class);
 		NetworkEventMap.register(EventMineRemove.class);
 		NetworkEventMap.register(EventMineChangeTimer.class);
@@ -495,8 +496,7 @@ public class Game
 		Panel.initialize();
 		Game.exitToTitle();
 
-		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent
-		);
+		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
 		steamNetworkHandler = new SteamNetworkHandler();
 		steamNetworkHandler.load();
@@ -553,6 +553,7 @@ public class Game
 		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, "bullet_laser.png");
 		registerBullet(BulletGas.class, BulletGas.bullet_class_name, "bullet_flame.png");
 		registerBullet(BulletArc.class, BulletArc.bullet_class_name, "bullet_arc.png");
+		registerBullet(BulletBlock.class, BulletBlock.bullet_class_name, "bullet_block.png");
 		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, "bullet_fire.png");
 
 		registerItem(ItemBullet.class, ItemBullet.item_class_name, "bullet_normal.png");
@@ -561,6 +562,7 @@ public class Game
 
 		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
+		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 

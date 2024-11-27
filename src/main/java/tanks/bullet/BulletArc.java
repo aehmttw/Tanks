@@ -25,6 +25,8 @@ public class BulletArc extends Bullet
     @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
     public double accuracySpreadCircle = 0;
 
+    protected double warningIndicatorTime = 100;
+
     public BulletArc()
     {
         this.init();
@@ -100,11 +102,16 @@ public class BulletArc extends Bullet
                 this.destroy = true;
             }
 
-            Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
+            this.playArcPop();
         }
 
         if (!this.destroy)
             this.angle = this.getPolarDirection();
+    }
+
+    public void playArcPop()
+    {
+        Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
     }
 
     public void draw()
@@ -112,9 +119,7 @@ public class BulletArc extends Bullet
         if (this.delay > 0)
             return;
 
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
-        Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
-        Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
+        this.drawShadow();
 
         if (!Game.enable3d)
             this.posY -= this.posZ - Game.tile_size / 4;
@@ -129,24 +134,33 @@ public class BulletArc extends Bullet
         if (destroy)
             time = 0;
 
-        double limit = 100;
-        if (time <= limit && !ScreenGame.finishedQuick)
+        if (time <= warningIndicatorTime && !ScreenGame.finishedQuick)
         {
             double frac;
 
-            frac = 1 - time / limit;
+            frac = 1 - time / warningIndicatorTime;
+            this.drawCursor(frac, this.posX + this.vX * time, this.posY + this.vY * time);
+        }
+    }
 
-            double s = (1.5 - frac) * this.size * 4;
-            double d = Math.max(1 - (this.destroyTimer / this.maxDestroyTimer) * 2, 0);
+    public void drawShadow()
+    {
+        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
+        Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
+        Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
+    }
 
-            Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
-            Drawing.drawing.drawImage(frac * Math.PI / 2, "cursor.png", this.posX + this.vX * time, this.posY + this.vY * time, s, s);
+    public void drawCursor(double frac, double x, double y)
+    {
+        double s = (1.5 - frac) * this.size * 4;
+        double d = Math.max(1 - (this.destroyTimer / this.maxDestroyTimer) * 2, 0);
+        Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+        Drawing.drawing.drawImage(frac * Math.PI / 2, "cursor.png", x, y, s, s);
 
-            if (Game.glowEnabled)
-            {
-                Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
-                Drawing.drawing.fillGlow(this.posX + this.vX * time, this.posY + this.vY * time, this.size * 4, this.size * 4);
-            }
+        if (Game.glowEnabled)
+        {
+            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+            Drawing.drawing.fillGlow(x, y, this.size * 4, this.size * 4);
         }
     }
 

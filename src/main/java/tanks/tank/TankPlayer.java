@@ -108,6 +108,9 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
 		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
 		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
+		this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
+		this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
+		this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
 	}
 
 	@Override
@@ -498,7 +501,12 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		if (b.moveOut)
 			b.moveOut(Math.signum(speed) * this.turretLength * this.size / Game.tile_size);
 
-		b.setTargetLocation(this.mouseX, this.mouseY);
+		double mx = this.mouseX - this.posX;
+		double my = this.mouseY - this.posY;
+
+		double tx = Math.cos(offset) * mx + Math.sin(offset) * my;
+		double ty = -Math.sin(offset) * mx + Math.cos(offset) * my;
+		b.setTargetLocation(this.posX + tx, this.posY + ty);
 
 		Integer num = 0;
 		if (Game.currentLevel != null)

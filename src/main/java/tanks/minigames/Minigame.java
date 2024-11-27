@@ -24,6 +24,7 @@ public abstract class Minigame extends Level
     public boolean enableKillMessages = false;
     public boolean customLevelEnd = false;
     public boolean hideSpeedrunTimer = false;
+    public boolean forceSpeedrunTimer = false;
     public boolean noLose = false;
     public boolean disableEndMusic = false;
     public boolean customIntroMusic = false;

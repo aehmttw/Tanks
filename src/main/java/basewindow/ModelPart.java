@@ -23,6 +23,8 @@ public abstract class ModelPart implements IModel
         public double y;
         public double z;
 
+        public double[] color = null;
+
         public Model.Bone[] bones;
         public double[] boneWeights;
 
@@ -31,6 +33,14 @@ public abstract class ModelPart implements IModel
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+
+        public Point(double x, double y, double z, double[] col)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.color = col;
         }
     }
 
@@ -43,6 +53,15 @@ public abstract class ModelPart implements IModel
             this.points[1] = b;
             this.points[2] = c;
             this.brightness = brightness;
+
+            if (a.color != null)
+                this.colors[0] = a.color;
+
+            if (b.color != null)
+                this.colors[1] = b.color;
+
+            if (c.color != null)
+                this.colors[2] = c.color;
         }
 
         public Triangle(Point a, Point b, Point c, Point ta, Point tb, Point tc, Point na, Point nb, Point nc, double[] ca, double[] cb, double[] cc)
@@ -66,6 +85,15 @@ public abstract class ModelPart implements IModel
             this.colors[0] = ca;
             this.colors[1] = cb;
             this.colors[2] = cc;
+
+            if (a.color != null)
+                this.colors[0] = a.color;
+
+            if (b.color != null)
+                this.colors[1] = b.color;
+
+            if (c.color != null)
+                this.colors[2] = c.color;
         }
     }
 

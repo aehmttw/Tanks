@@ -234,7 +234,12 @@ public class Model implements IModel, Serializable
             if (s.startsWith("v "))
             {
                 String[] sections = s.split(" ");
-                this.points.add(new ModelPart.Point(Double.parseDouble(sections[1]), -Double.parseDouble(sections[2]), Double.parseDouble(sections[3])));
+
+                if (sections.length >= 7)
+                    this.points.add(new ModelPart.Point(Double.parseDouble(sections[1]), -Double.parseDouble(sections[2]), Double.parseDouble(sections[3]),
+                            new double[]{Double.parseDouble(sections[4]), Double.parseDouble(sections[5]), Double.parseDouble(sections[6]), 1}));
+                else
+                    this.points.add(new ModelPart.Point(Double.parseDouble(sections[1]), -Double.parseDouble(sections[2]), Double.parseDouble(sections[3])));
             }
 
             if (s.startsWith("vt "))

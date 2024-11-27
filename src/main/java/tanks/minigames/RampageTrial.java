@@ -37,7 +37,7 @@ public class RampageTrial extends Minigame
     {
         super(level);
         this.customLevelEnd = true;
-        this.hideSpeedrunTimer = true;
+        this.forceSpeedrunTimer = true;
         this.noLose = true;
         this.disableEndMusic = true;
         this.customIntroMusic = true;

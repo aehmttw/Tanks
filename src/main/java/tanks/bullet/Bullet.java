@@ -44,6 +44,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public boolean canBeCanceled = true;
 	public boolean moveOut = true;
 
+	public boolean respectXRay = true;
+
 	@Property(id = "bounces", minValue = 0.0, name = "Bounces", category = BulletPropertyCategory.travel, desc = "The bullet will bounce off blocks this many times before being destroyed on impact")
 	public int bounces = 1;
 	public int bouncyBounces = 100;
@@ -1675,7 +1677,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 			if (Game.enable3d)
 			{
-				if (Game.xrayBullets)
+				if (Game.xrayBullets && this.respectXRay)
 					Drawing.drawing.fillOval(posX, posY, posZ - 0.5, size + sizeModifier, size + sizeModifier, false, true);
 				Drawing.drawing.fillOval(posX, posY, posZ, size + sizeModifier, size + sizeModifier);
 			}

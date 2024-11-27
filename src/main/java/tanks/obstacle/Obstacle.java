@@ -87,6 +87,7 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public double baseGroundHeight;
 
 	public boolean shouldClip = false;
+	public int clipFrames = 0;
 
 	public Obstacle(String name, double posX, double posY)
 	{
@@ -227,7 +228,12 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 
 	public void update()
 	{
-
+		this.clipFrames--;
+		if (this.clipFrames <= 0)
+		{
+			this.update = false;
+			this.shouldClip = false;
+		}
 	}
 
 	public void reactToHit(double bx, double by)

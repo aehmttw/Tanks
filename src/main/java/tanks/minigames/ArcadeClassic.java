@@ -1,9 +1,5 @@
 package tanks.minigames;
 
-import tanks.Game;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleBeatBlock;
-
 public class ArcadeClassic extends Arcade
 {
     public ArcadeClassic()

@@ -161,6 +161,9 @@ public class LevelGeneratorVersus extends LevelGenerator
 				case "Air":
 					price = 8;
 					break;
+				case "Block":
+					price = 5;
+					break;
 				default:
 					continue;
 			}

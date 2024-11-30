@@ -717,99 +717,7 @@ public class Game
 
 	public static void createModels()
 	{
-		Tank.health_model = Drawing.drawing.createModel();
-
 		TankModels.initialize();
-
-		double innerHealthEdge = 0.55;
-		double outerHealthEdge = 0.575;
-		double lengthMul = 1.2;
-		double healthHeight = 0.025;
-		Tank.health_model.shapes = new ModelPart.Shape[16];
-
-		Tank.health_model.shapes[0] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, innerHealthEdge, 0),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, innerHealthEdge, 0), 0.4);
-		Tank.health_model.shapes[1] = new ModelPart.Quad(
-				new ModelPart.Point(innerHealthEdge * lengthMul, -innerHealthEdge, 0),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -innerHealthEdge, 0),
-				new ModelPart.Point(outerHealthEdge * lengthMul, outerHealthEdge, 0),
-				new ModelPart.Point(innerHealthEdge * lengthMul, outerHealthEdge, 0), 0.4);
-		Tank.health_model.shapes[2] = new ModelPart.Quad(
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -innerHealthEdge, 0),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, 0), 0.4);
-		Tank.health_model.shapes[3] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, innerHealthEdge, 0),
-				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, 0),
-				new ModelPart.Point(innerHealthEdge * lengthMul, outerHealthEdge, 0),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.4);
-
-		Tank.health_model.shapes[4] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.6);
-		Tank.health_model.shapes[5] = new ModelPart.Quad(
-				new ModelPart.Point(outerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.6);
-		Tank.health_model.shapes[6] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, 0),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -outerHealthEdge, 0), 0.8);
-		Tank.health_model.shapes[7] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, 0),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, outerHealthEdge, 0), 0.8);
-
-		Tank.health_model.shapes[8] = new ModelPart.Quad(
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, 0),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, innerHealthEdge, 0), 0.6);
-		Tank.health_model.shapes[9] = new ModelPart.Quad(
-				new ModelPart.Point(innerHealthEdge * lengthMul, -innerHealthEdge, 0),
-				new ModelPart.Point(innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, 0), 0.6);
-		Tank.health_model.shapes[10] = new ModelPart.Quad(
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, 0),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, -innerHealthEdge, 0), 0.8);
-		Tank.health_model.shapes[11] = new ModelPart.Quad(
-				new ModelPart.Point(-innerHealthEdge * lengthMul, innerHealthEdge, 0),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, 0), 0.8);
-
-		Tank.health_model.shapes[12] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, innerHealthEdge, healthHeight), 1);
-		Tank.health_model.shapes[13] = new ModelPart.Quad(
-				new ModelPart.Point(innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, outerHealthEdge, healthHeight), 1);
-		Tank.health_model.shapes[14] = new ModelPart.Quad(
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -outerHealthEdge, healthHeight),
-				new ModelPart.Point(outerHealthEdge * lengthMul, -innerHealthEdge, healthHeight),
-				new ModelPart.Point(-innerHealthEdge * lengthMul, -innerHealthEdge, healthHeight), 1);
-		Tank.health_model.shapes[15] = new ModelPart.Quad(
-				new ModelPart.Point(-outerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, innerHealthEdge, healthHeight),
-				new ModelPart.Point(innerHealthEdge * lengthMul, outerHealthEdge, healthHeight),
-				new ModelPart.Point(-outerHealthEdge * lengthMul, outerHealthEdge, healthHeight), 1);
 	}
 
 	/**
@@ -1017,6 +925,11 @@ public class Game
 	}
 
 	public static void exitToCrash(Throwable e)
+	{
+		throw new GameCrashedException(e);
+	}
+
+	protected static void displayCrashScreen(Throwable e)
 	{
 		System.gc();
 

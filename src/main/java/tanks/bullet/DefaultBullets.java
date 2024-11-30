@@ -179,6 +179,7 @@ public class DefaultBullets
         air.glowIntensity = 0;
         air.glowSize = 0;
         air.opacity = 1.0 / 6;
+        air.mineCollision = false;
         air.bulletHitKnockback = 0.04;
         air.tankHitKnockback = 0.1;
         air.lowersBushes = false;

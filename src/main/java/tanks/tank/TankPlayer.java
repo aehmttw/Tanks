@@ -17,6 +17,7 @@ import tanks.hotbar.Hotbar;
 import tanks.item.*;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
+import tanks.tankson.Property;
 
 /**
  * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
@@ -58,6 +59,12 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 	public double mouseX;
 	public double mouseY;
+
+	@TankBuildProperty @Property(id = "ability1", name = "1st ability", category = TankPropertyCategory.abilities)
+	public Item.ItemStack<?> primaryAbility = this.bulletItem;
+
+	@TankBuildProperty @Property(id = "ability2", name = "2nd ability", category = TankPropertyCategory.abilities)
+	public Item.ItemStack<?> secondaryAbility = this.mineItem;
 
 	public TankPlayer(double x, double y, double angle)
 	{

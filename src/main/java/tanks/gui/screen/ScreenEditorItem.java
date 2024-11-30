@@ -77,6 +77,9 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     {
         super(itemStack, screen);
 
+        if (this.target.get() == null)
+            return;
+
         this.title = "Edit %s";
 
         this.itemTabButton.image = "item.png";

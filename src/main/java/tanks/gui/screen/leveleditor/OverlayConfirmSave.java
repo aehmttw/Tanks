@@ -12,7 +12,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
 
     Button saveExit = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Save and exit", () ->
     {
-        screenLevelEditor.save();
+        editor.save();
 
         System.exit(0);
     });
@@ -41,12 +41,12 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
             this.escape();
         }
 
-        if (Game.game.input.editorObjectMenu.isValid() && screenLevelEditor.objectMenu)
+        if (Game.game.input.editorObjectMenu.isValid() && editor.objectMenu)
         {
             Game.game.input.editorObjectMenu.invalidate();
-            Game.screen = screenLevelEditor;
-            screenLevelEditor.clickCooldown = 20;
-            screenLevelEditor.paused = false;
+            Game.screen = editor;
+            editor.clickCooldown = 20;
+            editor.paused = false;
         }
 
         saveExit.update();
@@ -63,7 +63,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
         this.opacity = Math.max(0, this.opacity - Panel.frameFrequency * 2);
         Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
-        Drawing.drawing.setColor(this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness, this.screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(this.editor.fontBrightness, this.editor.fontBrightness, this.editor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Save before exiting?");
 

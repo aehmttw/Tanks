@@ -4,6 +4,9 @@ import basewindow.Model;
 import basewindow.ModelPart;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.editor.selector.LevelEditorSelector;
+import tanks.editor.selector.RotationSelector;
+import tanks.editor.selector.TeamSelector;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -28,6 +31,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public static HashMap<Integer, Tank> idMap = new HashMap<>();
 
 	public static ModelPart health_model;
+
+	public RotationSelector<Tank> rotationSelector;
+	public TeamSelector<Tank> teamSelector;
 
 	public boolean fromRegistry = false;
 
@@ -1000,7 +1006,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		return this.verticalFaces;
 	}
 
-	public boolean damage(double amount, IGameObject source)
+	public boolean damage(double amount, GameObject source)
 	{
 		double finalAmount = amount * this.getDamageMultiplier(source);
 		this.health -= finalAmount;
@@ -1051,7 +1057,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		return this.health <= 0;
 	}
 
-	public void checkHit(Tank owner, IGameObject source)
+	public void checkHit(Tank owner, GameObject source)
 	{
 		if (Crusade.crusadeMode && Crusade.currentCrusade != null && !ScreenPartyLobby.isClient)
 		{
@@ -1091,7 +1097,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 	}
 
-	public double getDamageMultiplier(IGameObject source)
+	public double getDamageMultiplier(GameObject source)
 	{
 		if ((this.invulnerable || this.invulnerabilityTimer > 0) || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
 			return 0;
@@ -1111,6 +1117,20 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 		else
 			e.posZ = 1;
+	}
+
+	@Override
+	public void registerSelectors()
+	{
+		this.registerSelector(new TeamSelector<Tank>());
+		this.registerSelector(new RotationSelector<Tank>());
+	}
+
+	@Override
+	public void postInitSelectors()
+	{
+		this.teamSelector = (TeamSelector<Tank>) this.selectors.get(0);
+		this.rotationSelector = (RotationSelector<Tank>) this.selectors.get(1);
 	}
 
 	public void updatePossessing()
@@ -1215,10 +1235,45 @@ public abstract class Tank extends Movable implements ISolidObject
 		return Math.max(Math.min((targetScale - Drawing.drawing.unzoomedScale) / Math.max(0.001, Drawing.drawing.interfaceScale - Drawing.drawing.unzoomedScale), 1), 0);
 	}
 
+	public String getMetadata()
+	{
+		StringBuilder s = new StringBuilder();
+		int sc = this.selectorCount();
+		for (int i = 0; i < sc; i++)
+			s.append(this.selectors.get(saveOrder(i)).getMetadata()).append("-");
+
+		String s1 = s.toString();
+		if (s1.endsWith("-"))
+			return s1.substring(0, s1.length() - 1);
+		return s1;
+	}
+
+	public void setMetadata(String s)
+	{
+		String[] data = s.split("-");
+
+		for (int i = 0; i < Math.min(data.length, this.selectorCount()); i++)
+		{
+			if (data[i].isEmpty()) continue;
+			LevelEditorSelector<Tank> sel = (LevelEditorSelector<Tank>) this.selectors.get(saveOrder(i));
+			sel.setMetadata(data[i]);
+		}
+
+		updateSelectors();
+	}
+
 	public void setBufferCooldown(double value)
 	{
 		this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
 		this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
+	}
+
+	/** This is for backwards compatibility saving with the base game. */
+	public int saveOrder(int index)
+	{
+		if (index < 2)
+			return 1 - index;
+		return index;
 	}
 
 	public Tank getTopLevelPossessor()

@@ -1,6 +1,7 @@
 package tanks.obstacle;
 
 import tanks.*;
+import tanks.editor.selector.LevelEditorSelector;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.Tank;
 import tanks.tank.TeleporterOrb;
@@ -167,10 +168,8 @@ public class ObstacleTeleporter extends Obstacle
 	}
 
 	@Override
-	public void setMetadata(String s)
+	public void onPropertySet(LevelEditorSelector<?> s)
 	{
-		this.groupID = (int) Double.parseDouble(s);
-
 		double[] col = getColorFromID(this.groupID);
 		this.colorR = col[0];
 		this.colorG = col[1];

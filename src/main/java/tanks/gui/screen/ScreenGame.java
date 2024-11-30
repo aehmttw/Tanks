@@ -712,6 +712,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	@Override
 	public void setupLights()
 	{
+		setupGameLights();
+	}
+
+	public static void setupGameLights()
+	{
 		for (Obstacle o: Game.obstacles)
 		{
 			if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
@@ -738,7 +743,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		for (Effect o: Game.effects)
 		{
-			if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
+			if (o != null && ((IDrawableLightSource) o).lit())
 			{
 				double[] l = ((IDrawableLightSource) o).getLightInfo();
 				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);

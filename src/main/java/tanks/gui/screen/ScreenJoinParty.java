@@ -36,7 +36,7 @@ public class ScreenJoinParty extends Screen
 			try
 			{
 				if (clientThread != null && clientThread.isAlive())
-					clientThread.stop();
+					clientThread.interrupt();
 			}
 			catch (Exception ignored) {}
 

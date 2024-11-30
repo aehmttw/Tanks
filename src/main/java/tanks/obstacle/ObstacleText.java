@@ -3,6 +3,7 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.editor.selector.StringSelector;
 
 public class ObstacleText extends Obstacle
 {
@@ -58,6 +59,19 @@ public class ObstacleText extends Obstacle
 		Drawing.drawing.setFontSize(this.fontSize);
 		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
 		Drawing.drawing.drawInterfaceText(this.posX, this.posY, this.text);
+	}
+
+	@Override
+	public void registerSelectors()
+	{
+		StringSelector<ObstacleText> sel = new StringSelector<>();
+		sel.id = "text_obstacle";
+		sel.title = "Text";
+		sel.objectProperty = "text";
+		sel.keybind = Game.game.input.editorTeam;
+		sel.buttonText = "Choose Text";
+		sel.image = "text.png";
+		this.registerSelector(sel);
 	}
 
 	public double getTileHeight()

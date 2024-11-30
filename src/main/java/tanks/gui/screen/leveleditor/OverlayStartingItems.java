@@ -81,7 +81,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
 
         startingItemsList.reorderBehavior = (i, j) ->
         {
-            screenLevelEditor.level.startingItems.add(j, screenLevelEditor.level.startingItems.remove((int)i));
+            editor.level.startingItems.add(j, editor.level.startingItems.remove((int)i));
             this.refreshItems();
         };
 
@@ -106,8 +106,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
             return;
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720, 20, 5);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
@@ -135,7 +134,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
     public void refreshItems()
     {
         ButtonList buttons = this.startingItemsList;
-        ArrayList<Item.ItemStack<?>> items = screenLevelEditor.level.startingItems;
+        ArrayList<Item.ItemStack<?>> items = editor.level.startingItems;
 
         buttons.buttons.clear();
 
@@ -145,7 +144,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
 
             Button b = new Button(0, 0, 350, 40, items.get(i).item.name, () ->
             {
-                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.startingItems, j, false, this::refreshItems), Game.screen);
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(editor.level.startingItems, j, false, this::refreshItems), Game.screen);
                 s.onComplete = this::refreshItems;
                 Game.screen = s;
             });

@@ -81,4 +81,18 @@ public class Team
 		col[2] = b;
 		return col;
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof Team)
+			return this.name.equals(((Team) obj).name);
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return this.name.hashCode();
+	}
 }

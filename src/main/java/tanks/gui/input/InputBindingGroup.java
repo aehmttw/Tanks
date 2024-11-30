@@ -37,6 +37,11 @@ public class InputBindingGroup
         return input1.isValid() || input2.isValid();
     }
 
+    public boolean doubleValid()
+    {
+        return input1.doubleValid() || input2.doubleValid();
+    }
+
     public void invalidate()
     {
         input1.invalidate();
@@ -53,13 +58,12 @@ public class InputBindingGroup
     {
         if (input2.inputType == null)
             return input1.getInputName();
-        else if (input1.inputType == null)
+        if (input1.inputType == null)
             return input2.getInputName();
-        else if ((input1.getInputName().startsWith("Left") && input2.getInputName().startsWith("Right")) ||
+        if ((input1.getInputName().startsWith("Left") && input2.getInputName().startsWith("Right")) ||
                 (input2.getInputName().startsWith("Left") && input1.getInputName().startsWith("Right")))
             return Game.formatString(input1.getInputName().replace("Left ", "").replace("Right ", ""));
-        else
-            return Translation.translate("%s or %s", Translation.translate(input1.getInputName()), Translation.translate(input2.getInputName()));
+        return Translation.translate("%s or %s", Translation.translate(input1.getInputName()), Translation.translate(input2.getInputName()));
     }
 
     public void reset()

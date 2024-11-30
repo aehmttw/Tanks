@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
+import tanks.editor.selector.LevelEditorSelector;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
@@ -11,16 +12,16 @@ import java.util.ArrayList;
 public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelPreviewScreen
 {
     public Screen previous;
-    public ScreenLevelEditor screenLevelEditor;
+    public ScreenLevelEditor editor;
     public boolean musicInstruments = false;
     public InputBindingGroup triggerKeybind = null;
 
-    public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor screenLevelEditor)
+    public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor editor)
     {
         this.allowClose = false;
 
         this.previous = previous;
-        this.screenLevelEditor = screenLevelEditor;
+        this.editor = editor;
 
         this.music = previous.music;
         this.musicID = previous.musicID;
@@ -39,10 +40,19 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
         if (previous instanceof ScreenLevelEditorOverlay)
             ((ScreenLevelEditorOverlay) previous).load();
 
-        if (previous == screenLevelEditor)
+        if (previous == editor)
         {
-            screenLevelEditor.clickCooldown = 20;
-            screenLevelEditor.paused = false;
+            if (editor.initialized)
+            {
+                if (ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
+                    editor.mouseObstacle.forAllSelectors(LevelEditorSelector::load);
+                else
+                    editor.mouseTank.forAllSelectors(LevelEditorSelector::load);
+            }
+
+            OverlayObjectMenu.saveSelectors(editor);
+            editor.clickCooldown = 20;
+            editor.paused = false;
         }
     }
 
@@ -60,7 +70,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     public void update()
     {
         Game.recomputeHeightGrid();
-        this.screenLevelEditor.updateMusic(this.musicInstruments);
+        this.editor.updateMusic(this.musicInstruments);
 
         if (Game.game.input.editorPause.isValid())
         {
@@ -76,51 +86,52 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
             if (triggerKeybind != null)
                 triggerKeybind.invalidate();
 
-            Game.screen = screenLevelEditor;
-            screenLevelEditor.clickCooldown = 20;
-            screenLevelEditor.paused = false;
+            Game.screen = editor;
+            OverlayObjectMenu.saveSelectors(editor);
+            editor.clickCooldown = 20;
+            editor.paused = false;
         }
     }
 
     @Override
     public void setupLights()
     {
-        this.screenLevelEditor.setupLights();
+        this.editor.setupLights();
     }
 
 
     @Override
     public void draw()
     {
-        this.screenLevelEditor.draw();
+        this.editor.draw();
     }
 
     public ArrayList<TankSpawnMarker> getSpawns()
     {
-        return screenLevelEditor.spawns;
+        return editor.spawns;
     }
 
     @Override
     public double getOffsetX()
     {
-        return screenLevelEditor.getOffsetX();
+        return editor.getOffsetX();
     }
 
     @Override
     public double getOffsetY()
     {
-        return screenLevelEditor.getOffsetY();
+        return editor.getOffsetY();
     }
 
     @Override
     public double getScale()
     {
-        return screenLevelEditor.getScale();
+        return editor.getScale();
     }
 
     @Override
     public void onAttemptClose()
     {
-        Game.screen = new OverlayConfirmSave(Game.screen, this.screenLevelEditor);
+        Game.screen = new OverlayConfirmSave(Game.screen, this.editor);
     }
 }

@@ -18,6 +18,7 @@ import tanks.tank.TankSpawnMarker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
@@ -50,6 +51,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public double clickCooldown = 0;
 	public ArrayList<Team> teams = new ArrayList<>();
 	public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
+
+	public ArrayList<TankPlayer> playerTankBuilds = new ArrayList<>();
 
 	public Level level;
 	public String name;
@@ -284,6 +287,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public ScreenLevelEditor(String lvlName, Level level)
 	{
+		this.playerTankBuilds.add((TankPlayer) Game.playerTank);
+
 		this.selfBatch = false;
 		this.drawDarkness = false;
 

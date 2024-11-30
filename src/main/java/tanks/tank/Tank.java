@@ -12,6 +12,7 @@ import tanks.item.ItemMine;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
+import tanks.network.event.EventTankUpdateVisibility;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -27,17 +28,17 @@ public abstract class Tank extends Movable implements ISolidObject
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
 	public static HashMap<Integer, Tank> idMap = new HashMap<>();
 
-	public static ModelPart health_model;
+	public static Model health_model;
 
 	public boolean fromRegistry = false;
 
-	@Property(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = Property.MiscType.colorModel)
+	@TankBuildProperty @Property(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = Property.MiscType.colorModel)
 	public Model colorModel = TankModels.tank.color;
-	@Property(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = Property.MiscType.baseModel)
+	@TankBuildProperty @Property(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = Property.MiscType.baseModel)
 	public Model baseModel = TankModels.tank.base;
-	@Property(category = appearanceTurretBase, id = "turret_base_model", name = "Turret base model", miscType = Property.MiscType.turretBaseModel)
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "turret_base_model", name = "Turret base model", miscType = Property.MiscType.turretBaseModel)
 	public Model turretBaseModel = TankModels.tank.turretBase;
-	@Property(category = appearanceTurretBarrel, id = "turret_model", name = "Turret barrel model", miscType = Property.MiscType.turretModel)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_model", name = "Turret barrel model", miscType = Property.MiscType.turretModel)
 	public Model turretModel = TankModels.tank.turret;
 
 	public double angle = 0;
@@ -64,44 +65,54 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** If spawned by another tank, set to the tank that spawned this tank*/
 	protected Tank parent = null;
 
-	@Property(category = general, id = "name", name = "Tank name", miscType = Property.MiscType.name)
+	@TankBuildProperty @Property(category = general, id = "name", name = "Tank name", miscType = Property.MiscType.name)
 	public String name;
 
 	@Property(category = general, id = "coin_value", name = "Coin value")
 	public int coinValue = 0;
 
-	@Property(category = general, minValue = 0.0, id = "base_health", name = "Hitpoints", desc = "The default bullet does one hitpoint of damage")
+	@TankBuildProperty @Property(category = general, minValue = 0.0, id = "base_health", name = "Hitpoints", desc = "The default bullet does one hitpoint of damage")
 	public double baseHealth = 1;
 	public double health = 1;
 
-	@Property(category = general, id = "resist_bullets", name = "Bullet immunity")
+	@TankBuildProperty @Property(category = general, id = "resist_bullets", name = "Bullet immunity")
 	public boolean resistBullets = false;
-	@Property(category = general, id = "resist_explosions", name = "Explosion immunity")
+	@TankBuildProperty @Property(category = general, id = "resist_explosions", name = "Explosion immunity")
 	public boolean resistExplosions = false;
-	@Property(category = general, id = "resist_freezing", name = "Freezing immunity")
+	@TankBuildProperty @Property(category = general, id = "resist_freezing", name = "Freezing immunity")
 	public boolean resistFreeze = false;
 
 	public int networkID = -1;
 	public int crusadeID = -1;
 
-	@Property(category = general, id = "description", name = "Tank description", miscType = Property.MiscType.description)
+	@TankBuildProperty @Property(category = general, id = "description", name = "Tank description", miscType = Property.MiscType.description)
 	public String description = "";
 
-	@Property(category = movementGeneral, id = "max_speed", name = "Top speed", minValue = 0.0)
+	@TankBuildProperty @Property(category = movementGeneral, id = "max_speed", name = "Top speed", minValue = 0.0)
 	public double maxSpeed = 1.5;
 
-	@Property(category = movementGeneral, id = "acceleration", name = "Acceleration", minValue = 0.0)
+	@TankBuildProperty @Property(category = movementGeneral, id = "acceleration", name = "Acceleration", minValue = 0.0)
 	public double acceleration = 0.05;
 
-	@Property(category = movementGeneral, id = "friction", name = "Friction", minValue = 0.0, maxValue = 1.0)
+	@TankBuildProperty @Property(category = movementGeneral, id = "friction", name = "Friction", minValue = 0.0, maxValue = 1.0)
 	public double friction = 0.05;
 
 	public double accelerationModifier = 1;
 	public double frictionModifier = 1;
 	public double maxSpeedModifier = 1;
 
-	@Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
+	@TankBuildProperty @Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
 	public double size;
+
+	/** When set to true, the tank will vanish when the level begins*/
+	@TankBuildProperty @Property(category = appearanceGeneral, id = "invisible", name = "Invisible")
+	public boolean invisible = false;
+
+	/** Changes when the tank's visibility state changes, indicating whether the tank is visible on screen*/
+	public boolean currentlyVisible = true;
+
+	/** Time this tank has been invisible for*/
+	public double timeInvisible = 0;
 
 	@Property(category = appearanceBody, id = "color_r", name = "Red", miscType = Property.MiscType.color)
 	public double colorR;
@@ -110,15 +121,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = appearanceBody, id = "color_b", name = "Blue", miscType = Property.MiscType.color)
 	public double colorB;
 
-	@Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
 	public double glowIntensity = 1;
-	@Property(category = appearanceGlow, id = "glow_size", name = "Aura size", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceGlow, id = "glow_size", name = "Aura size", minValue = 0.0)
 	public double glowSize = 4;
-	@Property(category = appearanceGlow, id = "light_intensity", name = "Light intensity", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceGlow, id = "light_intensity", name = "Light intensity", minValue = 0.0)
 	public double lightIntensity = 1;
-	@Property(category = appearanceGlow, id = "light_size", name = "Light size", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceGlow, id = "light_size", name = "Light size", minValue = 0.0)
 	public double lightSize = 0;
-	@Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0, desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
+	@TankBuildProperty @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0, desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
 	public double luminance = 0.5;
 
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
@@ -130,9 +141,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double secondaryColorG;
 	@Property(category = appearanceTurretBarrel, id = "color_b2", name = "Blue", miscType = Property.MiscType.color)
 	public double secondaryColorB;
-	@Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
 	public double turretSize = 8;
-	@Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
 	public double turretLength = Game.tile_size;
 	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count")
 	public boolean multipleTurrets = true;
@@ -147,9 +158,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = appearanceTurretBase, id = "color_b3", name = "Blue", miscType = Property.MiscType.color)
 	public double tertiaryColorB;
 
-	@Property(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
+	@TankBuildProperty @Property(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
 	public boolean enableTracks = true;
-	@Property(category = appearanceTracks, id = "track_spacing", name = "Track spacing", minValue = 0.0)
+	@TankBuildProperty @Property(category = appearanceTracks, id = "track_spacing", name = "Track spacing", minValue = 0.0)
 	public double trackSpacing = 0.4;
 
 	/** The bullet a tank uses. If you want to change this, make sure to use setBullet() because it also updates the bulletItem. */
@@ -175,7 +186,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double treadAnimation = 0;
 	public boolean drawTread = false;
 
-	@Property(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = Property.MiscType.emblem)
+	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = Property.MiscType.emblem)
 	public String emblem = null;
 	@Property(category = appearanceEmblem, id = "emblem_r", name = "Red", miscType = Property.MiscType.color)
 	public double emblemR;
@@ -194,7 +205,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean droppedFromCrate = false;
 
 	/** Whether this tank needs to be destroyed before the level ends. */
-	@Property(category = general, id = "mandatory_kill", name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
+	@TankBuildProperty @Property(category = general, id = "mandatory_kill", name = "Must be destroyed", desc="Whether the tank needs to be destroyed to clear the level")
 	public boolean mandatoryKill = true;
 
 	/** Used for custom tanks, see /music/tank for built-in tanks */
@@ -479,6 +490,8 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank!"));
 		}
 
+		this.updateVisibility();
+
 		this.bulletItem.item.bullet = this.bullet;
 		this.mineItem.item.mine = this.mine;
 
@@ -652,6 +665,42 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.possessor != null)
 			this.possessor.updatePossessing();
+	}
+
+	public void updateVisibility()
+	{
+		if (this.invisible)
+		{
+			if (this.currentlyVisible)
+			{
+				this.currentlyVisible = false;
+				Drawing.drawing.playGlobalSound("transform.ogg", 1.2f);
+				Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
+
+				if (Game.effectsEnabled)
+				{
+					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
+					{
+						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
+						double var = 50;
+						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+
+						if (Game.enable3d)
+							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
+						else
+							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
+
+						Game.effects.add(e);
+					}
+				}
+			}
+
+			this.timeInvisible += Panel.frameFrequency;
+		}
+		else
+			this.timeInvisible = 0;
 	}
 
 	public void drawTread()
@@ -876,15 +925,30 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void draw()
 	{
-		if (!Game.game.window.drawingShadow)
-			drawAge += Panel.frameFrequency;
-
-		this.drawTank(false, false);
-
-		if (this.possessor != null)
+		if (this.currentlyVisible || this.destroy)
 		{
-			this.possessor.drawPossessing();
-			this.possessor.drawGlowPossessing();
+			if (!Game.game.window.drawingShadow)
+				drawAge += Panel.frameFrequency;
+
+			this.drawTank(false, false);
+
+			if (this.possessor != null)
+			{
+				this.possessor.drawPossessing();
+				this.possessor.drawGlowPossessing();
+			}
+		}
+		else
+		{
+			if (this.size * 4 > this.timeInvisible * 2)
+			{
+				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+
+				if (Game.enable3d)
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2, true, false);
+				else
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2);
+			}
 		}
 	}
 

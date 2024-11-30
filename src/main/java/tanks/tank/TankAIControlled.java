@@ -38,10 +38,6 @@ public class TankAIControlled extends Tank implements ITankField
 	// More complex behaviors may require overriding of methods.
 	// These values do not change normally along the course of the game.
 
-	/** When set to true, the tank will vanish when the level begins*/
-	@Property(category = appearanceGeneral, id = "invisible", name = "Invisible")
-	public boolean invisible = false;
-
 	@Property(category = movementGeneral, id = "enable_movement", name = "Can move")
 	public boolean enableMovement = true;
 
@@ -406,12 +402,6 @@ public class TankAIControlled extends Tank implements ITankField
 	/** Time until the tank will continue motion*/
 	protected double motionPauseTimer = 0;
 
-	/** Changes when the tank's visibility state changes, indicating whether the tank is visible on screen*/
-	public boolean currentlyVisible = true;
-
-	/** Time this tank has been invisible for*/
-	public double timeInvisible = 0;
-
 	/** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight.*/
 	protected Movable targetEnemy;
 
@@ -523,42 +513,6 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 
 		this.fromRegistry = !this.getClass().equals(TankAIControlled.class);
-	}
-
-	public void updateVisibility()
-	{
-		if (this.invisible)
-		{
-			if (this.currentlyVisible)
-			{
-				this.currentlyVisible = false;
-				Drawing.drawing.playGlobalSound("transform.ogg", 1.2f);
-				Game.eventsOut.add(new EventTankUpdateVisibility(this.networkID, false));
-
-				if (Game.effectsEnabled)
-				{
-					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
-					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
-						double var = 50;
-						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
-
-						if (Game.enable3d)
-							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
-						else
-							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
-
-						Game.effects.add(e);
-					}
-				}
-			}
-
-			this.timeInvisible += Panel.frameFrequency;
-		}
-		else
-			this.timeInvisible = 0;
 	}
 
 	public void initialize()
@@ -673,7 +627,6 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.bulletItem.updateCooldown(1);
 		this.mineItem.updateCooldown(1);
-		this.updateVisibility();
 		super.update();
 	}
 
@@ -2934,25 +2887,6 @@ public class TankAIControlled extends Tank implements ITankField
 		double accY = accel * Math.sin(angle);
 		this.aX = accX;
 		this.aY = accY;
-	}
-
-	@Override
-	public void draw()
-	{
-		if (this.currentlyVisible || this.destroy)
-			super.draw();
-		else
-		{
-			if (this.size * 4 > this.timeInvisible * 2)
-			{
-				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
-
-				if (Game.enable3d)
-					Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2, true, false);
-				else
-					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2);
-			}
-		}
 	}
 
 	@Override

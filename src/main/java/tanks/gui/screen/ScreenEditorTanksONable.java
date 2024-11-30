@@ -7,6 +7,7 @@ import tanks.Level;
 import tanks.bullet.Bullet;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.item.Item;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
 import tanks.tankson.FieldPointer;
@@ -816,6 +817,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 else
                     s = new ScreenSelectorTankReference(name.toLowerCase(), p.cast(), Game.screen);
             }
+            else if (Item.ItemStack.class.isAssignableFrom(p.getType()))
+                s = new ScreenEditorItem(p.cast(), Game.screen);
 
             Game.screen = s;
             ((IScreenWithCompletion) s).setOnComplete(() ->

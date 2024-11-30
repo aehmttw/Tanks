@@ -72,6 +72,11 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	@Property(id = "color_b2", name = "Secondary blue")
 	public double outlineColorB;
 
+	public double originalOutlineColorR;
+	public double originalOutlineColorG;
+	public double originalOutlineColorB;
+
+
 	@Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletPropertyCategory.appearanceGlow, desc = "How bright the bullet will be in dark lighting. At 0, the bullet will be shaded like terrain by lighting. At 1, the bullet will always be fully bright.")
 	public double luminance = 0.5;
 
@@ -151,6 +156,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	@Property(id = "collide_bullets", name = "Bullet collision", category = BulletPropertyCategory.travel)
 	public boolean bulletCollision = true;
+
+	@Property(id = "collide_mines", name = "Mine collision", category = BulletPropertyCategory.travel)
+	public boolean mineCollision = true;
 
 	public boolean destroyBullets = true;
 
@@ -565,7 +573,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public void collidedWithObject(Movable o)
 	{
-		if (o instanceof Mine)
+		if (o instanceof Mine && this.mineCollision)
 		{
 			this.collidedWithMisc(o);
 			o.destroy = true;
@@ -1205,6 +1213,13 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 		{
 			this.delay -= Panel.frameFrequency;
 			return;
+		}
+
+		if (this.age <= 0)
+		{
+			this.originalOutlineColorR = this.outlineColorR;
+			this.originalOutlineColorG = this.outlineColorG;
+			this.originalOutlineColorB = this.outlineColorB;
 		}
 
 		if (!this.previousRebounds.isEmpty() && !this.beganRebound)

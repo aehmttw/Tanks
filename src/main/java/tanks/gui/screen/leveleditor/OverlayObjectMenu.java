@@ -9,6 +9,7 @@ import tanks.gui.screen.*;
 import tanks.obstacle.ObstacleBeatBlock;
 import tanks.tank.*;
 import tanks.tankson.ArrayListIndexPointer;
+import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
@@ -59,7 +60,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button selectTeam = new Button(this.centerX + 380, this.centerY + 240, 350, 40, "", () -> Game.screen = new OverlayTeams(Game.screen, screenLevelEditor));
 
-    public Button playerItems = new Button(this.centerX, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, screenLevelEditor));
+    public Button playerItems = new Button(this.centerX - this.objXSpace / 2, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, screenLevelEditor));
+
+    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds", () -> Game.screen = new ScreenEditorPlayerTankBuild(new ArrayListIndexPointer<>(screenLevelEditor.playerTankBuilds, 0), screenLevelEditor));
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
@@ -292,6 +295,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.selectTeam.update();
             this.rotateTankButton.update();
             this.playerItems.update();
+            this.playerBuilds.enabled = false;
+            this.playerBuilds.update();
         }
 
         if (screenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.playerTank)
@@ -425,6 +430,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.playerSpawnsButton.draw();
             this.movePlayerButton.draw();
             this.playerItems.draw();
+            this.playerBuilds.draw();
 
             if (this.screenLevelEditor.movePlayer)
                 this.drawMobileTooltip(this.movePlayerButton.hoverTextRawTranslated);

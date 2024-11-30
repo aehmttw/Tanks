@@ -73,19 +73,21 @@ public class BulletBlock extends BulletArc
     @Override
     public void onDestroy()
     {
+        super.onDestroy();
+
         int x = (int) (this.posX / Game.tile_size);
         int y = (int) (this.posY / Game.tile_size);
 
         Obstacle o = new Obstacle("normal", x, y);
-        o.colorR = this.outlineColorR;
-        o.colorG = this.outlineColorG;
-        o.colorB = this.outlineColorB;
+        o.colorR = this.originalOutlineColorR;
+        o.colorG = this.originalOutlineColorG;
+        o.colorB = this.originalOutlineColorB;
 
         for (int i = 0; i < o.stackColorR.length; i++)
         {
-            o.stackColorR[i] = this.outlineColorR;
-            o.stackColorG[i] = this.outlineColorG;
-            o.stackColorB[i] = this.outlineColorB;
+            o.stackColorR[i] = this.originalOutlineColorR;
+            o.stackColorG[i] = this.originalOutlineColorG;
+            o.stackColorB[i] = this.originalOutlineColorB;
         }
 
         o.update = true;
@@ -150,13 +152,16 @@ public class BulletBlock extends BulletArc
             return;
 
         double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
-        double size = Math.max(this.size, Game.tile_size - time / 2);
+        double frac = Math.max(100 - time, 0) / 100.0;
+        double size = frac * Game.tile_size + (1.0 - frac) * this.size;
         if (this.destroy)
         {
             size = Game.tile_size * Math.max((this.maxDestroyTimer - this.destroyTimer) / this.maxDestroyTimer, 0);
         }
 
         Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
+
+
         Drawing.drawing.fillBox(this.posX, this.posY, this.posZ - size / 2, size, size, size);
     }
 

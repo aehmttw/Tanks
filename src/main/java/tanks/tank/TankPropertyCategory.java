@@ -29,4 +29,6 @@ public class TankPropertyCategory
     public static final String transformationOnAlone = "transformationOnAlone";
     public static final String transformationMimic = "transformationMimic";
     public static final String lastStand = "lastStand";
+
+    public static final String abilities = "abilites";
 }

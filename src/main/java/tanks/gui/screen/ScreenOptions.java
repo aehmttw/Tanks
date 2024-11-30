@@ -513,7 +513,7 @@ public class ScreenOptions extends Screen
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "debug_mode":
-						Game.debug = Boolean.parseBoolean(optionLine[1]);
+						Game.debug = Game.debug || Boolean.parseBoolean(optionLine[1]);		// cli argument
 						alwaysDebug = Game.debug;
 						break;
 				}

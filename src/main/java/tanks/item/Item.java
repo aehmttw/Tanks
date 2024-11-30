@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @TanksONable("item")
-public abstract class Item implements IGameObject
+public abstract class Item extends GameObject
 {
 	public static final String item_class_name = "item";
 
@@ -75,9 +75,7 @@ public abstract class Item implements IGameObject
 
 			ItemStack<?> stack = ItemStack.fromStringLegacy(null, s);
 			ShopItem si = new ShopItem(stack);
-
-			int price = Integer.parseInt(p[2]);
-			si.price = price;
+            si.price = Integer.parseInt(p[2]);
 
 			return si;
 		}

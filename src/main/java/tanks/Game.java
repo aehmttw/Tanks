@@ -38,10 +38,13 @@ import java.util.*;
 
 public class Game
 {
-	public enum Framework {lwjgl, libgdx}
+    public enum Framework {lwjgl, libgdx}
 	public static Framework framework;
 
 	public static final double tile_size = 50;
+
+	public static final int[] dirX = {1, -1, 0, 0};
+	public static final int[] dirY = {0, 0, 1, -1};
 
 	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
@@ -973,7 +976,7 @@ public class Game
 
 	public static String formatString(String s)
 	{
-		if (s.length() == 0)
+		if (s.isEmpty())
 			return s;
 		else if (s.length() == 1)
 			return s.toUpperCase();
@@ -1145,6 +1148,31 @@ public class Game
 
 		Level.currentLightIntensity = 1.0;
 		Level.currentShadowIntensity = 0.75;
+	}
+
+	// todo: chunk loading system
+	public static Obstacle getObstacle(int posX, int posY)
+	{
+//		return Objects.requireNonNullElse(Chunk.getTile(posX, posY), Chunk.emptyTile).obstacle;
+		return null;
+	}
+
+	public static Obstacle getSurfaceObstacle(int posX, int posY)
+	{
+		/*Chunk c = Chunk.getChunk(posX / Chunk.chunkSize, posY / Chunk.chunkSize);
+		if (c != null)
+			return Objects.requireNonNullElse(c.getChunkTile(posX, posY), Chunk.emptyTile).surfaceObstacle;*/
+		return null;
+	}
+
+	public static Obstacle getObstacle(double posX, double posY)
+	{
+		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static Obstacle getSurfaceObstacle(double posX, double posY)
+	{
+		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
 
 	public static double sampleGroundHeight(double px, double py)
@@ -1437,7 +1465,7 @@ public class Game
 
 			if (ia != ib)
 				return ia - ib;
-			else if ((la.toString().length() == 0 || lb.toString().length() == 0) && la.toString().length() + lb.toString().length() > 0)
+			else if ((la.toString().isEmpty() || lb.toString().isEmpty()) && la.toString().length() + lb.toString().length() > 0)
 				return lb.toString().length() - la.toString().length();
 			else if (la.toString().length() != lb.toString().length())
 				return la.toString().length() - lb.toString().length();
@@ -1484,4 +1512,16 @@ public class Game
 			return hash.get(0);
 	}
 
+	public static boolean lessThan(double a, double b, double c)
+	{
+		return (a < b && b < c) || (c < b && b < a);
+	}
+
+	public static boolean lessThan(boolean orEqualTo, double a, double b, double c)
+	{
+		if (!orEqualTo)
+			return lessThan(a, b, c);
+
+		return (a <= b && b <= c) || (c <= b && b <= a);
+	}
 }

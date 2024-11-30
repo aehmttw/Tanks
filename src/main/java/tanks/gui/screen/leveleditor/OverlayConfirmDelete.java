@@ -14,7 +14,7 @@ public class OverlayConfirmDelete extends ScreenLevelEditorOverlay
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
-        BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + screenLevelEditor.name);
+        BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + editor.name);
 
         Game.cleanUp();
 
@@ -44,7 +44,7 @@ public class OverlayConfirmDelete extends ScreenLevelEditorOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(editor.fontBrightness, editor.fontBrightness, editor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to delete the level?");
 

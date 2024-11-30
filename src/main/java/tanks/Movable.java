@@ -14,12 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public abstract class Movable implements IDrawableForInterface, IGameObject
+public abstract class Movable extends GameObject implements IDrawableForInterface
 {
-	public double posX;
-	public double posY;
-	public double posZ = 0;
-
 	public double lastPosX;
 	public double lastPosY;
 	public double lastPosZ = 0;

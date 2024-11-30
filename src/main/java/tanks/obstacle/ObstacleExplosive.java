@@ -23,6 +23,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
 
         this.draggable = false;
         this.destructible = true;
+        this.allowBounce = false;
         this.colorR = 255;
         this.colorG = Math.random() * 40 + 80;
         this.colorB = 0;

@@ -3,10 +3,15 @@ package tanks.obstacle;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
 import tanks.*;
+import tanks.editor.selector.GroupIdSelector;
+import tanks.editor.selector.LevelEditorSelector;
+import tanks.editor.selector.RotationSelector;
+import tanks.editor.selector.StackHeightSelector;
+import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
 
-public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IGameObject, IBatchRenderableObject
+public class Obstacle extends GameObject implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IBatchRenderableObject
 {
 	public static final int default_max_height = 8;
 
@@ -55,14 +60,15 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 	public int rendererNumber = 0;
 	public int tileRendererNumber = 0;
 
-	public double posX;
-	public double posY;
 	public double startHeight = 0;
 	public double colorR;
 	public double colorG;
 	public double colorB;
 	public double colorA = 255;
 	public double glow = 0;
+
+	public boolean enableRotation = false;
+	public double rotation;
 
 	public double[] stackColorR = new double[default_max_height];
 	public double[] stackColorG = new double[default_max_height];
@@ -205,14 +211,53 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 		drawing.fillInterfaceRect(x, y, draw_size, draw_size);
 	}
 
+	public void drawOutlineAt(double x, double y)
+	{
+		double x1 = this.posX;
+		double y1 = this.posY;
+		this.posX = x;
+		this.posY = y;
+		this.drawOutline();
+		this.posX = x1;
+		this.posY = y1;
+	}
+
 	public void drawOutline()
 	{
-		Drawing drawing = Drawing.drawing;
-		drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
-		drawing.fillRect(this.posX - Game.tile_size * 0.4, this.posY, Game.tile_size * 0.2, Game.tile_size);
-		drawing.fillRect(this.posX + Game.tile_size * 0.4, this.posY, Game.tile_size * 0.2, Game.tile_size);
-		drawing.fillRect(this.posX, this.posY - Game.tile_size * 0.4, Game.tile_size, Game.tile_size * 0.2);
-		drawing.fillRect(this.posX, this.posY + Game.tile_size * 0.4, Game.tile_size, Game.tile_size * 0.2);
+		drawOutline(this.colorR, this.colorG, this.colorB, this.colorA);
+	}
+
+	public void drawOutline(double r, double g, double b, double a)
+	{
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.drawRect(this.posX, this.posY, draw_size, draw_size, Game.tile_size * 0.2);
+	}
+
+	public void draw3dOutline()
+	{
+		draw3dOutline(this.colorR, this.colorG, this.colorB, 128);
+	}
+
+	public void draw3dOutline(double r, double g, double b)
+	{
+		draw3dOutline(r, g, b, 128);
+	}
+
+	public void draw3dOutline(double r, double g, double b, double a)
+	{
+		if (!Game.enable3d)
+		{
+			drawOutline(r, g, b, a);
+			return;
+		}
+
+		double sizeZ = this.stackHeight * Game.tile_size;
+		if (!this.enableStacking)
+			sizeZ = Game.screen instanceof ILevelPreviewScreen ? 15 : 50;
+
+		Drawing.drawing.setColor(r, g, b, a, 0.5);
+		Drawing.drawing.fillBox(this.posX, this.posY, this.startHeight * Game.tile_size,
+				Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, this.getOptionsByte(this.getTileHeight()));
 	}
 
 	public void onObjectEntry(Movable m)
@@ -301,13 +346,41 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 			Game.tileDrawables[x][y] = this;
 	}
 
-	public void setMetadata(String data)
+	public String getMetadata()
 	{
-		String[] metadata = data.split("-");
-		this.stackHeight = Double.parseDouble(metadata[0]);
+		StringBuilder s = new StringBuilder();
 
-		if (metadata.length >= 2)
-			this.startHeight = Double.parseDouble(metadata[1]);
+		int sc = this.selectorCount();
+		for (int i = 0; i < sc; i++)
+			s.append(this.selectors.get(saveOrder(i)).getMetadata()).append("-");
+
+		if (this.startHeight > 0)
+			s.append(this.startHeight);
+
+		if (s.toString().endsWith("-"))
+			return s.substring(0, s.length() - 1);
+
+		return s.toString();
+	}
+
+	public void setMetadata(String s)
+	{
+		String[] metadata = s.split("-");
+
+		for (int i = 0; i < Math.min(this.selectorCount(), metadata.length); i++)
+		{
+			LevelEditorSelector<Obstacle> sel = (LevelEditorSelector<Obstacle>) this.selectors.get(saveOrder(i));
+			sel.setMetadata(metadata[i]);
+		}
+
+		try
+		{
+			if (metadata.length - this.selectorCount() == 1)
+				this.startHeight = Double.parseDouble(metadata[metadata.length - 1]);
+		}
+		catch (Exception ignored) {}
+
+		this.updateSelectors();
 	}
 
 	public static double[] getRandomColor()
@@ -505,6 +578,18 @@ public class Obstacle implements IDrawableForInterface, ISolidObject, IDrawableW
 				}
 			}
 		}
+	}
+
+	public void registerSelectors()
+	{
+		if (this.enableStacking)
+			this.registerSelector(new StackHeightSelector());
+
+		if (this.enableGroupID)
+			this.registerSelector(new GroupIdSelector());
+
+		if (this.enableRotation)
+			this.registerSelector(new RotationSelector<Obstacle>());
 	}
 
 	public Effect getCompanionEffect()

@@ -55,6 +55,12 @@ public class InputBindings
     public InputBindingGroup editorZoomOut = new InputBindingGroup("editor.zoomOut", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_MINUS));
     public InputBindingGroup editorRevertCamera = new InputBindingGroup("editor.revertCamera", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_0));
 
+    public InputBindingGroup editorResetTool = new InputBindingGroup("editor.resetTool", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_0));
+    public InputBindingGroup editorSquare = new InputBindingGroup("editor.square", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_Q));
+    public InputBindingGroup editorCircle = new InputBindingGroup("editor.circle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_N));
+    public InputBindingGroup editorLine = new InputBindingGroup("editor.line", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_P));
+    public InputBindingGroup editorWand = new InputBindingGroup("editor.wand", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_W));
+
     public InputBindingGroup editorNextObj = new InputBindingGroup("editor.nextObject", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_5));
     public InputBindingGroup editorPrevObj = new InputBindingGroup("editor.prevObject", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_4));
     public InputBindingGroup editorNextType = new InputBindingGroup("editor.nextType", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_DOWN));
@@ -67,10 +73,14 @@ public class InputBindings
     public InputBindingGroup editorHoldSquare = new InputBindingGroup("editor.holdSquare", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT_SHIFT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT_SHIFT));
     public InputBindingGroup editorLockSquare = new InputBindingGroup("editor.lockSquare", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_L));
     public InputBindingGroup editorSelectAddToggle = new InputBindingGroup("editor.selectToggle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_A));
+    public InputBindingGroup editorPickBlock = new InputBindingGroup("editor.pickBlock", new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_3));
 
     public InputBindingGroup editorCopy = new InputBindingGroup("editor.copy", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_C));
     public InputBindingGroup editorCut = new InputBindingGroup("editor.cut", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_X));
     public InputBindingGroup editorPaste = new InputBindingGroup("editor.paste", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_V));
+    public InputBindingGroup editorFlipHoriz = new InputBindingGroup("editor.flipHoriz", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_H));
+    public InputBindingGroup editorFlipVert = new InputBindingGroup("editor.flipVert", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_J));
+    public InputBindingGroup editorRotateClockwise = new InputBindingGroup("editor.rotateClockwise", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_K), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_R));
 
     public void save()
     {

@@ -14,24 +14,25 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
 
     public Button resume = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", this::escape);
 
-    public Button play = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2.5), this.objWidth, this.objHeight, "Play", () -> screenLevelEditor.play());
+    public Button play = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2.5), this.objWidth, this.objHeight, "Play", () -> editor.play());
 
     public Button playUnavailable = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 2.5), this.objWidth, this.objHeight, "Play", "You must add a player---spawn point to play!");
 
-    public Button options = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 0.5), this.objWidth, this.objHeight, "Level options", () -> Game.screen = new OverlayLevelOptions(Game.screen, screenLevelEditor));
+    public Button options = new Button(this.centerX, (int) (this.centerY - this.objYSpace * 0.5), this.objWidth, this.objHeight, "Level options", () -> Game.screen = new OverlayLevelOptions(Game.screen, editor));
 
     public Button quit = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2.5), this.objWidth, this.objHeight, "Exit", () ->
     {
-        screenLevelEditor.save();
+        editor.save();
 
         Game.cleanUp();
+        System.gc();
         Game.screen = new ScreenSavedLevels();
     }
     );
 
-    public Button clone = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 0.5), this.objWidth, this.objHeight, "Make a copy", () -> Game.screen = new OverlayCloneLevel(Game.screen, screenLevelEditor));
+    public Button clone = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 0.5), this.objWidth, this.objHeight, "Make a copy", () -> Game.screen = new OverlayCloneLevel(Game.screen, editor));
 
-    public Button delete = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 1.5), this.objWidth, this.objHeight, "Delete level", () -> Game.screen = new OverlayConfirmDelete(Game.screen, screenLevelEditor));
+    public Button delete = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 1.5), this.objWidth, this.objHeight, "Delete level", () -> Game.screen = new OverlayConfirmDelete(Game.screen, editor));
 
     public OverlayEditorMenu(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -52,7 +53,10 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
 
     public void update()
     {
-        if (screenLevelEditor.level.editable)
+        if (!editor.initialized)
+            editor.initialize();
+
+        if (editor.level.editable)
         {
             resume.update();
             options.update();
@@ -63,14 +67,14 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         quit.update();
         clone.update();
 
-        if (screenLevelEditor.spawns.size() > 0)
+        if (editor.spawns.size() > 0)
             play.update();
         else
             playUnavailable.update();
 
-        if (Game.game.input.editorPlay.isValid() && screenLevelEditor.spawns.size() > 0)
+        if (Game.game.input.editorPlay.isValid() && editor.spawns.size() > 0)
         {
-            screenLevelEditor.play();
+            editor.play();
             Game.game.input.play.invalidate();
         }
     }
@@ -78,13 +82,13 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
     public void draw()
     {
         if (Level.isDark())
-            this.screenLevelEditor.fontBrightness = 255;
+            this.editor.fontBrightness = 255;
         else
-            this.screenLevelEditor.fontBrightness = 0;
+            this.editor.fontBrightness = 0;
 
         super.draw();
 
-        if (screenLevelEditor.level.editable)
+        if (editor.level.editable)
         {
             resume.draw();
             options.draw();
@@ -94,13 +98,13 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         quit.draw();
         clone.draw();
 
-        if (screenLevelEditor.spawns.size() > 0)
+        if (editor.spawns.size() > 0)
             play.draw();
         else
             playUnavailable.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(editor.fontBrightness, editor.fontBrightness, editor.fontBrightness);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Level menu");
 
         if (Game.showSpeedrunTimer && showTime)

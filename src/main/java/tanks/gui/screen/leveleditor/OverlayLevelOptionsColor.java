@@ -192,7 +192,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         this.colorVarRed.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(editor.fontBrightness, editor.fontBrightness, editor.fontBrightness);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Background colors");
         this.back.draw();
     }

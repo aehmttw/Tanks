@@ -107,7 +107,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		}
 	}
 
-	public void setDefaultColor()
+	public TankPlayer setDefaultColor()
 	{
 		this.colorR = 0;
 		this.colorG = 150;
@@ -115,6 +115,22 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
 		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
 		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
+        this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
+        this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
+        this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
+		return this;
+	}
+
+	@Override
+	public void postInitSelectors()
+	{
+		super.postInitSelectors();
+
+		this.teamSelector.id = "player_team";
+		this.teamSelector.defaultTeamIndex = 0;
+
+		if (!this.teamSelector.modified)
+			this.teamSelector.setChoice(0);
 		this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
 		this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
 		this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
@@ -147,7 +163,7 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				lastTrace = time;
 		}
 
-		if (destroy && this.enableDestroyCheat)
+		if (destroy && enableDestroyCheat)
 		{
 			for (int i = 0; i < Game.movables.size(); i++)
 			{

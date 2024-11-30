@@ -462,25 +462,21 @@ public class SoundPlayer extends BaseSoundPlayer
         }
         catch (Exception e)
         {
-            System.err.println("Failed to create music " + path);
-            e.printStackTrace();
+            throw new RuntimeException("Failed to create music " + path);
         }
 
         //Find the correct OpenAL format
         int format = -1;
         if (channels == 1)
-        {
             format = AL_FORMAT_MONO16;
-        }
         else if (channels == 2)
-        {
             format = AL_FORMAT_STEREO16;
-        }
 
         //Request space for the buffer
         int bufferPointer = alGenBuffers();
 
         //Send the data to OpenAL
+        assert rawAudioBuffer != null;
         alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
 
         //Free the memory allocated by STB

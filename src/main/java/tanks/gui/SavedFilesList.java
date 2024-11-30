@@ -22,9 +22,7 @@ public class SavedFilesList extends ButtonList
     public boolean drawOpenFileButton = false;
 
     Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2 * 1.35, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
-    {
-        Game.game.fileManager.openFileManager(this.directory);
-    }, "Open folder in file manager");
+            Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {

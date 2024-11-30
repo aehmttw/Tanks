@@ -1,10 +1,10 @@
 package tanks.obstacle;
 
-import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
-import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
+import tanks.editor.selector.LevelEditorSelector;
+import tanks.editor.selector.PatternSelector;
 import tanks.gui.screen.ScreenGame;
 import tanks.rendering.ShaderBeatBlocks;
 import tanks.rendering.ShaderGroundObstacleBeatBlock;
@@ -31,6 +31,13 @@ public class ObstacleBeatBlock extends Obstacle
         this.destructible = false;
 
         this.description = "A block that appears and disappears to the beat of the music";
+    }
+
+    @Override
+    public void registerSelectors()
+    {
+        this.registerSelector(new PatternSelector());
+        super.registerSelectors();
     }
 
     public static boolean isOn(double freq, boolean alt)
@@ -212,8 +219,6 @@ public class ObstacleBeatBlock extends Obstacle
         this.update = true;
         this.tankCollision = false;
         this.bulletCollision = false;
-
-        this.enableGroupID = true;
         this.enableStacking = true;
 
         for (int i = 0; i < default_max_height; i++)
@@ -251,10 +256,21 @@ public class ObstacleBeatBlock extends Obstacle
         else
             this.groupID = (int) Double.parseDouble(s);
 
+        onPropertySet(null);
+    }
+
+    public void onPropertySet(LevelEditorSelector<?> s)
+    {
         this.rendererNumber = this.groupID;
         this.tileRendererNumber = this.groupID;
         this.alternate = this.groupID % 2 == 1;
         this.beatFrequency = Math.pow(2, this.groupID / 2);
         this.initialize();
+    }
+
+    @Override
+    public String getMetadata()
+    {
+        return this.groupID + "#" + this.stackHeight;
     }
 }

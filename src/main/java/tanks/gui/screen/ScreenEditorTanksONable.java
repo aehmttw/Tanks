@@ -1094,7 +1094,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             return;
 
         if (prevScreen instanceof ScreenLevelEditorOverlay)
-            ((ScreenLevelEditorOverlay) prevScreen).screenLevelEditor.updateMusic(false);
+            ((ScreenLevelEditorOverlay) prevScreen).editor.updateMusic(false);
 
         this.prevMusics.clear();
         this.prevMusics.addAll(this.musics);

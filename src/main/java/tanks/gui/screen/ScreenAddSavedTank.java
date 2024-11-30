@@ -217,7 +217,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
         if (tankScreen instanceof OverlayObjectMenu)
         {
-            for (TankAIControlled t: ((OverlayObjectMenu) tankScreen).screenLevelEditor.level.customTanks)
+            for (TankAIControlled t: ((OverlayObjectMenu) tankScreen).editor.level.customTanks)
             {
                 int index = count % (rows * cols);
                 double x = this.centerX - 450 + 100 * (index % cols);

@@ -2,8 +2,8 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.editor.selector.PatternSelector;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.ObstacleBeatBlock;
 
@@ -12,26 +12,20 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
     public Button back = new Button(this.centerX, this.centerY + 240, 350, 40, "Done", this::escape);
 
     public int buttonSize = 60;
-
+    public PatternSelector selector;
     public Button[] groups = new Button[8];
 
-    public OverlayBeatBlockPattern(Screen previous, ScreenLevelEditor screenLevelEditor)
+    public OverlayBeatBlockPattern(Screen previous, ScreenLevelEditor editor, PatternSelector selector)
     {
-        super(previous, screenLevelEditor);
+        super(previous, editor);
+
+        this.selector = selector;
 
         for (int i = 0; i < 8; i++)
         {
             int j = i;
-            groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize, "", new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    screenLevelEditor.mouseObstacleBeatPattern = (j % 4) * 2 + j / 4;
-                    screenLevelEditor.mouseObstacle.setMetadata(screenLevelEditor.mouseObstacleBeatPattern + "");
-                }
-            }
-            );
+            groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize,
+                    "", () -> selector.number = (j % 4) * 2 + j / 4);
         }
 
         this.musicInstruments = true;
@@ -41,14 +35,14 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
     {
         for (int i = 0; i < groups.length; i++)
         {
-            groups[i].enabled = screenLevelEditor.mouseObstacleBeatPattern != (i % 4) * 2 + i / 4;
+            groups[i].enabled = selector.number != (i % 4) * 2 + i / 4;
             groups[i].update();
         }
 
         this.back.update();
 
-        screenLevelEditor.overlayMusics.add("beatblocks/beat_blocks.ogg");
-        screenLevelEditor.overlayMusics.add("beatblocks/beat_beeps_" + (int) Math.pow(2, screenLevelEditor.mouseObstacleBeatPattern / 2) + ".ogg");
+        editor.overlayMusics.add("beatblocks/beat_blocks.ogg");
+        editor.overlayMusics.add("beatblocks/beat_beeps_" + (int) Math.pow(2, (int) selector.number / 2) + ".ogg");
 
         super.update();
     }
@@ -58,8 +52,7 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 800, 600);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 780, 580);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 800, 600, 20, 5);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
@@ -69,21 +62,21 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
 
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 450, 200);
 
-        for (int i = 0; i < groups.length; i++)
+        for (Button group : groups)
         {
-            double sx = groups[i].sizeX;;
-            double sy = groups[i].sizeY;
+            double sx = group.sizeX;
+            double sy = group.sizeY;
 
-            if (!groups[i].enabled)
+            if (!group.enabled)
             {
-                groups[i].sizeX *= 1.2;
-                groups[i].sizeY *= 1.2;
+                group.sizeX *= 1.2;
+                group.sizeY *= 1.2;
             }
 
-            groups[i].draw();
+            group.draw();
 
-            groups[i].sizeX = sx;
-            groups[i].sizeY = sy;
+            group.sizeX = sx;
+            group.sizeY = sy;
         }
 
         for (int i = 0; i < 8; i++)

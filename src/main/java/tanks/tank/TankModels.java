@@ -57,6 +57,7 @@ public class TankModels
         arrow = new FullTankModel("tankarrow");
         camo = new FullTankModel("tankcamoflauge");
         flames = new FullTankModel("tankflames");
+        Tank.health_model = Drawing.drawing.createModel("/models/tankhealth/");
 
         Game.registerTankEmblem("medic.png");
         Game.registerTankEmblem("player_spawn.png");

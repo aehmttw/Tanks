@@ -13,6 +13,7 @@ import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 import tanks.tankson.ArrayListIndexPointer;
+import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
@@ -57,6 +58,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     );
 
     public Button playerItems = new Button(this.centerX, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, editor));
+
+    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds", () -> Game.screen = new ScreenEditorPlayerTankBuild(new ArrayListIndexPointer<>(screenLevelEditor.playerTankBuilds, 0), screenLevelEditor));
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
@@ -323,6 +326,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.playerSpawnsButton.update();
             this.movePlayerButton.update();
             this.playerItems.update();
+            this.playerBuilds.update();
         }
         else if (ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
         {
@@ -423,6 +427,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.playerSpawnsButton.draw();
             this.movePlayerButton.draw();
             this.playerItems.draw();
+            this.playerBuilds.draw();
 
             if (this.editor.movePlayer)
                 this.drawMobileTooltip(this.movePlayerButton.hoverTextRawTranslated);

@@ -123,7 +123,7 @@ public abstract class Item extends GameObject
 	}
 
 	@TanksONable("item_stack")
-	public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>
+	public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
 	{
 		@Property(id = "item", name = "Item")
 		public T item;
@@ -420,6 +420,12 @@ public abstract class Item extends GameObject
 		public String toString()
 		{
 			return Serializer.toTanksON(this);
+		}
+
+		@Override
+		public String getName()
+		{
+			return this.item.name;
 		}
 	}
 

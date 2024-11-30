@@ -34,7 +34,10 @@ public class GameUpdater implements IUpdater
 		}
 		catch (Throwable e)
 		{
-			Game.exitToCrash(e);
+			if (e instanceof GameCrashedException)
+				Game.displayCrashScreen(((GameCrashedException) e).originalException);
+			else
+				Game.displayCrashScreen(e);
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class ScreenConnecting extends Screen
 			Client.connectionID = null;
 			try
 			{
-				thread.stop();
+				thread.interrupt();
 			}
 			catch (Exception ignored)
 			{

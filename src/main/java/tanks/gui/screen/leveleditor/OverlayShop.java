@@ -91,7 +91,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
 
         shopList.reorderBehavior = (i, j) ->
         {
-            screenLevelEditor.level.shop.add(j, screenLevelEditor.level.shop.remove((int)i));
+            editor.level.shop.add(j, editor.level.shop.remove((int)i));
             this.refreshItems();
         };
 
@@ -116,8 +116,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
             return;
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 720);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 700);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720, 20, 5);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
@@ -144,20 +143,20 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
 
     public void addItem(Item.ShopItem i)
     {
-        screenLevelEditor.level.shop.add(i);
+        editor.level.shop.add(i);
         this.refreshItems();
     }
 
     public void removeItem(Item.ShopItem i)
     {
-        screenLevelEditor.level.shop.remove(i);
+        editor.level.shop.remove(i);
         this.refreshItems();
     }
 
     public void refreshItems()
     {
         ButtonList buttons = this.shopList;
-        ArrayList<Item.ShopItem> items = screenLevelEditor.level.shop;
+        ArrayList<Item.ShopItem> items = editor.level.shop;
 
         buttons.buttons.clear();
 
@@ -169,7 +168,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
             {
                 try
                 {
-                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.shop, j, false, this::refreshItems), Game.screen);
+                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(editor.level.shop, j, false, this::refreshItems), Game.screen);
                     s.onComplete = this::refreshItems;
                     Game.screen = s;
                 }

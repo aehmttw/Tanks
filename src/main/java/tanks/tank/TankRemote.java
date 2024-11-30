@@ -2,11 +2,15 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
+import tanks.tankson.Property;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class TankRemote extends Tank
 {
+	public static ArrayList<Field> fieldsToClone;
+
 	public final boolean isCopy;
 	public final Tank tank;
 
@@ -83,41 +87,32 @@ public class TankRemote extends Tank
 
 	public void copyTank(Tank t)
 	{
-		this.turretLength = t.turretLength;
-		this.turretSize = t.turretSize;
-		this.colorR = t.colorR;
-		this.colorG = t.colorG;
-		this.colorB = t.colorB;
-		this.secondaryColorR = t.secondaryColorR;
-		this.secondaryColorG = t.secondaryColorG;
-		this.secondaryColorB = t.secondaryColorB;
-		this.enableTertiaryColor = t.enableTertiaryColor;
-		this.tertiaryColorR = t.tertiaryColorR;
-		this.tertiaryColorG = t.tertiaryColorG;
-		this.tertiaryColorB = t.tertiaryColorB;
-		this.emblem = t.emblem;
-		this.emblemR = t.emblemR;
-		this.emblemG = t.emblemG;
-		this.emblemB = t.emblemB;
-		this.description = t.description;
-		this.baseModel = t.baseModel;
-		this.colorModel = t.colorModel;
-		this.turretBaseModel = t.turretBaseModel;
-		this.turretModel = t.turretModel;
-		this.mandatoryKill = t.mandatoryKill;
-		this.luminance = t.luminance;
-		this.glowIntensity = t.glowIntensity;
-		this.glowSize = t.glowSize;
-		this.lightSize = t.lightSize;
-		this.lightIntensity = t.lightIntensity;
-		this.setBullet(t.bullet);
-		this.mine = t.mine;
-		this.musicTracks = t.musicTracks;
-		this.fromRegistry = t.fromRegistry;
-		this.trackSpacing = t.trackSpacing;
-		this.enableTracks = t.enableTracks;
-		this.multipleTurrets = t.multipleTurrets;
-		this.bullet.shotCount = t.bullet.shotCount;
+		initSelectors(null);
+		cloneAllSelectors(t);
+
+		if (fieldsToClone == null)
+			initFieldsToClone();
+
+		try
+		{
+			for (Field field : fieldsToClone)
+				field.set(this, field.get(t));
+		}
+		catch (IllegalAccessException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static void initFieldsToClone()
+	{
+		fieldsToClone = new ArrayList<>();
+
+		for (Field field : Tank.class.getFields())
+		{
+			if (field.getAnnotation(Property.class) != null)
+				fieldsToClone.add(field);
+		}
 	}
 
 	@Override

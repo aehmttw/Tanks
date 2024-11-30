@@ -2,15 +2,10 @@ package tanks;
 
 import basewindow.InputCodes;
 import tanks.extension.Extension;
-import tanks.gui.Firework;
-import tanks.gui.IFixedMenu;
-import tanks.gui.ScreenIntro;
-import tanks.gui.TextBox;
+import tanks.gui.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.hotbar.Hotbar;
 import tanks.network.Client;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
@@ -19,7 +14,6 @@ import tanks.network.event.INetworkEvent;
 import tanks.network.event.IStackableEvent;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleBeatBlock;
 import tanks.rendering.*;
 import tanks.tank.*;
 
@@ -53,6 +47,7 @@ public class Panel
 	public static double darkness = 0;
 
 	public static TextBox selectedTextBox;
+	public static Button draggedButton;
 
 	/** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
 	public static double frameFrequency = 1;
@@ -604,9 +599,9 @@ public class Panel
 				lastDrawnScreen = Game.screen;
 
 				if (a instanceof ScreenLevelEditorOverlay)
-					a = ((ScreenLevelEditorOverlay) a).screenLevelEditor;
+					a = ((ScreenLevelEditorOverlay) a).editor;
 				if (b instanceof ScreenLevelEditorOverlay)
-					b = ((ScreenLevelEditorOverlay) b).screenLevelEditor;
+					b = ((ScreenLevelEditorOverlay) b).editor;
 
 				if (a != b)
 				{
@@ -935,10 +930,9 @@ public class Panel
 			boundary += 40;
 
 		String v = Game.version;
-		if ("0123456789".indexOf(v.charAt(v.length() - 1)) == -1 && !(ScreenPartyLobby.isClient && !Game.connectedToOnline))
-			v = Game.version + " \u00A7255227186064(" + Game.game.window.buildDate + ")";
-
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, v);
+		if ("0123456789".indexOf(v.charAt(v.length() - 1)) == -1 && !(ScreenPartyLobby.isClient && !Game.connectedToOnline))
+			Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, Game.game.window.buildDate);
 		Drawing.drawing.setColor(255, 227, 186);
 
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);

@@ -65,7 +65,7 @@ public class EventChangeBackgroundColor extends PersonalEvent
         else if (Game.screen instanceof ScreenLevelEditor)
             l = ((ScreenLevelEditor) Game.screen).level;
         else if (Game.screen instanceof ScreenLevelEditorOverlay)
-            l = ((ScreenLevelEditorOverlay) Game.screen).screenLevelEditor.level;
+            l = ((ScreenLevelEditorOverlay) Game.screen).editor.level;
         else
             l = new Level("{28,18||0-0-player}");
 

@@ -17,7 +17,7 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
         public void run()
         {
             String n = levelName.inputText.replace(" ", "_") + ".tanks";
-            screenLevelEditor.save(n);
+            editor.save(n);
 
             saveCopy.enabled = false;
             saveCopy.setText("Level copy saved!");
@@ -47,7 +47,7 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
         String n = levelName.inputText.replace(" ", "_") + ".tanks";
         BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + n);
 
-        if (n.equals(screenLevelEditor.name))
+        if (n.equals(editor.name))
         {
             saveCopy.setText("Pick a name for the copy!");
             saveCopy.enabled = false;
@@ -77,7 +77,7 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
     {
         super.draw();
 
-        Drawing.drawing.setColor(screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness, screenLevelEditor.fontBrightness);
+        Drawing.drawing.setColor(editor.fontBrightness, editor.fontBrightness, editor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "Make a copy");
 

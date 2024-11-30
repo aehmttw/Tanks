@@ -3143,7 +3143,7 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		TankAIControlled t = new TankAIControlled(name, x, y, this.size, this.colorR, this.colorG, this.colorB, angle, this.shootAIType);
 		this.cloneProperties(t);
-
+		t.registerSelectors();
 		return t;
 	}
 

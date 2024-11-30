@@ -6,13 +6,13 @@ import tanks.gui.screen.Screen;
 
 public class OverlayRotateTank extends ScreenLevelEditorOverlay
 {
-    public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> screenLevelEditor.mouseTankOrientation = 3);
+    public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> editor.mouseTankOrientation = 3);
 
-    public Button rotateRight = new Button(this.centerX + 100, this.centerY, 75, 75, "", () -> screenLevelEditor.mouseTankOrientation = 0);
+    public Button rotateRight = new Button(this.centerX + 100, this.centerY, 75, 75, "", () -> editor.mouseTankOrientation = 0);
 
-    public Button rotateDown = new Button(this.centerX, this.centerY + 100, 75, 75, "", () -> screenLevelEditor.mouseTankOrientation = 1);
+    public Button rotateDown = new Button(this.centerX, this.centerY + 100, 75, 75, "", () -> editor.mouseTankOrientation = 1);
 
-    public Button rotateLeft = new Button(this.centerX - 100, this.centerY, 75, 75, "", () -> screenLevelEditor.mouseTankOrientation = 2);
+    public Button rotateLeft = new Button(this.centerX - 100, this.centerY, 75, 75, "", () -> editor.mouseTankOrientation = 2);
 
     public Button back = new Button(this.centerX, this.centerY, 75, 75, "Done", this::escape);
 
@@ -56,11 +56,11 @@ public class OverlayRotateTank extends ScreenLevelEditorOverlay
         this.rotateLeft.enabled = true;
         this.rotateRight.enabled = true;
 
-        if (screenLevelEditor.mouseTankOrientation == 0)
+        if (editor.mouseTankOrientation == 0)
             this.rotateRight.enabled = false;
-        else if (screenLevelEditor.mouseTankOrientation == 1)
+        else if (editor.mouseTankOrientation == 1)
             this.rotateDown.enabled = false;
-        else if (screenLevelEditor.mouseTankOrientation == 2)
+        else if (editor.mouseTankOrientation == 2)
             this.rotateLeft.enabled = false;
         else
             this.rotateUp.enabled = false;

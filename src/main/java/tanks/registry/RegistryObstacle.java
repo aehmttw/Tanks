@@ -39,7 +39,9 @@ public class RegistryObstacle
 		{
 			try 
 			{
-				return obstacle.getConstructor(String.class, double.class, double.class).newInstance(this.name, x, y);
+				Obstacle o = obstacle.getConstructor(String.class, double.class, double.class).newInstance(this.name, x, y);
+				o.registerSelectors();
+				return o;
 			}
 			catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) 
 			{

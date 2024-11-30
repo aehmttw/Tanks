@@ -56,6 +56,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }
     );
 
+    public Button playerItems = new Button(this.centerX, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, editor));
+
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
         saveSelectors(editor);
@@ -134,6 +136,11 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (rightButton != null)
             loadButton(rightButton, rightSelector);
 
+        playerItems.imageXOffset = -155;
+        playerItems.imageSizeX = 30;
+        playerItems.imageSizeY = 30;
+        playerItems.image = "item.png";
+
         int count = Game.registryTank.tankEntries.size() + this.editor.level.customTanks.size();
         int rows = objectButtonRows;
         int cols = objectButtonCols;
@@ -187,7 +194,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
                     , t.description);
 
-            if (t.description.equals(""))
+            if (t.description.isEmpty())
                 b.enableHover = false;
 
             this.tankButtons.add(b);
@@ -315,6 +322,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
             this.playerSpawnsButton.update();
             this.movePlayerButton.update();
+            this.playerItems.update();
         }
         else if (ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)
         {
@@ -414,6 +422,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         {
             this.playerSpawnsButton.draw();
             this.movePlayerButton.draw();
+            this.playerItems.draw();
 
             if (this.editor.movePlayer)
                 this.drawMobileTooltip(this.movePlayerButton.hoverTextRawTranslated);

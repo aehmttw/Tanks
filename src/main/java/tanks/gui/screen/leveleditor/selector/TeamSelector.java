@@ -1,9 +1,11 @@
-package tanks.editor.selector;
+package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Game;
 import tanks.GameObject;
 import tanks.Team;
 import tanks.gui.screen.leveleditor.OverlayEditTeam;
+import tanks.gui.screen.leveleditor.OverlaySelectChoice;
+import tanks.gui.screen.leveleditor.OverlaySelectTeam;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;
@@ -36,7 +38,18 @@ public class TeamSelector<T extends GameObject> extends ChoiceSelector<T, Team>
             return null;
         };
         this.addNoneChoice = true;
-        this.onEdit = t -> Game.screen = new OverlayEditTeam(Game.screen, editor, t);
+        this.onEdit = t ->
+        {
+            OverlaySelectTeam s = (OverlaySelectTeam) Game.screen;
+            OverlayEditTeam o = new OverlayEditTeam(Game.screen, editor, t);
+            Game.screen = o;
+            o.onEscape = () ->
+            {
+                ChoiceSelector<?, Team> sel = this;
+                sel.baseInit();
+                o.previous = new OverlaySelectTeam(s.previous, s.editor, sel);
+            };
+        };
 
         updateDefaultChoices();
 
@@ -76,5 +89,11 @@ public class TeamSelector<T extends GameObject> extends ChoiceSelector<T, Team>
             this.choices = new ArrayList<>(Arrays.asList(Game.playerTeam, Game.enemyTeam));
         else
             this.choices = new ArrayList<>(Arrays.asList(Game.playerTeamNoFF, Game.enemyTeamNoFF));
+    }
+
+    @Override
+    public void onSelect()
+    {
+        Game.screen = new OverlaySelectTeam(Game.screen, editor, this);
     }
 }

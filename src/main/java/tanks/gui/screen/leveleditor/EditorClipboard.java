@@ -1,4 +1,4 @@
-package tanks.editor;
+package tanks.gui.screen.leveleditor;
 
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;

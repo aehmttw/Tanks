@@ -1,9 +1,8 @@
-package tanks.editor.selector;
+package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Consumer;
-import tanks.Game;
 import tanks.GameObject;
-import tanks.editor.EditorButtons.EditorButton;
+import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
@@ -25,7 +24,7 @@ import java.util.Objects;
  * @param <T> the type of <code>GameObject</code> (<code>Tank</code>, <code>Obstacle</code>, etc.)
  *            that the selector is applied to.
  */
-public abstract class LevelEditorSelector<T extends GameObject> implements Cloneable
+public abstract class LevelEditorSelector<T extends GameObject>
 {
     public static ArrayList<Consumer<GameObject>> addSelFuncRegistry = new ArrayList<>();
 
@@ -67,7 +66,7 @@ public abstract class LevelEditorSelector<T extends GameObject> implements Clone
         addSelFuncRegistry.add(func);
     }
 
-    protected void init()
+    public void init()
     {
 
     }
@@ -327,19 +326,6 @@ public abstract class LevelEditorSelector<T extends GameObject> implements Clone
             return editor.buttons.bottomRight;
 
         return null;
-    }
-
-    @Override
-    public LevelEditorSelector<T> clone()
-    {
-        try
-        {
-            return (LevelEditorSelector<T>) super.clone();
-        }
-        catch (CloneNotSupportedException e)
-        {
-            throw new AssertionError();
-        }
     }
 
     public void copyBase()

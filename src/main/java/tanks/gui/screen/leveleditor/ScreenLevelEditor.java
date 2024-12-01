@@ -5,12 +5,9 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.Panel;
-import tanks.editor.EditorAction;
-import tanks.editor.EditorButtons;
-import tanks.editor.EditorButtons.EditorButton;
-import tanks.editor.EditorClipboard;
-import tanks.editor.selector.LevelEditorSelector;
-import tanks.editor.selector.StackHeightSelector;
+import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
+import tanks.gui.screen.leveleditor.selector.StackHeightSelector;
 import tanks.gui.Button;
 import tanks.gui.screen.*;
 import tanks.item.Item;
@@ -1939,8 +1936,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 					if (Game.enable3d)
 					{
-						if (Game.lessThan(-1, x, Game.currentSizeX) && Game.lessThan(-1, y, Game.currentSizeY) &&
-								(Game.getObstacle(x, y) == null || !Game.lessThan(Game.getObstacle(x, y).startHeight, mouseObstacle.stackHeight + mouseObstacleStartHeight, Game.getObstacle(x, y).stackHeight)))
+						if (Game.isOrdered(-1, x, Game.currentSizeX) && Game.isOrdered(-1, y, Game.currentSizeY) &&
+								(Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mouseObstacle.stackHeight + mouseObstacleStartHeight, Game.getObstacle(x, y).stackHeight)))
 							mouseObstacle.draw3dOutline(mouseObstacle.colorR, mouseObstacle.colorG, mouseObstacle.colorB, 100);
 					}
 
@@ -2487,7 +2484,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		t.drawAge = mouseTank.drawAge;
 		mouseTank = t;
-		OverlayObjectMenu.loadSelectors(t, null, this);
 	}
 
 	public double clampTileX(double x)

@@ -1,7 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
-import tanks.editor.selector.LevelEditorSelector;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;

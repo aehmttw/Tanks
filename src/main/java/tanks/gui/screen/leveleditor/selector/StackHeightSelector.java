@@ -1,4 +1,4 @@
-package tanks.editor.selector;
+package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Game;
 import tanks.gui.screen.leveleditor.OverlayBlockHeight;

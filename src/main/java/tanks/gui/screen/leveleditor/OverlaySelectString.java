@@ -2,7 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.GameObject;
-import tanks.editor.selector.StringSelector;
+import tanks.gui.screen.leveleditor.selector.StringSelector;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;

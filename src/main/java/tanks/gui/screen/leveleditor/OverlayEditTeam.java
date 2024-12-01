@@ -14,6 +14,8 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     public TextBox teamName;
     public Team team;
 
+    public Runnable onEscape = () -> {};
+
     public OverlayEditTeam(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
         super(previous, screenLevelEditor);
@@ -98,6 +100,13 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
         }
     );
+
+    @Override
+    public void escape()
+    {
+        this.onEscape.run();
+        super.escape();
+    }
 
     public void update()
     {

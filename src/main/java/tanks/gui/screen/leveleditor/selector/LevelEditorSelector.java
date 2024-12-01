@@ -306,6 +306,9 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public boolean gameObjectSelected()
     {
+        if (editor.eraseMode || editor.changeCameraMode || editor.selectMode || editor.pasteMode)   // no buildMode variable
+            return false;
+
         if (gameObject instanceof Obstacle)
             return ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle && editor.mouseObstacle.getSelector(this.id) != null;
         return ScreenLevelEditor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle && editor.mouseTank.getSelector(this.id) != null;

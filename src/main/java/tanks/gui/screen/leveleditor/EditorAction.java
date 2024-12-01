@@ -1,7 +1,6 @@
-package tanks.editor;
+package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;

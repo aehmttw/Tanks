@@ -1425,15 +1425,15 @@ public class Game
 			return hash.get(0);
 	}
 
-	public static boolean lessThan(double a, double b, double c)
+	public static boolean isOrdered(double a, double b, double c)
 	{
 		return (a < b && b < c) || (c < b && b < a);
 	}
 
-	public static boolean lessThan(boolean orEqualTo, double a, double b, double c)
+	public static boolean isOrdered(boolean orEqualTo, double a, double b, double c)
 	{
 		if (!orEqualTo)
-			return lessThan(a, b, c);
+			return isOrdered(a, b, c);
 
 		return (a <= b && b <= c) || (c <= b && b <= a);
 	}

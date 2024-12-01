@@ -1,7 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
-import tanks.editor.selector.NumberSelector;
+import tanks.gui.screen.leveleditor.selector.NumberSelector;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;

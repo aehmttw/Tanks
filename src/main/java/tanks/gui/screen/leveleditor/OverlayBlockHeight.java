@@ -1,7 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
-import tanks.editor.selector.StackHeightSelector;
+import tanks.gui.screen.leveleditor.selector.StackHeightSelector;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.Obstacle;

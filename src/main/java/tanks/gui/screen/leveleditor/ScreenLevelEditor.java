@@ -160,8 +160,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						currentMode = EditorMode.build;
 					else
 					{
-						buildTool = BuildTool.normal;
-						place.secondaryImage = null;
+						place.option = 0;
+						place.setOption();
 					}
 				}
 			},
@@ -212,8 +212,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						currentMode = EditorMode.select;
 					else
 					{
-						selectTool = SelectTool.normal;
-						selectAddToggle.secondaryImage = null;
+						select.option = 0;
+						select.setOption();
 					}
 				}
 			},

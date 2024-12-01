@@ -401,6 +401,7 @@ public class EditorButtons
             {
                 if (resetFunc != null)
                     resetFunc.run();
+
                 secondaryImage = null;
                 return;
             }

@@ -306,7 +306,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             this.preview.drawAge = 50;
             this.preview.depthTest = false;
 
-            this.preview.drawTank(true, true);
+            this.preview.drawTank(true, Game.enable3d);
 
             super.drawUIElements();
         }

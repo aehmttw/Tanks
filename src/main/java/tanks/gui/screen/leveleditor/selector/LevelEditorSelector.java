@@ -177,7 +177,7 @@ public abstract class LevelEditorSelector<T extends GameObject>
     {
         changeMetadata(add);
         update();
-        ScreenLevelEditor.selectors.put(this.id, this);
+        this.editor.selectors.put(this.id, this);
     }
 
     public void load() {}
@@ -306,12 +306,12 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public boolean gameObjectSelected()
     {
-        if (editor.eraseMode || editor.changeCameraMode || editor.selectMode || editor.pasteMode)   // no buildMode variable
+        if (editor.currentMode != ScreenLevelEditor.EditorMode.build)   // no buildMode variable
             return false;
 
         if (gameObject instanceof Obstacle)
-            return ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle && editor.mouseObstacle.getSelector(this.id) != null;
-        return ScreenLevelEditor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle && editor.mouseTank.getSelector(this.id) != null;
+            return this.editor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle && editor.mouseObstacle.getSelector(this.id) != null;
+        return this.editor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle && editor.mouseTank.getSelector(this.id) != null;
     }
 
     public ArrayList<EditorButton> getLocation(Position p)

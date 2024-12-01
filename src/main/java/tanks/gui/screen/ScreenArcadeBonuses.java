@@ -346,8 +346,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         double heightFrac = Math.min(1, age / 25);
         double yPos = Drawing.drawing.interfaceSizeY * (1 - heightFrac / 2);
         Drawing.drawing.setColor(0, 0, 0, 127 * heightFrac);
-        Drawing.drawing.fillInterfaceRect(this.centerX, yPos, this.objWidth * 2, this.objHeight * 10);
-        Drawing.drawing.fillInterfaceRect(this.centerX, yPos, this.objWidth * 2 - 20, this.objHeight * 10 - 20);
+        Drawing.drawing.drawPopup(this.centerX, yPos, this.objWidth * 2, this.objHeight * 10);
 
         Drawing.drawing.setColor(255, 255, 255, 255 * heightFrac);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

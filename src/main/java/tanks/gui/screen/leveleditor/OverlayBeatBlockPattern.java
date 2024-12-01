@@ -52,7 +52,7 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY, 800, 600, 20, 5);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 800, 600);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

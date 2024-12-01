@@ -8,7 +8,7 @@ import tanks.gui.InputSelector;
 public class ScreenControlsEditor extends Screen
 {
     public static int page = 0;
-    public static final int page_count = 6;
+    public static final int page_count = 7;
 
     InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Editor menu", Game.game.input.editorPause);
     InputSelector objectMenu = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Object menu", Game.game.input.editorObjectMenu);
@@ -43,10 +43,22 @@ public class ScreenControlsEditor extends Screen
     InputSelector holdSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Square selection", Game.game.input.editorHoldSquare);
     InputSelector lockSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle square selection", Game.game.input.editorLockSquare);
     InputSelector toggleAdd = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle remove from selection", Game.game.input.editorSelectAddToggle);
+    InputSelector quickPick = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Block/tank picker", Game.game.input.editorPickBlock);
 
     InputSelector copy = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Copy", Game.game.input.editorCopy);
     InputSelector cut = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Cut", Game.game.input.editorCut);
     InputSelector paste = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Paste", Game.game.input.editorPaste);
+    InputSelector flipH = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Flip selection horizontally", Game.game.input.editorFlipHoriz);
+    InputSelector flipV = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Flip selection vertically", Game.game.input.editorFlipVert);
+    InputSelector rotateSel = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Rotate selection", Game.game.input.editorRotateClockwise);
+
+    InputSelector resetTool = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Clear tool", Game.game.input.editorResetTool);
+    InputSelector square = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Square tool", Game.game.input.editorSquare);
+    InputSelector circle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Circle tool", Game.game.input.editorCircle);
+    InputSelector line = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Line tool", Game.game.input.editorLine);
+    InputSelector wand = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Wand tool", Game.game.input.editorWand);
+    InputSelector wandDiscont = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Non-contiguous wand tool", Game.game.input.editorWandDiscontiguous);
+
 
     Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++
     );
@@ -119,12 +131,25 @@ public class ScreenControlsEditor extends Screen
             holdSquare.update();
             lockSquare.update();
             toggleAdd.update();
+            quickPick.update();
         }
         else if (page == 5)
         {
             copy.update();
             cut.update();
             paste.update();
+            flipV.update();
+            flipH.update();
+            rotateSel.update();
+        }
+        else if (page == 6)
+        {
+            resetTool.update();
+            circle.update();
+            square.update();
+            line.update();
+            wand.update();
+            wandDiscont.update();
         }
 
         next.enabled = page < page_count - 1;
@@ -185,12 +210,25 @@ public class ScreenControlsEditor extends Screen
             holdSquare.draw();
             deselect.draw();
             select.draw();
+            quickPick.draw();
         }
         else if (page == 5)
         {
             copy.draw();
             cut.draw();
             paste.draw();
+            flipV.draw();
+            flipH.draw();
+            rotateSel.draw();
+        }
+        else if (page == 6)
+        {
+            resetTool.draw();
+            circle.draw();
+            square.draw();
+            line.draw();
+            wand.draw();
+            wandDiscont.draw();
         }
 
         next.draw();

@@ -207,7 +207,7 @@ public class Level
 			this.clientStartingCoins = this.startingCoins;
 			this.clientStartingItems = this.startingItems;
 			this.clientShop = this.shop;
-			System.out.println(this.clientShop);
+
 			this.startingCoins = 0;
 			this.startingItems = new ArrayList<>();
 			this.shop = new ArrayList<>();

@@ -84,15 +84,19 @@ public class Arcade extends Minigame
         else
             this.random = new Random();
 
+        ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
         if (!ScreenPartyLobby.isClient)
         {
-            ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
+            int id = 0;
             for (String si : items)
             {
                 Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
+                i.item.name = Translation.translate(i.item.name);
+
+                itemNumbers.put(i.item.name, id + 1);
+                id++;
 
                 itemsMap.put(i.item.name, i);
-                i.item.name = Translation.translate(i.item.name);
             }
 
             tankItemsMap.put("mint", "Fire bullet");
@@ -112,6 +116,13 @@ public class Arcade extends Minigame
             tankItemsMap.put("lightblue", "Air");
             tankItemsMap.put("lightpink", "Laser");
             tankItemsMap.put("gold", "Zap");
+        }
+        else
+        {
+            for (String si : items)
+            {
+                this.clientShop.add(new Item.ShopItem(Item.ItemStack.fromString(null, si)));
+            }
         }
     }
 
@@ -766,7 +777,7 @@ public class Arcade extends Minigame
             Drawing.drawing.setColor(0, 0, 0, 128 * (100 - Game.player.hotbar.percentHidden) / 100.0 * chainOpacity);
 
         int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
-        int y = (int) (Drawing.drawing.interfaceSizeY - 100 + Game.player.hotbar.percentHidden - Game.player.hotbar.verticalOffset);
+        int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 100 + Game.player.hotbar.percentHidden - Game.player.hotbar.verticalOffset);
 
         double c = 0.5 - Math.min(max_power * 3, chain) / 30.0;
         if (c < 0)

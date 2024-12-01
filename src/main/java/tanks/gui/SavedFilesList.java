@@ -21,7 +21,7 @@ public class SavedFilesList extends ButtonList
     public ArrayList<Button> fileButtons = new ArrayList<>();
     public boolean drawOpenFileButton = false;
 
-    Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2 * 1.35, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
+    Button openFolder = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () ->
             Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
@@ -146,6 +146,9 @@ public class SavedFilesList extends ButtonList
     @Override
     public void update()
     {
+        this.openFolder.posX = Drawing.drawing.interfaceSizeX / 2 + this.xOffset + this.objXSpace / 2 * 1.35;
+        this.openFolder.posY = Drawing.drawing.interfaceSizeY / 2 + this.yOffset - this.objYSpace * 3.5;
+
         if (this.drawOpenFileButton)
             this.openFolder.update();
 
@@ -155,6 +158,9 @@ public class SavedFilesList extends ButtonList
     @Override
     public void draw()
     {
+        this.openFolder.posX = Drawing.drawing.interfaceSizeX / 2 + this.xOffset + this.objXSpace / 2 * 1.35;
+        this.openFolder.posY = Drawing.drawing.interfaceSizeY / 2 + this.yOffset - this.objYSpace * 3.5;
+
         super.draw();
 
         if (this.drawOpenFileButton)

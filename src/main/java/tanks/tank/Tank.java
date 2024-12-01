@@ -1014,7 +1014,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void onDestroy()
 	{
-		if (this.explodeOnDestroy && !(this.droppedFromCrate && this.age < 250))
+		if (this.explodeOnDestroy && !(this.droppedFromCrate && this.age < 250) && !ScreenPartyLobby.isClient)
 		{
 			Explosion e = new Explosion(this.posX, this.posY, this, this.mineItem);
 			this.mine.explosion.clonePropertiesTo(e);

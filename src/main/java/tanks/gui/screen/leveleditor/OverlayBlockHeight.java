@@ -86,7 +86,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY + 25, 1100, 700, 20, 5);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY + 25, 1100, 700);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Block height");

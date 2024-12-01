@@ -97,7 +97,7 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 128);
-        Drawing.drawing.drawPopup(centerX, centerY - 15,550, 420, 10, 5);
+        Drawing.drawing.drawPopup(centerX, centerY - 15,550, 420);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

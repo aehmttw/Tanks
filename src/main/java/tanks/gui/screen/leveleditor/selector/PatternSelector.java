@@ -12,7 +12,7 @@ public class PatternSelector extends GroupIdSelector
         this.title = "Beat pattern";
         this.buttonText = "Beat pattern: ";
         this.image = "obstacle_beat.png";
-        this.max = 8;
+        this.max = 7;
     }
 
     @Override

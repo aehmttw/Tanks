@@ -116,7 +116,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
             return;
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720, 20, 5);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

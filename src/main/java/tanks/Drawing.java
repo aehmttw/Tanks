@@ -740,7 +740,10 @@ public class Drawing
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
 
-		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, borderWidth, borderRadius);
+		double drawBorderWidth = (borderWidth * scale);
+		double drawBorderRadius = (borderRadius * scale);
+
+		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, drawBorderWidth, drawBorderRadius);
 	}
 
 	public void fillInterfaceOval(double x, double y, double sizeX, double sizeY)
@@ -1163,8 +1166,7 @@ public class Drawing
 		double drawY = y + sizeY / 2.0 + yPadding * text.length;
 
 		setColor(0, 0, 0, 127);
-		fillInterfaceRect(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length);
-		fillInterfaceRect(drawX - 7, drawY, sizeX + xPadding * 2 - 14 - 10, sizeY + yPadding * 2 * text.length - 10);
+		drawPopup(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length, 5, 4);
 
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
@@ -1175,10 +1177,15 @@ public class Drawing
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
 	}
 
+	public void drawPopup(double x, double y, double sX, double sY)
+	{
+		this.drawPopup(x, y, sX, sY, 10, 5);
+	}
+
 	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius)
 	{
+		fillInterfaceRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius);
 		fillInterfaceRect(x, y, sX, sY, borderRadius);
-		drawInterfaceRect(x + borderWidth, y + borderWidth, sX, sY, borderWidth, borderRadius);
 		Drawing.drawing.setColor(255, 255, 255);
 	}
 

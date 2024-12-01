@@ -177,7 +177,7 @@ public abstract class LevelEditorSelector<T extends GameObject>
     {
         changeMetadata(add);
         update();
-        ScreenLevelEditor.selectors.put(this.id, this);
+        this.editor.selectors.put(this.id, this);
     }
 
     public void load() {}

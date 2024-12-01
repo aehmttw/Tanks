@@ -290,12 +290,12 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         o.forAllSelectors(s ->
         {
-            LevelEditorSelector<?> s1 = ScreenLevelEditor.selectors.get(s.id);
+            LevelEditorSelector<?> s1 = this.editor.selectors.get(s.id);
             s.objectMenu = menu;
             s.gameObject = o;
 
             if (s1 == null)
-                ScreenLevelEditor.selectors.put(s.id, s);
+                this.editor.selectors.put(s.id, s);
             else
                 s.cloneProperties(s1);
 
@@ -535,7 +535,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public static void saveSelectors(ScreenLevelEditor e)
     {
         GameObject o = e.currentPlaceable == ScreenLevelEditor.Placeable.obstacle ? e.mouseObstacle : e.mouseTank;
-        o.forAllSelectors(s -> ScreenLevelEditor.selectors.put(s.id, s));
+        o.forAllSelectors(s -> e.selectors.put(s.id, s));
     }
 
     public void drawMobileTooltip(String text)

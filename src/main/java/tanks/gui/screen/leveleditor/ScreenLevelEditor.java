@@ -555,6 +555,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			if (!this.grab())
 				this.currentMode = EditorMode.picker;
+			else
+				this.currentMode = EditorMode.build;
 		}
 
 		if (undoActions.size() > 0 && undo.keybind.isValid())
@@ -1019,14 +1021,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		mouseObstacle.posX = posX;
 		mouseObstacle.posY = posY;
 
-		if (currentMode == EditorMode.picker && validLeft)
+		if (currentMode == EditorMode.picker)
 		{
-			handled[0] = true;
-			if (grab())
-				this.currentMode = EditorMode.build;
+			if (validLeft)
+			{
+				handled[0] = true;
+				if (grab())
+					this.currentMode = EditorMode.build;
+			}
 		}
-
-		if (currentMode == EditorMode.camera || (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_ALT) && validLeft))
+		else if (currentMode == EditorMode.camera || (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_ALT) && validLeft))
 		{
 			if (validLeft)
 			{

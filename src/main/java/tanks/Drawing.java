@@ -909,12 +909,30 @@ public class Drawing
 
 	public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
 	{
-		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+		boolean text = img.startsWith("text:");
+
 		double drawSizeX = (sizeX * interfaceScale);
 		double drawSizeY = (sizeY * interfaceScale);
 
-		Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
+		if (text)
+		{
+			img = img.substring(5);
+			sizeX = Game.game.window.fontRenderer.getStringSizeX(drawSizeX / 36, img);
+			sizeY = Game.game.window.fontRenderer.getStringSizeY(drawSizeY / 36, img);
+		}
+
+		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+		double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+
+		if (!text)
+		{
+			Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
+		}
+		else
+		{
+			Drawing.drawing.setColor(0, 0, 0);
+			Game.game.window.fontRenderer.drawString(drawX, drawY, drawSizeX / 36, drawSizeY / 36, img);
+		}
 	}
 
 	public void drawInterfaceImage(double rotation, String img, double x, double y, double sizeX, double sizeY)

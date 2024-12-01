@@ -190,7 +190,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (undoActions.isEmpty() || Game.game.window.pressedKeys.size() > 1)
 			return;
 
-		for (int i = 0; i < Math.min(undoActions.size(), undoCount); i++)
+		int s = undoActions.size();
+		for (int i = 0; i < Math.min(s, undoCount); i++)
 		{
 			EditorAction a = undoActions.remove(undoActions.size() - 1);
 			a.undo();
@@ -213,7 +214,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (redoActions.isEmpty())
 			return;
 
-		for (int i = 0; i < Math.min(redoCount, redoActions.size()); i++)
+		int s = redoActions.size();
+		for (int i = 0; i < Math.min(s, redoCount); i++)
 		{
 			EditorAction a = redoActions.remove(redoActions.size() - 1);
 			a.redo();
@@ -1808,6 +1810,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		else
 			this.fontBrightness = 0;
 
+		windowTitle = (allowClose ? "" : "*");
+
 		if (Panel.panel.continuation == null)
 		{
 			for (Obstacle o : Game.obstacles)
@@ -2375,6 +2379,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		ArrayList<Tank> tanks = new ArrayList<>();
 		ArrayList<Obstacle> obstacles = new ArrayList<>();
+		eraseMode = false;
 
 		clipboard = new EditorClipboard();
 

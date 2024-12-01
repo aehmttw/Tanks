@@ -248,6 +248,26 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         this.previousTankPage.imageSizeY = 25;
         this.previousTankPage.imageXOffset = -145;
 
+        this.lastObstaclePage.image = "icons/last.png";
+        this.lastObstaclePage.imageSizeX = 20;
+        this.lastObstaclePage.imageSizeY = 20;
+        this.lastObstaclePage.imageXOffset = 0;
+
+        this.firstObstaclePage.image = "icons/first.png";
+        this.firstObstaclePage.imageSizeX = 20;
+        this.firstObstaclePage.imageSizeY = 20;
+        this.firstObstaclePage.imageXOffset = 0;
+
+        this.lastTankPage.image = "icons/last.png";
+        this.lastTankPage.imageSizeX = 20;
+        this.lastTankPage.imageSizeY = 20;
+        this.lastTankPage.imageXOffset = 0;
+
+        this.firstTankPage.image = "icons/first.png";
+        this.firstTankPage.imageSizeX = 20;
+        this.firstTankPage.imageSizeY = 20;
+        this.firstTankPage.imageXOffset = 0;
+
         this.editTank.image = "icons/pencil.png";
         this.editTank.imageSizeX = 25;
         this.editTank.imageSizeY = 25;
@@ -341,6 +361,12 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             {
                 nextTankPage.update();
                 previousTankPage.update();
+
+                if ((tankButtons.size() - 1) / objectButtonRows / objectButtonCols >= 2)
+                {
+                    lastTankPage.update();
+                    firstTankPage.update();
+                }
             }
         }
         else if (ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)

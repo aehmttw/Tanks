@@ -14,6 +14,7 @@ public abstract class Screen implements IBatchRenderableObject
 	public String music = null;
 	public String musicID = null;
 
+	public String windowTitle = "";
 	public String screenHint = "";
 	public boolean showDefaultMouse = true;
 

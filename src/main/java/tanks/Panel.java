@@ -23,6 +23,8 @@ import java.util.HashMap;
 
 public class Panel
 {
+	public static String lastWindowTitle = "";
+
 	public static boolean onlinePaused;
 
 	public double zoomTimer = 0;
@@ -212,6 +214,12 @@ public class Panel
 			this.setUp();
 
 		firstFrame = false;
+
+		if (Game.screen == Game.prevScreen && !Game.screen.windowTitle.equals(lastWindowTitle))
+		{
+			lastWindowTitle = Game.screen.windowTitle;
+			Game.game.window.setWindowTitle("Tanks" + lastWindowTitle);
+		}
 
 		Game.prevScreen = Game.screen;
 		Obstacle.lastDrawSize = Obstacle.draw_size;

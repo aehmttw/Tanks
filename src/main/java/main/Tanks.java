@@ -93,7 +93,7 @@ public class Tanks
                     if (!path.endsWith(".jar"))
                         Game.game.window.buildDate = "Running from source";
                     else if (f.exists())
-                        Game.game.window.buildDate = Game.readHashFromFile();
+                        Game.game.window.buildDate = "Build hash: " + Game.readHashFromFile();
                 }
 
                 Game.postInitScript();

@@ -121,7 +121,7 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720, 20, 5);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720);
 
         back.draw();
 

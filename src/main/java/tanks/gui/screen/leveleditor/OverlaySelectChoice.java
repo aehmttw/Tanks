@@ -45,6 +45,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
                     () -> selector.setChoice(-1), selector.description.apply(null)));
 
         selector.buttonList = new ButtonList(choiceButtons, 0, 0, -30);
+        selector.buttonList.manualDarkMode = true;
 
         if (selector.addNoneChoice)
             selector.buttonList.fixedLastElements = 1;
@@ -95,7 +96,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720, 20, 5);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, selector.title);

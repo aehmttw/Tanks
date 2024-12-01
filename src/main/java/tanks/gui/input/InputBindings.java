@@ -60,6 +60,7 @@ public class InputBindings
     public InputBindingGroup editorCircle = new InputBindingGroup("editor.circle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_N));
     public InputBindingGroup editorLine = new InputBindingGroup("editor.line", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_P));
     public InputBindingGroup editorWand = new InputBindingGroup("editor.wand", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_W));
+    public InputBindingGroup editorWandDiscontiguous = new InputBindingGroup("editor.wand_discontiguous", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_D));
 
     public InputBindingGroup editorNextObj = new InputBindingGroup("editor.nextObject", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_5));
     public InputBindingGroup editorPrevObj = new InputBindingGroup("editor.prevObject", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_4));
@@ -73,7 +74,7 @@ public class InputBindings
     public InputBindingGroup editorHoldSquare = new InputBindingGroup("editor.holdSquare", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT_SHIFT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT_SHIFT));
     public InputBindingGroup editorLockSquare = new InputBindingGroup("editor.lockSquare", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_L));
     public InputBindingGroup editorSelectAddToggle = new InputBindingGroup("editor.selectToggle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_A));
-    public InputBindingGroup editorPickBlock = new InputBindingGroup("editor.pickBlock", new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_3));
+    public InputBindingGroup editorPickBlock = new InputBindingGroup("editor.pickBlock", new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_3), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F));
 
     public InputBindingGroup editorCopy = new InputBindingGroup("editor.copy", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_C));
     public InputBindingGroup editorCut = new InputBindingGroup("editor.cut", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_X));

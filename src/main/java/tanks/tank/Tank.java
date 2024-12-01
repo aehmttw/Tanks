@@ -757,7 +757,12 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.posY = y1;	
 	}
 
-	public void drawTank(boolean forInterface, boolean interface3d)
+	public void drawTank(boolean forInterface, boolean in3d)
+	{
+		this.drawTank(forInterface, in3d, false);
+	}
+
+	public void drawTank(boolean forInterface, boolean in3d, boolean transparent)
 	{
 		double luminance = this.getAttributeValue(AttributeModifier.glow, this.luminance);
 		double glow = this.getAttributeValue(AttributeModifier.glow, 1);
@@ -765,7 +770,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
 
-		if (forInterface && !interface3d)
+		if (forInterface && !in3d)
 			s = Math.min(this.size, Game.tile_size * 1.5);
 
 		Drawing drawing = Drawing.drawing;
@@ -773,18 +778,18 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		Drawing.drawing.setColor(teamColor[0] * glow * this.glowIntensity, teamColor[1] * glow * this.glowIntensity, teamColor[2] * glow * this.glowIntensity, 255, 1);
 
-		if (Game.glowEnabled)
+		if (Game.glowEnabled && !transparent)
 		{
 			double size = this.glowSize * s;
 			if (forInterface)
 				Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size);
-			else if (!Game.enable3d)
+			else if (!in3d)
 				Drawing.drawing.fillGlow(this.posX, this.posY, size, size);
 			else
 				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size,true, false);
 		}
 
-		if (this.lightIntensity > 0 && this.lightSize > 0)
+		if (this.lightIntensity > 0 && this.lightSize > 0 && !transparent)
 		{
 			double i = this.lightIntensity;
 
@@ -793,7 +798,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				double size = this.lightSize * s * i / this.lightIntensity;
 				Drawing.drawing.setColor(255, 255, 255, i * 255);
 
-				if (!(forInterface && !interface3d))
+				if (!(forInterface && !in3d))
 					Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
 
 				i--;
@@ -814,7 +819,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 					if (this.health > this.baseHealth)
 					{
-						if (!Game.enable3d)
+						if (!in3d)
 						{
 							Drawing.drawing.setColor(0, 255, 0, 255, 1);
 							drawing.drawModel(this.baseModel, this.posX, this.posY, s * mod, s * mod, this.orientation);
@@ -830,18 +835,18 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 
-		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], 255, luminance);
+		Drawing.drawing.setColor(teamColor[0], teamColor[1], teamColor[2], transparent ? 127 : 255, luminance);
 
 		if (forInterface)
 		{
-			if (interface3d)
+			if (in3d)
 				drawing.drawInterfaceModel(this.baseModel, this.posX, this.posY, this.posZ, s, s, s, this.orientation, 0, 0);
 			else
 				drawing.drawInterfaceModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
 		}
 		else
 		{
-			if (Game.enable3d)
+			if (in3d)
 				drawing.drawModel(this.baseModel, this.posX, this.posY, this.posZ, s, s, s, this.orientation);
 			else
 				drawing.drawModel(this.baseModel, this.posX, this.posY, s, s, this.orientation);
@@ -851,18 +856,18 @@ public abstract class Tank extends Movable implements ISolidObject
 		double dmgFlash = Math.min(1, this.damageFlashAnimation);
 		double healFlash = Math.min(1, this.healFlashAnimation);
 
-		Drawing.drawing.setColor(this.colorR * (1 - Math.max(dmgFlash, healFlash)) + 255 * dmgFlash, this.colorG * (1 - Math.max(dmgFlash, healFlash)) + 255 * healFlash, this.colorB * (1 - Math.max(dmgFlash, healFlash)), 255, luminance);
+		Drawing.drawing.setColor(this.colorR * (1 - Math.max(dmgFlash, healFlash)) + 255 * dmgFlash, this.colorG * (1 - Math.max(dmgFlash, healFlash)) + 255 * healFlash, this.colorB * (1 - Math.max(dmgFlash, healFlash)), transparent ? 127 : 255, luminance);
 
 		if (forInterface)
 		{
-			if (interface3d)
+			if (in3d)
 				drawing.drawInterfaceModel(this.colorModel, this.posX, this.posY, this.posZ, s * sizeMod, s * sizeMod, s * sizeMod, this.orientation, 0, 0);
 			else
 				drawing.drawInterfaceModel(this.colorModel, this.posX, this.posY, s * sizeMod, s * sizeMod, this.orientation);
 		}
 		else
 		{
-			if (Game.enable3d)
+			if (in3d)
 				drawing.drawModel(this.colorModel, this.posX, this.posY, this.posZ, s, s, s, this.orientation);
 			else
 				drawing.drawModel(this.colorModel, this.posX, this.posY, s, s, this.orientation);
@@ -873,7 +878,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			double size = s;
 			for (int i = 1; i < Math.min(health, 6); i++)
 			{
-				if (Game.enable3d)
+				if (in3d)
 					drawing.drawModel(health_model,
 							this.posX, this.posY, this.posZ + s / 4,
 							size, size, s,
@@ -888,23 +893,23 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		this.drawTurret(forInterface, interface3d || (!forInterface && Game.enable3d), false);
+		this.drawTurret(forInterface, in3d || (!forInterface && in3d), transparent);
 
 		sizeMod = 0.5;
 
-		Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 255, luminance);
+		Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, transparent ? 127 : 255, luminance);
 		if (this.emblem != null)
 		{
 			if (forInterface)
 			{
-				if (interface3d)
+				if (in3d)
 					drawing.drawInterfaceImage(0, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawInterfaceImage(this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
 			else
 			{
-				if (Game.enable3d)
+				if (in3d)
 					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
@@ -935,7 +940,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			if (!Game.game.window.drawingShadow)
 				drawAge += Panel.frameFrequency;
 
-			this.drawTank(false, false);
+			this.drawTank(false, Game.enable3d);
 
 			if (this.possessor != null)
 			{
@@ -960,21 +965,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public void drawOutline() 
 	{
 		drawAge = Game.tile_size;
-		Drawing drawing = Drawing.drawing;
 
-		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
-		drawing.fillRect(this.posX - this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(this.posX + this.size * 0.4, this.posY, this.size * 0.2, this.size);
-		drawing.fillRect(this.posX, this.posY - this.size * 0.4, this.size * 0.6, this.size * 0.2);
-		drawing.fillRect(this.posX, this.posY + this.size * 0.4, this.size * 0.6, this.size * 0.2);
-
-		this.drawTurret(false, false, true);
-
-		if (this.emblem != null)
-		{
-			Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, 127);
-			drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, this.size / 2, this.size / 2);
-		}
+		this.drawTank(false, Game.enable3d, true);
+		this.drawTurret(false, Game.enable3d, true);
 
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
 	}

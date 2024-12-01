@@ -22,7 +22,8 @@ public class EditorButtons
     public ArrayList<EditorButton>[] buttons;
 
     public boolean prevShowControls = true;
-    public double animationTimer = 50;
+    public double animationTime = 50;
+    public double animationTimer = animationTime;
 
     public double[] xs;
     public double[] ys;
@@ -68,8 +69,8 @@ public class EditorButtons
                     refreshButtons();
 
                 boolean prev = b.shown;
-                //noinspection AssignmentUsedAsCondition
-                if (b.shown = b.shownFunc.apply())
+                b.shown = b.shownFunc.apply();
+                if (b.shown)
                 {
                     b.enabled = !b.disabledFunc.apply();
 
@@ -94,17 +95,17 @@ public class EditorButtons
         if (editor.showControls != prevShowControls)
         {
             slideAnimation = true;
-            animationTimer = 50 - animationTimer;
+            animationTimer = animationTime - animationTimer;
             prevShowControls = editor.showControls;
         }
 
         if (slideAnimation)
         {
             animationTimer += Panel.frameFrequency * 2;
-            animationMultiplier = Math.sin(animationTimer / 50 * Math.PI / 2);
+            animationMultiplier = Math.sin(animationTimer / animationTime * Math.PI / 2);
             refreshButtons();
 
-            if (animationTimer > 50)
+            if (animationTimer > animationTime)
                 slideAnimation = false;
         }
     }
@@ -160,7 +161,10 @@ public class EditorButtons
             if (!editor.showControls)
                 direction = !direction;
 
-            axis[pos] += (animationMultiplier * (direction ? 1 : -1) * 100 * editor.controlsSizeMultiplier) + (editor.showControls ? -1 : 0) * (pos % 2 == 1 ? -1 : 1) * 100 * editor.controlsSizeMultiplier;
+            int posDir = (pos % 2 == 1 ? -1 : 1);
+            if (v == 0)
+                posDir = pos / 2 == 1 ? -1 : 1;
+            axis[pos] += (animationMultiplier * (direction ? 1 : -1) * 100 * editor.controlsSizeMultiplier) + (editor.showControls ? -1 : 0) * posDir * 100 * editor.controlsSizeMultiplier;
         }
 
         EditorButton prev = null;
@@ -181,8 +185,8 @@ public class EditorButtons
             b.imageSizeX = b.baseImageSX * editor.controlsSizeMultiplier;
             b.imageSizeY = b.baseImageSY * editor.controlsSizeMultiplier;
 
-            //noinspection AssignmentUsedAsCondition
-            if (b.shown = b.shownFunc.apply())
+            b.shown = b.shownFunc.apply();
+            if (b.shown)
                 prev = b;
         }
     }
@@ -197,10 +201,11 @@ public class EditorButtons
         public Runnable resetFunc;
 
         public ArrayList<EditorButton> subMenuButtons = new ArrayList<>();
-        public double keyHoldTime = 0;
+        public double hoverTime = 0;
         public double menuOpenAge = -9999;
         public int option = 0;
         public boolean showSubButtons = false;
+        public boolean subButtonsAsOptions = true;
 
         public String secondaryImage;
         public double baseImageSX;
@@ -231,8 +236,7 @@ public class EditorButtons
         public EditorButton(
                 ArrayList<EditorButton> location, String image, double imageSX, double imageSY, Runnable f,
                 ToBooleanFunction disabledFunc, ToBooleanFunction shownFunc,
-                String description, InputBindingGroup keybind
-        )
+                String description, InputBindingGroup keybind)
         {
             super(0, -1000, 70, 70, "", f, description, keybind != null ? keybind.getInputs() : "");
 
@@ -247,7 +251,6 @@ public class EditorButtons
             this.baseImageSX = imageSX;
             this.baseImageSY = imageSY;
             this.fullInfo = true;
-            this.disabledClick = true;
 
             this.keybind = keybind;
             this.disabledFunc = disabledFunc;
@@ -261,14 +264,17 @@ public class EditorButtons
         @Override
         public void draw()
         {
+            boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
+                    Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+
             if (!subMenuButtons.isEmpty())
             {
                 double percentage = Math.sin(Math.min((age - menuOpenAge) / 25, 1) * Math.PI / 2);
                 if (!showSubButtons)
                     percentage = 1 - percentage;
 
-                double totalSizeX = (sizeX + 10) * (subMenuButtons.size() + 1);
-                double sX = percentage * totalSizeX;
+                double totalSize = (sizeX + 10) * (subMenuButtons.size() + 1) - 10;
+                double s = percentage * totalSize;
 
                 if (slideAnimation)
                 {
@@ -277,23 +283,41 @@ public class EditorButtons
                     showSubButtons = false;
                 }
 
-                if (!enabled)
-                    Drawing.drawing.setColor(bgColR - 10, bgColG - 10, bgColB - 10, 200);
-                else
-                    Drawing.drawing.setColor(disabledColR, disabledColG, disabledColB, 200);
+                Drawing.drawing.setColor(disabledColR * 0.75, disabledColG * 0.75, disabledColB * 0.75, 200);
 
-                double centerX = posX - sizeX / 2 + Math.max(sizeX / 2, sX / 2);
-                Drawing.drawing.fillInterfaceRect(centerX, posY, sX, sizeY, 9999);
+                if (!vertical)
+                {
+                    double centerY = posY - sizeY / 2 + Math.max(sizeY / 2, s / 2);
+                    Drawing.drawing.fillInterfaceRect(posX, centerY, sizeX, s, 9999);
+                }
+                else
+                {
+                    double centerX = posX - sizeX / 2 + Math.max(sizeX / 2, s / 2);
+                    Drawing.drawing.fillInterfaceRect(centerX, posY, s, sizeY, 9999);
+                }
 
                 for (int i = subMenuButtons.size() - 1; i >= 0; i--)
                 {
                     EditorButton b = subMenuButtons.get(i);
-                    double x = posX + (sizeX + 10) * (i + 1) - (totalSizeX - sX);
-                    if (x <= posX)
-                        continue;
+
+                    double x = posX;
+                    double y = posY;
+
+                    if (!vertical)
+                    {
+                        y = posY + (sizeY + 10) * (i + 1) - (totalSize - s);
+                        if (y <= posY)
+                            continue;
+                    }
+                    else
+                    {
+                        x = posX + (sizeX + 10) * (i + 1) - (totalSize - s);
+                        if (x <= posX)
+                            continue;
+                    }
 
                     b.enableHover = !b.hoverTextRaw.isEmpty() && percentage == 1;
-                    b.setPosition(x, posY);
+                    b.setPosition(x, y);
                     b.bgColA = 255;
                     b.draw();
                 }
@@ -301,7 +325,7 @@ public class EditorButtons
 
             super.draw();
 
-            if (secondaryImage != null && option > 0 && option <= subMenuButtons.size())
+            if (secondaryImage != null && option > 0 && option <= subMenuButtons.size() && !this.showSubButtons)
             {
                 EditorButton b = subMenuButtons.get(option - 1);
                 imageXOffset = imageSizeX * -0.15;
@@ -339,7 +363,7 @@ public class EditorButtons
                     resetFunc.run();
             }
 
-            if (showSubButtons && (keybind != null && keybind.isPressed()))
+            if (keybind != null && keybind.isPressed() && subButtonsAsOptions)
             {
                 if (Game.game.window.validScrollUp)
                 {
@@ -367,7 +391,7 @@ public class EditorButtons
             }
         }
 
-        private void setOption()
+        protected void setOption()
         {
             int len = subMenuButtons.size() + 1;
             option = (option + len) % len;
@@ -380,30 +404,78 @@ public class EditorButtons
             }
 
             subMenuButtons.get(option - 1).onClick();
-            keyHoldTime = 60;
         }
 
         @Override
         public void onClick()
         {
-            super.onClick();
+            if (this.enabled)
+                super.onClick();
+
             Game.game.window.pressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
+
         }
 
         @Override
         public void updateKeybind()
         {
+            if (!this.enabled && keybind != null && keybind.isValid() && subButtonsAsOptions)
+            {
+                if (option != 0)
+                {
+                    option = 0;
+                    setOption();
+                }
+
+                keybind.invalidate();
+            }
+
             super.updateKeybind();
             if (keybind == null)
                 return;
 
-            if (keybind.isPressed())
-                keyHoldTime = Math.min(60, keyHoldTime + Panel.frameFrequency);
-            else
-                keyHoldTime = Math.max(0, keyHoldTime - Panel.frameFrequency * 0.1);
+            if (this.selected && ((this.subButtonsAsOptions && !this.enabled) || (!this.subButtonsAsOptions && this.enabled)))
+                hoverTime = 25;
+            else if (this.hoverTime > 0)
+            {
+                double totalSize = (sizeX + 10) * (subMenuButtons.size() + 1) - 10;
+
+                boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
+                        Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+
+                double startX;
+                double startY;
+                double endX;
+                double endY;
+
+                if (vertical)
+                {
+                    startX = this.posX - this.sizeX / 2;
+                    endX = startX + totalSize;
+                    startY = this.posY - this.sizeY / 2;
+                    endY = this.posY + this.sizeY / 2;
+                }
+                else
+                {
+                    startX = this.posX - this.sizeX / 2;
+                    endX = this.posX + this.sizeX / 2;
+                    startY = this.posY - this.sizeY / 2;
+                    endY = startY + totalSize;
+                }
+
+                double mx = Drawing.drawing.getInterfaceMouseX();
+                double my = Drawing.drawing.getInterfaceMouseY();
+
+                if (!(this.subButtonsAsOptions || this.enabled))
+                    hoverTime = 0;
+                else if (mx >= startX && mx <= endX && my >= startY && my <= endY)
+                    hoverTime = 25;
+                else
+                    hoverTime = Math.max(0, this.hoverTime - Panel.frameFrequency);
+            }
 
             boolean prev = showSubButtons;
-            showSubButtons = keyHoldTime >= 50;
+            showSubButtons = hoverTime > 0;
             if (showSubButtons != prev)
                 menuOpenAge = age;
         }
@@ -416,10 +488,6 @@ public class EditorButtons
                 b.bgColG = bgColG;
                 b.bgColB = bgColB;
 
-                b.disabledColR += 30;
-                b.disabledColG += 30;
-                b.disabledColB += 30;
-
                 b.sizeX = sizeX * 0.9;
                 b.sizeY = sizeY * 0.9;
                 b.imageSizeX *= 0.75;
@@ -428,8 +496,11 @@ public class EditorButtons
                 Runnable r = b.function;
                 b.function = () ->
                 {
-                    secondaryImage = b.image;
-                    option = subMenuButtons.indexOf(b) + 1;
+                    if (subButtonsAsOptions)
+                    {
+                        secondaryImage = b.image;
+                        option = subMenuButtons.indexOf(b) + 1;
+                    }
                     r.run();
                 };
             }
@@ -438,6 +509,12 @@ public class EditorButtons
         public EditorButton addSubButtons(EditorButton... buttons)
         {
             Collections.addAll(subMenuButtons, buttons);
+            return this;
+        }
+
+        public EditorButton setSubButtonsAsOptions(boolean value)
+        {
+            this.subButtonsAsOptions = value;
             return this;
         }
 

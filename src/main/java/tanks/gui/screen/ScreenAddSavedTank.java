@@ -464,8 +464,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 600);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 580);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 600);
 
         if (nextTankPage.enabled || previousTankPage.enabled)
         {

@@ -230,8 +230,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
         this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1200, 660);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 1180, 640);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 660);
 
         quit.draw();
 

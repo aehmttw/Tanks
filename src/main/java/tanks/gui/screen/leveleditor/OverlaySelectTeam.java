@@ -31,6 +31,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
         public void run()
         {
             selector.buttonList.reorder = !selector.buttonList.reorder;
+            editor.modified = true;
 
             if (selector.buttonList.reorder)
                 reorder.setText("Stop reordering");

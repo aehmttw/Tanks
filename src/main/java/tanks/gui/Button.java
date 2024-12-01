@@ -401,6 +401,9 @@ public class Button implements IDrawable, ITrigger
 			sizeY += 20;
 		}
 
+		selected = (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+		infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+
 		if (selected && valid)
 		{
 			clickX = mx;
@@ -470,9 +473,6 @@ public class Button implements IDrawable, ITrigger
 			origX = posX;
 			origY = posY;
 		}
-
-		selected = (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
-		infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
 
 		if (Game.game.window.touchscreen)
 		{

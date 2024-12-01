@@ -1,4 +1,4 @@
-package tanks.editor.selector;
+package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Game;
 import tanks.GameObject;
@@ -32,6 +32,7 @@ public class StringSelector<T extends GameObject> extends LevelEditorSelector<T>
     public String getMetadata()
     {
         // WARNING: DO NOT TRY THIS AT HOME!!!
+        // Comment from aehmttw: this could probably be done more reasonably if/when obstacles are tanksonified
         return Base64.getEncoder().encodeToString(encodeString(string).getBytes()) + ";" + true;
     }
 

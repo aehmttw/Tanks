@@ -1,12 +1,11 @@
 package tanks.tank;
 
 import basewindow.Model;
-import basewindow.ModelPart;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.editor.selector.LevelEditorSelector;
-import tanks.editor.selector.RotationSelector;
-import tanks.editor.selector.TeamSelector;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
+import tanks.gui.screen.leveleditor.selector.RotationSelector;
+import tanks.gui.screen.leveleditor.selector.TeamSelector;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;

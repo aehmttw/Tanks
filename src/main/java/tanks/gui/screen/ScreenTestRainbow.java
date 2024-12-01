@@ -44,7 +44,7 @@ public class ScreenTestRainbow extends Screen
             double mx = Drawing.drawing.getInterfaceMouseX();
             double my = Drawing.drawing.getInterfaceMouseY();
 
-            if (Game.lessThan(x - 500 / rect_count, mx, x + 500 / rect_count) && Game.lessThan(this.centerY - 75, my, this.centerY))
+            if (Game.isOrdered(x - 500 / rect_count, mx, x + 500 / rect_count) && Game.isOrdered(this.centerY - 75, my, this.centerY))
                 lastHovered = i;
 
             if (lastHovered == i)

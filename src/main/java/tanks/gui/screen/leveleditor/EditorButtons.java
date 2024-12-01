@@ -1,4 +1,4 @@
-package tanks.editor;
+package tanks.gui.screen.leveleditor;
 
 import basewindow.InputCodes;
 import tanks.Drawing;

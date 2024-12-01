@@ -1,7 +1,7 @@
 package tanks;
 
-import tanks.editor.selector.LevelEditorSelector;
-import tanks.editor.selector.LevelEditorSelector.Position;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector.Position;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.obstacle.Obstacle;

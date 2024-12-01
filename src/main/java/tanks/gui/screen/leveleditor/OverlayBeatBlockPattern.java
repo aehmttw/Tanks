@@ -2,7 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.editor.selector.PatternSelector;
+import tanks.gui.screen.leveleditor.selector.PatternSelector;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.ObstacleBeatBlock;

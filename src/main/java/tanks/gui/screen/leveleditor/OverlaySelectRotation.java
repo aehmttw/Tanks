@@ -3,7 +3,7 @@ package tanks.gui.screen.leveleditor;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.editor.selector.RotationSelector;
+import tanks.gui.screen.leveleditor.selector.RotationSelector;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.Obstacle;

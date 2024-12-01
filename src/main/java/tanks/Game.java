@@ -1419,7 +1419,7 @@ public class Game
 	{
 		ArrayList<String> hash = Game.game.fileManager.getInternalFileContents("/hash.txt");
 		if (hash == null)
-			return "-1.-1.-1";
+			return "";
 		else
 			return hash.get(0);
 	}

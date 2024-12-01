@@ -139,7 +139,7 @@ public class DefaultBullets
         healing_ray.outlineColorR = 200;
         healing_ray.outlineColorG = 255;
         healing_ray.outlineColorB = 200;
-        healing_ray.shotSound = null;
+        healing_ray.soundVolume = 0;
         
         flamethrower = new BulletGas();
         flamethrower.bounces = 0;

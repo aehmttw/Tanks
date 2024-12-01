@@ -441,7 +441,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			double healthBefore = t.health;
 			double healFlashBefore = t.healFlashAnimation;
 			boolean kill = t.damage(dmg * this.frameDamageMultipler, this);
-			if (!t.destroy && this.hitStun > 0)
+			if (!t.destroy && this.hitStun > 0 && !(Team.isAllied(this, t) && this.team != null && !this.team.friendlyFire))
 				this.applyStun(t);
 
 			if (this.damage < 0)

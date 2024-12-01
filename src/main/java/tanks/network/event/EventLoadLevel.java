@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.item.Item;
 import tanks.minigames.Minigame;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankAIControlled;
@@ -33,6 +34,13 @@ public class EventLoadLevel extends PersonalEvent
 			for (TankAIControlled t : l.customTanks)
 			{
 				s.append(t.toString()).append("\n");
+			}
+
+			s.append("shop\n");
+
+			for (Item.ShopItem i: Crusade.currentCrusade.getShop())
+			{
+				s.append(i.toString()).append("\n");
 			}
 
 			s.append("level\n");

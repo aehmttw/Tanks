@@ -22,7 +22,7 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
         this.checkForObjects = true;
         this.enableStacking = false;
 
-        this.isSurfaceTile = true;
+        this.type = ObstacleType.ground;
 
         this.colorR = 200;
         this.colorG = 20;

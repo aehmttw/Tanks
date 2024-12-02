@@ -37,6 +37,7 @@ public class ObstacleSnow extends Obstacle
         this.destroyEffect = Effect.EffectType.snow;
         this.destroyEffectAmount = 0.25;
         this.replaceTiles = false;
+        this.type = ObstacleType.top;
 
         double darkness = Math.random() * 20;
 

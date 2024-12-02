@@ -35,6 +35,7 @@ public class ObstacleTeleporter extends Obstacle
 		this.colorB = 255;
 		this.draggable = false;
 		this.enableStacking = false;
+		this.type = ObstacleType.extra;
 
 		this.batchDraw = false;
 

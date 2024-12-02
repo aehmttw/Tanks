@@ -25,7 +25,7 @@ public class ObstacleIce extends Obstacle
         this.checkForObjects = true;
         this.enableStacking = false;
 
-        this.isSurfaceTile = true;
+        this.type = ObstacleType.ground;
 
         this.colorR = 200;
         this.colorG = 225;

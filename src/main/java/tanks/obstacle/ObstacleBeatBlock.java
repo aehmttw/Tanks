@@ -29,6 +29,7 @@ public class ObstacleBeatBlock extends Obstacle
         this.renderer = ShaderBeatBlocks.class;
         this.tileRenderer = ShaderGroundObstacleBeatBlock.class;
         this.destructible = false;
+        this.type = ObstacleType.top;
 
         this.description = "A block that appears and disappears to the beat of the music";
     }

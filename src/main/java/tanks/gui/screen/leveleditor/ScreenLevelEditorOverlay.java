@@ -44,7 +44,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
         {
             if (editor.initialized)
             {
-                if (this.editor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
+                if (ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
                     editor.mouseObstacle.forAllSelectors(LevelEditorSelector::load);
                 else
                     editor.mouseTank.forAllSelectors(LevelEditorSelector::load);

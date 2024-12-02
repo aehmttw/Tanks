@@ -29,11 +29,11 @@ import java.util.*;
 @SuppressWarnings({"unused"})
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
-	public HashMap<String, LevelEditorSelector<?>> selectors = new HashMap<>();
-	public Placeable currentPlaceable = Placeable.enemyTank;
-	public EditorClipboard[] clipboards = new EditorClipboard[5];
-	public EditorClipboard clipboard = new EditorClipboard();
-	public int selectedNum = 0;
+	public static HashMap<String, LevelEditorSelector<?>> selectors = new HashMap<>();
+	public static Placeable currentPlaceable = Placeable.enemyTank;
+	public static EditorClipboard[] clipboards = new EditorClipboard[5];
+	public static EditorClipboard clipboard = new EditorClipboard();
+	public static int selectedNum = 0;
 
 	public ArrayList<EditorAction> undoActions = new ArrayList<>();
 	public ArrayList<EditorAction> redoActions = new ArrayList<>();
@@ -465,7 +465,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			if (t.name.equals("player"))
 			{
-				this.currentPlaceable = Placeable.playerTank;
+				currentPlaceable = Placeable.playerTank;
 				this.mouseTank = new TankPlayer(0, 0, 0);
 				this.mouseTank.initSelectors(this);
 				this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
@@ -481,7 +481,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					if (e.name.equals(t.name))
 					{
 						tankNum = i;
-						this.currentPlaceable = Placeable.enemyTank;
+						currentPlaceable = Placeable.enemyTank;
 						this.refreshMouseTank();
 						return true;
 					}
@@ -492,7 +492,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					if (this.level.customTanks.get(i).name.equals(t.name))
 					{
 						tankNum = Game.registryTank.tankEntries.size() + i;
-						this.currentPlaceable = Placeable.enemyTank;
+						currentPlaceable = Placeable.enemyTank;
 						this.refreshMouseTank();
 						return true;
 					}
@@ -520,7 +520,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				i++;
 			}
 
-			this.currentPlaceable = Placeable.obstacle;
+			currentPlaceable = Placeable.obstacle;
 			obstacleNum = i;
 			mouseObstacle = Game.registryObstacle.getEntry(i).getObstacle(0, 0);
 			mouseObstacle.initSelectors(this);
@@ -711,8 +711,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				obstacleNum = (obstacleNum + 1) % Game.registryObstacle.obstacleEntries.size();
 				mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-				this.mouseObstacle.initSelectors(this);
-				this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
+				cloneSelectorProperties();
 			}
 
 			if (up && currentPlaceable == Placeable.enemyTank)
@@ -751,13 +750,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				if (currentPlaceable == Placeable.enemyTank)
 				{
-					this.currentPlaceable = Placeable.obstacle;
+					currentPlaceable = Placeable.obstacle;
 					this.mouseObstacle.initSelectors(this);
 					this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
 				}
 				else if (currentPlaceable == Placeable.obstacle)
 				{
-					this.currentPlaceable = Placeable.playerTank;
+					currentPlaceable = Placeable.playerTank;
 					this.mouseTank = new TankPlayer(0, 0, 0);
 					this.mouseTank.initSelectors(this);
 					this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
@@ -766,7 +765,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				}
 				else if (currentPlaceable == Placeable.playerTank)
 				{
-					this.currentPlaceable = Placeable.enemyTank;
+					currentPlaceable = Placeable.enemyTank;
 					this.refreshMouseTank();
 				}
 			}
@@ -775,18 +774,18 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				if (currentPlaceable == Placeable.playerTank)
 				{
-					this.currentPlaceable = Placeable.obstacle;
+					currentPlaceable = Placeable.obstacle;
 					this.mouseObstacle.initSelectors(this);
 					this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
 				}
 				else if (currentPlaceable == Placeable.obstacle)
 				{
-					this.currentPlaceable = Placeable.enemyTank;
+					currentPlaceable = Placeable.enemyTank;
 					this.refreshMouseTank();
 				}
 				else if (currentPlaceable == Placeable.enemyTank)
 				{
-					this.currentPlaceable = Placeable.playerTank;
+					currentPlaceable = Placeable.playerTank;
 					this.mouseTank = new TankPlayer(0, 0, 0);
 					this.mouseTank.initSelectors(this);
 					this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
@@ -1341,7 +1340,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.initialized = true;
 			this.clickCooldown = 50;
 
-			if (this.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
+			if (currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
 			{
 				this.mouseObstacle.initSelectors(this);
 				this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
@@ -2512,7 +2511,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		return currentMode == EditorMode.build && buildTool != BuildTool.normal && currentPlaceable != Placeable.playerTank;
 	}
 
-
 	public void cloneSelectorProperties()
 	{
 		cloneSelectorProperties(true);
@@ -2525,16 +2523,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		o.forAllSelectors(s ->
 		{
-			LevelEditorSelector<?> s1 = this.selectors.get(s.id);
+			LevelEditorSelector<?> s1 = selectors.get(s.id);
 			if (s1 != null)
 			{
 				if (forward)
-					s.cloneProperties(s1);
+                    s.cloneProperties(s1);
 				else
-					s1.cloneProperties(s);
+                    s1.cloneProperties(s);
 			}
 			else if (s.modified())
-				this.selectors.put(s.id, s);
+				selectors.put(s.id, s);
 		});
 	}
 
@@ -2783,8 +2781,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		t.drawAge = mouseTank.drawAge;
 		mouseTank = t;
-		this.mouseTank.initSelectors(this);
-		this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
+		OverlayObjectMenu.loadSelectors(t, null, this);
 	}
 
 	public double clampTileX(double x)

@@ -2543,15 +2543,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.save();
 		this.replaceSpawns();
 
-		if (Game.enable3d)
-			for (int i = 0; i < Game.obstacles.size(); i++)
-			{
-				Obstacle o = Game.obstacles.get(i);
-
-				if (o.replaceTiles)
-					o.postOverride();
-			}
-
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
@@ -2563,6 +2554,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
+
+			o.removed = false;
+			o.postOverride();
 
 			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{

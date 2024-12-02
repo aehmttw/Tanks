@@ -76,7 +76,8 @@ public class EventAddObstacleText extends PersonalEvent
         String[] lines = text.split("---");
         for (int i = 0; i < lines.length; i++)
         {
-            ObstacleText o = new ObstacleText("text", lines[i], posX, posY + i);
+            ObstacleText o = new ObstacleText("text", posX, posY + i);
+            o.text = lines[i];
             o.duration = duration;
             o.colorR = this.colorR;
             o.colorG = this.colorG;

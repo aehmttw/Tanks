@@ -797,10 +797,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				}
 			}
 
-			updateMetadata();
+//			updateMetadata();
 		}
-		else if (selection)
-			updateMetadata();
+//		else if (selection)
+//			updateMetadata();
 
 		double prevZoom = zoom;
 		double prevOffsetX = offsetX;
@@ -993,22 +993,22 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.removeObstacles.clear();
 	}
 
-	public void updateMetadata()
-	{
-		if (Game.game.input.editorPrevMeta.isValid())
-		{
-			Game.game.input.editorPrevMeta.invalidate();
-			this.undoActions.add(new EditorAction.ActionChangeHeight(this, -1));
-			changeMetadata(-1);
-		}
-
-		if (Game.game.input.editorNextMeta.isValid())
-		{
-			Game.game.input.editorNextMeta.invalidate();
-			this.undoActions.add(new EditorAction.ActionChangeHeight(this, 1));
-			changeMetadata(1);
-		}
-	}
+//	public void updateMetadata()
+//	{
+//		if (Game.game.input.editorPrevMeta.isValid())
+//		{
+//			Game.game.input.editorPrevMeta.invalidate();
+//			this.undoActions.add(new EditorAction.ActionChangeHeight(this, -1));
+//			changeMetadata(-1);
+//		}
+//
+//		if (Game.game.input.editorNextMeta.isValid())
+//		{
+//			Game.game.input.editorNextMeta.invalidate();
+//			this.undoActions.add(new EditorAction.ActionChangeHeight(this, 1));
+//			changeMetadata(1);
+//		}
+//	}
 
 	public boolean[] checkMouse(double mx, double my, boolean left, boolean right, boolean validLeft, boolean validRight)
 	{
@@ -1530,7 +1530,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						my = mouseObstacle.posY;
 					}
 
-					if (mouseObstacleStartHeight < 1 && mouseObstacle.tankCollision || currentPlaceable != Placeable.obstacle)
+					if (mouseObstacleStartHeight < 1 && mouseObstacle.type == Obstacle.ObstacleType.full || currentPlaceable != Placeable.obstacle)
 					{
 						for (Movable m : Game.movables)
 						{
@@ -1549,7 +1549,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						{
 							if (!validRight)
 							{
-								if (m.tankCollision || mouseObstacle.tankCollision || m.getClass() == mouseObstacle.getClass() || (mouseObstacle.isSurfaceTile && m.isSurfaceTile))
+								if (m.getClass() == mouseObstacle.getClass() || !Obstacle.canPlaceOn(mouseObstacle.type, m.type))
 								{
 									skip = true;
 									break;
@@ -1673,138 +1673,179 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void save(String levelName)
 	{
-		if (undoActions.isEmpty() && !modified)
-			return;
-
-		OverlayObjectMenu.saveSelectors(this);
 		StringBuilder level = new StringBuilder("{");
 
 		if (!this.level.editable)
 			level.append("*");
 
-		level.append(this.level.sizeX).append(",").append(this.level.sizeY).append(",")
-				.append(this.level.colorR).append(",").append(this.level.colorG).append(",").append(this.level.colorB).append(",")
-				.append(this.level.colorVarR).append(",").append(this.level.colorVarG).append(",").append(this.level.colorVarB).append(",")
-				.append((int) (this.level.timer / 100)).append(",").append((int) Math.round(this.level.light * 100)).append(",")
-				.append((int) Math.round(this.level.shadow * 100)).append("|");
+		level.append(this.level.sizeX).append(",").append(this.level.sizeY).append(",").append(this.level.colorR).append(",").append(this.level.colorG).append(",").append(this.level.colorB).append(",").append(this.level.colorVarR).append(",").append(this.level.colorVarG).append(",").append(this.level.colorVarB)
+				.append(",").append((int) (this.level.timer / 100)).append(",").append((int) Math.round(this.level.light * 100)).append(",").append((int) Math.round(this.level.shadow * 100)).append("|");
 
-		grid = new HashMap[Game.currentSizeX][Game.currentSizeY];
+		ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
+		String[][][] obstacles = new String[Game.registryObstacle.obstacleEntries.size()][this.level.sizeX][this.level.sizeY];
 
-		ArrayList<Obstacle> unmarked = new ArrayList<>();
-
-		HashSet<Class<? extends Obstacle>> classes = new HashSet<>();
-		HashMap<Class<? extends Obstacle>, String> names = new HashMap<>();
-		for (RegistryObstacle.ObstacleEntry o : Game.registryObstacle.obstacleEntries)
+		for (int h = 0; h < Game.registryObstacle.obstacleEntries.size(); h++)
 		{
-			classes.add(o.obstacle);
-			names.put(o.obstacle, o.name);
-		}
+			Obstacle obs = Game.registryObstacle.obstacleEntries.get(h).getObstacle(0, 0);
 
-		for (Obstacle o : Game.obstacles)
-		{
-			// using this variable to determine one of two states: handled by compression or unmarked
-			if (o.removed)
-				continue;
-
-			if (o.isSurfaceTile)
-				o.startHeight = -1;
-
-			int x = (int) (o.posX / 50);
-			int y = (int) (o.posY / 50);
-
-			if (x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY || !classes.contains(o.getClass()))
+			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
-				unmarked.add(o);
-				o.removed = true;
-			}
-			else
-			{
-				if (grid[x][y] == null)
-					grid[x][y] = new HashMap<>();
+				Obstacle o = Game.obstacles.get(i);
+				int x = (int) (o.posX / Game.tile_size);
+				int y = (int) (o.posY / Game.tile_size);
 
-				if (!o.enableGroupID)
-					grid[x][y].put((float) o.startHeight, o);
-				else
-					grid[x][y].put((float) Math.pow(o.startHeight, o.groupID), o);
-			}
-		}
-
-		for (int x = 0; x < this.level.sizeX; x++)
-		{
-			for (int y = 0; y < this.level.sizeY; y++)
-			{
-				if (this.grid[x][y] == null)
-					continue;
-
-				for (float layer: this.grid[x][y].keySet())
+				if (x < obstacles[h].length && x >= 0 && y < obstacles[h][0].length && y >= 0 && o.name.equals(Game.registryObstacle.getEntry(h).name))
 				{
-					Obstacle o = this.grid[x][y].get(layer);
+					obstacles[h][x][y] = o.stackHeight + "";
 
-					// using this variable to determine whether handled by compression or unmarked
-					if (o == null || o.removed)
-						continue;
+					if (o.enableGroupID)
+					{
+						if (o.enableStacking)
+							obstacles[h][x][y] = o.groupID + "#" + o.stackHeight;
+						else
+							obstacles[h][x][y] = o.groupID + "";
+					}
 
-					compress1D(x, y, layer);
+					unmarked.remove(o);
+				}
 
-					if (endX > 0)
-						level.append(x).append("...").append(endX-1).append("-").append(y);
-					else if (endY > 0)
-						level.append(x).append("-").append(y).append("...").append(endY-1);
-					else
-						level.append(x).append("-").append(y);
+				//level += x + "-" + y + ",";
+			}
 
-					level.append("-").append(names.get(o.getClass()));
-					level.append("-").append(o.getMetadata());
-					level.append(",");
+			//compression
+			for (int i = 0; i < this.level.sizeX; i++)
+			{
+				for (int j = 0; j < this.level.sizeY; j++)
+				{
+					if (obstacles[h][i][j] != null)
+					{
+						String stack = obstacles[h][i][j];
+
+						int xLength = 0;
+
+						while (true)
+						{
+							xLength += 1;
+
+							if (i + xLength >= obstacles[h].length)
+								break;
+							else if (!Objects.equals(obstacles[h][i + xLength][j], stack))
+								break;
+						}
+
+
+						int yLength = 0;
+
+						while (true)
+						{
+							yLength += 1;
+
+							if (j + yLength >= obstacles[h][0].length)
+								break;
+							else if (!Objects.equals(obstacles[h][i][j + yLength], stack))
+								break;
+						}
+
+						String name = "";
+						String obsName = Game.registryObstacle.obstacleEntries.get(h).name;
+
+						if (!obsName.equals("normal") || stack != null)
+							name = "-" + obsName;
+
+						if (xLength >= yLength)
+						{
+							if (xLength == 1)
+								level.append(i).append("-").append(j).append(name);
+							else
+								level.append(i).append("...").append(i + xLength - 1).append("-").append(j).append(name);
+
+							if ((obs.enableStacking && stack != null) || (obs.enableGroupID && !("0".equals(stack))))
+								level.append("-").append(stack);
+
+							level.append(",");
+
+							for (int z = 0; z < xLength; z++)
+							{
+								obstacles[h][i + z][j] = null;
+							}
+						}
+						else
+						{
+							level.append(i).append("-").append(j).append("...").append(j + yLength - 1).append(name);
+
+							if ((obs.enableStacking && !("1.0".equals(stack))) || (obs.enableGroupID && !("0".equals(stack))))
+								level.append("-").append(stack);
+
+							level.append(",");
+
+							for (int z = 0; z < yLength; z++)
+							{
+								obstacles[h][i][j + z] = null;
+							}
+						}
+					}
 				}
 			}
 		}
 
-		for (Obstacle o : unmarked)
+		for (int i = 0; i < unmarked.size(); i++)
 		{
-			level.append((int) (o.posX / Game.tile_size)).append("-").append((int) (o.posY / Game.tile_size));
-			level.append("-").append(o.name);
+			level.append((int)(unmarked.get(i).posX / Game.tile_size)).append("-").append((int)(unmarked.get(i).posY / Game.tile_size));
+			level.append("-").append(unmarked.get(i).name);
 
-			if (o instanceof ObstacleUnknown && ((ObstacleUnknown) o).metadata != null)
-				level.append("-").append(((ObstacleUnknown) o).metadata);
-			else if (o.enableStacking)
-				level.append("-").append(o.stackHeight);
-			else if (o.enableGroupID)
-				level.append("-").append(o.groupID);
+			Obstacle u = unmarked.get(i);
+			if (u instanceof ObstacleUnknown && ((ObstacleUnknown) u).metadata != null)
+				level.append("-").append(((ObstacleUnknown) u).metadata);
+			else
+			{
+				if (u.enableGroupID)
+					level.append("-").append(u.groupID);
 
-			if (o.startHeight > 0)
-				level.append("-").append(o.startHeight);
+				if (u.enableStacking)
+					level.append("-").append(u.stackHeight);
+			}
+
 
 			level.append(",");
 		}
 
 		if (level.charAt(level.length() - 1) == ',')
+		{
 			level = new StringBuilder(level.substring(0, level.length() - 1));
+		}
 
 		level.append("|");
 
-		for (Movable m : Game.movables)
+		for (int i = 0; i < Game.movables.size(); i++)
 		{
-			if (m instanceof Tank)
+			if (Game.movables.get(i) instanceof Tank)
 			{
-				Tank t = (Tank) m;
+				Tank t = (Tank) Game.movables.get(i);
 				int x = (int) (t.posX / Game.tile_size);
 				int y = (int) (t.posY / Game.tile_size);
+				int angle = (int) (t.angle * 2 / Math.PI);
 
-				level.append(x).append("-").append(y).append("-").append(t.name).append("-");
-				level.append(t.getMetadata()).append(",");
+				level.append(x).append("-").append(y).append("-").append(t.name).append("-").append(angle);
+
+				if (t.team != null)
+					level.append("-").append(t.team.name);
+
+				level.append(",");
 			}
 		}
 
-		if (Game.movables.isEmpty())
+		if (Game.movables.size() == 0)
+		{
 			level.append("|");
+		}
 
 		level = new StringBuilder(level.substring(0, level.length() - 1));
 
 		level.append("|");
 
-		for (Team t : teams)
+		for (int i = 0; i < teams.size(); i++)
 		{
+			Team t = teams.get(i);
 			level.append(t.name).append("-").append(t.friendlyFire);
 			if (t.enableColor)
 				level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
@@ -1867,64 +1908,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		catch (IOException e)
 		{
 			Game.exitToCrash(e);
-		}
-
-	}
-
-	int endX, endY;
-
-	public void compress1D(int x, int y, float layer)
-	{
-		Obstacle compare = grid[x][y].get(layer);
-		String metadata = compare.getMetadata();
-		compare.removed = true;
-
-		ArrayList<Obstacle> compX = new ArrayList<>();
-		for (endX = x + 1; endX < Game.currentSizeX; endX++)
-		{
-			if (grid[endX][y] == null)
-				break;
-
-			Obstacle o = grid[endX][y].get(layer);
-
-			if (o == null || o.removed || o.getClass() != compare.getClass() || !Objects.equals(o.getMetadata(), metadata))
-				break;
-
-			compX.add(o);
-		}
-
-		ArrayList<Obstacle> compY = new ArrayList<>();
-		for (endY = y + 1; endY < Game.currentSizeY; endY++)
-		{
-			if (grid[x][endY] == null)
-				break;
-
-			Obstacle o = grid[x][endY].get(layer);
-
-			if (o == null || o.removed || o.getClass() != compare.getClass() || !Objects.equals(o.getMetadata(), compare.getMetadata()))
-				break;
-
-			compY.add(o);
-		}
-
-		if (endX - x <= 1 && endY - y <= 1)
-		{
-			endX = -1;
-			endY = -1;
-			return;
-		}
-
-		if (endX >= endY)
-		{
-			endY = -1;
-			for (Obstacle o : compX)
-				o.removed = true;
-		}
-		else
-		{
-			endX = -1;
-			for (Obstacle o : compY)
-				o.removed = true;
 		}
 	}
 
@@ -2157,16 +2140,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				int x = (int) (mouseObstacle.posX / Game.tile_size);
 				int y = (int) (mouseObstacle.posY / Game.tile_size);
 
-				if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY &&
+				if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY /*&&
 						(Game.getObstacle(x, y) == null || (Game.getSurfaceObstacle(x, y) == null &&
-								Game.getObstacle(x, y).isSurfaceTile != mouseObstacle.isSurfaceTile && !mouseObstacle.tankCollision)))
+								Game.getObstacle(x, y).isSurfaceTile != mouseObstacle.isSurfaceTile && !mouseObstacle.tankCollision))*/)
 				{
 					mouseObstacle.startHeight = mouseObstacleStartHeight;
 
 					if (Game.enable3d)
 					{
-						if (Game.isOrdered(-1, x, Game.currentSizeX) && Game.isOrdered(-1, y, Game.currentSizeY) &&
-								(Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mouseObstacle.stackHeight + mouseObstacleStartHeight, Game.getObstacle(x, y).stackHeight)))
+						if (Game.isOrdered(-1, x, Game.currentSizeX) && Game.isOrdered(-1, y, Game.currentSizeY) /*&&
+								(Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mouseObstacle.stackHeight + mouseObstacleStartHeight, Game.getObstacle(x, y).stackHeight))*/)
 							mouseObstacle.draw3dOutline(mouseObstacle.colorR, mouseObstacle.colorG, mouseObstacle.colorB, 100);
 					}
 
@@ -2276,42 +2259,42 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 	}
 
-	public void changeMetadata(int add)
-	{
-		if (currentPlaceable == Placeable.obstacle || selection)
-		{
-			if (!selection)
-			{
-				if (mouseObstacle.selectorCount() > 0)
-					mouseObstacle.selectors.get(0).changeMeta(add);
-			}
-			else
-			{
-				for (int x = 0; x < Game.currentSizeX; x++)
-				{
-					for (int y = 0; y < Game.currentSizeY; y++)
-					{
-						if (!selectedTiles[x][y])
-							continue;
-
-						Obstacle o = Game.getObstacle(x, y);
-						if (o == null) o = Game.getSurfaceObstacle(x, y);
-						if (o == null || o.selectorCount() == 0 || !(o.selectors.get(0) instanceof StackHeightSelector)) continue;
-
-						o.selectors.get(0).changeMeta(add);
-
-						if (Game.enable3d)
-						{
-							Drawing.drawing.terrainRenderer.remove(o);
-							Game.redrawObstacles.add(o);
-						}
-					}
-				}
-			}
-		}
-		else if (mouseTank.selectorCount() > 0)
-			mouseTank.selectors.get(0).changeMeta(add);
-	}
+//	public void changeMetadata(int add)
+//	{
+//		if (currentPlaceable == Placeable.obstacle || selection)
+//		{
+//			if (!selection)
+//			{
+//				if (mouseObstacle.selectorCount() > 0)
+//					mouseObstacle.selectors.get(0).changeMeta(add);
+//			}
+//			else
+//			{
+//				for (int x = 0; x < Game.currentSizeX; x++)
+//				{
+//					for (int y = 0; y < Game.currentSizeY; y++)
+//					{
+//						if (!selectedTiles[x][y])
+//							continue;
+//
+//						Obstacle o = Game.getObstacle(x, y);
+//						if (o == null) o = Game.getSurfaceObstacle(x, y);
+//						if (o == null || o.selectorCount() == 0 || !(o.selectors.get(0) instanceof StackHeightSelector)) continue;
+//
+//						o.selectors.get(0).changeMeta(add);
+//
+//						if (Game.enable3d)
+//						{
+//							Drawing.drawing.terrainRenderer.remove(o);
+//							Game.redrawObstacles.add(o);
+//						}
+//					}
+//				}
+//			}
+//		}
+//		else if (mouseTank.selectorCount() > 0)
+//			mouseTank.selectors.get(0).changeMeta(add);
+//	}
 
 	public void previewSelection(double lowX, double highX, double lowY, double highY, double extra)
 	{
@@ -2341,11 +2324,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 					if (Game.enable3d)
 					{
-						if (Game.getObstacle(gridX, gridY) != null)
-						{
-							Game.getObstacle(gridX, gridY).draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
-						}
-						else
+//						if (Game.getObstacle(gridX, gridY) != null)
+//						{
+//							Game.getObstacle(gridX, gridY).draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
+//						}
+//						else
 						{
 							if (!selectInverted)
 								Drawing.drawing.setColor(255, 255, 255, 127, 0.3);
@@ -2547,15 +2530,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.save();
 		this.replaceSpawns();
 
-		if (Game.enable3d)
-			for (int i = 0; i < Game.obstacles.size(); i++)
-			{
-				Obstacle o = Game.obstacles.get(i);
-
-				if (o.replaceTiles)
-					o.postOverride();
-			}
-
 		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
@@ -2581,6 +2555,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				Game.currentLevel.synchronizeMusic = true;
 				Game.currentLevel.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
 			}
+
+			o.removed = false;
+			if (o.replaceTiles)
+				o.postOverride();
 		}
 
 		Game.resetNetworkIDs();

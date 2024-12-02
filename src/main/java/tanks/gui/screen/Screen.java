@@ -60,8 +60,6 @@ public abstract class Screen implements IBatchRenderableObject
 
 	public Screen(double objWidth, double objHeight, double objXSpace, double objYSpace)
 	{
-		//Game.game.window.setCursorLocked(false);
-
 		this.objWidth = objWidth;
 		this.objHeight = objHeight;
 		this.objXSpace = objXSpace;

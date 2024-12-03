@@ -82,21 +82,21 @@ public class TankRemote extends Tank
 
 		this.invulnerable = true;
 
-		this.setNetworkID(t.networkID);
+		if (t.networkID > 0)
+			this.setNetworkID(t.networkID);
 	}
 
 	public void copyTank(Tank t)
 	{
-		initSelectors(null);
-		cloneAllSelectors(t);
-
 		if (fieldsToClone == null)
 			initFieldsToClone();
 
 		try
 		{
 			for (Field field : fieldsToClone)
+			{
 				field.set(this, field.get(t));
+			}
 		}
 		catch (IllegalAccessException e)
 		{
@@ -110,7 +110,7 @@ public class TankRemote extends Tank
 
 		for (Field field : Tank.class.getFields())
 		{
-			if (field.getAnnotation(Property.class) != null)
+			if (field.getAnnotation(Property.class) != null && !field.getName().equals("name"))
 				fieldsToClone.add(field);
 		}
 	}

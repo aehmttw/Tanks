@@ -3,7 +3,7 @@ package tanks.gui.screen.leveleditor.selector;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 
-public class GroupIdSelector extends NumberSelector<Obstacle>
+public class SelectorGroupID extends SelectorNumber<Obstacle>
 {
     public void init()
     {

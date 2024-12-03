@@ -1,14 +1,14 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
-import tanks.gui.screen.leveleditor.selector.StackHeightSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.Obstacle;
 
 public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 {
-    public StackHeightSelector selector;
+    public SelectorStackHeight selector;
 
     public Button increaseHeight = new Button(this.centerX + 100, this.centerY, 60, 60, "+", () -> selector.number += 0.5);
 
@@ -36,7 +36,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
     }, " --- "
     );
 
-    public OverlayBlockHeight(Screen previous, ScreenLevelEditor screenLevelEditor, StackHeightSelector selector)
+    public OverlayBlockHeight(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorStackHeight selector)
     {
         super(previous, screenLevelEditor);
 

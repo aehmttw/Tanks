@@ -103,6 +103,7 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void draw()
     {
+//        windowTitle = (this.editor.allowClose ? "" : "*");
         this.editor.draw();
     }
 

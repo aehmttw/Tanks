@@ -4,7 +4,7 @@ import tanks.Game;
 import tanks.gui.screen.leveleditor.OverlayBlockHeight;
 import tanks.obstacle.Obstacle;
 
-public class StackHeightSelector extends NumberSelector<Obstacle>
+public class SelectorStackHeight extends SelectorNumber<Obstacle>
 {
     public void init()
     {

@@ -1,7 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
-import tanks.gui.screen.leveleditor.selector.NumberSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorNumber;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
@@ -10,7 +10,7 @@ import tanks.gui.screen.Screen;
 public class OverlaySelectNumber extends ScreenLevelEditorOverlay
 {
     public TextBox textBox;
-    public NumberSelector selector;
+    public SelectorNumber selector;
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, 350, 40, "Done", this::escape
     );
@@ -37,7 +37,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
     }
     );
 
-    public OverlaySelectNumber(Screen previous, ScreenLevelEditor screenLevelEditor, NumberSelector selector)
+    public OverlaySelectNumber(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorNumber selector)
     {
         super(previous, screenLevelEditor);
 

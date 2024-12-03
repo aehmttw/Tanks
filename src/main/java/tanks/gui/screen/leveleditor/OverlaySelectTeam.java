@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.Team;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
-import tanks.gui.screen.leveleditor.selector.ChoiceSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorChoice;
 
 public class OverlaySelectTeam extends OverlaySelectChoice<Team>
 {
@@ -19,7 +19,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
         Game.screen = o;
         o.onEscape = () ->
         {
-            ChoiceSelector<?, Team> sel = (ChoiceSelector<?, Team>) this.selector;
+            SelectorChoice<?, Team> sel = (SelectorChoice<?, Team>) this.selector;
             sel.baseInit();
             o.previous = new OverlaySelectTeam(s.previous, s.editor, sel);
         };
@@ -41,7 +41,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
     }
     );
 
-    public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor, ChoiceSelector<?, Team> selector)
+    public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<?, Team> selector)
     {
         super(previous, screenLevelEditor, selector);
         this.selector.buttonList.setupArrows();

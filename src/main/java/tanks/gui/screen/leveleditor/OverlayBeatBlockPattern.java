@@ -2,7 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.screen.leveleditor.selector.PatternSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.ObstacleBeatBlock;
@@ -12,10 +12,10 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
     public Button back = new Button(this.centerX, this.centerY + 240, 350, 40, "Done", this::escape);
 
     public int buttonSize = 60;
-    public PatternSelector selector;
+    public SelectorBeatPattern selector;
     public Button[] groups = new Button[8];
 
-    public OverlayBeatBlockPattern(Screen previous, ScreenLevelEditor editor, PatternSelector selector)
+    public OverlayBeatBlockPattern(Screen previous, ScreenLevelEditor editor, SelectorBeatPattern selector)
     {
         super(previous, editor);
 

@@ -115,7 +115,7 @@ public class BulletBlock extends BulletArc
             Game.addObstacle(o);
         else
         {
-            Drawing.drawing.playGlobalSound("break_block.ogg");
+            Drawing.drawing.playGlobalSound("break.ogg");
             o.playDestroyAnimation(this.posX, this.posY, Game.tile_size);
         }
 
@@ -139,7 +139,7 @@ public class BulletBlock extends BulletArc
 
     public void playArcPop()
     {
-        Drawing.drawing.playGlobalSound("place_block.ogg");
+        Drawing.drawing.playGlobalSound("slam.ogg");
     }
 
 

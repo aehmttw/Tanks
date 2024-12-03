@@ -523,6 +523,7 @@ public class Game
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 		registerObstacle(ObstacleBeatBlock.class, "beat");
+//		registerObstacle(ObstacleText.class, "text");
 
 		registerTank(TankDummy.class, "dummy", 0);
 		registerTank(TankBrown.class, "brown", 1);
@@ -1063,29 +1064,29 @@ public class Game
 	}
 
 	// todo: chunk loading system
-	public static Obstacle getObstacle(int posX, int posY)
-	{
-//		return Objects.requireNonNullElse(Chunk.getTile(posX, posY), Chunk.emptyTile).obstacle;
-		return null;
-	}
-
-	public static Obstacle getSurfaceObstacle(int posX, int posY)
-	{
-		/*Chunk c = Chunk.getChunk(posX / Chunk.chunkSize, posY / Chunk.chunkSize);
-		if (c != null)
-			return Objects.requireNonNullElse(c.getChunkTile(posX, posY), Chunk.emptyTile).surfaceObstacle;*/
-		return null;
-	}
-
-	public static Obstacle getObstacle(double posX, double posY)
-	{
-		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
-	public static Obstacle getSurfaceObstacle(double posX, double posY)
-	{
-		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
+//	public static Obstacle getObstacle(int posX, int posY)
+//	{
+////		return Objects.requireNonNullElse(Chunk.getTile(posX, posY), Chunk.emptyTile).obstacle;
+//		return null;
+//	}
+//
+//	public static Obstacle getSurfaceObstacle(int posX, int posY)
+//	{
+//		/*Chunk c = Chunk.getChunk(posX / Chunk.chunkSize, posY / Chunk.chunkSize);
+//		if (c != null)
+//			return Objects.requireNonNullElse(c.getChunkTile(posX, posY), Chunk.emptyTile).surfaceObstacle;*/
+//		return null;
+//	}
+//
+//	public static Obstacle getObstacle(double posX, double posY)
+//	{
+//		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+//	}
+//
+//	public static Obstacle getSurfaceObstacle(double posX, double posY)
+//	{
+//		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+//	}
 
 	public static double sampleGroundHeight(double px, double py)
 	{
@@ -1419,7 +1420,7 @@ public class Game
 	{
 		ArrayList<String> hash = Game.game.fileManager.getInternalFileContents("/hash.txt");
 		if (hash == null)
-			return "-1.-1.-1";
+			return "";
 		else
 			return hash.get(0);
 	}

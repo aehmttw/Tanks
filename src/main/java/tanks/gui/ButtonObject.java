@@ -3,6 +3,7 @@ package tanks.gui;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawableForInterface;
+import tanks.obstacle.Obstacle;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ public class ButtonObject extends Button
 
 	public double disabledColA = 127;
 	public double selectedColA = 64;
-
 
 	public ButtonObject(IDrawableForInterface d, double x, double y, double sX, double sY, Runnable f)
 	{
@@ -71,6 +71,12 @@ public class ButtonObject extends Button
 	public void draw()
 	{
 		Drawing drawing = Drawing.drawing;
+
+		if (object instanceof Obstacle)
+		{
+			drawing.setColor(127, 127, 127);
+			Drawing.drawing.fillGlow(posX, posY, Game.tile_size * 3, Game.tile_size * 3);
+		}
 		
 		this.object.drawForInterface(this.posX, this.posY);
 		

@@ -317,6 +317,8 @@ public class EditorButtons
                     }
 
                     b.enableHover = !b.hoverTextRaw.isEmpty() && percentage == 1;
+                    b.sizeX = sizeX * 0.9;
+                    b.sizeY = sizeY * 0.9;
                     b.setPosition(x, y);
                     b.bgColA = 255;
                     b.draw();
@@ -399,6 +401,7 @@ public class EditorButtons
             {
                 if (resetFunc != null)
                     resetFunc.run();
+
                 secondaryImage = null;
                 return;
             }

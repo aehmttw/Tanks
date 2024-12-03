@@ -35,6 +35,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 			this.stackColorB[i] = 235;
 		}
 
+		this.type = ObstacleType.extra;
 		this.description = "A light to illuminate dark levels";
 	}
 

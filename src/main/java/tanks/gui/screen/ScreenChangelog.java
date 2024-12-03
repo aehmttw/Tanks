@@ -493,6 +493,17 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     }
             );
+
+            new Changelog("v1.6.b", new String[]
+                    {
+                            "*What's new in Tanks v1.6.b:\n\n" +
+                                    "Added block bullets\n" +
+                                    "Added beat arcade mode minigame\n" +
+                                    "Added new editor tools\n" +
+                                    "Added buttons to open file directories\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
         }
     }
 }

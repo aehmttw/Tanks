@@ -66,7 +66,7 @@ public class ItemBullet extends Item
 
 				double speedmul = m.getAttributeValue(AttributeModifier.bullet_speed, 1);
 
-				if (this.item.bullet.shotSound != null)
+				if (this.item.bullet.shotSound != null && this.item.bullet.soundVolume > 0)
 					Drawing.drawing.playGlobalSound(this.item.bullet.shotSound,
 							(float) ((Bullet.bullet_size / this.item.bullet.size) * this.item.bullet.pitch * (1 - (Math.random() * 0.5) * this.item.bullet.pitchVariation)),
 							(float) this.item.bullet.soundVolume);

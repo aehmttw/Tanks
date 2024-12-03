@@ -637,6 +637,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		this();
 		this.initShop(shop);
+		for (int i = 0; i < this.shop.size(); i++)
+		{
+			Game.currentLevel.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
+		}
 	}
 
 	public void pause()

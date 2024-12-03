@@ -1186,6 +1186,8 @@ public class Drawing
 	{
 		fillInterfaceRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius);
 		fillInterfaceRect(x, y, sX, sY, borderRadius);
+//		fillInterfaceRect(x, y, sX, sY, borderRadius);
+//		drawInterfaceRect(x + borderWidth, y + borderWidth, sX, sY, borderWidth, borderRadius);
 		Drawing.drawing.setColor(255, 255, 255);
 	}
 

@@ -19,7 +19,7 @@ public class ObstacleMud extends Obstacle
         this.checkForObjects = true;
         this.enableStacking = false;
 
-        this.isSurfaceTile = true;
+        this.type = ObstacleType.ground;
 
         this.colorR = 70;
         this.colorG = 30;

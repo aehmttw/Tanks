@@ -36,6 +36,7 @@ public class ObstacleShrubbery extends Obstacle
 		this.colorG = (Math.random() * 50) + 150;
 		this.colorB = (Math.random() * 20);
 		this.enableStacking = false;
+		this.type = ObstacleType.top;
 
 		if (!Game.fancyTerrain)
 		{

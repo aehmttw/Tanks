@@ -32,7 +32,14 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	 */
 	public int unfavorability = -1;
 
-	public boolean isSurfaceTile = false;
+	/**
+	 * Full = a full block, nothing can be placed underneath
+	 * Ground = replaces the ground tile, can have blocks/tanks on top
+	 * Top = can be placed on top of a ground tile, can have tanks inside
+	 * Extra = can be placed anywhere without a full tile, can have tanks inside
+	 * */
+	public enum ObstacleType { full, ground, top, extra }
+	public ObstacleType type = ObstacleType.full;
 
 	public boolean enableStacking = true;
 	public double stackHeight = 1;
@@ -343,7 +350,10 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 		int y = (int)(this.posY / Game.tile_size);
 
 		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-			Game.tileDrawables[x][y] = this;
+		{
+			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
+				Game.tileDrawables[x][y] = this;
+		}
 	}
 
 	public String getMetadata()
@@ -595,5 +605,15 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public Effect getCompanionEffect()
 	{
 		return null;
+	}
+
+	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)
+	{
+		if (t1 == ObstacleType.full || t2 == ObstacleType.full)
+			return false;
+		else if (t1 == ObstacleType.extra || t2 == ObstacleType.extra)
+			return true;
+		else
+			return t1 != t2;
 	}
 }

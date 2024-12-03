@@ -29,7 +29,7 @@ public class ObstacleColor extends Obstacle
         this.checkForObjects = true;
         this.enableStacking = false;
 
-        this.isSurfaceTile = true;
+        this.type = ObstacleType.ground;
         this.update = true;
 
         this.colorR = r;

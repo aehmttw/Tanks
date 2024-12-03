@@ -5,6 +5,7 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 
 public class EventTankMimicLaser extends PersonalEvent implements IStackableEvent
 {
@@ -34,6 +35,9 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
     {
         Tank t = Tank.idMap.get(tank);
         Tank t2 = Tank.idMap.get(tank2);
+
+        if (TankPlayer.idMap.get(-1) != null)
+            throw new RuntimeException();
 
         for (Movable m: Game.movables)
         {

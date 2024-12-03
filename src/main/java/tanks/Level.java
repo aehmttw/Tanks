@@ -516,7 +516,7 @@ public class Level
 
                 // Don't do this in your code! We only want to dynamically generate tank IDs on level load!
                 t.networkID = Tank.nextFreeNetworkID();
-                Tank.idMap.put(t.networkID, t);
+				Tank.idMap.put(t.networkID, t);
 
                 if (remote)
                     Game.movables.add(new TankRemote(t));

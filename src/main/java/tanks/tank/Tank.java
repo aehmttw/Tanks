@@ -4,8 +4,8 @@ import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.RotationSelector;
-import tanks.gui.screen.leveleditor.selector.TeamSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -32,8 +32,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static Model health_model;
 
-	public RotationSelector<Tank> rotationSelector;
-	public TeamSelector<Tank> teamSelector;
+	public SelectorRotation<Tank> rotationSelector;
+	public SelectorTeam<Tank> teamSelector;
 
 	public boolean fromRegistry = false;
 
@@ -1178,15 +1178,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void registerSelectors()
 	{
-		this.registerSelector(new TeamSelector<Tank>());
-		this.registerSelector(new RotationSelector<Tank>());
+		this.registerSelector(new SelectorTeam<Tank>());
+		this.registerSelector(new SelectorRotation<Tank>());
 	}
 
 	@Override
 	public void postInitSelectors()
 	{
-		this.teamSelector = (TeamSelector<Tank>) this.selectors.get(0);
-		this.rotationSelector = (RotationSelector<Tank>) this.selectors.get(1);
+		this.teamSelector = (SelectorTeam<Tank>) this.selectors.get(0);
+		this.rotationSelector = (SelectorRotation<Tank>) this.selectors.get(1);
 	}
 
 	public void updatePossessing()

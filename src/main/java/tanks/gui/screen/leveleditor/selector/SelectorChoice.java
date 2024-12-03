@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /** @param <V> The class of the object being selected. (e.g. {@code Team} for team selectors) */
-public class ChoiceSelector<T extends GameObject, V> extends LevelEditorSelector<T>
+public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector<T>
 {
     public ArrayList<V> choices = new ArrayList<>();
     public V selectedChoice;

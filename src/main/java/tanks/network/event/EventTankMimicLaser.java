@@ -36,9 +36,6 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
         Tank t = Tank.idMap.get(tank);
         Tank t2 = Tank.idMap.get(tank2);
 
-        if (TankPlayer.idMap.get(-1) != null)
-            throw new RuntimeException();
-
         for (Movable m: Game.movables)
         {
             if (m instanceof Laser && (((Laser) m).tank1 == t || ((Laser) m).tank2 == t))

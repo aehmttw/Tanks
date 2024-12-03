@@ -4,7 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.PatternSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.gui.screen.ScreenGame;
 import tanks.rendering.ShaderBeatBlocks;
 import tanks.rendering.ShaderGroundObstacleBeatBlock;
@@ -37,7 +37,7 @@ public class ObstacleBeatBlock extends Obstacle
     @Override
     public void registerSelectors()
     {
-        this.registerSelector(new PatternSelector());
+        this.registerSelector(new SelectorBeatPattern());
         super.registerSelectors();
     }
 

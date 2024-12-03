@@ -193,30 +193,31 @@ public abstract class EditorAction
         }
     }
 
-//    public static class ActionChangeHeight extends EditorAction
-//    {
-//
-//        public ScreenLevelEditor editor;
-//        public int add;
-//
-//        public ActionChangeHeight(ScreenLevelEditor editor, int add)
-//        {
-//            this.editor = editor;
-//            this.add = add;
-//        }
-//
-//        @Override
-//        public void undo()
-//        {
-//            editor.changeMetadata(-add);
-//        }
-//
-//        @Override
-//        public void redo()
-//        {
-//            editor.changeMetadata(add);
-//        }
-//    }
+    public static class ActionChangeHeight extends EditorAction
+    {
+        public ScreenLevelEditor editor;
+        public int add;
+        public ArrayList<Integer> x;
+        public ArrayList<Integer> y;
+
+        public ActionChangeHeight(ScreenLevelEditor editor, int add)
+        {
+            this.editor = editor;
+            this.add = add;
+        }
+
+        @Override
+        public void undo()
+        {
+            editor.adjustSelectionHeight(-add);
+        }
+
+        @Override
+        public void redo()
+        {
+            editor.adjustSelectionHeight(add);
+        }
+    }
 
     public static class ActionGroup extends EditorAction
     {

@@ -7,7 +7,7 @@ import tanks.gui.screen.leveleditor.OverlaySelectString;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-public class StringSelector<T extends GameObject> extends LevelEditorSelector<T>
+public class SelectorText<T extends GameObject> extends LevelEditorSelector<T>
 {
     public String string;
     public boolean encoded;

@@ -3,7 +3,7 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.leveleditor.selector.StringSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorText;
 
 public class ObstacleText extends Obstacle
 {
@@ -64,7 +64,7 @@ public class ObstacleText extends Obstacle
 	@Override
 	public void registerSelectors()
 	{
-		StringSelector<ObstacleText> sel = new StringSelector<>();
+		SelectorText<ObstacleText> sel = new SelectorText<>();
 		sel.id = "text_obstacle";
 		sel.title = "Text";
 		sel.objectProperty = "text";

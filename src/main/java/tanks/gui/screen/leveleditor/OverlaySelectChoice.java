@@ -1,8 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
-import tanks.Team;
-import tanks.gui.screen.leveleditor.selector.ChoiceSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorChoice;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.Screen;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 
 public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
 {
-    public ChoiceSelector<?, ?> selector;
+    public SelectorChoice<?, ?> selector;
     public ArrayList<Button> choiceButtons = new ArrayList<>();
     public Button hoveredButton = null;
     public V hoveredChoice;
@@ -21,7 +20,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
     public Button edit;
     public int editSelected = -1;
 
-    public OverlaySelectChoice(Screen previous, ScreenLevelEditor screenLevelEditor, ChoiceSelector<?, V> selector)
+    public OverlaySelectChoice(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<?, V> selector)
     {
         super(previous, screenLevelEditor);
 

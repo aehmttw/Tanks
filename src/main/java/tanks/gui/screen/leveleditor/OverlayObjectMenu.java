@@ -74,7 +74,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     {
         saveSelectors(editor);
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.enemyTank;
-        this.editor.refreshMouseTank();
+        this.editor.refreshMouseObject();
         this.loadSelectors(editor.mouseTank, this);
     }
     );
@@ -568,7 +568,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (select)
         {
             this.editor.tankNum = this.editor.level.customTanks.size() + Game.registryTank.tankEntries.size() - 1;
-            this.editor.refreshMouseTank();
+            this.editor.refreshMouseObject();
             this.loadSelectors(t, null, this.editor);
         }
 
@@ -614,7 +614,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (this.editor.tankNum >= this.editor.level.customTanks.size() + Game.registryTank.tankEntries.size())
             this.editor.tankNum--;
 
-        this.editor.refreshMouseTank();
+        this.editor.refreshMouseObject();
         this.loadSelectors(t, null, this.editor);
     }
 

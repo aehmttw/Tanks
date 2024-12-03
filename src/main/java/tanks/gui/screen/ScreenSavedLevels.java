@@ -56,7 +56,9 @@ public class ScreenSavedLevels extends Screen
 		String name = System.currentTimeMillis() + ".tanks";
 
 		Level l = new Level("{28,18||0-0-player}");
-		Game.screen = new ScreenLevelEditor(name, l);
+		ScreenLevelEditor sl = new ScreenLevelEditor(name, l);
+		sl.modified = true;
+		Game.screen = sl;
 		l.loadLevel((ILevelPreviewScreen) Game.screen);
 	}
 	);

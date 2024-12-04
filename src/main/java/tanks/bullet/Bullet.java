@@ -1031,6 +1031,8 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 	public void updateHoming()
 	{
+		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+
 		Tank nearest = null;
 		double nearestDist = Double.MAX_VALUE;
 
@@ -1070,18 +1072,18 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 						double change = Math.sqrt(dx * dx + dy * dy);
 						double cappedChange = Math.min(change, this.homingSharpness / 2.5);
 
-						this.vX += dx / change * cappedChange * Panel.frameFrequency;
-						this.vY += dy / change * cappedChange * Panel.frameFrequency;
+						this.vX += dx / change * cappedChange * frameFrequency;
+						this.vY += dy / change * cappedChange * frameFrequency;
 
 						if (this instanceof BulletArc)
-							this.vZ -= BulletArc.gravity * this.homingSharpness * Panel.frameFrequency;
+							this.vZ -= BulletArc.gravity * this.homingSharpness * frameFrequency;
 
 						this.homingTarget = nearest;
 					}
 				}
 				else if (r.getTarget() == nearest)
 				{
-					this.addPolarMotion(a, Panel.frameFrequency * this.homingSharpness);
+					this.addPolarMotion(a, frameFrequency * this.homingSharpness);
 					double s2 = this.getSpeed();
 					this.vX *= s / s2;
 					this.vY *= s / s2;
@@ -1116,7 +1118,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				}
 			}
 
-			if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent)
+			if (Game.bulletTrails && Math.random() < frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;
@@ -1140,7 +1142,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				Game.effects.add(e);
 			}
 
-			this.homingTargetTime += Panel.frameFrequency;
+			this.homingTargetTime += frameFrequency;
 		}
 
 		if (homingPrevTarget != this.homingTarget)
@@ -1209,9 +1211,11 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 		if (this.isTemplate)
 			Game.exitToCrash(new Exception("Do not add template bullets to the game field: found " + this));
 
+		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+
 		if (this.delay > 0)
 		{
-			this.delay -= Panel.frameFrequency;
+			this.delay -= frameFrequency;
 			return;
 		}
 
@@ -1298,7 +1302,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 		if (!this.destroy && this.revertSpeed)
 		{
-			double frac = Math.pow(0.999, Panel.frameFrequency);
+			double frac = Math.pow(0.999, frameFrequency);
 			this.setPolarMotion(this.getPolarDirection(), this.getSpeed() * frac + this.speed * (1 -frac));
 		}
 
@@ -1349,7 +1353,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				this.addDestroyEffect();
 			}
 
-			this.destroyTimer += Panel.frameFrequency;
+			this.destroyTimer += frameFrequency;
 			this.vX = 0;
 			this.vY = 0;
 		}
@@ -1360,9 +1364,9 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			if (this.autoZ)
 				this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
 
-			this.ageFrac += Panel.frameFrequency * Game.effectMultiplier;
-			this.halfAgeFrac += Panel.frameFrequency * Game.effectMultiplier;
-			this.quarterAgeFrac += Panel.frameFrequency * Game.effectMultiplier;
+			this.ageFrac += frameFrequency * Game.effectMultiplier;
+			this.halfAgeFrac += frameFrequency * Game.effectMultiplier;
+			this.quarterAgeFrac += frameFrequency * Game.effectMultiplier;
 
 			if (Game.bulletTrails)
 			{
@@ -1476,7 +1480,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				this.checkCollisionLocal();
 		}
 
-		this.age += Panel.frameFrequency;
+		this.age += frameFrequency;
 
 		if (((this.age > lifespan && this.lifespan > 0) || (this.range > 0 && Math.pow(this.originX - this.posX, 2) + Math.pow(this.originY - posY, 2) > this.range * this.range)) && !this.destroy)
 		{

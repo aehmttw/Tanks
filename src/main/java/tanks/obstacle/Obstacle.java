@@ -100,6 +100,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public double baseGroundHeight;
 
 	public boolean shouldClip = false;
+	public boolean collisionWhenClipped = true;
 	public int clipFrames = 0;
 
 	public Obstacle(String name, double posX, double posY)

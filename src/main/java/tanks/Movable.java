@@ -42,6 +42,8 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public NameTag nameTag;
 	public boolean showName = false;
 
+	public boolean affectedByFrameFrequency = true;
+
 	public boolean skipNextUpdate = false;
 
 	public int drawLevel = 3;
@@ -67,9 +69,10 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	public void preUpdate()
 	{
-		this.lastVX = (this.posX - this.lastPosX) / Panel.frameFrequency;
-		this.lastVY = (this.posY - this.lastPosY) / Panel.frameFrequency;
-		this.lastVZ = (this.posZ - this.lastPosZ) / Panel.frameFrequency;
+		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
+		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
+		this.lastVZ = (this.posZ - this.lastPosZ) / frameFrequency;
 
 		this.lastOriginalVX = this.vX;
 		this.lastOriginalVY = this.vY;
@@ -82,6 +85,8 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	public void update()
 	{
+		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+
 		if (!destroy)
 		{
 			double vX2 = this.vX;
@@ -117,9 +122,9 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 				this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 				this.lastFinalVZ = vZ2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
-				this.posX += this.lastFinalVX * Panel.frameFrequency;
-				this.posY += this.lastFinalVY * Panel.frameFrequency;
-				this.posZ += this.lastFinalVZ * Panel.frameFrequency;
+				this.posX += this.lastFinalVX * frameFrequency;
+				this.posY += this.lastFinalVY * frameFrequency;
+				this.posZ += this.lastFinalVZ * frameFrequency;
 			}
 		}
 	}
@@ -396,17 +401,19 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	public void updateStatusEffects()
 	{
+		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+
 		for (StatusEffect s: this.statusEffects.keySet())
 		{
 			StatusEffect.Instance i = this.statusEffects.get(s);
 
-			if (i.age < i.deteriorationAge && i.age + Panel.frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this instanceof Bullet || this instanceof Tank))
+			if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this instanceof Bullet || this instanceof Tank))
 			{
 				Game.eventsOut.add(new EventStatusEffectDeteriorate(this, s, i.duration - i.deteriorationAge));
 			}
 
-			if (i.duration <= 0 || i.age + Panel.frameFrequency <= i.duration)
-				i.age += Panel.frameFrequency;
+			if (i.duration <= 0 || i.age + frameFrequency <= i.duration)
+				i.age += frameFrequency;
 			else
 			{
 				this.removeStatusEffects.add(s);

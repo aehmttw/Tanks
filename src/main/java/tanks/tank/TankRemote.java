@@ -82,7 +82,7 @@ public class TankRemote extends Tank
 
 		this.invulnerable = true;
 
-		if (t.networkID > 0)
+		if (t.networkID >= 0)
 			this.setNetworkID(t.networkID);
 	}
 

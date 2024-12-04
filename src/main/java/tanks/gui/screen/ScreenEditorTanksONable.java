@@ -325,8 +325,6 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             if (parent != null)
                 back.draw();
 
-            this.drawUIElements();
-
             previous.enabled = page > 0;
             next.enabled = (uiElements.size() > (1 + page) * rows * 3);
 
@@ -344,6 +342,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 200,
                         "Page %d of %d", (page + 1), (uiElements.size() / (rows * 3) + Math.min(1, uiElements.size() % (rows * 3))));
             }
+
+            this.drawUIElements();
         }
     }
 

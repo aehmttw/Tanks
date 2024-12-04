@@ -2292,7 +2292,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 							else
 								Drawing.drawing.setColor(0, 0, 0, 127, 0.3);
 
-							Drawing.drawing.fillBox(x, y, 15, Game.tile_size, Game.tile_size, 1);
+							// For now, 2d because we don't have grid lookup
+							Drawing.drawing.fillRect(x, y, Game.tile_size, Game.tile_size);
 						}
 					}
 					else

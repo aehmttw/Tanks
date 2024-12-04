@@ -434,14 +434,17 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (!o.tankCollision)
 					continue;
 
-				if (this.stillClips(o.posX, o.posY))
+				if (this.stillClips(o.posX, o.posY) && !o.collisionWhenClipped)
 					continue;
+
 				if (o.shouldClip)
 				{
 					ClippedTile c = new ClippedTile((int) (o.posX / Game.tile_size), (int) (o.posY / Game.tile_size));
 					this.stillClippedTiles.add(c);
 					this.clippedTiles.add(c);
-					continue;
+
+					if (!o.collisionWhenClipped)
+						continue;
 				}
 
 				if ((!o.hasLeftNeighbor() || this.clips(o.posX - Game.tile_size, o.posY)) && dx <= 0 && dx >= -bound && horizontalDist >= verticalDist)
@@ -492,7 +495,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.networkID < 0)
 		{
 			// If you get this crash, please make sure you call Game.addTank() to add them to movables, or use registerNetworkID()!
-			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank!"));
+			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank! " + this.name));
 		}
 
 		this.updateVisibility();

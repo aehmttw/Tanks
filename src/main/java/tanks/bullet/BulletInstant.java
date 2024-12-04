@@ -43,6 +43,7 @@ public class BulletInstant extends Bullet
 		this.playPopSound = false;
 		this.playBounceSound = false;
 		this.effect = BulletEffect.none;
+		this.homingSilent = true;
 	}
 
 	public void saveTarget()
@@ -93,16 +94,27 @@ public class BulletInstant extends Bullet
 			this.saveTarget();
 		}
 
+		this.affectedByFrameFrequency = false;
+		double angle = this.getPolarDirection();
 		while (!this.destroy)
 		{
 			if (ScreenGame.finished)
 				this.destroy = true;
+
+			if (Movable.absoluteAngleBetween(this.getPolarDirection(), angle) >= 0.1)
+			{
+				this.collisionX = this.posX;
+				this.collisionY = this.posY;
+				this.collided();
+				angle = this.getPolarDirection();
+			}
 
 			super.update();
 
 			if (Math.abs(this.lastFinalVX) < 0.01 && Math.abs(this.lastFinalVY) < 0.01)
 				this.destroy = true;
 		}
+		this.affectedByFrameFrequency = true;
 
 		if (!this.tank.isRemote)
 		{

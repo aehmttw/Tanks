@@ -18,6 +18,14 @@ public final class Serializer {
 
     public static HashMap<String, Tank>userTanks = new HashMap<>();
 
+    public static Class<?> getCorrectClass(Object o) {
+        if (o instanceof TankAIControlled) {
+            return TankAIControlled.class;
+        } else {
+            return o.getClass();
+        }
+    }
+
     public static Object getDefault(Class<?> c) {
         if (defaults.containsKey(c)) {
             return defaults.get(c);
@@ -91,16 +99,17 @@ public final class Serializer {
             else if (o instanceof Bullet)
                 p.put("bullet_type", ((Bullet) o).typeName);
 
+
             for (Field f : o.getClass().getFields())
             {
                 try
                 {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(o.getClass())), f.get(o))))
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
-                        if (isTanksONable(f))
+                        if (o2 != null && isTanksONable(f)) {
                             p.put(getid(f), toMap(o2));
-                        else if (o2 instanceof ArrayList)
+                        } else if (o2 instanceof ArrayList)
                         {
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
                             {
@@ -126,7 +135,8 @@ public final class Serializer {
                 }
                 catch (Exception e)
                 {
-                    Game.exitToCrash(e);
+                    throw new RuntimeException(e);
+//                    Game.exitToCrash(e);
                 }
             }
             return p;

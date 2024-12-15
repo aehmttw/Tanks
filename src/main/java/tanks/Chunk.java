@@ -272,7 +272,7 @@ public class Chunk implements Comparable<Chunk>
     /** Automatically converts to tile coordinates and then chunk coordinates. */
     public Tile getChunkTile(double posX, double posY)
     {
-        if (!Game.currentLevel.mapLoad && (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size))
+        if (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size)
             return null;
 
         return tileGrid[toChunkTileCoords(posX)][toChunkTileCoords(posY)];

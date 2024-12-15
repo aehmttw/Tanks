@@ -37,15 +37,15 @@ public class ItemDrop extends Movable
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - size / 2, this.posY - size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + size / 2, this.posY - size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - size / 2, this.posY + size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + size / 2, this.posY + size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX, this.posY + size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX, this.posY - size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - size / 2, this.posY));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + size / 2, this.posY));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX, this.posY));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX - size / 2, this.posY - size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX + size / 2, this.posY - size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX - size / 2, this.posY + size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX + size / 2, this.posY + size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX, this.posY + size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX, this.posY - size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX - size / 2, this.posY));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX + size / 2, this.posY));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX, this.posY));
         }
     }
 

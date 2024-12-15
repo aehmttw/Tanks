@@ -11,6 +11,8 @@ import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
 
+import java.util.ArrayList;
+
 public class Obstacle extends GameObject implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IBatchRenderableObject
 {
 	public static final int default_max_height = 8;
@@ -28,7 +30,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public boolean shouldShootThrough = false;
 
 	/**
-	 * If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this
+	 * If set to a non-negative value, will override how much AI controlled tanks will avoid pathfinding over this
 	 */
 	public int unfavorability = -1;
 
@@ -43,6 +45,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 	public boolean enableStacking = true;
 	public double stackHeight = 1;
+	public double startHeight = 0;
 
 	public boolean enableGroupID = false;
 	public int groupID = 0;
@@ -67,7 +70,6 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public int rendererNumber = 0;
 	public int tileRendererNumber = 0;
 
-	public double startHeight = 0;
 	public double colorR;
 	public double colorG;
 	public double colorB;
@@ -127,8 +129,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 			this.stackColorB[i] = col2[2];
 		}
 
-		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
-
+		this.baseGroundHeight = Game.sampleDefaultGroundHeight(this.posX, this.posY);
 		this.description = "A solid block which can be destroyed by mines";
 	}
 
@@ -150,17 +151,6 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 				drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA, this.glow);
 
 				byte option = 0;
-
-				if (Obstacle.draw_size >= Game.tile_size)
-				{
-//					if (i > 0)
-//						option += 1;
-
-//					if (i < Math.min(this.stackHeight, default_max_height) - 1)
-//						option += 2;
-				}
-
-				double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
 
 				if (stackHeight % 1 == 0)
 				{
@@ -279,14 +269,19 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 	}
 
+	public void afterAdd()
+	{
+
+	}
+
 	public void update()
 	{
-		this.clipFrames--;
-		if (this.clipFrames <= 0)
-		{
-			this.update = false;
-			this.shouldClip = false;
-		}
+
+	}
+
+	public void onNeighborUpdate()
+	{
+		refreshHitboxes();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -302,10 +297,9 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 		{
 			if (unbreakable)
-				return Game.game.unbreakableGrid[x][y];
-			else
-				return Game.game.solidGrid[x][y];
-		}
+				return Game.isUnbreakable(x, y);
+            return Game.isSolid(x, y);
+        }
 
 		return false;
 	}
@@ -347,14 +341,10 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 	public void postOverride()
 	{
-		int x = (int)(this.posX / Game.tile_size);
-		int y = (int)(this.posY / Game.tile_size);
+		if (this.startHeight > 0)
+			return;
 
-		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-		{
-			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
-				Game.tileDrawables[x][y] = this;
-		}
+		Game.setObstacle(posX, posY, this);
 	}
 
 	public String getMetadata()
@@ -428,8 +418,8 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 	public boolean[] getValidHorizontalFaces(boolean unbreakable)
 	{
-		this.validFaces[0] = (!this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-		this.validFaces[1] = (!this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+		this.validFaces[0] = (!this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1) && (this.tankCollision || this.bulletCollision);
+		this.validFaces[1] = (!this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1) && (this.tankCollision || this.bulletCollision);
 		return this.validFaces;
 	}
 
@@ -449,8 +439,8 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 	public boolean[] getValidVerticalFaces(boolean unbreakable)
 	{
-		this.validFaces[0] = (!this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-		this.validFaces[1] = (!this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+		this.validFaces[0] = (!this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1) && (this.tankCollision || this.bulletCollision);
+		this.validFaces[1] = (!this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1) && (this.tankCollision || this.bulletCollision);
 		return this.validFaces;
 	}
 
@@ -511,6 +501,30 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public void onDestroy(Movable source)
 	{
 		Game.removeObstacles.add(this);
+	}
+
+	public void refreshHitboxes()
+	{
+		Chunk.FaceList f = Chunk.getChunk(posX, posY).staticFaces;
+		f.removeFaces(this);
+        if (tankCollision || bulletCollision)
+            f.addFaces(this);
+		afterAdd();
+    }
+
+	public ArrayList<Obstacle> getNeighbors()
+	{
+		ArrayList<Obstacle> neighbors = new ArrayList<>();
+		for (int i = 0; i < 4; i++)
+		{
+			double newX = posX + Game.tile_size * Game.dirX[i];
+			double newY = posY + Game.tile_size * Game.dirY[i];
+
+			Obstacle o = Game.getObstacle(newX, newY);
+			if (o != null)
+				neighbors.add(o);
+		}
+		return neighbors;
 	}
 
 	public void playDestroyAnimation(double posX, double posY, double radius)
@@ -606,6 +620,11 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public Effect getCompanionEffect()
 	{
 		return null;
+	}
+
+	public static boolean canPlaceOn(ObstacleType type, Chunk.Tile tile)
+	{
+		return tile == null || tile.obstacle == null || canPlaceOn(type, tile.obstacle.type);
 	}
 
 	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)

@@ -47,9 +47,7 @@ public class ObstacleShrubbery extends Obstacle
 		}
 
 		this.update = true;
-
 		this.description = "A destructible bush in which you can hide by standing still";
-
 		this.renderer = ShaderShrubbery.class;
 	}
 
@@ -57,20 +55,15 @@ public class ObstacleShrubbery extends Obstacle
 	public void update()
 	{
 		this.previousFinalHeight = this.finalHeight;
-
 		this.height = Math.min(this.height + Panel.frameFrequency, 255);
 
 		if (ScreenGame.finishedQuick)
-		{
-			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
-		}
+            this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (this.finalHeight != this.previousFinalHeight)
-		{
-			Game.redrawObstacles.add(this);
-		}
+            Game.redrawObstacles.add(this);
 	}
 
 	@Override
@@ -78,13 +71,8 @@ public class ObstacleShrubbery extends Obstacle
 	{
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-		if (!Game.enable3d)
-		{
-			if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
-			{
-				this.height = 127;
-			}
-		}
+		if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
+			this.height = 127;
 
 		if (Game.enable3d)
 		{
@@ -200,15 +188,6 @@ public class ObstacleShrubbery extends Obstacle
 		if (Obstacle.draw_size < Game.tile_size)
 			return 0;
 
-		double shrubScale = 0.25;
-		if (Game.screen instanceof ScreenGame)
-			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
-
-		return this.finalHeight * shrubScale;
-	}
-
-	public byte getOptionsByte(double h)
-	{
-		return 0;
+		return this.finalHeight * Drawing.drawing.terrainRenderer.getShrubHeight();
 	}
 }

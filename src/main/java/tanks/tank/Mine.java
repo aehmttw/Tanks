@@ -9,6 +9,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
 import tanks.network.event.EventMineChangeTimer;
 import tanks.network.event.EventMineRemove;
+import tanks.obstacle.Obstacle;
 import tanks.tankson.*;
 
 import java.lang.reflect.Field;
@@ -20,6 +21,7 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
 {
     public static double mine_size = 30;
     public static double mine_radius = Game.tile_size * 2.25;
+    public static double mine_friction = 0.02;      // throwable mines when?
 
     @Property(id = "explosion", name = "Explosion")
     public Explosion explosion = new Explosion();
@@ -29,6 +31,9 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
 
     @Property(id = "size", name = "Size")
     public double size = mine_size;
+
+    public double friction = mine_friction;
+    public double frictionModifier = 1;
 
     public double outlineColorR;
     public double outlineColorG;
@@ -127,10 +132,10 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleDefaultGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
         }
 
         if (Game.enable3d)
@@ -179,6 +184,12 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
     }
 
     @Override
+    public double getSize()
+    {
+        return size;
+    }
+
+    @Override
     public void update()
     {
         this.timer -= Panel.frameFrequency;
@@ -198,9 +209,17 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
 
         super.update();
 
+        if (Math.abs(vX) + Math.abs(vY) > 1e-7)
+        {
+            this.vX *= Math.pow(1 - friction, frictionModifier * Panel.frameFrequency);
+            this.vY *= Math.pow(1 - friction, frictionModifier * Panel.frameFrequency);
+
+            checkCollision();
+        }
+
         boolean enemyNear = false;
         boolean allyNear = false;
-        for (Movable m: Game.movables)
+        for (Movable m: Game.getInRadius(posX, posY, explosion.radius, c -> c.movables))
         {
             if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(this.explosion.radius, 2))
             {
@@ -219,6 +238,39 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
             this.timer = this.triggeredTimer;
             Game.eventsOut.add(new EventMineChangeTimer(this));
         }
+    }
+
+    public void checkCollision()
+    {
+        if (Tank.checkBorderCollision(this))
+            onCollidedWith(null);
+
+        double t = Game.tile_size;
+
+        int x1 = (int) Math.min(Math.max(0, this.posX / t - this.size / t / 2 - 1), Game.currentSizeX);
+        int y1 = (int) Math.min(Math.max(0, this.posY / t - this.size / t / 2 - 1), Game.currentSizeY);
+        int x2 = (int) Math.min(Math.max(0, this.posX / t + this.size / t / 2 + 1), Game.currentSizeX);
+        int y2 = (int) Math.min(Math.max(0, this.posY / t + this.size / t / 2 + 1), Game.currentSizeY);
+
+        for (int x = x1; x < x2; x++)
+        {
+            for (int y = y1; y < y2; y++)
+            {
+                checkCollisionWith(Game.getObstacle(x, y));
+                checkCollisionWith(Game.getSurfaceObstacle(x, y));
+            }
+        }
+    }
+
+    public void checkCollisionWith(Obstacle o)
+    {
+        if (Tank.checkCollideWith(this, o))
+            onCollidedWith(o);
+    }
+
+    public void onCollidedWith(Obstacle o)
+    {
+
     }
 
     public void explode()

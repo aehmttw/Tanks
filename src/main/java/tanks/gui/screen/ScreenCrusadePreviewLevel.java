@@ -98,9 +98,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         this.next.update();
         this.prev.update();
 
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
-
         if (Game.game.input.editorPause.isValid())
         {
             back.function.run();

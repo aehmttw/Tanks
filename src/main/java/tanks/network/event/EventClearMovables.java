@@ -7,7 +7,7 @@ import tanks.tank.Crate;
 import tanks.tank.TankPlayerController;
 import tanks.tank.TankRemote;
 
-public class EventArcadeClearMovables extends PersonalEvent
+public class EventClearMovables extends PersonalEvent
 {
 
     @Override

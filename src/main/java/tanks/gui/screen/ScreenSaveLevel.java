@@ -118,9 +118,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         if (!this.downloaded)
             this.levelName.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

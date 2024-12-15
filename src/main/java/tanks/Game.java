@@ -51,17 +51,6 @@ public class Game
 
 	public static final int absoluteDepthBase = 1000;
 
-	public static ArrayList<Face> horizontalFaces = new ArrayList<>();
-	public static ArrayList<Face> verticalFaces = new ArrayList<>();
-
-	public boolean[][] solidGrid;
-	public boolean[][] unbreakableGrid;
-	public double[][] heightGrid;
-	public double[][] groundHeightGrid;
-	public double[][] groundEdgeHeightGrid;
-
-	public double[][] lastHeightGrid;
-
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
@@ -104,6 +93,8 @@ public class Game
 
 	public static Player player;
 
+	public static ArrayList<Obstacle> updateObstacles = new ArrayList<>();
+
 	public static HashSet<Movable> removeMovables = new HashSet<>();
 	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
 	public static HashSet<Effect> removeEffects = new HashSet<>();
@@ -125,18 +116,10 @@ public class Game
 	/** Use this if you want to spawn a mine not allied with any tank, or such*/
 	public static Tank dummyTank;
 
-	public static int currentSizeX = 28;
-	public static int currentSizeY = 18;
+	public static int currentSizeX = 28, currentSizeY = 18;
+	public static int tileOffsetX = 0, tileOffsetY = 0;
 	public static double bgResMultiplier = 1;
 
-	public static double[][] tilesR = new double[28][18];
-	public static double[][] tilesG = new double[28][18];
-	public static double[][] tilesB = new double[28][18];
-	public static double[][] tilesFlash = new double[28][18];
-
-	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
-
-	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	//Versioning has moved to version.txt
@@ -147,6 +130,7 @@ public class Game
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
 	public static boolean drawAutoZoom = false;
+	public static boolean showHitboxes = false;
 	public static final boolean cinematic = false;
 
 	public static String lastVersion = "Tanks v0";
@@ -246,7 +230,7 @@ public class Game
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
 
-	public final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
+	public HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
 	public ShaderGroundIntro shaderIntro;
 	public ShaderGroundOutOfBounds shaderOutOfBounds;
 	public ShaderTracks shaderTracks;
@@ -306,10 +290,12 @@ public class Game
 	public static String homedir;
 	public static Game game = new Game();
 
-	// Note: this is not used by the game to determine fullscreen status
-	// It is simply a value defined before
-	// Refer to Game.game.window.fullscreen for true fullscreen status
-	// Value is set before Game.game.window is initialized
+	/**
+	Note: this is not used by the game to determine fullscreen status<br>
+	It is simply a value defined before<br>
+	Refer to {@link BaseWindow#fullscreen Game.game.window.fullscreen} for true fullscreen status<br>
+	Value is set before {@code Game.game.window} is initialized
+	*/
 	public boolean fullscreen = false;
 
 	private Game()
@@ -404,7 +390,7 @@ public class Game
 		NetworkEventMap.register(EventStatusEffectEnd.class);
 		NetworkEventMap.register(EventArcadeHit.class);
 		NetworkEventMap.register(EventArcadeRampage.class);
-		NetworkEventMap.register(EventArcadeClearMovables.class);
+		NetworkEventMap.register(EventClearMovables.class);
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);
@@ -601,39 +587,27 @@ public class Game
 
 		BaseFile levelsFile = game.fileManager.getFile(homedir + levelDir);
 		if (!levelsFile.exists())
-		{
-			levelsFile.mkdirs();
-		}
+            levelsFile.mkdirs();
 
 		BaseFile crusadesFile = game.fileManager.getFile(homedir + crusadeDir);
 		if (!crusadesFile.exists())
-		{
-			crusadesFile.mkdirs();
-		}
+            crusadesFile.mkdirs();
 
 		BaseFile savedCrusadesProgressFile = game.fileManager.getFile(homedir + savedCrusadePath + "/internal");
 		if (!savedCrusadesProgressFile.exists())
-		{
-			savedCrusadesProgressFile.mkdirs();
-		}
+            savedCrusadesProgressFile.mkdirs();
 
 		BaseFile itemsFile = game.fileManager.getFile(homedir + itemDir);
 		if (!itemsFile.exists())
-		{
-			itemsFile.mkdirs();
-		}
+            itemsFile.mkdirs();
 
 		BaseFile tanksFile = game.fileManager.getFile(homedir + tankDir);
 		if (!tanksFile.exists())
-		{
-			tanksFile.mkdirs();
-		}
+            tanksFile.mkdirs();
 
 		BaseFile extensionsFile = game.fileManager.getFile(homedir + extensionDir);
 		if (!extensionsFile.exists())
-		{
-			extensionsFile.mkdirs();
-		}
+            extensionsFile.mkdirs();
 
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
 		if (!uuidFile.exists())
@@ -674,14 +648,12 @@ public class Game
 		catch (FileNotFoundException e)
 		{
 			Game.logger = System.err;
-			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
+			Game.logger.println(new Date() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 
 		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
 		if (!optionsFile.exists())
-		{
-			ScreenOptions.initOptions(Game.homedir);
-		}
+            ScreenOptions.initOptions(Game.homedir);
 
 		ScreenOptions.loadOptions(Game.homedir);
 
@@ -769,68 +741,45 @@ public class Game
 
 	public static void addObstacle(Obstacle o)
 	{
-		o.removed = false;
-		Game.obstacles.add(o);
-		Game.redrawObstacles.add(o);
-
-		int x = (int) (o.posX / Game.tile_size);
-		int y = (int) (o.posY / Game.tile_size);
-
-		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
-			Game.redrawGroundTiles.add(new GroundTile(x, y));
-
-		if (Game.enable3d && (!Game.fancyTerrain || !Game.enable3dBg))
-		{
-			if (x > 0) Game.redrawGroundTiles.add(new GroundTile(x - 1, y));
-			if (x < Game.currentSizeX - 1)  Game.redrawGroundTiles.add(new GroundTile(x + 1, y));
-			if (y > 0) Game.redrawGroundTiles.add(new GroundTile(x, y - 1));
-			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new GroundTile(x, y + 1));
-		}
+		addObstacle(o, true);
 	}
 
-	public static void recomputeHeightGrid()
+	public static void addObstacle(Obstacle o, boolean redraw)
 	{
-		for (int i = 0; i < Game.game.heightGrid.length; i++)
+		o.removed = false;
+		Game.obstacles.add(o);
+		o.postOverride();
+
+		if (o.update)
+			Game.updateObstacles.add(o);
+
+		if (o.startHeight > 0)
+			return;
+
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+		if (c != null)
+			c.addObstacle(o);
+
+		if (redraw)
 		{
-			Arrays.fill(Game.game.heightGrid[i], -1000);
-			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-		}
-
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-
-			if (o.replaceTiles)
-				o.postOverride();
-
 			int x = (int) (o.posX / Game.tile_size);
 			int y = (int) (o.posY / Game.tile_size);
 
-			if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-			{
-				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-				Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
-				Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
-			}
+			if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
+				Game.redrawGroundTiles.add(new GroundTile(x, y));
+
+			Game.redrawObstacles.add(o);
 		}
 
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.groundHeightGrid[i][j] <= -1000)
-					Game.game.groundHeightGrid[i][j] = Game.tilesDepth[i][j];
+		o.afterAdd();
 
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
+		for (Obstacle o1 : o.getNeighbors())
+			o1.onNeighborUpdate();
 	}
 
 	public static boolean usernameInvalid(String username)
 	{
-		if (username.length() > 20)
+		if (username.length() > 25)
 			return true;
 
 		for (int i = 0; i < username.length(); i++)
@@ -870,17 +819,14 @@ public class Game
 
 		if (days > 7)
 			return days + "d";
-		else if (days > 0)
-			return days + "d " + hours % 24 + "h";
-		else if (hours > 0)
-			return hours % 24 + "h " + mins % 60 + "m";
-		else if (mins > 0)
-			return mins % 60 + "m";
-		else if (seconds)
-			return secs + "s";
-		else
-			return "less than 1m";
-	}
+        if (days > 0)
+            return days + "d " + hours % 24 + "h";
+        if (hours > 0)
+            return hours % 24 + "h " + mins % 60 + "m";
+        if (mins > 0)
+            return mins % 60 + "m";
+        return "less than 1m";
+    }
 
 	public static String formatString(String s)
 	{
@@ -962,10 +908,10 @@ public class Game
 		}
 
 		Game.crashTime = System.currentTimeMillis();
-		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
+		Game.logger.println(new Date() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
 
-		if (!(Game.screen instanceof ScreenCrashed) && !(Game.screen instanceof ScreenOutOfMemory))
+		if (!(Game.screen instanceof ScreenCrashed))
 		{
 			try
 			{
@@ -977,13 +923,11 @@ public class Game
 				f.create();
 
 				f.startWriting();
-				f.println("Tanks crash report: " + Game.version + " - " + new Date().toString() + "\n");
+				f.println("Tanks crash report: " + Game.version + " - " + new Date() + "\n");
 
 				f.println(e.toString());
 				for (StackTraceElement el: e.getStackTrace())
-				{
-					f.println("at " + el.toString());
-				}
+                    f.println("at " + el.toString());
 
 				f.println("\nSystem properties:");
 				Properties p = System.getProperties();
@@ -1003,9 +947,7 @@ public class Game
 		try
 		{
 			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
-			{
-				Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
-			}
+                Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
 		}
 		catch (Exception e1)
 		{
@@ -1023,33 +965,10 @@ public class Game
 	{
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
 
-		Game.tilesR = new double[28][18];
-		Game.tilesG = new double[28][18];
-		Game.tilesB = new double[28][18];
-		Game.tilesDepth = new double[28][18];
-		Game.tilesFlash = new double[28][18];
-		Game.game.heightGrid = new double[28][18];
-		Game.game.groundHeightGrid = new double[28][18];
-		Game.game.groundEdgeHeightGrid = new double[28][18];
-		Game.tileDrawables = new Obstacle[28][18];
+        tileOffsetX = 0;
+        tileOffsetY = 0;
 
-		double var = 0;
-
-		if (Game.fancyTerrain)
-			var = 20;
-
-		Random tilesRandom = new Random(0);
-		for (int i = 0; i < 28; i++)
-		{
-			for (int j = 0; j < 18; j++)
-			{
-				Game.tilesR[i][j] = (235 + tilesRandom.nextDouble() * var);
-				Game.tilesG[i][j] = (207 + tilesRandom.nextDouble() * var);
-				Game.tilesB[i][j] = (166 + tilesRandom.nextDouble() * var);
-				double rand = tilesRandom.nextDouble() * var / 2;
-				Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
-			}
-		}
+		Chunk.reset();
 
 		Level.currentColorR = 235;
 		Level.currentColorG = 207;
@@ -1063,30 +982,131 @@ public class Game
 		Level.currentShadowIntensity = 0.75;
 	}
 
-	// todo: chunk loading system
-//	public static Obstacle getObstacle(int posX, int posY)
-//	{
-////		return Objects.requireNonNullElse(Chunk.getTile(posX, posY), Chunk.emptyTile).obstacle;
-//		return null;
-//	}
-//
-//	public static Obstacle getSurfaceObstacle(int posX, int posY)
-//	{
-//		/*Chunk c = Chunk.getChunk(posX / Chunk.chunkSize, posY / Chunk.chunkSize);
-//		if (c != null)
-//			return Objects.requireNonNullElse(c.getChunkTile(posX, posY), Chunk.emptyTile).surfaceObstacle;*/
-//		return null;
-//	}
-//
-//	public static Obstacle getObstacle(double posX, double posY)
-//	{
-//		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-//	}
-//
-//	public static Obstacle getSurfaceObstacle(double posX, double posY)
-//	{
-//		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-//	}
+	public static Obstacle getObstacle(int tileX, int tileY)
+	{
+		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).obstacle;
+	}
+
+	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
+	{
+		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).surfaceObstacle;
+	}
+
+	public static Obstacle getExtraObstacle(int tileX, int tileY)
+	{
+		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).extraObstacle;
+	}
+
+	public static Obstacle getObstacle(double posX, double posY)
+	{
+		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static Obstacle getSurfaceObstacle(double posX, double posY)
+	{
+		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static Obstacle getExtraObstacle(double posX, double posY)
+	{
+		return getExtraObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	/** Iterates through all chunks, applies {@code func} to the ones within the specified position range,
+	 * and filters through the collection it returns. Expects all pixel coordinates. */
+    public static <T extends GameObject> ArrayList<T> getInRange(double x1, double y1, double x2, double y2, Function<Chunk, Collection<T>> func)
+	{
+		ArrayList<T> out = new ArrayList<>();
+		Chunk.getChunksInRange(x1, y1, x2, y2).forEach(c ->
+		{
+			for (T o : func.apply(c))
+			{
+				if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, x2, o.posY, y2))
+					out.add(o);
+			}
+		});
+		return out;
+	}
+
+	/** Expects all pixel coordinates.
+	 * Example: <p>{@code Game.getInRadius(posX, posY, explosion.radius, c -> c.movables)}<p>
+	 *     returns all movables within a explosion's radius.
+	 * @param func Used to map the chunks in radius {@code radius} from the position, and return a collection of {@link GameObject}s.
+	 * @return Iterates through all chunks, maps {@code func} to the chunks within {@code radius} of the position,
+	 * and filters through the collection {@code func} is expected to return. */
+	public static <T extends GameObject> ArrayList<T> getInRadius(double posX, double posY, double radius, Function<Chunk, Collection<T>> func)
+	{
+		ArrayList<T> out = new ArrayList<>();
+		Chunk.getChunksInRadius(posX, posY, radius).forEach(c ->
+		{
+			for (T o : func.apply(c))
+				if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+					out.add(o);
+		});
+		return out;
+	}
+
+	public static void removeObstacle(Obstacle o)
+	{
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+        if (c == null)
+            return;
+
+        c.removeObstacleIfEquals(o);
+		c.removeSurfaceIfEquals(o);
+		c.removeExtraIfEquals(o);
+
+		int x = (int) (o.posX / Game.tile_size);
+		int y = (int) (o.posY / Game.tile_size);
+
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
+			Game.redrawGroundTiles.add(new GroundTile(x, y));
+
+		for (Obstacle o1 : o.getNeighbors())
+			o1.onNeighborUpdate();
+
+		Game.obstacles.remove(o);
+    }
+
+	public static boolean isSolid(int tileX, int tileY)
+	{
+		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).solid();
+	}
+
+	public static boolean isSolid(double posX, double posY)
+	{
+		return Chunk.getTileOptional(posX, posY).orElse(Chunk.emptyTile).solid();
+	}
+
+	public static boolean isUnbreakable(int tileX, int tileY)
+	{
+		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).unbreakable();
+	}
+
+	public static boolean isUnbreakable(double posX, double posY)
+	{
+		return Chunk.getTileOptional(posX, posY).orElse(Chunk.emptyTile).unbreakable();
+	}
+
+	public static double getTileHeight(double posX, double posY)
+	{
+		return Chunk.getTileOptional(posX, posY).orElse(Chunk.emptyTile).height();
+	}
+
+	public static void removeSurfaceObstacle(Obstacle o)
+	{
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+		if (c != null)
+			c.removeSurfaceIfEquals(o);
+		Game.obstacles.remove(o);
+	}
+
+	public static void setObstacle(double posX, double posY, Obstacle o)
+	{
+		Chunk c = Chunk.getChunk(posX, posY);
+		if (c != null)
+			c.setObstacle(Chunk.toChunkTileCoords(posX), Chunk.toChunkTileCoords(posY), o);
+	}
 
 	public static double sampleGroundHeight(double px, double py)
 	{
@@ -1095,11 +1115,14 @@ public class Game
 
 		if (!Game.enable3dBg || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
 			return 0;
-		else
-			return Game.tilesDepth[x][y] + 0;
-	}
 
-	public static double sampleTerrainGroundHeight(double px, double py)
+		Chunk.Tile t = Chunk.getTile(x, y);
+        assert t != null;
+        return t.groundHeight() + t.depth;
+    }
+
+	/** @return The depth that the tile renders with; not affected by obstacles */
+	public static double sampleDefaultGroundHeight(double px, double py)
 	{
 		int x = (int) (px / Game.tile_size);
 		int y = (int) (py / Game.tile_size);
@@ -1110,13 +1133,10 @@ public class Game
 		if (py < 0)
 			y--;
 
-		double r;
 		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.groundHeightGrid[x][y];
+			return 0;
 
-		return r;
+		return Objects.requireNonNull(Chunk.getTile(x, y)).depth;
 	}
 
 	public static double sampleObstacleHeight(double px, double py)
@@ -1134,18 +1154,7 @@ public class Game
 		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
 			r = 0;
 		else
-			r = Game.game.heightGrid[x][y];
-
-		return r;
-	}
-
-	public static double sampleEdgeGroundDepth(int x, int y)
-	{
-		double r;
-		if (!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.groundEdgeHeightGrid[x][y];
+			r = Game.getTileHeight(px, py);
 
 		return r;
 	}
@@ -1262,8 +1271,8 @@ public class Game
 
 	public static void cleanUp()
 	{
+		Game.currentLevel = null;
 		resetTiles();
-
 		silentCleanUp();
 	}
 
@@ -1278,7 +1287,7 @@ public class Game
 		removeEffects.clear();
 		removeTracks.clear();
 		removeClouds.clear();
-		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
+		updateObstacles.clear();
 
 		resetNetworkIDs();
 
@@ -1382,7 +1391,7 @@ public class Game
 				return lb.toString().length() - la.toString().length();
 			else if (la.toString().length() != lb.toString().length())
 				return la.toString().length() - lb.toString().length();
-			else if (!la.toString().equals(lb.toString()))
+			else if (!la.toString().contentEquals(lb))
 				return la.toString().compareTo(lb.toString());
 		}
 

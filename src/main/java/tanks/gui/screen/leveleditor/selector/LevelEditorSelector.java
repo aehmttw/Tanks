@@ -124,6 +124,11 @@ public abstract class LevelEditorSelector<T extends GameObject>
             Object sel = getPropertyBase();
             Object obj = getObjectProp();
 
+            if (sel instanceof Number)      // nice one java
+                sel = ((Number) sel).doubleValue();
+            if (obj instanceof Number)
+                obj = ((Number) obj).doubleValue();
+
             if (!Objects.equals(sel, prevObject))
             {
                 if (objPropField.getType() == int.class && sel instanceof Double)

@@ -1148,9 +1148,7 @@ public class Drawing
 
 		int sizeX = 0;
 		for (String s : text)
-		{
-			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
-		}
+            sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
 
 		double sizeY = 14;
 
@@ -1166,28 +1164,37 @@ public class Drawing
 		double drawY = y + sizeY / 2.0 + yPadding * text.length;
 
 		setColor(0, 0, 0, 127);
-		drawPopup(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length, 5, 4);
+		drawPopup(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length, 5, 4, true);
 
 		setColor(255, 255, 255);
 		for (int i = 0; i < text.length; i++)
-		{
-			drawUncenteredInterfaceText(x + xPadding, y + yPadding * (2 * i + 1), text[i]);
-		}
+            drawUncenteredInterfaceText(x + xPadding, y + yPadding * (2 * i + 1), text[i]);
 
 		//return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
 	}
 
 	public void drawPopup(double x, double y, double sX, double sY)
 	{
-		this.drawPopup(x, y, sX, sY, 10, 5);
+		this.drawPopup(x, y, sX, sY, 20, 5);
 	}
 
 	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius)
 	{
-		fillInterfaceRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius);
-		fillInterfaceRect(x, y, sX, sY, borderRadius);
-//		fillInterfaceRect(x, y, sX, sY, borderRadius);
-//		drawInterfaceRect(x + borderWidth, y + borderWidth, sX, sY, borderWidth, borderRadius);
+		drawPopup(x, y, sX, sY, borderWidth, borderRadius, false);
+	}
+
+	public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius, boolean inverse)
+	{
+		if (inverse)
+		{
+			fillInterfaceRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius);
+			fillInterfaceRect(x, y, sX, sY, borderRadius);
+		}
+		else
+		{
+			fillInterfaceRect(x, y, sX, sY, borderRadius);
+			drawInterfaceRect(x + borderWidth, y + borderWidth, sX, sY, borderWidth, borderRadius);
+		}
 		Drawing.drawing.setColor(255, 255, 255);
 	}
 

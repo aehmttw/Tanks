@@ -7,7 +7,6 @@ import tanks.Panel;
 import tanks.ToBooleanFunction;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -193,6 +192,8 @@ public class EditorButtons
 
     public static class EditorButton extends Button
     {
+        public EditorButton parent;
+
         public ArrayList<EditorButton> location;
         public boolean firstFrame = true;
 
@@ -371,14 +372,14 @@ public class EditorButtons
                 {
                     Game.game.window.validScrollUp = false;
                     option--;
-                    setOption();
+                    initOption();
                 }
 
                 if (Game.game.window.validScrollDown)
                 {
                     Game.game.window.validScrollDown = false;
                     option++;
-                    setOption();
+                    initOption();
                 }
             }
 
@@ -393,7 +394,7 @@ public class EditorButtons
             }
         }
 
-        protected void setOption()
+        protected void initOption()
         {
             int len = subMenuButtons.size() + 1;
             option = (option + len) % len;
@@ -412,11 +413,19 @@ public class EditorButtons
         @Override
         public void onClick()
         {
+            if (parent != null)
+                parent.onClick();
+
+            if (subButtonsAsOptions)
+            {
+                option = 0;
+                initOption();
+            }
+
             if (this.enabled)
                 super.onClick();
 
             Game.game.window.pressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
-
         }
 
         @Override
@@ -427,7 +436,7 @@ public class EditorButtons
                 if (option != 0)
                 {
                     option = 0;
-                    setOption();
+                    initOption();
                 }
 
                 keybind.invalidate();
@@ -483,6 +492,12 @@ public class EditorButtons
                 menuOpenAge = age;
         }
 
+        public EditorButton setParent(EditorButton parent)
+        {
+            this.parent = parent;
+            return this;
+        }
+
         public void setUpSubButtons()
         {
             for (EditorButton b : subMenuButtons)
@@ -512,6 +527,8 @@ public class EditorButtons
         public EditorButton addSubButtons(EditorButton... buttons)
         {
             Collections.addAll(subMenuButtons, buttons);
+            for (EditorButton b : buttons)
+                b.setParent(this);
             return this;
         }
 

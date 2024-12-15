@@ -281,6 +281,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         loadSelectors(o, menu, menu != null ? menu.editor : null);
     }
 
+    /** Initializes and loads the object's selectors, and adds their corresponding buttons to their
+     * respective locations in the object menu and the bottom right of the editor. */
     public static void loadSelectors(GameObject o, OverlayObjectMenu menu, ScreenLevelEditor editor)
     {
         leftButton = null;

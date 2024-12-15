@@ -29,6 +29,7 @@ public class ObstacleBeatBlock extends Obstacle
         this.renderer = ShaderBeatBlocks.class;
         this.tileRenderer = ShaderGroundObstacleBeatBlock.class;
         this.destructible = false;
+        this.update = true;
         this.type = ObstacleType.top;
 
         this.description = "A block that appears and disappears to the beat of the music";
@@ -67,17 +68,19 @@ public class ObstacleBeatBlock extends Obstacle
         this.bulletCollision = on;
         this.tankCollision = on;
 
+        if (Game.currentLevel != null)
+        {
+            Game.currentLevel.synchronizeMusic = true;
+            Game.currentLevel.beatBlocks |= (int) beatFrequency;
+        }
+
         if (this.tankCollision != lastOn || firstUpdate)
         {
             if (firstUpdate)
                 this.postOverride();
 
             this.firstUpdate = false;
-            int x = (int) (this.posX / Game.tile_size);
-            int y = (int) (this.posY / Game.tile_size);
-
-            if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-                Game.game.solidGrid[x][y] = this.tankCollision;
+            refreshHitboxes();
 
             this.verticalFaces = null;
             this.horizontalFaces = null;
@@ -184,8 +187,7 @@ public class ObstacleBeatBlock extends Obstacle
     {
         float cx = (float) this.posX;
         float cy = (float) this.posY;
-        float h = (float) (Game.sampleGroundHeight(this.posX, this.posY));
-        float cz = (float) (h);
+        float cz = (float) Game.sampleDefaultGroundHeight(this.posX, this.posY);
 
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
 
@@ -266,6 +268,7 @@ public class ObstacleBeatBlock extends Obstacle
         this.tileRendererNumber = this.groupID;
         this.alternate = this.groupID % 2 == 1;
         this.beatFrequency = Math.pow(2, this.groupID / 2);
+
         this.initialize();
     }
 

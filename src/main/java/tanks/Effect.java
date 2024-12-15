@@ -48,7 +48,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
     {
-        while (Game.recycleEffects.size() > 0)
+        while (!Game.recycleEffects.isEmpty())
         {
             Effect e = Game.recycleEffects.remove();
 
@@ -62,6 +62,13 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
         Effect e = new Effect();
         e.initialize(x, y, z, type);
+        return e;
+    }
+
+    public static Effect createNewEffect(double x, double y, double z, EffectType type, double age)
+    {
+        Effect e = Effect.createNewEffect(x, y, z, type);
+        e.age = age;
         return e;
     }
 
@@ -618,6 +625,48 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
         }
     }
 
+    public Effect setColor(double r, double g, double b)
+    {
+        this.colR = r;
+        this.colG = g;
+        this.colB = b;
+        return this;
+    }
+
+    public Effect setColor(double r, double g, double b, double noise)
+    {
+        this.colR = r + (Math.random() - 0.5) * noise;
+        this.colG = g + (Math.random() - 0.5) * noise;
+        this.colB = b + (Math.random() - 0.5) * noise;
+        return this;
+    }
+
+    public Effect setGlowColor(double r, double g, double b)
+    {
+        this.glowR = r;
+        this.glowG = g;
+        this.glowB = b;
+        return this;
+    }
+
+    public Effect setRadius(double radius)
+    {
+        this.radius = radius;
+        return this;
+    }
+
+    public Effect setSize(double size)
+    {
+        this.size = size;
+        return this;
+    }
+
+    @Override
+    public double getSize()
+    {
+        return size;
+    }
+
     public void drawGlow()
     {
         if (this.maxAge > 0 && this.maxAge < this.age)
@@ -771,11 +820,12 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
             }
         }
 
+        int x = (int) (this.posX / Game.tile_size);
+        int y = (int) (this.posY / Game.tile_size);
+        Chunk.Tile t = Chunk.getTile(x, y), prevTile = Chunk.getTile(prevGridX, prevGridY);
+
         if (this.type == EffectType.obstaclePiece3d)
         {
-            int x = (int) Math.floor(this.posX / Game.tile_size);
-            int y = (int) Math.floor(this.posY / Game.tile_size);
-
             boolean collidedX = false;
             boolean collidedY = false;
             boolean collided;
@@ -796,9 +846,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
 
             if (!(collidedX || collidedY))
             {
-                collided = this.posZ <= Game.game.lastHeightGrid[x][y];
+                collided = this.posZ <= t.height();
 
-                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && Game.game.lastHeightGrid[x][y] != Game.game.lastHeightGrid[prevGridX][prevGridY])
+                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && t.height() != prevTile.height())
                 {
                     collidedX = this.prevGridX != x;
                     collidedY = this.prevGridY != y;
@@ -840,10 +890,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
                     this.posY = this.posY - dist;
                 }
 
-                if (!collidedX && !collidedY && (x != this.initialGridX || y != initialGridY) && Math.abs(this.posZ - Game.game.lastHeightGrid[x][y]) < Game.tile_size / 2)
+                if (!collidedX && !collidedY && (x != this.initialGridX || y != initialGridY) && Math.abs(this.posZ - t.height()) < Game.tile_size / 2)
                 {
                     this.vZ = -0.6 * this.vZ;
-                    this.posZ = (2 * Game.game.lastHeightGrid[x][y] - this.posZ);
+                    this.posZ = (2 * t.height() - this.posZ);
                 }
             }
 

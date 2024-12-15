@@ -250,7 +250,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
         if (Game.previewCrusades)
         {
-            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.setColor(0, 0, 0, 115);
             Drawing.drawing.drawPopup(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * 0.7, this.objYSpace * sizeY);
             Drawing.drawing.setColor(255, 255, 255);
         }

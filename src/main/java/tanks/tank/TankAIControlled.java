@@ -1051,7 +1051,7 @@ public class TankAIControlled extends Tank implements ITankField
 		t.statusEffects = this.statusEffects;
 		t.coinValue = this.coinValue;
 		t.currentlyVisible = true;
-		t.cooldown = Math.min(t.cooldownBase, this.cooldown);
+		t.cooldown = Math.max(t.cooldownBase, this.cooldown);
 		t.age = 0;
 
 		Tank p = this;

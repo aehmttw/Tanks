@@ -1847,6 +1847,12 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	}
 
 	@Override
+	public double getSize()
+	{
+		return size;
+	}
+
+	@Override
 	public boolean lit()
 	{
 		return Game.fancyLights;

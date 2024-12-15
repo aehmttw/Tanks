@@ -2900,7 +2900,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public static TankAIControlled fromString(String s)
 	{
-		if (s.indexOf("[") == -1 || s.indexOf("{") < s.indexOf("["))
+		if (s.contains("{") && (!s.contains("[") || s.indexOf("{") < s.indexOf("[")))
 			return (TankAIControlled) Serializer.fromTanksON(s);
 		else
 			return fromStringLegacy(s, null);

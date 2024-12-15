@@ -366,6 +366,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public ScreenLevelEditor(String lvlName, Level level)
 	{
+		Game.playerTank = new TankPlayer(0, 0, 0);
 		this.playerTankBuilds.add((TankPlayer) Game.playerTank);
 
 		this.selfBatch = false;

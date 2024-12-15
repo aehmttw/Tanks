@@ -461,7 +461,13 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (b.moveOut)
             b.moveOut(50 * this.size / Game.tile_size);
 
-        b.setTargetLocation(this.mouseX, this.mouseY);
+
+        double mx = this.mouseX - this.posX;
+        double my = this.mouseY - this.posY;
+
+        double tx = Math.cos(offset) * mx + Math.sin(offset) * my;
+        double ty = -Math.sin(offset) * mx + Math.cos(offset) * my;
+        b.setTargetLocation(this.posX + tx, this.posY + ty);
 
         Integer num = 0;
         if (Game.currentLevel != null)
@@ -474,7 +480,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 //        if (b.recoil != 0)
 //            this.forceMotion = true;
 
-        if (!this.hasCollided)
+        if (!this.hasCollided && b.recoil != 0)
             this.recoil = true;
 
         Game.eventsOut.add(new EventTankControllerAddVelocity(this, this.vX - vX, this.vY - vY, true));

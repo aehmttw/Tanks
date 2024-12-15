@@ -879,7 +879,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.health > 1 && this.size > 0 && !forInterface)
 		{
 			double size = s;
-			for (int i = 1; i < Math.min(health, 6); i++)
+			for (int i = 0; i < Math.min(Math.log10(health) * Math.log10(10) / Math.log10(4), 6); i++)
 			{
 				if (in3d)
 					drawing.drawModel(health_model,
@@ -1105,7 +1105,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkHit(owner, source);
 
-		if (this.health > 6 && (int) (this.health + amount) != (int) (this.health))
+		if (this.health > 0 && (int) (this.health + amount) != (int) (this.health))
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
 			e.size = this.size;

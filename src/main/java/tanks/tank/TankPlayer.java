@@ -514,11 +514,14 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		b.speed = Math.abs(speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
-		this.recoilSpeed = this.getSpeed();
-		if (this.recoilSpeed > this.maxSpeed * 1.01)
+		if (b.recoil != 0)
 		{
-			this.tookRecoil = true;
-			this.inControlOfMotion = false;
+			this.recoilSpeed = this.getSpeed();
+			if (this.recoilSpeed > this.maxSpeed * 1.01)
+			{
+				this.tookRecoil = true;
+				this.inControlOfMotion = false;
+			}
 		}
 
 		if (b.moveOut)

@@ -88,12 +88,12 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 {
                     ITrigger el = screen.getUIElementForField(f, p, screen.target);
 
-                    if (p.id().equals("sound_pitch") || p.id().equals("sound_pitch_variation"))
+                    if (p.id().equals("sound_pitch") || p.id().equals("sound_pitch_variation") || p.id().equals("sound_volume"))
                     {
                         ((TextBox) el).silent = true;
                         Runnable func = ((TextBox) el).function;
                         Bullet t = target.get();
-                        ((TextBox) el).function = () -> { func.run(); Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation)); };
+                        ((TextBox) el).function = () -> { func.run(); Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation), (float) t.soundVolume); };
                     }
 
                     this.uiElements.add(el);

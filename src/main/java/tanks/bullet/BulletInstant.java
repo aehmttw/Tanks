@@ -95,6 +95,7 @@ public class BulletInstant extends Bullet
 
 		this.affectedByFrameFrequency = false;
 		double angle = this.getPolarDirection();
+		int redirects = 0;
 		while (!this.destroy)
 		{
 			if (ScreenGame.finished)
@@ -102,9 +103,14 @@ public class BulletInstant extends Bullet
 
 			if (Movable.absoluteAngleBetween(this.getPolarDirection(), angle) >= 0.1)
 			{
+				redirects++;
 				this.collisionX = this.posX;
 				this.collisionY = this.posY;
 				this.collided();
+
+				if (redirects > 100)
+					this.homingSharpness = this.homingSharpness * 0.95;
+
 				angle = this.getPolarDirection();
 			}
 
@@ -290,13 +296,5 @@ public class BulletInstant extends Bullet
 	public void addTrail(boolean redirect)
 	{
 
-	}
-
-	@Override
-	public void collidedWithObject(Movable m)
-	{
-		this.playPopSound = true;
-		super.collidedWithObject(m);
-		this.playPopSound = false;
 	}
 }

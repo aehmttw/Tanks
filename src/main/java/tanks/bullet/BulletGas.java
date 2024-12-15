@@ -92,7 +92,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         if (this.lifespan > 0)
             frac = Math.pow(this.startSize, 2) / Math.pow(this.size, 2);
 
-        this.damage = this.baseDamage * this.lifespan <= 0 ? 1 : Math.max(0, 1.0 - this.age / this.lifespan);
+        this.damage = this.baseDamage * (this.lifespan <= 0 ? 1 : Math.max(0, 1.0 - this.age / this.lifespan));
         this.tankHitKnockback = this.baseTankKB * frac;
         this.bulletHitKnockback = this.baseBulletKB * frac;
 

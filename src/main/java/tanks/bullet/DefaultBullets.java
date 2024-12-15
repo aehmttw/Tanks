@@ -30,6 +30,7 @@ public class DefaultBullets
 
         mini_bullet = new Bullet();
         mini_bullet.size /= 2;
+        mini_bullet.pitch *= 2;
         mini_bullet.speed *= 2;
         mini_bullet.bounces = 0;
         mini_bullet.damage /= 8;
@@ -37,6 +38,7 @@ public class DefaultBullets
 
         mega_bullet = new Bullet();
         mega_bullet.size *= 2.5;
+        mega_bullet.pitch /= 2.5;
         mega_bullet.bounces = 3;
         mega_bullet.maxLiveBullets = 3;
         mega_bullet.heavy = true;
@@ -95,6 +97,7 @@ public class DefaultBullets
         explosive_bullet.bounces = 0;
         explosive_bullet.effect = Bullet.BulletEffect.trail;
         explosive_bullet.size = 20;
+        explosive_bullet.pitch /= 2;
         explosive_bullet.hitExplosion = new Explosion();
 
         laser = new BulletInstant();
@@ -196,6 +199,7 @@ public class DefaultBullets
         artillery_shell = new BulletArc();
         artillery_shell.maxLiveBullets = 5;
         artillery_shell.size = 25;
+        artillery_shell.pitch /= 2.5;
         artillery_shell.bounces = 0;
         artillery_shell.maxRange = 1000;
         artillery_shell.effect = Bullet.BulletEffect.long_trail;

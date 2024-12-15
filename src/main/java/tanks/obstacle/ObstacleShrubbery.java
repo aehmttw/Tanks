@@ -60,7 +60,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.height = Math.min(this.height + Panel.frameFrequency, 255);
 
-		if (ScreenGame.finishedQuick)
+		if (ScreenGame.finishedQuick && !Game.enable3d)
 		{
 			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 		}

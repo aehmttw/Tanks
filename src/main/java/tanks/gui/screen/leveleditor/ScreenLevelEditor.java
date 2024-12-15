@@ -538,7 +538,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				obstacleNum = (obstacleNum + 1) % Game.registryObstacle.obstacleEntries.size();
 				mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-				cloneSelectorProperties();
+				OverlayObjectMenu.loadSelectors(mouseObstacle, null);
 			}
 
 			if (up && currentPlaceable == Placeable.enemyTank)

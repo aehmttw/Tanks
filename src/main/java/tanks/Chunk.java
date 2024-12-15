@@ -289,10 +289,13 @@ public class Chunk implements Comparable<Chunk>
             return;
 
         if (o.type == Obstacle.ObstacleType.extra)
+        {
             t.extraObstacle = o;
-        else if (o1 != null && o1.type == Obstacle.ObstacleType.ground)
-            t.surfaceObstacle = o1;
+            return;
+        }
 
+        if (o1 != null && o1.type == Obstacle.ObstacleType.ground)
+            t.surfaceObstacle = o1;
         t.obstacle = o;
     }
 

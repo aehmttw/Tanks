@@ -624,7 +624,8 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 	public static boolean canPlaceOn(ObstacleType type, Chunk.Tile tile)
 	{
-		return tile == null || tile.obstacle == null || canPlaceOn(type, tile.obstacle.type);
+		return tile == null || ((tile.obstacle == null || canPlaceOn(type, tile.obstacle.type))
+				&& (tile.surfaceObstacle == null || canPlaceOn(type, tile.surfaceObstacle.type)));
 	}
 
 	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)

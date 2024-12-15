@@ -1304,6 +1304,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					if (mouseObstacleStartHeight == 0)
 					{
 						o = Game.getObstacle(mouseObstacle.posX, mouseObstacle.posY);
+						if (o == null)
+							o = Game.getExtraObstacle(mouseObstacle.posX, mouseObstacle.posY);
 					}
 					else
 					{
@@ -1373,26 +1375,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					if (mouseObstacleStartHeight == 0 && currentPlaceable == Placeable.obstacle)
 					{
 						Obstacle o = Game.getObstacle(mx, my);
-						Obstacle s = Game.getSurfaceObstacle(mx, my);
-
-						if (o != null || s != null)
+						if (!validRight)
 						{
-							if (o != null && s != null)
-								return new boolean[]{true, true};
-
-							if (o == null)
-								o = s;
-
-							if (!validRight)
-							{
-								if (!Obstacle.canPlaceOn(o.type, mouseObstacle.type) || o.getClass() == mouseObstacle.getClass())
-									skip = true;
-							}
-							else
-							{
-								this.undoActions.add(new EditorAction.ActionObstacle(o, false));
-								Game.removeObstacles.add(o);
-							}
+							if (!Obstacle.canPlaceOn(mouseObstacle.type, Chunk.getTile(mx, my)) || mouseObstacle.getClass().isInstance(o))
+								skip = true;
+						}
+						else
+						{
+							this.undoActions.add(new EditorAction.ActionObstacle(o, false));
+							Game.removeObstacles.add(o);
 						}
 					}
 					else

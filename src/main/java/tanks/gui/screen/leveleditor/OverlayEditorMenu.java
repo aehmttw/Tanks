@@ -67,12 +67,12 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         quit.update();
         clone.update();
 
-        if (editor.spawns.size() > 0)
+        if (!editor.spawns.isEmpty())
             play.update();
         else
             playUnavailable.update();
 
-        if (Game.game.input.editorPlay.isValid() && editor.spawns.size() > 0)
+        if (Game.game.input.editorPlay.isValid() && !editor.spawns.isEmpty())
         {
             editor.play();
             Game.game.input.play.invalidate();
@@ -98,7 +98,7 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         quit.draw();
         clone.draw();
 
-        if (editor.spawns.size() > 0)
+        if (!editor.spawns.isEmpty())
             play.draw();
         else
             playUnavailable.draw();

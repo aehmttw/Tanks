@@ -6,7 +6,6 @@ import tanks.gui.Button;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenOptions;
-import tanks.tank.TankDummy;
 import tanks.tank.TankPlayer;
 
 public class OverlayEditTeamColor extends ScreenLevelEditorOverlay

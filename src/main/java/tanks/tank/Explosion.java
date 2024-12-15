@@ -7,7 +7,6 @@ import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.*;
 import tanks.item.Item;
-import tanks.item.ItemMine;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;

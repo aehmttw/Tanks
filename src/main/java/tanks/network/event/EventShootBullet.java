@@ -7,7 +7,6 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
-import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
 public class EventShootBullet extends PersonalEvent

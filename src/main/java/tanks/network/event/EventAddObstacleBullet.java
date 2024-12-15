@@ -2,10 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class EventAddObstacleBullet extends PersonalEvent
 {

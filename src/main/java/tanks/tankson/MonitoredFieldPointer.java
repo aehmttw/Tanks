@@ -1,7 +1,6 @@
 package tanks.tankson;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 public class MonitoredFieldPointer<T> extends FieldPointer<T>
 {

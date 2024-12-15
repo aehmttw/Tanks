@@ -10,7 +10,6 @@ import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class TerrainRenderer
 {

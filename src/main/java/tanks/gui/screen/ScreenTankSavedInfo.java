@@ -50,9 +50,9 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
         double cY = this.centerY + 40;
 
-        if (copied.size() == 0)
+        if (copied.isEmpty())
         {
-            if (notCopied.size() == 0)
+            if (notCopied.isEmpty())
                 row1Y = cY;
             else
             {
@@ -62,7 +62,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         }
         else
         {
-            if (notCopied.size() == 0)
+            if (notCopied.isEmpty())
             {
                 row1Y = cY - rowSpacing / 2;
                 row2Y = cY + rowSpacing / 2;
@@ -180,18 +180,18 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
         if (this.copiedToTemplate)
         {
-            if (this.linkedTanksCopied.size() > 0)
+            if (!this.linkedTanksCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row2Y - 80, "Tanks referenced by this tank also saved to templates");
 
-            if (this.linkedTanksNotCopied.size() > 0)
+            if (!this.linkedTanksNotCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row3Y - 80, "Tanks referenced by this tank already present in templates");
         }
         else
         {
-            if (this.linkedTanksCopied.size() > 0)
+            if (!this.linkedTanksCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row2Y - 80, "Tank templates referenced by this tank also added to level");
 
-            if (this.linkedTanksNotCopied.size() > 0)
+            if (!this.linkedTanksNotCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row3Y - 80, "Tank templates referenced by this tank already present in level");
         }
 

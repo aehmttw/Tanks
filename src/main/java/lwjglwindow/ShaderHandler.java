@@ -3,7 +3,6 @@ package lwjglwindow;
 import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;

@@ -5,14 +5,9 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.*;
-import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.item.Item;
 import tanks.tank.*;
-import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
-import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

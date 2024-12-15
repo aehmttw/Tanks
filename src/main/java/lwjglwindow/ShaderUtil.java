@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -64,7 +63,7 @@ public class ShaderUtil extends BaseShaderUtil
         int linked = glGetProgrami(this.programID, GL_LINK_STATUS);
         String programLog = glGetProgramInfoLog(this.programID);
 
-        if (programLog.trim().length() > 0)
+        if (!programLog.trim().isEmpty())
             System.err.println(programLog);
 
         if (linked == 0)

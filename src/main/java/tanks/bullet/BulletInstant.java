@@ -5,7 +5,6 @@ import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletDestroyed;
 import tanks.network.event.EventBulletInstantWaypoint;
-import tanks.network.event.EventShootBullet;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;

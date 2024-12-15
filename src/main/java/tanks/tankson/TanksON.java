@@ -1,18 +1,8 @@
 package tanks.tankson;
 
 import basewindow.IModel;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.item.Item;
-import tanks.tank.Explosion;
-import tanks.tank.Mine;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankReference;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**

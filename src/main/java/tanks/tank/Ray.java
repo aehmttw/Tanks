@@ -11,7 +11,6 @@ import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.TreeSet;
 
 public class Ray

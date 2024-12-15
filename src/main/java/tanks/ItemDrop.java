@@ -51,7 +51,7 @@ public class ItemDrop extends Movable
 
     public static int nextFreeNetworkID()
     {
-        if (freeIDs.size() > 0)
+        if (!freeIDs.isEmpty())
             return freeIDs.remove(0);
         else
         {

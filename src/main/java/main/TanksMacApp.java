@@ -7,8 +7,6 @@ import tanksonline.CommandExecutor;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;
 
-import java.io.File;
-
 public class TanksMacApp
 {
     public static void main(String[] args)

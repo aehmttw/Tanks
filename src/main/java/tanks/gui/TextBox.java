@@ -224,7 +224,7 @@ public class TextBox implements IDrawable, ITrigger
 			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 		}
 
-		if (selected && inputText.length() > 0)
+		if (selected && !inputText.isEmpty())
 		{
 			if (Game.glowEnabled)
 			{
@@ -406,7 +406,7 @@ public class TextBox implements IDrawable, ITrigger
 			}
 		}
 
-		if (clearSelected && valid && inputText.length() > 0)
+		if (clearSelected && valid && !inputText.isEmpty())
 		{
 			handled = true;
 			this.clear();
@@ -626,7 +626,7 @@ public class TextBox implements IDrawable, ITrigger
 						inputText += key;
 				}
 
-				if (allowNegatives && inputText.length() == 0 || inputText.toLowerCase(Locale.ROOT).endsWith("e"))
+				if (allowNegatives && inputText.isEmpty() || inputText.toLowerCase(Locale.ROOT).endsWith("e"))
 				{
 					if ('-' == key)
 						inputText += key;
@@ -638,12 +638,12 @@ public class TextBox implements IDrawable, ITrigger
 						inputText += key;
 				}
 
-				if (allowDoubles && (inputText.length() == 0 || inputText.equals("-")) && 'i' == Character.toLowerCase(key))
+				if (allowDoubles && (inputText.isEmpty() || inputText.equals("-")) && 'i' == Character.toLowerCase(key))
 				{
 					inputText += "Infinity";
 				}
 
-				if (allowDoubles && !inputText.toLowerCase(Locale.ROOT).contains("e") && (this.inputText.length() >= 1 && !this.inputText.equals("-")))
+				if (allowDoubles && !inputText.toLowerCase(Locale.ROOT).contains("e") && (!this.inputText.isEmpty() && !this.inputText.equals("-")))
 				{
 					if ('e' == Character.toLowerCase(key))
 						inputText += "E";

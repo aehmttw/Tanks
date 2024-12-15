@@ -9,7 +9,6 @@ import tanks.gui.ITrigger;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
-import tanks.tank.Explosion;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;

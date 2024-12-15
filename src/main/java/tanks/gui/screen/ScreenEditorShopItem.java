@@ -1,16 +1,10 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
-import tanks.Game;
-import tanks.gui.Button;
 import tanks.item.Item;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
 import tanks.tankson.MonitoredFieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class ScreenEditorShopItem extends ScreenEditorItem

@@ -5,7 +5,6 @@ import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.gui.screen.ScreenGame;

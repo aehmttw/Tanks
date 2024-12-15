@@ -341,7 +341,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         };
                         s.drawBehindScreen = true;
 
-                        if (inLevel.size() > 0 || notInLevel.size() > 0)
+                        if (!inLevel.isEmpty() || !notInLevel.isEmpty())
                         {
                             ScreenTankSavedInfo sc = new ScreenTankSavedInfo(s, clone, new ArrayList<>(notInLevel), new ArrayList<>(inLevel));
                             sc.copiedToTemplate = false;

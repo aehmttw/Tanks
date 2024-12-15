@@ -2,7 +2,6 @@ package tanks.bullet;
 
 import basewindow.Model;
 import basewindow.transformation.AxisRotation;
-import basewindow.transformation.Rotation;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;

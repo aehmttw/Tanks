@@ -3,8 +3,6 @@ package tanks.tank;
 import tanks.*;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
-import tanks.gui.screen.ScreenEditorBullet;
-import tanks.gui.screen.ScreenEditorMine;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
 import tanks.network.event.EventMineChangeTimer;
@@ -12,7 +10,6 @@ import tanks.network.event.EventMineRemove;
 import tanks.obstacle.Obstacle;
 import tanks.tankson.*;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -93,7 +90,7 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
 
         if (!ScreenPartyLobby.isClient)
         {
-            if (freeIDs.size() > 0)
+            if (!freeIDs.isEmpty())
                 this.networkID = freeIDs.remove(0);
             else
             {

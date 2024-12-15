@@ -106,7 +106,7 @@ public class Player
             if (f.hasNextLine())
             {
                 parseIntHashSet(c.livingTankIDs, f.nextLine());
-                c.retry = c.livingTankIDs.size() > 0;
+                c.retry = !c.livingTankIDs.isEmpty();
             }
 
             f.stopReading();

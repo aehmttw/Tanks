@@ -6,7 +6,6 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.item.Item;
-import tanks.tankson.MonitoredArrayListIndexPointer;
 
 public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundScreen
 {

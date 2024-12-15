@@ -294,7 +294,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 		if (!this.tank.isRemote)
 		{
-			if (freeIDs.size() > 0)
+			if (!freeIDs.isEmpty())
 				this.networkID = freeIDs.remove(0);
 			else
 			{
@@ -510,7 +510,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 					((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
-				else if ((Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
+				else if ((!Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty()) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
 				{
 					if (this.tank instanceof TankPlayerRemote)
 					{
@@ -1540,7 +1540,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	{
 		for (ArrayList<Trail> trail : this.trails)
 		{
-			if (trail.size() > 0)
+			if (!trail.isEmpty())
 			{
 				Trail t = trail.get(0);
 				if (t.spawning)
@@ -1557,7 +1557,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	{
 		Trail old = null;
 
-		if (this.trails[group].size() > 0)
+		if (!this.trails[group].isEmpty())
 			old = this.trails[group].get(0);
 
 		this.trails[group].add(0, t);

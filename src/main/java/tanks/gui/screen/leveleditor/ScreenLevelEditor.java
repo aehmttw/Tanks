@@ -5,7 +5,6 @@ import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
 import tanks.Panel;
-import tanks.gui.ScreenElement;
 import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
 import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;

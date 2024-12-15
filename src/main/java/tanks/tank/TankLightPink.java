@@ -1,7 +1,6 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
 
 /**
  * A tank which gets angry on line of sight

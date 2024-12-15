@@ -3,7 +3,7 @@ package tanks.gui.screen.leveleditor.selector;
 import tanks.Game;
 import tanks.gui.screen.leveleditor.OverlayBeatBlockPattern;
 
-public class PatternSelector extends GroupIdSelector
+public class SelectorBeatPattern extends SelectorGroupID
 {
     public void init()
     {

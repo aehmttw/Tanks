@@ -518,6 +518,9 @@ public class TankAIControlled extends Tank implements ITankField
 	public void initialize()
 	{
 		this.bulletItem.item.cooldownBase = Math.min(1, this.cooldownBase);
+		if (this.cooldownRandom > 0)
+			this.bulletItem.item.cooldownBase = Math.max(this.bulletItem.item.cooldownBase, Double.MIN_VALUE);
+
 		this.bulletItem.item.bullet = this.bullet;
 		this.mineItem.item.mine = this.mine;
 
@@ -2897,7 +2900,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public static TankAIControlled fromString(String s)
 	{
-		if (s.startsWith("{"))
+		if (s.indexOf("[") == -1 || s.indexOf("{") < s.indexOf("["))
 			return (TankAIControlled) Serializer.fromTanksON(s);
 		else
 			return fromStringLegacy(s, null);

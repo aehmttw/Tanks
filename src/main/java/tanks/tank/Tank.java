@@ -4,8 +4,8 @@ import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.RotationSelector;
-import tanks.gui.screen.leveleditor.selector.TeamSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -32,8 +32,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static Model health_model;
 
-	public RotationSelector<Tank> rotationSelector;
-	public TeamSelector<Tank> teamSelector;
+	public SelectorRotation<Tank> rotationSelector;
+	public SelectorTeam<Tank> teamSelector;
 
 	public boolean fromRegistry = false;
 
@@ -434,14 +434,17 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (!o.tankCollision)
 					continue;
 
-				if (this.stillClips(o.posX, o.posY))
+				if (this.stillClips(o.posX, o.posY) && !o.collisionWhenClipped)
 					continue;
+
 				if (o.shouldClip)
 				{
 					ClippedTile c = new ClippedTile((int) (o.posX / Game.tile_size), (int) (o.posY / Game.tile_size));
 					this.stillClippedTiles.add(c);
 					this.clippedTiles.add(c);
-					continue;
+
+					if (!o.collisionWhenClipped)
+						continue;
 				}
 
 				if ((!o.hasLeftNeighbor() || this.clips(o.posX - Game.tile_size, o.posY)) && dx <= 0 && dx >= -bound && horizontalDist >= verticalDist)
@@ -492,7 +495,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.networkID < 0)
 		{
 			// If you get this crash, please make sure you call Game.addTank() to add them to movables, or use registerNetworkID()!
-			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank!"));
+			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank! " + this.name));
 		}
 
 		this.updateVisibility();
@@ -1178,15 +1181,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void registerSelectors()
 	{
-		this.registerSelector(new TeamSelector<Tank>());
-		this.registerSelector(new RotationSelector<Tank>());
+		this.registerSelector(new SelectorTeam<Tank>());
+		this.registerSelector(new SelectorRotation<Tank>());
 	}
 
 	@Override
 	public void postInitSelectors()
 	{
-		this.teamSelector = (TeamSelector<Tank>) this.selectors.get(0);
-		this.rotationSelector = (RotationSelector<Tank>) this.selectors.get(1);
+		this.teamSelector = (SelectorTeam<Tank>) this.selectors.get(0);
+		this.rotationSelector = (SelectorRotation<Tank>) this.selectors.get(1);
 	}
 
 	public void updatePossessing()

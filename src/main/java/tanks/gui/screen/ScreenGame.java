@@ -896,6 +896,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					if ((Game.currentLevel.beatBlocks & 2) != 0)
 						Drawing.drawing.playSound("beatblocks/beat_beeps_2_intro.ogg", 1f, true);
 
+					if ((Game.currentLevel.beatBlocks & 4) != 0)
+						Drawing.drawing.playSound("beatblocks/beat_beeps_4_intro.ogg", 1f, true);
+
 					if ((Game.currentLevel.beatBlocks & 8) != 0)
 						Drawing.drawing.playSound("beatblocks/beat_beeps_8_intro.ogg", 1f, true);
 				}

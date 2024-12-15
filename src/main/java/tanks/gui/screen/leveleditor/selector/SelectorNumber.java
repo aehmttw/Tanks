@@ -6,7 +6,7 @@ import tanks.gui.screen.leveleditor.OverlaySelectNumber;
 
 import java.util.Locale;
 
-public class NumberSelector<T extends GameObject> extends LevelEditorSelector<T>
+public class SelectorNumber<T extends GameObject> extends LevelEditorSelector<T>
 {
     public String format = "%.1f";
 

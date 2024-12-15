@@ -86,17 +86,17 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
                 this.drawLevel = 0;
         }
 
-        this.size = this.startSize * (1 - this.age / this.lifespan) + this.endSize * (this.age / this.lifespan);
+        this.size = this.lifespan <= 0 ? this.startSize : this.startSize * (1 - this.age / this.lifespan) + this.endSize * (this.age / this.lifespan);
 
-        double frac = 0;
+        double frac = 1;
         if (this.lifespan > 0)
             frac = Math.pow(this.startSize, 2) / Math.pow(this.size, 2);
 
-        this.damage = this.baseDamage * Math.max(0, 1.0 - this.age / this.lifespan);
+        this.damage = this.baseDamage * this.lifespan <= 0 ? 1 : Math.max(0, 1.0 - this.age / this.lifespan);
         this.tankHitKnockback = this.baseTankKB * frac;
         this.bulletHitKnockback = this.baseBulletKB * frac;
 
-        if (this.age > lifespan)
+        if (this.age > lifespan && lifespan > 0)
             Game.removeMovables.add(this);
 
         super.update();

@@ -3,14 +3,14 @@ package tanks.gui.screen.leveleditor;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.screen.leveleditor.selector.RotationSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.Obstacle;
 
 public class OverlaySelectRotation extends ScreenLevelEditorOverlay
 {
-    public RotationSelector<?> selector;
+    public SelectorRotation<?> selector;
 
     public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> selector.number = 3);
 
@@ -22,7 +22,7 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
 
     public Button back = new Button(this.centerX, this.centerY, 75, 75, "Done", this::escape);
 
-    public OverlaySelectRotation(Screen previous, ScreenLevelEditor screenLevelEditor, RotationSelector<?> selector)
+    public OverlaySelectRotation(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorRotation<?> selector)
     {
         super(previous, screenLevelEditor);
 

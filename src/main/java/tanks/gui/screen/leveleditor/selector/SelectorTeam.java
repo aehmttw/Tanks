@@ -4,14 +4,13 @@ import tanks.Game;
 import tanks.GameObject;
 import tanks.Team;
 import tanks.gui.screen.leveleditor.OverlayEditTeam;
-import tanks.gui.screen.leveleditor.OverlaySelectChoice;
 import tanks.gui.screen.leveleditor.OverlaySelectTeam;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TeamSelector<T extends GameObject> extends ChoiceSelector<T, Team>
+public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
 {
     /**
      * The default selected team, by default the index of the enemy team.<br>
@@ -45,7 +44,7 @@ public class TeamSelector<T extends GameObject> extends ChoiceSelector<T, Team>
             Game.screen = o;
             o.onEscape = () ->
             {
-                ChoiceSelector<?, Team> sel = this;
+                SelectorChoice<?, Team> sel = this;
                 sel.baseInit();
                 o.previous = new OverlaySelectTeam(s.previous, s.editor, sel);
             };

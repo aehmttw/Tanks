@@ -3,10 +3,10 @@ package tanks.obstacle;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
 import tanks.*;
-import tanks.gui.screen.leveleditor.selector.GroupIdSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorGroupID;
 import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.RotationSelector;
-import tanks.gui.screen.leveleditor.selector.StackHeightSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
+import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
@@ -100,6 +100,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public double baseGroundHeight;
 
 	public boolean shouldClip = false;
+	public boolean collisionWhenClipped = true;
 	public int clipFrames = 0;
 
 	public Obstacle(String name, double posX, double posY)
@@ -361,6 +362,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 		StringBuilder s = new StringBuilder();
 
 		int sc = this.selectorCount();
+
 		for (int i = 0; i < sc; i++)
 			s.append(this.selectors.get(saveOrder(i)).getMetadata()).append("-");
 
@@ -369,7 +371,6 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 		if (s.toString().endsWith("-"))
 			return s.substring(0, s.length() - 1);
-
 		return s.toString();
 	}
 
@@ -593,13 +594,13 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public void registerSelectors()
 	{
 		if (this.enableStacking)
-			this.registerSelector(new StackHeightSelector());
+			this.registerSelector(new SelectorStackHeight());
 
 		if (this.enableGroupID)
-			this.registerSelector(new GroupIdSelector());
+			this.registerSelector(new SelectorGroupID());
 
 		if (this.enableRotation)
-			this.registerSelector(new RotationSelector<Obstacle>());
+			this.registerSelector(new SelectorRotation<Obstacle>());
 	}
 
 	public Effect getCompanionEffect()

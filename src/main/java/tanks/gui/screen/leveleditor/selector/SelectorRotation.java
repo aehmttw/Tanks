@@ -7,7 +7,7 @@ import tanks.tank.Tank;
 
 import java.util.Objects;
 
-public class RotationSelector<T extends GameObject> extends NumberSelector<T>
+public class SelectorRotation<T extends GameObject> extends SelectorNumber<T>
 {
     @Override
     public void init()

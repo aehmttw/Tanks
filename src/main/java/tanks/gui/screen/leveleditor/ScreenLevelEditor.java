@@ -1696,10 +1696,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (file.exists())
 		{
 			if (!this.level.editable)
-			{
-				return;
-			}
-
+                return;
 			file.delete();
 		}
 

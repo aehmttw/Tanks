@@ -753,6 +753,9 @@ public class Game
 		if (o.update)
 			Game.updateObstacles.add(o);
 
+		if (o instanceof IAvoidObject)
+			IAvoidObject.avoidances.add((IAvoidObject) o);
+
 		if (o.startHeight > 0)
 			return;
 
@@ -1051,6 +1054,9 @@ public class Game
 		Chunk c = Chunk.getChunk(o.posX, o.posY);
         if (c == null)
             return;
+
+		if (o instanceof IAvoidObject)
+			IAvoidObject.avoidances.remove(o);
 
         c.removeObstacleIfEquals(o);
 		c.removeSurfaceIfEquals(o);

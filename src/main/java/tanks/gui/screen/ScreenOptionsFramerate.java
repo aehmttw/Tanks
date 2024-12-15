@@ -145,7 +145,7 @@ public class ScreenOptionsFramerate extends Screen
         if (Game.vsync)
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: \u00A7200100000255V-Sync");
         else if (Game.maxFPS > 0)
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: %s", "\u00A7000200000255" + Game.maxFPS);
         else
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: \u00A7000100200255unlimited");
 

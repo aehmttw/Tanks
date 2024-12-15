@@ -144,7 +144,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
             {
                 b = new ButtonObject(t, x, y, 75, 75, () -> pointer.set(new TankReference(t.name)), desc);
 
-                if (desc.equals(""))
+                if (desc.isEmpty())
                     b.enableHover = false;
             }
             else
@@ -185,7 +185,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
     @Override
     public void update()
     {
-        if (copy.hoverTextRaw.equals(""))
+        if (copy.hoverTextRaw.isEmpty())
             copy.setHoverText("Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level. This allows you to modify the---%s independently of the tank---in the level.", this.objName, this.objName);
 
         int pageCount = (this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols);

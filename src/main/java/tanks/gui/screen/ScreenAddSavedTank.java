@@ -45,9 +45,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
     public Button lastTankPage = new Button(this.centerX + 500, this.centerY + this.objYSpace * 3, 40, 40, "", () -> tankPage = (tankButtons.size() - 1) / objectButtonRows / objectButtonCols);
 
     Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
-    {
-        Game.game.fileManager.openFileManager(Game.homedir + Game.tankDir);
-    }, "Open folder in file manager");
+            Game.game.fileManager.openFileManager(Game.homedir + Game.tankDir), "Open folder in file manager");
 
 
     public Button quit = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", new Runnable()
@@ -145,7 +143,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             }
                 , t.description);
 
-            if (t.description.equals(""))
+            if (t.description.isEmpty())
                 b.enableHover = false;
 
             this.tankButtons.add(b);
@@ -225,7 +223,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 count++;
 
                 String desc = t.description;
-                if (!t.description.equals(""))
+                if (!t.description.isEmpty())
                     desc += " \n \n ";
 
                 desc += "\u00A7000255255255Custom tank from this level";
@@ -275,7 +273,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 savedTanks.add(t);
 
                 String desc = t.description;
-                if (!t.description.equals(""))
+                if (!t.description.isEmpty())
                     desc += " \n \n ";
 
                 desc += "\u00A7000255000255Saved custom tank template";

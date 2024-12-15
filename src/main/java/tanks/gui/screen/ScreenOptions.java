@@ -84,9 +84,7 @@ public class ScreenOptions extends Screen
 	Button miscOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
 
 	Button openFolder = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Open game folder", () ->
-	{
-		Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath);
-	});
+            Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath));
 
 
 	@Override

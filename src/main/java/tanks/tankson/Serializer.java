@@ -194,7 +194,7 @@ public final class Serializer {
                 o = new TankReference((String) m.get("tank"));
                 break;
             default:
-                throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
+                throw new RuntimeException("Bad object type: " + m.get("obj_type"));
         }
         for (Field f : o.getClass().getFields()) {
             if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f))) {

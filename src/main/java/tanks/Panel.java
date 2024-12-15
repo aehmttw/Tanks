@@ -822,6 +822,7 @@ public class Panel
 			{
 				Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_K);
 				Function<List<Integer>, List<String>> func = l -> l.stream().map(Game.game.window::getKeyText).collect(Collectors.toList());;
+				System.out.println("Game.screen = " + Game.screen.getClass().getSimpleName());
 				System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
 				System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
 				System.out.println("textPressedKeys: " + func.apply(Game.game.window.textPressedKeys));

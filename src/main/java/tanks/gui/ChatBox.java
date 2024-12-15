@@ -83,7 +83,7 @@ public class ChatBox extends TextBox
 				double mx = Drawing.drawing.getInterfacePointerX(p.x);
 				double my = Drawing.drawing.getInterfacePointerY(p.y);
 
-				if (p.tag.equals(""))
+				if (p.tag.isEmpty())
 				{
 					boolean handled = checkMouse(mx, my, p.valid);
 

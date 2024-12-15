@@ -1289,6 +1289,8 @@ public class Game
 		removeClouds.clear();
 		updateObstacles.clear();
 
+		IAvoidObject.avoidances.clear();
+
 		resetNetworkIDs();
 
 		Game.player.hotbar.coins = 0;

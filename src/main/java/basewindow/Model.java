@@ -376,7 +376,7 @@ public class Model implements IModel, Serializable
 
         for (int n = 0; n < s.length; n++)
         {
-            if (!s[n].equals(""))
+            if (!s[n].isEmpty())
                i[n] = Integer.parseInt(s[n]);
         }
 

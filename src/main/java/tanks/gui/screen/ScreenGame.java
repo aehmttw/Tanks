@@ -1372,7 +1372,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (Game.followingCam)
 			{
-				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 100;
+				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 200;
 				Game.game.window.setCursorLocked(true);
 				this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
 				this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
@@ -1402,6 +1402,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					m.skipNextUpdate = false;
 					continue;
 				}
+
+				if (m instanceof IAvoidObject)
+					IAvoidObject.avoidances.add(((IAvoidObject) m));
 
 				m.update();
 			}
@@ -1729,7 +1732,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.updateMusic(prevMusic);
 
 		for (Movable m : Game.removeMovables)
+		{
 			m.getTouchingChunks().forEach(chunk -> chunk.removeMovable(m));
+
+			if (m instanceof IAvoidObject)
+				IAvoidObject.avoidances.remove(m);
+		}
 
 		Game.movables.removeAll(Game.removeMovables);
 		Game.clouds.removeAll(Game.removeClouds);
@@ -1737,6 +1745,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		for (Obstacle o: Game.removeObstacles)
 		{
+			if (o instanceof IAvoidObject)
+				IAvoidObject.avoidances.remove(o);
+
 			o.removed = true;
 			Drawing.drawing.terrainRenderer.remove(o);
 

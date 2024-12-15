@@ -49,15 +49,11 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
     }
 
     public Button replace = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Replace template", () ->
-    {
-        this.previous.writeTankAndShowConfirmation(tank, true);
-    }
+            this.previous.writeTankAndShowConfirmation(tank, true)
     );
 
     public Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", () ->
-    {
-        Game.screen = this.previous;
-    }
+            Game.screen = this.previous
     );
 
     @Override

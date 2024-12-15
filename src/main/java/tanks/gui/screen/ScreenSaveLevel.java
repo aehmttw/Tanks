@@ -92,7 +92,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            if (levelName.inputText.equals(""))
+            if (levelName.inputText.isEmpty())
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
         }

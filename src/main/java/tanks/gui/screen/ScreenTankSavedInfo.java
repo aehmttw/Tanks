@@ -37,9 +37,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
     public int pageEntries = 10;
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Ok", () ->
-    {
-        Game.screen = this.previous;
-    }
+            Game.screen = this.previous
     );
 
     public ScreenTankSavedInfo(Screen s, Tank tank, ArrayList<Tank> copied, ArrayList<Tank> notCopied)
@@ -98,10 +96,10 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
             this.linkedTanksNotCopied.add(b);
         }
 
-        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () -> { this.copiedPage++; });
-        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () -> { this.copiedPage--; });
-        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage++; });
-        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage--; });
+        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () -> this.copiedPage++);
+        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () -> this.copiedPage--);
+        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () -> this.notCopiedPage++);
+        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () -> this.notCopiedPage--);
 
         this.nextCopiedPage.image = "icons/forward.png";
         this.nextCopiedPage.imageSizeX = 35;
@@ -200,14 +198,10 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.mainButton.draw();
 
         for (int i = Math.min(linkedTanksCopied.size(), (copiedPage + 1) * pageEntries) - 1; i >= copiedPage * pageEntries; i--)
-        {
             this.linkedTanksCopied.get(i).draw();
-        }
 
         for (int i = Math.min(linkedTanksNotCopied.size(), (notCopiedPage + 1) * pageEntries) - 1; i >= notCopiedPage * pageEntries; i--)
-        {
             this.linkedTanksNotCopied.get(i).draw();
-        }
 
         if (prevCopiedPage.enabled || nextCopiedPage.enabled)
         {

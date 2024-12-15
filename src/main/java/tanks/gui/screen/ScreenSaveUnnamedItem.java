@@ -42,9 +42,7 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
 
 
     public Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () ->
-    {
-        Game.screen = this.previous;
-    }
+            Game.screen = this.previous
     );
 
     public boolean writeItem(boolean overwrite)
@@ -119,7 +117,7 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
 
         itemName = new TextBox(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "Item save name", () ->
         {
-            if (itemName.inputText.equals(""))
+            if (itemName.inputText.isEmpty())
                 itemName.inputText = itemName.previousInputText;
             updateSaveButton();
         }

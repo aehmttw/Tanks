@@ -72,7 +72,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
     public Button edit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", () -> Game.screen = new ScreenCrusadeEditor(crusade));
 
-    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", () -> Game.screen = new ScreenConfirmDeleteCrusade((ScreenCrusadeDetails) Game.screen, crusade));
+    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", () -> Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade));
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {

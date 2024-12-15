@@ -52,7 +52,7 @@ public class EventSetMusic extends PersonalEvent
     {
         if (this.clientID == null)
         {
-            if (music.equals(""))
+            if (music.isEmpty())
                 Drawing.drawing.stopMusic();
             else
                 Drawing.drawing.playMusic(music, volume, looped, id, fadeTime);

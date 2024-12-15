@@ -32,7 +32,7 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
 
         levelName = new TextBox(this.centerX, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            if (levelName.inputText.equals(""))
+            if (levelName.inputText.isEmpty())
                 levelName.inputText = levelName.previousInputText;
             updateCloneButton();
         }

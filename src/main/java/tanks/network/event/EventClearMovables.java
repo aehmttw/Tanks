@@ -29,7 +29,7 @@ public class EventClearMovables extends PersonalEvent
         {
             for (Movable m : Game.movables)
             {
-                if (m instanceof Crate && ((((Crate) m).tank instanceof TankRemote && ((TankRemote) ((Crate) m).tank).name.equals("player")) || ((Crate) m).tank instanceof TankPlayerController))
+                if (m instanceof Crate && ((((Crate) m).tank instanceof TankRemote && ((Crate) m).tank.name.equals("player")) || ((Crate) m).tank instanceof TankPlayerController))
                     continue;
 
                 m.destroy = true;

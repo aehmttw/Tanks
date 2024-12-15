@@ -176,9 +176,7 @@ public class LWJGLWindow extends BaseWindow
 		});
 
 		glfwSetCharCallback(window, (window, codepoint) ->
-		{
-			this.inputCodepoints.add((char) codepoint);
-		});
+                this.inputCodepoints.add((char) codepoint));
 
 		glfwSetScrollCallback(window, (window, xoffset, yoffset) ->
 		{

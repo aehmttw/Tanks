@@ -93,6 +93,9 @@ public class Chunk implements Comparable<Chunk>
         HashSet<Chunk> visited = new HashSet<>();
 
         Chunk start = Chunk.getChunk(tileX, tileY, true);
+        if (start == null)
+            return out;
+
         queue.add(start);
 
         while (!queue.isEmpty())

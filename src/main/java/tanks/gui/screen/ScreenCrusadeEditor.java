@@ -179,7 +179,7 @@ public class ScreenCrusadeEditor extends Screen implements ICrusadeShopItemScree
                 try
                 {
                     addItem(new Item.CrusadeShopItem(i));
-                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<Item.CrusadeShopItem>(crusade.crusadeShopItems, crusade.crusadeShopItems.size() - 1, false, this::refreshItems), this);
+                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<>(crusade.crusadeShopItems, crusade.crusadeShopItems.size() - 1, false, this::refreshItems), this);
                     s.onComplete = this::refreshItems;
                     Game.screen = s;
                 }

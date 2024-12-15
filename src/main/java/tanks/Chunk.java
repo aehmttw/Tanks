@@ -289,12 +289,8 @@ public class Chunk implements Comparable<Chunk>
             return;
 
         if (o.type == Obstacle.ObstacleType.extra)
-        {
             t.extraObstacle = o;
-            return;
-        }
-
-        if (o1 != null && o1.type == Obstacle.ObstacleType.ground)
+        else if (o1 != null && o1.type == Obstacle.ObstacleType.ground)
             t.surfaceObstacle = o1;
         t.obstacle = o;
     }
@@ -490,7 +486,7 @@ public class Chunk implements Comparable<Chunk>
 
         int startX = l.startX / chunkSize, startY = l.startY / chunkSize;
         int sX = l.sizeX / chunkSize + 1, sY = l.sizeY / chunkSize + 1;
-        Random r = new Random();
+        Random r = new Random(l.tilesRandomSeed);
 
         for (int x = 0; x < sX; x++)
             for (int y = 0; y < sY; y++)

@@ -55,6 +55,6 @@ public class ArrayListIndexPointer<T> extends Pointer<T>
     @Override
     public <U> Pointer<U> cast()
     {
-        return new ArrayListIndexPointer<U>((ArrayList<U>) arrayList, index, nullable);
+        return new ArrayListIndexPointer<>((ArrayList<U>) arrayList, index, nullable);
     }
 }

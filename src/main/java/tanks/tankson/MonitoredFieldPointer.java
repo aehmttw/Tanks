@@ -28,6 +28,6 @@ public class MonitoredFieldPointer<T> extends FieldPointer<T>
     @Override
     public <U> Pointer<U> cast()
     {
-        return new MonitoredFieldPointer<U>(object, field, nullable, onEdit);
+        return new MonitoredFieldPointer<>(object, field, nullable, onEdit);
     }
 }

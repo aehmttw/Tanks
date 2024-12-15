@@ -828,7 +828,7 @@ public class Game
             return hours % 24 + "h " + mins % 60 + "m";
         if (mins > 0)
             return mins % 60 + "m";
-        return "less than 1m";
+        return seconds ? secs + "s" : "less than 1m";
     }
 
 	public static String formatString(String s)
@@ -1277,9 +1277,9 @@ public class Game
 
 	public static void cleanUp()
 	{
-		Game.currentLevel = null;
 		resetTiles();
 		silentCleanUp();
+		Game.currentLevel = null;
 	}
 
 	public static void silentCleanUp()

@@ -32,6 +32,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             else
                 Game.silentCleanUp();
 
+            Chunk.populateChunks(Game.currentLevel);
             Game.screen = screen;
         }
     });

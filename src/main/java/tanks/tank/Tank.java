@@ -1147,7 +1147,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkHit(owner, source);
 
-		if (this.health > 0 && (int) (this.health + amount) != (int) (this.health))
+		if (this.health > 5 && (int) (this.health + amount) != (int) (this.health))
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
 			e.size = this.size;

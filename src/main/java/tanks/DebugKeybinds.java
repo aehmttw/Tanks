@@ -84,7 +84,7 @@ public class DebugKeybinds
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_K);
-            Function<List<Integer>, List<String>> func = l -> l.stream().map(Game.game.window::getKeyText).collect(Collectors.toList());;
+            Function<List<Integer>, List<String>> func = l -> l.stream().map(Game.game.window::getKeyText).collect(Collectors.toList());
             System.out.println("Game.screen = " + Game.screen.getClass().getSimpleName());
             System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
             System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
@@ -190,11 +190,7 @@ public class DebugKeybinds
         double mx = Game.game.window.absoluteMouseX, my = Game.game.window.absoluteMouseY;
 
         String text;
-        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_P))
-        {
-            text = "(" + (int) Game.game.window.absoluteWidth + ", " + (int) Game.game.window.absoluteHeight + ")";
-        }
-        else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_S))
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_S))
         {
             if (Game.game.window.shift)
                 text = "(" + (int) (mx - Game.screen.getOffsetX()) + ", " + (int) (my - Game.screen.getOffsetY()) + ")  " + Drawing.drawing.interfaceScale + ", " + Drawing.drawing.interfaceScaleZoom;

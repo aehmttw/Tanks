@@ -68,11 +68,7 @@ public class ObstacleBeatBlock extends Obstacle
         this.bulletCollision = on;
         this.tankCollision = on;
 
-        if (Game.currentLevel != null)
-        {
-            Game.currentLevel.synchronizeMusic = true;
-            Game.currentLevel.beatBlocks |= (int) beatFrequency;
-        }
+        addMusic();
 
         if (this.tankCollision != lastOn || firstUpdate)
         {
@@ -93,6 +89,15 @@ public class ObstacleBeatBlock extends Obstacle
         {
             this.allowBounce = true;
             this.shouldClip = false;
+        }
+    }
+
+    public void addMusic()
+    {
+        if (Game.currentLevel != null)
+        {
+            Game.currentLevel.synchronizeMusic = true;
+            Game.currentLevel.beatBlocks |= (int) beatFrequency;
         }
     }
 
@@ -269,6 +274,7 @@ public class ObstacleBeatBlock extends Obstacle
         this.alternate = this.groupID % 2 == 1;
         this.beatFrequency = Math.pow(2, this.groupID / 2);
 
+        this.addMusic();
         this.initialize();
     }
 

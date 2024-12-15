@@ -40,7 +40,7 @@ public class Level
 	public int colorR = 235, colorG = 207, colorB = 166;
 	public int colorVarR = 20, colorVarG = 20, colorVarB = 20;
 
-	public int tilesRandomSeed = 0;
+	public int tilesRandomSeed = new Random().nextInt();
 
 	public double light = 1.0;
 	public double shadow = 0.5;

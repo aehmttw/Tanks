@@ -311,7 +311,7 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public boolean gameObjectSelected()
     {
-        if (editor.currentMode != ScreenLevelEditor.EditorMode.build)   // no buildMode variable
+        if (editor.currentMode != ScreenLevelEditor.EditorMode.build)
             return false;
 
         if (gameObject instanceof Obstacle)

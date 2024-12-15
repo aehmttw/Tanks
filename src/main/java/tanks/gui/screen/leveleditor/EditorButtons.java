@@ -252,6 +252,7 @@ public class EditorButtons
             this.baseImageSX = imageSX;
             this.baseImageSY = imageSY;
             this.fullInfo = true;
+            this.disabledClick = true;
 
             this.keybind = keybind;
             this.disabledFunc = disabledFunc;
@@ -422,7 +423,7 @@ public class EditorButtons
                 initOption();
             }
 
-            if (this.enabled)
+            if (this.enabled || disabledClick)
                 super.onClick();
 
             Game.game.window.pressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -431,7 +432,7 @@ public class EditorButtons
         @Override
         public void updateKeybind()
         {
-            if (!this.enabled && keybind != null && keybind.isValid() && subButtonsAsOptions)
+            if (!(this.enabled || disabledClick) && keybind != null && keybind.isValid() && subButtonsAsOptions)
             {
                 if (option != 0)
                 {

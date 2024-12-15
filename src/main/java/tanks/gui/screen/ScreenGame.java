@@ -1372,7 +1372,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (Game.followingCam)
 			{
-				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 200;
+				Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 150;
 				Game.game.window.setCursorLocked(true);
 				this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
 				this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
@@ -1409,6 +1409,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				m.update();
 			}
 
+			Game.currentLevel.beatBlocks = 0;
+			Game.currentLevel.synchronizeMusic = false;
 			for (Obstacle o : Game.updateObstacles)
                 o.update();
 
@@ -1663,9 +1665,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 										Game.eventsOut.add(new EventShowCrusadeStats());
 
 									for (int i = 0; i < Game.players.size(); i++)
-									{
-										Game.eventsOut.add(new EventUpdateRemainingLives(Game.players.get(i)));
-									}
+                                        Game.eventsOut.add(new EventUpdateRemainingLives(Game.players.get(i)));
 								}
 								else
 									Game.exitToInterlevel();
@@ -1743,31 +1743,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Game.clouds.removeAll(Game.removeClouds);
 		ModAPI.menuGroup.removeAll(ModAPI.removeMenus);
 
-		for (Obstacle o: Game.removeObstacles)
-		{
-			if (o instanceof IAvoidObject)
-				IAvoidObject.avoidances.remove(o);
-
-			o.removed = true;
-			Drawing.drawing.terrainRenderer.remove(o);
-
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-			{
-				if (Game.enable3d)
-					Game.redrawGroundTiles.add(new Game.GroundTile(x, y));
-
-				Game.removeObstacle(o);
-				Game.removeSurfaceObstacle(o);
-			}
-
-			for (Obstacle o1 : o.getNeighbors())
-				o1.onNeighborUpdate();
-
-			Game.obstacles.remove(o);
-		}
+		handleRemoveObstacles();
 
 		for (Effect e: Game.removeEffects)
 		{
@@ -1793,7 +1769,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 
 		Game.removeMovables.clear();
-		Game.removeObstacles.clear();
 		Game.removeEffects.clear();
 		Game.removeTracks.clear();
 		Game.removeClouds.clear();
@@ -1803,6 +1778,40 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			this.tutorial.update();
 		}
+	}
+
+	public static void handleRemoveObstacles()
+	{
+		for (Obstacle o: Game.removeObstacles)
+		{
+			if (o instanceof IAvoidObject)
+				IAvoidObject.avoidances.remove(o);
+
+			o.removed = true;
+			Drawing.drawing.terrainRenderer.remove(o);
+
+			if (o.update)
+				Game.updateObstacles.remove(o);
+
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			{
+				if (Game.enable3d)
+					Game.redrawGroundTiles.add(new Game.GroundTile(x, y));
+
+				Game.removeObstacle(o);
+				Game.removeSurfaceObstacle(o);
+			}
+
+			for (Obstacle o1 : o.getNeighbors())
+				o1.onNeighborUpdate();
+
+			Game.obstacles.remove(o);
+		}
+
+		Game.removeObstacles.clear();
 	}
 
 	public void updateMusic(String prevMusic)
@@ -2692,7 +2701,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							x + Game.tile_size * 0.5 * bx[side],
 							y + Game.tile_size * 0.5 * by[side], -Game.tile_size,
 							sizeX + Game.tile_size * bsx[side],
-							sizeY + Game.tile_size * bsy[side], Game.tile_size * 2, (byte) 1);
+							sizeY + Game.tile_size * bsy[side], Obstacle.draw_size * 2, (byte) 1);
 				}
 			}
 		}

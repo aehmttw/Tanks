@@ -187,6 +187,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 {
                     editor.mouseTank = Game.registryTank.getEntry(j).getTank(0, 0, editor.mouseTank.angle);
                     editor.mouseTank.selectors = t.selectors;
+                    editor.mouseTank.forAllSelectors(s -> s.editor = editor);
                 }
                 else
                     editor.mouseTank = ((TankAIControlled) t).instantiate(t.name, 0, 0, 0);

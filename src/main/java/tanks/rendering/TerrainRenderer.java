@@ -582,6 +582,10 @@ public class TerrainRenderer
             Game.redrawGroundTiles.clear();
         }
 
+        ScreenGame g = ScreenGame.getInstance();
+        if (g != null)
+            g.drawBorders();
+
         age += Panel.frameFrequency;
 
         double width = (Game.game.window.absoluteWidth / Drawing.drawing.unzoomedScale / Game.tile_size);
@@ -777,10 +781,6 @@ public class TerrainRenderer
 
         stagedCount = x * Game.currentSizeY;
         bgStaged = x >= Game.currentSizeX;
-
-        ScreenGame g = ScreenGame.getInstance();
-        if (g != null)
-            g.drawBorders();
 
         Obstacle.draw_size = s;
     }

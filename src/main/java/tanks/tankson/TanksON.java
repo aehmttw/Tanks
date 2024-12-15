@@ -238,7 +238,7 @@ public class TanksON
             StringBuilder s = new StringBuilder("{");
             HashMap<?, ?> h = ((HashMap<?, ?>) o);
 
-            ArrayList<String> keys = new ArrayList<String>((Collection<? extends String>) h.keySet());
+            ArrayList<String> keys = new ArrayList<>((Collection<? extends String>) h.keySet());
             if (keys.remove("name"))
                 keys.add(0, "name");
 

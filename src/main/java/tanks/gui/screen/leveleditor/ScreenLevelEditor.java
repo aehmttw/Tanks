@@ -1554,6 +1554,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (o.type == Obstacle.ObstacleType.ground)
 				o.startHeight = -1;
 
+			if (o.type == Obstacle.ObstacleType.extra)
+				o.startHeight = -2;
+
 			int x = (int) (o.posX / 50);
 			int y = (int) (o.posY / 50);
 

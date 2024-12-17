@@ -249,6 +249,12 @@ public class Game
 	public static Level currentLevel = null;
 	public static String currentLevelString = "";
 
+	/** 0: Birds-eye<br>
+	 * 1: Angled<br>
+	 * 2: Third person<br>
+	 * 3: First person */
+	public static int perspectiveID = 0;
+
 	public static LevelGenerator lastGenerator = null;
 
 	public static ChatFilter chatFilter = new ChatFilter();

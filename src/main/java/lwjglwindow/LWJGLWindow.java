@@ -28,7 +28,6 @@ import java.util.Scanner;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -177,9 +176,7 @@ public class LWJGLWindow extends BaseWindow
 		});
 
 		glfwSetCharCallback(window, (window, codepoint) ->
-		{
-			this.inputCodepoints.add((char) codepoint);
-		});
+                this.inputCodepoints.add((char) codepoint));
 
 		glfwSetScrollCallback(window, (window, xoffset, yoffset) ->
 		{

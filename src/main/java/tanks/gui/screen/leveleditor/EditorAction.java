@@ -29,10 +29,7 @@ public abstract class EditorAction
         public void undo()
         {
             if (!add)
-            {
                 Game.addObstacle(this.obstacle);
-                this.obstacle.removed = false;
-            }
             else
                 Game.removeObstacles.add(this.obstacle);
         }
@@ -193,14 +190,12 @@ public abstract class EditorAction
         }
     }
 
-    public static class ActionChangeHeight extends EditorAction
+    public static class ActionChangeMeta extends EditorAction
     {
         public ScreenLevelEditor editor;
         public int add;
-        public ArrayList<Integer> x;
-        public ArrayList<Integer> y;
 
-        public ActionChangeHeight(ScreenLevelEditor editor, int add)
+        public ActionChangeMeta(ScreenLevelEditor editor, int add)
         {
             this.editor = editor;
             this.add = add;
@@ -209,13 +204,13 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            editor.adjustSelectionHeight(-add);
+            editor.changeMetadata(-add);
         }
 
         @Override
         public void redo()
         {
-            editor.adjustSelectionHeight(add);
+            editor.changeMetadata(add);
         }
     }
 

@@ -3,12 +3,9 @@ package tanks.tankson;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemEmpty;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -197,7 +194,7 @@ public final class Serializer {
                 o = new TankReference((String) m.get("tank"));
                 break;
             default:
-                throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
+                throw new RuntimeException("Bad object type: " + m.get("obj_type"));
         }
         for (Field f : o.getClass().getFields()) {
             if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f))) {

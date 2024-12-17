@@ -96,7 +96,7 @@ public class EventAddButton extends PersonalEvent
             }, hover);
 
             b.enabled = this.enabled;
-            b.enableHover = !this.hover.equals("");
+            b.enableHover = !this.hover.isEmpty();
 
             b.posX -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeX * (xAlignment + 1) / 2.0;
             b.posY -= (Drawing.drawing.interfaceScaleZoom - 1) * Drawing.drawing.interfaceSizeY * (yAlignment + 1) / 2.0;

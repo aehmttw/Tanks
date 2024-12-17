@@ -124,6 +124,11 @@ public abstract class LevelEditorSelector<T extends GameObject>
             Object sel = getPropertyBase();
             Object obj = getObjectProp();
 
+            if (sel instanceof Number)      // nice one java
+                sel = ((Number) sel).doubleValue();
+            if (obj instanceof Number)
+                obj = ((Number) obj).doubleValue();
+
             if (!Objects.equals(sel, prevObject))
             {
                 if (objPropField.getType() == int.class && sel instanceof Double)
@@ -177,22 +182,22 @@ public abstract class LevelEditorSelector<T extends GameObject>
     {
         changeMetadata(add);
         update();
-        this.editor.selectors.put(this.id, this);
+        ScreenLevelEditor.selectors.put(this.id, this);
     }
 
     public void load() {}
 
-    /** Sets this selector's metadata to <code>s</code>'s metadata. */
-    public void cloneProperties(LevelEditorSelector<T> s)
+    /** Sets this selector's metadata to <code>cloneFrom</code>'s metadata. */
+    public void cloneProperties(LevelEditorSelector<T> cloneFrom)
     {
-        if (this == s)
+        if (this == cloneFrom)
             return;     // weirdest bug ever
 
-        if (s.editor != null)
-            this.editor = s.editor;
+        if (cloneFrom.editor != null)
+            this.editor = cloneFrom.editor;
 
-        if (s.objectMenu != null)
-            this.objectMenu = s.objectMenu;
+        if (cloneFrom.objectMenu != null)
+            this.objectMenu = cloneFrom.objectMenu;
 
         if (!this.init)
             this.baseInit();
@@ -201,8 +206,8 @@ public abstract class LevelEditorSelector<T extends GameObject>
             this.button = getButton();
         this.modified = true;
 
-        s.update();
-        this.setMetadata(s.getMetadata());
+        cloneFrom.update();
+        this.setMetadata(cloneFrom.getMetadata());
         this.update();
     }
 
@@ -306,12 +311,12 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public boolean gameObjectSelected()
     {
-        if (editor.currentMode != ScreenLevelEditor.EditorMode.build)   // no buildMode variable
+        if (editor.currentMode != ScreenLevelEditor.EditorMode.build)
             return false;
 
         if (gameObject instanceof Obstacle)
-            return this.editor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle && editor.mouseObstacle.getSelector(this.id) != null;
-        return this.editor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle && editor.mouseTank.getSelector(this.id) != null;
+            return ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle && editor.mouseObstacle.getSelector(this.id) != null;
+        return ScreenLevelEditor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle && editor.mouseTank.getSelector(this.id) != null;
     }
 
     public ArrayList<EditorButton> getLocation(Position p)

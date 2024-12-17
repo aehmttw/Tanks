@@ -32,6 +32,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             else
                 Game.silentCleanUp();
 
+            Chunk.populateChunks(Game.currentLevel);
             Game.screen = screen;
         }
     });
@@ -92,7 +93,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 150, this.objWidth, this.objHeight, "Level save name", () ->
         {
-            if (levelName.inputText.equals(""))
+            if (levelName.inputText.isEmpty())
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
         }
@@ -118,9 +119,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         if (!this.downloaded)
             this.levelName.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

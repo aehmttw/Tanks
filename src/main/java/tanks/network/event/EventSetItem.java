@@ -96,7 +96,7 @@ public class EventSetItem extends PersonalEvent
         if (this.clientID == null && this.playerID.equals(Game.clientID))
         {
             ItemRemote i = new ItemRemote();
-            i.icon = this.texture.equals("") ? null : this.texture;
+            i.icon = this.texture.isEmpty() ? null : this.texture;
             i.name = this.name;
             i.bounces = this.bounces;
 

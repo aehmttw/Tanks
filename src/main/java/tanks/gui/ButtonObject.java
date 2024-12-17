@@ -75,7 +75,7 @@ public class ButtonObject extends Button
 		if (object instanceof Obstacle)
 		{
 			drawing.setColor(127, 127, 127);
-			Drawing.drawing.fillGlow(posX, posY, Game.tile_size * 3, Game.tile_size * 3);
+			Drawing.drawing.fillInterfaceGlow(posX, posY, Game.tile_size * 3, Game.tile_size * 3);
 		}
 		
 		this.object.drawForInterface(this.posX, this.posY);

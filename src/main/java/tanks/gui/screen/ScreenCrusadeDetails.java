@@ -72,7 +72,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
     public Button edit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", () -> Game.screen = new ScreenCrusadeEditor(crusade));
 
-    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", () -> Game.screen = new ScreenConfirmDeleteCrusade((ScreenCrusadeDetails) Game.screen, crusade));
+    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", () -> Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade));
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {
@@ -250,7 +250,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
         if (Game.previewCrusades)
         {
-            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.setColor(0, 0, 0, 115);
             Drawing.drawing.drawPopup(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * 0.7, this.objYSpace * sizeY);
             Drawing.drawing.setColor(255, 255, 255);
         }

@@ -81,7 +81,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		String ls = Game.currentLevelString;
 
 		StringBuilder tanks = new StringBuilder("\ntanks\n");
-		if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
+		if (Crusade.crusadeMode && !Crusade.currentCrusade.customTanks.isEmpty())
 		{
 			for (TankAIControlled t: Crusade.currentCrusade.customTanks)
 				tanks.append(t.toString()).append("\n");
@@ -172,7 +172,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			f.startWriting();
 			f.println("Certificate of completion:");
 			f.println("Tanks: The Crusades tutorial");
-			f.println("Completed " + new Date().toString());
+			f.println("Completed " + new Date());
 			f.stopWriting();
 		}
 		catch (Exception e)
@@ -311,8 +311,6 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			if (!(Crusade.crusadeMode && Crusade.currentCrusade.replay))
 				quitCrusade.posY -= this.objYSpace / 2;
 		}
-
-
 
 		if (Crusade.crusadeMode)
 			if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)

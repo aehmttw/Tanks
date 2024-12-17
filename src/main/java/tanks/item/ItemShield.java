@@ -1,6 +1,7 @@
 package tanks.item;
 
 import tanks.*;
+import tanks.bullet.BulletPropertyCategory;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.tank.Tank;
 import tanks.tankson.Property;
@@ -14,6 +15,9 @@ public class ItemShield extends Item
 
     @Property(id = "max_extra_health", name = "Max extra hitpoints", desc = "This item will not heal a tank to more than its default hitpoints plus 'max extra hitpoints' \n \n The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double max;
+
+    @Property(id = "sound_volume", minValue = 0.0, maxValue = 1.0, name = "Sound volume", desc = "Volume of the shield sound, \n percentage out of 1")
+    public double soundVolume = 1;
 
     public ItemShield()
     {
@@ -44,7 +48,7 @@ public class ItemShield extends Item
 
             Game.eventsOut.add(new EventTankUpdateHealth(t));
 
-            Drawing.drawing.playGlobalSound("shield.ogg");
+            Drawing.drawing.playGlobalSound("shield.ogg", 1, (float) item.soundVolume);
 
             if (t.health > 6 && (int) (t.health - this.item.amount) != (int) (t.health))
             {

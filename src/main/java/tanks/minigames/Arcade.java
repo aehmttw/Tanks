@@ -348,7 +348,7 @@ public class Arcade extends Minigame
 
             }
 
-            if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / (waveTriggerCount / 3)) + waveTriggerCount && alivePlayers.size() > 0 && timer > 0)
+            if (this.spawnedTanks.size() <= (Math.min(this.chain, max_power * 6) / (waveTriggerCount / 3)) + waveTriggerCount && !alivePlayers.isEmpty() && timer > 0)
             {
                 int count = (int) ((this.random.nextDouble() * this.waveSize + this.waveSize));
                 for (int i = 0; i < count; i++)
@@ -374,7 +374,7 @@ public class Arcade extends Minigame
 
             if (alivePlayers.size() <= 0 && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
             {
-                Game.eventsOut.add(new EventArcadeClearMovables());
+                Game.eventsOut.add(new EventClearMovables());
 
                 for (Movable m : Game.movables)
                 {
@@ -466,7 +466,7 @@ public class Arcade extends Minigame
         playerDeathTimes.remove(p);
 
         int r;
-        if (this.availablePlayerSpawns.size() > 0)
+        if (!this.availablePlayerSpawns.isEmpty())
             r = this.availablePlayerSpawns.remove((int) (this.random.nextDouble() * this.availablePlayerSpawns.size()));
         else
             r = (int) (this.playerSpawnsX.size() * this.random.nextDouble());
@@ -642,7 +642,7 @@ public class Arcade extends Minigame
             else if (other)
                 y += Game.currentSizeY - 4;
 
-            if (!Game.game.solidGrid[x][y])
+            if (!Game.isSolid(x, y))
             {
                 found = true;
 

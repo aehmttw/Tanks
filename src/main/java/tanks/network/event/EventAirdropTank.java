@@ -39,7 +39,7 @@ public class EventAirdropTank extends EventTankCreate
         if (this.clientID == null)
         {
             Tank t = Game.registryTank.getEntry(this.type).getTank(this.posX, this.posY, this.angle);
-            Team tm = (Team) Game.currentLevel.teamsMap.get(this.team);
+            Team tm = Game.currentLevel.teamsMap.get(this.team);
             if (this.team.equals("**"))
             {
                 tm = Game.enemyTeam;

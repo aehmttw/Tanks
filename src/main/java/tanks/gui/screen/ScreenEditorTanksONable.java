@@ -185,7 +185,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
         public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", () -> page--);
 
-        public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", () -> {screen.setTab(screen.currentTab.parent);});
+        public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", () -> screen.setTab(screen.currentTab.parent));
 
         public Tab(ScreenEditorTanksONable<T> screen, String name, String category)
         {
@@ -366,7 +366,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
-                        if (t.inputText.length() == 0)
+                        if (t.inputText.isEmpty())
                             t.inputText = f.get(target) + "";
                         else
                             f.set(target, (int) Double.parseDouble(t.inputText));
@@ -380,7 +380,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 };
 
                 t.hoverText = formatDescription(p.desc());
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.maxChars = 11;
                 t.allowLetters = false;
                 t.allowSpaces = false;
@@ -401,7 +401,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
-                        if (t.inputText.length() == 0)
+                        if (t.inputText.isEmpty())
                             t.inputText = f.get(target) + "";
                         else
                             f.set(target, Double.parseDouble(t.inputText));
@@ -422,7 +422,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 };
 
                 t.hoverText = formatDescription(p.desc());
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.allowDoubles = true;
                 t.allowLetters = false;
                 t.allowSpaces = false;
@@ -466,7 +466,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p.desc());
                 t.images = emblems;
                 t.imageR = 127;
@@ -501,7 +501,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p.desc());
                 return t;
             }
@@ -564,7 +564,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 };
 
                 t.hoverText = formatDescription(p.desc());
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
 
                 if (p.miscType() == Property.MiscType.complexString)
                 {
@@ -598,7 +598,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 };
                 t.optionText = (boolean) f.get(target) ? "Yes" : "No";
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p.desc());
                 return t;
             }
@@ -629,7 +629,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p.desc());
                 return t;
             }
@@ -678,7 +678,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 };
 
-                t.enableHover = !p.desc().equals("");
+                t.enableHover = !p.desc().isEmpty();
                 t.hoverText = formatDescription(p.desc());
                 t.models = models;
 
@@ -776,7 +776,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         s.optionText = "";
                 }
 
-                s.enableHover = !p.desc().equals("");
+                s.enableHover = !p.desc().isEmpty();
                 s.hoverText = formatDescription(p.desc());
 
                 return s;
@@ -838,7 +838,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     b.optionText = Game.formatString(o.getName());
             });
         };
-        b.enableHover = !desc.equals("");
+        b.enableHover = !desc.isEmpty();
         b.hoverText = formatDescription(desc);
 
         if (Tank.class.isAssignableFrom(p.getType()))
@@ -882,7 +882,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, "Spawn weight", () -> {}, e.weight + "", "Bigger numbers relative to---other spawned tanks increase---the likelihood of this tank---being spawned");
         t.function = () ->
         {
-            if (t.inputText.length() == 0)
+            if (t.inputText.isEmpty())
                 t.inputText = e.weight + "";
             else
                 e.weight = Double.parseDouble(t.inputText);

@@ -5,7 +5,6 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 
 public class EventTankMimicLaser extends PersonalEvent implements IStackableEvent
 {

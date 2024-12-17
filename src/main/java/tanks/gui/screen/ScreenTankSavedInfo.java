@@ -37,9 +37,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
     public int pageEntries = 10;
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Ok", () ->
-    {
-        Game.screen = this.previous;
-    }
+            Game.screen = this.previous
     );
 
     public ScreenTankSavedInfo(Screen s, Tank tank, ArrayList<Tank> copied, ArrayList<Tank> notCopied)
@@ -50,9 +48,9 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
         double cY = this.centerY + 40;
 
-        if (copied.size() == 0)
+        if (copied.isEmpty())
         {
-            if (notCopied.size() == 0)
+            if (notCopied.isEmpty())
                 row1Y = cY;
             else
             {
@@ -62,7 +60,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         }
         else
         {
-            if (notCopied.size() == 0)
+            if (notCopied.isEmpty())
             {
                 row1Y = cY - rowSpacing / 2;
                 row2Y = cY + rowSpacing / 2;
@@ -98,10 +96,10 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
             this.linkedTanksNotCopied.add(b);
         }
 
-        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () -> { this.copiedPage++; });
-        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () -> { this.copiedPage--; });
-        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage++; });
-        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage--; });
+        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () -> this.copiedPage++);
+        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () -> this.copiedPage--);
+        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () -> this.notCopiedPage++);
+        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () -> this.notCopiedPage--);
 
         this.nextCopiedPage.image = "icons/forward.png";
         this.nextCopiedPage.imageSizeX = 35;
@@ -180,18 +178,18 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
         if (this.copiedToTemplate)
         {
-            if (this.linkedTanksCopied.size() > 0)
+            if (!this.linkedTanksCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row2Y - 80, "Tanks referenced by this tank also saved to templates");
 
-            if (this.linkedTanksNotCopied.size() > 0)
+            if (!this.linkedTanksNotCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row3Y - 80, "Tanks referenced by this tank already present in templates");
         }
         else
         {
-            if (this.linkedTanksCopied.size() > 0)
+            if (!this.linkedTanksCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row2Y - 80, "Tank templates referenced by this tank also added to level");
 
-            if (this.linkedTanksNotCopied.size() > 0)
+            if (!this.linkedTanksNotCopied.isEmpty())
                 Drawing.drawing.displayInterfaceText(this.centerX, row3Y - 80, "Tank templates referenced by this tank already present in level");
         }
 
@@ -200,14 +198,10 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.mainButton.draw();
 
         for (int i = Math.min(linkedTanksCopied.size(), (copiedPage + 1) * pageEntries) - 1; i >= copiedPage * pageEntries; i--)
-        {
             this.linkedTanksCopied.get(i).draw();
-        }
 
         for (int i = Math.min(linkedTanksNotCopied.size(), (notCopiedPage + 1) * pageEntries) - 1; i >= notCopiedPage * pageEntries; i--)
-        {
             this.linkedTanksNotCopied.get(i).draw();
-        }
 
         if (prevCopiedPage.enabled || nextCopiedPage.enabled)
         {

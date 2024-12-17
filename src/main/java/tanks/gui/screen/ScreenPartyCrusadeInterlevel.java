@@ -111,7 +111,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         String ls = Game.currentLevelString;
 
         StringBuilder tanks = new StringBuilder("\ntanks\n");
-        if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
+        if (Crusade.crusadeMode && !Crusade.currentCrusade.customTanks.isEmpty())
         {
             for (TankAIControlled t: Crusade.currentCrusade.customTanks)
                 tanks.append(t.toString()).append("\n");

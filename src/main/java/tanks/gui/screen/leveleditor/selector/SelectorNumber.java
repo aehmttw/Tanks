@@ -70,6 +70,6 @@ public class SelectorNumber extends MetadataSelector
 
     public String numberString(GameObject o)
     {
-        return String.format(format, ((Number) this.getMetadata(o)).doubleValue(), Locale.ROOT);
+        return String.format(Locale.ROOT, format, ((Number) this.getMetadata(o)).doubleValue());
     }
 }

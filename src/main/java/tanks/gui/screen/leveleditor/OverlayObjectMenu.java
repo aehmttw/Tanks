@@ -268,7 +268,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
             if (!s1.metadataProperty.image().isEmpty())
             {
-                this.primaryMetadataButton.image = "/icons/" + s1.metadataProperty.image();
+                this.primaryMetadataButton.image = "icons/" + s1.metadataProperty.image();
                 this.primaryMetadataButton.imageXOffset = -this.objWidth / 2 + objHeight / 2;
                 this.primaryMetadataButton.imageSizeX = this.objHeight * 0.8;
                 this.primaryMetadataButton.imageSizeY = this.objHeight * 0.8;
@@ -288,7 +288,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
             if (!s2.metadataProperty.image().isEmpty())
             {
-                this.secondaryMetadataButton.image = "/icons/" + s2.metadataProperty.image();
+                this.secondaryMetadataButton.image = "icons/" + s2.metadataProperty.image();
                 this.secondaryMetadataButton.imageXOffset = -this.objWidth / 2 + objHeight / 2;
                 this.secondaryMetadataButton.imageSizeX = this.objHeight * 0.8;
                 this.secondaryMetadataButton.imageSizeY = this.objHeight * 0.8;

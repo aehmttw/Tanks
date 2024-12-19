@@ -530,6 +530,7 @@ public class Game
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 		registerObstacle(ObstacleBeatBlock.class, "beat");
+		registerObstacle(ObstacleColor.class, "paint");
 //		registerObstacle(ObstacleText.class, "text");
 
 		registerTank(TankDummy.class, "dummy", 0);

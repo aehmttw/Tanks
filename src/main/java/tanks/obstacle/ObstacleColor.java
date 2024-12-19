@@ -27,7 +27,6 @@ public class ObstacleColor extends Obstacle
         this.tankCollision = false;
         this.bulletCollision = false;
         this.checkForObjects = true;
-        this.enableStacking = false;
 
         this.type = ObstacleType.ground;
         this.update = true;
@@ -48,6 +47,12 @@ public class ObstacleColor extends Obstacle
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
             Drawing.drawing.fillRect(this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
         }
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+
     }
 
     @Override
@@ -84,6 +89,22 @@ public class ObstacleColor extends Obstacle
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
             Drawing.drawing.fillBox(o, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, d * (1 - frac) + extra, (byte) 61);
         }
+    }
+
+    @Override
+    public String getMetadata()
+    {
+        return this.colorR + "-" + this.colorG + "-" + this.colorB + "-" + this.colorA;
+    }
+
+    @Override
+    public void setMetadata(String meta)
+    {
+        String[] metadata = meta.split("-");
+        this.colorR = Double.parseDouble(metadata[0]);
+        this.colorG = Double.parseDouble(metadata[1]);
+        this.colorB = Double.parseDouble(metadata[2]);
+        this.colorA = Double.parseDouble(metadata[3]);
     }
 
     public double getTileHeight()

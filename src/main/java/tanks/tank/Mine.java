@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @TanksONable("mine")
-public class Mine extends Movable implements IAvoidObject, IDrawableLightSource, ICopyable<Mine>, ITanksONEditable
+public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITanksONEditable
 {
     public static double mine_size = 30;
     public static double mine_radius = Game.tile_size * 2.25;
@@ -316,23 +316,6 @@ public class Mine extends Movable implements IAvoidObject, IDrawableLightSource,
         Game.game.window.shapeRenderer.setBatchMode(false, true, false);
 
         Drawing.drawing.setColor(r, g, b, a);
-    }
-
-    @Override
-    public boolean lit()
-    {
-        return Game.fancyLights;
-    }
-
-    @Override
-    public double[] getLightInfo()
-    {
-        this.lightInfo[3] = 2;
-
-        this.lightInfo[4] = this.outlineColorR;
-        this.lightInfo[5] = this.outlineColorG;
-        this.lightInfo[6] = this.outlineColorB;
-        return this.lightInfo;
     }
 
     @Override

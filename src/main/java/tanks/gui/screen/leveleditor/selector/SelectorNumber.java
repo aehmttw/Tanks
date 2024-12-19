@@ -3,11 +3,15 @@ package tanks.gui.screen.leveleditor.selector;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectNumber;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
-public class SelectorNumber<T extends GameObject> extends LevelEditorSelector<T>
+public class SelectorNumber extends MetadataSelector
 {
+    public static final String selector_name = "number";
+
     public String format = "%.1f";
 
     /** Interval: [min, max). Just like <code>for</code> loops. */
@@ -17,68 +21,55 @@ public class SelectorNumber<T extends GameObject> extends LevelEditorSelector<T>
 
     /** When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
      * or the maximum value if it is below the minimum value. */
-    public boolean loop = false;
+    public boolean wrap = false;
 
     /** When inputted from a text box, rounds it to the nearest number divisible to <code>step</code>. */
     public boolean forceStep = true;
     public boolean allowDecimals = false;
-    public double number;
 
-    @Override
-    public void baseInit()
+    public SelectorNumber(Field f)
     {
-        if (this.init)
-            return;
-
-        this.id = "number";
-        this.title = "Number Selector";
-
-        super.baseInit();
-        this.property = "number";
-        this.number = Math.max(this.min, Math.min(this.max, this.number));
+        super(f);
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor editor)
     {
         Game.screen = new OverlaySelectNumber(Game.screen, editor, this);
     }
 
-    public static final Locale US_LOCALE = new Locale("en", "US");
-
-    public String numberString()
+    @Override
+    public void changeMetadata(ScreenLevelEditor e, GameObject o, int add)
     {
-        return String.format(US_LOCALE, format, number);   // bruh
-    }
+        double number = ((Number) this.getMetadata(o)).doubleValue() + add * step;
 
-    public void changeMetadata(int add)
-    {
-        this.number += add * step;
-
-        if (loop)
+        if (wrap)
         {
-            this.number = (this.number + this.max) % this.max;
+            number = (number + this.max) % this.max;
 
-            if (this.number < this.min)
-                this.number += this.min;
+            if (number < this.min)
+                number += this.min;
         }
         else
-            this.number = Math.max(this.min, Math.min(this.max, this.number));
+            number = Math.max(this.min, Math.min(this.max, number));
+
+        if (this.metadataField.getType().equals(int.class))
+            this.setMetadata(e, o, (int) number);
+        else
+            this.setMetadata(e, o, number);
     }
 
     @Override
-    public void load()
+    public void setMetadata(ScreenLevelEditor ed, GameObject o, Object value)
     {
-        this.button.setText(buttonText, number);
+        if (this.metadataField.getType().equals(int.class))
+            super.setMetadata(ed, o, ((Number) value).intValue());
+        else
+            super.setMetadata(ed, o, value);
     }
 
-    public String getMetadata()
+    public String numberString(GameObject o)
     {
-        return numberString();
-    }
-
-    public void setMetadata(String d)
-    {
-        this.number = Double.parseDouble(d);
+        return String.format(format, ((Number) this.getMetadata(o)).doubleValue(), Locale.ROOT);
     }
 }

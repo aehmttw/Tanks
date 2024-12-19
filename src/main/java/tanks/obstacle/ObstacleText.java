@@ -3,7 +3,6 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.leveleditor.selector.SelectorText;
 
 public class ObstacleText extends Obstacle
 {
@@ -26,7 +25,6 @@ public class ObstacleText extends Obstacle
 		this.colorG = 0;
 		this.colorB = 0;
 		this.colorA = 0;
-		this.enableStacking = false;
 		this.batchDraw = false;
 		this.type = ObstacleType.extra;
 
@@ -62,16 +60,9 @@ public class ObstacleText extends Obstacle
 	}
 
 	@Override
-	public void registerSelectors()
+	public void draw3dOutline(double r, double g, double b, double a)
 	{
-		SelectorText<ObstacleText> sel = new SelectorText<>();
-		sel.id = "text_obstacle";
-		sel.title = "Text";
-		sel.objectProperty = "text";
-		sel.keybind = Game.game.input.editorTeam;
-		sel.buttonText = "Choose Text";
-		sel.image = "text.png";
-		this.registerSelector(sel);
+
 	}
 
 	public double getTileHeight()

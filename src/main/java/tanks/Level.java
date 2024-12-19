@@ -3,6 +3,7 @@ package tanks;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
@@ -335,11 +336,30 @@ public class Level
 
 			if (!enableTeams)
 			{
-				this.teamsList.add(Game.playerTeam);
-				this.teamsList.add(Game.enemyTeam);
+				enableTeams = true;
+
+				Team player = new Team(Game.playerTeam.name);
+				Team enemy = new Team(Game.enemyTeam.name);
+
+				for (Movable m: Game.movables)
+				{
+					if (m.team == Game.playerTeam)
+						m.team = player;
+					else if (m.team == Game.enemyTeam)
+						m.team = enemy;
+				}
+
+				this.teamsList.add(enemy);
+				this.teamsList.add(player);
 			}
 
 			s.teams = this.teamsList;
+			if (s.teams.size() > 0)
+			{
+				s.currentMetadata.put(SelectorTeam.selector_name, s.teams.get(0));
+				s.currentMetadata.put(SelectorTeam.player_selector_name, s.teams.get(Math.min(s.teams.size() - 1, 1)));
+			}
+
 		}
 
 		this.reloadTiles();
@@ -387,7 +407,6 @@ public class Level
                     for (double y = startY; y <= endY; y++)
                     {
                         Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
-                        o.initSelectors(sc instanceof ScreenLevelEditor ? (ScreenLevelEditor) sc : null);
 
                         if (meta != null)
                             o.setMetadata(meta);
@@ -505,7 +524,6 @@ public class Level
                 else
                     t = Game.registryTank.getEntry(type).getTank(x, y, angle);
 
-                t.initSelectors(sc instanceof ScreenLevelEditor ? (ScreenLevelEditor) sc : null);
                 t.crusadeID = currentCrusadeID;
                 currentCrusadeID++;
 
@@ -682,8 +700,6 @@ public class Level
 			{
 				TankSpawnMarker t = new TankSpawnMarker("player", this.playerSpawnsX.get(i), this.playerSpawnsY.get(i), this.playerSpawnsAngle.get(i));
 				t.team = this.playerSpawnsTeam.get(i);
-				t.initSelectors(sc instanceof ScreenLevelEditor ? (ScreenLevelEditor) sc : null);
-				t.copySelectorBase();
 				Game.movables.add(t);
 
 				if (sc != null)

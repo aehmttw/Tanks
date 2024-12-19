@@ -77,7 +77,7 @@ public class EditorButtons
                     if (editor.showControls || slideAnimation)
                         b.update();
 
-                    if (b.keybind.isValid())
+                    if (b.keybind != null && b.keybind.isValid())
                     {
                         b.function.run();
                         b.keybind.invalidate();
@@ -259,6 +259,11 @@ public class EditorButtons
 
             if (location != null)
                 location.add(this);
+        }
+
+        public String toString()
+        {
+            return this.image;
         }
 
         @Override

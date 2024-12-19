@@ -35,7 +35,6 @@ public class ObstacleShrubbery extends Obstacle
 		this.colorR = (Math.random() * 20);
 		this.colorG = (Math.random() * 50) + 150;
 		this.colorB = (Math.random() * 20);
-		this.enableStacking = false;
 		this.type = ObstacleType.top;
 
 		if (!Game.fancyTerrain)
@@ -103,6 +102,13 @@ public class ObstacleShrubbery extends Obstacle
 	{
 		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
 		Drawing.drawing.fillInterfaceRect(x, y, draw_size, draw_size);
+	}
+
+	@Override
+	public void draw3dOutline(double r, double g, double b, double a)
+	{
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight);
 	}
 
 	public boolean isInside(double x, double y)

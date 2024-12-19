@@ -6,6 +6,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventAddObstacleBullet;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 import tanks.tank.Crate;
 import tanks.tank.Tank;
 
@@ -78,7 +79,7 @@ public class BulletBlock extends BulletArc
         int x = (int) (this.posX / Game.tile_size);
         int y = (int) (this.posY / Game.tile_size);
 
-        Obstacle o = new Obstacle("normal", x, y);
+        ObstacleStackable o = new ObstacleStackable("normal", x, y);
         o.colorR = this.originalOutlineColorR;
         o.colorG = this.originalOutlineColorG;
         o.colorB = this.originalOutlineColorB;

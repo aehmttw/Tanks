@@ -33,7 +33,6 @@ public class ObstacleSnow extends Obstacle
         this.tankCollision = false;
         this.bulletCollision = false;
         this.checkForObjects = true;
-        this.enableStacking = false;
         this.destroyEffect = Effect.EffectType.snow;
         this.destroyEffectAmount = 0.25;
         this.replaceTiles = false;
@@ -54,6 +53,12 @@ public class ObstacleSnow extends Obstacle
         this.description = "A thick, melting pile of snow that slows tanks and bullets down";
 
         this.renderer = ShaderSnow.class;
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+
     }
 
     @Override

@@ -158,7 +158,7 @@ public class ScreenAbout extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "About");
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s", Game.version);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s (%s)", Game.version, Game.readHashFromFile());
 
         int extensions = Game.extensionRegistry.extensions.size();
         if (extensions > 0)

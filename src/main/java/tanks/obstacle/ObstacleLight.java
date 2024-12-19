@@ -21,7 +21,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 
 	public static int default_color = 255 * 256 * 256 + 250 * 256 + 235;
 
-	@MetadataProperty(id = "color", name = "Color", selector = SelectorColor.selector_name, image = "color.png", keybind = "editor.groupID")
+	@MetadataProperty(id = "light_color", name = "Light color", selector = SelectorColor.selector_name, image = "color.png", keybind = "editor.groupID")
 	public int lightColor = default_color;
 
 	public ObstacleLight(String name, double posX, double posY)
@@ -95,14 +95,15 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 	@Override
 	public void draw3dOutline(double r, double g, double b, double a)
 	{
-
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size / 2, Obstacle.draw_size / 2, Obstacle.draw_size / 2);
 	}
 
 	@Override
 	public String getMetadata()
 	{
 		if (this.lightColor != default_color)
-			return this.luminosity + "@" + this.lightColor;
+			return this.luminosity + "@" + Integer.toHexString(this.lightColor);
 		else if (this.luminosity != 1)
 			return this.luminosity + "";
 		else
@@ -117,7 +118,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 			String[] parts = meta.split("@");
 			this.luminosity = Double.parseDouble(parts[0]);
 			if (parts.length > 1)
-				this.lightColor = Integer.parseInt(parts[1]);
+				this.lightColor = Integer.parseInt(parts[1], 16);
 		}
 		else
 			this.luminosity = 1;

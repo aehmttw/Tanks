@@ -88,8 +88,6 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		this.draggable = true;
 
 		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
-
-		this.description = "A solid block which can be destroyed by mines";
 	}
 
 	@Override

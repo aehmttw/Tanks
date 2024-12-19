@@ -46,6 +46,8 @@ public class ObstacleStackable extends Obstacle
             this.stackColorG[i] = col2[1];
             this.stackColorB[i] = col2[2];
         }
+
+        this.description = "A solid block which can be destroyed by mines";
     }
 
     public double[] getRandomColor()

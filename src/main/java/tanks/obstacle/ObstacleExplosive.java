@@ -11,7 +11,7 @@ import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderExplosive;
 import tanks.tank.*;
 
-public class ObstacleExplosive extends Obstacle implements IAvoidObject
+public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
 {
     public double timer = 25;
     public Tank trigger = Game.dummyTank;

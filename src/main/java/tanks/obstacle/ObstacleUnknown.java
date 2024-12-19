@@ -21,12 +21,16 @@ public class ObstacleUnknown extends Obstacle
 		this.tankCollision = false;
 		this.bulletCollision = false;
 		this.batchDraw = false;
-		this.enableStacking = false;
-
 
 		this.description = "A block which could not be identified";
 	}
-	
+
+	@Override
+	public void draw3dOutline(double r, double g, double b, double a)
+	{
+
+	}
+
 	@Override
 	public void draw()
 	{

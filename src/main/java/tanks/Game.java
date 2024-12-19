@@ -13,6 +13,7 @@ import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.selector.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
@@ -175,7 +176,7 @@ public class Game
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
 
-	public static boolean fancyLights = false;
+	public static boolean fancyLights = true;
 
 	public static boolean tankTextures = true;
 
@@ -245,6 +246,7 @@ public class Game
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
+	public static RegistryMetadataSelectors registryMetadataSelectors = new RegistryMetadataSelectors();
 
 	public final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
 	public ShaderGroundIntro shaderIntro;
@@ -269,7 +271,7 @@ public class Game
 
 	public static ChatFilter chatFilter = new ChatFilter();
 
-	public ArrayList<InputBindingGroup> inputBindings = new ArrayList<>();
+	public LinkedHashMap<String, InputBindingGroup> inputBindings = new LinkedHashMap<>();
 	public InputBindings input;
 
 	public static PrintStream logger = System.err;
@@ -489,6 +491,11 @@ public class Game
 		registryMinigame.minigameDescriptions.put(name, desc);
 	}
 
+	public static void registerMetadataSelector(String name, Class<? extends MetadataSelector> selector)
+	{
+		registryMetadataSelectors.metadataSelectors.put(name, selector);
+	}
+
 	public static void initScript()
 	{
 		version = "Tanks v" + Game.readVersionFromFile();
@@ -507,7 +514,7 @@ public class Game
 		registerEvents();
 		DefaultBullets.initialize();
 
-		registerObstacle(Obstacle.class, "normal");
+		registerObstacle(ObstacleStackable.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
 		registerObstacle(ObstacleHole.class, "hole");
 		registerObstacle(ObstacleBouncy.class, "bouncy");
@@ -568,6 +575,14 @@ public class Game
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
+
+		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
+		registerMetadataSelector(SelectorGroupID.selector_name, SelectorGroupID.class);
+		registerMetadataSelector(SelectorBeatPattern.selector_name, SelectorBeatPattern.class);
+		registerMetadataSelector(SelectorRotation.selector_name, SelectorRotation.class);
+		registerMetadataSelector(SelectorTeam.selector_name, SelectorTeam.class);
+		registerMetadataSelector(SelectorLuminosity.selector_name, SelectorLuminosity.class);
+		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
 
 		TankPlayer.default_bullet = new Bullet();
 		TankPlayer.default_mine = new Mine();
@@ -926,6 +941,9 @@ public class Game
 
 	public static void exitToCrash(Throwable e)
 	{
+		if (e instanceof GameCrashedException)
+			throw (GameCrashedException) e;
+
 		throw new GameCrashedException(e);
 	}
 

@@ -3,14 +3,17 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.rendering.ShaderBeatBlocks;
 import tanks.rendering.ShaderGroundObstacleBeatBlock;
+import tanks.tankson.MetadataProperty;
 
-public class ObstacleBeatBlock extends Obstacle
+public class ObstacleBeatBlock extends ObstacleStackable
 {
+    @MetadataProperty(id = "beat_pattern", name = "Beat pattern", image = "obstacle_beat.png", selector = SelectorBeatPattern.selector_name, keybind = "editor.groupID")
+    public int beatPattern = 0;
+
     public double beatFrequency = 1;
     public boolean alternate;
 
@@ -31,14 +34,10 @@ public class ObstacleBeatBlock extends Obstacle
         this.destructible = false;
         this.type = ObstacleType.top;
 
-        this.description = "A block that appears and disappears to the beat of the music";
-    }
+        this.primaryMetadataID = "beat_pattern";
+        this.secondaryMetadataID = "stack_height";
 
-    @Override
-    public void registerSelectors()
-    {
-        this.registerSelector(new SelectorBeatPattern());
-        super.registerSelectors();
+        this.description = "A block that appears and disappears to the beat of the music";
     }
 
     public static boolean isOn(double freq, boolean alt)
@@ -220,7 +219,6 @@ public class ObstacleBeatBlock extends Obstacle
         this.update = true;
         this.tankCollision = false;
         this.bulletCollision = false;
-        this.enableStacking = true;
 
         for (int i = 0; i < default_max_height; i++)
         {
@@ -251,27 +249,28 @@ public class ObstacleBeatBlock extends Obstacle
         if (s.contains("#"))
         {
             String[] p = s.split("#");
-            this.groupID = (int) Double.parseDouble(p[0]);
+            this.beatPattern = (int) Double.parseDouble(p[0]);
             this.stackHeight = Double.parseDouble(p[1]);
         }
         else
-            this.groupID = (int) Double.parseDouble(s);
+            this.beatPattern = (int) Double.parseDouble(s);
 
-        onPropertySet(null);
+        this.refreshMetadata();
     }
 
-    public void onPropertySet(LevelEditorSelector<?> s)
+    @Override
+    public void refreshMetadata()
     {
-        this.rendererNumber = this.groupID;
-        this.tileRendererNumber = this.groupID;
-        this.alternate = this.groupID % 2 == 1;
-        this.beatFrequency = Math.pow(2, this.groupID / 2);
+        this.rendererNumber = this.beatPattern;
+        this.tileRendererNumber = this.beatPattern;
+        this.alternate = this.beatPattern % 2 == 1;
+        this.beatFrequency = Math.pow(2, this.beatPattern / 2);
         this.initialize();
     }
 
     @Override
     public String getMetadata()
     {
-        return this.groupID + "#" + this.stackHeight;
+        return this.beatPattern + "#" + this.stackHeight;
     }
 }

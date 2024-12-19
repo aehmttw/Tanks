@@ -222,7 +222,6 @@ public class Panel
 		}
 
 		Game.prevScreen = Game.screen;
-		Obstacle.lastDrawSize = Obstacle.draw_size;
 
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{

@@ -3,12 +3,15 @@ package tanks;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.network.event.EventStatusEffectBegin;
 import tanks.network.event.EventStatusEffectDeteriorate;
 import tanks.network.event.EventStatusEffectEnd;
 import tanks.obstacle.Obstacle;
 import tanks.tank.NameTag;
 import tanks.tank.Tank;
+import tanks.tankson.MetadataProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +57,7 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public HashMap<StatusEffect, StatusEffect.Instance> statusEffects = new HashMap<>();
 	public HashSet<String> attributeImmunities = new HashSet<>();
 
+	@MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
 	public Team team;
 
 	protected ArrayList<StatusEffect> removeStatusEffects = new ArrayList<>();

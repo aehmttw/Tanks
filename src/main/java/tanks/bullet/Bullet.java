@@ -11,6 +11,7 @@ import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
 import tanks.tankson.*;
 
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @TanksONable("bullet")
-public class Bullet extends Movable implements IDrawableLightSource, ICopyable<Bullet>, ITanksONEditable
+public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -786,7 +787,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			{
 				Obstacle o = Game.obstacles.get(i);
 
-				if ((!o.bulletCollision && !o.checkForObjects) || o.startHeight > 1)
+				if ((!o.bulletCollision && !o.checkForObjects) || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
 					continue;
 
 				double dx = this.posX - o.posX;
@@ -1845,22 +1846,6 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public double getRangeMax()
 	{
 		return this.range;
-	}
-
-	@Override
-	public boolean lit()
-	{
-		return Game.fancyLights;
-	}
-
-	@Override
-	public double[] getLightInfo()
-	{
-		this.lightInfo[3] = Math.max(0, 1 - this.destroyTimer / this.maxDestroyTimer);
-		this.lightInfo[4] = this.outlineColorR;
-		this.lightInfo[5] = this.outlineColorG;
-		this.lightInfo[6] = this.outlineColorB;
-		return this.lightInfo;
 	}
 
 	@Override

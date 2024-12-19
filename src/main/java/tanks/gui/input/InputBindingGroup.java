@@ -15,7 +15,7 @@ public class InputBindingGroup
         this.input1 = i1;
         this.input2 = i2;
 
-        Game.game.inputBindings.add(this);
+        Game.game.inputBindings.put(name, this);
     }
 
     public InputBindingGroup(String name, InputBinding i1)
@@ -24,7 +24,7 @@ public class InputBindingGroup
         this.input1 = i1;
         this.input2 = new InputBinding();
 
-        Game.game.inputBindings.add(this);
+        Game.game.inputBindings.put(name, this);
     }
 
     public boolean isPressed()

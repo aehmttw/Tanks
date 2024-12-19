@@ -9,7 +9,7 @@ import tanks.rendering.TrackRenderer;
 import tanks.tank.Mine;
 import tanks.tank.Turret;
 
-public class Effect extends Movable implements IDrawableWithGlow, IDrawableLightSource, IBatchRenderableObject
+public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject
 {
     public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
 
@@ -892,21 +892,5 @@ public class Effect extends Movable implements IDrawableWithGlow, IDrawableLight
     {
         Drawing.drawing.setColor(0, 0, 0, 64);
         Drawing.drawing.trackRenderer.addRect(this, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, angle);
-    }
-
-    @Override
-    public boolean lit()
-    {
-        return (Game.fancyLights && type == EffectType.explosion);
-    }
-
-    @Override
-    public double[] getLightInfo()
-    {
-        this.lightInfo[3] = 4 * (1 - this.age / this.maxAge);
-        this.lightInfo[4] = 255;
-        this.lightInfo[5] = 200;
-        this.lightInfo[6] = 160;
-        return this.lightInfo;
     }
 }

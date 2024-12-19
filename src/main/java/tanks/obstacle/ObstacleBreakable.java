@@ -7,7 +7,7 @@ import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.network.event.EventObstacleHit;
 
-public class ObstacleBreakable extends Obstacle
+public class ObstacleBreakable extends ObstacleStackable
 {
     public double fallAnimation = 0;
     public double lastFallAnimation = 0;
@@ -16,32 +16,24 @@ public class ObstacleBreakable extends Obstacle
     {
         super(name, posX, posY);
 
+        this.shouldShootThrough = true;
+        this.description = "A block which breaks when hit by a bullet";
+    }
+
+    public double[] getRandomColor()
+    {
         double frac = Math.random() * 0.2 + 0.8;
 
         if (!Game.fancyTerrain)
             frac = 0.9;
 
-        this.colorR = 246 * frac;
-        this.colorG = 206 * frac;
-        this.colorB = 135 * frac;
+        double[] col = new double[3];
 
-        this.checkForObjects = true;
-        this.update = true;
+        col[0] = frac * 246;
+        col[1] = frac * 206;
+        col[2] = frac * 135;
 
-        for (int i = 0; i < default_max_height; i++)
-        {
-            double frac2 = Math.random() * 0.2 + 0.8;
-
-            if (!Game.fancyTerrain)
-                frac2 = 0.9;
-
-            this.stackColorR[i] = 246 * frac2;
-            this.stackColorG[i] = 206 * frac2;
-            this.stackColorB[i] = 135 * frac2;
-        }
-
-        this.shouldShootThrough = true;
-        this.description = "A block which breaks when hit by a bullet";
+        return col;
     }
 
     @Override
@@ -114,7 +106,7 @@ public class ObstacleBreakable extends Obstacle
 
         if (Game.enable3d)
         {
-            for (int i = 0; i < Math.min(this.stackHeight, Obstacle.default_max_height); i++)
+            for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
             {
                 int in = default_max_height - 1 - i;
                 drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA);

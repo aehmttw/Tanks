@@ -23,7 +23,6 @@ public class ObstacleIce extends Obstacle
         this.tankCollision = false;
         this.bulletCollision = false;
         this.checkForObjects = true;
-        this.enableStacking = false;
 
         this.type = ObstacleType.ground;
 
@@ -38,6 +37,13 @@ public class ObstacleIce extends Obstacle
         this.tileRenderer = ShaderGroundIce.class;
 
         this.description = "A slippery layer of ice";
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+        Drawing.drawing.setColor(r, g, b);
+        Drawing.drawing.fillRect(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size);
     }
 
     @Override

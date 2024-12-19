@@ -1,31 +1,33 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
+import tanks.Game;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 
-public class OverlayBlockHeight extends ScreenLevelEditorOverlay
+public class OverlaySelectBlockHeight extends ScreenLevelEditorOverlay
 {
     public SelectorStackHeight selector;
 
-    public Button increaseHeight = new Button(this.centerX + 100, this.centerY, 60, 60, "+", () -> selector.number += 0.5);
+    public Button increaseHeight = new Button(this.centerX + 100, this.centerY, 60, 60, "+", () -> selector.changeMetadata(editor, editor.mousePlaceable, 1));
 
-    public Button decreaseHeight = new Button(this.centerX - 100, this.centerY, 60, 60, "-", () -> selector.number -= 0.5);
+    public Button decreaseHeight = new Button(this.centerX - 100, this.centerY, 60, 60, "-", () -> selector.changeMetadata(editor, editor.mousePlaceable, -1));
 
-    public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", this::escape);
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, 350, 40, "Done", this::escape);
 
     public Button staggering = new Button(this.centerX + 200, this.centerY, 60, 60, "", () ->
     {
         if (!editor.stagger)
         {
-            selector.number = Math.max(selector.number, 1);
+            selector.setMetadata(editor, editor.mousePlaceable, Math.max(1, (double) selector.getMetadata(editor.mousePlaceable)));
             editor.stagger = true;
         }
         else if (!editor.oddStagger)
         {
-            selector.number = Math.max(selector.number, 1);
+            selector.setMetadata(editor, editor.mousePlaceable, Math.max(1, (double) selector.getMetadata(editor.mousePlaceable)));
             editor.oddStagger = true;
         }
         else
@@ -36,7 +38,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
     }, " --- "
     );
 
-    public OverlayBlockHeight(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorStackHeight selector)
+    public OverlaySelectBlockHeight(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorStackHeight selector)
     {
         super(previous, screenLevelEditor);
 
@@ -50,11 +52,18 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 
     public void update()
     {
-        this.increaseHeight.enabled = selector.number < Obstacle.default_max_height;
-        this.decreaseHeight.enabled = selector.number > 0.5;
+        InputBindingGroup ig = Game.game.inputBindings.get(this.selector.metadataProperty.keybind());
+        if (ig.isValid())
+        {
+            ig.invalidate();
+            this.escape();
+        }
+
+        this.increaseHeight.enabled = (double) selector.getMetadata(editor.mousePlaceable) < ObstacleStackable.default_max_height;
+        this.decreaseHeight.enabled = (double) selector.getMetadata(editor.mousePlaceable) > 0.5;
 
         if (editor.stagger)
-            this.decreaseHeight.enabled = selector.number > 1;
+            this.decreaseHeight.enabled = (double) selector.getMetadata(editor.mousePlaceable) > 1;
 
         this.increaseHeight.update();
         this.decreaseHeight.update();
@@ -86,7 +95,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY + 25, 1100, 700);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY + 25, 800, 600);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Block height");
@@ -97,7 +106,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(36);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, selector.number + "");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, selector.getMetadata(editor.mousePlaceable) + "");
 
         this.increaseHeight.draw();
         this.decreaseHeight.draw();

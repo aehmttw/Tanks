@@ -1,41 +1,32 @@
 package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Game;
-import tanks.gui.screen.leveleditor.OverlayBeatBlockPattern;
+import tanks.GameObject;
+import tanks.gui.screen.leveleditor.OverlaySelectBeatBlockPattern;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+
+import java.lang.reflect.Field;
 
 public class SelectorBeatPattern extends SelectorGroupID
 {
-    public void init()
+    public static final String selector_name = "beat_pattern";
+
+    public SelectorBeatPattern(Field f)
     {
-        super.init();
-        this.id = "pattern";
-        this.title = "Beat pattern";
-        this.buttonText = "Beat pattern: ";
-        this.image = "obstacle_beat.png";
+        super(f);
         this.max = 7;
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor e)
     {
-        Game.screen = new OverlayBeatBlockPattern(Game.screen, editor, this);
+        Game.screen = new OverlaySelectBeatBlockPattern(Game.screen, e, this);
     }
 
     @Override
-    public void load()
+    public String getMetadataDisplayString(GameObject o)
     {
-        this.button.setText(this.buttonText, getMetadata());
-    }
-
-    @Override
-    public void setMetadata(String d)
-    {
-        this.number = Math.log(Integer.parseInt(String.valueOf(d.charAt(0)))) / Math.log(2) * 2 + (d.charAt(1) == 'a' ? 0 : 1);
-    }
-
-    @Override
-    public String getMetadata()
-    {
+        int number = (int) this.getMetadata(o);
         return (int) Math.pow(2, (int) (number / 2)) + (number % 2 == 0 ? "a" : "b");
     }
 }

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -56,7 +57,7 @@ public class EventAddObstacleBullet extends PersonalEvent
     @Override
     public void execute()
     {
-        Obstacle o = new Obstacle("normal", this.posX / 50 - 0.5, this.posY / 50 - 0.5);
+        ObstacleStackable o = new ObstacleStackable("normal", this.posX / 50 - 0.5, this.posY / 50 - 0.5);
         o.colorR = this.colorR;
         o.colorG = this.colorG;
         o.colorB = this.colorB;

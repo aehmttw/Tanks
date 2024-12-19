@@ -18,8 +18,6 @@ public class ObstacleHole extends Obstacle
 		this.bulletCollision = false;
 		this.replaceTiles = Game.fancyTerrain;
 
-		this.enableStacking = false;
-
 		this.colorR = 0;
 		this.colorG = 0;
 		this.colorB = 0;
@@ -45,6 +43,13 @@ public class ObstacleHole extends Obstacle
 	{	
 		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 		Drawing.drawing.fillInterfaceRect(x, y, draw_size * size, draw_size * size);
+	}
+
+	@Override
+	public void draw3dOutline(double r, double g, double b, double a)
+	{
+		Drawing.drawing.setColor(r, g, b, a);
+		Drawing.drawing.fillBox(this.posX, this.posY, Game.sampleGroundHeight(this.posX, this.posY) - Game.tile_size / 2,Game.tile_size / 2, Game.tile_size / 2, Game.tile_size / 2);
 	}
 
 	@Override

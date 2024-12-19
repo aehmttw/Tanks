@@ -13,16 +13,20 @@ import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenTitle;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.hotbar.Hotbar;
 import tanks.item.*;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
+import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
+
+import java.lang.reflect.Method;
 
 /**
  * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
  */
-public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank, IDrawableLightSource
+public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerTank
 {
 	public static Bullet default_bullet;
 	public static Mine default_mine;
@@ -69,6 +73,10 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 	public TankPlayer(double x, double y, double angle)
 	{
 		super("player", x, y, Game.tile_size, 0, 150, 255);
+
+		this.overrideMetadataPropertyIDs.put(SelectorTeam.selector_name, SelectorTeam.player_selector_name);
+		this.primaryMetadataID = SelectorTeam.player_selector_name;
+
 		this.angle = angle;
 		this.orientation = angle;
 		this.player.tank = this;
@@ -119,21 +127,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
         this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
         this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
 		return this;
-	}
-
-	@Override
-	public void postInitSelectors()
-	{
-		super.postInitSelectors();
-
-		this.teamSelector.id = "player_team";
-		this.teamSelector.defaultTeamIndex = 0;
-
-		if (!this.teamSelector.modified)
-			this.teamSelector.setChoice(0);
-		this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
-		this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
-		this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
 	}
 
 	@Override
@@ -514,11 +507,14 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		b.speed = Math.abs(speed);
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
-		this.recoilSpeed = this.getSpeed();
-		if (this.recoilSpeed > this.maxSpeed * 1.01)
+		if (b.recoil != 0)
 		{
-			this.tookRecoil = true;
-			this.inControlOfMotion = false;
+			this.recoilSpeed = this.getSpeed();
+			if (this.recoilSpeed > this.maxSpeed * 1.01)
+			{
+				this.tookRecoil = true;
+				this.inControlOfMotion = false;
+			}
 		}
 
 		if (b.moveOut)
@@ -644,20 +640,5 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 				}
 			}
 		}
-	}
-
-	@Override
-	public boolean lit()
-	{
-		return false;
-	}
-
-	double[] lightInfo = new double[]{0, 0, 0, 2, 255, 255, 255};
-
-	@Override
-	public double[] getLightInfo()
-	{
-		this.glowSize = 4;
-		return this.lightInfo;
 	}
 }

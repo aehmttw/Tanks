@@ -94,7 +94,7 @@ public class InputBindings
 
             file.startWriting();
 
-            for (InputBindingGroup i: Game.game.inputBindings)
+            for (InputBindingGroup i: Game.game.inputBindings.values())
             {
                 file.println(i.toString());
             }
@@ -121,7 +121,7 @@ public class InputBindings
             while (file.hasNextLine())
             {
                 String[] s = file.nextLine().split("=");
-                for (InputBindingGroup i : Game.game.inputBindings)
+                for (InputBindingGroup i : Game.game.inputBindings.values())
                 {
                     if (s[0].equals(i.name))
                     {

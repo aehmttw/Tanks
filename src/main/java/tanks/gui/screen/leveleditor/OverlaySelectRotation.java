@@ -3,6 +3,7 @@ package tanks.gui.screen.leveleditor;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
@@ -10,24 +11,23 @@ import tanks.obstacle.Obstacle;
 
 public class OverlaySelectRotation extends ScreenLevelEditorOverlay
 {
-    public SelectorRotation<?> selector;
+    public SelectorRotation selector;
 
-    public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> selector.number = 3);
+    public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> selector.setMetadata(editor, editor.mousePlaceable, Math.PI * 3 / 2));
 
-    public Button rotateRight = new Button(this.centerX + 100, this.centerY, 75, 75, "", () -> selector.number = 0);
+    public Button rotateRight = new Button(this.centerX + 100, this.centerY, 75, 75, "", () -> selector.setMetadata(editor, editor.mousePlaceable, Math.PI * 0 / 2));
 
-    public Button rotateDown = new Button(this.centerX, this.centerY + 100, 75, 75, "", () -> selector.number = 1);
+    public Button rotateDown = new Button(this.centerX, this.centerY + 100, 75, 75, "", () -> selector.setMetadata(editor, editor.mousePlaceable, Math.PI * 1 / 2));
 
-    public Button rotateLeft = new Button(this.centerX - 100, this.centerY, 75, 75, "", () -> selector.number = 2);
+    public Button rotateLeft = new Button(this.centerX - 100, this.centerY, 75, 75, "", () -> selector.setMetadata(editor, editor.mousePlaceable, Math.PI * 2 / 2));
 
     public Button back = new Button(this.centerX, this.centerY, 75, 75, "Done", this::escape);
 
-    public OverlaySelectRotation(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorRotation<?> selector)
+    public OverlaySelectRotation(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorRotation selector)
     {
         super(previous, screenLevelEditor);
 
         this.selector = selector;
-        this.selector.modified = true;
 
         this.rotateDown.fontSize = 24;
         this.rotateRight.fontSize = 24;
@@ -62,16 +62,24 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
 
     public void update()
     {
+        InputBindingGroup ig = Game.game.inputBindings.get(this.selector.metadataProperty.keybind());
+        if (ig.isValid())
+        {
+            ig.invalidate();
+            this.escape();
+        }
+
         this.rotateUp.enabled = true;
         this.rotateDown.enabled = true;
         this.rotateLeft.enabled = true;
         this.rotateRight.enabled = true;
 
-        if (selector.number == 0)
+        int n = (int) Math.round((double) selector.getMetadata(editor.mousePlaceable) / Math.PI * 2);
+        if (n == 0)
             this.rotateRight.enabled = false;
-        else if (selector.number == 1)
+        else if (n == 1)
             this.rotateDown.enabled = false;
-        else if (selector.number == 2)
+        else if (n == 2)
             this.rotateLeft.enabled = false;
         else
             this.rotateUp.enabled = false;
@@ -101,7 +109,7 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Select " + (selector.gameObject instanceof Obstacle ? "obstacle" : "tank") + " orientation");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, (editor.mousePlaceable instanceof Obstacle ? "Obstacle" : "Tank") + " rotation");
 
         this.rotateUp.draw();
         this.rotateLeft.draw();

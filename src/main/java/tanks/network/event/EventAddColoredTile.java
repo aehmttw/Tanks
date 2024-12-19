@@ -3,7 +3,7 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.obstacle.ObstacleColor;
+import tanks.obstacle.ObstacleColorFlashing;
 
 public class EventAddColoredTile extends PersonalEvent
 {
@@ -76,7 +76,7 @@ public class EventAddColoredTile extends PersonalEvent
         {
             for (int j = 0; j < width; j++)
             {
-                ObstacleColor c = new ObstacleColor("bob", this.posX + i, this.posY + j, this.colorR, this.colorG, this.colorB, this.colorA);
+                ObstacleColorFlashing c = new ObstacleColorFlashing("bob", this.posX + i, this.posY + j, this.colorR, this.colorG, this.colorB, this.colorA);
                 c.flashing = flashing;
                 c.flashSpeedMultiplier = flashSpeedMultiplier;
                 Game.obstacles.add(c);

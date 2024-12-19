@@ -4,36 +4,35 @@ import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
-import tanks.Panel;
-import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.gui.Button;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
+import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
+import tanks.gui.screen.leveleditor.selector.MetadataSelector;
 import tanks.item.Item;
 import tanks.network.event.INetworkEvent;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
+import tanks.obstacle.ObstacleStackable;
 import tanks.obstacle.ObstacleUnknown;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankSpawnMarker;
+import tanks.tank.*;
+import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.util.*;
 
-
-@SuppressWarnings({"unused"})
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
-	public HashMap<String, LevelEditorSelector<?>> selectors = new HashMap<>();
 	public Placeable currentPlaceable = Placeable.enemyTank;
-	public EditorClipboard[] clipboards = new EditorClipboard[5];
+	public int tankNum = 0;
+	public int obstacleNum = 0;
+
+	public GameObject mousePlaceable = new TankDummy("dummy", 0, 0, 0);
+	public HashMap<String, Object> currentMetadata = new HashMap<>();
+	
 	public EditorClipboard clipboard = new EditorClipboard();
-	public int selectedNum = 0;
 
 	public ArrayList<EditorAction> undoActions = new ArrayList<>();
 	public ArrayList<EditorAction> redoActions = new ArrayList<>();
@@ -43,19 +42,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public int tankPage = 0;
 	public int obstaclePage = 0;
-
-	public int tankNum = 0;
-	public int obstacleNum = 0;
-	public Tank mouseTank = currentPlaceable == Placeable.playerTank ? new TankPlayer(0, 0, 0).setDefaultColor() : Game.registryTank.getEntry(tankNum).getTank(0, 0, 0);
-	public int mouseTankOrientation = 0;
-	public Obstacle mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
+	
 	public Obstacle hoverObstacle = null;
 	public EditorButtons buttons = new EditorButtons(this);
+	
 	public boolean stagger = false;
 	public boolean oddStagger = false;
 	public boolean paused = false;
+	
 	public boolean objectMenu = false;
-	public boolean modified = false;
 
 	public double clickCooldown = 0;
 	public ArrayList<Team> teams = new ArrayList<>();
@@ -81,7 +76,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public Shape prevSelectShape;
 	public double selectX1, selectY1, selectX2, selectY2;
 
-	public HashMap<String, EditorButtons.EditorButton> addedShortcutButtons = new HashMap<>();
+	public ArrayList<EditorButton> shortcutButtons = new ArrayList<>();
 	public boolean initialized = false;
 
 	public SymmetryType symmetryType = SymmetryType.none;
@@ -114,11 +109,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	public HashSet<String> prevTankMusics = new HashSet<>();
 	public HashSet<String> tankMusics = new HashSet<>();
 	public HashSet<String> overlayMusics = new HashSet<>();
-	public double mouseObstacleStartHeight;
 
 	public double fontBrightness = 0;
 
-	public HashMap<Float, Obstacle>[][] grid = new HashMap[Game.currentSizeX][Game.currentSizeY];
+	public boolean modified = true;
 
 	EditorButton pause = new EditorButton(buttons.topRight, "pause.png", 40, 40, () ->
 	{
@@ -366,6 +360,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public ScreenLevelEditor(String lvlName, Level level)
 	{
+		Game.playerTank = new TankPlayer(0, 0, 0);
 		this.playerTankBuilds.add((TankPlayer) Game.playerTank);
 
 		this.selfBatch = false;
@@ -374,13 +369,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.music = "battle_editor.ogg";
 		this.musicID = "editor";
 
-		this.allowClose = true;
+		// todo
+		this.allowClose = false;
 
 		if (Game.game.window.touchscreen)
 			controlsSizeMultiplier = 1.0;
 
 		this.level = level;
 		this.enableMargins = false;
+
+		this.setMousePlaceable();
 
 		for (int i = 0; i < drawables.length; i++)
 		{
@@ -455,7 +453,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Tank t = null;
 		for (Movable m: Game.movables)
 		{
-			if (m.posX == mouseTank.posX && m.posY == mouseTank.posY && m instanceof Tank)
+			if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY && m instanceof Tank)
 			{
 				t = (Tank) m;
 				break;
@@ -467,9 +465,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (t.name.equals("player"))
 			{
 				this.currentPlaceable = Placeable.playerTank;
-				this.refreshMouseObject();
+				this.setMousePlaceable();
+				mousePlaceable.setMetadata(t.getMetadata());
 
-				((TankPlayer) mouseTank).setDefaultColor();
+				((TankPlayer) mousePlaceable).setDefaultColor();
 				return true;
 			}
 			else
@@ -481,7 +480,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					{
 						tankNum = i;
 						this.currentPlaceable = Placeable.enemyTank;
-						this.refreshMouseObject();
+						this.setMousePlaceable();
+						mousePlaceable.setMetadata(t.getMetadata());
 						return true;
 					}
 				}
@@ -492,7 +492,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					{
 						tankNum = Game.registryTank.tankEntries.size() + i;
 						this.currentPlaceable = Placeable.enemyTank;
-						this.refreshMouseObject();
+						this.setMousePlaceable();
+						mousePlaceable.setMetadata(t.getMetadata());
 						return true;
 					}
 				}
@@ -502,7 +503,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Obstacle o = null;
 		for (Obstacle o1: Game.obstacles)
 		{
-			if (o1.posX == mouseObstacle.posX && o1.posY == mouseObstacle.posY)
+			if (o1.posX == mousePlaceable.posX && o1.posY == mousePlaceable.posY)
 			{
 				o = o1;
 				break;
@@ -521,9 +522,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			this.currentPlaceable = Placeable.obstacle;
 			obstacleNum = i;
-			this.refreshMouseObject();
-			mouseObstacle.setMetadata(o.getMetadata());
-			mouseObstacle.updateSelectors();
+			this.setMousePlaceable();
+			mousePlaceable.setMetadata(o.getMetadata());
 			return true;
 		}
 
@@ -544,7 +544,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (clipboard == null)
 			clipboard = new EditorClipboard();
 
-		allowClose = this.undoActions.isEmpty() && !modified;
+		if (mousePlaceable instanceof Tank)
+			((Tank) mousePlaceable).angle = ((Tank) mousePlaceable).orientation;
+
+//		allowClose = this.undoActions.isEmpty() && !modified;
 		clickCooldown = Math.max(0, clickCooldown - Panel.frameFrequency);
 
 		if (grab.keybind.isValid())
@@ -587,7 +590,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		buttons.update();
+		this.buttons.bottomRight.removeAll(this.shortcutButtons);
+
+		if (this.currentMode == EditorMode.build)
+			this.buttons.bottomRight.addAll(this.shortcutButtons);
+
+		this.buttons.refreshButtons();
+		this.buttons.update();
 
 		this.updateMusic(true);
 
@@ -633,15 +642,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (this.paused)
 			return;
-
-		(currentPlaceable == Placeable.obstacle ? mouseObstacle : mouseTank).forAllSelectors(s ->
-		{
-			if (s.keybind != null && s.keybind.isValid())
-			{
-				s.keybind.invalidate();
-				s.onSelect();
-			}
-		});
 
 		if (Game.game.input.editorRevertCamera.isValid())
 		{
@@ -703,24 +703,24 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (down && currentPlaceable == Placeable.enemyTank)
 			{
 				tankNum = (tankNum + 1) % (Game.registryTank.tankEntries.size() + this.level.customTanks.size());
-				this.refreshMouseObject();
+				this.setMousePlaceable();
 			}
 			else if (down && currentPlaceable == Placeable.obstacle)
 			{
 				obstacleNum = (obstacleNum + 1) % Game.registryObstacle.obstacleEntries.size();
-				this.refreshMouseObject();
+				this.setMousePlaceable();
 			}
 
 			if (up && currentPlaceable == Placeable.enemyTank)
 			{
 				tankNum = ((tankNum - 1) + Game.registryTank.tankEntries.size() + this.level.customTanks.size()) % (Game.registryTank.tankEntries.size() + this.level.customTanks.size());
-				this.refreshMouseObject();
+				this.setMousePlaceable();
 
 			}
 			else if (up && currentPlaceable == Placeable.obstacle)
 			{
 				obstacleNum = ((obstacleNum - 1) + Game.registryObstacle.obstacleEntries.size()) % Game.registryObstacle.obstacleEntries.size();
-				this.refreshMouseObject();
+				this.setMousePlaceable();
 			}
 
 			if ((up || down) && !(up && down))
@@ -746,22 +746,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (currentPlaceable == Placeable.enemyTank)
 				{
 					this.currentPlaceable = Placeable.obstacle;
-					this.mouseObstacle.initSelectors(this);
-					this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
+					this.setMousePlaceable();
 				}
 				else if (currentPlaceable == Placeable.obstacle)
 				{
 					this.currentPlaceable = Placeable.playerTank;
-					this.mouseTank = new TankPlayer(0, 0, 0);
-					this.mouseTank.initSelectors(this);
-					this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
-
-					((TankPlayer) mouseTank).setDefaultColor();
+					this.setMousePlaceable();
 				}
 				else if (currentPlaceable == Placeable.playerTank)
 				{
 					this.currentPlaceable = Placeable.enemyTank;
-					this.refreshMouseObject();
+					this.setMousePlaceable();
 				}
 			}
 
@@ -770,17 +765,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (currentPlaceable == Placeable.playerTank)
 				{
 					this.currentPlaceable = Placeable.obstacle;
-					this.refreshMouseObject();
+					this.setMousePlaceable();
 				}
 				else if (currentPlaceable == Placeable.obstacle)
 				{
 					this.currentPlaceable = Placeable.enemyTank;
-					this.refreshMouseObject();
+					this.setMousePlaceable();
 				}
 				else if (currentPlaceable == Placeable.enemyTank)
 				{
 					this.currentPlaceable = Placeable.playerTank;
-					this.refreshMouseObject();
+					this.setMousePlaceable();
 				}
 			}
 
@@ -924,11 +919,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				this.clearSelection();
 			}
-			else if (Game.game.window.shift)
-			{
-				Arrays.fill(clipboards, null);
-				clipboard = new EditorClipboard();
-			}
 		}
 
 		if (Game.game.input.editorToggleControls.isValid())
@@ -1007,10 +997,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		double posX = Math.round((mx) / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2;
 		double posY = Math.round((my) / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2;
-		mouseTank.posX = posX;
-		mouseTank.posY = posY;
-		mouseObstacle.posX = posX;
-		mouseObstacle.posY = posY;
+		mousePlaceable.posX = posX;
+		mousePlaceable.posY = posY;
 
 		if (currentMode == EditorMode.picker)
 		{
@@ -1045,7 +1033,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			if (validRight)
 				selectInverted = !selectInverted;
-			magicSelect((int) (clampTileX(mouseObstacle.posX) / Game.tile_size), (int) (clampTileY(mouseObstacle.posY) / Game.tile_size), selectTool == SelectTool.wand_contiguous);
+			magicSelect((int) (clampTileX(mousePlaceable.posX) / Game.tile_size), (int) (clampTileY(mousePlaceable.posY) / Game.tile_size), selectTool == SelectTool.wand_contiguous);
 
 			if (validRight)
 			{
@@ -1065,8 +1053,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (valid)
 			{
-				selectX1 = clampTileX(mouseObstacle.posX);
-				selectY1 = clampTileY(mouseObstacle.posY);
+				selectX1 = clampTileX(mousePlaceable.posX);
+				selectY1 = clampTileY(mousePlaceable.posY);
 				selectHeld = true;
 				handled[0] = true;
 				handled[1] = true;
@@ -1079,8 +1067,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				double prevSelectX2 = selectX2;
 				double prevSelectY2 = selectY2;
 
-				selectX2 = clampTileX(mouseObstacle.posX);
-				selectY2 = clampTileY(mouseObstacle.posY);
+				selectX2 = clampTileX(mousePlaceable.posX);
+				selectY2 = clampTileY(mousePlaceable.posY);
 
 				if (lockSquare || Game.game.input.editorHoldSquare.isPressed())
 				{
@@ -1115,8 +1103,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			if (validLeft)
 			{
-				selectX1 = clampTileX(mouseObstacle.posX);
-				selectY1 = clampTileY(mouseObstacle.posY);
+				selectX1 = clampTileX(mousePlaceable.posX);
+				selectY1 = clampTileY(mousePlaceable.posY);
 				selectHeld = true;
 				handled[0] = true;
 				handled[1] = true;
@@ -1129,8 +1117,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				double prevSelectX2 = selectX2;
 				double prevSelectY2 = selectY2;
 
-				selectX2 = clampTileX(mouseObstacle.posX);
-				selectY2 = clampTileY(mouseObstacle.posY);
+				selectX2 = clampTileX(mousePlaceable.posX);
+				selectY2 = clampTileY(mousePlaceable.posY);
 
 				if (symmetryType == SymmetryType.flip8 || symmetryType == SymmetryType.rot90)
 				{
@@ -1161,15 +1149,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 		else
 		{
-			int x = (int) (mouseObstacle.posX / Game.tile_size);
-			int y = (int) (mouseObstacle.posY / Game.tile_size);
+			int x = (int) (mousePlaceable.posX / Game.tile_size);
+			int y = (int) (mousePlaceable.posY / Game.tile_size);
 
 			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
 				if (selectedTiles[x][y] && (validLeft || validRight) && !(currentPlaceable == Placeable.playerTank && this.movePlayer))
 				{
-					double ox = mouseObstacle.posX;
-					double oy = mouseObstacle.posY;
+					double ox = mousePlaceable.posX;
+					double oy = mousePlaceable.posY;
 
 					ArrayList<EditorAction> actions = this.undoActions;
 					this.undoActions = new ArrayList<>();
@@ -1180,11 +1168,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						{
 							if (selectedTiles[i][j])
 							{
-								mouseObstacle.posX = (i + 0.5) * Game.tile_size;
-								mouseObstacle.posY = (j + 0.5) * Game.tile_size;
+								mousePlaceable.posX = (i + 0.5) * Game.tile_size;
+								mousePlaceable.posY = (j + 0.5) * Game.tile_size;
 
-								mouseTank.posX = mouseObstacle.posX;
-								mouseTank.posY = mouseObstacle.posY;
+								mousePlaceable.posX = mousePlaceable.posX;
+								mousePlaceable.posY = mousePlaceable.posY;
 
 								handled = handlePlace(handled, left, right, validLeft, validRight, true);
 							}
@@ -1200,11 +1188,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 					this.undoActions = actions;
 
-					mouseObstacle.posX = ox;
-					mouseObstacle.posY = oy;
+					mousePlaceable.posX = ox;
+					mousePlaceable.posY = oy;
 
-					mouseTank.posX = ox;
-					mouseTank.posY = oy;
+					mousePlaceable.posX = ox;
+					mousePlaceable.posY = oy;
 				}
 				else
 					handled = handlePlace(handled, left, right, validLeft, validRight, false);
@@ -1225,8 +1213,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			double x = s.xs.get(i), y = s.ys.get(i);
 
-			mouseTank.posX = mouseObstacle.posX = (x + 0.5) * Game.tile_size;
-			mouseTank.posY = mouseObstacle.posY = (y + 0.5) * Game.tile_size;
+			mousePlaceable.posX = mousePlaceable.posX = (x + 0.5) * Game.tile_size;
+			mousePlaceable.posY = mousePlaceable.posY = (y + 0.5) * Game.tile_size;
 
 			handlePlace(handled, true, false, true, false, true, false);
 		}
@@ -1336,18 +1324,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.initialized = true;
 			this.clickCooldown = 50;
 
-			if (this.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
-			{
-				this.mouseObstacle.initSelectors(this);
-				this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
-			}
-			else
-			{
-				this.mouseTank.initSelectors(this);
-				this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
-			}
-
-			this.cloneSelectorProperties();
+			this.setMousePlaceable();
 		}
 
 		selectSquareToggle.moveToBottom();
@@ -1361,15 +1338,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		ArrayList<Double> posY = new ArrayList<>();
 		ArrayList<Double> orientations = new ArrayList<>();
 
-		double originalX = mouseTank.posX;
-		double originalY = mouseTank.posY;
-		double originalOrientation = mouseTank.orientation;
+		double originalX = mousePlaceable.posX;
+		double originalY = mousePlaceable.posY;
+		double originalOrientation = mousePlaceable instanceof Tank ? ((Tank) mousePlaceable).orientation : 0;
 
-		posX.add(mouseTank.posX);
-		posY.add(mouseTank.posY);
-		orientations.add(mouseTank.orientation);
+		posX.add(mousePlaceable.posX);
+		posY.add(mousePlaceable.posY);
+		orientations.add(originalOrientation);
 
-		if (mouseTank.posX >= symmetryX1 && mouseTank.posX <= symmetryX2 && mouseTank.posY >= symmetryY1 && mouseTank.posY <= symmetryY2)
+		if (mousePlaceable.posX >= symmetryX1 && mousePlaceable.posX <= symmetryX2 && mousePlaceable.posY >= symmetryY1 && mousePlaceable.posY <= symmetryY2)
 		{
 			if (symmetryType == SymmetryType.flipHorizontal || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
 			{
@@ -1402,24 +1379,23 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (int oi = 0; oi < orientations.size(); oi++)
 		{
-			mouseTank.posX = posX.get(oi);
-			mouseTank.posY = posY.get(oi);
-			mouseObstacle.posX = mouseTank.posX;
-			mouseObstacle.posY = mouseTank.posY;
-			mouseTank.orientation = orientations.get(oi);
+			mousePlaceable.posX = posX.get(oi);
+			mousePlaceable.posY = posY.get(oi);
 
-			if (mouseTank.posX > 0 && mouseTank.posY > 0 && mouseTank.posX < Game.tile_size * Game.currentSizeX && mouseTank.posY < Game.tile_size * Game.currentSizeY)
+			if (mousePlaceable instanceof Tank)
+				((Tank) mousePlaceable).orientation = orientations.get(oi);
+
+			if (mousePlaceable.posX > 0 && mousePlaceable.posY > 0 && mousePlaceable.posX < Game.tile_size * Game.currentSizeX && mousePlaceable.posY < Game.tile_size * Game.currentSizeY)
 			{
 				if (validLeft && currentMode == EditorMode.paste && !paste)
 				{
 					paste();
 
-					mouseTank.posX = originalX;
-					mouseTank.posY = originalY;
-					mouseTank.orientation = originalOrientation;
+					mousePlaceable.posX = originalX;
+					mousePlaceable.posY = originalY;
 
-					mouseObstacle.posX = originalX;
-					mouseObstacle.posY = originalY;
+					if (mousePlaceable instanceof Tank)
+						((Tank) mousePlaceable).orientation = originalOrientation;
 
 					return new boolean[]{true, true};
 				}
@@ -1432,7 +1408,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					{
 						for (Movable m : Game.movables)
 						{
-							if (m.posX == mouseTank.posX && m.posY == mouseTank.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() == 1))
+							if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() == 1))
 							{
 								skip = true;
 
@@ -1476,7 +1452,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					for (int i = 0; i < Game.obstacles.size(); i++)
 					{
 						Obstacle m = Game.obstacles.get(i);
-						if (m.posX == mouseTank.posX && m.posY == mouseTank.posY)
+						if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY)
 						{
 							skip = true;
 							this.undoActions.add(new EditorAction.ActionObstacle(m, false));
@@ -1489,17 +1465,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						}
 					}
 
+
 					if (!batch && !Game.game.window.touchscreen && !skip && validRight)
 					{
-						int add = Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) ? -1 : 1;
+						int add = Game.game.window.shift ? -1 : 1;
 
-						if (currentPlaceable == Placeable.obstacle)
-						{
-							if (mouseObstacle.selectorCount() > 1)
-								mouseObstacle.selectors.get(1).changeMeta(add);
-						}
-						else if (mouseTank.selectorCount() > 1)
-							mouseTank.selectors.get(1).changeMeta(add);
+						MetadataSelector s = mousePlaceable.getSecondaryMetadataProperty();
+						if (s != null)
+							s.changeMetadata(this, mousePlaceable, add);
+
 					}
 
 					if (Game.game.window.touchscreen)
@@ -1508,20 +1482,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					handled[1] = true;
 				}
 
-				if (currentMode != EditorMode.erase && clickCooldown <= 0 && (validLeft || (currentMode != EditorMode.paste && left && currentPlaceable == Placeable.obstacle && this.mouseObstacle.draggable)))
+				if (currentMode != EditorMode.erase && clickCooldown <= 0 && (validLeft || (currentMode != EditorMode.paste && left && currentPlaceable == Placeable.obstacle && this.mousePlaceable.draggable)))
 				{
 					boolean skip = false;
 
-					double mx = mouseTank.posX;
-					double my = mouseTank.posY;
+					double mx = mousePlaceable.posX;
+					double my = mousePlaceable.posY;
 
 					if (currentPlaceable == Placeable.obstacle)
 					{
-						mx = mouseObstacle.posX;
-						my = mouseObstacle.posY;
+						mx = mousePlaceable.posX;
+						my = mousePlaceable.posY;
 					}
 
-					if (mouseObstacleStartHeight < 1 && mouseObstacle.type == Obstacle.ObstacleType.full || currentPlaceable != Placeable.obstacle)
+					if ((mousePlaceable instanceof ObstacleStackable && ((ObstacleStackable) mousePlaceable).startHeight <= 0 && ((Obstacle) mousePlaceable).type == Obstacle.ObstacleType.full) || currentPlaceable != Placeable.obstacle)
 					{
 						for (Movable m : Game.movables)
 						{
@@ -1540,7 +1514,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						{
 							if (!validRight)
 							{
-								if (m.getClass() == mouseObstacle.getClass() || !Obstacle.canPlaceOn(mouseObstacle.type, m.type))
+								if (m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type)))
 								{
 									skip = true;
 									break;
@@ -1561,16 +1535,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 							Tank t;
 
 							if (paste)
-								t = mouseTank;
+								t = (Tank) mousePlaceable;
 							else
 							{
 								if (tankNum < Game.registryTank.tankEntries.size())
-									t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+									t = Game.registryTank.getEntry(tankNum).getTank(mousePlaceable.posX, mousePlaceable.posY, ((Tank) mousePlaceable).angle);
 								else
-									t = ((TankAIControlled) mouseTank).instantiate(mouseTank.name, mouseTank.posX, mouseTank.posY, mouseTank.angle);
+									t = ((TankAIControlled) mousePlaceable).instantiate(((TankAIControlled) mousePlaceable).name, mousePlaceable.posX, mousePlaceable.posY, ((TankAIControlled) mousePlaceable).angle);
 							}
 
-							t.cloneAllSelectors(mouseTank);
+							t.setMetadata(mousePlaceable.getMetadata());
 
 							this.undoActions.add(new EditorAction.ActionTank(t, true));
 							Game.movables.add(t);
@@ -1592,10 +1566,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 								this.spawns.clear();
 							}
 
-							TankSpawnMarker t = new TankSpawnMarker("player", mouseTank.posX, mouseTank.posY, mouseTank.angle);
-							t.registerSelectors();
-							t.cloneAllSelectors(mouseTank);
-							t.updateSelectors();
+							TankSpawnMarker t = new TankSpawnMarker("player", mousePlaceable.posX, mousePlaceable.posY, 0);
+							t.setMetadata(mousePlaceable.getMetadata());
+							t.angle = t.orientation;
 
 							this.spawns.add(t);
 
@@ -1615,27 +1588,24 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						else if (currentPlaceable == Placeable.obstacle)
 						{
 							Obstacle o = !paste ? Game.registryObstacle.getEntry(obstacleNum)
-									.getObstacle(mouseObstacle.posX / Game.tile_size - 0.5, mouseObstacle.posY / Game.tile_size - 0.5)
-									: mouseObstacle;
-							o.startHeight = mouseObstacleStartHeight;
-							o.initSelectors(this);
+									.getObstacle(mousePlaceable.posX / Game.tile_size - 0.5, mousePlaceable.posY / Game.tile_size - 0.5)
+									: (Obstacle) mousePlaceable;
+							o.setMetadata(mousePlaceable.getMetadata());
 
-							o.cloneAllSelectors(mouseObstacle);
-
-							if (o.enableStacking)
+							if (o instanceof ObstacleStackable)
 							{
-								SelectorStackHeight s = (SelectorStackHeight) o.getSelector("stack_height");
-								s.number = mouseObstacle.stackHeight;
-
-								if (this.stagger && !paste)
+								if (((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0)
 								{
-									if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == (this.oddStagger ? 1 : 0)))
-										s.number -= 0.5;
+									if (this.stagger && !this.oddStagger)
+										((ObstacleStackable) o).stackHeight -= 0.5;
 								}
+								else if (this.stagger && this.oddStagger)
+									((ObstacleStackable) o).stackHeight -= 0.5;
+
+								o.refreshMetadata();
 							}
 
 							this.undoActions.add(new EditorAction.ActionObstacle(o, true));
-							double x = o.posX;
 							Game.addObstacle(o);
 
 							if (!batch)
@@ -1677,8 +1647,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (int h = 0; h < Game.registryObstacle.obstacleEntries.size(); h++)
 		{
-			Obstacle obs = Game.registryObstacle.obstacleEntries.get(h).getObstacle(0, 0);
-
 			for (int i = 0; i < Game.obstacles.size(); i++)
 			{
 				Obstacle o = Game.obstacles.get(i);
@@ -1742,7 +1710,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 							else
 								level.append(i).append("...").append(i + xLength - 1).append("-").append(j).append(name);
 
-							if ((obs.enableStacking && !("1.0".equals(stack))) || (obs.enableGroupID && !("0".equals(stack))))
+							if (!stack.isEmpty())
 								level.append("-").append(stack);
 
 							level.append(",");
@@ -1756,7 +1724,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						{
 							level.append(i).append("-").append(j).append("...").append(j + yLength - 1).append(name);
 
-							if ((obs.enableStacking && !("1.0".equals(stack))) || (obs.enableGroupID && !("0".equals(stack))))
+							if (!stack.isEmpty())
 								level.append("-").append(stack);
 
 							level.append(",");
@@ -1781,11 +1749,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				level.append("-").append(((ObstacleUnknown) u).metadata);
 			else
 			{
-				if (u.enableGroupID)
-					level.append("-").append(u.groupID);
-
-				if (u.enableStacking)
-					level.append("-").append(u.stackHeight);
+				String meta = u.getMetadata();
+				if (!meta.isEmpty())
+					level.append("-").append(meta);
 			}
 
 
@@ -1903,12 +1869,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		boolean[] handled = new boolean[2];
 
-		Tank prevMouseTank = mouseTank;
-		Obstacle prevMouseObstacle = mouseObstacle;
+		GameObject prevMousePlaceable = mousePlaceable;
 		Placeable placeable = currentPlaceable;
 
-		double mx = prevMouseObstacle.posX;
-		double my = prevMouseObstacle.posY;
+		double mx = prevMousePlaceable.posX;
+		double my = prevMousePlaceable.posY;
 
 		int prevSize = Game.movables.size() + Game.obstacles.size();
 
@@ -1919,20 +1884,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			try
 			{
 				Obstacle n = o.getClass().getConstructor(String.class, double.class, double.class).newInstance(o.name, (o.posX + mx) / Game.tile_size - 0.5, (o.posY + my) / Game.tile_size - 0.5);
-				n.selectors = o.selectors;
-				n.groupID = o.groupID;
-				n.stackHeight = o.stackHeight;
-				n.startHeight = o.startHeight;
-				mouseObstacle = n;
-				mouseObstacle.stackHeight = n.stackHeight;
-                mouseObstacleStartHeight = n.startHeight;
-				mouseTank.posX = mouseObstacle.posX;
-				mouseTank.posY = mouseObstacle.posY;
+				n.setMetadata(o.getMetadata());
 
 				handlePlace(handled, true, false, true, false, true, true);
-
-				mouseTank.posX = mouseObstacle.posX;
-				mouseTank.posY = mouseObstacle.posY;
 			}
 			catch (Exception e)
 			{
@@ -1940,7 +1894,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		mouseObstacle = prevMouseObstacle;    	// this line is important! debugging this took at least 1.5 hrs
+		mousePlaceable = prevMousePlaceable;    	// this line is important! debugging this took at least 1.5 hrs
 
 		for (Tank t : clipboard.tanks)
 		{
@@ -1960,7 +1914,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				n.team = t.team;
 				n.destroy = t.destroy;
-				mouseTank = n;
+				mousePlaceable = n;
 
 				if (n instanceof TankSpawnMarker || n instanceof TankPlayer)
 					currentPlaceable = Placeable.playerTank;
@@ -1973,16 +1927,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		prevMouseObstacle.posX = mx;
-		prevMouseObstacle.posY = my;
-		prevMouseTank.posX = mx;
-		prevMouseTank.posY = my;
+		prevMousePlaceable.posX = mx;
+		prevMousePlaceable.posY = my;
 
 		currentPlaceable = placeable;
-		mouseTank = prevMouseTank;
-		mouseObstacle = prevMouseObstacle;
-
-		mouseObstacleStartHeight = mouseObstacle.startHeight;
+		mousePlaceable = prevMousePlaceable;
 
 		ArrayList<EditorAction> tempActions = this.undoActions;
 		this.undoActions = actions;
@@ -2023,9 +1972,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (Movable m: Game.movables)
 			drawables[m.drawLevel].add(m);
-
-		mouseTank.updateSelectors();
-		mouseObstacle.updateSelectors();
 
 		for (Obstacle o : Game.obstacles)
 		{
@@ -2079,70 +2025,73 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				if (Game.enable3d)
 				{
 					if (hoverObstacle == null)
-						Drawing.drawing.fillBox(mouseObstacle.posX, mouseObstacle.posY, 0, Game.tile_size, Game.tile_size, Game.tile_size, (byte) 64);
+						Drawing.drawing.fillBox(mousePlaceable.posX, mousePlaceable.posY, 0, Game.tile_size, Game.tile_size, Game.tile_size, (byte) 64);
 					else
 						hoverObstacle.draw3dOutline(255, 0, 0, 64);
 				}
 				else
-					Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+					Drawing.drawing.fillRect(mousePlaceable.posX, mousePlaceable.posY, Game.tile_size, Game.tile_size);
 			}
 			else if (currentMode == EditorMode.paste)
 			{
 				Drawing.drawing.setColor(255, 255, 255, 127, 0.3);
-				Drawing.drawing.drawImage("icons/paste.png", mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+				Drawing.drawing.drawImage("icons/paste.png", mousePlaceable.posX, mousePlaceable.posY, Game.tile_size, Game.tile_size);
 
 				for (Obstacle o : clipboard.obstacles)
 				{
 					Drawing.drawing.setColor(o.colorR, o.colorG, o.colorB, 64, 0.5);
-					Drawing.drawing.fillRect(o.posX + mouseTank.posX, o.posY + mouseTank.posY, /*0,*/ Game.tile_size, Game.tile_size/*, ((Obstacle) o).stackHeight * Game.tile_size, (byte) 64*/);
+					Drawing.drawing.fillRect(o.posX + mousePlaceable.posX, o.posY + mousePlaceable.posY, /*0,*/ Game.tile_size, Game.tile_size/*, ((Obstacle) o).stackHeight * Game.tile_size, (byte) 64*/);
 				}
 
 				for (Tank t : clipboard.tanks)
-                    t.drawOutlineAt(t.posX + mouseTank.posX, t.posY + mouseTank.posY);
+                    t.drawOutlineAt(t.posX + mousePlaceable.posX, t.posY + mousePlaceable.posY);
 			}
 			else if (currentMode == EditorMode.picker)
 			{
 				Drawing.drawing.setColor(0, 0, 0, 127);
-				Drawing.drawing.drawRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size, 10, 0);
+				Drawing.drawing.drawRect(mousePlaceable.posX, mousePlaceable.posY, Game.tile_size, Game.tile_size, 10, 0);
 				Drawing.drawing.setColor(255, 255, 255, 255, 1);
-				Drawing.drawing.drawImage("icons/eyedropper.png", mouseObstacle.posX - Game.tile_size / 2, mouseObstacle.posY - Game.tile_size / 2, Game.tile_size, Game.tile_size);
+				Drawing.drawing.drawImage("icons/eyedropper.png", mousePlaceable.posX - Game.tile_size / 2, mousePlaceable.posY - Game.tile_size / 2, Game.tile_size, Game.tile_size);
 			}
 			else if ((currentPlaceable == Placeable.enemyTank || currentPlaceable == Placeable.playerTank) && currentMode == EditorMode.build)
 			{
-				mouseTank.drawOutline();
-				mouseTank.drawTeam();
+				((Tank)mousePlaceable).drawOutline();
+				((Tank)mousePlaceable).drawTeam();
 
 				if (currentPlaceable == Placeable.playerTank && !this.movePlayer)
 				{
 					Drawing.drawing.setColor(0, 200, 255, 127);
-					Drawing.drawing.drawImage("emblems/player_spawn.png", mouseTank.posX, mouseTank.posY, mouseTank.size * 0.7, mouseTank.size * 0.7);
+
+					if (!Game.enable3d)
+						Drawing.drawing.drawImage("emblems/player_spawn.png", mousePlaceable.posX, mousePlaceable.posY, ((Tank) mousePlaceable).size * 0.7, ((Tank) mousePlaceable).size * 0.7);
+					else
+						Drawing.drawing.drawImage("emblems/player_spawn.png", mousePlaceable.posX, mousePlaceable.posY, Game.tile_size * 0.82, ((Tank) mousePlaceable).size * 0.5, ((Tank) mousePlaceable).size * 0.5);
 				}
 			}
 			else if (currentPlaceable == Placeable.obstacle && currentMode == EditorMode.build)
 			{
-				int x = (int) (mouseObstacle.posX / Game.tile_size);
-				int y = (int) (mouseObstacle.posY / Game.tile_size);
+				int x = (int) (mousePlaceable.posX / Game.tile_size);
+				int y = (int) (mousePlaceable.posY / Game.tile_size);
 
 				if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY /*&&
 						(Game.getObstacle(x, y) == null || (Game.getSurfaceObstacle(x, y) == null &&
-								Game.getObstacle(x, y).isSurfaceTile != mouseObstacle.isSurfaceTile && !mouseObstacle.tankCollision))*/)
+								Game.getObstacle(x, y).isSurfaceTile != mousePlaceable.isSurfaceTile && !mousePlaceable.tankCollision))*/)
 				{
-					mouseObstacle.startHeight = mouseObstacleStartHeight;
-
+					Obstacle mouseObstacle = (Obstacle) mousePlaceable;
 					if (Game.enable3d)
 					{
 						if (Game.isOrdered(-1, x, Game.currentSizeX) && Game.isOrdered(-1, y, Game.currentSizeY) /*&&
-								(Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mouseObstacle.stackHeight + mouseObstacleStartHeight, Game.getObstacle(x, y).stackHeight))*/)
+								(Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mousePlaceable.stackHeight + mousePlaceableStartHeight, Game.getObstacle(x, y).stackHeight))*/)
 							mouseObstacle.draw3dOutline(mouseObstacle.colorR, mouseObstacle.colorG, mouseObstacle.colorB, 100);
 					}
 
 					mouseObstacle.drawOutline();
 
-					if (mouseObstacle.hasCustomSelectors())
+					if (mouseObstacle.getPrimaryMetadataProperty() != null)
 					{
 						Drawing.drawing.setFontSize(16);
 						Drawing.drawing.setColor(mouseObstacle.colorR / 2, mouseObstacle.colorG / 2, mouseObstacle.colorB / 2, 255);
-						Drawing.drawing.drawText(mouseObstacle.posX, mouseObstacle.posY, mouseObstacle.selectors.get(0).getMetadata());
+						Drawing.drawing.drawText(mousePlaceable.posX, mousePlaceable.posY, mouseObstacle.getPrimaryMetadataProperty().getMetadataDisplayString(mousePlaceable));
 					}
 				}
 			}
@@ -2244,13 +2193,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void changeMetadata(int add)
 	{
-		if (currentPlaceable == Placeable.obstacle)
-		{
-			if (mouseObstacle.selectorCount() > 0)
-				mouseObstacle.selectors.get(0).changeMeta(add);
-		}
-		else if (mouseTank.selectorCount() > 0)
-			mouseTank.selectors.get(0).changeMeta(add);
+		MetadataSelector m = mousePlaceable.getPrimaryMetadataProperty();
+
+		if (m != null)
+			m.changeMetadata(this, mousePlaceable, add);
 	}
 
 	public void previewSelection(double lowX, double highX, double lowY, double highY, double extra)
@@ -2265,7 +2211,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!Game.game.window.touchscreen)
 			{
 				if (hoverObstacle == null)
-					Drawing.drawing.fillRect(mouseObstacle.posX, mouseObstacle.posY, Game.tile_size, Game.tile_size);
+					Drawing.drawing.fillRect(mousePlaceable.posX, mousePlaceable.posY, Game.tile_size, Game.tile_size);
 				else
 					hoverObstacle.draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
 			}
@@ -2446,41 +2392,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		for (int i = 0; i < s.size(); i++)
 		{
 			if (currentPlaceable == Placeable.enemyTank)
-				mouseTank.drawOutlineAt((s.xs.get(i) + 0.5) * Game.tile_size, (s.ys.get(i) + 0.5) * Game.tile_size);
+				((Tank) mousePlaceable).drawOutlineAt((s.xs.get(i) + 0.5) * Game.tile_size, (s.ys.get(i) + 0.5) * Game.tile_size);
 			else
-				mouseObstacle.drawOutlineAt((s.xs.get(i) + 0.5) * Game.tile_size, (s.ys.get(i) + 0.5) * Game.tile_size);
+				((Obstacle) mousePlaceable).drawOutlineAt((s.xs.get(i) + 0.5) * Game.tile_size, (s.ys.get(i) + 0.5) * Game.tile_size);
 		}
 	}
 
 	public boolean specialBuildTool()
 	{
 		return currentMode == EditorMode.build && buildTool != BuildTool.normal && currentPlaceable != Placeable.playerTank;
-	}
-
-
-	public void cloneSelectorProperties()
-	{
-		cloneSelectorProperties(true);
-	}
-
-	public void cloneSelectorProperties(boolean forward)
-	{
-		GameObject o = (currentPlaceable == Placeable.obstacle ? mouseObstacle : mouseTank);
-		o.initSelectors(this);
-
-		o.forAllSelectors(s ->
-		{
-			LevelEditorSelector<?> s1 = this.selectors.get(s.id);
-			if (s1 != null)
-			{
-				if (forward)
-					s.cloneProperties(s1);
-				else
-					s1.cloneProperties(s);
-			}
-			else if (s.modified())
-				this.selectors.put(s.id, s);
-		});
 	}
 
 	public void play()
@@ -2630,8 +2550,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				if (selectedTiles[i][j])
 				{
-					SelectorStackHeight s = (SelectorStackHeight) o.getSelector("stack_height");
-					if (s != null)
+					if (o.getMetadataProperty("stack_height") != null)
 					{
 						heightBlocksSelected = true;
 						break;
@@ -2651,11 +2570,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 			if (i >= 0 && i < Game.currentSizeX && j >= 0 && j < Game.currentSizeY && selectedTiles[i][j])
 			{
-				SelectorStackHeight s = (SelectorStackHeight) o.getSelector("stack_height");
+				MetadataSelector s = o.getMetadataProperty("stack_height");
 				if (s == null)
 					continue;
 
-				s.changeMeta(num);
+				s.changeMetadata(this, o, num);
 
 				if (Game.enable3d)
 				{
@@ -2686,7 +2605,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				try
 				{
 					Obstacle n = o.getClass().getConstructor(String.class, double.class, double.class).newInstance(o.name, (int) (o.posX / 50 - 0.5), (int) (o.posY / 50 - 0.5));
-					n.cloneAllSelectors(o);
+					o.setMetadata(n.getMetadata());
 					clipboard.add(n);
 
 					if (cut)
@@ -2761,49 +2680,84 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			this.currentMode = EditorMode.paste;
 		}
-
-		clipboards[selectedNum] = clipboard;
 	}
 
-	public void refreshMouseObject()
+	public void createShortcutButton(MetadataSelector s)
 	{
+		InputBindingGroup i = Game.game.inputBindings.get(s.metadataProperty.keybind());
+		EditorButton e = new EditorButton(shortcutButtons, s.metadataProperty.image(), 50, 50, () ->
+		{
+			this.paused = true;
+			this.objectMenu = true;
+			s.openEditorOverlay(this);
+		}, "", i);
+		e.setDescription(s.metadataProperty.name() + " (%s)", i.getInputs());
+	}
+
+	public void setMousePlaceable()
+	{
+		double prevMousePlaceableX = mousePlaceable.posX;
+		double prevMousePlaceableY = mousePlaceable.posY;
+
 		if (this.currentPlaceable == Placeable.enemyTank)
 		{
 			Tank t;
 			if (tankNum < Game.registryTank.tankEntries.size())
-				t = Game.registryTank.getEntry(tankNum).getTank(mouseTank.posX, mouseTank.posY, mouseTank.angle);
+				t = Game.registryTank.getEntry(tankNum).getTank(mousePlaceable.posX, mousePlaceable.posY, 0);
 			else
-				t = this.level.customTanks.get(tankNum - Game.registryTank.tankEntries.size()).instantiate(mouseTank.name, mouseTank.posX, mouseTank.posY, mouseTank.angle);
+			{
+				TankAIControlled t1 = this.level.customTanks.get(tankNum - Game.registryTank.tankEntries.size());
+				t = t1.instantiate(t1.name, mousePlaceable.posX, mousePlaceable.posY, t1.angle);
+			}
 
-			t.drawAge = mouseTank.drawAge;
-			mouseTank = t;
-			this.mouseTank.initSelectors(this);
-			this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
+			t.drawAge = 100;
+			mousePlaceable = t;
 		}
 		else if (this.currentPlaceable == Placeable.obstacle)
 		{
-			this.mouseObstacle.forAllSelectors(s -> this.selectors.put(s.id, s));
-			this.mouseObstacle = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
-			this.mouseObstacle.initSelectors(this);
-			this.mouseObstacle.forAllSelectors(s ->
-			{
-				LevelEditorSelector<?> s1 = this.selectors.get(s.id);
-				s.gameObject = this.mouseObstacle;
-
-				if (s1 == null)
-					this.selectors.put(s.id, s);
-				else
-					s.cloneProperties(s1);
-			});
-			this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
+			this.mousePlaceable = Game.registryObstacle.getEntry(obstacleNum).getObstacle(0, 0);
 		}
 		else if (this.currentPlaceable == Placeable.playerTank)
 		{
-			this.mouseTank = new TankPlayer(0, 0, 0);
-			this.mouseTank.initSelectors(this);
-			this.mouseTank.forAllSelectors(LevelEditorSelector::addShortcutButton);
-			((TankPlayer) mouseTank).setDefaultColor();
+			this.mousePlaceable = new TankPlayer(0, 0, 0);
+			((TankPlayer) mousePlaceable).setDefaultColor();
 		}
+
+		this.buttons.bottomRight.removeAll(this.shortcutButtons);
+		this.shortcutButtons.clear();
+
+		MetadataSelector primary = mousePlaceable.getPrimaryMetadataProperty();
+		MetadataSelector secondary = mousePlaceable.getSecondaryMetadataProperty();
+
+		if (primary != null)
+			createShortcutButton(primary);
+
+		if (secondary != null)
+			createShortcutButton(secondary);
+
+		for (MetadataSelector a: mousePlaceable.getMetadataProperties().values())
+		{
+			if (a != null)
+			{
+				if (currentMetadata.get(a.id) != null)
+					a.setMetadata(null, this.mousePlaceable, currentMetadata.get(a.id));
+
+				if (!a.id.equals(mousePlaceable.primaryMetadataID) && !a.id.equals(mousePlaceable.secondaryMetadataID))
+					createShortcutButton(a);
+			}
+		}
+
+		if (mousePlaceable instanceof Tank)
+			((Tank) mousePlaceable).angle = ((Tank) mousePlaceable).orientation;
+
+		if (this.currentMode == EditorMode.build)
+			this.buttons.bottomRight.addAll(this.shortcutButtons);
+
+		this.buttons.refreshButtons();
+
+		this.mousePlaceable.refreshMetadata();
+		mousePlaceable.posX = prevMousePlaceableX;
+		mousePlaceable.posY = prevMousePlaceableY;
 	}
 
 	public double clampTileX(double x)

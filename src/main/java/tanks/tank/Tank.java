@@ -3,12 +3,10 @@ package tanks.tank;
 import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.SelectorRotation;
-import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.network.event.EventTankAddAttributeModifier;
@@ -18,11 +16,13 @@ import tanks.network.event.EventTankUpdateVisibility;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
+import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
-import static tanks.tank.TankPropertyCategory.*;
-
 import java.util.*;
+
+import static tanks.tank.TankPropertyCategory.*;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -31,9 +31,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	public static HashMap<Integer, Tank> idMap = new HashMap<>();
 
 	public static Model health_model;
-
-	public SelectorRotation<Tank> rotationSelector;
-	public SelectorTeam<Tank> teamSelector;
 
 	public boolean fromRegistry = false;
 
@@ -200,6 +197,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = appearanceEmblem, id = "emblem_b", name = "Blue", miscType = Property.MiscType.color)
 	public double emblemB;
 
+	@MetadataProperty(id = "rotation", name = "Rotation", selector = SelectorRotation.selector_name, image = "rotate_tank.png", keybind = "editor.rotate")
 	public double orientation = 0;
 
 	public double hitboxSize = 0.95;
@@ -250,6 +248,9 @@ public abstract class Tank extends Movable implements ISolidObject
 		turret = new Turret(this);
 		this.name = name;
 		this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, this.name);
+
+		this.primaryMetadataID = "team";
+		this.secondaryMetadataID = "rotation";
 
 		this.drawLevel = 4;
 	}
@@ -415,7 +416,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
 
-			if (!o.tankCollision && !o.checkForObjects || o.startHeight > 1)
+			if (!o.tankCollision && !o.checkForObjects || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
 				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
@@ -879,7 +880,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.health > 1 && this.size > 0 && !forInterface)
 		{
 			double size = s;
-			for (int i = 1; i < Math.min(health, 6); i++)
+			for (int i = 0; i < Math.min(Math.log10(health) * Math.log10(10) / Math.log10(4), 6); i++)
 			{
 				if (in3d)
 					drawing.drawModel(health_model,
@@ -1105,7 +1106,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkHit(owner, source);
 
-		if (this.health > 6 && (int) (this.health + amount) != (int) (this.health))
+		if (this.health > 0 && (int) (this.health + amount) != (int) (this.health))
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
 			e.size = this.size;
@@ -1176,20 +1177,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 		else
 			e.posZ = 1;
-	}
-
-	@Override
-	public void registerSelectors()
-	{
-		this.registerSelector(new SelectorTeam<Tank>());
-		this.registerSelector(new SelectorRotation<Tank>());
-	}
-
-	@Override
-	public void postInitSelectors()
-	{
-		this.teamSelector = (SelectorTeam<Tank>) this.selectors.get(0);
-		this.rotationSelector = (SelectorRotation<Tank>) this.selectors.get(1);
 	}
 
 	public void updatePossessing()
@@ -1296,29 +1283,30 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public String getMetadata()
 	{
-		StringBuilder s = new StringBuilder();
-		int sc = this.selectorCount();
-		for (int i = 0; i < sc; i++)
-			s.append(this.selectors.get(saveOrder(i)).getMetadata()).append("-");
-
-		String s1 = s.toString();
-		if (s1.endsWith("-"))
-			return s1.substring(0, s1.length() - 1);
-		return s1;
+		if (Game.currentLevel.enableTeams && this.team != null)
+			return (int) Math.round(this.orientation / Math.PI * 2) + "-" + this.team.name;
+		else
+			return (int) Math.round(this.orientation / Math.PI * 2) + "";
 	}
 
 	public void setMetadata(String s)
 	{
 		String[] data = s.split("-");
 
-		for (int i = 0; i < Math.min(data.length, this.selectorCount()); i++)
-		{
-			if (data[i].isEmpty()) continue;
-			LevelEditorSelector<Tank> sel = (LevelEditorSelector<Tank>) this.selectors.get(saveOrder(i));
-			sel.setMetadata(data[i]);
-		}
+		if (data.length >= 1)
+			this.orientation = Math.PI / 2 * Double.parseDouble(data[0]);
 
-		updateSelectors();
+		if (!Game.currentLevel.enableTeams)
+		{
+			if (Game.currentLevel.disableFriendlyFire)
+				this.team = (this instanceof IServerPlayerTank || this instanceof ILocalPlayerTank) ? Game.playerTeamNoFF : Game.enemyTeamNoFF;
+			else
+				this.team = (this instanceof IServerPlayerTank || this instanceof ILocalPlayerTank) ? Game.playerTeam : Game.enemyTeam;
+		}
+		else if (data.length >= 2)
+			this.team = Game.currentLevel.teamsMap.get(data[1]);
+		else
+			this.team = null;
 	}
 
 	public void setBufferCooldown(double value)

@@ -21,7 +21,6 @@ import tanks.tankson.TanksONable;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static java.lang.System.exit;
 import static tanks.tank.TankPropertyCategory.*;
 
 /** This class is the 'skeleton' tank class.
@@ -2900,7 +2899,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public static TankAIControlled fromString(String s)
 	{
-		if (s.indexOf("[") == -1 || s.indexOf("{") < s.indexOf("["))
+		if (s.contains("{") && (!s.contains("[") || s.indexOf("{") < s.indexOf("[")))
 			return (TankAIControlled) Serializer.fromTanksON(s);
 		else
 			return fromStringLegacy(s, null);
@@ -3088,7 +3087,6 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		TankAIControlled t = new TankAIControlled(name, x, y, this.size, this.colorR, this.colorG, this.colorB, angle, this.shootAIType);
 		this.cloneProperties(t);
-		t.registerSelectors();
 		return t;
 	}
 

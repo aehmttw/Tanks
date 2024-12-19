@@ -73,7 +73,6 @@ public class RegistryTank
 			{
 				Constructor<? extends Tank> c = tank.getConstructor(String.class, double.class, double.class, double.class);
 				Tank t = c.newInstance(this.name, x, y, a);
-				t.registerSelectors();
 				t.fromRegistry = true;
 				t.musicTracks = Game.registryTank.tankMusics.get(this.name);
 

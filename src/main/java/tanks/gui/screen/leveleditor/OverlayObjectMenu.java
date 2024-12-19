@@ -4,11 +4,11 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.Movable;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector.Position;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
+import tanks.gui.screen.leveleditor.selector.MetadataSelector;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 import tanks.tankson.ArrayListIndexPointer;
@@ -16,14 +16,17 @@ import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITankScreen, IRenamableScreen
 {
-    public Button leftButton, rightButton;
-    public LevelEditorSelector<?> leftSelector, rightSelector;
+    public Button primaryMetadataButton;
+    public Button secondaryMetadataButton;
 
     public int objectButtonRows = 3;
     public int objectButtonCols = 10;
+
+    public boolean refreshButtons = false;
 
     public ArrayList<Button> tankButtons = new ArrayList<>();
     public ArrayList<Button> obstacleButtons = new ArrayList<>();
@@ -61,29 +64,25 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
-        saveSelectors(editor);
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.playerTank;
-        editor.mouseTank = new TankPlayer(0, 0, 0);
-        editor.mouseTank.registerSelectors();
-        ((TankPlayer) editor.mouseTank).setDefaultColor();
-        this.loadSelectors(editor.mouseTank, this);
+        this.editor.setMousePlaceable();
+        this.loadButtons();
     }
     );
 
     public Button placeEnemy = new Button(this.centerX, this.centerY - 180, 350, 40, "Tank", () ->
     {
-        saveSelectors(editor);
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.enemyTank;
-        this.editor.refreshMouseObject();
-        this.loadSelectors(editor.mouseTank, this);
+        this.editor.setMousePlaceable();
+        this.loadButtons();
     }
     );
 
     public Button placeObstacle = new Button(this.centerX + 380, this.centerY - 180, 350, 40, "Block", () ->
     {
-        saveSelectors(editor);
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.obstacle;
-        this.loadSelectors(editor.mouseObstacle, this);
+        this.editor.setMousePlaceable();
+        this.loadButtons();
     });
 
     public Button editTank = new Button(0, 0, 40, 40, "", () ->
@@ -126,16 +125,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         sort.image = "icons/sort_alphabetical.png";
         sort.fullInfo = true;
 
-        if (this.editor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
-            loadSelectors(editor.mouseObstacle, this);
-        else
-            loadSelectors(editor.mouseTank, this);
-
-        if (leftButton != null)
-            loadButton(leftButton, leftSelector);
-
-        if (rightButton != null)
-            loadButton(rightButton, rightSelector);
+        this.loadButtons();
 
         playerItems.imageXOffset = -155;
         playerItems.imageSizeX = 30;
@@ -179,19 +169,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
             ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
             {
-                saveSelectors(editor);
-
                 editor.tankNum = j;
-
-                if (j < Game.registryTank.tankEntries.size())
-                {
-                    editor.mouseTank = Game.registryTank.getEntry(j).getTank(0, 0, editor.mouseTank.angle);
-                    editor.mouseTank.selectors = t.selectors;
-                }
-                else
-                    editor.mouseTank = ((TankAIControlled) t).instantiate(t.name, 0, 0, 0);
-
-                loadSelectors(editor.mouseTank, this);
+                editor.setMousePlaceable();
+                this.loadButtons();
             }
                     , t.description);
 
@@ -212,15 +192,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             Obstacle o = Game.registryObstacle.obstacleEntries.get(i).getObstacle(x, y);
             ButtonObject b = new ButtonObject(o, x, y, 75, 75, () ->
             {
-                saveSelectors(editor);
-
                 editor.obstacleNum = j;
-                editor.mouseObstacle = Game.registryObstacle.getEntry(j).getObstacle(0, 0);
-
-                leftButton = null;
-                rightButton = null;
-
-                loadSelectors(editor.mouseObstacle, this);
+                editor.setMousePlaceable();
+                this.loadButtons();
             }
                     , o.description);
 
@@ -276,56 +250,59 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         this.editTank.fullInfo = true;
     }
 
-    public void loadSelectors(GameObject o, OverlayObjectMenu menu)
+    public void loadButtons()
     {
-        this.loadSelectors(o, menu, menu != null ? menu.editor : null);
-    }
+        this.primaryMetadataButton = null;
+        this.secondaryMetadataButton = null;
 
-    public void loadSelectors(GameObject o, OverlayObjectMenu menu, ScreenLevelEditor editor)
-    {
-        leftButton = null;
-        rightButton = null;
+        MetadataSelector s1 = editor.mousePlaceable.getPrimaryMetadataProperty();
+        MetadataSelector s2 = editor.mousePlaceable.getSecondaryMetadataProperty();
 
-        o.initSelectors(editor);
-
-        o.forAllSelectors(s ->
+        if (s1 != null)
         {
-            LevelEditorSelector<?> s1 = this.editor.selectors.get(s.id);
-            s.objectMenu = menu;
-            s.gameObject = o;
-
-            if (s1 == null)
-                this.editor.selectors.put(s.id, s);
-            else
-                s.cloneProperties(s1);
-
-            s.addShortcutButton();
-
-            if (s.position == LevelEditorSelector.Position.object_menu_left)
+            this.primaryMetadataButton = new Button(this.exitObjectMenu.posX - this.objXSpace, this.exitObjectMenu.posY, this.objWidth, this.objHeight, "", () ->
             {
-                leftButton = s.button;
-                leftSelector = s;
-                loadButton(leftButton, s);
-            }
+                this.refreshButtons = true;
+                s1.openEditorOverlay(editor);
+            });
 
-            if (s.position == LevelEditorSelector.Position.object_menu_right)
+            if (!s1.metadataProperty.image().isEmpty())
             {
-                rightButton = s.button;
-                rightSelector = s;
-                loadButton(rightButton, s);
+                this.primaryMetadataButton.image = "/icons/" + s1.metadataProperty.image();
+                this.primaryMetadataButton.imageXOffset = -this.objWidth / 2 + objHeight / 2;
+                this.primaryMetadataButton.imageSizeX = this.objHeight * 0.8;
+                this.primaryMetadataButton.imageSizeY = this.objHeight * 0.8;
+                this.primaryMetadataButton.setText("%s: %s", Translation.translate(s1.metadataProperty.name()), s1.getMetadataDisplayString(editor.mousePlaceable));
             }
-        });
-    }
+        }
 
-    public void loadButton(Button b, LevelEditorSelector<?> s)
-    {
-        b.setPosition(this.centerX + (s.position == Position.object_menu_left ? -this.objXSpace : this.objXSpace), this.centerY + this.objYSpace * 4);
-        s.button = b;
-        s.load();
+        if (s2 != null)
+        {
+            this.secondaryMetadataButton = new Button(this.exitObjectMenu.posX + this.objXSpace, this.exitObjectMenu.posY, this.objWidth, this.objHeight, "", () ->
+            {
+                this.refreshButtons = true;
+                s2.openEditorOverlay(editor);
+            });
+
+            this.secondaryMetadataButton.setText("%s: %s", Translation.translate(s2.metadataProperty.name()), s2.getMetadataDisplayString(editor.mousePlaceable));
+
+            if (!s2.metadataProperty.image().isEmpty())
+            {
+                this.secondaryMetadataButton.image = "/icons/" + s2.metadataProperty.image();
+                this.secondaryMetadataButton.imageXOffset = -this.objWidth / 2 + objHeight / 2;
+                this.secondaryMetadataButton.imageSizeX = this.objHeight * 0.8;
+                this.secondaryMetadataButton.imageSizeY = this.objHeight * 0.8;
+            }
+        }
     }
 
     public void update()
     {
+        if (this.refreshButtons)
+            this.loadButtons();
+
+        this.refreshButtons = false;
+
         this.placePlayer.enabled = (this.editor.currentPlaceable != ScreenLevelEditor.Placeable.playerTank);
         this.placeEnemy.enabled = (this.editor.currentPlaceable != ScreenLevelEditor.Placeable.enemyTank);
         this.placeObstacle.enabled = (this.editor.currentPlaceable != ScreenLevelEditor.Placeable.obstacle);
@@ -396,11 +373,11 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 previousObstaclePage.update();
         }
 
-        if (leftButton != null)
-            leftButton.update();
+        if (primaryMetadataButton != null)
+            primaryMetadataButton.update();
 
-        if (rightButton != null)
-            rightButton.update();
+        if (secondaryMetadataButton != null)
+            secondaryMetadataButton.update();
 
         if (editor.tankNum >= Game.registryTank.tankEntries.size())
         {
@@ -410,15 +387,16 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.editTank.update();
         }
 
-        (this.editor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle ? editor.mouseObstacle : editor.mouseTank)
-                .forAllSelectors(s ->
-                {
-                    if (s.keybind != null && s.keybind.isValid())
-                    {
-                        s.keybind.invalidate();
-                        s.onSelect();
-                    }
-                });
+        HashMap<String, MetadataSelector> h = editor.mousePlaceable.getMetadataProperties();
+        for (MetadataSelector s: h.values())
+        {
+            InputBindingGroup i = Game.game.inputBindings.get(s.metadataProperty.keybind());
+            if (i != null && i.isValid())
+            {
+                i.invalidate();
+                s.openEditorOverlay(editor);
+            }
+        }
 
         super.update();
     }
@@ -525,17 +503,11 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.drawMobileTooltip(this.obstacleButtons.get(this.editor.obstacleNum).hoverTextRawTranslated);
         }
 
-        if (leftButton != null)
-            leftButton.draw();
+        if (primaryMetadataButton != null)
+            primaryMetadataButton.draw();
 
-        if (rightButton != null)
-            rightButton.draw();
-    }
-
-    public static void saveSelectors(ScreenLevelEditor e)
-    {
-        GameObject o = e.currentPlaceable == ScreenLevelEditor.Placeable.obstacle ? e.mouseObstacle : e.mouseTank;
-        o.forAllSelectors(s -> e.selectors.put(s.id, s));
+        if (secondaryMetadataButton != null)
+            secondaryMetadataButton.draw();
     }
 
     public void drawMobileTooltip(String text)
@@ -552,15 +524,6 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }
 
     @Override
-    public void load()
-    {
-        if (this.editor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
-            editor.mouseObstacle.forAllSelectors(LevelEditorSelector::load);
-        else
-            editor.mouseTank.forAllSelectors(LevelEditorSelector::load);
-    }
-
-    @Override
     public Pointer<TankAIControlled> addTank(TankAIControlled t, boolean select)
     {
         this.editor.level.customTanks.add(t);
@@ -568,8 +531,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (select)
         {
             this.editor.tankNum = this.editor.level.customTanks.size() + Game.registryTank.tankEntries.size() - 1;
-            this.editor.refreshMouseObject();
-            this.loadSelectors(t, null, this.editor);
+            this.editor.setMousePlaceable();
         }
 
         return new ArrayListIndexPointer<>(this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
@@ -600,9 +562,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     {
         Game.screen = new OverlayObjectMenu(this.previous, this.editor);
 
-        String name = this.editor.mouseTank.name;
+        String name = this.editor.mousePlaceable instanceof Tank ? ((Tank) this.editor.mousePlaceable).name : "";
 
-        if (this.editor.mouseTank instanceof TankAIControlled)
+        if (this.editor.mousePlaceable instanceof TankAIControlled)
         {
             for (Movable m : Game.movables)
             {
@@ -614,8 +576,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (this.editor.tankNum >= this.editor.level.customTanks.size() + Game.registryTank.tankEntries.size())
             this.editor.tankNum--;
 
-        this.editor.refreshMouseObject();
-        this.loadSelectors(t, null, this.editor);
+        this.editor.setMousePlaceable();
     }
 
     public int compareTo(TankAIControlled t1, TankAIControlled t2)

@@ -21,6 +21,7 @@ import tanks.network.event.*;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
 
 import java.util.*;
@@ -728,7 +729,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				double[] l = ((IDrawableLightSource) o).getLightInfo();
 				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
 				l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-				l[2] = (o.startHeight + 25) * Drawing.drawing.scale;
+				l[2] = (o instanceof ObstacleStackable ? ((ObstacleStackable) o).startHeight : 0 + 25) * Drawing.drawing.scale;
 				Panel.panel.lights.add(l);
 			}
 		}
@@ -745,17 +746,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 		}
 
-		for (Effect o: Game.effects)
-		{
-			if (o != null && ((IDrawableLightSource) o).lit())
-			{
-				double[] l = ((IDrawableLightSource) o).getLightInfo();
-				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
-				l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-				l[2] = (o.posZ) * Drawing.drawing.scale;
-				Panel.panel.lights.add(l);
-			}
-		}
+//		for (Effect o: Game.effects)
+//		{
+//			if (o != null && ((IDrawableLightSource) o).lit())
+//			{
+//				double[] l = ((IDrawableLightSource) o).getLightInfo();
+//				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
+//				l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
+//				l[2] = (o.posZ) * Drawing.drawing.scale;
+//				Panel.panel.lights.add(l);
+//			}
+//		}
 	}
 
 	@Override

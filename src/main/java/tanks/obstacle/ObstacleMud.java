@@ -17,7 +17,6 @@ public class ObstacleMud extends Obstacle
         this.tankCollision = false;
         this.bulletCollision = false;
         this.checkForObjects = true;
-        this.enableStacking = false;
 
         this.type = ObstacleType.ground;
 
@@ -25,11 +24,17 @@ public class ObstacleMud extends Obstacle
         this.colorG = 30;
         this.colorB = 0;
 
-        this.replaceTiles = true;
-
         this.description = "A thick puddle of mud that slows tanks down";
 
+        this.replaceTiles = true;
         this.tileRenderer = ShaderMud.class;
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+        Drawing.drawing.setColor(r, g, b);
+        Drawing.drawing.fillRect(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size);
     }
 
     @Override

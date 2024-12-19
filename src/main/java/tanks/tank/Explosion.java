@@ -82,8 +82,18 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
 
     public void explode()
     {
-        double r = this.radius <= 0 ? this.knockbackRadius : this.radius;
-        Drawing.drawing.playSound("explosion.ogg", (float) (Mine.mine_radius / r));
+        double r = (this.radius <= 0 || this.damage == 0) ? this.knockbackRadius : this.radius;
+        double k;
+
+        if (Math.abs(this.tankKnockback) > Math.abs(this.bulletKnockback))
+            k = this.tankKnockback;
+        else
+            k = this.bulletKnockback;
+
+        if (k >= 0)
+            Drawing.drawing.playSound("explosion.ogg", (float) (Mine.mine_radius / r));
+        else
+            Drawing.drawing.playSound("suck.ogg", (float) (Mine.mine_radius / r));
 
         if (Game.effectsEnabled)
         {
@@ -101,6 +111,37 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                 else
                     e.setPolarMotion(Math.random() * 2 * Math.PI, random * (this.radius - Game.tile_size / 2) / Game.tile_size * 2);
                 Game.effects.add(e);
+            }
+
+            if (this.bulletKnockback != 0 || this.tankKnockback != 0)
+            {
+                for (int j = 0; j < Math.min(800, 200 * this.knockbackRadius / 125) * Game.effectMultiplier; j++)
+                {
+                    double random = Math.random();
+                    Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
+                    e.maxAge /= 2;
+                    e.colR = (1 - random) * 155 + Math.random() * 100;
+                    e.colG = 0;
+                    e.colB = 255;
+
+                    double m = k < 0 ? Math.random() * 4 + 2 : 1;
+
+                    if (Game.enable3d)
+                        e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.asin(Math.random()), k * m);
+                    else
+                        e.setPolarMotion(Math.random() * 2 * Math.PI, k * m);
+
+                    if (k < 0)
+                    {
+                        e.maxAge /= m;
+                        e.type = Effect.EffectType.charge;
+                        e.posX -= e.vX * e.maxAge;
+                        e.posY -= e.vY * e.maxAge;
+                        e.posZ -= e.vZ * e.maxAge;
+                    }
+
+                    Game.effects.add(e);
+                }
             }
         }
 
@@ -241,9 +282,12 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
             }
         }
 
-        Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
-        e.radius = Math.max(this.radius, 0);
-        Game.effects.add(e);
+        if (this.radius > 0 && this.damage != 0)
+        {
+            Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
+            e.radius = Math.max(this.radius, 0);
+            Game.effects.add(e);
+        }
 
         if (this.tankKnockback != 0 || this.bulletKnockback != 0)
         {

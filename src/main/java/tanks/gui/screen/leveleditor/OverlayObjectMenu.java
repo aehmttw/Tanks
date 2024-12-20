@@ -260,7 +260,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         if (s1 != null)
         {
-            this.primaryMetadataButton = new Button(this.exitObjectMenu.posX - this.objXSpace, this.exitObjectMenu.posY, this.objWidth, this.objHeight, "", () ->
+            this.primaryMetadataButton = new Button(this.exitObjectMenu.posX - 380, this.exitObjectMenu.posY, 350, 40, "", () ->
             {
                 this.refreshButtons = true;
                 s1.openEditorOverlay(editor);
@@ -269,16 +269,16 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             if (!s1.metadataProperty.image().isEmpty())
             {
                 this.primaryMetadataButton.image = "icons/" + s1.metadataProperty.image();
-                this.primaryMetadataButton.imageXOffset = -this.objWidth / 2 + objHeight / 2;
-                this.primaryMetadataButton.imageSizeX = this.objHeight * 0.8;
-                this.primaryMetadataButton.imageSizeY = this.objHeight * 0.8;
+                this.primaryMetadataButton.imageXOffset = -350 / 2 + 40 / 2;
+                this.primaryMetadataButton.imageSizeX = 40 * 0.8;
+                this.primaryMetadataButton.imageSizeY = 40 * 0.8;
                 this.primaryMetadataButton.setText("%s: %s", Translation.translate(s1.metadataProperty.name()), s1.getMetadataDisplayString(editor.mousePlaceable));
             }
         }
 
         if (s2 != null)
         {
-            this.secondaryMetadataButton = new Button(this.exitObjectMenu.posX + this.objXSpace, this.exitObjectMenu.posY, this.objWidth, this.objHeight, "", () ->
+            this.secondaryMetadataButton = new Button(this.exitObjectMenu.posX + 380, this.exitObjectMenu.posY, 350, 40, "", () ->
             {
                 this.refreshButtons = true;
                 s2.openEditorOverlay(editor);
@@ -289,9 +289,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             if (!s2.metadataProperty.image().isEmpty())
             {
                 this.secondaryMetadataButton.image = "icons/" + s2.metadataProperty.image();
-                this.secondaryMetadataButton.imageXOffset = -this.objWidth / 2 + objHeight / 2;
-                this.secondaryMetadataButton.imageSizeX = this.objHeight * 0.8;
-                this.secondaryMetadataButton.imageSizeY = this.objHeight * 0.8;
+                this.secondaryMetadataButton.imageXOffset = -350 / 2 + 40 / 2;
+                this.secondaryMetadataButton.imageSizeX = 40 * 0.8;
+                this.secondaryMetadataButton.imageSizeY = 40 * 0.8;
             }
         }
     }

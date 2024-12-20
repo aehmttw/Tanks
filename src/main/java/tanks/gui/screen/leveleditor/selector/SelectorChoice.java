@@ -1,20 +1,15 @@
 package tanks.gui.screen.leveleditor.selector;
 
-import tanks.Consumer;
-import tanks.Function;
-import tanks.Game;
-import tanks.GameObject;
+import tanks.*;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.leveleditor.OverlaySelectChoice;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /** @param <V> The class of the object being selected. (e.g. {@code Team} for team selectors) */
-public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector<T>
+public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector<T, V>
 {
     public ArrayList<V> choices = new ArrayList<>();
-    public V selectedChoice;
     public ButtonList buttonList;
     public int selectedIndex = 0;
     public boolean addNoneChoice = false;
@@ -29,7 +24,6 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
 
         this.id = "choice";
         this.title = "Choice Selector";
-        this.property = "selectedChoice";
 
         super.baseInit();
     }
@@ -43,7 +37,7 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
     @Override
     public String getMetadata()
     {
-        return choiceToString(selectedChoice);
+        return choiceToString(getObject());
     }
 
     @Override
@@ -65,18 +59,6 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
     }
 
     @Override
-    public void onPropertySet()
-    {
-        int i = 0;
-        for (V choice : choices)
-        {
-            if (Objects.equals(selectedChoice, choice))
-                setChoice(i);
-            i++;
-        }
-    }
-
-    @Override
     public void changeMetadata(int add)
     {
         selectedIndex += add;
@@ -86,7 +68,7 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
     @Override
     public void load()
     {
-        this.button.setText(this.buttonText, choiceToString(selectedChoice));
+        this.button.setText(this.buttonText, choiceToString(getObject()));
     }
 
     public String choiceToString(V choice)
@@ -116,9 +98,12 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
 
         selectedIndex = index;
 
-        if (index > -1)
-            selectedChoice = choices.get(index);
-        else
-            selectedChoice = null;
+        setObject(index > -1 ? choices.get(index) : null);
     }
+
+    public V choice()
+    {
+        return getObject();
+    }
+
 }

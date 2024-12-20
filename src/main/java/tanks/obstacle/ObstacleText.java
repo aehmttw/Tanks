@@ -62,7 +62,7 @@ public class ObstacleText extends Obstacle
 	}
 
 	@Override
-	public void registerSelectors()
+	protected void registerSelectors()
 	{
 		SelectorText<ObstacleText> sel = new SelectorText<>();
 		sel.id = "text_obstacle";

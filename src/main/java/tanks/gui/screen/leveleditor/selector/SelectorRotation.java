@@ -5,12 +5,10 @@ import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectRotation;
 import tanks.tank.Tank;
 
-import java.util.Objects;
-
 public class SelectorRotation<T extends GameObject> extends SelectorNumber<T>
 {
     @Override
-    public void init()
+    protected void init()
     {
         this.id = "rotation";
         this.keybind = Game.game.input.editorRotate;
@@ -35,46 +33,14 @@ public class SelectorRotation<T extends GameObject> extends SelectorNumber<T>
         }
     }
 
-    public void update()
+    public Double getObject()
     {
-        if (!this.init)
-            return;
-
-        try
-        {
-            Object sel = getPropertyBase();
-            Object obj = getObjectProp();
-
-            if (!Objects.equals(sel, prevObject))
-            {
-                if (gameObject instanceof Tank)
-                    ((Tank) gameObject).orientation = this.number * Math.PI / 2;
-
-                objPropField.set(gameObject, sel);
-                gameObject.onPropertySet(this);
-                prevObject = sel;
-            }
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        return super.getObject() / (Math.PI / 2);
     }
 
-    public Object getProperty()
+    public void setObject(Double o)
     {
-        return this.number * Math.PI / 2;
-    }
-
-    public void setProperty(Object o)
-    {
-        super.setProperty(((double) o) / (Math.PI / 2));
-    }
-
-    @Override
-    public String getMetadata()
-    {
-        return super.getMetadata();
+        super.setObject(o * (Math.PI / 2));
     }
 
     @Override

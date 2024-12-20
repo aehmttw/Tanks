@@ -6,7 +6,7 @@ import tanks.obstacle.Obstacle;
 
 public class SelectorStackHeight extends SelectorNumber<Obstacle>
 {
-    public void init()
+    protected void init()
     {
         this.id = "stack_height";
         this.title = "Block height";
@@ -14,7 +14,7 @@ public class SelectorStackHeight extends SelectorNumber<Obstacle>
 
         this.min = 0.5;
         this.max = Obstacle.default_max_height;
-        this.number = 1;
+        this.defaultNum = 1;
         this.step = 0.5;
         this.image = "obstacle_height.png";
         this.buttonText = "Block height: %.1f";

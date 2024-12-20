@@ -169,7 +169,7 @@ public class ObstacleTeleporter extends Obstacle
 	}
 
 	@Override
-	public void onPropertySet(LevelEditorSelector<?> s)
+	public void onPropertySet(LevelEditorSelector<?, ?> s)
 	{
 		double[] col = getColorFromID(this.groupID);
 		this.colorR = col[0];

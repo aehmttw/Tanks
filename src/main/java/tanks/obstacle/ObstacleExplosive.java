@@ -76,7 +76,7 @@ public class ObstacleExplosive extends Obstacle implements IAvoidObject
             return;
 
         if (!ScreenPartyLobby.isClient)
-            this.update = true;
+            setUpdate(true);
 
         if (m instanceof Explosion)
         {

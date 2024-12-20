@@ -1,16 +1,18 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
+import tanks.GameObject;
 import tanks.gui.screen.leveleditor.selector.SelectorNumber;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
-@SuppressWarnings({"rawtypes"})
+import java.util.Locale;
+
 public class OverlaySelectNumber extends ScreenLevelEditorOverlay
 {
     public TextBox textBox;
-    public SelectorNumber selector;
+    public SelectorNumber<? extends GameObject> selector;
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, 350, 40, "Done", this::escape
     );
@@ -20,8 +22,8 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         @Override
         public void run()
         {
-            selector.number += selector.step;
-            textBox.inputText = String.format(selector.format, selector.number);
+            selector.changeMeta(1);
+            textBox.inputText = String.format(Locale.US, selector.format, selector.number());
         }
     }
     );
@@ -31,13 +33,13 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         @Override
         public void run()
         {
-            selector.number -= selector.step;
-            textBox.inputText = String.format(selector.format, selector.number);
+            selector.changeMeta(-1);
+            textBox.inputText = String.format(Locale.US, selector.format, selector.number());
         }
     }
     );
 
-    public OverlaySelectNumber(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorNumber selector)
+    public OverlaySelectNumber(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorNumber<? extends GameObject> selector)
     {
         super(previous, screenLevelEditor);
 
@@ -59,8 +61,8 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
 
     public void update()
     {
-        this.increase.enabled = selector.number < selector.max;
-        this.decrease.enabled = selector.number > selector.min;
+        this.increase.enabled = selector.number() < selector.max;
+        this.decrease.enabled = selector.number() > selector.min;
 
         this.increase.update();
         this.decrease.update();

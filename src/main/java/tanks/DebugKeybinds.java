@@ -28,25 +28,6 @@ public class DebugKeybinds
         if (!Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
             return;
 
-        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_1))
-        {
-            double mx = Game.game.window.absoluteMouseX, my = Game.game.window.absoluteMouseY;
-            Chunk.getTileOptional(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY()).ifPresent(t ->
-            {
-                if (t.obstacle == null)
-                    return;
-
-                int brightness = 0;
-                if (Game.currentLevel != null && Level.isDark())
-                    brightness = 255;
-
-                Drawing.drawing.setColor(brightness, brightness, brightness);
-                Drawing.drawing.setInterfaceFontSize(16);
-                Game.game.window.fontRenderer.drawString(mx + 10, my + 30, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                        "M: " + t.obstacle.getMetadata());
-            });
-        }
-
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_P))
         {
             Panel.pauseOnDefocus = !Panel.pauseOnDefocus;
@@ -180,9 +161,13 @@ public class DebugKeybinds
             notifs.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)").setColor(255, 255, 128));
         }
 
-        int brightness = 0;
+        int brightness;
         if (Game.currentLevel != null && Level.isDark())
             brightness = 255;
+        else
+        {
+            brightness = 0;
+        }
 
         Drawing.drawing.setColor(brightness, brightness, brightness);
         Drawing.drawing.setInterfaceFontSize(16);
@@ -209,7 +194,7 @@ public class DebugKeybinds
 
             text = "P: (" + posX + ", " + posY + ")";
 
-            if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT))
+            if (Game.game.window.pressedKeys.contains(InputCodes.KEY_1))
             {
                 Chunk c = Chunk.getChunk(posX, posY, true);
                 Chunk.Tile t1 = Chunk.getTile(posX, posY);
@@ -239,6 +224,26 @@ public class DebugKeybinds
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 70, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
                             "S: " + t1.solid() + " U: " + t1.unbreakable());
                 }
+            }
+            else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_2))
+            {
+                ArrayList<Movable> v = Game.getInRadius(mx, my, 50, c -> c.movables);
+                if (!v.isEmpty())
+                    text = v.get(0).getMetadata();
+            }
+            else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_3))
+            {
+                double finalMx = mx, finalMy = my;
+                Chunk.getTileOptional(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY()).ifPresent(t ->
+                {
+                    if (t.obstacle == null)
+                        return;
+
+                    Drawing.drawing.setColor(brightness, brightness, brightness);
+                    Drawing.drawing.setInterfaceFontSize(16);
+                    Game.game.window.fontRenderer.drawString(finalMx + 10, finalMy + 30, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
+                            "M: " + t.obstacle.getMetadata());
+                });
             }
         }
 

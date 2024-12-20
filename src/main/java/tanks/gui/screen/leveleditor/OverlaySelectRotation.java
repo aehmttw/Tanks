@@ -12,13 +12,13 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
 {
     public SelectorRotation<?> selector;
 
-    public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> selector.number = 3);
+    public Button rotateUp = new Button(this.centerX, this.centerY - 100, 75, 75, "", () -> selector.setNumber(3));
 
-    public Button rotateRight = new Button(this.centerX + 100, this.centerY, 75, 75, "", () -> selector.number = 0);
+    public Button rotateRight = new Button(this.centerX + 100, this.centerY, 75, 75, "", () -> selector.setNumber(0));
 
-    public Button rotateDown = new Button(this.centerX, this.centerY + 100, 75, 75, "", () -> selector.number = 1);
+    public Button rotateDown = new Button(this.centerX, this.centerY + 100, 75, 75, "", () -> selector.setNumber(1));
 
-    public Button rotateLeft = new Button(this.centerX - 100, this.centerY, 75, 75, "", () -> selector.number = 2);
+    public Button rotateLeft = new Button(this.centerX - 100, this.centerY, 75, 75, "", () -> selector.setNumber(2));
 
     public Button back = new Button(this.centerX, this.centerY, 75, 75, "Done", this::escape);
 
@@ -67,11 +67,11 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
         this.rotateLeft.enabled = true;
         this.rotateRight.enabled = true;
 
-        if (selector.number == 0)
+        if (selector.number() == 0)
             this.rotateRight.enabled = false;
-        else if (selector.number == 1)
+        else if (selector.number() == 1)
             this.rotateDown.enabled = false;
-        else if (selector.number == 2)
+        else if (selector.number() == 2)
             this.rotateLeft.enabled = false;
         else
             this.rotateUp.enabled = false;

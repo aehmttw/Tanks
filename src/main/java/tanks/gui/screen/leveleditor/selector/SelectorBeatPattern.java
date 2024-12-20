@@ -5,7 +5,7 @@ import tanks.gui.screen.leveleditor.OverlayBeatBlockPattern;
 
 public class SelectorBeatPattern extends SelectorGroupID
 {
-    public void init()
+    protected void init()
     {
         super.init();
         this.id = "pattern";
@@ -30,12 +30,12 @@ public class SelectorBeatPattern extends SelectorGroupID
     @Override
     public void setMetadata(String d)
     {
-        this.number = Math.log(Integer.parseInt(String.valueOf(d.charAt(0)))) / Math.log(2) * 2 + (d.charAt(1) == 'a' ? 0 : 1);
+        setNumber(Math.log(Integer.parseInt(String.valueOf(d.charAt(0)))) / Math.log(2) * 2 + (d.charAt(1) == 'a' ? 0 : 1));
     }
 
     @Override
     public String getMetadata()
     {
-        return (int) Math.pow(2, (int) (number / 2)) + (number % 2 == 0 ? "a" : "b");
+        return (int) Math.pow(2, (int) (number() / 2)) + (number() % 2 == 0 ? "a" : "b");
     }
 }

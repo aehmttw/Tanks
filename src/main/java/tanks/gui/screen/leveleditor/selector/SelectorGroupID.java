@@ -5,7 +5,7 @@ import tanks.obstacle.Obstacle;
 
 public class SelectorGroupID extends SelectorNumber<Obstacle>
 {
-    public void init()
+    protected void init()
     {
         this.id = "group_id";
         this.title = "Group ID";

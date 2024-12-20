@@ -2,16 +2,15 @@ package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Consumer;
 import tanks.GameObject;
-import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
+import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Obstacle;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * A selector that is added to <code>GameObject</code>s.
@@ -24,7 +23,7 @@ import java.util.Objects;
  * @param <T> the type of <code>GameObject</code> (<code>Tank</code>, <code>Obstacle</code>, etc.)
  *            that the selector is applied to.
  */
-public abstract class LevelEditorSelector<T extends GameObject>
+public abstract class LevelEditorSelector<T extends GameObject, V>
 {
     public static ArrayList<Consumer<GameObject>> addSelFuncRegistry = new ArrayList<>();
 
@@ -35,8 +34,8 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public GameObject gameObject;
     public Class<? extends GameObject> objCls;
-    public String property, objectProperty;
-    public Field propField, objPropField;
+    public String objectProperty;
+    public Field objPropField;
     public Object prevObject = null;
 
     public String id = "";
@@ -50,7 +49,6 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public boolean init = false;
     public boolean modified = false;
-    protected boolean updated = false;
 
     /** The result of {@link #addShortcutButton()} is stored in this variable.*/
     public EditorButton shortcutButton;
@@ -66,7 +64,7 @@ public abstract class LevelEditorSelector<T extends GameObject>
         addSelFuncRegistry.add(func);
     }
 
-    public void init()
+    protected void init()
     {
 
     }
@@ -112,56 +110,11 @@ public abstract class LevelEditorSelector<T extends GameObject>
         onSelect();
     }
 
-    public void update()
-    {
-        if (!this.init)
-            return;
-
-        updated = true;
-
-        try
-        {
-            Object sel = getPropertyBase();
-            Object obj = getObjectProp();
-
-            if (sel instanceof Number)      // nice one java
-                sel = ((Number) sel).doubleValue();
-            if (obj instanceof Number)
-                obj = ((Number) obj).doubleValue();
-
-            if (!Objects.equals(sel, prevObject))
-            {
-                if (objPropField.getType() == int.class && sel instanceof Double)
-                    objPropField.setInt(gameObject, ((Double) sel).intValue());
-                else if (!objPropField.getType().isPrimitive())
-                    objPropField.set(gameObject, objPropField.getType().cast(sel));
-                else
-                    objPropField.set(gameObject, sel);
-
-                gameObject.onPropertySet(this);
-                prevObject = sel;
-            }
-            else if (!Objects.equals(sel, obj))
-            {
-                modified = true;
-                setProperty(obj);
-                prevObject = obj;
-                onPropertySet();
-            }
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void onPropertySet() {}
-
     public String getMetadata()
     {
         try
         {
-            return propField.get(this).toString();
+            return objPropField.get(gameObject).toString();
         }
         catch (IllegalAccessException e)
         {
@@ -171,24 +124,76 @@ public abstract class LevelEditorSelector<T extends GameObject>
 
     public abstract void setMetadata(String data);
 
+    public void setObject(V object)
+    {
+        checkObjField();
+        modified = true;
+        try
+        {
+            Class<?> type = objPropField.getType();
+            if (type == int.class && object instanceof Number)
+                objPropField.setInt(gameObject, ((Number) object).intValue());
+            else if (type == double.class && object instanceof Number)
+                objPropField.setDouble(gameObject, ((Number) object).doubleValue());
+            else
+                objPropField.set(gameObject, object);
+            gameObject.onPropertySet(this);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void checkObjField()
+    {
+        try
+        {
+            if (objPropField == null)
+                objPropField = gameObject.getClass().getField(objectProperty);
+        }
+        catch (NoSuchFieldException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public V getObject()
+    {
+        checkObjField();
+
+        try
+        {
+            if (objPropField.getType() == int.class )
+                return (V) (Object) objPropField.getDouble(gameObject);
+            return (V) objPropField.get(gameObject);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * The <code>add</code> parameter takes two values:<br>
      * -1: If the editor's prev. meta keybind was pressed or if Shift+RMB was pressed.<br>
      * 1: If the editor's next meta keybind was pressed or if RMB was pressed.
      */
-    protected abstract void changeMetadata(int add);
+    protected void changeMetadata(int add)
+    {
+
+    }
 
     public void changeMeta(int add)
     {
         changeMetadata(add);
-        update();
         ScreenLevelEditor.selectors.put(this.id, this);
     }
 
     public void load() {}
 
     /** Sets this selector's metadata to <code>cloneFrom</code>'s metadata. */
-    public void cloneProperties(LevelEditorSelector<T> cloneFrom)
+    public void cloneProperties(LevelEditorSelector<T, V> cloneFrom)
     {
         if (this == cloneFrom)
             return;     // weirdest bug ever
@@ -206,17 +211,7 @@ public abstract class LevelEditorSelector<T extends GameObject>
             this.button = getButton();
         this.modified = true;
 
-        cloneFrom.update();
         this.setMetadata(cloneFrom.getMetadata());
-        this.update();
-    }
-
-    public boolean modified()
-    {
-        if (!updated)
-            update();
-
-        return modified;
     }
 
     public void baseInit()
@@ -240,73 +235,6 @@ public abstract class LevelEditorSelector<T extends GameObject>
         }
 
         this.objCls = gameObject.getClass();
-    }
-
-    public void setProperty(Object o)
-    {
-        try
-        {
-            propField.set(this, o);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Object getProperty()
-    {
-        try
-        {
-            return propField.get(this);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Object getPropertyBase()
-    {
-        if (initPropFields()) return null;
-        return getProperty();
-    }
-
-    private boolean initPropFields()
-    {
-        if (property == null || objectProperty == null)
-        {
-            System.err.println("Warning: Neither property or objectProperty should be null.");
-            return true;
-        }
-
-        if (propField == null)
-        {
-            try
-            {
-                this.propField = this.getClass().getField(property);
-                this.objPropField = this.objCls.getField(objectProperty);
-            }
-            catch (NoSuchFieldException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        return false;
-    }
-
-    public Object getObjectProp()
-    {
-        if (initPropFields()) return null;
-
-        try
-        {
-            return this.objPropField.get(gameObject);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     public boolean gameObjectSelected()
@@ -334,12 +262,6 @@ public abstract class LevelEditorSelector<T extends GameObject>
             return editor.buttons.bottomRight;
 
         return null;
-    }
-
-    public void copyBase()
-    {
-        this.prevObject = getObjectProp();
-        setProperty(prevObject);
     }
 
     public enum Position

@@ -10,9 +10,9 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 {
     public SelectorStackHeight selector;
 
-    public Button increaseHeight = new Button(this.centerX + 100, this.centerY, 60, 60, "+", () -> selector.number += 0.5);
+    public Button increaseHeight = new Button(this.centerX + 100, this.centerY, 60, 60, "+", () -> selector.changeMeta(1));
 
-    public Button decreaseHeight = new Button(this.centerX - 100, this.centerY, 60, 60, "-", () -> selector.number -= 0.5);
+    public Button decreaseHeight = new Button(this.centerX - 100, this.centerY, 60, 60, "-", () -> selector.changeMeta(-1));
 
     public Button back = new Button(this.centerX, this.centerY + 300, 350, 40, "Done", this::escape);
 
@@ -20,12 +20,12 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
     {
         if (!editor.stagger)
         {
-            selector.number = Math.max(selector.number, 1);
+            selector.min(1);
             editor.stagger = true;
         }
         else if (!editor.oddStagger)
         {
-            selector.number = Math.max(selector.number, 1);
+            selector.max(1);
             editor.oddStagger = true;
         }
         else
@@ -50,11 +50,11 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 
     public void update()
     {
-        this.increaseHeight.enabled = selector.number < Obstacle.default_max_height;
-        this.decreaseHeight.enabled = selector.number > 0.5;
+        this.increaseHeight.enabled = selector.number() < Obstacle.default_max_height;
+        this.decreaseHeight.enabled = selector.number() > 0.5;
 
         if (editor.stagger)
-            this.decreaseHeight.enabled = selector.number > 1;
+            this.decreaseHeight.enabled = selector.number() > 1;
 
         this.increaseHeight.update();
         this.decreaseHeight.update();
@@ -97,7 +97,7 @@ public class OverlayBlockHeight extends ScreenLevelEditorOverlay
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(36);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, selector.number + "");
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, selector.numberString());
 
         this.increaseHeight.draw();
         this.decreaseHeight.draw();

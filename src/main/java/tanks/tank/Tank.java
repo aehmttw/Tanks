@@ -3,12 +3,12 @@ package tanks.tank;
 import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.SelectorRotation;
-import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.network.event.EventTankAddAttributeModifier;
@@ -20,9 +20,9 @@ import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.tankson.Property;
 
-import static tanks.tank.TankPropertyCategory.*;
-
 import java.util.*;
+
+import static tanks.tank.TankPropertyCategory.*;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -1010,9 +1010,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	public void drawOutline() 
 	{
 		drawAge = Game.tile_size;
-
+		double prevOrient = orientation;
+		orientation = angle;
 		this.drawTank(false, Game.enable3d, true);
 		this.drawTurret(false, Game.enable3d, true);
+		orientation = prevOrient;
 
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
 	}
@@ -1221,7 +1223,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	}
 
 	@Override
-	public void registerSelectors()
+	protected void registerSelectors()
 	{
 		this.registerSelector(new SelectorTeam<Tank>());
 		this.registerSelector(new SelectorRotation<Tank>());
@@ -1351,16 +1353,15 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void setMetadata(String s)
 	{
+		checkSelectorRegister();
 		String[] data = s.split("-");
 
 		for (int i = 0; i < Math.min(data.length, this.selectorCount()); i++)
 		{
 			if (data[i].isEmpty()) continue;
-			LevelEditorSelector<Tank> sel = (LevelEditorSelector<Tank>) this.selectors.get(saveOrder(i));
+			LevelEditorSelector<Tank, ?> sel = (LevelEditorSelector<Tank, ?>) this.selectors.get(saveOrder(i));
 			sel.setMetadata(data[i]);
 		}
-
-		updateSelectors();
 	}
 
 	public void setBufferCooldown(double value)

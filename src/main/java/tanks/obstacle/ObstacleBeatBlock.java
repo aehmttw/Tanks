@@ -36,7 +36,7 @@ public class ObstacleBeatBlock extends Obstacle
     }
 
     @Override
-    public void registerSelectors()
+    protected void registerSelectors()
     {
         this.registerSelector(new SelectorBeatPattern());
         super.registerSelectors();
@@ -267,7 +267,7 @@ public class ObstacleBeatBlock extends Obstacle
         onPropertySet(null);
     }
 
-    public void onPropertySet(LevelEditorSelector<?> s)
+    public void onPropertySet(LevelEditorSelector<?, ?> s)
     {
         this.rendererNumber = this.groupID;
         this.tileRendererNumber = this.groupID;

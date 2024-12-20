@@ -22,11 +22,17 @@ public class ScreenCrashed extends Screen
 			int r = (int) (Math.random() * 5);
 
 			if (r == 0)
-				sadFace = ":)";
+                sadFace = ":)";
 			else if (r == 1)
+			{
 				sadFace = ":O";
+				ohNoes = "Oh nooos!";
+			}
 			else if (r == 2)
+			{
 				sadFace = ">:(";
+				ohNoes = "Sadge!";
+			}
 			else if (r == 3)
 			{
 				sadFace = ":3";

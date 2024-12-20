@@ -49,6 +49,7 @@ public class InputBindings
     public InputBindingGroup editorRotate = new InputBindingGroup("editor.rotate", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_R));
     public InputBindingGroup editorHeight = new InputBindingGroup("editor.height", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_H));
     public InputBindingGroup editorGroupID = new InputBindingGroup("editor.groupID", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_G));
+    public InputBindingGroup editorColor = new InputBindingGroup("editor.color", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_G));
 
     public InputBindingGroup editorBuild = new InputBindingGroup("editor.build", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_B));
     public InputBindingGroup editorErase = new InputBindingGroup("editor.erase", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_E));
@@ -96,10 +97,8 @@ public class InputBindings
 
             file.startWriting();
 
-            for (InputBindingGroup i: Game.game.inputBindings)
-            {
+            for (InputBindingGroup i : Game.game.inputBindings.values())
                 file.println(i.toString());
-            }
 
             file.stopWriting();
         }
@@ -123,29 +122,24 @@ public class InputBindings
             while (file.hasNextLine())
             {
                 String[] s = file.nextLine().split("=");
-                for (InputBindingGroup i : Game.game.inputBindings)
-                {
-                    if (s[0].equals(i.name))
-                    {
-                        String[] s2 = s[1].split(",");
+                String[] s2 = s[1].split(",");
 
-                        String[] i1 = s2[0].split(":");
-                        String[] i2 = s2[1].split(":");
+                String[] i1 = s2[0].split(":");
+                String[] i2 = s2[1].split(":");
 
-                        if (i1[0].equals("null"))
-                            i.input1.inputType = null;
-                        else
-                            i.input1.inputType = InputBinding.InputType.valueOf(i1[0]);
+                InputBindingGroup i = Game.game.inputBindings.get(s[0]);
+                if (i1[0].equals("null"))
+                    i.input1.inputType = null;
+                else
+                    i.input1.inputType = InputBinding.InputType.valueOf(i1[0]);
 
-                        i.input1.input = Integer.parseInt(i1[1]);
+                i.input1.input = Integer.parseInt(i1[1]);
 
-                        if (i2[0].equals("null"))
-                            i.input2.inputType = null;
-                        else
-                            i.input2.inputType = InputBinding.InputType.valueOf(i2[0]);
-                        i.input2.input = Integer.parseInt(i2[1]);
-                    }
-                }
+                if (i2[0].equals("null"))
+                    i.input2.inputType = null;
+                else
+                    i.input2.inputType = InputBinding.InputType.valueOf(i2[0]);
+                i.input2.input = Integer.parseInt(i2[1]);
             }
 
             file.stopReading();

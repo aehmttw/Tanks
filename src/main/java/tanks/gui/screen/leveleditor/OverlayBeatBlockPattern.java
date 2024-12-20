@@ -25,7 +25,7 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
         {
             int j = i;
             groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize,
-                    "", () -> selector.number = (j % 4) * 2 + j / 4);
+                    "", () -> selector.setNumber((j % 4) * 2 + j / 4));
         }
 
         this.musicInstruments = true;
@@ -35,14 +35,14 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
     {
         for (int i = 0; i < groups.length; i++)
         {
-            groups[i].enabled = selector.number != (i % 4) * 2 + i / 4;
+            groups[i].enabled = selector.number() != (i % 4) * 2 + i / 4;
             groups[i].update();
         }
 
         this.back.update();
 
         editor.overlayMusics.add("beatblocks/beat_blocks.ogg");
-        editor.overlayMusics.add("beatblocks/beat_beeps_" + (int) Math.pow(2, (int) selector.number / 2) + ".ogg");
+        editor.overlayMusics.add("beatblocks/beat_beeps_" + (int) Math.pow(2, (int) selector.number() / 2) + ".ogg");
 
         super.update();
     }

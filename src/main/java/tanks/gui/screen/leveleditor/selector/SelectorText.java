@@ -7,9 +7,8 @@ import tanks.gui.screen.leveleditor.OverlaySelectString;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-public class SelectorText<T extends GameObject> extends LevelEditorSelector<T>
+public class SelectorText<T extends GameObject> extends LevelEditorSelector<T, String>
 {
-    public String string;
     public boolean encoded;
 
     @Override
@@ -17,7 +16,6 @@ public class SelectorText<T extends GameObject> extends LevelEditorSelector<T>
     {
         this.id = "string";
         this.title = "String Selector";
-        this.property = "string";
 
         super.baseInit();
     }
@@ -33,21 +31,23 @@ public class SelectorText<T extends GameObject> extends LevelEditorSelector<T>
     {
         // WARNING: DO NOT TRY THIS AT HOME!!!
         // Comment from aehmttw: this could probably be done more reasonably if/when obstacles are tanksonified
-        return Base64.getEncoder().encodeToString(encodeString(string).getBytes()) + ";" + true;
+        // lancelot: yes please this is cursed lol
+        return Base64.getEncoder().encodeToString(encodeString(getObject()).getBytes()) + ";" + true;
     }
 
     @Override
     public void setMetadata(String data)
     {
         String[] stuff = data.split(";");
-        this.string = stuff[0];
+        String string = stuff[0];
         if (stuff.length > 1)
             encoded = Boolean.parseBoolean(stuff[1]);
 
         if (encoded)     // WARNING: DO NOT TRY THIS AT HOME!!!
-            this.string = new String(Base64.getDecoder().decode(this.string.getBytes())).replaceAll("-o\\$8", "§");
+            string = new String(Base64.getDecoder().decode(string.getBytes())).replaceAll("-o\\$8", "§");
         else
-            this.string = decodeString(string);
+            string = decodeString(string);
+        setObject(string);
     }
 
     @Override
@@ -66,5 +66,10 @@ public class SelectorText<T extends GameObject> extends LevelEditorSelector<T>
     public static String decodeString(String s)
     {
         return s.replaceAll("-o\\$8", "§");
+    }
+
+    public String string()
+    {
+        return getObject();
     }
 }

@@ -53,6 +53,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 	public int drawLevel = 5;
 
 	public boolean checkForObjects = false;
+	/** Use setUpdate to change */
 	public boolean update = false;
 	public boolean draggable = true;
 	public boolean bouncy = false;
@@ -198,6 +199,15 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 		this.draw();
 		this.posX = x1;
 		this.posY = y1;
+	}
+
+	public void setUpdate(boolean update)
+	{
+		this.update = update;
+		if (update)
+			Game.updateObstacles.add(this);
+		else
+			Game.updateObstacles.remove(this);
 	}
 
 	@Override
@@ -370,7 +380,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 
 		for (int i = 0; i < Math.min(this.selectorCount(), metadata.length); i++)
 		{
-			LevelEditorSelector<Obstacle> sel = (LevelEditorSelector<Obstacle>) this.selectors.get(saveOrder(i));
+			LevelEditorSelector<Obstacle, ?> sel = (LevelEditorSelector<Obstacle, ?>) this.selectors.get(saveOrder(i));
 			sel.setMetadata(metadata[i]);
 		}
 
@@ -380,8 +390,6 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 				this.startHeight = Double.parseDouble(metadata[metadata.length - 1]);
 		}
 		catch (Exception ignored) {}
-
-		this.updateSelectors();
 	}
 
 	public static double[] getRandomColor()
@@ -605,7 +613,7 @@ public class Obstacle extends GameObject implements IDrawableForInterface, ISoli
 		}
 	}
 
-	public void registerSelectors()
+	protected void registerSelectors()
 	{
 		if (this.enableStacking)
 			this.registerSelector(new SelectorStackHeight());

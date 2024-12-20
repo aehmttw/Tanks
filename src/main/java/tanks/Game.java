@@ -259,7 +259,7 @@ public class Game
 
 	public static ChatFilter chatFilter = new ChatFilter();
 
-	public ArrayList<InputBindingGroup> inputBindings = new ArrayList<>();
+	public LinkedHashMap<String, InputBindingGroup> inputBindings = new LinkedHashMap<>();
 	public InputBindings input;
 
 	public static PrintStream logger = System.err;

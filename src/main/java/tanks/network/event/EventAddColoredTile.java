@@ -76,10 +76,14 @@ public class EventAddColoredTile extends PersonalEvent
         {
             for (int j = 0; j < width; j++)
             {
-                ObstacleColor c = new ObstacleColor("bob", this.posX + i, this.posY + j, this.colorR, this.colorG, this.colorB, this.colorA);
+                ObstacleColor c = new ObstacleColor("bob", this.posX + i, this.posY + j);
+                c.colorR = colorR;
+                c.colorG = colorG;
+                c.colorB = colorB;
+                c.colorA = colorA;
                 c.flashing = flashing;
                 c.flashSpeedMultiplier = flashSpeedMultiplier;
-                Game.obstacles.add(c);
+                Game.addObstacle(c);
             }
         }
     }

@@ -1,9 +1,9 @@
 package tanks;
 
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector.Position;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
+import tanks.gui.screen.leveleditor.selector.LevelEditorSelector.Position;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
@@ -13,10 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class GameObject
 {
-    public ArrayList<LevelEditorSelector<? extends GameObject>> selectors;
+    public ArrayList<LevelEditorSelector<? extends GameObject, ?>> selectors;
 
     public double posX, posY, posZ;
 
+    public boolean selRegistered = false;
     Position[] positions = {Position.object_menu_left, Position.object_menu_right};
     Position extraSelPos /* Position of extra selectors */ = Position.editor_bottom_right;
     int currentPos = 0;
@@ -24,12 +25,12 @@ public abstract class GameObject
     /** Registers the specified selector. <br>
      * Examples: {@link Tank#registerSelectors()}, {@link Obstacle#registerSelectors()}
      * @see #postInitSelectors() */
-    public void registerSelector(LevelEditorSelector<?>... s)
+    public void registerSelector(LevelEditorSelector<?, ?>... s)
     {
         if (selectors == null)
             selectors = new ArrayList<>();
 
-        for (LevelEditorSelector<?> s1 : s)
+        for (LevelEditorSelector<?, ?> s1 : s)
         {
             if (currentPos < positions.length)
             {
@@ -44,12 +45,13 @@ public abstract class GameObject
         }
     }
 
-    public LevelEditorSelector<?> getSelector(String id)
+    public LevelEditorSelector<?, ?> getSelector(String id)
     {
+        checkSelectorRegister();
         if (!this.hasCustomSelectors())
             return null;
 
-        for (LevelEditorSelector<?> s : this.selectors)
+        for (LevelEditorSelector<?, ?> s : this.selectors)
         {
             if (id.equals(s.id))
                 return s;
@@ -70,25 +72,39 @@ public abstract class GameObject
 
     public void forAllSelectors(Consumer<LevelEditorSelector> c)
     {
+        checkSelectorRegister();
         if (this.hasCustomSelectors())
         {
-            for (LevelEditorSelector<?> s : this.selectors)
+            for (LevelEditorSelector<?, ?> s : this.selectors)
                 c.accept(s);
         }
     }
 
-    public void registerSelectors()
+    /** Should only be called through {@linkplain #checkSelectorRegister()}.  */
+    protected void registerSelectors()
     {
 
     }
 
-    public void onPropertySet(LevelEditorSelector<?> s)
+    public void onPropertySet(LevelEditorSelector<?, ?> s)
     {
 
+    }
+
+    public void checkSelectorRegister()
+    {
+        if (selRegistered)
+            return;
+
+        registerSelectors();
+        selRegistered = true;
     }
 
     public void cloneAllSelectors(GameObject cloneFrom)
     {
+        checkSelectorRegister();
+        cloneFrom.checkSelectorRegister();
+
         if (!cloneFrom.hasCustomSelectors())
             return;
 
@@ -108,6 +124,8 @@ public abstract class GameObject
 
     public void initSelectors(ScreenLevelEditor editor)
     {
+        checkSelectorRegister();
+
         if (editor == null)
         {
             if (Game.screen instanceof ScreenLevelEditor)
@@ -140,6 +158,12 @@ public abstract class GameObject
         postInitSelectors();
     }
 
+    public void modify()
+    {
+        checkSelectorRegister();
+        forAllSelectors(s -> s.modified = true);
+    }
+
     /** The save order of selectors; the selector that appears at index {@code saveOrder(i)} is saved at the {@code i}th position.
      *  (0 <= {@code i} < total selector count) */
     public int saveOrder(int index)
@@ -149,14 +173,4 @@ public abstract class GameObject
 
     public void setMetadata(String s) {}
     public String getMetadata() { return null; }
-
-    public void copySelectorBase()
-    {
-        forAllSelectors(LevelEditorSelector::copyBase);
-    }
-
-    public void updateSelectors()
-    {
-        this.forAllSelectors(LevelEditorSelector::update);
-    }
 }

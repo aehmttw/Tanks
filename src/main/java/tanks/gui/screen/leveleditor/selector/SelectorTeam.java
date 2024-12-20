@@ -22,7 +22,7 @@ public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
     public int defaultTeamIndex = 1;
 
     @Override
-    public void init()
+    protected void init()
     {
         this.id = "team";
         this.title = "Select " + (gameObject instanceof Tank ? "tank" : "obstacle") + " team";
@@ -52,10 +52,13 @@ public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
 
         updateDefaultChoices();
 
-        if (Game.currentLevel.enableTeams && editor == null)
-            setChoice(-1, false);
-        else
-            setChoice(Math.min(this.choices.size() - 1, defaultTeamIndex), false);
+        if (!modified)
+        {
+            if (Game.currentLevel.enableTeams && editor == null)
+                setChoice(-1, false);
+            else
+                setChoice(Math.min(this.choices.size() - 1, defaultTeamIndex), false);
+        }
     }
 
     @Override
@@ -63,8 +66,8 @@ public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
     {
         updateDefaultChoices();
 
-        if (this.selectedChoice != null)
-            this.button.setText("Team: ", this.selectedChoice.name);
+        if (this.choice() != null)
+            this.button.setText("Team: ", this.choice().name);
         else
             this.button.setText("No team");
     }

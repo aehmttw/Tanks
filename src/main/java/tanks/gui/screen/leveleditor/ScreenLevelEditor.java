@@ -3,14 +3,13 @@ package tanks.gui.screen.leveleditor;
 import basewindow.BaseFile;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.*;
 import tanks.Panel;
+import tanks.*;
+import tanks.gui.Button;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.EditorButtons.EditorButton;
 import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
-import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
-import tanks.gui.Button;
-import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
@@ -28,7 +27,7 @@ import java.util.*;
 @SuppressWarnings({"unused"})
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
-	public static HashMap<String, LevelEditorSelector<?>> selectors = new HashMap<>();
+	public static HashMap<String, LevelEditorSelector<?, ?>> selectors = new HashMap<>();
 	public static Placeable currentPlaceable = Placeable.enemyTank;
 	public static EditorClipboard[] clipboards = new EditorClipboard[5];
 	public static EditorClipboard clipboard = new EditorClipboard();
@@ -407,7 +406,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			mouseObstacle = Game.registryObstacle.getEntry(i).getObstacle(0, 0);
 			mouseObstacle.initSelectors(this);
 			mouseObstacle.setMetadata(o.getMetadata());
-			mouseObstacle.updateSelectors();
 			cloneSelectorProperties(false);
 			this.mouseObstacle.forAllSelectors(LevelEditorSelector::addShortcutButton);
 			return true;
@@ -1422,9 +1420,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 							}
 
 							TankSpawnMarker t = new TankSpawnMarker("player", mouseTank.posX, mouseTank.posY, mouseTank.angle);
-							t.registerSelectors();
 							t.cloneAllSelectors(mouseTank);
-							t.updateSelectors();
 
 							this.spawns.add(t);
 
@@ -1451,17 +1447,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 							o.cloneAllSelectors(mouseObstacle);
 
-							if (o.enableStacking)
+							if (o.enableStacking && this.stagger && !paste)
 							{
-								SelectorStackHeight s = (SelectorStackHeight) o.getSelector("stack_height");
-								s.number = mouseObstacle.stackHeight;
-
-								if (this.stagger && !paste)
-								{
-									if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == (this.oddStagger ? 1 : 0)))
-										s.number -= 0.5;
-								}
-							}
+                                if ((((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == (this.oddStagger ? 1 : 0)))
+                                    o.stackHeight -= 0.5;
+                            }
 
 							this.undoActions.add(new EditorAction.ActionObstacle(o, true));
 							Game.addObstacle(o);
@@ -1603,11 +1593,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		level.append("|");
 
-		for (int i = 0; i < Game.movables.size(); i++)
+		for (Movable m : Game.movables)
 		{
-			if (Game.movables.get(i) instanceof Tank)
+			if (m instanceof Tank)
 			{
-                Tank t = (Tank) Game.movables.get(i);
+                Tank t = (Tank) m;
                 int x = (int) (t.posX / Game.tile_size);
 				int y = (int) (t.posY / Game.tile_size);
 
@@ -1769,9 +1759,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		for (Movable m: Game.movables)
 			drawables[m.drawLevel].add(m);
-
-		mouseTank.updateSelectors();
-		mouseObstacle.updateSelectors();
 
 		for (Obstacle o : Game.obstacles)
 		{
@@ -2358,7 +2345,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		o.forAllSelectors(s ->
 		{
-			LevelEditorSelector<?> s1 = selectors.get(s.id);
+			LevelEditorSelector<?, ?> s1 = selectors.get(s.id);
 			if (s1 != null)
 			{
 				if (forward)
@@ -2366,7 +2353,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				else
                     s1.cloneProperties(s);
 			}
-			else if (s.modified())
+			else if (s.modified)
 				selectors.put(s.id, s);
 		});
 	}

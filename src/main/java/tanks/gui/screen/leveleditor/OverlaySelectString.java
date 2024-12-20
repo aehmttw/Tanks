@@ -20,7 +20,7 @@ public class OverlaySelectString extends ScreenLevelEditorOverlay
 
         screenLevelEditor.paused = true;
         this.selector = selector;
-        this.textBox.inputText = selector.string;
+        this.textBox.inputText = selector.string();
         this.textBox.maxChars = 50;
         this.textBox.enableCaps = true;
         this.textBox.enablePunctuation = true;

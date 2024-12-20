@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITankScreen, IRenamableScreen
 {
     public static Button leftButton, rightButton;
-    public static LevelEditorSelector<?> leftSelector, rightSelector;
+    public static LevelEditorSelector<?, ?> leftSelector, rightSelector;
 
     public int objectButtonRows = 3;
     public int objectButtonCols = 10;
@@ -64,7 +64,6 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         saveSelectors(editor);
         ScreenLevelEditor.currentPlaceable = ScreenLevelEditor.Placeable.playerTank;
         editor.mouseTank = new TankPlayer(0, 0, 0);
-        editor.mouseTank.registerSelectors();
         ((TankPlayer) editor.mouseTank).setDefaultColor();
         loadSelectors(editor.mouseTank, this);
     }
@@ -293,7 +292,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         o.forAllSelectors(s ->
         {
-            LevelEditorSelector<?> s1 = ScreenLevelEditor.selectors.get(s.id);
+            LevelEditorSelector<?, ?> s1 = ScreenLevelEditor.selectors.get(s.id);
             s.objectMenu = menu;
             s.gameObject = o;
 
@@ -320,7 +319,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         });
     }
 
-    public static void loadButton(Button b, LevelEditorSelector<?> s)
+    public static void loadButton(Button b, LevelEditorSelector<?, ?> s)
     {
         b.setPosition(Drawing.drawing.interfaceSizeX / 2 + (s.position == Position.object_menu_left ? -380 : 380), Drawing.drawing.interfaceSizeY / 2 + 240);
         s.button = b;

@@ -8,6 +8,8 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
 
+import java.util.Locale;
+
 public class OverlaySelectNumber extends ScreenLevelEditorOverlay
 {
     public TextBox textBox;
@@ -20,7 +22,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         try
         {
             selector.changeMetadata(editor, editor.mousePlaceable, 1);
-            textBox.inputText = String.format(selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
+            textBox.inputText = String.format(Locale.ROOT, selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
         }
         catch (IllegalAccessException e)
         {
@@ -34,7 +36,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         try
         {
             selector.changeMetadata(editor, editor.mousePlaceable, -1);
-            textBox.inputText = String.format(selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
+            textBox.inputText = String.format(Locale.ROOT, selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
         }
         catch (IllegalAccessException e)
         {
@@ -114,7 +116,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         }
 
         if (selector.forceStep)
-            textBox.inputText = String.format(selector.format, Math.round(Double.parseDouble(textBox.inputText) * selector.step) / selector.step);
+            textBox.inputText = String.format(Locale.ROOT, selector.format, Math.round(Double.parseDouble(textBox.inputText) * selector.step) / selector.step);
 
         this.selector.setMetadata(editor, editor.mousePlaceable, Double.parseDouble(textBox.inputText));
     }

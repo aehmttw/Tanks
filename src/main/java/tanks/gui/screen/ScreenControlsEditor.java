@@ -60,11 +60,9 @@ public class ScreenControlsEditor extends Screen
     InputSelector wandDiscont = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Non-contiguous wand tool", Game.game.input.editorWandDiscontiguous);
 
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++
-    );
+    Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++);
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", () -> page--
-    );
+    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", () -> page--);
 
     public ScreenControlsEditor()
     {

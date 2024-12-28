@@ -160,7 +160,7 @@ public class Game
 
 	public static double levelSize = 1;
 
-	public static Tank playerTank;
+	public static TankPlayer playerTank;
 
 	public static boolean bulletLocked = false;
 
@@ -345,6 +345,7 @@ public class Game
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
+		NetworkEventMap.register(EventUpdateTankAbility.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
 		NetworkEventMap.register(EventPlayerAutoReady.class);
@@ -530,7 +531,7 @@ public class Game
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 		registerObstacle(ObstacleBeatBlock.class, "beat");
-		registerObstacle(ObstacleColor.class, "paint");
+		registerObstacle(ObstacleGroundPaint.class, "paint");
 //		registerObstacle(ObstacleText.class, "text");
 
 		registerTank(TankDummy.class, "dummy", 0);
@@ -584,6 +585,7 @@ public class Game
 		registerMetadataSelector(SelectorTeam.selector_name, SelectorTeam.class);
 		registerMetadataSelector(SelectorLuminosity.selector_name, SelectorLuminosity.class);
 		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
+		registerMetadataSelector(SelectorColorAndNoise.selector_name, SelectorColorAndNoise.class);
 
 		TankPlayer.default_bullet = new Bullet();
 		TankPlayer.default_mine = new Mine();
@@ -1304,7 +1306,7 @@ public class Game
 		Game.player.hotbar.coins = 0;
 		Game.player.hotbar.enabledCoins = false;
 		Game.player.hotbar.itemBar = new ItemBar(Game.player);
-		Game.player.hotbar.enabledItemBar = false;
+		Game.player.hotbar.itemBar.showItems = false;
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);

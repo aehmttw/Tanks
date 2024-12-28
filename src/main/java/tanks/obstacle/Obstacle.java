@@ -342,7 +342,69 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	public void playDestroyAnimation(double posX, double posY, double radius)
 	{
+		if (Game.effectsEnabled)
+		{
+			Effect.EffectType effect = this.destroyEffect;
+			double freq = Math.min((Math.sqrt(Math.pow(posX - this.posX, 2) + Math.pow(posY - this.posY, 2)) + Game.tile_size * 2.5) / radius, 1);
 
+			if (Game.enable3d)
+			{
+				if (effect == Effect.EffectType.obstaclePiece)
+					effect = Effect.EffectType.obstaclePiece3d;
+
+				double s = 12.5;
+				for (double j = 0; j < Game.tile_size; j += s)
+				{
+					for (double k = 0; k < Game.tile_size; k += s)
+					{
+						for (double l = 0; l < Game.tile_size; l += s)
+						{
+							if (Math.random() > this.destroyEffectAmount * freq * freq * Game.effectMultiplier)
+								continue;
+
+							Effect e = Effect.createNewEffect(this.posX + j + s / 2 - Game.tile_size / 2, this.posY + k + s / 2 - Game.tile_size / 2, l, effect);
+
+							e.colR = this.colorR;
+							e.colG = this.colorG;
+							e.colB = this.colorB;
+
+							double dist = Movable.distanceBetween(this, e);
+							double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
+							double rad = radius - Game.tile_size / 2;
+							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
+							e.addPolarMotion(angle, (v + Math.random() * 2) * 1.5);
+							e.vZ = 1.5 * (v + Math.random() * 2);
+
+							Game.effects.add(e);
+						}
+					}
+				}
+			}
+			else
+			{
+				for (int j = 0; j < Game.tile_size - 6; j += 4)
+				{
+					for (int k = 0; k < Game.tile_size - 6; k += 4)
+					{
+						if (Math.random() > this.destroyEffectAmount * freq * freq * Game.effectMultiplier)
+							continue;
+
+						Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, effect);
+
+						e.colR = this.colorR;
+						e.colG = this.colorG;
+						e.colB = this.colorB;
+
+						double dist = Movable.distanceBetween(this, e);
+						double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
+						double rad = radius - Game.tile_size / 2;
+						e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
+
+						Game.effects.add(e);
+					}
+				}
+			}
+		}
 	}
 
 	public Effect getCompanionEffect()

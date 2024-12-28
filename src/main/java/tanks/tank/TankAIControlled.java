@@ -37,6 +37,16 @@ public class TankAIControlled extends Tank implements ITankField
 	// More complex behaviors may require overriding of methods.
 	// These values do not change normally along the course of the game.
 
+	/** The bullet a tank uses. If you want to change this, make sure to use setBullet() because it also updates the bulletItem. */
+	@Property(category = firingGeneral, id = "bullet", name = "Bullet")
+	public Bullet bullet = TankPlayer.default_bullet.clonePropertiesTo(new Bullet());
+	public ItemBullet.ItemStackBullet bulletItem = new ItemBullet.ItemStackBullet(null, new ItemBullet(this.bullet), -1);
+
+	/** The mine a tank uses. If you want to change this, make sure to use setMine() because it also updates the mineItem. */
+	@Property(category = mines, id = "mine", name = "Mine")
+	public Mine mine = TankPlayer.default_mine.clonePropertiesTo(new Mine());
+	public ItemMine.ItemStackMine mineItem = new ItemMine.ItemStackMine(null, new ItemMine(this.mine), -1);
+
 	@Property(category = movementGeneral, id = "enable_movement", name = "Can move")
 	public boolean enableMovement = true;
 
@@ -553,6 +563,9 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		if (this.age <= 0)
 			this.initialize();
+
+		this.bulletItem.item.bullet = this.bullet;
+		this.mineItem.item.mine = this.mine;
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 
@@ -3334,5 +3347,32 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 
 		return edited;
+	}
+
+	/**
+	 * Always use this to change a tank's bullet
+	 * @param b the bullet to set the tank to use
+	 */
+	public void setBullet(Bullet b)
+	{
+		this.bullet = b.getCopy();
+		this.bulletItem.item.bullet = this.bullet;
+	}
+
+	/**
+	 * Always use this to change a tank's mine
+	 * @param m the mine to set the tank to use
+	 */
+	public void setMine(Mine m)
+	{
+		this.mine = m.getCopy();
+		this.mineItem.item.mine = this.mine;
+	}
+
+	@Override
+	public void setBufferCooldown(double value)
+	{
+		this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
+		this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
 	}
 }

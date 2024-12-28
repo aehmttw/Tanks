@@ -200,7 +200,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                 {
                     if (p.miscType() == Property.MiscType.description)
                     {
-                        TextBox t = (TextBox) screen.getUIElementForField(f, p, target);
+                        TextBox t = (TextBox) screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
                         t.posX = this.screen.centerX;
                         t.posY = this.screen.centerY + 270;
                         t.enableCaps = true;
@@ -212,7 +212,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                         this.description = t;
                     }
                     else
-                        this.uiElements.add(screen.getUIElementForField(f, p, target));
+                        this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(target.get(), f), p));
                 }
             }
         }
@@ -238,7 +238,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
     public class TabWithPreview extends Tab
     {
-        public TankPlayer preview;
+        public TankAIControlled preview;
 
         public TabWithPreview(ScreenEditorTank screen, Tab parent, String name, String category)
         {
@@ -252,7 +252,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
         public void set()
         {
-            this.preview = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 315 * Drawing.drawing.interfaceScaleZoom, 0);
+            this.preview = new TankAIControlled("preview", Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 315 * Drawing.drawing.interfaceScaleZoom, Game.tile_size, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
 
             this.preview.posX = this.screen.centerX;
             this.preview.posY = this.screen.centerY - 30;

@@ -6,6 +6,7 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 import tanks.tank.TankRemote;
 
 import java.util.HashSet;
@@ -60,8 +61,8 @@ public class EventTankTransformCustom extends PersonalEvent
 
     public int effect;
 
-    public int bulletCount;
-    public double bulletSpread;
+    public int bulletCount = 1;
+    public double bulletSpread = 0;
 
     public EventTankTransformCustom()
     {
@@ -107,8 +108,11 @@ public class EventTankTransformCustom extends PersonalEvent
         this.emblemGreen = newTank.emblemG;
         this.emblemBlue = newTank.emblemB;
 
-        this.bulletCount = newTank.bullet.shotCount;
-        this.bulletSpread = newTank.bullet.multishotSpread;
+        if (newTank instanceof TankAIControlled)
+        {
+            this.bulletCount = ((TankAIControlled) newTank).bullet.shotCount;
+            this.bulletSpread = ((TankAIControlled) newTank).bullet.multishotSpread;
+        }
 
         this.enableTracks = newTank.enableTracks;
         this.trackSpacing = newTank.trackSpacing;
@@ -144,8 +148,11 @@ public class EventTankTransformCustom extends PersonalEvent
             t.lightIntensity = this.lightIntensity;
             t.lightSize = this.lightSize;
 
-            t.bullet.shotCount = bulletCount;
-            t.bullet.multishotSpread = bulletSpread;
+            if (((TankRemote) t).tank instanceof TankAIControlled)
+            {
+                ((TankAIControlled) ((TankRemote) t).tank).bullet.shotCount = bulletCount;
+                ((TankAIControlled) ((TankRemote) t).tank).bullet.multishotSpread = bulletSpread;
+            }
 
             t.mandatoryKill = requiredKill;
             t.musicTracks = tankMusic;

@@ -30,6 +30,7 @@ public class ArrayListIndexPointer<T> extends Pointer<T>
 
         if (!nullable && val == null)
         {
+            System.out.println(this);
             this.deleted = true;
             this.arrayList.remove(this.index);
         }

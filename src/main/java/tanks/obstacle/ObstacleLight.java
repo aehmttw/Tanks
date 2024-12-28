@@ -21,7 +21,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 
 	public static int default_color = 255 * 256 * 256 + 250 * 256 + 235;
 
-	@MetadataProperty(id = "light_color", name = "Light color", selector = SelectorColor.selector_name, image = "color.png", keybind = "editor.groupID")
+	@MetadataProperty(id = "light_color", name = "Color", selector = SelectorColor.selector_name, image = "color.png", keybind = "editor.groupID")
 	public int lightColor = default_color;
 
 	public ObstacleLight(String name, double posX, double posY)
@@ -44,7 +44,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 		this.drawLevel = 9;
 
 		this.primaryMetadataID = SelectorLuminosity.selector_name;
-		this.secondaryMetadataID = SelectorColor.selector_name;
+		this.secondaryMetadataID = "light_color";
 
 		this.type = ObstacleType.extra;
 		this.description = "A light to illuminate dark levels";

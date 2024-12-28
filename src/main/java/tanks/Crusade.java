@@ -248,8 +248,8 @@ public class Crusade
 		Level l = new Level(this.levels.get(this.currentLevel).levelString);
 		l.customTanks = this.customTanks;
 
-		Game.player.hotbar.enabledItemBar = true;
 		Game.player.hotbar.enabledCoins = true;
+		Game.player.hotbar.itemBar.showItems = true;
 
 		int playersTotal = 0;
 		int livesTotal = 0;
@@ -298,7 +298,7 @@ public class Crusade
 			if (player.remainingLives > 0)
 				l.includedPlayers.add(player);
 
-			player.hotbar.enabledItemBar = true;
+			player.hotbar.itemBar.showItems = true;
 		}
 
 		l.loadLevel();

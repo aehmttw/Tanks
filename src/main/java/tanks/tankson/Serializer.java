@@ -12,37 +12,53 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public final class Serializer {
+public final class Serializer
+{
 
-    public static HashMap<Class<?>,Object> defaults = new HashMap<>();
+    public static HashMap<Class<?>, Object> defaults = new HashMap<>();
 
-    public static HashMap<String, Tank>userTanks = new HashMap<>();
+    public static HashMap<String, Tank> userTanks = new HashMap<>();
 
-    public static Class<?> getCorrectClass(Object o) {
-        if (o instanceof TankAIControlled) {
+    public static Class<?> getCorrectClass(Object o)
+    {
+        if (o instanceof TankAIControlled)
+        {
             return TankAIControlled.class;
-        } else {
+        }
+        else
+        {
             return o.getClass();
         }
     }
 
-    public static Object getDefault(Class<?> c) {
-        if (defaults.containsKey(c)) {
+    public static Object getDefault(Class<?> c)
+    {
+        if (defaults.containsKey(c))
+        {
             return defaults.get(c);
-        } else {
-            try {
+        }
+        else
+        {
+            try
+            {
                 Object o = c.getConstructor().newInstance();
                 defaults.put(c, o);
                 return o;
-            } catch (Exception ignore){}
+            }
+            catch (Exception ignore)
+            {
+            }
         }
         return null;
     }
 
-    public static boolean isTanksONable(Object o) {
-        if (o != null) {
+    public static boolean isTanksONable(Object o)
+    {
+        if (o != null)
+        {
             Class c = o.getClass();
-            while (c != null) {
+            while (c != null)
+            {
                 if (c.isAnnotationPresent(TanksONable.class))
                     return true;
                 else
@@ -54,9 +70,11 @@ public final class Serializer {
 
     public static boolean isTanksONable(Field f)
     {
-        if (f != null) {
+        if (f != null)
+        {
             Class c = f.getType();
-            while (c != null) {
+            while (c != null)
+            {
                 if (c.isAnnotationPresent(TanksONable.class))
                     return true;
                 else
@@ -66,9 +84,11 @@ public final class Serializer {
         return false;
     }
 
-    public static <A extends Annotation> A getAnnotation(Object o, Class<A> a) {
+    public static <A extends Annotation> A getAnnotation(Object o, Class<A> a)
+    {
         Class<?> target = o.getClass();
-        while (target != null) {
+        while (target != null)
+        {
             A r = target.getAnnotation(a);
 
             if (r != null)
@@ -80,7 +100,8 @@ public final class Serializer {
         return null;
     }
 
-    public static String getid(Field f) {
+    public static String getid(Field f)
+    {
         return f.getAnnotation(Property.class).id();
     }
 
@@ -95,7 +116,9 @@ public final class Serializer {
                 {
                     p.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
                 }
-                catch (Exception ignore) {}
+                catch (Exception ignore)
+                {
+                }
             else if (o instanceof Bullet)
                 p.put("bullet_type", ((Bullet) o).typeName);
 
@@ -107,9 +130,11 @@ public final class Serializer {
                     if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
-                        if (o2 != null && isTanksONable(f)) {
+                        if (o2 != null && isTanksONable(f))
+                        {
                             p.put(getid(f), toMap(o2));
-                        } else if (o2 instanceof ArrayList)
+                        }
+                        else if (o2 instanceof ArrayList)
                         {
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
                             {
@@ -136,7 +161,6 @@ public final class Serializer {
                 catch (Exception e)
                 {
                     throw new RuntimeException(e);
-//                    Game.exitToCrash(e);
                 }
             }
             return p;
@@ -144,39 +168,58 @@ public final class Serializer {
         return null;
     }
 
-    public static String toTanksON(Object o) {
+    public static String toTanksON(Object o)
+    {
         return TanksON.toString(toMap(o));
     }
 
-    public static Object fromTanksON(String s) {
-        return parseObject((Map<String,Object>)TanksON.parseObject(s));
+    public static Object fromTanksON(String s)
+    {
+        return parseObject((Map<String, Object>) TanksON.parseObject(s));
     }
 
-    public static Object parseObject(Map<String, Object> m) {
-        if (m == null) {
+    public static Object parseObject(Map<String, Object> m)
+    {
+        if (m == null)
             return null;
-        }
         Object o = null;
-        switch ((String) m.get("obj_type")) {
+        switch ((String) m.get("obj_type"))
+        {
             case "tank":
                 o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
                 break;
-            case "bullet": {
-                try {
+            case "player_tank":
+                o = new TankPlayer();
+                break;
+            case "bullet":
+            {
+                try
+                {
                     o = Game.registryBullet.getEntry((String) m.get("bullet_type")).bullet.newInstance();
-                } catch (Exception ignore){}
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
                 break;
             }
             case "mine":
                 o = new Mine();
                 break;
-            case "item": {
-                try {
+            case "item":
+            {
+                try
+                {
                     o = Game.registryItem.getEntry((String) m.get("item_type")).item.getConstructor().newInstance();
-                } catch (Exception ignore){}
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
                 break;
             }
-            case "item_stack": {
+            case "item_stack":
+            {
                 Item i = (Item) parseObject((Map) m.get("item"));
                 o = (i.getStack(null));
                 break;
@@ -199,26 +242,34 @@ public final class Serializer {
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
-        for (Field f : o.getClass().getFields()) {
-            if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f))) {
-                try {
+        for (Field f : o.getClass().getFields())
+        {
+            if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f)))
+            {
+                try
+                {
                     Object o2 = f.get(o);
-                    if (isTanksONable(f)) {
+                    if (isTanksONable(f))
+                    {
                         Object o3 = m.get(getid(f));
                         f.set(o, parseObject((Map) o3));
                     }
-                    else if (o2 instanceof ArrayList) {
+                    else if (o2 instanceof ArrayList)
+                    {
                         ArrayList arr = (ArrayList) m.get(getid(f));
-                        if (!arr.isEmpty() && (arr.get(0) instanceof Map)) {
+                        if (!arr.isEmpty() && (arr.get(0) instanceof Map))
+                        {
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f)))) {
+                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f))))
+                            {
                                 o3s.add(parseObject(o3));
                             }
                             f.set(o, o3s);
                         }
                         else
                             f.set(o, m.get(getid(f)));
-                    } else if (o2 instanceof HashSet)
+                    }
+                    else if (o2 instanceof HashSet)
                         f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
                     else if (o2 instanceof Enum)
                         f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
@@ -230,7 +281,11 @@ public final class Serializer {
                         f.set(o, m.get(getid(f)));
                     else
                         f.set(o, m.get(getid(f)));
-                } catch (Exception ignore) {ignore.printStackTrace();}
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return o;

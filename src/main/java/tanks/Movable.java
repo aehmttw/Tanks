@@ -526,16 +526,6 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 		this.drawAt(x, y);
 	}
 
-	public static double distanceBetween(final Movable a, final Movable b)
-	{
-		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
-	}
-	
-	public static double distanceBetween(final Obstacle a, final Movable b)
-	{
-		return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
-	}
-
 	public static double angleBetween(double a, double b)
 	{
 		return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;

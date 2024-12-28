@@ -4,6 +4,7 @@ import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
+import tanks.bullet.Bullet;
 
 public class Turret extends Movable
 {
@@ -52,17 +53,23 @@ public class Turret extends Movable
 			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, luminance);
 
 
-		if (this.tank.bullet.shotCount > 1 && this.tank.multipleTurrets)
+		Bullet b = null;
+		if (this.tank instanceof TankAIControlled)
+			b = ((TankAIControlled) this.tank).bullet;
+		else if (this.tank instanceof TankRemote && !(((TankRemote) this.tank).tank instanceof TankPlayer))
+			b = ((TankAIControlled) ((TankRemote) this.tank).tank).bullet;
+
+		if (b != null && b.shotCount > 1 && this.tank.multipleTurrets)
 		{
-			int q = this.tank.bullet.shotCount;
+			int q = b.shotCount;
 
 			int n = 0;
 
-			if (this.tank.bullet.multishotSpread < 360)
+			if (b.multishotSpread < 360)
 				n = 1;
 
 			for (int i = 0; i < q; i++)
-				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(this.tank.bullet.multishotSpread) * ((i * 1.0 / (q - n)) - n / 2.0), vAngle);
+				this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation + Math.toRadians(b.multishotSpread) * ((i * 1.0 / (q - n)) - n / 2.0), vAngle);
 		}
 		else
 			this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation, vAngle);

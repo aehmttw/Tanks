@@ -8,6 +8,7 @@ import tanks.item.ItemMine;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
+import tanks.tank.TankPlayerController;
 import tanks.translation.Translation;
 
 public class Hotbar
@@ -16,7 +17,7 @@ public class Hotbar
 	public int coins;
 
 	public boolean enabledAmmunitionBar = true;
-	public boolean enabledItemBar = false;
+	public boolean enabledItemBar = true;
 	public boolean enabledHealthBar = true;
 	public boolean enabledCoins = false;
 	public boolean enabledRemainingEnemies = true;
@@ -28,6 +29,8 @@ public class Hotbar
 	public double verticalOffset = 0;
 
 	public double hideTimer = 0;
+
+	public static double bar_width = 410;
 
 	public static Button toggle;
 
@@ -66,8 +69,7 @@ public class Hotbar
 			this.persistent = !this.persistent;
 		}
 
-		if (this.enabledItemBar)
-			this.itemBar.update();
+		this.itemBar.update();
 	}
 
 	public void draw()
@@ -84,8 +86,7 @@ public class Hotbar
 				Drawing.drawing.drawInterfaceImage("icons/widearrow.png", Drawing.drawing.interfaceSizeX / 2, y, 64, -16);
 		}
 
-		if (this.enabledItemBar)
-			this.itemBar.draw();
+		this.itemBar.draw();
 
 		if (this.enabledHealthBar)
 		{
@@ -97,7 +98,7 @@ public class Hotbar
 			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
 
-			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
+			Drawing.drawing.fillInterfaceRect(x, y, bar_width, 5);
 			Drawing.drawing.setColor(255, 128, 0, (100 - this.percentHidden) * 2.55);
 
 			double lives = 0;
@@ -115,21 +116,21 @@ public class Hotbar
 				shields = (int) (Game.playerTank.health - lives);
 			}
 
-			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, lives);
+			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, lives);
 
 			if (shields > 0)
 			{
 				Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.fillInterfaceOval(x - 175, y, 18, 18);
-				//Drawing.drawing.drawImage("shield.png", x - 175, y + 1, 14, 14);
+				Drawing.drawing.fillInterfaceOval(x - bar_width / 2, y, 18, 18);
+				//Drawing.drawing.drawImage("shield.png", x - bar_width / 2, y + 1, 14, 14);
 				Drawing.drawing.setInterfaceFontSize(12);
 				Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
-				Drawing.drawing.drawInterfaceText(x - 175, y, shields + "");
+				Drawing.drawing.drawInterfaceText(x - bar_width / 2, y, shields + "");
 			}
 		/*	else
 			{
 				Drawing.drawing.setColor(0, 160, 0);
-				Drawing.drawing.drawImage("emblems/medic.png", x - 175, y, 14, 14);
+				Drawing.drawing.drawImage("emblems/medic.png", x - bar_width / 2, y, 14, 14);
 			}*/
 		}
 
@@ -143,41 +144,71 @@ public class Hotbar
 			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, 128 * (100 - this.percentHidden) / 100.0);
 
-			Drawing.drawing.fillInterfaceRect(x, y, 350, 5);
+			Drawing.drawing.fillInterfaceRect(x, y, bar_width, 5);
 
 			int live = 1;
 			int max = 1;
 			double cooldownFrac = 0;
 
-			ItemBullet.ItemStackBullet ib = null;
-			if (Game.playerTank != null && !Game.playerTank.destroy)
-				ib = Game.playerTank.bulletItem;
-
-			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
-				ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
-
-			if (ib != null)
+			if (Game.playerTank instanceof TankPlayerController)
 			{
-				live = ib.liveBullets;
-				max = ib.item.bullet.maxLiveBullets;
-				cooldownFrac = ib.cooldown / ib.item.cooldownBase;
+				TankPlayerController p = ((TankPlayerController) Game.playerTank);
+				live = p.liveBullets;
+				max = p.maxLiveBullets;
+				cooldownFrac = p.bulletCooldown / p.bulletCooldownBase;
+			}
+			else
+			{
+				ItemBullet.ItemStackBullet ib = null;
+				if (Game.playerTank != null && !Game.playerTank.destroy && Game.playerTank.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
+					ib = (ItemBullet.ItemStackBullet) Game.playerTank.getPrimaryAbility();
+
+				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
+					ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
+
+				if (ib != null)
+				{
+					live = ib.liveBullets;
+					max = ib.item.bullet.maxLiveBullets;
+
+					if (ib.stackSize > 0 && ib.stackSize < max)
+						max = ib.stackSize;
+
+					if (ib.destroy)
+					{
+						max = 1;
+						live = 1;
+					}
+
+					cooldownFrac = ib.cooldown / ib.item.cooldownBase;
+				}
 			}
 
 			double ammo = live * 1.0 / max;
 			double ammo2 = (live - cooldownFrac) / max;
 
-
 			if (max <= 0)
+			{
+				max = 1;
 				ammo = 0;
+				ammo2 = -cooldownFrac;
+			}
+
+			if (Game.playerTank != null && Game.playerTank.destroy)
+			{
+				ammo = 1;
+				ammo2 = 1;
+				max = 1;
+			}
 
 			Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, Math.min(1, 1 - ammo2));
+			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, 1 - ammo2));
 
 			Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, 1 - ammo);
+			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, 1 - ammo);
 
 			Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceProgressRect(x, y, 350, 5, Math.min(1, Math.max(0, -ammo2 * max)));
+			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, Math.max(0, -ammo2 * max)));
 
 			Drawing.drawing.setColor(0, 0, 0, 128 * (100 - this.percentHidden) / 100.0);
 
@@ -186,32 +217,53 @@ public class Hotbar
 				for (int i = 1; i < max; i++)
 				{
 					double frac = i * 1.0 / max;
-					Drawing.drawing.fillInterfaceRect(x - 175 + frac * 350, y, 2, 5);
+					Drawing.drawing.fillInterfaceRect(x - bar_width / 2 + frac * bar_width, y, 2, 5);
 				}
 			}
 
 			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
-				int mines = Game.playerTank.mine.maxLiveMines - Game.playerTank.mineItem.liveMines;
+				int mines = 0;
 
-				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
+				if (Game.playerTank instanceof TankPlayerController)
 				{
-					ItemMine.ItemStackMine im = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
-					mines = im.item.mine.maxLiveMines - im.liveMines;
+					TankPlayerController p = ((TankPlayerController) Game.playerTank);
+					mines = p.maxLiveMines - p.liveMines;
+				}
+				else
+				{
+					ItemMine.ItemStackMine m = null;
+
+					if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
+						m = (ItemMine.ItemStackMine) Game.playerTank.getSecondaryAbility();
+
+					if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
+						m = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
+
+					if (m != null)
+					{
+						mines = m.item.mine.maxLiveMines - m.liveMines;
+
+						if (m.stackSize > 0)
+							mines = Math.min(m.stackSize, mines);
+
+						if (m.destroy)
+							mines = 0;
+					}
 				}
 
 				if (mines > 0)
 				{
 					Drawing.drawing.setColor(255, 0, 0, (100 - this.percentHidden) * 2.55);
-					Drawing.drawing.fillInterfaceOval(x + 175, y, 18, 18);
+					Drawing.drawing.fillInterfaceOval(x + bar_width / 2, y, 18, 18);
 
 					Drawing.drawing.setColor(255, 255, 0, (100 - this.percentHidden) * 2.55);
-					Drawing.drawing.fillInterfaceOval(x + 175, y, 14, 14);
+					Drawing.drawing.fillInterfaceOval(x + bar_width / 2, y, 14, 14);
 
 					Drawing.drawing.setInterfaceFontSize(12);
 					Drawing.drawing.setColor(0, 0, 0, (100 - this.percentHidden) * 2.55);
 
-					Drawing.drawing.drawInterfaceText(x + 175, y, mines + "");
+					Drawing.drawing.drawInterfaceText(x + bar_width / 2, y, mines + "");
 				}
 			}
 		}
@@ -237,7 +289,7 @@ public class Hotbar
 					count++;
 			}
 
-			int x = (int) ((Drawing.drawing.interfaceSizeX / 2) - 210);
+			int x = (int) ((Drawing.drawing.interfaceSizeX / 2) - bar_width / 2 - 35);
 			int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 17.5 + percentHidden - verticalOffset);
 
 			Drawing.drawing.setColor(159, 32, 32, (100 - this.percentHidden) * 2.55);

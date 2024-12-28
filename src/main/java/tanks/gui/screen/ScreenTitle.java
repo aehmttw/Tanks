@@ -1,8 +1,8 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import tanks.*;
 import tanks.gui.Button;
+import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
@@ -374,7 +374,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.hidden = true;
 			this.logo.team = Game.playerTeam;
 			this.logo.maxSpeed *= 1.5;
-			this.logo.bullet.speed *= 1.5;
+			((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
 			Game.playerTank = logo;
 			Game.movables.add(this.logo);
 			this.controlPlayer = false;
@@ -412,7 +412,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.invulnerable = true;
 			this.logo.hidden = true;
 			this.logo.maxSpeed *= 1.5;
-			this.logo.bullet.speed *= 1.5;
+			((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
 			Game.playerTank = logo;
 			this.logo.team = Game.playerTeam;
 

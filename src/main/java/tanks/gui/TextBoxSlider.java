@@ -82,18 +82,18 @@ public class TextBoxSlider extends TextBox
         if (Game.glowEnabled)
         {
             if (selected)
-                Button.drawGlow(mid2, this.posY + 3.5, end2 - start2 - this.sizeY * (- m), this.sizeY * m, 0.55, 0, 0, 0, 160, false);
+                Button.drawGlow(mid2, this.posY + 3.5, end2 - start2 - this.sizeY * (-m), this.sizeY * m, 0.55, 0, 0, 0, 160, false);
             else if (hover && !Game.game.window.touchscreen)
-                Button.drawGlow(mid2, this.posY + 5, end2 - start2 - this.sizeY * (- m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+                Button.drawGlow(mid2, this.posY + 5, end2 - start2 - this.sizeY * (-m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
             else
-                Button.drawGlow(mid2, this.posY + 5, end2 - start2 - this.sizeY * (- m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+                Button.drawGlow(mid2, this.posY + 5, end2 - start2 - this.sizeY * (-m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
             if (sliding)
-                Button.drawGlow(mid1, this.posY + 3.5, end1 - start1 - this.sizeY * (- m), this.sizeY * m, 0.55, 0, 0, 0, 160, false);
+                Button.drawGlow(mid1, this.posY + 3.5, end1 - start1 - this.sizeY * (-m), this.sizeY * m, 0.55, 0, 0, 0, 160, false);
             else if (sliderHover)
-                Button.drawGlow(mid1, this.posY + 5, end1 - start1 - this.sizeY * (- m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+                Button.drawGlow(mid1, this.posY + 5, end1 - start1 - this.sizeY * (-m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
             else
-                Button.drawGlow(mid1, this.posY + 5, end1 - start1 - this.sizeY * (- m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+                Button.drawGlow(mid1, this.posY + 5, end1 - start1 - this.sizeY * (-m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
@@ -120,8 +120,26 @@ public class TextBoxSlider extends TextBox
         Drawing.drawing.addInterfaceVertex(end1, posY - sizeY * m / 2, 0);
         Game.game.window.shapeRenderer.setBatchMode(false, true, false, false);
 
-        if (Game.glowEnabled)
-            Button.drawGlow(x, this.posY + 2.5, this.sizeY * m, this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+        if (this.min < this.max)
+        {
+            if (Game.glowEnabled)
+                Button.drawGlow(x, this.posY + 2.5, this.sizeY * m, this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+
+            if (Game.glowEnabled)
+                drawing.setColor((this.bgColorR + this.colorR) / 2, (this.bgColorG + this.colorG) / 2, (this.bgColorB + this.colorB) / 2);
+            else
+                drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
+
+            drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m, this.sizeY * m * m);
+            //drawing.setColor(this.colorR, this.colorG, this.colorB);
+
+            if (Game.glowEnabled)
+                Button.drawGlow(x, this.posY + 1.5, this.sizeY * m * m, this.sizeY * m * m, 0.6, 0, 0, 0, 100, false);
+
+            drawing.setColor(this.r1 * (1 - frac) + this.r2 * frac, this.g1 * (1 - frac) + this.g2 * frac, this.b1 * (1 - frac) + this.b2 * frac);
+
+            drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m * m, this.sizeY * m * m * m);
+        }
 
         if (selected)
         {
@@ -138,21 +156,6 @@ public class TextBoxSlider extends TextBox
         drawing.fillInterfaceOval(start2, posY, sizeY * m, sizeY * m);
         drawing.fillInterfaceOval(end2, posY, sizeY * m, sizeY * m);
         drawing.fillInterfaceRect(mid2, posY, end2 - start2, sizeY * m);
-
-        if (Game.glowEnabled)
-            drawing.setColor((this.bgColorR + this.colorR) / 2, (this.bgColorG + this.colorG) / 2, (this.bgColorB + this.colorB) / 2);
-        else
-            drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
-
-        drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m, this.sizeY * m * m);
-        //drawing.setColor(this.colorR, this.colorG, this.colorB);
-
-        if (Game.glowEnabled)
-            Button.drawGlow(x, this.posY + 1.5, this.sizeY * m * m, this.sizeY * m * m, 0.6, 0, 0, 0, 100, false);
-
-        drawing.setColor(this.r1 * (1 - frac) + this.r2 * frac, this.g1 * (1 - frac) + this.g2 * frac, this.b1 * (1 - frac) + this.b2 * frac);
-
-        drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m * m, this.sizeY * m * m * m);
 
         drawing.setColor(0, 0, 0);
 

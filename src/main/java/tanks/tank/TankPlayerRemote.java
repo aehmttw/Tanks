@@ -12,7 +12,9 @@ import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.network.event.*;
 
-public class TankPlayerRemote extends Tank implements IServerPlayerTank
+import java.util.ArrayList;
+
+public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 {
     public double lastPosX;
     public double lastPosY;
@@ -77,7 +79,7 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
-        super("player", x, y, Game.tile_size, 0, 150, 255);
+        super(x, y);
         this.player = p;
         this.showName = true;
         this.angle = angle;
@@ -86,6 +88,12 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         this.standardUpdateEvent = false;
         this.managedMotion = false;
         this.player.tank = this;
+
+        this.abilities.add(new ItemBullet.ItemStackBullet(this.player, new ItemBullet(TankPlayer.default_bullet.clonePropertiesTo(new Bullet())), 0));
+        this.abilities.add(new ItemMine.ItemStackMine(this.player, new ItemMine(TankPlayer.default_mine.clonePropertiesTo(new Mine())), 0));
+        this.abilities.get(0).item.name = TankPlayer.default_bullet_name;
+        this.abilities.get(1).item.name = TankPlayer.default_mine_name;
+        this.abilities.get(1).item.cooldownBase = 50;
 
         this.lastPosX = x;
         this.lastPosY = y;
@@ -151,8 +159,10 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
-        this.bulletItem.updateCooldown(reload);
-        this.mineItem.updateCooldown(reload);
+        for (Item.ItemStack<?> s: this.abilities)
+        {
+            s.updateCooldown(reload);
+        }
 
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
@@ -211,8 +221,14 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
     public void refreshAmmo()
     {
         ItemBar b = this.player.hotbar.itemBar;
-        ItemBullet.ItemStackBullet ib = this.bulletItem;
-        ItemMine.ItemStackMine im = this.mineItem;
+        ItemBullet.ItemStackBullet ib = null;
+        ItemMine.ItemStackMine im = null;
+
+        if (this.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
+            ib = (ItemBullet.ItemStackBullet) this.getPrimaryAbility();
+
+        if (this.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
+            im = (ItemMine.ItemStackMine) this.getSecondaryAbility();
 
         if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1)
         {
@@ -222,13 +238,22 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
                 im = (ItemMine.ItemStackMine) b.slots[b.selected];
         }
 
-        if (lastLiveBullets != ib.liveBullets || ib.item.bullet.maxLiveBullets != lastMaxLiveBullets || im.liveMines != lastLiveMines || im.item.mine.maxLiveMines != lastMaxLiveMines)
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, ib.liveBullets, ib.item.bullet.maxLiveBullets, im.liveMines, im.item.mine.maxLiveMines, ib.cooldown, ib.item.cooldownBase));
+        int lb = ib == null ? 0 : ib.liveBullets;
+        int lm = im == null ? 0 : im.liveMines;
 
-        lastLiveBullets = ib.liveBullets;
-        lastLiveMines = im.liveMines;
-        lastMaxLiveBullets = ib.item.bullet.maxLiveBullets;
-        lastMaxLiveMines = im.item.mine.maxLiveMines;
+        int mlb = ib == null ? 0 : ib.item.bullet.maxLiveBullets;
+        int mlm = im == null ? 0 : im.item.mine.maxLiveMines;
+
+        double cooldown = ib == null ? 0 : ib.cooldown;
+        double cooldownBase = ib == null ? 0 : ib.item.cooldownBase;
+
+        if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines)
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase));
+
+        lastLiveBullets = lb;
+        lastLiveMines = lm;
+        lastMaxLiveBullets = mlb;
+        lastMaxLiveMines = mlm;
     }
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)
@@ -388,10 +413,10 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
             this.lastUpdateTime = t;
 
             if (action1 && !this.disabled)
-                this.shoot();
+                this.action(false);
 
             if (action2 && !this.disabled)
-                this.layMine();
+                this.action(true);
 
             this.posX = this.prevKnownPosX;
             this.posY = this.prevKnownPosY;
@@ -408,6 +433,14 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 
         Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
+        if (m.item.networkIndex >= 0)
+        {
+            Integer num = 0;
+            if (Game.currentLevel != null)
+                num = Game.currentLevel.itemNumbers.get(m.item.item.name);
+            m.item.networkIndex = num == null ? 0 : num;
+        }
+
         Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
 
@@ -418,32 +451,38 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         }
     }
 
-    public void shoot()
+    public void action(boolean right)
     {
         if (Game.bulletLocked || this.destroy)
             return;
 
+        int a = right ? selectedSecondaryAbility : selectedPrimaryAbility;
         if (this.player.hotbar.enabledItemBar)
         {
-            if (this.player.hotbar.itemBar.useItem(false))
+            if (this.player.hotbar.itemBar.useItem(right))
                 return;
         }
 
-        this.bulletItem.attemptUse(this);
+        Item.ItemStack<?> s = right ? this.getSecondaryAbility() : this.getPrimaryAbility();
+        if (s != null)
+        {
+            s.networkIndex = -a;
+            if (s.attemptUse(this))
+                Game.eventsOut.add(new EventUpdateTankAbility(this.player, right ? this.selectedSecondaryAbility : this.selectedPrimaryAbility));
+        }
     }
 
-    public void layMine()
+    public void quickAction(int click)
     {
         if (Game.bulletLocked || this.destroy)
             return;
 
-        if (this.player.hotbar.enabledItemBar)
+        if (this.abilities.size() > click)
         {
-            if (this.player.hotbar.itemBar.useItem(true))
-                return;
+            this.getAbility(click).networkIndex = -click;
+            if (this.getAbility(click).attemptUse(this))
+                Game.eventsOut.add(new EventUpdateTankAbility(this.player, click));
         }
-
-        this.mineItem.attemptUse(this);
     }
 
     public void fireBullet(Bullet b, double speed, double offset)
@@ -461,7 +500,6 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         if (b.moveOut)
             b.moveOut(50 * this.size / Game.tile_size);
 
-
         double mx = this.mouseX - this.posX;
         double my = this.mouseY - this.posY;
 
@@ -469,10 +507,13 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
         double ty = -Math.sin(offset) * mx + Math.cos(offset) * my;
         b.setTargetLocation(this.posX + tx, this.posY + ty);
 
-        Integer num = 0;
-        if (Game.currentLevel != null)
-            num = Game.currentLevel.itemNumbers.get(b.item.item.name);
-        b.item.networkIndex = num == null ? 0 : num;
+        if (b.item.networkIndex >= 0)
+        {
+            Integer num = 0;
+            if (Game.currentLevel != null)
+                num = Game.currentLevel.itemNumbers.get(b.item.item.name);
+            b.item.networkIndex = num == null ? 0 : num;
+        }
 
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);
@@ -481,9 +522,10 @@ public class TankPlayerRemote extends Tank implements IServerPlayerTank
 //            this.forceMotion = true;
 
         if (!this.hasCollided && b.recoil != 0)
+        {
             this.recoil = true;
-
-        Game.eventsOut.add(new EventTankControllerAddVelocity(this, this.vX - vX, this.vY - vY, true));
+            Game.eventsOut.add(new EventTankControllerAddVelocity(this, this.vX - vX, this.vY - vY, true));
+        }
 
         if (Crusade.crusadeMode && Crusade.currentCrusade != null)
         {

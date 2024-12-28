@@ -2,7 +2,6 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.GameObject;
 import tanks.Movable;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
@@ -49,7 +48,6 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button lastObstaclePage = new Button(this.centerX + 500, this.centerY + 60 * 3, 40, 40, "", () -> editor.obstaclePage = (obstacleButtons.size() - 1) / objectButtonRows / objectButtonCols);
 
-
     public Button exitObjectMenu = new Button(this.centerX, this.centerY + 240, 350, 40, "Ok", () ->
     {
         Game.screen = editor;
@@ -60,13 +58,13 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
     public Button playerItems = new Button(this.centerX - this.objXSpace / 2, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, editor));
 
-    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds", () -> Game.screen = new ScreenEditorPlayerTankBuild(new ArrayListIndexPointer<>(editor.playerTankBuilds, 0), editor));
+    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds", () -> Game.screen = new OverlayPlayerBuilds(Game.screen, editor));
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.playerTank;
         this.editor.setMousePlaceable();
-        this.loadButtons();
+        this.loadMetadataButtons();
     }
     );
 
@@ -74,7 +72,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     {
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.enemyTank;
         this.editor.setMousePlaceable();
-        this.loadButtons();
+        this.loadMetadataButtons();
     }
     );
 
@@ -82,7 +80,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     {
         this.editor.currentPlaceable = ScreenLevelEditor.Placeable.obstacle;
         this.editor.setMousePlaceable();
-        this.loadButtons();
+        this.loadMetadataButtons();
     });
 
     public Button editTank = new Button(0, 0, 40, 40, "", () ->
@@ -125,12 +123,17 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         sort.image = "icons/sort_alphabetical.png";
         sort.fullInfo = true;
 
-        this.loadButtons();
+        this.loadMetadataButtons();
 
         playerItems.imageXOffset = -155;
         playerItems.imageSizeX = 30;
         playerItems.imageSizeY = 30;
         playerItems.image = "item.png";
+
+        playerBuilds.imageXOffset = -145;
+        playerBuilds.imageSizeX = 40;
+        playerBuilds.imageSizeY = 40;
+        playerBuilds.image = "tank_builds.png";
 
         int count = Game.registryTank.tankEntries.size() + this.editor.level.customTanks.size();
         int rows = objectButtonRows;
@@ -171,7 +174,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             {
                 editor.tankNum = j;
                 editor.setMousePlaceable();
-                this.loadButtons();
+                this.loadMetadataButtons();
             }
                     , t.description);
 
@@ -194,7 +197,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             {
                 editor.obstacleNum = j;
                 editor.setMousePlaceable();
-                this.loadButtons();
+                this.loadMetadataButtons();
             }
                     , o.description);
 
@@ -250,7 +253,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         this.editTank.fullInfo = true;
     }
 
-    public void loadButtons()
+    public void loadMetadataButtons()
     {
         this.primaryMetadataButton = null;
         this.secondaryMetadataButton = null;
@@ -299,7 +302,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public void update()
     {
         if (this.refreshButtons)
-            this.loadButtons();
+            this.loadMetadataButtons();
 
         this.refreshButtons = false;
 
@@ -322,7 +325,6 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.movePlayerButton.update();
             this.playerItems.update();
 
-            this.playerBuilds.enabled = false;
             this.playerBuilds.update();
         }
         else if (this.editor.currentPlaceable == ScreenLevelEditor.Placeable.enemyTank)

@@ -3,16 +3,18 @@ package tanks.obstacle;
 import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.screen.leveleditor.selector.SelectorColor;
+import tanks.gui.screen.leveleditor.selector.SelectorColorAndNoise;
 import tanks.rendering.ShaderGroundColor;
 import tanks.tankson.MetadataProperty;
 
-public class ObstacleColor extends Obstacle
-{
-    @MetadataProperty(id = "color", name = "Color", selector = SelectorColor.selector_name, image = "color.png", keybind = "editor.groupID")
-    public int color = 16777215;
+import java.util.Arrays;
 
-    public ObstacleColor(String name, double posX, double posY)
+public class ObstacleGroundPaint extends Obstacle
+{
+    @MetadataProperty(id = "color", name = "Color", selector = SelectorColorAndNoise.selector_name, image = "color.png", keybind = "editor.groupID")
+    public long color = 16777215;
+
+    public ObstacleGroundPaint(String name, double posX, double posY)
     {
         super(name, posX, posY);
 
@@ -72,28 +74,40 @@ public class ObstacleColor extends Obstacle
     @Override
     public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
     {
-        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
         Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d);
     }
 
     @Override
     public String getMetadata()
     {
-        return Integer.toHexString(this.color);
+        return Long.toHexString(this.color);
     }
 
     @Override
     public void setMetadata(String meta)
     {
-        this.color = Integer.parseInt(meta, 16);
+        this.color = Long.parseLong(meta, 16);
         this.refreshMetadata();
     }
 
     @Override
     public void refreshMetadata()
     {
-        this.colorR = this.color / (256 * 256) % 256;
-        this.colorG = this.color / (256) % 256;
-        this.colorB = this.color % 256;
+        int[] color = new int[7];
+        long c = this.color;
+        for (int i = 0; i < color.length; i++)
+        {
+            color[i] = (int) (c % 256);
+            c /= 256;
+        }
+
+        double r1 = Math.random();
+        double r2 = color[6] == 0 ? Math.random() : r1;
+        double r3 = color[6] == 0 ? Math.random() : r1;
+
+        this.colorR = color[2] + r1 * color[5];
+        this.colorG = color[1] + r2 * color[4];
+        this.colorB = color[0] + r3 * color[3];
     }
 }

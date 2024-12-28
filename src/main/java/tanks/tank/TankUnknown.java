@@ -33,5 +33,4 @@ public class TankUnknown extends Tank
 		drawing.drawText(this.posX, this.posY - 40, this.name);
 
 	}
-
 }

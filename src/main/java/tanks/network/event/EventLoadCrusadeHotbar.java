@@ -51,6 +51,7 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
         if (this.clientID == null)
         {
             Game.player.hotbar.enabledItemBar = true;
+            Game.player.hotbar.itemBar.showItems = true;
             Game.player.hotbar.enabledCoins = true;
         }
 

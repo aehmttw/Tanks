@@ -8,6 +8,7 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.ItemBullet;
+import tanks.item.ItemDummyTankExplosion;
 import tanks.item.ItemMine;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
@@ -165,16 +166,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankBuildProperty @Property(category = appearanceTracks, id = "track_spacing", name = "Track spacing", minValue = 0.0)
 	public double trackSpacing = 0.4;
 
-	/** The bullet a tank uses. If you want to change this, make sure to use setBullet() because it also updates the bulletItem. */
-	@Property(category = firingGeneral, id = "bullet", name = "Bullet")
-	public Bullet bullet = TankPlayer.default_bullet.clonePropertiesTo(new Bullet());
-	public ItemBullet.ItemStackBullet bulletItem = new ItemBullet.ItemStackBullet(null, new ItemBullet(this.bullet), -1);
-
-	/** The mine a tank uses. If you want to change this, make sure to use setMine() because it also updates the mineItem. */
-	@Property(category = mines, id = "mine", name = "Mine")
-	public Mine mine = TankPlayer.default_mine.clonePropertiesTo(new Mine());
-	public ItemMine.ItemStackMine mineItem = new ItemMine.ItemStackMine(null, new ItemMine(this.mine), -1);
-
 	/** Age in frames*/
 	protected double age = 0;
 	/** A tank will spawn other tanks on the second frame it updates if it was spawned by another tank, to prevent infinite loop for recursively spawning tanks*/
@@ -202,8 +193,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double hitboxSize = 0.95;
 
-	@Property(category = general, id = "explode_on_destroy", name = "Explosive", desc="If set, the tank will explode when destroyed. The explosion will use the properties of the tank's mine.")
-	public boolean explodeOnDestroy = false;
+	@Property(category = general, id = "explode_on_destroy", name = "Destroy explosion", desc="When destroyed, the tank will explode with this explosion.", nullable = true)
+	public Explosion explodeOnDestroy = null;
 
 	public boolean droppedFromCrate = false;
 
@@ -290,26 +281,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.networkID = id;
 		idMap.put(id, this);
-	}
-
-	/**
-	 * Always use this to change a tank's bullet
-	 * @param b the bullet to set the tank to use
-	 */
-	public void setBullet(Bullet b)
-	{
-		this.bullet = b.getCopy();
-		this.bulletItem.item.bullet = this.bullet;
-	}
-
-	/**
-	 * Always use this to change a tank's mine
-	 * @param m the mine to set the tank to use
-	 */
-	public void setMine(Mine m)
-	{
-		this.mine = m.getCopy();
-		this.mineItem.item.mine = this.mine;
 	}
 
 	public void fireBullet(Bullet b, double speed, double offset)
@@ -500,9 +471,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		this.updateVisibility();
-
-		this.bulletItem.item.bullet = this.bullet;
-		this.mineItem.item.mine = this.mine;
 
 		this.age += Panel.frameFrequency;
 		this.invulnerabilityTimer = Math.max(0, this.invulnerabilityTimer - Panel.frameFrequency);
@@ -1018,10 +986,10 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void onDestroy()
 	{
-		if (this.explodeOnDestroy && !(this.droppedFromCrate && this.age < 250) && !ScreenPartyLobby.isClient)
+		if (this.explodeOnDestroy != null && !(this.droppedFromCrate && this.age < 250) && !ScreenPartyLobby.isClient)
 		{
-			Explosion e = new Explosion(this.posX, this.posY, this, this.mineItem);
-			this.mine.explosion.clonePropertiesTo(e);
+			Explosion e = new Explosion(this.posX, this.posY, this, ItemDummyTankExplosion.dummy_explosion.getStack(null));
+			this.explodeOnDestroy.clonePropertiesTo(e);
 			e.explode();
 		}
 	}
@@ -1068,8 +1036,12 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean damage(double amount, GameObject source)
 	{
+		double prev = this.health;
 		double finalAmount = amount * this.getDamageMultiplier(source);
 		this.health -= finalAmount;
+
+		if (source instanceof Bullet && ((Bullet) source).maxExtraHealth > 0 && amount < 0)
+			this.health = Math.max(prev, Math.min(this.health, this.baseHealth + ((Bullet) source).maxExtraHealth));
 
 		if (this.health <= 1)
 		{
@@ -1106,11 +1078,22 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkHit(owner, source);
 
-		if (this.health > 0 && (int) (this.health + amount) != (int) (this.health))
+		double hf = this.health % 1.0;
+		if (hf == 0)
+			hf = 1;
+
+		double hf2 = prev % 1.0;
+		if (hf2 == 0)
+			hf2 = 1;
+
+		int h = (int) (this.health - hf);
+		int h2 = (int) (prev - hf2);
+
+		if (h >= 0 && h2 != h)
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
 			e.size = this.size;
-			e.radius = this.health - 1;
+			e.radius = h;
 			Game.effects.add(e);
 		}
 
@@ -1311,8 +1294,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void setBufferCooldown(double value)
 	{
-		this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
-		this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
+
 	}
 
 	/** This is for backwards compatibility saving with the base game. */

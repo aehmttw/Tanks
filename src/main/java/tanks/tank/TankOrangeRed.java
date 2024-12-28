@@ -26,7 +26,7 @@ public class TankOrangeRed extends TankAIControlled
         this.enableDefensiveFiring = true;
         this.resistExplosions = true;
         this.enableMineAvoidance = false;
-        this.explodeOnDestroy = true;
+        this.explodeOnDestroy = this.mine.explosion;
 
         this.setBullet(DefaultBullets.explosive_bullet);
 

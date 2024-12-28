@@ -140,6 +140,8 @@ public abstract class Item extends GameObject
 		public boolean destroy = false;
 		public Player player;
 
+		public int networkIndex = 0;
+
 		/**
 		 * Creates a new item stack with given parameters. Make sure if you extend this class you provide the same
 		 * constructor parameters in your subclass.
@@ -200,12 +202,15 @@ public abstract class Item extends GameObject
 			this.attemptUse(this.getUser());
 		}
 
-		public void attemptUse(Tank t)
+		public boolean attemptUse(Tank t)
 		{
-			if (this.usable(t))
+			if (this.usable(t) && !this.destroy)
 			{
 				use(t);
+				return true;
 			}
+
+			return false;
 		}
 
 		public Tank getUser()

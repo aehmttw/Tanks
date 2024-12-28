@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.item.Item;
+import tanks.tankson.FieldPointer;
 import tanks.tankson.MonitoredFieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
@@ -18,10 +19,10 @@ public class ScreenEditorCrusadeShopItem extends ScreenEditorItem
         }), screen);
 
         Field price = item.get().getClass().getField("price");
-        this.itemProperties.uiElements.add(getUIElementForField(price, price.getAnnotation(Property.class), item));
+        this.itemProperties.uiElements.add(getUIElementForField(new FieldPointer<>(item.get(), price), price.getAnnotation(Property.class)));
 
         Field level = item.get().getClass().getField("levelUnlock");
-        this.itemProperties.uiElements.add(getUIElementForField(level, level.getAnnotation(Property.class), item));
+        this.itemProperties.uiElements.add(getUIElementForField(new FieldPointer<>(item.get(), level), level.getAnnotation(Property.class)));
 
         this.itemProperties.sortUIElements();
     }

@@ -1,17 +1,22 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.EmptySpace;
-import tanks.gui.TextBox;
+import tanks.Panel;
+import tanks.bullet.Bullet;
+import tanks.gui.*;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.registry.RegistryItem;
 import tanks.tank.*;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPlayer>
 {
@@ -102,7 +107,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
         Tab general = new TabGeneral(this, "General", TankPropertyCategory.general);
         Tab appearance = new TabAppearance(this, "Appearance", TankPropertyCategory.appearanceGeneral);
         Tab movement = new TabTankBuild(this, "Movement", TankPropertyCategory.movementGeneral);
-        Tab abilities = new TabTankBuild(this, "Abilities", TankPropertyCategory.abilities);
+        Tab abilities = new TabAbilities(this, "Abilities", TankPropertyCategory.abilities);
 
         new TabWithPreview(this, appearance, "Emblem", TankPropertyCategory.appearanceEmblem);
         new TabWithPreview(this, appearance, "Turret base", TankPropertyCategory.appearanceTurretBase);
@@ -174,7 +179,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
 
                 if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)) && p.miscType() != Property.MiscType.color)
-                    this.uiElements.add(screen.getUIElementForField(f, p, target));
+                    this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(target.get(), f), p));
             }
         }
     }
@@ -204,7 +209,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
                 {
                     if (p.miscType() == Property.MiscType.description)
                     {
-                        TextBox t = (TextBox) screen.getUIElementForField(f, p, target);
+                        TextBox t = (TextBox) screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
                         t.posX = this.screen.centerX;
                         t.posY = this.screen.centerY + 270;
                         t.enableCaps = true;
@@ -216,7 +221,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
                         this.description = t;
                     }
                     else
-                        this.uiElements.add(screen.getUIElementForField(f, p, target));
+                        this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(target.get(), f), p));
                 }
             }
         }
@@ -298,15 +303,14 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
             this.preview.tertiaryColorR = tank.tertiaryColorR;
             this.preview.tertiaryColorG = tank.tertiaryColorG;
             this.preview.tertiaryColorB = tank.tertiaryColorB;
-            this.preview.emblemR = tank.emblemR;
-            this.preview.emblemG = tank.emblemG;
-            this.preview.emblemB = tank.emblemB;
+            this.preview.emblemR = tank.secondaryColorR;
+            this.preview.emblemG = tank.secondaryColorG;
+            this.preview.emblemB = tank.secondaryColorB;
             this.preview.luminance = tank.luminance;
             this.preview.glowIntensity = tank.glowIntensity;
             this.preview.glowSize = tank.glowSize;
             this.preview.lightSize = tank.lightSize;
             this.preview.lightIntensity = tank.lightIntensity;
-            this.preview.setBullet(tank.bullet);
             this.preview.multipleTurrets = tank.multipleTurrets;
 
             if (this.preview.size > Game.tile_size * 2)
@@ -409,7 +413,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
 
             if (tank.emblem != null)
             {
-                Drawing.drawing.setColor(tank.emblemR, tank.emblemG, tank.emblemB);
+                Drawing.drawing.setColor(tank.secondaryColorR, tank.secondaryColorG, tank.secondaryColorB);
                 Drawing.drawing.drawInterfaceImage(tank.emblem, margin, screen.centerY + 60 - space * 3, s, s);
             }
 
@@ -444,6 +448,135 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
                 {
                     Drawing.drawing.fillInterfaceRect(margin + (i - 1) * s * tank.trackSpacing, screen.centerY + 60 + space * 3 + (j - 0.5) * s * 0.6, s / 5, s / 5);
                 }
+            }
+        }
+    }
+
+    public class TabAbilities extends TabTankBuild
+    {
+        public ArrayList<Button> deleteButtons = new ArrayList<>();
+        public Selector itemSelector;
+
+        public Button create = new Button(screen.centerX, -1000, 60, 60, "+", () ->
+        {
+            itemSelector.setScreen();
+        });
+
+        public TabAbilities(ScreenEditorPlayerTankBuild screen, String name, String category)
+        {
+            super(screen, name, category);
+            this.rows += 1;
+
+            String[] itemNames = new String[Game.registryItem.itemEntries.size()];
+            String[] itemImages = new String[Game.registryItem.itemEntries.size()];
+
+            for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
+            {
+                RegistryItem.ItemEntry r = Game.registryItem.getEntry(i);
+                itemNames[i] = r.name;
+                itemImages[i] = r.image;
+            }
+
+            itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
+            {
+                Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
+                {
+                    target.get().abilities.add(i);
+
+                    ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>(target.get().abilities, target.get().abilities.size() - 1), screen);
+                    s.onComplete = () ->
+                    {
+                        uiElements.clear();
+                        addFields();
+                        sortUIElements();
+                    };
+                    s.showLoadFromTemplate = true;
+                    Game.screen = s;
+                };
+
+                Game.screen = new ScreenAddSavedItem(screen, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
+            });
+
+            itemSelector.images = itemImages;
+            itemSelector.quick = true;
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.deleteButtons.clear();
+
+            TankPlayer t = target.get();
+            for (int i = 0; i < t.abilities.size(); i++)
+            {
+                int j = i;
+                Property p = new Property()
+                {
+                    @Override public Class<? extends Annotation> annotationType() { return Property.class; }
+                    @Override public String id() { return "ability_" + (j + 1); }
+                    @Override public String name() { return "Ability " + (j + 1); }
+                    @Override public String desc() { return ""; }
+                    @Override public String category() { return ""; }
+                    @Override public MiscType miscType() { return MiscType.none; }
+                    @Override public boolean nullable() { return false; }
+                    @Override public double minValue() { return 0; }
+                    @Override public double maxValue() { return 0; }
+                };
+                SelectorDrawable s = (SelectorDrawable) getUIElementForField(new ArrayListIndexPointer<>(t.abilities, i), p);
+                s.sizeX *= 1.5;
+                s.imageXOffset = - s.sizeX / 2 + s.sizeY / 2;
+                this.uiElements.add(s);
+
+                Button delete = new Button(-1000, -1000, 60, 60, "x", () ->
+                {
+                    t.abilities.remove(j);
+                    uiElements.clear();
+                    addFields();
+                    sortUIElements();
+                });
+
+                delete.textOffsetY = -2.5;
+
+                delete.bgColR = 160;
+                delete.bgColG = 160;
+                delete.bgColB = 160;
+
+                delete.selectedColR = 255;
+                delete.selectedColG = 0;
+                delete.selectedColB = 0;
+
+                delete.textColR = 255;
+                delete.textColG = 255;
+                delete.textColB = 255;
+
+                deleteButtons.add(delete);
+            }
+
+            if (t.abilities.size() < TankPlayer.max_abilities)
+                this.uiElements.add(create);
+        }
+
+        public void update()
+        {
+            super.update();
+
+            for (int i = 0; i < this.deleteButtons.size(); i++)
+            {
+                Button b = this.deleteButtons.get(i);
+                b.update();
+            }
+        }
+
+        public void draw()
+        {
+            super.draw();
+            for (int i = 0; i < this.deleteButtons.size(); i++)
+            {
+                Button b = this.deleteButtons.get(i);
+                SelectorDrawable d = ((SelectorDrawable) this.uiElements.get(i));
+                b.posX = d.posX - screen.objXSpace * 0.85;
+                b.posY = d.posY - screen.objHeight / 4;
+                b.draw();
             }
         }
     }

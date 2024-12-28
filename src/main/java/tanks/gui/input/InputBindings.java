@@ -22,7 +22,14 @@ public class InputBindings
     public InputBindingGroup hotbar3 = new InputBindingGroup("hotbar.3", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_3));
     public InputBindingGroup hotbar4 = new InputBindingGroup("hotbar.4", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_4));
     public InputBindingGroup hotbar5 = new InputBindingGroup("hotbar.5", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_5));
+    public InputBindingGroup hotbar6 = new InputBindingGroup("hotbar.6", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_6));
+    public InputBindingGroup hotbar7 = new InputBindingGroup("hotbar.7", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_7));
+    public InputBindingGroup hotbar8 = new InputBindingGroup("hotbar.8", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_8));
+    public InputBindingGroup hotbar9 = new InputBindingGroup("hotbar.9", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_9));
+    public InputBindingGroup hotbar10 = new InputBindingGroup("hotbar.10", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_0));
     public InputBindingGroup hotbarDeselect = new InputBindingGroup("hotbar.deselect", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_GRAVE_ACCENT));
+
+    public InputBindingGroup[] hotbarBindings = new InputBindingGroup[]{hotbar1, hotbar2, hotbar3, hotbar4, hotbar5, hotbar6, hotbar7, hotbar8, hotbar9, hotbar10};
 
     public InputBindingGroup pause = new InputBindingGroup("game.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup play = new InputBindingGroup("game.play", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ENTER));

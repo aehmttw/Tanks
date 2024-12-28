@@ -16,6 +16,7 @@ public class ObstacleBreakable extends ObstacleStackable
     {
         super(name, posX, posY);
 
+        this.checkForObjects = true;
         this.shouldShootThrough = true;
         this.description = "A block which breaks when hit by a bullet";
     }

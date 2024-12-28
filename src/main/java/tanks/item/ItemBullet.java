@@ -37,8 +37,6 @@ public class ItemBullet extends Item
 		public double fractionUsed = 0;
 		public int liveBullets;
 
-		public int networkIndex = 0;
-
 		public ItemStackBullet(Player p, ItemBullet item, int max)
 		{
 			super(p, item, max);

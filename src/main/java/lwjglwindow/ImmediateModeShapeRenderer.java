@@ -826,11 +826,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             glVertex2d(xs[nextI] + xRadius[i], ys[nextI] + yRadius[i]);
             glVertex2d(xs[nextI] + xWidth[nextI] + innerRadius * Math.cos(maxJ), ys[nextI] + yWidth[nextI] + innerRadius * Math.sin(maxJ));
 
-            if (innerRadius > 1)
-            {
-                for (double j = maxJ; j >= Math.PI * 2 * (order[i] / 4.) - change / 2; j -= change)
-                    glVertex2d(xs[i] + xWidth[i] + Math.cos(j) * innerRadius, ys[i] + yWidth[i] + Math.sin(j) * innerRadius);
-            }
+            for (double j = maxJ; j >= Math.PI * 2 * (order[i] / 4.) - change / 2; j -= change)
+                glVertex2d(xs[i] + xWidth[i] + Math.cos(j) * innerRadius, ys[i] + yWidth[i] + Math.sin(j) * innerRadius);
 
             glEnd();
         }

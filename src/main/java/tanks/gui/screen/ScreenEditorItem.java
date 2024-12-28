@@ -9,7 +9,6 @@ import tanks.gui.ITrigger;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
-import tanks.tank.Explosion;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
@@ -21,11 +20,19 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 {
     public TabItemProperties itemProperties;
     public ScreenEditorTanksONable<?> objectEditorScreen = null;
-    public Button itemTabButton = new Button(this.centerX, 175, 350, 40, "Item properties", () ->
+    public boolean showLoadFromTemplate = false;
+
+    public Button itemTabButton;
+
+    public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
-        this.setTab(itemProperties);
-        this.objectEditorScreen.currentTab = null;
-    });
+        Game.screen = new ScreenAddSavedItem(this, (b) ->
+        {
+            this.setTarget(b);
+            Game.screen = this;
+        }, "My", Item.class);
+    }
+    );
 
     public boolean writeItem(Item.ItemStack<?> t)
     {
@@ -88,11 +95,32 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         this.itemTabButton.imageSizeY = 40;
         this.itemTabButton.imageXOffset = -145;
 
+        this.delete.function = () ->
+        {
+            setTarget(null);
+            this.quit.function.run();
+        };
+
+        this.deleteText = "Delete item";
+        this.showDeleteObj = false;
+        this.delete.setText("Delete item");
+
+        this.resetTabs();
+    }
+
+    @Override
+    public void resetTabs()
+    {
+        super.resetTabs();
+
         try
         {
-            this.objName = itemStack.get().item.getClass().getField("item_class_name").get(null) + " item";
+            if (target.get() == null)
+                return;
 
-            Item.ItemStack<?> is = itemStack.get();
+            this.objName = target.get().item.getClass().getField("item_class_name").get(null) + " item";
+
+            Item.ItemStack<?> is = target.get();
             Item item = is.item;
 
             if (is instanceof ItemBullet.ItemStackBullet)
@@ -110,6 +138,8 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 b.sizeX = this.itemTabButton.sizeX;
                 b.imageXOffset = this.itemTabButton.imageXOffset;
             }
+            else
+                this.objectEditorScreen = null;
 
             if (this.objectEditorScreen != null)
             {
@@ -121,16 +151,6 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         {
             Game.exitToCrash(e);
         }
-
-        this.delete.function = () ->
-        {
-            setTarget(null);
-            this.quit.function.run();
-        };
-
-        this.deleteText = "Delete item";
-        this.showDeleteObj = false;
-        this.delete.setText("Delete item");
     }
 
     public class TabItemProperties extends Tab
@@ -157,7 +177,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                         Property p = f.getAnnotation(Property.class);
                         if (p != null && p.category().equals(this.category))
                         {
-                            this.uiElements.add(screen.getUIElementForField(f, p, ip));
+                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
                         }
                     }
                 }
@@ -169,7 +189,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                     Property p = f.getAnnotation(Property.class);
                     if (p != null && p.category().equals(this.category) && !p.id().equals("item"))
                     {
-                        this.uiElements.add(screen.getUIElementForField(f, p, screen.target));
+                        this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(screen.target.get(), f), p));
                     }
                 }
                 this.uiElements.add(cooldown);
@@ -182,7 +202,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                         Property p = f.getAnnotation(Property.class);
                         if (p != null && p.category().equals(this.category))
                         {
-                            this.uiElements.add(screen.getUIElementForField(f, p, ip));
+                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
                         }
                     }
                 }
@@ -199,6 +219,11 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     {
         this.itemProperties = new TabItemProperties(this, "Item properties", "");
         this.setTab(this.itemProperties);
+        this.itemTabButton = new Button(this.centerX, 175, 350, 40, "Item properties", () ->
+        {
+            this.setTab(itemProperties);
+            this.objectEditorScreen.currentTab = null;
+        });
     }
 
     @Override
@@ -226,7 +251,11 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         else
             super.draw();
 
-        this.delete.draw();
+        if (this.showLoadFromTemplate)
+            load.draw();
+        else
+            this.delete.draw();
+
         this.save.draw();
     }
 
@@ -247,7 +276,11 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         else
             super.update();
 
-        this.delete.update();
+        if (this.showLoadFromTemplate)
+            load.update();
+        else
+            this.delete.update();
+
         this.save.update();
     }
 }

@@ -88,17 +88,17 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
         {
             Pointer<Item.ItemStack<?>> p = new FieldPointer<>(this.itemStack, Item.ItemStack.class.getField("item"));
             Field f = Item.class.getField("icon");
-            this.image = (SelectorImage) previous.getUIElementForField(f, f.getAnnotation(Property.class), p);
+            this.image = (SelectorImage) previous.getUIElementForField(new FieldPointer<>(p.get(), f), f.getAnnotation(Property.class));
 
             f = Item.class.getField("cooldownBase");
-            this.cooldown = (TextBox) previous.getUIElementForField(f, f.getAnnotation(Property.class), p);
+            this.cooldown = (TextBox) previous.getUIElementForField(new FieldPointer<>(p.get(), f), f.getAnnotation(Property.class));
 
             p = new FieldPointer<>(this, this.getClass().getField("itemStack"));
             f = Item.ItemStack.class.getField("stackSize");
-            this.amount = (TextBox) previous.getUIElementForField(f, f.getAnnotation(Property.class), p);
+            this.amount = (TextBox) previous.getUIElementForField(new FieldPointer<>(p.get(), f), f.getAnnotation(Property.class));
 
             f = Item.ItemStack.class.getField("maxStackSize");
-            this.maxAmount = (TextBox) previous.getUIElementForField(f, f.getAnnotation(Property.class), p);
+            this.maxAmount = (TextBox) previous.getUIElementForField(new FieldPointer<>(p.get(), f), f.getAnnotation(Property.class));
 
             this.image.posX = this.centerX - this.objXSpace * 0.5;
             this.image.posY = this.centerY - this.objYSpace * 0.5;

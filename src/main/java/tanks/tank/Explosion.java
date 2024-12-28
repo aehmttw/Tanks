@@ -56,7 +56,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         this.isRemote = tank.isRemote;
     }
 
-    public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank)
+    public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, TankAIControlled tank)
     {
         this(x, y, radius, damage, destroysObstacles, tank, tank.mineItem);
     }
@@ -249,7 +249,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                                     Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
                                 }
                             }
-                            else
+                            else if (damage > 0)
                                 Drawing.drawing.playGlobalSound("damage.ogg");
                         }
                     }
@@ -282,7 +282,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
             }
         }
 
-        if (this.radius > 0 && this.damage != 0)
+        if (this.radius > 0)
         {
             Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
             e.radius = Math.max(this.radius, 0);

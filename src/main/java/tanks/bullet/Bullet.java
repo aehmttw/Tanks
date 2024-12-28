@@ -441,15 +441,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			double healthBefore = t.health;
 			double healFlashBefore = t.healFlashAnimation;
+
 			boolean kill = t.damage(dmg * this.frameDamageMultipler, this);
 			if (!t.destroy && this.hitStun > 0 && !(Team.isAllied(this, t) && this.team != null && !this.team.friendlyFire))
 				this.applyStun(t);
 
 			if (this.damage < 0)
 			{
-				if (this.maxExtraHealth > 0)
-					t.health = Math.max(healthBefore, Math.min(t.health, t.baseHealth + this.maxExtraHealth));
-
 				if (healthBefore == t.health)
 					t.healFlashAnimation = healFlashBefore;
 

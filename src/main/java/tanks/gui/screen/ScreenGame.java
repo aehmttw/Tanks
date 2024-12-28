@@ -43,6 +43,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public static double finishTimerMax = 100;
 	public double finishQuickTimer = 0;
 
+	public double age = 0;
+
 	public boolean cancelCountdown = false;
 	public String name = null;
 
@@ -587,25 +589,23 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			for (Player p: Game.players)
 			{
-				p.hotbar.enabledItemBar = false;
+				p.hotbar.itemBar = new ItemBar(p);
+				p.hotbar.itemBar.showItems = false;
 				p.hotbar.enabledCoins = false;
-
-				if (startingItems || shop || (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).enableItemBar))
-				{
-					p.hotbar.enabledItemBar = true;
-					p.hotbar.itemBar = new ItemBar(p);
-				}
 
 				if (startingItems)
 				{
 					for (Item.ItemStack<?> i: Game.currentLevel.startingItems)
 						p.hotbar.itemBar.addItem(i);
+
+					p.hotbar.itemBar.showItems = true;
 				}
 
 				if (shop)
 				{
 					p.hotbar.enabledCoins = true;
 					p.hotbar.coins = Game.currentLevel.startingCoins;
+					p.hotbar.itemBar.showItems = true;
 					Game.eventsOut.add(new EventUpdateCoins(p));
 				}
 
@@ -1390,6 +1390,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				((Minigame) Game.currentLevel).update();
 
 			playing = true;
+			this.age += Panel.frameFrequency;
 
 			if (Game.followingCam)
 			{

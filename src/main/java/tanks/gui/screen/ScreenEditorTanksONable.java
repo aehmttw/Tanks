@@ -568,15 +568,17 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
-                        f.cast().set(!(boolean) f.get());
-                        t.optionText = (boolean) f.get() ? "Yes" : "No";
+                        Pointer<Boolean> b = f.cast();
+                        b.set(!b.get());
+                        t.optionText = b.get() ? "Yes" : "No";
                     }
                     catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
                 };
-                t.optionText = (boolean) f.get() ? "Yes" : "No";
+                Pointer<Boolean> b = f.cast();
+                t.optionText = b.get() ? "Yes" : "No";
                 t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p.desc());
                 return t;

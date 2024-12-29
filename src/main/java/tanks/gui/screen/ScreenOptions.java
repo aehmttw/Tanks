@@ -218,6 +218,7 @@ public class ScreenOptions extends Screen
 			f.println("xray_bullets=" + Game.xrayBullets);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("mouse_target_height=" + Panel.showMouseTargetHeight);
+			f.println("pause_on_lost_focus=" + Panel.pauseOnDefocus);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
@@ -340,6 +341,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "mouse_target_height":
 						Panel.showMouseTargetHeight = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "pause_on_lost_focus":
+						Panel.pauseOnDefocus = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "constrain_mouse":
 						Game.constrainMouse = Boolean.parseBoolean(optionLine[1]);

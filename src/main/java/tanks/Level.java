@@ -235,7 +235,7 @@ public class Level
 
 		this.remote = remote;
 
-		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
+		if (!remote && (sc == null || sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
 
 		LinkedHashMap<String, TankAIControlled> customTanksMap = getTankMap();

@@ -15,7 +15,9 @@ public class ScreenTestDebug extends Screen
 
     Button fontTest = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Test fonts", () -> Game.screen = new ScreenTestFonts());
 
-    Button fireworks = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test fireworks", () -> Game.screen = new ScreenTestFireworks());
+    Button fireworks = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test fireworks", () -> Game.screen = new ScreenTestFireworks());
+
+    Button tests = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Automated tests", () -> Game.screen = new ScreenAutomatedTests());
 
     Button shapeTest = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test shapes", () -> Game.screen = new ScreenTestShapes());
 
@@ -38,6 +40,7 @@ public class ScreenTestDebug extends Screen
         fontTest.update();
         shapeTest.update();
         fireworks.update();
+        tests.update();
         rainbowTest.update();
 
         back.update();
@@ -57,6 +60,7 @@ public class ScreenTestDebug extends Screen
         textboxTest.draw();
         fontTest.draw();
         fireworks.draw();
+        tests.draw();
         shapeTest.draw();
         rainbowTest.draw();
 

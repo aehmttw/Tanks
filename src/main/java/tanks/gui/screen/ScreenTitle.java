@@ -202,6 +202,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			this.logo.invulnerable = false;
 		}
 
+		if (!Game.game.window.focused)
+			return;
+
 		Obstacle.draw_size = Game.tile_size;
 		for (int i = 0; i < Game.tracks.size(); i++)
 		{

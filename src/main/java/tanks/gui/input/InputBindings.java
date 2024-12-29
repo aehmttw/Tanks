@@ -30,6 +30,7 @@ public class InputBindings
     public InputBindingGroup zoomIn = new InputBindingGroup("game.zoomIn", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_EQUAL));
     public InputBindingGroup zoomOut = new InputBindingGroup("game.zoomOut", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_MINUS));
     public InputBindingGroup zoomAuto = new InputBindingGroup("game.zoomAuto", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_O));
+    public InputBindingGroup freecam = new InputBindingGroup("game.freecam", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_N));
     public InputBindingGroup chat = new InputBindingGroup("game.chat", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_T));
     public InputBindingGroup hidePause = new InputBindingGroup("game.hidePauseMenu", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F1));
     public InputBindingGroup fullscreen = new InputBindingGroup("game.fullscreen", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F11), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F10));
@@ -49,7 +50,7 @@ public class InputBindings
     public InputBindingGroup editorRotate = new InputBindingGroup("editor.rotate", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_R));
     public InputBindingGroup editorHeight = new InputBindingGroup("editor.height", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_H));
     public InputBindingGroup editorGroupID = new InputBindingGroup("editor.groupID", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_G));
-    public InputBindingGroup editorColor = new InputBindingGroup("editor.color", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_G));
+    public InputBindingGroup fcZoom = new InputBindingGroup("game.fcZoom", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_C));
 
     public InputBindingGroup editorBuild = new InputBindingGroup("editor.build", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_B));
     public InputBindingGroup editorErase = new InputBindingGroup("editor.erase", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_E));

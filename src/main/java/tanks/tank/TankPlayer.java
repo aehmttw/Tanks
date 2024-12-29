@@ -195,17 +195,21 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 			double a = -1;
 
-			if (left)
-				x -= 1;
+			ScreenGame g = ScreenGame.getInstance();
+			if (g == null || !g.freecam || ScreenGame.controlPlayer)
+			{
+				if (left)
+					x -= 1;
 
-			if (right)
-				x += 1;
+				if (right)
+					x += 1;
 
-			if (up)
-				y -= 1;
+				if (up)
+					y -= 1;
 
-			if (down)
-				y += 1;
+				if (down)
+					y += 1;
+			}
 
 			if (x == 1 && y == 0)
 				a = 0;
@@ -278,7 +282,6 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		}
 
 		boolean shoot = !Game.game.window.touchscreen && Game.game.input.shoot.isPressed();
-
 		boolean mine = !Game.game.window.touchscreen && Game.game.input.mine.isPressed();
 
 		boolean hideShootStick = false;
@@ -404,11 +407,15 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 			this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
 		}
 
-		if (shoot && this.getItem(false).cooldown <= 0 && !this.disabled)
-			this.shoot();
+		ScreenGame g = ScreenGame.getInstance();
+		if (!(g != null && g.freecam && !ScreenGame.controlPlayer))
+		{
+			if (shoot && this.getItem(false).cooldown <= 0 && !this.disabled)
+				this.shoot();
 
-		if (mine && this.getItem(true).cooldown <= 0 && !this.disabled)
-			this.layMine();
+			if (mine && this.getItem(true).cooldown <= 0 && !this.disabled)
+				this.layMine();
+		}
 
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && (Game.screen instanceof ScreenGame || Game.screen instanceof ScreenTitle))
 		{
@@ -532,7 +539,12 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 
 		double tx = Math.cos(offset) * mx + Math.sin(offset) * my;
 		double ty = -Math.sin(offset) * mx + Math.cos(offset) * my;
-		b.setTargetLocation(this.posX + tx, this.posY + ty);
+		ScreenGame g = ScreenGame.getInstance();
+
+		if (!Game.followingCam)
+			b.setTargetLocation(this.posX + tx, this.posY + ty);
+		else if (g != null)
+			b.setTargetLocation(posX + Math.cos(angle) * g.fcArcAim, posY + Math.sin(angle) * g.fcArcAim);
 
 		Integer num = 0;
 		if (Game.currentLevel != null)

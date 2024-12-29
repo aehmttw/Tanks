@@ -1,16 +1,14 @@
 package tanks;
 
-import basewindow.BaseWindow;
 import basewindow.InputCodes;
-import basewindow.ShaderGroup;
 import tanks.extension.Extension;
 import tanks.gui.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.network.Client;
-import tanks.gui.ScreenElement.CenterMessage;
-import tanks.gui.ScreenElement.Notification;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
 import tanks.network.event.EventBeginLevelCountdown;
@@ -21,8 +19,9 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Panel
 {
@@ -89,6 +88,8 @@ public class Panel
 
 	public double age = 0;
 	public long ageFrames = 0;
+
+	protected boolean prevFocused = true;
 
 	public boolean started = false;
 	public boolean settingUp = true;
@@ -284,7 +285,9 @@ public class Panel
 		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
-		if (Game.deterministicMode && Game.deterministic30Fps)
+		if (tickSprint)
+			Panel.frameFrequency = 2;
+		else if (Game.deterministicMode && Game.deterministic30Fps)
 			Panel.frameFrequency = 100.0 / 30;
 		else if (Game.deterministicMode)
 			Panel.frameFrequency = 100.0 / 60;
@@ -323,9 +326,7 @@ public class Panel
 		}
 
 		for (INetworkEvent e: stackedEventsIn.values())
-		{
-			e.execute();
-		}
+            e.execute();
 		stackedEventsIn.clear();
 
 		if (ScreenPartyHost.isServer)
@@ -510,6 +511,12 @@ public class Panel
 		Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
 		Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
 
+		if (Game.game.window.focused != prevFocused)
+		{
+			prevFocused = Game.game.window.focused;
+			Game.screen.onFocusChange(prevFocused);
+		}
+
 		if (!onlinePaused)
 			Game.screen.update();
 		else
@@ -550,10 +557,11 @@ public class Panel
 			Panel.selectedTextBox = null;
 		}
 
+		if (Replay.isRecording)
+			Replay.currentReplay.updateReplay(Game.eventsOut);
+
 		if (ScreenPartyLobby.isClient)
-		{
-			Client.handler.reply();
-		}
+            Client.handler.reply();
 
 		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
 		{

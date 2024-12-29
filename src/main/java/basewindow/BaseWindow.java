@@ -19,31 +19,18 @@ public abstract class BaseWindow
     public BaseFontRenderer fontRenderer;
 
     public boolean angled = false;
+    public double pointWidth = -1, pointHeight = -1;
 
-    public double pointWidth = -1;
-    public double pointHeight = -1;
-
-    public double absoluteWidth;
-    public double absoluteHeight;
-    public double absoluteDepth;
-
-    public double clipMultiplier = 100;
-    public double clipDistMultiplier = 1;
+    public double absoluteWidth, absoluteHeight, absoluteDepth;
+    public double clipMultiplier = 100, clipDistMultiplier = 1;
 
     public boolean hasResized;
 
-    public double absoluteMouseX;
-    public double absoluteMouseY;
-
+    public double absoluteMouseX, absoluteMouseY;
     public boolean constrainMouse;
 
-    public double colorR;
-    public double colorG;
-    public double colorB;
-    public double colorA;
-    public double glow;
-
-    public boolean fullscreen;
+    public double colorR, colorG, colorB, colorA, glow;
+    public boolean fullscreen, focused;
 
     public HashMap<Integer, InputPoint> touchPoints = new HashMap<>();
 

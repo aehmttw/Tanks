@@ -278,6 +278,7 @@ public class Game
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
 	public static final String tankDir = directoryPath + "/tanks";
+	public static final String replaysDir = directoryPath + "/replays/";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
 
@@ -614,6 +615,10 @@ public class Game
 		BaseFile extensionsFile = game.fileManager.getFile(homedir + extensionDir);
 		if (!extensionsFile.exists())
             extensionsFile.mkdirs();
+
+		BaseFile replaysFile = game.fileManager.getFile(homedir + replaysDir);
+		if (!replaysFile.exists())
+			replaysFile.mkdirs();
 
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
 		if (!uuidFile.exists())

@@ -391,6 +391,8 @@ public class LWJGLWindow extends BaseWindow
 		else
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
+		focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
+
 		glfwGetFramebufferSize(window, w, h);
 
 		this.updater.update();

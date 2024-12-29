@@ -36,6 +36,19 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_P);
         }
 
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_R))
+        {
+            if (!Game.game.window.shift)
+                Replay.toggleRecording();
+
+            if (!Replay.isRecording || Game.game.window.shift)
+                Replay.read("test");
+
+            notifs.add(new ScreenElement.Notification("Recording \u00a7255200000255"
+                    + (Replay.isRecording ? "started" : "stopped")).setColor(255, 255, 128));
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_R);
+        }
+
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_B))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_B);

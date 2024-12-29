@@ -686,7 +686,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		if (!this.isRemote && this.standardUpdateEvent && ScreenPartyHost.isServer)
+		if (this.standardUpdateEvent)
 			Game.eventsOut.add(new EventTankUpdate(this));
 
 		this.canHide = true;

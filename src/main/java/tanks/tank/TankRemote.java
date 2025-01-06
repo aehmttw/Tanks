@@ -223,6 +223,10 @@ public class TankRemote extends Tank
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
+
+		/*Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.toInterfaceCoordsX(prevKnownPosX), Drawing.drawing.toInterfaceCoordsY(prevKnownPosY), String.format("%d, %d, %.2f", (int) posX / 50, (int) posY / 50, timeSinceRefresh));*/
 	}
 
 	public static double cubicInterpolationVelocity(double startPos, double startVel, double endPos, double endVel, double curTime, double totalTime)

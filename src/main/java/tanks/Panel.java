@@ -517,10 +517,14 @@ public class Panel
 			Game.screen.onFocusChange(prevFocused);
 		}
 
+		Replay.preUpdate();
+
 		if (!onlinePaused)
 			Game.screen.update();
 		else
 			this.onlineOverlay.update();
+
+		Replay.update();
 
 		if (Game.game.input.fullscreen.isValid())
 		{
@@ -558,7 +562,7 @@ public class Panel
 		}
 
 		if (Replay.isRecording)
-			Replay.currentReplay.updateReplay(Game.eventsOut);
+			Replay.currentReplay.updateRecording(new ArrayList<>(Game.eventsOut));
 
 		if (ScreenPartyLobby.isClient)
             Client.handler.reply();
@@ -677,6 +681,7 @@ public class Panel
 			try
 			{
 				Game.screen.draw();
+				Replay.draw();
 				this.continuation = null;
 				this.continuationMusic = false;
 			}

@@ -27,6 +27,7 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGameScreen
@@ -36,6 +37,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean playing = false;
 	public boolean paused = false;
 	public boolean savedRemainingTanks = false;
+
+	public boolean playingReplay = false;
 
 	public boolean shopScreen = false;
 	public boolean npcShopScreen = false;
@@ -2111,27 +2114,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (!finishedQuick && (Game.playerTank == null || Game.playerTank.destroy) && (spectatingTank == null || !Drawing.drawing.movingCamera) && Panel.panel.zoomTimer <= 0)
 		{
-			Chunk c = Chunk.getChunk(x, y);
-			if (c == null)
-				return false;
-
-			for (Movable m : c.movables)
+			AtomicBoolean found = new AtomicBoolean(false);
+			Game.getInRadius(x, y, 100, c -> c.movables).stream().filter(m -> m instanceof Tank).findFirst().ifPresent(t ->
 			{
-				if (!(m instanceof Tank && !m.destroy))
-					continue;
+				found.set(true);
+				this.spectatingTank = (Tank) t;
+				Panel.panel.pastPlayerX.clear();
+				Panel.panel.pastPlayerY.clear();
+				Panel.panel.pastPlayerTime.clear();
+				Drawing.drawing.movingCamera = true;
+			});
 
-				Tank t = (Tank) m;
-				if (x >= t.posX - t.size && x <= t.posX + t.size &&
-						y >= t.posY - t.size && y <= t.posY + t.size)
-				{
-					this.spectatingTank = t;
-					Panel.panel.pastPlayerX.clear();
-					Panel.panel.pastPlayerY.clear();
-					Panel.panel.pastPlayerTime.clear();
-					Drawing.drawing.movingCamera = true;
-					return true;
-				}
-			}
+            return found.get();
 		}
 
 		return false;

@@ -42,7 +42,7 @@ public class DebugKeybinds
                 Replay.toggleRecording();
 
             if (!Replay.isRecording || Game.game.window.shift)
-                Replay.read("test");
+                Replay.read("test").loadAndPlay();
 
             notifs.add(new ScreenElement.Notification("Recording \u00a7255200000255"
                     + (Replay.isRecording ? "started" : "stopped")).setColor(255, 255, 128));

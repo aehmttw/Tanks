@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenOptionsMisc extends Screen
@@ -10,7 +11,7 @@ public class ScreenOptionsMisc extends Screen
     public static final String fullStatsText = "Stats animations: ";
     public static final String previewCrusadesText = "Crusade preview: ";
 
-    Button autostart = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button autostart = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -25,7 +26,7 @@ public class ScreenOptionsMisc extends Screen
     },
             "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
-    Button fullStats = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    Button fullStats = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -40,7 +41,7 @@ public class ScreenOptionsMisc extends Screen
     },
             "When off, skips directly to the summary tab---of the crusade end stats screen");
 
-    Button previewCrusades = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button previewCrusades = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -54,6 +55,16 @@ public class ScreenOptionsMisc extends Screen
         }
     },
             "When enabled, the backgrounds of---the crusade preview and stats---screens display an animation of all---the crusade levels scrolling by.");
+
+    Button pauseOnDefocus = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Panel.pauseOnDefocus = !Panel.pauseOnDefocus;
+            pauseOnDefocus.setText("Pause on lost focus: ", Panel.pauseOnDefocus ? ScreenOptions.onText : ScreenOptions.offText);
+        }
+    });
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
@@ -77,6 +88,8 @@ public class ScreenOptionsMisc extends Screen
         else
             previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
 
+        pauseOnDefocus.setText("Pause on lost focus: ", Panel.pauseOnDefocus ? ScreenOptions.onText : ScreenOptions.offText);
+
 //        if (Game.framework == Game.Framework.libgdx)
 //            previewCrusades.enabled = false;
     }
@@ -87,6 +100,7 @@ public class ScreenOptionsMisc extends Screen
         back.update();
         autostart.update();
         fullStats.update();
+        pauseOnDefocus.update();
         previewCrusades.update();
     }
 
@@ -97,6 +111,7 @@ public class ScreenOptionsMisc extends Screen
 
         back.draw();
         previewCrusades.draw();
+        pauseOnDefocus.draw();
         fullStats.draw();
         autostart.draw();
 

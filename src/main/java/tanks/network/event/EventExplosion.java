@@ -35,7 +35,7 @@ public class EventExplosion extends PersonalEvent
     {
         if (clientID == null)
         {
-            Explosion e = new Explosion(this.posX, this.posY, this.radius, 0, destroysObstacles, Game.dummyTank);
+            Explosion e = new Explosion(this.posX, this.posY, this.radius, 1, destroysObstacles, Game.dummyTank);
 
             if (this.kbRadius != 0)
                 e.tankKnockback = 1;

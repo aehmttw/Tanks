@@ -36,7 +36,7 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_P);
         }
 
-        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_R))
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_R) && Game.debug)
         {
             if (!Game.game.window.shift)
                 Replay.toggleRecording();

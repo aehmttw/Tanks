@@ -17,7 +17,7 @@ public class ScreenTestDebug extends Screen
 
     Button fireworks = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test fireworks", () -> Game.screen = new ScreenTestFireworks());
 
-    Button tests = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Automated tests", () -> Game.screen = new ScreenAutomatedTests());
+    Button tests = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Automated tests", "Unfinished... check back later");
 
     Button shapeTest = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test shapes", () -> Game.screen = new ScreenTestShapes());
 

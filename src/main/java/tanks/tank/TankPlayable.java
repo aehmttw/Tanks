@@ -26,6 +26,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     public static String default_bullet_name = "Basic bullet";
     public static String default_mine_name = "Basic mine";
 
+    public String buildName = "player";
+
     public TankPlayable(double x, double y)
     {
         super("player", x, y, Game.tile_size, 0, 150, 255);
@@ -39,6 +41,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         this.abilities.get(0).item.name = default_bullet_name;
         this.abilities.get(1).item.name = default_mine_name;
         this.abilities.get(1).item.cooldownBase = 50;
+
+        this.description = "The default player build: decent speed with basic bullets and basic mines";
     }
 
     public void updateAbilities()
@@ -96,6 +100,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                 m.abilities.add(s.getCopy());
             }
 
+            m.buildName = this.name;
             m.emblemR = m.secondaryColorR;
             m.emblemG = m.secondaryColorG;
             m.emblemB = m.secondaryColorB;
@@ -104,6 +109,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         {
             Game.exitToCrash(e);
         }
+
+        m.health = m.baseHealth;
 
         m.updateAbilities();
 

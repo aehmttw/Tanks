@@ -824,13 +824,13 @@ public class TerrainRenderer
                 this.drawTile(i, j);
             }
 
-            if (System.currentTimeMillis() - startTime > 50 && allowPartialLoading)
+            if (System.currentTimeMillis() - startTime > (this.hasContinuationed ? 50 : 100) && allowPartialLoading)
             {
                 i++;
                 break;
             }
         }
-        stagedCount = i * this.tiles[0].length;
+        stagedCount = Math.max(i * this.tiles[0].length, stagedCount);
         bgStaged = i >= this.tiles.length;
         Obstacle.draw_size = s;
     }
@@ -858,7 +858,7 @@ public class TerrainRenderer
             if (o.batchDraw)
                 o.draw();
 
-            if (System.currentTimeMillis() - startTime > 50 && allowPartialLoading)
+            if (System.currentTimeMillis() - startTime > (this.hasContinuationed ? 50 : 100) && allowPartialLoading)
             {
                 oi++;
                 break;

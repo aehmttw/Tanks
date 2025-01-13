@@ -28,6 +28,8 @@ public class ButtonList
     public int rows = 6;
     public int columns = 3;
 
+    public boolean horizontalLayout = false;
+
     public double xOffset;
     public double yOffset;
 
@@ -56,7 +58,7 @@ public class ButtonList
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
     {
         @Override
         public void run()
@@ -66,7 +68,7 @@ public class ButtonList
     }
     );
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
+    public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
         @Override
         public void run()
@@ -76,7 +78,7 @@ public class ButtonList
     }
     );
 
-    Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
+    public Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -86,7 +88,7 @@ public class ButtonList
     }
     );
 
-    Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
+    public Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -159,17 +161,31 @@ public class ButtonList
         this.first.imageSizeY = 20;
         this.first.imageXOffset = 0;
 
+        double oy = this.buttons.size() < rows * columns ? 30 : 0;
+
         for (int i = 0; i < buttons.size(); i++)
         {
             int page = i / (rows * columns);
 
             int entries = rows * columns + Math.min(0, buttons.size() - (page + 1) * rows * columns);
             int cols = entries / rows + Math.min(1, entries % rows);
+            int rs = Math.min(rows, buttons.size());
+
+            int r = i % rows;
+            int c = ((i / rows) % columns);
+
+            if (horizontalLayout)
+            {
+                r = (i / columns) % rows;
+                c = i % columns;
+                cols = Math.min(columns, buttons.size());
+                rs = entries / cols + Math.min(1, entries % cols);
+            }
 
             double offset = -this.objXSpace / 2 * (cols - 1);
 
-            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (i % rows - (rows - 1) / 2.0) * this.objYSpace;
-            buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + ((i / rows) % columns) * this.objXSpace + xOffset;
+            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.objYSpace + oy;
+            buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + c * this.objXSpace + xOffset;
             buttons.get(i).sizeX = this.objWidth;
             buttons.get(i).sizeY = this.objHeight;
             buttons.get(i).translated = this.translate;
@@ -233,7 +249,9 @@ public class ButtonList
                 this.buttons.get(i).enabled = false;
 
             buttons.get(i).update();
-            this.buttons.get(i).enabled = e;
+
+            if (this.arrowsEnabled && this.reorder)
+                this.buttons.get(i).enabled = e;
 
             if (this.reorder && i >= this.fixedFirstElements && this.buttons.size() - i > this.fixedLastElements)
             {

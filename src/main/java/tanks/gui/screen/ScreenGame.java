@@ -6,10 +6,7 @@ import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.generator.LevelGeneratorVersus;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.Minimap;
-import tanks.gui.SpeedrunTimer;
+import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
@@ -34,6 +31,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public boolean shopScreen = false;
 	public boolean npcShopScreen = false;
+	public boolean buildsScreen = false;
 
 	public double slant = 0;
 
@@ -132,15 +130,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			ScreenPartyHost.readyPlayers.add(Game.player);
 			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
-
-			//synchronized(ScreenPartyHost.server.connections)
-			{
-				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size())
-				{
-					Game.eventsOut.add(new EventBeginLevelCountdown());
-					cancelCountdown = false;
-				}
-			}
 		}
 		ready = true;
 	}
@@ -157,9 +146,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 
 			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
-
-			Game.eventsOut.add(new EventBeginLevelCountdown());
-			cancelCountdown = false;
 		}
 		ready = true;
 	}
@@ -180,6 +166,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		}
 	}, "New items available in shop!"
 	);
+
+	Button viewBuilds = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, 350, 40, "Change tank build", () ->
+	{
+		cancelCountdown = true;
+		buildsScreen = true;
+	});
 
 	Button pause = new Button(0, -1000, 70, 70, "", this::pause);
 
@@ -508,12 +500,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	{
 		shopScreen = false;
 		npcShopScreen = false;
+		buildsScreen = false;
 	}
 
 	);
 
 	public ArrayList<Button> shopItemButtons = new ArrayList<>();
+	public ArrayList<Button> playerBuildButtons = new ArrayList<>();
+
 	public ButtonList shopList;
+	public ButtonList playerBuildsList;
+
 	public ButtonList npcShopList = new ButtonList(new ArrayList<>(), 0, 0, (int) shopOffset, -30);
 
 	public ScreenGame()
@@ -521,6 +518,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		Game.recomputeHeightGrid();
 		this.selfBatch = false;
 		this.enableMargins = !Game.followingCam;
+
+		this.initBuilds();
 
 		introMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/ready_music_intro_length.txt").get(0));
 		introBattleMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/battle_intro_length.txt").get(0));
@@ -609,6 +608,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Game.eventsOut.add(new EventUpdateCoins(p));
 				}
 
+				if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).showItems)
+					p.hotbar.itemBar.showItems = true;
+
 				if (p != Game.player)
 				{
 					Game.eventsOut.add(new EventSetupHotbar(p));
@@ -662,6 +664,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public void initShop(ArrayList<Item.ShopItem> shop)
 	{
 		this.shop = shop;
+		this.viewBuilds.posY -= 60;
 
 		for (int i = 0; i < this.shop.size(); i++)
 		{
@@ -698,6 +701,33 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.initializeShopList();
 
 		Game.eventsOut.add(new EventSortShopButtons());
+	}
+
+	public void initBuilds()
+	{
+		for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
+		{
+			TankPlayer t = Game.currentLevel.playerBuilds.get(i);
+			int j = i;
+			ButtonObject b = new ButtonObject(t, 0, 0, 75, 75, () ->
+			{
+				t.clonePropertiesTo(Game.playerTank);
+				if (ScreenPartyLobby.isClient)
+					Game.eventsOut.add(new EventPlayerSetBuild(j));
+			}, t.description);
+			//b.text = t.name;
+			this.playerBuildButtons.add(b);
+		}
+
+		this.playerBuildsList = new ButtonList(this.playerBuildButtons, 0, 0, 0, 0);
+		this.playerBuildsList.rows = 3;
+		this.playerBuildsList.columns = 10;
+		this.playerBuildsList.objXSpace = 100;
+		this.playerBuildsList.objYSpace = 100;
+		this.playerBuildsList.objWidth = 75;
+		this.playerBuildsList.objHeight = 75;
+		this.playerBuildsList.horizontalLayout = true;
+		this.playerBuildsList.sortButtons();
 	}
 
 	public void initializeShopList()
@@ -1021,10 +1051,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (Game.game.input.pause.isValid())
 		{
-			if (shopScreen || npcShopScreen)
+			if (shopScreen || npcShopScreen || buildsScreen)
 			{
 				shopScreen = false;
 				npcShopScreen = false;
+				buildsScreen = false;
 			}
 			else
 			{
@@ -1251,14 +1282,24 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		if (!playing && Game.startTime >= 0)
 		{
-			if (shopScreen)
+			if (shopScreen || buildsScreen)
 			{
 				Game.player.hotbar.hidden = false;
 				Game.player.hotbar.hideTimer = 100;
 
 				this.exitShop.update();
 
-				this.shopList.update();
+				if (this.buildsScreen)
+					this.playerBuildsList.update();
+				else if (this.shopScreen)
+				{
+					for (int i = 0; i < this.shop.size(); i++)
+					{
+						this.shopItemButtons.get(i).enabled = this.shop.get(i).price <= Game.player.hotbar.coins;
+					}
+
+					this.shopList.update();
+				}
 
 				if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
 				{
@@ -1373,6 +1414,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (!this.shopItemButtons.isEmpty() && readyButton.enabled)
 					enterShop.update();
+
+				if (this.playerBuildButtons.size() > 1 && readyButton.enabled)
+					viewBuilds.update();
 
 				if (ScreenPartyHost.isServer && this.cancelCountdown)
 				{
@@ -2393,30 +2437,36 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 75, subtitle);
 			}
 
-			if (shopScreen)
+			if (shopScreen || buildsScreen)
 			{
 				Drawing.drawing.setColor(127, 178, 228, 64);
 				Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
-				Drawing.drawing.setInterfaceFontSize(this.titleSize);
-
-				if (Level.isDark())
-					Drawing.drawing.setColor(255, 255, 255);
-				else
-					Drawing.drawing.setColor(0, 0, 0);
-
-				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 210 + shopOffset, "Shop");
+				Drawing.drawing.setColor(0, 0, 0, 127);
+				Drawing.drawing.drawPopup(this.centerX, this.centerY + shopOffset + 50, 1200, 600);
 
 				this.exitShop.draw();
 
-				this.shopList.draw();
+				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-				for (int i = Math.min((this.shopList.page + 1) * this.shopList.rows * this.shopList.columns, shopItemButtons.size()) - 1; i >= this.shopList.page * this.shopList.rows * this.shopList.columns; i--)
+				if (this.buildsScreen)
 				{
-					Button b = this.shopItemButtons.get(i);
-					b.draw();
-					Drawing.drawing.setColor(255, 255, 255);
-					Drawing.drawing.drawInterfaceImage(this.shop.get(i).itemStack.item.icon, b.posX - 135, b.posY, 40, 40);
+					Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 210 + shopOffset, "Tank builds");
+					this.playerBuildsList.draw();
+				}
+				else
+				{
+					Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 210 + shopOffset, "Shop");
+					this.shopList.draw();
+
+					for (int i = Math.min((this.shopList.page + 1) * this.shopList.rows * this.shopList.columns, shopItemButtons.size()) - 1; i >= this.shopList.page * this.shopList.rows * this.shopList.columns; i--)
+					{
+						Button b = this.shopItemButtons.get(i);
+						b.draw();
+						Drawing.drawing.setColor(255, 255, 255);
+						Drawing.drawing.drawInterfaceImage(this.shop.get(i).itemStack.item.icon, b.posX - 135, b.posY, 40, 40);
+					}
 				}
 			}
 			else
@@ -2550,6 +2600,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Drawing.drawing.drawInterfaceText(enterShop.posX - enterShop.sizeX / 2 + enterShop.sizeY / 2 + 0.5, enterShop.posY, "!");
 					}
 				}
+
+				if (this.playerBuildButtons.size() > 1 && readyButton.enabled)
+					viewBuilds.draw();
 
 				if (ScreenPartyHost.isServer && this.cancelCountdown)
 					startNow.draw();

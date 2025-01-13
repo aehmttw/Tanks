@@ -26,9 +26,6 @@ public class GameWindowHandler implements IWindowHandler
 	@Override
 	public void onWindowClose() 
 	{
-		if (Game.steamNetworkHandler.initialized)
-			Game.steamNetworkHandler.exit();
-
 		ScreenOptions.saveOptions(Game.homedir);
 
 		if (ScreenPartyHost.isServer)
@@ -47,6 +44,9 @@ public class GameWindowHandler implements IWindowHandler
 		{
 			Game.exitToCrash(e);
 		}
+
+		if (Game.steamNetworkHandler.initialized)
+			Game.steamNetworkHandler.exit();
 	}
 
 }

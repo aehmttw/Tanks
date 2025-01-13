@@ -198,7 +198,7 @@ public class ObstacleTeleporter extends Obstacle
 		if (s.isEmpty())
 			s = "0";
 
-		this.groupID = Integer.parseInt(s);
+		this.groupID = (int) Double.parseDouble(s);
 		this.refreshMetadata();
 	}
 

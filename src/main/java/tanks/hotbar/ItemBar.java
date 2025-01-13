@@ -238,13 +238,13 @@ public class ItemBar
 			}
 		}
 
-		if (Game.game.window.validScrollUp)
+		if (Game.game.window.validScrollUp && items > 0)
 		{
 			this.setItem(((this.selected - 1) + items) % items);
 			Game.game.window.validScrollUp = false;
 		}
 
-		if (Game.game.window.validScrollDown)
+		if (Game.game.window.validScrollDown && items > 0)
 		{
 			this.setItem(((this.selected + 1) + items) % items);
 			Game.game.window.validScrollDown = false;

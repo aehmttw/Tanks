@@ -200,7 +200,13 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 				}
 			}
 
-			Game.game.window.validPressedKeys.clear();
+			Game.game.window.validPressedKeys.remove((Integer) KEY_UP);
+			Game.game.window.validPressedKeys.remove((Integer) KEY_DOWN);
+			Game.game.window.validPressedKeys.remove((Integer) KEY_LEFT);
+			Game.game.window.validPressedKeys.remove((Integer) KEY_RIGHT);
+			Game.game.window.validPressedKeys.remove((Integer) KEY_B);
+			Game.game.window.validPressedKeys.remove((Integer) KEY_A);
+			Game.game.window.validPressedKeys.remove((Integer) KEY_ENTER);
 		}
 
 		if (this.controlPlayer)
@@ -436,6 +442,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			debug.draw();
 
 		about.draw();
+
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.setInterfaceFontSize(24);
 
 		if (Game.player.enableTertiaryColor)
 			Drawing.drawing.setColor(Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);

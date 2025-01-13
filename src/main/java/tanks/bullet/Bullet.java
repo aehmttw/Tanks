@@ -129,6 +129,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	protected double delay = 0;
 	protected ArrayList<Movable> previousRebounds = new ArrayList<>();
 	protected boolean beganRebound = true;
+	protected boolean failedRebound = false;
 	protected Bullet reboundSuccessor = null;
 
 	public boolean enableExternalCollisions = true;
@@ -375,11 +376,11 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (b instanceof BulletArc || b instanceof BulletAirStrike)
 				b.posZ += 15;
 			b.previousRebounds = this.previousRebounds;
+			b.affectsMaxLiveBullets = this.affectsMaxLiveBullets;
 			b.previousRebounds.add(m);
 			b.delay = this.reboundDelay;
 			b.rebounds = this.rebounds - 1;
 			b.beganRebound = false;
-			b.affectsMaxLiveBullets = this.affectsMaxLiveBullets;
 			Game.movables.add(b);
 			Game.movables.add(new BulletReboundIndicator(b));
 
@@ -1255,6 +1256,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				if (this.affectsMaxLiveBullets)
 					this.item.liveBullets--;
 
+				this.failedRebound = true;
 				Game.removeMovables.add(this);
 				return;
 			}

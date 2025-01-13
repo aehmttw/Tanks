@@ -38,6 +38,13 @@ public class ScreenIntro extends Screen
         {
             if (Game.cinematic)
                 nextScreen = new ScreenCinematicTitle();
+            else if (Game.steamLobbyInvite != -1)
+            {
+                if (Game.player.username.isEmpty())
+                    nextScreen = new ScreenUsernamePrompt();
+                else
+                    nextScreen = new ScreenAcceptSteamInvite();
+            }
             else
             {
                 nextScreen = new ScreenTitle();

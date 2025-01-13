@@ -86,5 +86,8 @@ public class Server
 			bossGroup.shutdownGracefully();
 			connections.clear();
 		}
+
+		if (Game.steamNetworkHandler.initialized)
+			Game.steamNetworkHandler.leaveParty();
 	}    
 }

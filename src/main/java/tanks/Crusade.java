@@ -314,6 +314,8 @@ public class Crusade
 			else
 				player.hotbar.itemBar = i;
 
+			player.hotbar.itemBar.showItems = true;
+
 			if (player != Game.player)
 			{
 				Game.eventsOut.add(new EventUpdateCoins(player));

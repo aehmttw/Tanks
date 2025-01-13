@@ -1,6 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUGCDetails;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
@@ -12,6 +14,8 @@ import java.util.ArrayList;
 
 public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 {
+    public Level queuedLevel = null;
+
     public String level;
     public TextBox levelName;
     public boolean downloaded = false;
@@ -21,6 +25,15 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     public Screen screen;
 
     public DisplayLevel levelDisplay;
+
+    public boolean showDelete = false;
+    public boolean confirmingDelete = false;
+    public SteamUGCDetails workshopDetails;
+
+    public int votesUp = 0;
+    public int votesDown = 0;
+
+    public static final double votePosY = Drawing.drawing.interfaceSizeY - 125;
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -34,6 +47,17 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
             Game.screen = screen;
         }
+    });
+
+    public Button reveal = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Show level", () ->
+    {
+        this.queuedLevel.loadLevel(this);
+        this.queuedLevel = null;
+    });
+
+    public Button delete = new Button(200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Remove from server", () ->
+    {
+        confirmingDelete = true;
     });
 
     public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Download", new Runnable()
@@ -76,6 +100,44 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         }
     });
 
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+
+    public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
+    {
+        Game.cleanUp();
+        Game.steamNetworkHandler.workshop.delete(workshopDetails);
+        Game.screen = new ScreenWaiting("Removing level from server...");
+    }
+    );
+
+    public Button voteUp = new Button(Drawing.drawing.interfaceSizeX - 630, votePosY, this.objHeight, this.objHeight, "\u00A7000200000255+", () ->
+    {
+        if (Game.steamNetworkHandler.workshop.currentDownloadVote == -1)
+            votesDown--;
+
+        votesUp++;
+        Game.steamNetworkHandler.workshop.currentDownloadVote = 1;
+
+        Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), true);
+    }, "Like the level");
+
+    public Button voteDown = new Button(Drawing.drawing.interfaceSizeX - 515, votePosY, this.objHeight, this.objHeight, "\u00A7200000000255-", () ->
+    {
+        if (Game.steamNetworkHandler.workshop.currentDownloadVote == 1)
+            votesUp--;
+
+        votesDown++;
+        Game.steamNetworkHandler.workshop.currentDownloadVote = -1;
+
+
+        Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), false);
+    }, "Dislike the level");
+
+    public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 45, Drawing.drawing.interfaceSizeY - 190, this.objHeight, this.objHeight, "", () ->
+    {
+        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
+    }, "View level page in Steam");
+
     public ScreenSaveLevel(String name, String level, Screen s)
     {
         super(350, 40, 380, 60);
@@ -107,17 +169,52 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             levelName.posY += 40;
             download.posY += 40;
             back.posY += 40;
+            delete.posY += 40;
         }
+
+        voteUp.fullInfo = true;
+        voteDown.fullInfo = true;
+
+        showPage.fullInfo = true;
+        showPage.imageSizeX = 30;
+        showPage.imageSizeY = 30;
+        showPage.image = "icons/link.png";
     }
 
     @Override
     public void update()
     {
-        this.download.update();
-        this.back.update();
+        if (confirmingDelete)
+        {
+            confirmDelete.update();
+            cancelDelete.update();
+        }
+        else
+        {
+            this.download.update();
+            this.back.update();
 
-        if (!this.downloaded)
-            this.levelName.update();
+            if (this.queuedLevel != null)
+                this.reveal.update();
+
+            if (showDelete)
+                this.delete.update();
+
+            if (!this.downloaded)
+                this.levelName.update();
+
+            if (workshopDetails != null)
+            {
+                int v = Game.steamNetworkHandler.workshop.currentDownloadVote;
+                voteUp.enabled = v == -1 || v == 0;
+                voteDown.enabled = v == 1 || v == 0;
+
+                voteUp.update();
+                voteDown.update();
+
+                showPage.update();
+            }
+        }
 
         if (Game.enable3d)
             Game.recomputeHeightGrid();
@@ -128,11 +225,60 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     {
         this.levelDisplay.draw();
 
-        this.download.draw();
-        this.back.draw();
+        if (confirmingDelete)
+        {
+            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.drawPopup(this.centerX, this.centerY, 700, 350);
 
-        if (!this.downloaded)
-            this.levelName.draw();
+            confirmDelete.draw();
+            cancelDelete.draw();
+
+            Drawing.drawing.setColor(255, 255, 255);
+
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove the level?");
+        }
+        else
+        {
+            this.download.draw();
+            this.back.draw();
+
+            if (this.queuedLevel != null)
+            {
+                Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setInterfaceFontSize(24);
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "This level is not automatically drawn because");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.", this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.length);
+                this.reveal.draw();
+            }
+
+            if (!this.downloaded)
+                this.levelName.draw();
+
+            if (showDelete)
+                this.delete.draw();
+
+            if (workshopDetails != null)
+            {
+                Drawing.drawing.setColor(0, 0, 0, 127);
+                Drawing.drawing.drawConcentricPopup(Drawing.drawing.interfaceSizeX - 580, votePosY, this.objWidth, this.objHeight * 1.75, 5, 20);
+
+                Drawing.drawing.setColor(255, 255, 255);
+                Drawing.drawing.setInterfaceFontSize(this.textSize);
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 700, votePosY, "Vote:");
+
+                Drawing.drawing.setColor(0, 200, 0);
+                Drawing.drawing.drawInterfaceText(voteUp.posX + 30, votePosY, votesUp + "", false);
+
+                Drawing.drawing.setColor(200, 0, 0);
+                Drawing.drawing.drawInterfaceText(voteDown.posX + 30, votePosY, votesDown + "", false);
+
+                voteDown.draw();
+                voteUp.draw();
+
+                showPage.draw();
+            }
+        }
     }
 
     public void updateDownloadButton()

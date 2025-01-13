@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
@@ -43,6 +44,26 @@ public class ScreenPartyHost extends Screen
 
     public SynchronizedList<SharedLevel> sharedLevels = new SynchronizedList<>();
     public SynchronizedList<SharedCrusade> sharedCrusades = new SynchronizedList<>();
+
+    public String visibilityText = "Steam visibility: ";
+    public static final String publicText = "\u00A7000200000255public";
+    public static final String privateText = "\u00A7200000000255private";
+
+    public Button visibility = new Button(this.centerX - 190, this.centerY - 340, this.objWidth, this.objHeight, "", () ->
+    {
+        if (Game.steamVisibility == SteamMatchmaking.LobbyType.Public)
+            Game.steamVisibility = SteamMatchmaking.LobbyType.Private;
+        else
+            Game.steamVisibility = SteamMatchmaking.LobbyType.Public;
+
+        updateButtonText();
+        Game.steamNetworkHandler.matchmaking.setLobbyType(Game.steamNetworkHandler.currentLobby, Game.steamVisibility);
+    });
+
+    public Button invite = new Button(this.centerX + 190, this.centerY - 340, this.objWidth, this.objHeight, "Invite Steam friends", () ->
+    {
+        Game.screen = new ScreenInviteSteamFriends(Game.screen);
+    });
 
     Button newLevel = new Button(this.centerX + 190, this.centerY - 250, this.objWidth, this.objHeight, "Random co-op", () ->
     {
@@ -119,6 +140,8 @@ public class ScreenPartyHost extends Screen
         this.musicID = "menu";
         toggleIP.fullInfo = true;
 
+        updateButtonText();
+
         chatbox = new ChatBox(this.centerX, Drawing.drawing.getInterfaceEdgeY(true) - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () ->
         {
             ScreenPartyHost.chat.add(0, new ChatMessage(Game.player, ScreenPartyHost.chatbox.inputText));
@@ -191,6 +214,16 @@ public class ScreenPartyHost extends Screen
 
         }
         ).start();
+
+        if (Game.steamNetworkHandler.initialized)
+            Game.steamNetworkHandler.hostParty();
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        if (Game.steamNetworkHandler.initialized)
+            this.centerY += 30;
     }
 
     @Override
@@ -206,6 +239,12 @@ public class ScreenPartyHost extends Screen
         options.update();
         partyOptions.update();
         quit.update();
+
+        if (Game.steamNetworkHandler.initialized)
+        {
+            visibility.update();
+            invite.update();
+        }
 
         if (server != null && server.connections != null)
         {
@@ -258,9 +297,12 @@ public class ScreenPartyHost extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
 
-        double ipY = 360;
+        double ipY = 400;
         if (Game.steamNetworkHandler.initialized)
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 320, "Also hosting on Steam peer-to-peer (Steam friends can join)");
+        {
+            visibility.draw();
+            invite.draw();
+        }
         else
             ipY = 330;
 
@@ -342,6 +384,14 @@ public class ScreenPartyHost extends Screen
                 }
             }
         }
+    }
+
+    public void updateButtonText()
+    {
+        if (Game.steamVisibility == SteamMatchmaking.LobbyType.Public)
+            visibility.setText(visibilityText, publicText);
+        else
+            visibility.setText(visibilityText, privateText);
     }
 
     public static class SharedLevel

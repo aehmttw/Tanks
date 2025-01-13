@@ -50,6 +50,7 @@ public class ObstacleBreakable extends ObstacleStackable
     @Override
     public void reactToHit(double bx, double by)
     {
+        this.update = true;
         double height = this.stackHeight;
         this.fallAnimation = 100;
 
@@ -90,7 +91,9 @@ public class ObstacleBreakable extends ObstacleStackable
 
         if (this.fallAnimation != this.lastFallAnimation)
             Game.redrawObstacles.add(this);
-        //this.allowBounce = this.fallAnimation <= 0;
+
+        if (this.fallAnimation <= 0)
+            this.update = false;
     }
 
     @Override

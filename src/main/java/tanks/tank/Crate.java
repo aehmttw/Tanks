@@ -11,11 +11,13 @@ public class Crate extends Movable
     public Tank tank;
     public double size;
     public double age = 0;
+    public double iPosZ;
 
     public Crate(Tank tank)
     {
         super(tank.posX, tank.posY);
-        this.posZ = 1000;
+        this.iPosZ = Math.random() * 400 + 800;
+        this.posZ = this.iPosZ;
         this.tank = tank;
         this.size = tank.size * 1.5;
         this.drawLevel = 9;
@@ -24,6 +26,9 @@ public class Crate extends Movable
     @Override
     public void draw()
     {
+        if (this.age <= 0)
+            Drawing.drawing.playGlobalSound("accel.ogg", (float) (0.75f / this.iPosZ * 1000), 0.125f);
+
         if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
             this.age += Panel.frameFrequency;
 
@@ -69,7 +74,7 @@ public class Crate extends Movable
             }
         }
 
-        double frac = Math.max(0, (1000 - this.posZ) / 1000);
+        double frac = Math.max(0, (this.iPosZ - this.posZ) / this.iPosZ);
 
         Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB, frac * 255, 1);
         fillOutlineRect(this.posX, this.posY, this.size * (2 - frac));
@@ -110,7 +115,7 @@ public class Crate extends Movable
         {
             this.posZ = 0;
             this.destroy = true;
-            Drawing.drawing.playSound("open.ogg");
+            Drawing.drawing.playSound("open1.ogg");
 
             tank.droppedFromCrate = true;
             tank.drawAge = 50;

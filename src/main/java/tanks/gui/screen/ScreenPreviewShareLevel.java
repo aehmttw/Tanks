@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import tanks.*;
 import tanks.gui.Button;
+import tanks.gui.TextBox;
 import tanks.network.event.EventShareLevel;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
@@ -14,6 +15,8 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
     public Level level;
     public Screen screen;
     public DisplayLevel levelDisplay;
+    public boolean hideUI = false;
+    public boolean showUI = false;
 
     public Button back = new Button(Drawing.drawing.interfaceSizeX - 580, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Back", new Runnable()
     {
@@ -38,16 +41,29 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
                 EventShareLevel e = new EventShareLevel(level, name);
                 e.clientID = Game.clientID;
                 Game.eventsIn.add(e);
+                Game.cleanUp();
             }
-            else
+            else if (ScreenPartyLobby.isClient)
             {
                 Game.screen = new ScreenPartyLobby();
                 Game.eventsOut.add(new EventShareLevel(level, name));
+                Game.cleanUp();
             }
-
-            Game.cleanUp();
+            else
+            {
+                Game.steamNetworkHandler.workshop.upload("Level", name, level.levelString);
+                hideUI = true;
+                infoBar = Drawing.drawing.enableStats;
+                mouseTarget = Panel.showMouseTarget;
+                mouseTargetHeight = Panel.showMouseTargetHeight;
+                Panel.showMouseTarget = false;
+                Panel.showMouseTargetHeight = false;
+                Drawing.drawing.showStats(false);
+            }
         }
     });
+
+    public TextBox levelName;
 
     public ScreenPreviewShareLevel(String name, Screen s)
     {
@@ -62,6 +78,21 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
 
         Obstacle.draw_size = Game.tile_size;
         this.screen = s;
+
+        if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+        {
+            upload.posY += 40;
+            back.posY += 40;
+        }
+
+        levelName = new TextBox(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Level upload name", () ->
+        {
+            if (levelName.inputText.equals(""))
+                levelName.inputText = levelName.previousInputText;
+            this.name = levelName.inputText;
+        }
+                , name.replace("_", " "));
+        levelName.enableCaps = true;
     }
 
     @Override
@@ -70,16 +101,47 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
         this.back.update();
         this.upload.update();
 
+        if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+            levelName.update();
+
         if (Game.enable3d)
             Game.recomputeHeightGrid();
     }
+
+    boolean mouseTarget;
+    boolean mouseTargetHeight;
+    boolean infoBar;
+
 
     @Override
     public void draw()
     {
         this.levelDisplay.draw();
-        this.back.draw();
-        this.upload.draw();
+
+        if (showUI && !Game.game.window.drawingShadow)
+        {
+            Panel.showMouseTarget = mouseTarget;
+            Panel.showMouseTargetHeight = mouseTargetHeight;
+            Drawing.drawing.showStats(infoBar);
+            showUI = false;
+            hideUI = false;
+            Game.cleanUp();
+            Game.screen = new ScreenWaiting("Uploading level...");
+        }
+
+        if (!hideUI && !Game.game.window.drawingShadow)
+        {
+            this.back.draw();
+            this.upload.draw();
+
+            if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+                levelName.draw();
+        }
+
+        if (hideUI && !Game.game.window.drawingShadow)
+        {
+            showUI = true;
+        }
     }
 
     @Override

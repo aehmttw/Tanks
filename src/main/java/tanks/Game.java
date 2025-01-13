@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.*;
+import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -150,6 +151,8 @@ public class Game
 	public static boolean drawAutoZoom = false;
 	public static final boolean cinematic = false;
 
+	public static long steamLobbyInvite = -1;
+
 	public static String lastVersion = "Tanks v0";
 
 	public static int port = 8080;
@@ -157,6 +160,10 @@ public class Game
 	public static String lastParty = "";
 	public static String lastOnlineServer = "";
 	public static boolean showIP = true;
+	public static boolean enableIPConnections = true;
+	public static SteamMatchmaking.LobbyType steamVisibility = SteamMatchmaking.LobbyType.Private;
+
+	public static boolean agreedToWorkshopAgreement = false;
 
 	public static double levelSize = 1;
 
@@ -292,6 +299,7 @@ public class Game
 	public static final String tankDir = directoryPath + "/tanks";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
+	public static final String screenshotsPath = directoryPath + "/screenshots/";
 
 	public static final String resourcesPath = directoryPath + "/resources/";
 	public static final String languagesPath = resourcesPath + "languages/";
@@ -304,6 +312,8 @@ public class Game
 	public static boolean connectedToOnline = false;
 
 	public static SteamNetworkHandler steamNetworkHandler;
+	public boolean runningCallbacks = false;
+	public Throwable callbackException = null;
 
 	public static String homedir;
 	public static Game game = new Game();
@@ -350,6 +360,8 @@ public class Game
 		NetworkEventMap.register(EventPlayerReady.class);
 		NetworkEventMap.register(EventPlayerAutoReady.class);
 		NetworkEventMap.register(EventPlayerAutoReadyConfirm.class);
+		NetworkEventMap.register(EventPlayerSetBuild.class);
+		NetworkEventMap.register(EventPlayerRevealBuild.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
@@ -653,6 +665,12 @@ public class Game
 			extensionsFile.mkdirs();
 		}
 
+		BaseFile screenshotsFile = game.fileManager.getFile(homedir + screenshotsPath);
+		if (!screenshotsFile.exists())
+		{
+			screenshotsFile.mkdirs();
+		}
+
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
 		if (!uuidFile.exists())
 		{
@@ -944,8 +962,11 @@ public class Game
 
 	public static void exitToCrash(Throwable e)
 	{
-		if (e instanceof GameCrashedException)
-			throw (GameCrashedException) e;
+		while (e instanceof GameCrashedException)
+			e = ((GameCrashedException) e).originalException;
+
+		if (Game.game.runningCallbacks)
+			Game.game.callbackException = e;
 
 		throw new GameCrashedException(e);
 	}

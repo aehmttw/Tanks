@@ -4,9 +4,11 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
+import tanks.gui.screen.IRenamableScreen;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenEditorPlayerTankBuild;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
@@ -14,7 +16,7 @@ import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
-public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay
+public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRenamableScreen
 {
     public ArrayList<Button> tankButtons = new ArrayList<>();
     public int rows = 3;
@@ -53,6 +55,12 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay
         this.firstTankPage.imageSizeY = 20;
         this.firstTankPage.imageXOffset = 0;
 
+        this.refreshButtons();
+    }
+
+    public void refreshButtons()
+    {
+        this.tankButtons.clear();
         int count = Game.currentLevel.playerBuilds.size();
         for (int i = 0; i <= count; i++)
         {
@@ -73,7 +81,13 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay
             }
             else
             {
-                Button b = new Button(x, y, 50, 50, "+", "Create a new player tank build! (not yet implemented)");
+                Button b = new Button(x, y, 50, 50, "+",  () ->
+                {
+                    TankPlayer p = new TankPlayer();
+                    p.name = System.currentTimeMillis() + "";
+                    editor.level.playerBuilds.add(p);
+                    this.editTank(j);
+                }, "Create a new player tank build!");
                 this.tankButtons.add(b);
                 b.fullInfo = true;
 
@@ -82,23 +96,27 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay
 
             ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
             {
-                Pointer<TankPlayer> p = new ArrayListIndexPointer<>(editor.level.playerBuilds, j);
-                ScreenEditorPlayerTankBuild s = new ScreenEditorPlayerTankBuild(p, this);
-                s.onComplete = () ->
-                {
-                    if (p.get() == null)
-                        this.editor.level.playerBuilds.remove(j);
-                };
-                Game.screen = s;
-                editor.modified = true;
-            }
-                    , t.description);
+                this.editTank(j);
+            }, t.description);
 
             if (t.description.isEmpty())
                 b.enableHover = false;
 
             this.tankButtons.add(b);
         }
+    }
+
+    public void editTank(int index)
+    {
+        Pointer<TankPlayer> p = new ArrayListIndexPointer<>(editor.level.playerBuilds, index);
+        ScreenEditorPlayerTankBuild s = new ScreenEditorPlayerTankBuild(p, this);
+
+        if (editor.level.playerBuilds.size() == 1)
+            s.delete.enabled = false;
+
+        s.onComplete = this::refreshButtons;
+        Game.screen = s;
+        editor.modified = true;
     }
 
     @Override
@@ -168,5 +186,20 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay
             if (i / (cols * rows) == page)
                 tankButtons.get(i).draw();
         }
+    }
+
+    @Override
+    public boolean rename(String from, String to)
+    {
+        if (from.equals(to))
+            return true;
+
+        for (TankPlayable t: Game.currentLevel.playerBuilds)
+        {
+            if (to.equals(t.name))
+                return false;
+        }
+
+        return true;
     }
 }

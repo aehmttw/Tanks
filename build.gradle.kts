@@ -12,7 +12,7 @@ fun get_hash(): String {
         ?.trim() ?: ""
 }
 
-val lwjglVersion = "3.3.4"
+val lwjglVersion = "3.3.6"
 val lwjglNatives = listOf(
     "natives-freebsd",
     "natives-linux-arm32", "natives-linux-arm64", "natives-linux-ppc64le", "natives-linux-riscv64", "natives-linux",

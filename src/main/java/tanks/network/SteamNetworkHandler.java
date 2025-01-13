@@ -464,6 +464,8 @@ public class SteamNetworkHandler
 			}
 
 			this.initialized = true;
+			this.friends.updateFriends();
+
 			return true;
 		}
 		catch (SteamException e)

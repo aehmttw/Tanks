@@ -66,6 +66,13 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     {
         super(350, 40, 380, 60);
 
+        if (!(ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
+        {
+            prev.posY += 40;
+            back.posY += 40;
+            next.posY += 40;
+        }
+
         this.levelDisplay = new DisplayLevel();
 
         this.music = "menu_4.ogg";

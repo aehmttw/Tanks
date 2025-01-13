@@ -12,29 +12,56 @@ public class ScreenSteamWorkshop extends Screen
         this.musicID = "menu";
     }
 
-    Button upload = new Button(this.centerX, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Upload", () ->
+    Button uploadLevel = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Upload level", () ->
     {
         if (Game.agreedToWorkshopAgreement)
             Game.screen = new ScreenShareLevel();
         else
             Game.screen = new ScreenSteamWorkshopAgreement();
     },
-            "Upload a level!");
+            "Share a level you made with the Tanks community!");
 
-    Button download = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Download", () ->
+    Button downloadLevel = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Browse levels", () ->
     {
         Game.screen = new ScreenWorkshopSearchWaiting();
-        Game.steamNetworkHandler.workshop.search("Level", 0, 18);
+        Game.steamNetworkHandler.workshop.search("Level", 0, 18, null, null, Game.steamNetworkHandler.workshop.searchByScore);
     },
-            "Download a level!");
+            "Browse levels the Tanks community has created!");
+
+    Button uploadCrusade = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Upload crusade", () ->
+    {
+        if (Game.agreedToWorkshopAgreement)
+            Game.screen = new ScreenShareCrusade();
+        else
+            Game.screen = new ScreenSteamWorkshopAgreement();
+    },
+            "Share a crusade you made with the Tanks community!");
+
+    Button downloadCrusade = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Browse crusades", () ->
+    {
+        Game.screen = new ScreenWorkshopSearchWaiting();
+        Game.steamNetworkHandler.workshop.search("Crusade", 0, 18, null, null, Game.steamNetworkHandler.workshop.searchByScore);
+    },
+            "Browse crusades the Tanks community has created!");
+
+
+    Button myLevels = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "My uploaded creations", () ->
+    {
+        Game.screen = new ScreenWorkshopSearchWaiting();
+        Game.steamNetworkHandler.workshop.search(null, 0, 18, Game.steamNetworkHandler.playerID, null, Game.steamNetworkHandler.workshop.searchByScore);
+    },
+            "View everything you have uploaded");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay());
 
     @Override
     public void update()
     {
-        upload.update();
-        download.update();
+        uploadLevel.update();
+        downloadLevel.update();
+        uploadCrusade.update();
+        downloadCrusade.update();
+        myLevels.update();
         back.update();
     }
 
@@ -47,7 +74,10 @@ public class ScreenSteamWorkshop extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, "Steam workshop");
 
         back.draw();
-        download.draw();
-        upload.draw();
+        downloadCrusade.draw();
+        uploadCrusade.draw();
+        myLevels.draw();
+        downloadLevel.draw();
+        uploadLevel.draw();
     }
 }

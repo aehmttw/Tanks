@@ -406,7 +406,6 @@ public class Panel
 					{
 						if (m instanceof TankPlayable)
 						{
-							System.out.println(((TankPlayable) m).buildName);
 							int build = -1;
 							for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
 							{
@@ -414,9 +413,7 @@ public class Panel
 								if (t.name.equals(((TankPlayable) m).buildName))
 								{
 									build = i;
-									System.out.println(t.emblem);
 									t.clonePropertiesTo((TankPlayable) m);
-									System.out.println(((TankPlayable) m).emblem);
 									break;
 								}
 							}

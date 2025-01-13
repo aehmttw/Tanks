@@ -6,7 +6,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBox;
+import tanks.gui.SearchBoxInstant;
 import tanks.translation.Translation;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class ScreenCrusades extends Screen
 	public SavedFilesList fullCrusadesList;
 	public SavedFilesList crusadesList;
 
-	SearchBox search = new SearchBox(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
 		@Override
 		public void run()

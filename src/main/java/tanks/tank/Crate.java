@@ -27,7 +27,7 @@ public class Crate extends Movable
     public void draw()
     {
         if (this.age <= 0)
-            Drawing.drawing.playGlobalSound("accel.ogg", (float) (0.75f / this.iPosZ * 1000), 0.125f);
+            Drawing.drawing.playGlobalSound("accel.ogg", (float) (0.75f / this.iPosZ * 1000), 0.25f);
 
         if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
             this.age += Panel.frameFrequency;

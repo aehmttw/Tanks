@@ -1,6 +1,6 @@
 package tanks.gui.screen;
 
-public class ScreenWaitingLobbyList extends ScreenWaiting
+public class ScreenWaitingLobbyList extends ScreenWaitingCancelable
 {
     public ScreenWaitingLobbyList()
     {

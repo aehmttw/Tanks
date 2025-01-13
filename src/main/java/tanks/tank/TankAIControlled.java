@@ -79,13 +79,14 @@ public class TankAIControlled extends Tank implements ITankField
 	 *  Intersect = move away
 	 *  from where bullet path will intersect tank; less accurate */
 	public enum BulletAvoidBehavior
-	{intersect, back_off, dodge, aggressive_dodge}
+	{intersect, back_off, dodge, aggressive_dodge, back_off_dodge}
 
 	@Property(category = movementAvoid, id = "bullet_avoid_behavior", name = "Bullet avoid behavior", desc = "Method the tank will use to avoid bullets \n " +
 			"\n Intersect: move away from where the bullet will hit the tank (less accurate) " +
 			"\n Back off: move away from the bullet (may back into corners) " +
 			"\n Dodge: move at an angle away from the bullet (more accurate) " +
-			"\n Aggressive dodge: move at an angle toward the bullet")
+			"\n Aggressive dodge: move at an angle toward the bullet " +
+			"\n Back off dodge: back off if there is space behind, dodge otherwise")
 	public BulletAvoidBehavior bulletAvoidBehvavior = BulletAvoidBehavior.intersect;
 	/** How close the tank needs to get to a mine to avoid it*/
 	@Property(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius", desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
@@ -1518,6 +1519,18 @@ public class TankAIControlled extends Tank implements ITankField
 					}
 					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off)
 						this.avoidDirection = nearest.getAngleInDirection(this.posX, this.posY);
+					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off_dodge)
+					{
+						double a = nearest.getAngleInDirection(this.posX, this.posY);
+						Ray r = new Ray(this.posX, this.posY, a, 0, this, Game.tile_size);
+						r.size = Game.tile_size * this.hitboxSize - 1;
+						double d = r.getDist();
+
+						if (d < Game.tile_size * 2)
+							this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * -1 / 2) * Math.signum(diff);
+						else
+							this.avoidDirection = a;
+					}
 					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.intersect)
 					{
 						double targetX = nearestTarget.targetX;

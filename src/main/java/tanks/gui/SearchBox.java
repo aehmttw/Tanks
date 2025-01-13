@@ -140,7 +140,9 @@ public class SearchBox extends TextBox
 		{
 			handled = true;
 			this.clear();
-			function.run();
+
+			if (!this.selected)
+				function.run();
 		}
 
 		if (Game.game.window.touchscreen)
@@ -174,47 +176,5 @@ public class SearchBox extends TextBox
 			this.effectTimer -= 0.4 / Panel.frameFrequency;
 			Button.addEffect(this.posX + this.sizeY / 2, this.posY, this.sizeX - this.sizeY * (2 - 0.8), this.sizeY * 0.8, this.glowEffects);
 		}
-	}
-
-	public void submitEffect()
-	{
-
-	}
-
-	public void inputKey(char key)
-	{
-		super.inputKey(key);
-		this.performValueCheck();
-		function.run();
-	}
-
-	public void submit()
-	{
-		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
-		Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ESCAPE);
-
-		this.performValueCheck();
-		this.previousInputText = this.inputText;
-		Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
-		Drawing.drawing.playVibration("click");
-		selected = false;
-		Game.game.window.showKeyboard = false;
-		Panel.selectedTextBox = null;
-
-		if (Game.glowEnabled)
-		{
-			this.submitEffect();
-		}
-	}
-
-	@Override
-	public void revert()
-	{
-		selected = false;
-		Panel.selectedTextBox = null;
-		this.inputText = "";
-		function.run();
-		Drawing.drawing.playSound("bounce.ogg", 0.25f, 0.7f);
-		Game.game.window.showKeyboard = false;
 	}
 }

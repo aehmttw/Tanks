@@ -2,6 +2,7 @@ package tanks.network;
 
 import basewindow.BaseFile;
 import com.codedisaster.steamworks.*;
+import tanks.Crusade;
 import tanks.Game;
 import tanks.Level;
 import tanks.Panel;
@@ -25,6 +26,9 @@ public class SteamWorkshopHandler
     public static final int results_count = 50;
 
     public String searchType = null;
+    public SteamID searchUser = null;
+    public String searchText = null;
+    public boolean searchByScore = false;
 
     public HashMap<Integer, SteamUGCDetails> publishedFiles = new HashMap<>();
 
@@ -112,6 +116,8 @@ public class SteamWorkshopHandler
                 {
                     SteamUGCDetails d = new SteamUGCDetails();
                     workshop.getQueryUGCResult(query, i, d);
+                    if (!handler.friends.knownUsernamesByID.containsKey(d.getOwnerID().getAccountID()))
+                        handler.friends.friends.requestUserInformation(d.getOwnerID(), true);
                     publishedFiles.put(i + page * results_count, d);
                 }
 
@@ -125,16 +131,21 @@ public class SteamWorkshopHandler
         {
             if (appID == handler.clientUtils.getAppID() && downloadFile.getPublishedFileID().equals(publishedFileID))
             {
-                try
+                if (result == SteamResult.OK)
                 {
-                    SteamUGC.ItemInstallInfo i = new SteamUGC.ItemInstallInfo();
-                    workshop.getItemInstallInfo(publishedFileID, i);
-                    downloadFolder = Game.game.fileManager.getFile(i.getFolder());
+                    try
+                    {
+                        SteamUGC.ItemInstallInfo i = new SteamUGC.ItemInstallInfo();
+                        workshop.getItemInstallInfo(publishedFileID, i);
+                        downloadFolder = Game.game.fileManager.getFile(i.getFolder());
+                    }
+                    catch (Exception e)
+                    {
+                        Game.exitToCrash(e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Game.exitToCrash(e);
-                }
+                else
+                    Game.screen = new ScreenInfo(new ScreenSteamWorkshop(), "Failed!", new String[]{result.name()});
             }
         }
 
@@ -182,9 +193,9 @@ public class SteamWorkshopHandler
         workshop.createItem(handler.clientUtils.getAppID(), SteamRemoteStorage.WorkshopFileType.Community);
     }
 
-    public void search(String type, int start, int end)
+    public void search(String type, int start, int end, SteamID user, String text, boolean byScore)
     {
-        if (!type.equals(searchType))
+        if (!Objects.equals(type, searchType) || !Objects.equals(user, searchUser) || !Objects.equals(text, searchText) || byScore != searchByScore)
         {
             publishedFiles.clear();
             currentQuery = null;
@@ -193,7 +204,11 @@ public class SteamWorkshopHandler
             totalResults = -1;
         }
 
+        searchText = text;
+        searchUser = user;
         searchType = type;
+        searchByScore = byScore;
+
         for (int i = start / results_count; i <= end / results_count; i++)
         {
             if (!pagesQueried.contains(i))
@@ -211,9 +226,21 @@ public class SteamWorkshopHandler
         if (currentQuery == null && !pendingQueries.isEmpty())
         {
             int n = pendingQueries.peek();
-            SteamUGCQuery q = workshop.createQueryAllUGCRequest(SteamUGC.UGCQueryType.RankedByPublicationDate, SteamUGC.MatchingUGCType.Items, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
+
+            SteamUGCQuery q;
+            if (searchUser == null)
+                q = workshop.createQueryAllUGCRequest(searchByScore ? SteamUGC.UGCQueryType.RankedByVote : SteamUGC.UGCQueryType.RankedByPublicationDate, SteamUGC.MatchingUGCType.Items, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
+            else
+                q = workshop.createQueryUserUGCRequest(searchUser.getAccountID(), SteamUGC.UserUGCList.Published, SteamUGC.MatchingUGCType.Items, SteamUGC.UserUGCListSortOrder.CreationOrderDesc, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
+
+            if (searchText != null)
+                workshop.setSearchText(q, searchText);
+
             workshop.setMatchAnyTag(q, true);
-            workshop.addRequiredTag(q, searchType);
+
+            if (searchType != null)
+                workshop.addRequiredTag(q, searchType);
+
             workshop.setAllowCachedResponse(q, 0);
 
             workshop.sendQueryUGCRequest(q);
@@ -239,7 +266,7 @@ public class SteamWorkshopHandler
     {
         try
         {
-            if (downloadFolder == null || downloadFolder.getSubfiles().isEmpty())
+            if (downloadFolder == null || downloadFolder.getSubfiles().isEmpty() || !(Game.screen instanceof ScreenWaiting))
                 return;
 
             BaseFile f1 = Game.game.fileManager.getFile(downloadFolder.getSubfiles().get(0));
@@ -247,30 +274,47 @@ public class SteamWorkshopHandler
             StringBuilder s = new StringBuilder();
             while (f1.hasNextLine())
             {
-                s.append(f1.nextLine());
+                s.append(f1.nextLine()).append("\n");
             }
             f1.stopReading();
 
             Screen s1 = Game.screen;
             if (s1 instanceof ScreenWaiting)
                 s1 = ((ScreenWaiting) s1).previous;
-            ScreenSaveLevel sc = new ScreenSaveLevel(downloadingName, s.toString(), s1);
-            sc.workshopDetails = downloadFile;
-            sc.votesUp = downloadFile.getVotesUp();
-            sc.votesDown = downloadFile.getVotesDown();
 
-            if (downloadFile.getOwnerID().equals(Game.steamNetworkHandler.playerID))
-                sc.showDelete = true;
+            if (downloadFile.getTags().toLowerCase().contains("level"))
+            {
+                ScreenSaveLevel sc = new ScreenSaveLevel(downloadingName, s.toString(), s1);
+                sc.workshopDetails = downloadFile;
+                sc.votesUp = downloadFile.getVotesUp();
+                sc.votesDown = downloadFile.getVotesDown();
 
-            Level l = new Level(s.toString());
-            l.preview = true;
+                if (downloadFile.getOwnerID().equals(Game.steamNetworkHandler.playerID))
+                    sc.showDelete = true;
 
-            if (l.sizeX * l.sizeY <= 100000 && l.tanks.length < 500)
-                l.loadLevel(sc);
-            else
-                sc.queuedLevel = l;
+                Level l = new Level(s.toString());
+                l.preview = true;
 
-            Game.screen = sc;
+                if (l.sizeX * l.sizeY <= 100000 && l.tanks.length < 500)
+                    l.loadLevel(sc);
+                else
+                    sc.queuedLevel = l;
+
+                Game.screen = sc;
+            }
+            else if (downloadFile.getTags().toLowerCase().contains("crusade"))
+            {
+                ScreenCrusadePreview sc = new ScreenCrusadePreview(new Crusade(s.toString(), downloadFile.getTitle()), s1, false);
+                sc.workshopDetails = downloadFile;
+                sc.votesUp = downloadFile.getVotesUp();
+                sc.votesDown = downloadFile.getVotesDown();
+
+                if (downloadFile.getOwnerID().equals(Game.steamNetworkHandler.playerID))
+                    sc.showDelete = true;
+
+                Game.screen = sc;
+            }
+
             downloadFolder = null;
         }
         catch (Exception e)

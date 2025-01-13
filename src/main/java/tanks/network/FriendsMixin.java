@@ -16,7 +16,7 @@ public class FriendsMixin
 	public SteamFriends friends;
 	public Map<Integer, SteamID> friendUserIDs = new ConcurrentHashMap<>();
 	public Map<Integer, Long> friendGameIDs = new ConcurrentHashMap<>();
-	public Map<Integer, String> friendNames = new ConcurrentHashMap<>();
+	public Map<Integer, String> knownUsernamesByID = new ConcurrentHashMap<>();
 	public Map<Integer, SteamFriends.PersonaState> friendStatuses = new ConcurrentHashMap<>();
 
 	public SteamFriendsCallback friendsCallback = new SteamFriendsCallback()
@@ -54,8 +54,10 @@ public class FriendsMixin
 			long id = friendGameInfo.getGameID();
 			friendGameIDs.put(steamIDUser.getAccountID(), id);
 			friendStatuses.put(steamIDUser.getAccountID(), friends.getFriendPersonaState(steamIDUser));
-			friendNames.put(steamIDUser.getAccountID(), friends.getFriendPersonaName(steamIDUser));
+			knownUsernamesByID.put(steamIDUser.getAccountID(), friends.getFriendPersonaName(steamIDUser));
 		}
+
+		knownUsernamesByID.put(Game.steamNetworkHandler.user.getSteamID().getAccountID(), friends.getPersonaName());
 	}
 
 	public boolean isFriendAccountID(int accountID)

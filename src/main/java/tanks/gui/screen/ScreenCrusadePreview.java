@@ -1,10 +1,9 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUGCDetails;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.TextBox;
@@ -34,6 +33,16 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
     public TextBox crusadeName;
     public boolean downloaded = false;
 
+    public boolean showWaiting = false;
+
+    public boolean showDelete = false;
+    public boolean confirmingDelete = false;
+    public SteamUGCDetails workshopDetails;
+
+    public int votesUp = 0;
+    public int votesDown = 0;
+
+
     public Button upload = new Button(this.centerX, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Share", new Runnable()
     {
         @Override
@@ -46,10 +55,15 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
                 e.clientID = Game.clientID;
                 Game.eventsIn.add(e);
             }
-            else
+            else if (ScreenPartyLobby.isClient)
             {
                 Game.screen = new ScreenPartyLobby();
                 Game.eventsOut.add(new EventShareCrusade(crusade, crusade.name));
+            }
+            else
+            {
+                showWaiting = true;
+                Game.steamNetworkHandler.workshop.upload("Crusade", crusadeName.inputText, crusade.contents);
             }
 
             Game.cleanUp();
@@ -102,6 +116,58 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
     }
     );
 
+    public Button delete = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Remove from server", () ->
+    {
+        confirmingDelete = true;
+    });
+
+    public Button more = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "More by this user", () ->
+    {
+        Game.cleanUp();
+        Game.screen = new ScreenWorkshopSearchWaiting();
+        Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
+    });
+
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+
+    public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
+    {
+        Game.cleanUp();
+        Game.steamNetworkHandler.workshop.delete(workshopDetails);
+        Game.screen = new ScreenWaiting("Removing crusade from server...");
+    }
+    );
+
+    public final double votePosY = this.centerY + this.objYSpace * 3.75;
+    public Button voteUp = new Button(this.centerX + this.objXSpace - 50, votePosY, this.objHeight, this.objHeight, "\u00A7000200000255+", () ->
+    {
+        if (Game.steamNetworkHandler.workshop.currentDownloadVote == -1)
+            votesDown--;
+
+        votesUp++;
+        Game.steamNetworkHandler.workshop.currentDownloadVote = 1;
+
+        Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), true);
+    }, "Like the crusade");
+
+    public Button voteDown = new Button(this.centerX + this.objXSpace + 65, votePosY, this.objHeight, this.objHeight, "\u00A7200000000255-", () ->
+    {
+        if (Game.steamNetworkHandler.workshop.currentDownloadVote == 1)
+            votesUp--;
+
+        votesDown++;
+        Game.steamNetworkHandler.workshop.currentDownloadVote = -1;
+
+
+        Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), false);
+    }, "Dislike the crusade");
+
+    public Button showPage = new Button(this.centerX + this.objXSpace - this.objWidth / 2 + this.objHeight / 2, this.centerY + this.objYSpace * 2.5, this.objHeight, this.objHeight, "", () ->
+    {
+        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
+    }, "View crusade page on Steam");
+
+
     public Button options = new Button(this.centerX - this.objXSpace, 60, this.objWidth, this.objHeight, "Overview", () -> mode = Mode.options);
 
     public Button levels = new Button(this.centerX, 60, this.objWidth, this.objHeight, "Levels", () -> mode = Mode.levels);
@@ -144,7 +210,8 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
 
         this.levelButtons.indexPrefix = true;
 
-        crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Crusade save name", () ->
+        crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight,
+                !uploadMode ? "Crusade save name" : "Crusade upload name", () ->
         {
             if (crusadeName.inputText.equals(""))
                 crusadeName.inputText = crusadeName.previousInputText;
@@ -155,6 +222,14 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
         crusadeName.enableCaps = true;
 
         this.updateDownloadButton();
+
+        voteUp.fullInfo = true;
+        voteDown.fullInfo = true;
+
+        showPage.fullInfo = true;
+        showPage.imageSizeX = 30;
+        showPage.imageSizeY = 30;
+        showPage.image = "icons/link.png";
     }
 
     public void refreshLevelButtons()
@@ -210,38 +285,71 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
     @Override
     public void update()
     {
+        if (showWaiting)
+        {
+            Game.screen = new ScreenWaiting("Uploading crusade...");
+        }
+
         options.enabled = mode != Mode.options;
         levels.enabled = mode != Mode.levels;
         items.enabled = mode != Mode.items;
 
-        options.update();
-        levels.update();
-        items.update();
-
-        if (mode == Mode.levels)
+        if (confirmingDelete)
         {
-            levelButtons.update();
-
-            quit.update();
+            confirmDelete.update();
+            cancelDelete.update();
         }
-        else if (mode == Mode.options)
+        else
         {
-            quit.update();
+            options.update();
+            levels.update();
+            items.update();
 
-            if (uploadMode)
+            if (mode == Mode.levels)
             {
-                upload.update();
+                levelButtons.update();
+
+                quit.update();
             }
-            else
+            else if (mode == Mode.options)
             {
-                crusadeName.update();
-                download.update();
+                quit.update();
+
+                if (uploadMode)
+                {
+                    upload.update();
+
+                    if (!ScreenPartyLobby.isClient && !ScreenPartyHost.isServer)
+                        crusadeName.update();
+                }
+                else
+                {
+                    crusadeName.update();
+                    download.update();
+                }
+
+                if (workshopDetails != null)
+                {
+                    int v = Game.steamNetworkHandler.workshop.currentDownloadVote;
+                    voteUp.enabled = v == -1 || v == 0;
+                    voteDown.enabled = v == 1 || v == 0;
+
+                    voteUp.update();
+                    voteDown.update();
+
+                    showPage.update();
+
+                    if (showDelete)
+                        delete.update();
+
+                    more.update();
+                }
             }
-        }
-        else if (mode == Mode.items)
-        {
-            itemButtons.update();
-            quit.update();
+            else if (mode == Mode.items)
+            {
+                itemButtons.update();
+                quit.update();
+            }
         }
     }
 
@@ -288,11 +396,44 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
             if (uploadMode)
             {
                 upload.draw();
+
+                if (!ScreenPartyLobby.isClient && !ScreenPartyHost.isServer)
+                    crusadeName.draw();
             }
             else
             {
                 crusadeName.draw();
                 download.draw();
+            }
+
+            if (workshopDetails != null)
+            {
+                Drawing.drawing.setColor(0, 0, 0, 127);
+                Drawing.drawing.drawConcentricPopup(this.centerX + this.objXSpace, votePosY, this.objWidth, this.objHeight * 1.75, 5, 20);
+
+                Drawing.drawing.setColor(255, 255, 255);
+                Drawing.drawing.setInterfaceFontSize(this.textSize);
+                Drawing.drawing.drawInterfaceText(this.centerX + this.objXSpace - 120, votePosY, "Vote:");
+
+                Drawing.drawing.setColor(0, 200, 0);
+                Drawing.drawing.drawInterfaceText(voteUp.posX + 30, votePosY, votesUp + "", false);
+
+                Drawing.drawing.setColor(200, 0, 0);
+                Drawing.drawing.drawInterfaceText(voteDown.posX + 30, votePosY, votesDown + "", false);
+
+                voteDown.draw();
+                voteUp.draw();
+
+                showPage.draw();
+
+                if (showDelete)
+                    delete.draw();
+
+                String name = Game.steamNetworkHandler.friends.knownUsernamesByID.get(this.workshopDetails.getOwnerID().getAccountID());
+                if (name != null)
+                    this.more.setText("More by %s", (Object) name);
+
+                more.draw();
             }
         }
         else if (mode == Mode.items)
@@ -303,6 +444,20 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + titleOffset, "Crusade items");
+        }
+
+        if (confirmingDelete)
+        {
+            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.drawPopup(this.centerX, this.centerY, 700, 350);
+
+            confirmDelete.draw();
+            cancelDelete.draw();
+
+            Drawing.drawing.setColor(255, 255, 255);
+
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove the crusade?");
         }
     }
 

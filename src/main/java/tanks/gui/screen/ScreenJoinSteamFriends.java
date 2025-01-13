@@ -40,7 +40,7 @@ public class ScreenJoinSteamFriends extends Screen
         {
             if (d.friendGameIDs.get(i) == game_id)
             {
-                String name = d.friendNames.get(i);
+                String name = d.knownUsernamesByID.get(i);
 
                 StringBuilder newName = new StringBuilder();
 

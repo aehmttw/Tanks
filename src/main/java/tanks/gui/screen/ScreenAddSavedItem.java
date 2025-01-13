@@ -7,7 +7,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBox;
+import tanks.gui.SearchBoxInstant;
 import tanks.item.Item;
 import tanks.translation.Translation;
 
@@ -30,7 +30,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
     public Consumer<Item.ItemStack<?>> onComplete;
 
-    SearchBox search = new SearchBox(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+    SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
     {
         @Override
         public void run()

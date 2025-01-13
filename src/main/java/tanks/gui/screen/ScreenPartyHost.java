@@ -61,9 +61,7 @@ public class ScreenPartyHost extends Screen
     });
 
     public Button invite = new Button(this.centerX + 190, this.centerY - 340, this.objWidth, this.objHeight, "Invite Steam friends", () ->
-    {
-        Game.screen = new ScreenInviteSteamFriends(Game.screen);
-    });
+            Game.screen = new ScreenInviteSteamFriends(Game.screen));
 
     Button newLevel = new Button(this.centerX + 190, this.centerY - 250, this.objWidth, this.objHeight, "Random co-op", () ->
     {

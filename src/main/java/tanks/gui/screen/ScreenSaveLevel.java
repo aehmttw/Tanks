@@ -56,9 +56,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     });
 
     public Button delete = new Button(200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Remove from server", () ->
-    {
-        confirmingDelete = true;
-    });
+            confirmingDelete = true);
 
     public Button download = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Download", new Runnable()
     {
@@ -100,7 +98,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         }
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> confirmingDelete = false);
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
@@ -134,9 +132,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     }, "Dislike the level");
 
     public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 45, Drawing.drawing.interfaceSizeY - 190, this.objHeight, this.objHeight, "", () ->
-    {
-        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
-    }, "View level page in Steam");
+            Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default), "View level page in Steam");
 
     public ScreenSaveLevel(String name, String level, Screen s)
     {
@@ -215,9 +211,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 showPage.update();
             }
         }
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

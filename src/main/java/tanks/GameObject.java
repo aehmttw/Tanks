@@ -1,7 +1,6 @@
 package tanks;
 
 import tanks.gui.screen.leveleditor.selector.MetadataSelector;
-import tanks.obstacle.Obstacle;
 import tanks.tankson.MetadataProperty;
 
 import java.lang.reflect.Field;
@@ -105,10 +104,4 @@ public abstract class GameObject
         this.setupMetadataFields();
         return secondaryMetadataField.get(this.getClass());
     }
-
-    public static double distanceBetween(final GameObject a, final GameObject b)
-    {
-        return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
-    }
-
 }

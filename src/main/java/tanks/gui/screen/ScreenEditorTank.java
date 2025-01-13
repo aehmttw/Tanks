@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.*;
 import tanks.tank.*;
+import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 

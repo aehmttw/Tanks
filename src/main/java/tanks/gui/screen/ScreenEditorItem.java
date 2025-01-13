@@ -25,13 +25,11 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     public Button itemTabButton;
 
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
-    {
-        Game.screen = new ScreenAddSavedItem(this, (b) ->
-        {
-            this.setTarget(b);
-            Game.screen = this;
-        }, "My", Item.class);
-    }
+            Game.screen = new ScreenAddSavedItem(this, (b) ->
+            {
+                this.setTarget(b);
+                Game.screen = this;
+            }, "My", Item.class)
     );
 
     public boolean writeItem(Item.ItemStack<?> t)

@@ -1,8 +1,12 @@
-package tanks;
+package tanks.replay;
 
 import basewindow.InputCodes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
+import tanks.Panel;
 import tanks.gui.ScreenElement;
 import tanks.gui.input.InputBinding;
 import tanks.gui.input.InputBindingGroup;
@@ -15,27 +19,9 @@ import tanks.replay.ReplayEvents.*;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Currency;
-import java.util.HashMap;
 
 public class Replay
 {
-    public static HashMap<Integer, Class<? extends IReplayEvent>> replayEventMap = new HashMap<>();
-    public static HashMap<Class<? extends IReplayEvent>, Integer> replayIDMap = new HashMap<>();
-    static
-    {
-        registerEvent(Tick.class);
-        registerEvent(LevelChange.class);
-    }
-
-    public static int eventID = 0;
-    public static void registerEvent(Class<? extends IReplayEvent> event)
-    {
-        int p = eventID++;
-        replayEventMap.put(p, event);
-        replayIDMap.put(event, p);
-    }
-
     public static double frameFreq;
     public static boolean isRecording;
     public static Replay currentReplay, currentPlaying;
@@ -272,7 +258,7 @@ public class Replay
                 buf.writeInt(events.size());
                 for (IReplayEvent event : events)
                 {
-                    buf.writeInt(replayIDMap.get(event.getClass()));
+                    buf.writeInt(ReplayEventMap.get(event.getClass()));
                     event.write(buf);
                 }
 
@@ -289,6 +275,21 @@ public class Replay
         catch (IOException e)
         {
             Game.exitToCrash(e);
+        }
+    }
+
+    public static void toggleRecording()
+    {
+        isRecording = !isRecording;
+        currentPlaying = null;
+        if (isRecording)
+        {
+            currentReplay = new Replay();
+        }
+        else
+        {
+            currentReplay.save();
+            currentReplay = null;
         }
     }
 
@@ -310,7 +311,7 @@ public class Replay
             for (int i = 0; i < eventCnt; i++)
             {
                 int eventID = buf.readInt();
-                IReplayEvent event = replayEventMap.get(eventID).getConstructor().newInstance();
+                IReplayEvent event = ReplayEventMap.get(eventID).getConstructor().newInstance();
                 event.read(buf);
                 r.events.add(event);
             }
@@ -324,21 +325,6 @@ public class Replay
         System.out.println("Size: " + size / 1024 + " KB");
 
         return r;
-    }
-
-    public static void toggleRecording()
-    {
-        isRecording = !isRecording;
-        currentPlaying = null;
-        if (isRecording)
-        {
-            currentReplay = new Replay();
-        }
-        else
-        {
-            currentReplay.save();
-            currentReplay = null;
-        }
     }
 
     public static double interp(double start, double end, double percentage)

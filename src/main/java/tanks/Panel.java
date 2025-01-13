@@ -18,6 +18,7 @@ import tanks.network.event.IStackableEvent;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
+import tanks.replay.Replay;
 import tanks.tank.*;
 
 import java.util.ArrayList;
@@ -405,26 +406,26 @@ public class Panel
 
 					for (Movable m: Game.movables)
 					{
-						if (m instanceof TankPlayable)
-						{
-							System.out.println(((TankPlayable) m).buildName);
-							int build = -1;
-							for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
-							{
-								TankPlayable t = Game.currentLevel.playerBuilds.get(i);
-								if (t.name.equals(((TankPlayable) m).buildName))
-								{
-									build = i;
-									System.out.println(t.emblem);
-									t.clonePropertiesTo((TankPlayable) m);
-									System.out.println(((TankPlayable) m).emblem);
-									break;
-								}
-							}
+                        if (!(m instanceof TankPlayable))
+                            continue;
 
-							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
-						}
-					}
+                        System.out.println(((TankPlayable) m).buildName);
+                        int build = -1;
+                        for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
+                        {
+                            TankPlayable t = Game.currentLevel.playerBuilds.get(i);
+                            if (t.name.equals(((TankPlayable) m).buildName))
+                            {
+                                build = i;
+                                System.out.println(t.emblem);
+                                t.clonePropertiesTo((TankPlayable) m);
+                                System.out.println(((TankPlayable) m).emblem);
+                                break;
+                            }
+                        }
+
+                        Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
+                    }
 				}
 
 				ScreenPartyHost.disconnectedPlayers.clear();

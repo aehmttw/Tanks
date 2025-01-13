@@ -3,12 +3,12 @@ package tanks;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.network.event.EventStatusEffectBegin;
 import tanks.network.event.EventStatusEffectDeteriorate;
 import tanks.network.event.EventStatusEffectEnd;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
 import tanks.tank.NameTag;
 import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
@@ -16,9 +16,13 @@ import tanks.tankson.MetadataProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public abstract class Movable extends GameObject implements IDrawableForInterface
+public abstract class Movable extends GameObject implements IDrawableForInterface, ISolidObject
 {
+	public HashSet<Chunk> prevChunks = new HashSet<>();
+
 	public double lastPosX;
 	public double lastPosY;
 	public double lastPosZ = 0;
@@ -62,6 +66,8 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	protected ArrayList<StatusEffect> removeStatusEffects = new ArrayList<>();
 
+	public Face[] horizontalFaces, verticalFaces;
+
 	public Movable(double x, double y)
 	{
 		this.posX = x;
@@ -85,6 +91,51 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
+	}
+
+	public void updateChunks()
+	{
+		HashSet<Chunk> chunks = getTouchingChunks().collect(Collectors.toCollection(HashSet::new));
+		for (Chunk c : prevChunks)
+		{
+			if (!chunks.contains(c))
+                onLeaveChunk(c);
+		}
+
+		for (Chunk c : chunks)
+		{
+			c.faces.addFaces(this);
+			if (!prevChunks.contains(c))
+				onEnterChunk(c);
+		}
+
+		prevChunks = chunks;
+	}
+
+	public void onEnterChunk(Chunk c)
+	{
+		c.addMovable(this);
+	}
+
+	public void onLeaveChunk(Chunk c)
+	{
+		c.removeMovable(this);
+	}
+
+	public void addFaces()
+	{
+		getTouchingChunks().forEach(chunk -> chunk.faces.addFaces(this));
+	}
+
+	public void removeFaces()
+	{
+		getTouchingChunks().forEach(chunk -> chunk.faces.removeFaces(this));
+	}
+
+	public Stream<Chunk> getTouchingChunks()
+	{
+		double size = getSize();
+		return Chunk.getChunksInRange(posX - size / 2, posY - size / 2, posX + size / 2, posY + size / 2);
 	}
 
 	public void update()
@@ -131,6 +182,8 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 				this.posZ += this.lastFinalVZ * frameFrequency;
 			}
 		}
+
+		updateChunks();
 	}
 
 	public void setMotionInDirection(double x, double y, double velocity)
@@ -412,9 +465,7 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 			StatusEffect.Instance i = this.statusEffects.get(s);
 
 			if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this instanceof Bullet || this instanceof Tank))
-			{
 				Game.eventsOut.add(new EventStatusEffectDeteriorate(this, s, i.duration - i.deteriorationAge));
-			}
 
 			if (i.duration <= 0 || i.age + frameFrequency <= i.duration)
 				i.age += frameFrequency;
@@ -436,22 +487,18 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	}
 
 	public double getAttributeValue(AttributeModifier.Type type, double value)
-	{
-		for (AttributeModifier a : attributes)
-		{
-			if (!a.expired && a.type.equals(type))
-			{
-				value = a.getValue(value);
-			}
-		}
+    {
+        for (AttributeModifier a : attributes)
+        {
+            if (!a.expired && a.type.equals(type))
+                value = a.getValue(value);
+        }
 
-		for (StatusEffect s : this.statusEffects.keySet())
-		{
-			value = this.statusEffects.get(s).getValue(value, type);
-		}
+        for (StatusEffect.Instance i : this.statusEffects.values())
+            value = i.getValue(value, type);
 
-		return value;
-	}
+        return value;
+    }
 
 	public AttributeModifier getAttribute(AttributeModifier.Type type)
 	{
@@ -503,13 +550,59 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 		return best;
 	}
 
+	@Override
+	public Face[] getHorizontalFaces()
+	{
+		double s = this.getSize() / 2;
+
+		if (this.horizontalFaces == null)
+		{
+			this.horizontalFaces = new Face[2];
+			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, true, true);
+			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false,true, true);
+		}
+		else
+		{
+			this.horizontalFaces[0].update(this.posX - s, this.posY - s, this.posX + s, this.posY - s);
+			this.horizontalFaces[1].update(this.posX - s, this.posY + s, this.posX + s, this.posY + s);
+		}
+
+		return this.horizontalFaces;
+	}
+
+	@Override
+	public Face[] getVerticalFaces()
+	{
+		double s = this.getSize() / 2;
+
+		if (this.verticalFaces == null)
+		{
+			this.verticalFaces = new Face[2];
+			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, true, true);
+			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, true, true);
+		}
+		else
+		{
+			this.verticalFaces[0].update(this.posX - s, this.posY - s, this.posX - s, this.posY + s);
+			this.verticalFaces[1].update(this.posX + s, this.posY - s, this.posX + s, this.posY + s);
+		}
+
+		return this.verticalFaces;
+	}
+
+
 	public static double[] getLocationInDirection(double angle, double distance)
 	{
 		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};	
 	}
 
 	public abstract void draw();
-	
+
+	public double getSize()
+	{
+		return 0;
+	}
+
 	public void drawAt(double x, double y)
 	{	
 		double x1 = this.posX;
@@ -524,6 +617,31 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public void drawForInterface(double x, double y)
 	{	
 		this.drawAt(x, y);
+	}
+
+	public static double distanceBetween(double x1, double y1, double x2, double y2)
+	{
+		return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
+	}
+
+	public static double sqDistBetw(double x1, double y1, double x2, double y2)
+	{
+		return (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2);
+	}
+
+	public static double sqDistBetw(final GameObject a, final GameObject b)
+	{
+		return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
+	}
+
+	public static boolean withinRange(final GameObject a, final GameObject b, double range)
+	{
+		return sqDistBetw(a, b) < range * range;
+	}
+
+	public static double distanceBetween(final GameObject a, final GameObject b)
+	{
+		return distanceBetween(a.posX, a.posY, b.posX, b.posY);
 	}
 
 	public static double angleBetween(double a, double b)

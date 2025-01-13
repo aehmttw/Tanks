@@ -20,9 +20,7 @@ public class ScreenWorkshopLevels extends Screen
 	public int lastLoadedLevels = 0;
 
 	public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () ->
-	{
-		Game.screen = new ScreenSteamWorkshop();
-	}
+            Game.screen = new ScreenSteamWorkshop()
 	);
 
 	public ScreenWorkshopLevels()

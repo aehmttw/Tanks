@@ -458,9 +458,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
         public Selector itemSelector;
 
         public Button create = new Button(screen.centerX, -1000, 60, 60, "+", () ->
-        {
-            itemSelector.setScreen();
-        });
+                itemSelector.setScreen());
 
         public TabAbilities(ScreenEditorPlayerTankBuild screen, String name, String category)
         {

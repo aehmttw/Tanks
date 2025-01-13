@@ -6,6 +6,8 @@ import tanks.*;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
 
+import java.util.ArrayList;
+
 public abstract class Obstacle extends GameObject implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IBatchRenderableObject
 {
 	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
@@ -34,6 +36,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public enum ObstacleType { full, ground, top, extra }
 	public ObstacleType type = ObstacleType.full;
 
+	public double startHeight = 0;
 	public int drawLevel = 5;
 
 	public boolean checkForObjects = false;
@@ -114,6 +117,15 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		this.posY = y1;
 	}
 
+	public void setUpdate(boolean update)
+	{
+		this.update = update;
+		if (update)
+			Game.updateObstacles.add(this);
+		else
+			Game.updateObstacles.remove(this);
+	}
+
 	@Override
 	public void drawForInterface(double x, double y)
 	{
@@ -168,6 +180,11 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	}
 
+	public void afterAdd()
+	{
+
+	}
+
 	public void update()
 	{
 		this.clipFrames--;
@@ -176,6 +193,12 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 			this.update = false;
 			this.shouldClip = false;
 		}
+
+	}
+
+	public void onNeighborUpdate()
+	{
+		refreshHitboxes();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -191,10 +214,9 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 		{
 			if (unbreakable)
-				return Game.game.unbreakableGrid[x][y];
-			else
-				return Game.game.solidGrid[x][y];
-		}
+				return Game.isUnbreakable(x, y);
+            return Game.isSolid(x, y);
+        }
 
 		return false;
 	}
@@ -236,14 +258,10 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	public void postOverride()
 	{
-		int x = (int)(this.posX / Game.tile_size);
-		int y = (int)(this.posY / Game.tile_size);
+		if (this.startHeight > 0)
+			return;
 
-		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-		{
-			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
-				Game.tileDrawables[x][y] = this;
-		}
+		Game.setObstacle(posX, posY, this);
 	}
 
 	@Override
@@ -306,7 +324,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	 * */
 	public double getGroundHeight()
 	{
-		return -1000;
+		return 0;
 	}
 
 	public byte getOptionsByte(double h)
@@ -338,6 +356,30 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public void onDestroy(Movable source)
 	{
 		Game.removeObstacles.add(this);
+	}
+
+	public void refreshHitboxes()
+	{
+		Chunk.FaceList f = Chunk.getChunk(posX, posY).staticFaces;
+		f.removeFaces(this);
+        if (tankCollision || bulletCollision)
+            f.addFaces(this);
+		afterAdd();
+    }
+
+	public ArrayList<Obstacle> getNeighbors()
+	{
+		ArrayList<Obstacle> neighbors = new ArrayList<>();
+		for (int i = 0; i < 4; i++)
+		{
+			double newX = posX + Game.tile_size * Game.dirX[i];
+			double newY = posY + Game.tile_size * Game.dirY[i];
+
+			Obstacle o = Game.getObstacle(newX, newY);
+			if (o != null)
+				neighbors.add(o);
+		}
+		return neighbors;
 	}
 
 	public void playDestroyAnimation(double posX, double posY, double radius)
@@ -410,6 +452,12 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public Effect getCompanionEffect()
 	{
 		return null;
+	}
+
+	public static boolean canPlaceOn(ObstacleType type, Chunk.Tile tile)
+	{
+		return tile != null && ((tile.obstacle == null || canPlaceOn(type, tile.obstacle.type))
+				&& (tile.surfaceObstacle == null || canPlaceOn(type, tile.surfaceObstacle.type)));
 	}
 
 	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)

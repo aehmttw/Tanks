@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("UnusedReturnValue")
 public class Chunk implements Comparable<Chunk>
 {
-    public static final Level defaultLevel = new Level("{28,18|,|,}");
+    public static Level defaultLevel = new Level("{28,18|,|,}");
     public static final Chunk zeroChunk = new Chunk();
     public static final Tile emptyTile = new Tile();
     public static boolean debug = false;
@@ -451,7 +451,7 @@ public class Chunk implements Comparable<Chunk>
 
         public double groundHeight()
         {
-            return obstacle != null ? obstacle.getGroundHeight() : -1000;
+            return obstacle != null ? obstacle.getGroundHeight() : 0;
         }
 
         public boolean solid()

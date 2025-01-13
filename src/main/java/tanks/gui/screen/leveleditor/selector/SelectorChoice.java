@@ -65,4 +65,9 @@ public class SelectorChoice<V> extends MetadataSelector
         selectedIndex = index;
         this.setMetadata(e, o, selectedChoice);
     }
+
+    public V choice()
+    {
+        return selectedChoice;
+    }
 }

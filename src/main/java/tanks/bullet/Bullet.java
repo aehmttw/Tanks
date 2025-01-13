@@ -1849,6 +1849,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	}
 
 	@Override
+	public double getSize()
+	{
+		return size;
+	}
+
+	@Override
 	public String getName()
 	{
 		return Game.formatString(this.typeName);

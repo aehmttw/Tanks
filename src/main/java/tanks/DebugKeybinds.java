@@ -12,6 +12,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.TerrainRenderer;
+import tanks.replay.Replay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -178,9 +179,7 @@ public class DebugKeybinds
         if (Game.currentLevel != null && Level.isDark())
             brightness = 255;
         else
-        {
             brightness = 0;
-        }
 
         Drawing.drawing.setColor(brightness, brightness, brightness);
         Drawing.drawing.setInterfaceFontSize(16);
@@ -201,8 +200,8 @@ public class DebugKeybinds
             int posY = (int) (((Math.round(Drawing.drawing.getMouseY() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
 
             if (Game.screen instanceof ScreenLevelEditor) {
-                posX = (int) (((ScreenLevelEditor) Game.screen).mouseObstacle.posX / Game.tile_size - 0.5);
-                posY = (int) (((ScreenLevelEditor) Game.screen).mouseObstacle.posY / Game.tile_size - 0.5);
+                posX = (int) (((ScreenLevelEditor) Game.screen).mousePlaceable.posX / Game.tile_size - 0.5);
+                posY = (int) (((ScreenLevelEditor) Game.screen).mousePlaceable.posY / Game.tile_size - 0.5);
             }
 
             text = "P: (" + posX + ", " + posY + ")";

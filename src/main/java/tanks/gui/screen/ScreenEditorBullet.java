@@ -10,6 +10,7 @@ import tanks.gui.*;
 import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Turret;
+import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 

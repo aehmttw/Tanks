@@ -24,6 +24,9 @@ public class TanksMacApp
 
             if (args[i].equals("debug"))
                 Game.debug = true;
+
+            if (i < args.length - 1 && args[i].equals("+connect_lobby"))
+                Game.steamLobbyInvite = Long.parseLong(args[i + 1]);
         }
 
         if (!Game.isOnlineServer)

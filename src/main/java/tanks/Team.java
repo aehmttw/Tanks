@@ -95,4 +95,10 @@ public class Team
 	{
 		return this.name.hashCode();
 	}
+
+	@Override
+	public String toString()
+	{
+		return this.name;
+	}
 }

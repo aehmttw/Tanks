@@ -5,31 +5,23 @@ import tanks.GameObject;
 import tanks.Team;
 import tanks.gui.screen.leveleditor.OverlayEditTeam;
 import tanks.gui.screen.leveleditor.OverlaySelectTeam;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.tank.Tank;
+import tanks.translation.Translation;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
+public class SelectorTeam extends SelectorChoice<Team>
 {
-    /**
-     * The default selected team, by default the index of the enemy team.<br>
-     * It is changed when placing player spawns, in which it defaults to the index of the ally team.
-     * <br><br>
-     * If <code>choices.size()</code> <= <code>defaultTeamIndex</code>,
-     * the chosen team is the last one in the choice list.
-     */
-    public int defaultTeamIndex = 1;
+    public static final String selector_name = "team";
+    public static final String player_selector_name = "player_team";
 
-    @Override
-    protected void init()
+    public SelectorTeam(Field f)
     {
-        this.id = "team";
-        this.title = "Select " + (gameObject instanceof Tank ? "tank" : "obstacle") + " team";
-        this.objectProperty = "team";
+        super(f);
 
-        this.keybind = Game.game.input.editorTeam;
-        this.image = "team.png";
         this.description = team ->
         {
             if (team == null)
@@ -37,39 +29,17 @@ public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
             return null;
         };
         this.addNoneChoice = true;
-        this.onEdit = t ->
+        this.onEdit = (editor, t) ->
         {
             OverlaySelectTeam s = (OverlaySelectTeam) Game.screen;
             OverlayEditTeam o = new OverlayEditTeam(Game.screen, editor, t);
             Game.screen = o;
             o.onEscape = () ->
             {
-                SelectorChoice<?, Team> sel = this;
-                sel.baseInit();
+                SelectorChoice<Team> sel = this;
                 o.previous = new OverlaySelectTeam(s.previous, s.editor, sel);
             };
         };
-
-        updateDefaultChoices();
-
-        if (!modified)
-        {
-            if (Game.currentLevel.enableTeams && editor == null)
-                setChoice(-1, false);
-            else
-                setChoice(Math.min(this.choices.size() - 1, defaultTeamIndex), false);
-        }
-    }
-
-    @Override
-    public void load()
-    {
-        updateDefaultChoices();
-
-        if (this.choice() != null)
-            this.button.setText("Team: ", this.choice().name);
-        else
-            this.button.setText("No team");
     }
 
     @Override
@@ -81,7 +51,19 @@ public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
         return choice.name;
     }
 
-    public void updateDefaultChoices()
+    @Override
+    public void changeMetadata(ScreenLevelEditor editor, GameObject o, int add)
+    {
+        updateDefaultChoices(editor, o);
+
+        selectedIndex += add;
+        if (Game.currentLevel.enableTeams && editor == null)
+            setChoice(editor, o, -1);
+        else
+            setChoice(editor, o, selectedIndex);
+    }
+
+    public void updateDefaultChoices(ScreenLevelEditor editor, GameObject o)
     {
         if (editor != null)
             this.choices = editor.teams;
@@ -91,11 +73,25 @@ public class SelectorTeam<T extends GameObject> extends SelectorChoice<T, Team>
             this.choices = new ArrayList<>(Arrays.asList(Game.playerTeam, Game.enemyTeam));
         else
             this.choices = new ArrayList<>(Arrays.asList(Game.playerTeamNoFF, Game.enemyTeamNoFF));
+
+        this.selectedIndex = this.choices.indexOf(this.getMetadata(o));
+        this.selectedChoice = (Team) this.getMetadata(o);
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor editor)
     {
+        updateDefaultChoices(editor, editor.mousePlaceable);
         Game.screen = new OverlaySelectTeam(Game.screen, editor, this);
+    }
+
+    @Override
+    public String getMetadataDisplayString(GameObject o)
+    {
+        Object t = this.getMetadata(o);
+        if (t == null)
+            return "\u00A7127000000255none";
+        else
+            return t.toString();
     }
 }

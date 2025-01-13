@@ -100,7 +100,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 			else
 				t = new TankPlayerController(posX, posY, angle, clientIdTarget);
 
-			Game.playerTank = t;
+			Game.playerTank = (TankPlayer) t;
+			Game.player.tank = t;
 		}
 		else
 		{
@@ -108,6 +109,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 			{
 				TankPlayer t2 = new TankPlayer(posX, posY, angle);
 				t2.player = new Player(clientIdTarget, "");
+				Game.currentLevel.playerBuilds.get(0).clonePropertiesTo(t2);
 				t = new TankRemote(t2);
 			}
 			else
@@ -122,6 +124,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 			if (Game.enableChatFilter)
 				t.nameTag.name = Game.chatFilter.filterChat(t.nameTag.name);
 		}
+
+		if (t instanceof TankPlayable)
+			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayable) t);
 
 		if (team.equals("**"))
 			t.team = Game.playerTeam;
@@ -144,6 +149,10 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.tertiaryColorR = this.colorR3;
 		t.tertiaryColorG = this.colorG3;
 		t.tertiaryColorB = this.colorB3;
+
+		t.emblemR = this.colorR2;
+		t.emblemG = this.colorG2;
+		t.emblemB = this.colorB2;
 
 		t.drawAge = this.drawAge;
 

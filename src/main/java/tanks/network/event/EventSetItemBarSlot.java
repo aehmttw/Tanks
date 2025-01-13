@@ -42,7 +42,7 @@ public class EventSetItemBarSlot extends PersonalEvent implements IStackableEven
                 if (p.clientID.equals(this.clientID))
                 {
                     if (p.hotbar.itemBar != null)
-                        p.hotbar.itemBar.selected = this.slot;
+                        p.hotbar.itemBar.setItemLocal(slot);
 
                     if (p.tank instanceof TankPlayerRemote)
                         ((TankPlayerRemote) p.tank).refreshAmmo();
@@ -52,7 +52,7 @@ public class EventSetItemBarSlot extends PersonalEvent implements IStackableEven
         else
         {
             if (Game.player != null && Game.player.hotbar != null && Game.player.hotbar.enabledItemBar)
-                Game.player.hotbar.itemBar.selected = this.slot;
+                Game.player.hotbar.itemBar.setItemLocal(this.slot);
         }
     }
 

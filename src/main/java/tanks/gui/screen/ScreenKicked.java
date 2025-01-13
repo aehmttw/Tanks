@@ -24,8 +24,7 @@ public class ScreenKicked extends Screen
 		ScreenPartyLobby.connections.clear();
 	}
 		
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = Game.lastOfflineScreen
-	);
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = Game.lastOfflineScreen);
 
 	@Override
 	public void update() 

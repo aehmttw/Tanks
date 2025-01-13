@@ -51,6 +51,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	{
 		this.ctx = ctx;
 
+		if (ctx != null && !Game.enableIPConnections)
+			this.sendEventAndClose(new EventKick("This party is not accepting new players connecting by IP address"));
+
 		if (ctx != null)
 			this.reader.queue = ctx.channel().alloc().buffer();
 		else

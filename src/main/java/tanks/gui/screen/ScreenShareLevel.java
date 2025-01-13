@@ -10,9 +10,9 @@ public class ScreenShareLevel extends Screen
 {
 	public SavedFilesList allLevels;
 	public SavedFilesList levels;
+	public Screen previous;
 
-	public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenShareSelect()
-	);
+	public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = previous);
 
 	SearchBox search = new SearchBox(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
@@ -47,10 +47,13 @@ public class ScreenShareLevel extends Screen
 	{
 		super(350, 40, 380, 60);
 
+		this.previous = Game.screen;
 		this.music = "menu_4.ogg";
 		this.musicID = "menu";
 
-		allLevels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, -60,
+		boolean party = ScreenPartyLobby.isClient || ScreenPartyHost.isServer;
+
+		allLevels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, party ? -60 : -30,
 				(name, file) ->
 				{
 					ScreenPreviewShareLevel sc = new ScreenPreviewShareLevel(name, Game.screen);
@@ -132,6 +135,8 @@ public class ScreenShareLevel extends Screen
 	@Override
 	public void setupLayoutParameters()
 	{
-		this.centerY -= this.objYSpace / 2;
+		boolean party = ScreenPartyLobby.isClient || ScreenPartyHost.isServer;
+		if (party)
+			this.centerY -= this.objYSpace / 2;
 	}
 }

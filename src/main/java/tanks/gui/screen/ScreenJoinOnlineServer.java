@@ -24,8 +24,7 @@ public class ScreenJoinOnlineServer extends Screen
         ip.lowerCase = true;
     }
 
-    Button back = new Button(this.centerX, this.centerY + objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlayMultiplayer()
-    );
+    Button back = new Button(this.centerX, this.centerY + objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlayMultiplayer());
 
     TextBox ip = new TextBox(this.centerX, this.centerY - objYSpace / 2, this.objWidth * 16 / 7, this.objHeight, "Online server URL or IP Address", new Runnable()
     {

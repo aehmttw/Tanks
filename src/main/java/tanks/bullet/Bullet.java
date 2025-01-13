@@ -11,6 +11,7 @@ import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
 import tanks.tankson.*;
 
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @TanksONable("bullet")
-public class Bullet extends Movable implements IDrawableLightSource, ICopyable<Bullet>, ITanksONEditable
+public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -128,6 +129,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	protected double delay = 0;
 	protected ArrayList<Movable> previousRebounds = new ArrayList<>();
 	protected boolean beganRebound = true;
+	protected boolean failedRebound = false;
 	protected Bullet reboundSuccessor = null;
 
 	public boolean enableExternalCollisions = true;
@@ -294,7 +296,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 		if (!this.tank.isRemote)
 		{
-			if (!freeIDs.isEmpty())
+			if (freeIDs.size() > 0)
 				this.networkID = freeIDs.remove(0);
 			else
 			{
@@ -374,11 +376,11 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			if (b instanceof BulletArc || b instanceof BulletAirStrike)
 				b.posZ += 15;
 			b.previousRebounds = this.previousRebounds;
+			b.affectsMaxLiveBullets = this.affectsMaxLiveBullets;
 			b.previousRebounds.add(m);
 			b.delay = this.reboundDelay;
 			b.rebounds = this.rebounds - 1;
 			b.beganRebound = false;
-			b.affectsMaxLiveBullets = this.affectsMaxLiveBullets;
 			Game.movables.add(b);
 			Game.movables.add(new BulletReboundIndicator(b));
 
@@ -440,15 +442,13 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 
 			double healthBefore = t.health;
 			double healFlashBefore = t.healFlashAnimation;
+
 			boolean kill = t.damage(dmg * this.frameDamageMultipler, this);
 			if (!t.destroy && this.hitStun > 0 && !(Team.isAllied(this, t) && this.team != null && !this.team.friendlyFire))
 				this.applyStun(t);
 
 			if (this.damage < 0)
 			{
-				if (this.maxExtraHealth > 0)
-					t.health = Math.max(healthBefore, Math.min(t.health, t.baseHealth + this.maxExtraHealth));
-
 				if (healthBefore == t.health)
 					t.healFlashAnimation = healFlashBefore;
 
@@ -510,7 +510,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 					((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
-				else if ((!Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty()) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
+				else if ((Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
 				{
 					if (this.tank instanceof TankPlayerRemote)
 					{
@@ -786,7 +786,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 			{
 				Obstacle o = Game.obstacles.get(i);
 
-				if ((!o.bulletCollision && !o.checkForObjects) || o.startHeight > 1)
+				if ((!o.bulletCollision && !o.checkForObjects) || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
 					continue;
 
 				double dx = this.posX - o.posX;
@@ -1256,6 +1256,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 				if (this.affectsMaxLiveBullets)
 					this.item.liveBullets--;
 
+				this.failedRebound = true;
 				Game.removeMovables.add(this);
 				return;
 			}
@@ -1540,7 +1541,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	{
 		for (ArrayList<Trail> trail : this.trails)
 		{
-			if (!trail.isEmpty())
+			if (trail.size() > 0)
 			{
 				Trail t = trail.get(0);
 				if (t.spawning)
@@ -1557,7 +1558,7 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	{
 		Trail old = null;
 
-		if (!this.trails[group].isEmpty())
+		if (this.trails[group].size() > 0)
 			old = this.trails[group].get(0);
 
 		this.trails[group].add(0, t);
@@ -1845,28 +1846,6 @@ public class Bullet extends Movable implements IDrawableLightSource, ICopyable<B
 	public double getRangeMax()
 	{
 		return this.range;
-	}
-
-	@Override
-	public double getSize()
-	{
-		return size;
-	}
-
-	@Override
-	public boolean lit()
-	{
-		return Game.fancyLights;
-	}
-
-	@Override
-	public double[] getLightInfo()
-	{
-		this.lightInfo[3] = Math.max(0, 1 - this.destroyTimer / this.maxDestroyTimer);
-		this.lightInfo[4] = this.outlineColorR;
-		this.lightInfo[5] = this.outlineColorG;
-		this.lightInfo[6] = this.outlineColorB;
-		return this.lightInfo;
 	}
 
 	@Override

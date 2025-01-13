@@ -2,12 +2,13 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.obstacle.ObstacleBeatBlock;
 
-public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
+public class OverlaySelectBeatBlockPattern extends ScreenLevelEditorOverlay
 {
     public Button back = new Button(this.centerX, this.centerY + 240, 350, 40, "Done", this::escape);
 
@@ -15,7 +16,7 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
     public SelectorBeatPattern selector;
     public Button[] groups = new Button[8];
 
-    public OverlayBeatBlockPattern(Screen previous, ScreenLevelEditor editor, SelectorBeatPattern selector)
+    public OverlaySelectBeatBlockPattern(Screen previous, ScreenLevelEditor editor, SelectorBeatPattern selector)
     {
         super(previous, editor);
 
@@ -25,7 +26,7 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
         {
             int j = i;
             groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize,
-                    "", () -> selector.setNumber((j % 4) * 2 + j / 4));
+                    "", () -> selector.setMetadata(editor, editor.mousePlaceable, (j % 4) * 2 + j / 4));
         }
 
         this.musicInstruments = true;
@@ -33,16 +34,24 @@ public class OverlayBeatBlockPattern extends ScreenLevelEditorOverlay
 
     public void update()
     {
+        InputBindingGroup ig = Game.game.inputBindings.get(this.selector.metadataProperty.keybind());
+        if (ig.isValid())
+        {
+            ig.invalidate();
+            this.escape();
+        }
+
+        int val = (int) selector.getMetadata(editor.mousePlaceable);
         for (int i = 0; i < groups.length; i++)
         {
-            groups[i].enabled = selector.number() != (i % 4) * 2 + i / 4;
+            groups[i].enabled = val != (i % 4) * 2 + i / 4;
             groups[i].update();
         }
 
         this.back.update();
 
         editor.overlayMusics.add("beatblocks/beat_blocks.ogg");
-        editor.overlayMusics.add("beatblocks/beat_beeps_" + (int) Math.pow(2, (int) selector.number() / 2) + ".ogg");
+        editor.overlayMusics.add("beatblocks/beat_beeps_" + (int) Math.pow(2, val / 2) + ".ogg");
 
         super.update();
     }

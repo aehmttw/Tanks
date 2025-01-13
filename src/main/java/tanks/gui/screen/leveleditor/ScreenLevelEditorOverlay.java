@@ -1,7 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
@@ -42,15 +41,6 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 
         if (previous == editor)
         {
-            if (editor.initialized)
-            {
-                if (ScreenLevelEditor.currentPlaceable == ScreenLevelEditor.Placeable.obstacle)
-                    editor.mouseObstacle.forAllSelectors(LevelEditorSelector::load);
-                else
-                    editor.mouseTank.forAllSelectors(LevelEditorSelector::load);
-            }
-
-            OverlayObjectMenu.saveSelectors(editor);
             editor.clickCooldown = 20;
             editor.paused = false;
         }
@@ -69,8 +59,8 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void update()
     {
+        Game.recomputeHeightGrid();
         this.editor.updateMusic(this.musicInstruments);
-        this.windowTitle = this.editor.windowTitle;
 
         if (Game.game.input.editorPause.isValid())
         {
@@ -87,7 +77,6 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
                 triggerKeybind.invalidate();
 
             Game.screen = editor;
-            OverlayObjectMenu.saveSelectors(editor);
             editor.clickCooldown = 20;
             editor.paused = false;
         }

@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
@@ -241,6 +242,8 @@ public class ScreenOptions extends Screen
 			f.println("last_party=" + Game.lastParty);
 			f.println("last_online_server=" + Game.lastOnlineServer);
 			f.println("show_ip=" + Game.showIP);
+			f.println("allow_ip_connections=" + Game.enableIPConnections);
+			f.println("steam_visibility=" + Game.steamVisibility.ordinal());
 			f.println("chat_filter=" + Game.enableChatFilter);
 			f.println("auto_ready=" + Game.autoReady);
 			f.println("anticheat=" + TankPlayerRemote.checkMotion);
@@ -259,6 +262,7 @@ public class ScreenOptions extends Screen
 			f.println("tank_green_3=" + Game.player.colorG3);
 			f.println("tank_blue_3=" + Game.player.colorB3);
 			f.println("translation=" + (Translation.currentTranslation == null ? "null" : Translation.currentTranslation.fileName));
+			f.println("agreed_steam_workshop=" + Game.agreedToWorkshopAgreement);
 			f.println("last_version=" + Game.lastVersion);
 			f.println("enable_extensions=" + Game.enableExtensions);
 			f.println("auto_load_extensions=" + Game.autoLoadExtensions);
@@ -451,6 +455,12 @@ public class ScreenOptions extends Screen
 					case "show_ip":
 						Game.showIP = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "allow_ip_connections":
+						Game.enableIPConnections = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "steam_visibility":
+						Game.steamVisibility = SteamMatchmaking.LobbyType.values()[Integer.parseInt(optionLine[1])];
+						break;
 					case "chat_filter":
 						Game.enableChatFilter = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -514,6 +524,9 @@ public class ScreenOptions extends Screen
 					case "auto_load_extensions":
 						Game.autoLoadExtensions = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "agreed_steam_workshop":
+						Game.agreedToWorkshopAgreement = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "debug_mode":
 						alwaysDebug = Boolean.parseBoolean(optionLine[1]);
 						if (alwaysDebug)
@@ -521,6 +534,7 @@ public class ScreenOptions extends Screen
 						break;
 				}
 			}
+
 			f.stopReading();
 
 			if (Game.framework == Game.Framework.libgdx)

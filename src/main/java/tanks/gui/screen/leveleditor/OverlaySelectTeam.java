@@ -19,8 +19,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
         Game.screen = o;
         o.onEscape = () ->
         {
-            SelectorChoice<?, Team> sel = (SelectorChoice<?, Team>) this.selector;
-            sel.baseInit();
+            SelectorChoice<Team> sel = (SelectorChoice<Team>) this.selector;
             o.previous = new OverlaySelectTeam(s.previous, s.editor, sel);
         };
     });
@@ -41,7 +40,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
     }
     );
 
-    public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<?, Team> selector)
+    public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<Team> selector)
     {
         super(previous, screenLevelEditor, selector);
         this.selector.buttonList.setupArrows();
@@ -99,7 +98,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
     @Override
     public void escape()
     {
-        this.selector.setChoice(this.selector.selectedIndex);
+        this.selector.setChoice(editor, editor.mousePlaceable, this.selector.selectedIndex);
         super.escape();
     }
 }

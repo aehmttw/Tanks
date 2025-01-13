@@ -1,74 +1,43 @@
 package tanks.gui.screen.leveleditor.selector;
 
-import tanks.*;
+import tanks.BiConsumer;
+import tanks.Function;
+import tanks.Game;
+import tanks.GameObject;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.leveleditor.OverlaySelectChoice;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /** @param <V> The class of the object being selected. (e.g. {@code Team} for team selectors) */
-public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector<T, V>
+public class SelectorChoice<V> extends MetadataSelector
 {
     public ArrayList<V> choices = new ArrayList<>();
+    public V selectedChoice;
+    public int selectedIndex;
     public ButtonList buttonList;
-    public int selectedIndex = 0;
     public boolean addNoneChoice = false;
     public Function<V, String> description = v -> null;
-    public Consumer<V> onEdit = null;
+    public BiConsumer<ScreenLevelEditor, V> onEdit = null;
 
-    @Override
-    public void baseInit()
+    public SelectorChoice(Field f)
     {
-        if (this.init)
-            return;
-
-        this.id = "choice";
-        this.title = "Choice Selector";
-
-        super.baseInit();
+        super(f);
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor editor)
     {
         Game.screen = new OverlaySelectChoice<>(Game.screen, editor, this);
     }
 
     @Override
-    public String getMetadata()
-    {
-        return choiceToString(getObject());
-    }
-
-    @Override
-    public void setMetadata(String data)
-    {
-        if (addNoneChoice && data.equals(choiceToString(null)))
-        {
-            setChoice(-1);
-            return;
-        }
-
-        int i = 0;
-        for (V choice : choices)
-        {
-            if (data.equals(choiceToString(choice)))
-                setChoice(i);
-            i++;
-        }
-    }
-
-    @Override
-    public void changeMetadata(int add)
+    public void changeMetadata(ScreenLevelEditor e, GameObject o, int add)
     {
         selectedIndex += add;
-        setChoice(selectedIndex);
-    }
-
-    @Override
-    public void load()
-    {
-        this.button.setText(this.buttonText, choiceToString(getObject()));
+        setChoice(e, o, selectedIndex);
     }
 
     public String choiceToString(V choice)
@@ -76,16 +45,8 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
         return choice != null ? choice.toString() : "";
     }
 
-    public void setChoice(int index)
+    public void setChoice(ScreenLevelEditor e, GameObject o, int index)
     {
-        setChoice(index, true);
-    }
-
-    public void setChoice(int index, boolean modify)
-    {
-        if (modify && selectedIndex != index)
-            modified = true;
-
         if (addNoneChoice)
         {
             if (index < -1)
@@ -96,14 +57,12 @@ public class SelectorChoice<T extends GameObject, V> extends LevelEditorSelector
         else
             index = (index + choices.size()) % choices.size();
 
+        if (index > -1)
+            selectedChoice = choices.get(index);
+        else
+            selectedChoice = null;
+
         selectedIndex = index;
-
-        setObject(index > -1 ? choices.get(index) : null);
+        this.setMetadata(e, o, selectedChoice);
     }
-
-    public V choice()
-    {
-        return getObject();
-    }
-
 }

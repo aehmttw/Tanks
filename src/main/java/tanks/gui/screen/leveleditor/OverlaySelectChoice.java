@@ -1,6 +1,8 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
+import tanks.Game;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.leveleditor.selector.SelectorChoice;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 
 public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
 {
-    public SelectorChoice<?, ?> selector;
+    public SelectorChoice<?> selector;
     public ArrayList<Button> choiceButtons = new ArrayList<>();
     public Button hoveredButton = null;
     public V hoveredChoice;
@@ -20,12 +22,12 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
     public Button edit;
     public int editSelected = -1;
 
-    public OverlaySelectChoice(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<?, V> selector)
+    public OverlaySelectChoice(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<V> selector)
     {
         super(previous, screenLevelEditor);
 
         this.selector = selector;
-        edit = new Button(0, 0, 32, 32, "", () -> selector.onEdit.accept(hoveredChoice), "Edit");
+        edit = new Button(0, 0, 32, 32, "", () -> selector.onEdit.accept(screenLevelEditor, hoveredChoice), "Edit");
         edit.fullInfo = true;
         edit.image = "icons/pencil.png";
         edit.imageSizeX = edit.imageSizeY = 20;
@@ -35,13 +37,13 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         {
             final int j = i;
             choiceButtons.add(new Button(0, 0, 350, 40, selector.choiceToString(b),
-                    () -> selector.setChoice(j), selector.description.apply(b)));
+                    () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, j), selector.description.apply(b)));
             i++;
         }
 
         if (selector.addNoneChoice)
             choiceButtons.add(new Button(0, 0, 350, 40, "\u00A7127000000255none",
-                    () -> selector.setChoice(-1), selector.description.apply(null)));
+                    () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, -1), selector.description.apply(null)));
 
         selector.buttonList = new ButtonList(choiceButtons, 0, 0, -30);
         selector.buttonList.manualDarkMode = true;
@@ -54,6 +56,13 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
     {
         for (Button b : choiceButtons)
             b.enabled = true;
+
+        InputBindingGroup ig = Game.game.inputBindings.get(this.selector.metadataProperty.keybind());
+        if (ig.isValid())
+        {
+            ig.invalidate();
+            this.escape();
+        }
 
         hoveredButton = null;
         if (selector.onEdit != null && !this.selector.buttonList.reorder)
@@ -98,7 +107,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 720);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, selector.title);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, selector.metadataProperty.name());
 
         selector.buttonList.draw();
 

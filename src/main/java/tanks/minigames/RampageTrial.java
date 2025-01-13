@@ -41,7 +41,7 @@ public class RampageTrial extends Minigame
         this.noLose = true;
         this.disableEndMusic = true;
         this.customIntroMusic = true;
-        this.enableItemBar = true;
+        this.showItems = true;
         this.introMusic = "arcade/battle_intro.ogg";
         this.disableFriendlyFire = true;
 

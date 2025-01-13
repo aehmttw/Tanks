@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -12,8 +13,7 @@ public class EventAddObstacle extends PersonalEvent
     public String name;
     public double posX;
     public double posY;
-    public double stackHeight;
-    public double startHeight;
+    public String metadata;
 
     public EventAddObstacle()
     {
@@ -25,8 +25,7 @@ public class EventAddObstacle extends PersonalEvent
         this.name = o.name;
         this.posX = o.posX;
         this.posY = o.posY;
-        this.stackHeight = o.stackHeight;
-        this.startHeight = o.startHeight;
+        this.metadata = o.getMetadata();
     }
 
     @Override
@@ -35,8 +34,7 @@ public class EventAddObstacle extends PersonalEvent
         NetworkUtils.writeString(b, this.name);
         b.writeDouble(this.posX);
         b.writeDouble(this.posY);
-        b.writeDouble(this.stackHeight);
-        b.writeDouble(this.startHeight);
+        NetworkUtils.writeString(b, metadata);
     }
 
     @Override
@@ -45,8 +43,7 @@ public class EventAddObstacle extends PersonalEvent
         this.name = NetworkUtils.readString(b);
         this.posX = b.readDouble();
         this.posY = b.readDouble();
-        this.stackHeight = b.readDouble();
-        this.startHeight = b.readDouble();
+        this.metadata = NetworkUtils.readString(b);
     }
 
     @Override
@@ -55,8 +52,7 @@ public class EventAddObstacle extends PersonalEvent
         try
         {
             Obstacle o = Game.registryObstacle.getEntry(this.name).obstacle.getConstructor(String.class, double.class, double.class).newInstance(this.name, this.posX / 50 - 0.5, this.posY / 50 - 0.5);
-            o.stackHeight = this.stackHeight;
-            o.startHeight = this.startHeight;
+            o.setMetadata(this.metadata);
             Game.obstacles.add(o);
 
         }

@@ -3,14 +3,17 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.leveleditor.selector.LevelEditorSelector;
-import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.rendering.ShaderBeatBlocks;
 import tanks.rendering.ShaderGroundObstacleBeatBlock;
+import tanks.tankson.MetadataProperty;
 
-public class ObstacleBeatBlock extends Obstacle
+public class ObstacleBeatBlock extends ObstacleStackable
 {
+    @MetadataProperty(id = "beat_pattern", name = "Beat pattern", image = "obstacle_beat.png", selector = SelectorBeatPattern.selector_name, keybind = "editor.groupID")
+    public int beatPattern = 0;
+
     public double beatFrequency = 1;
     public boolean alternate;
 
@@ -29,17 +32,12 @@ public class ObstacleBeatBlock extends Obstacle
         this.renderer = ShaderBeatBlocks.class;
         this.tileRenderer = ShaderGroundObstacleBeatBlock.class;
         this.destructible = false;
-        this.update = true;
         this.type = ObstacleType.top;
 
-        this.description = "A block that appears and disappears to the beat of the music";
-    }
+        this.primaryMetadataID = "beat_pattern";
+        this.secondaryMetadataID = "stack_height";
 
-    @Override
-    protected void registerSelectors()
-    {
-        this.registerSelector(new SelectorBeatPattern());
-        super.registerSelectors();
+        this.description = "A block that appears and disappears to the beat of the music";
     }
 
     public static boolean isOn(double freq, boolean alt)
@@ -68,15 +66,17 @@ public class ObstacleBeatBlock extends Obstacle
         this.bulletCollision = on;
         this.tankCollision = on;
 
-        addMusic();
-
         if (this.tankCollision != lastOn || firstUpdate)
         {
             if (firstUpdate)
                 this.postOverride();
 
             this.firstUpdate = false;
-            refreshHitboxes();
+            int x = (int) (this.posX / Game.tile_size);
+            int y = (int) (this.posY / Game.tile_size);
+
+            if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+                Game.game.solidGrid[x][y] = this.tankCollision;
 
             this.verticalFaces = null;
             this.horizontalFaces = null;
@@ -89,15 +89,6 @@ public class ObstacleBeatBlock extends Obstacle
         {
             this.allowBounce = true;
             this.shouldClip = false;
-        }
-    }
-
-    public void addMusic()
-    {
-        if (Game.currentLevel != null)
-        {
-            Game.currentLevel.synchronizeMusic = true;
-            Game.currentLevel.beatBlocks |= (int) beatFrequency;
         }
     }
 
@@ -192,7 +183,8 @@ public class ObstacleBeatBlock extends Obstacle
     {
         float cx = (float) this.posX;
         float cy = (float) this.posY;
-        float cz = (float) Game.sampleDefaultGroundHeight(this.posX, this.posY);
+        float h = (float) (Game.sampleGroundHeight(this.posX, this.posY));
+        float cz = (float) (h);
 
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
 
@@ -227,7 +219,6 @@ public class ObstacleBeatBlock extends Obstacle
         this.update = true;
         this.tankCollision = false;
         this.bulletCollision = false;
-        this.enableStacking = true;
 
         for (int i = 0; i < default_max_height; i++)
         {
@@ -258,29 +249,28 @@ public class ObstacleBeatBlock extends Obstacle
         if (s.contains("#"))
         {
             String[] p = s.split("#");
-            this.groupID = (int) Double.parseDouble(p[0]);
+            this.beatPattern = (int) Double.parseDouble(p[0]);
             this.stackHeight = Double.parseDouble(p[1]);
         }
         else
-            this.groupID = (int) Double.parseDouble(s);
+            this.beatPattern = (int) Double.parseDouble(s);
 
-        onPropertySet(null);
+        this.refreshMetadata();
     }
 
-    public void onPropertySet(LevelEditorSelector<?, ?> s)
+    @Override
+    public void refreshMetadata()
     {
-        this.rendererNumber = this.groupID;
-        this.tileRendererNumber = this.groupID;
-        this.alternate = this.groupID % 2 == 1;
-        this.beatFrequency = Math.pow(2, this.groupID / 2);
-
-        this.addMusic();
+        this.rendererNumber = this.beatPattern;
+        this.tileRendererNumber = this.beatPattern;
+        this.alternate = this.beatPattern % 2 == 1;
+        this.beatFrequency = Math.pow(2, this.beatPattern / 2);
         this.initialize();
     }
 
     @Override
     public String getMetadata()
     {
-        return this.groupID + "#" + this.stackHeight;
+        return this.beatPattern + "#" + this.stackHeight;
     }
 }

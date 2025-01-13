@@ -3,7 +3,10 @@ package tanks.network;
 import com.codedisaster.steamworks.SteamFriends;
 import com.codedisaster.steamworks.SteamFriendsCallback;
 import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamResult;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.gui.screen.ScreenOverlayChat;
+import tanks.translation.Translation;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,71 +17,16 @@ public class FriendsMixin
 	public Map<Integer, SteamID> friendUserIDs = new ConcurrentHashMap<>();
 	public Map<Integer, Long> friendGameIDs = new ConcurrentHashMap<>();
 	public Map<Integer, String> friendNames = new ConcurrentHashMap<>();
+	public Map<Integer, SteamFriends.PersonaState> friendStatuses = new ConcurrentHashMap<>();
 
 	public SteamFriendsCallback friendsCallback = new SteamFriendsCallback()
 	{
 		@Override
-		public void onSetPersonaNameResponse(boolean success, boolean localSuccess, SteamResult result)
-		{
-			/*System.out.println("Set persona name response: " +
-					"success=" + success +
-					", localSuccess=" + localSuccess +
-					", result=" + result.name());*/
-		}
-
-		@Override
-		public void onPersonaStateChange(SteamID steamID, SteamFriends.PersonaChange change)
-		{
-			/*switch (change)
-			{
-				case Name:
-					System.out.println("Persona name received: " +
-							"accountID=" + steamID.getAccountID() +
-							", name='" + friends.getFriendPersonaName(steamID) + "'");
-					break;
-
-				default:
-					System.out.println("Persona state changed (unhandled): " +
-							"accountID=" + steamID.getAccountID() +
-							", change=" + change.name());
-					break;
-			}*/
-		}
-
-		//@Override
-		public void onGameOverlayActivated(boolean active)
-		{
-
-		}
-
-		@Override
 		public void onGameLobbyJoinRequested(SteamID steamIDLobby, SteamID steamIDFriend)
 		{
-
-		}
-
-		@Override
-		public void onAvatarImageLoaded(SteamID steamID, int image, int width, int height)
-		{
-
-		}
-
-		@Override
-		public void onFriendRichPresenceUpdate(SteamID steamIDFriend, int appID)
-		{
-
-		}
-
-		@Override
-		public void onGameRichPresenceJoinRequested(SteamID steamIDFriend, String connect)
-		{
-
-		}
-
-		@Override
-		public void onGameServerChangeRequested(String server, String password)
-		{
-
+			Game.steamLobbyInvite = Long.parseLong(steamIDLobby.toString(), 16);
+			Drawing.drawing.playSound("join.ogg", 2f);
+			ScreenOverlayChat.addChat(Translation.translate("\u00A7000200000255Head over to the 'Join a party' menu under 'Multiplayer' to join the party you were invited to!"));
 		}
 	};
 
@@ -91,37 +39,6 @@ public class FriendsMixin
 	{
 		friends.dispose();
 	}
-
-	/*public void processInput(String input)
-	{
-		if (input.equals("persona get"))
-		{
-			System.out.println("persona name: " + friends.getPersonaName());
-		}
-		else if (input.startsWith("persona set "))
-		{
-			String personaName = input.substring("persona set ".length());
-			friends.setPersonaName(personaName);
-		}
-		else if (input.equals("friends list"))
-		{
-
-			int friendsCount = friends.getFriendCount(SteamFriends.FriendFlags.Immediate);
-			System.out.println(friendsCount + " friends");
-
-			for (int i = 0; i < friendsCount; i++)
-			{
-				SteamID steamIDUser = friends.getFriendByIndex(i, SteamFriends.FriendFlags.Immediate);
-				friendUserIDs.put(steamIDUser.getAccountID(), steamIDUser);
-
-				String personaName = friends.getFriendPersonaName(steamIDUser);
-				SteamFriends.PersonaState personaState = friends.getFriendPersonaState(steamIDUser);
-
-				System.out.println("  - " + steamIDUser.getAccountID() + " (" +
-						personaName + ", " + personaState.name() + ")");
-			}
-		}
-	}*/
 
 	public void updateFriends()
 	{
@@ -136,7 +53,7 @@ public class FriendsMixin
 			friends.getFriendGamePlayed(steamIDUser, friendGameInfo);
 			long id = friendGameInfo.getGameID();
 			friendGameIDs.put(steamIDUser.getAccountID(), id);
-
+			friendStatuses.put(steamIDUser.getAccountID(), friends.getFriendPersonaState(steamIDUser));
 			friendNames.put(steamIDUser.getAccountID(), friends.getFriendPersonaName(steamIDUser));
 		}
 	}

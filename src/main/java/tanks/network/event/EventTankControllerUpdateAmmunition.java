@@ -3,6 +3,7 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.network.NetworkUtils;
+import tanks.tank.TankPlayerController;
 
 import java.util.UUID;
 
@@ -59,14 +60,15 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
     @Override
     public void execute()
     {
-        if (this.clientID == null && clientIdTarget.equals(Game.clientID))
+        if (this.clientID == null && clientIdTarget.equals(Game.clientID) && Game.playerTank instanceof TankPlayerController)
         {
-            Game.playerTank.bulletItem.liveBullets = action1Live;
-            Game.playerTank.bullet.maxLiveBullets = action1Max;
-            Game.playerTank.mineItem.liveMines = action2Live;
-            Game.playerTank.mine.maxLiveMines = action2Max;
-            Game.playerTank.bulletItem.item.cooldownBase = cooldownBase;
-            Game.playerTank.bulletItem.cooldown = cooldown;
+            TankPlayerController c = (TankPlayerController) Game.playerTank;
+            c.liveBullets = action1Live;
+            c.maxLiveBullets = action1Max;
+            c.liveMines = action2Live;
+            c.maxLiveMines = action2Max;
+            c.bulletCooldownBase = cooldownBase;
+            c.bulletCooldown = cooldown;
         }
     }
 }

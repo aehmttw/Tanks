@@ -22,7 +22,14 @@ public class InputBindings
     public InputBindingGroup hotbar3 = new InputBindingGroup("hotbar.3", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_3));
     public InputBindingGroup hotbar4 = new InputBindingGroup("hotbar.4", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_4));
     public InputBindingGroup hotbar5 = new InputBindingGroup("hotbar.5", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_5));
+    public InputBindingGroup hotbar6 = new InputBindingGroup("hotbar.6", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_6));
+    public InputBindingGroup hotbar7 = new InputBindingGroup("hotbar.7", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_7));
+    public InputBindingGroup hotbar8 = new InputBindingGroup("hotbar.8", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_8));
+    public InputBindingGroup hotbar9 = new InputBindingGroup("hotbar.9", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_9));
+    public InputBindingGroup hotbar10 = new InputBindingGroup("hotbar.10", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_0));
     public InputBindingGroup hotbarDeselect = new InputBindingGroup("hotbar.deselect", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_GRAVE_ACCENT));
+
+    public InputBindingGroup[] hotbarBindings = new InputBindingGroup[]{hotbar1, hotbar2, hotbar3, hotbar4, hotbar5, hotbar6, hotbar7, hotbar8, hotbar9, hotbar10};
 
     public InputBindingGroup pause = new InputBindingGroup("game.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup play = new InputBindingGroup("game.play", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ENTER));
@@ -30,12 +37,10 @@ public class InputBindings
     public InputBindingGroup zoomIn = new InputBindingGroup("game.zoomIn", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_EQUAL));
     public InputBindingGroup zoomOut = new InputBindingGroup("game.zoomOut", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_MINUS));
     public InputBindingGroup zoomAuto = new InputBindingGroup("game.zoomAuto", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_O));
-    public InputBindingGroup freecam = new InputBindingGroup("game.freecam", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_N));
     public InputBindingGroup chat = new InputBindingGroup("game.chat", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_T));
     public InputBindingGroup hidePause = new InputBindingGroup("game.hidePauseMenu", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F1));
     public InputBindingGroup fullscreen = new InputBindingGroup("game.fullscreen", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F11), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F10));
-    public InputBindingGroup perspective = new InputBindingGroup("game.perspective", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F5));
-    public InputBindingGroup tilt = new InputBindingGroup("game.pitch", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_5));
+    public InputBindingGroup screenshot = new InputBindingGroup("game.screenshot", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F12));
 
     public InputBindingGroup editorPause = new InputBindingGroup("editor.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup editorObjectMenu = new InputBindingGroup("editor.objects", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_SPACE));
@@ -50,7 +55,6 @@ public class InputBindings
     public InputBindingGroup editorRotate = new InputBindingGroup("editor.rotate", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_R));
     public InputBindingGroup editorHeight = new InputBindingGroup("editor.height", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_H));
     public InputBindingGroup editorGroupID = new InputBindingGroup("editor.groupID", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_G));
-    public InputBindingGroup fcZoom = new InputBindingGroup("game.fcZoom", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_C));
 
     public InputBindingGroup editorBuild = new InputBindingGroup("editor.build", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_B));
     public InputBindingGroup editorErase = new InputBindingGroup("editor.erase", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_E));
@@ -98,8 +102,10 @@ public class InputBindings
 
             file.startWriting();
 
-            for (InputBindingGroup i : Game.game.inputBindings.values())
+            for (InputBindingGroup i: Game.game.inputBindings.values())
+            {
                 file.println(i.toString());
+            }
 
             file.stopWriting();
         }
@@ -123,24 +129,29 @@ public class InputBindings
             while (file.hasNextLine())
             {
                 String[] s = file.nextLine().split("=");
-                String[] s2 = s[1].split(",");
+                for (InputBindingGroup i : Game.game.inputBindings.values())
+                {
+                    if (s[0].equals(i.name))
+                    {
+                        String[] s2 = s[1].split(",");
 
-                String[] i1 = s2[0].split(":");
-                String[] i2 = s2[1].split(":");
+                        String[] i1 = s2[0].split(":");
+                        String[] i2 = s2[1].split(":");
 
-                InputBindingGroup i = Game.game.inputBindings.get(s[0]);
-                if (i1[0].equals("null"))
-                    i.input1.inputType = null;
-                else
-                    i.input1.inputType = InputBinding.InputType.valueOf(i1[0]);
+                        if (i1[0].equals("null"))
+                            i.input1.inputType = null;
+                        else
+                            i.input1.inputType = InputBinding.InputType.valueOf(i1[0]);
 
-                i.input1.input = Integer.parseInt(i1[1]);
+                        i.input1.input = Integer.parseInt(i1[1]);
 
-                if (i2[0].equals("null"))
-                    i.input2.inputType = null;
-                else
-                    i.input2.inputType = InputBinding.InputType.valueOf(i2[0]);
-                i.input2.input = Integer.parseInt(i2[1]);
+                        if (i2[0].equals("null"))
+                            i.input2.inputType = null;
+                        else
+                            i.input2.inputType = InputBinding.InputType.valueOf(i2[0]);
+                        i.input2.input = Integer.parseInt(i2[1]);
+                    }
+                }
             }
 
             file.stopReading();

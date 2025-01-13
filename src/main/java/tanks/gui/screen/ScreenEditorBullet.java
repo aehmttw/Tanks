@@ -86,7 +86,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
                 {
-                    ITrigger el = screen.getUIElementForField(f, p, screen.target);
+                    ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
 
                     if (p.id().equals("sound_pitch") || p.id().equals("sound_pitch_variation") || p.id().equals("sound_volume"))
                     {
@@ -118,7 +118,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
                 {
-                    ITrigger el = screen.getUIElementForField(f, p, screen.target);
+                    ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
 
                     if ((p.id().equals("range") || p.id().equals("lifespan")) && target.get() instanceof BulletArc)
                         continue;
@@ -149,7 +149,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
                 {
-                    ITrigger el = screen.getUIElementForField(f, p, screen.target);
+                    ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
                     if (gas)
                     {
                         if (p.id().equals("effect"))

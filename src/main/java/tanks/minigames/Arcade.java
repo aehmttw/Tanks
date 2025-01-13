@@ -6,6 +6,7 @@ import tanks.gui.screen.IDarkScreen;
 import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.hotbar.Hotbar;
 import tanks.item.Item;
 import tanks.item.ItemShield;
 import tanks.network.event.*;
@@ -75,7 +76,7 @@ public class Arcade extends Minigame
         this.noLose = true;
         this.disableEndMusic = true;
         this.customIntroMusic = true;
-        this.enableItemBar = true;
+        this.showItems = true;
         this.introMusic = "arcade/battle_intro.ogg";
         this.disableFriendlyFire = true;
 
@@ -660,7 +661,6 @@ public class Arcade extends Minigame
                     destX = (x + 0.5) * Game.tile_size;
                     destY = (y + 0.5) * Game.tile_size;
 
-                    Drawing.drawing.playGlobalSound("flame.ogg", 0.75f);
                     break;
                 }
             }
@@ -793,19 +793,19 @@ public class Arcade extends Minigame
         if (this.age <= 0)
             chainOpacity = 0;
 
-        Drawing.drawing.fillInterfaceRect(x, y, 350 * chainOpacity + pulse, 5 + pulse);
+        Drawing.drawing.fillInterfaceRect(x, y, Hotbar.bar_width * chainOpacity + pulse, 5 + pulse);
 
         if (chain > 0)
         {
-            double xo = 350 * (1 - chainOpacity) / 2;
+            double xo = Hotbar.bar_width * (1 - chainOpacity) / 2;
             Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * (100 - Game.player.hotbar.percentHidden) * 2.55);
-            Drawing.drawing.fillInterfaceProgressRect(x, y, 350 * chainOpacity + pulse, 5 + pulse, Math.max(0, 1 - (this.age - lh) / rampage_duration));
+            Drawing.drawing.fillInterfaceProgressRect(x, y, Hotbar.bar_width * chainOpacity + pulse, 5 + pulse, Math.max(0, 1 - (this.age - lh) / rampage_duration));
 
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
-            Drawing.drawing.fillInterfaceOval(x + xo - 175 - pulse / 2, y, 18 + pulse, 18 + pulse);
+            Drawing.drawing.fillInterfaceOval(x + xo - Hotbar.bar_width / 2 - pulse / 2, y, 18 + pulse, 18 + pulse);
             Drawing.drawing.setInterfaceFontSize(12 + pulse);
             Drawing.drawing.setColor(255, 255, 255, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
-            Drawing.drawing.drawInterfaceText(x + xo - 175 - pulse / 2, y, chain + "");
+            Drawing.drawing.drawInterfaceText(x + xo - Hotbar.bar_width / 2 - pulse / 2, y, chain + "");
         }
 
         if (frenzy)

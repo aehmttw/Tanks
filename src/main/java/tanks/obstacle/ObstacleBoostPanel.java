@@ -23,7 +23,6 @@ public class ObstacleBoostPanel extends Obstacle
         this.tankCollision = false;
         this.bulletCollision = false;
         this.checkForObjects = true;
-        this.enableStacking = false;
 
         this.type = ObstacleType.ground;
         this.update = true;
@@ -37,6 +36,13 @@ public class ObstacleBoostPanel extends Obstacle
         glow = Effect.createNewEffect(this.posX, this.posY, 0, Effect.EffectType.boostLight);
 
         this.description = "A panel which speeds up tanks and bullets";
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+        Drawing.drawing.setColor(r, g, b);
+        Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
     }
 
     @Override

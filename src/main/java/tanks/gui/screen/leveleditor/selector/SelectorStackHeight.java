@@ -1,29 +1,28 @@
 package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Game;
-import tanks.gui.screen.leveleditor.OverlayBlockHeight;
-import tanks.obstacle.Obstacle;
+import tanks.gui.screen.leveleditor.OverlaySelectBlockHeight;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.obstacle.ObstacleStackable;
 
-public class SelectorStackHeight extends SelectorNumber<Obstacle>
+import java.lang.reflect.Field;
+
+public class SelectorStackHeight extends SelectorNumber
 {
-    protected void init()
+    public static final String selector_name = "stack_height";
+
+    public SelectorStackHeight(Field f)
     {
-        this.id = "stack_height";
-        this.title = "Block height";
-        this.objectProperty = "stackHeight";
+        super(f);
 
         this.min = 0.5;
-        this.max = Obstacle.default_max_height;
-        this.defaultNum = 1;
+        this.max = ObstacleStackable.default_max_height;
         this.step = 0.5;
-        this.image = "obstacle_height.png";
-        this.buttonText = "Block height: %.1f";
-        this.keybind = Game.game.input.editorHeight;
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor editor)
     {
-        Game.screen = new OverlayBlockHeight(Game.screen, editor, this);
+        Game.screen = new OverlaySelectBlockHeight(Game.screen, editor, this);
     }
 }

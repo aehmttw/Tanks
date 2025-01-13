@@ -5,7 +5,6 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
-import tanks.tank.TankDummyLoadingScreen;
 
 public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundScreen
 {
@@ -18,7 +17,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
 
     public ScreenCinematicTitle()
     {
-        this.logo = new TankDummyLoadingScreen(-200, Drawing.drawing.sizeY / 2);
+//        this.logo = new TankDummyLoadingScreen(-200, Drawing.drawing.sizeY / 2);
         this.logo.size *= 2;
         this.logo.invulnerable = true;
         this.logo.drawAge = 50;
@@ -28,7 +27,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         Game.movables.add(logo);
         ScreenGame.finished = false;
 
-        mine = new Mine(this.centerX + 200, this.centerY, this.logo, this.logo.mineItem);
+//        mine = new Mine(this.centerX + 200, this.centerY, this.logo, this.logo.mineItem);
         mine.size *= 2;
         mine.explosion.radius *= 2;
         mine.timer = 100000;

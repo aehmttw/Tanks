@@ -1,11 +1,15 @@
 package tanks;
 
+import tanks.bullet.DefaultBullets;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
+import tanks.item.ItemBullet;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleBeatBlock;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
@@ -15,13 +19,25 @@ public class Level
 {
 	public String levelString;
 
-	public String[] preset, screen, obstaclesPos, tanks, teams;
+	public String[] preset;
+	public String[] screen;
+	public String[] obstaclesPos;
+	public String[] tanks;
+	public String[] teams;
+
 	public Team[] tankTeams;
 	public boolean enableTeams = false;
 
-	public static double currentColorR = 235, currentColorG = 207, currentColorB = 166;
-	public static double currentColorVarR = 235, currentColorVarG = 207, currentColorVarB = 166;
-	public static double currentLightIntensity = 1, currentShadowIntensity = 0.5;
+	public static double currentColorR = 235;
+	public static double currentColorG = 207;
+	public static double currentColorB = 166;
+
+	public static double currentColorVarR = 235;
+	public static double currentColorVarG = 207;
+	public static double currentColorVarB = 166;
+
+	public static double currentLightIntensity = 1;
+	public static double currentShadowIntensity = 0.5;
 
 	public static int currentCloudCount = 0;
 
@@ -34,13 +50,18 @@ public class Level
 	public boolean timed = false;
 	public double timer;
 
-	public int startX, startY;
-	public int sizeX, sizeY;
+	public int sizeX;
+	public int sizeY;
 
-	public int colorR = 235, colorG = 207, colorB = 166;
-	public int colorVarR = 20, colorVarG = 20, colorVarB = 20;
+	public int colorR = 235;
+	public int colorG = 207;
+	public int colorB = 166;
 
-	public int tilesRandomSeed = new Random().nextInt();
+	public int colorVarR = 20;
+	public int colorVarG = 20;
+	public int colorVarB = 20;
+
+	public int tilesRandomSeed = 0;
 
 	public double light = 1.0;
 	public double shadow = 0.5;
@@ -61,6 +82,7 @@ public class Level
 	public int startingCoins;
 	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
 	public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
+	public ArrayList<TankPlayer> playerBuilds = new ArrayList<>();
 
 	// Saved on the client to keep track of what each item is
 	public int clientStartingCoins;
@@ -78,9 +100,6 @@ public class Level
 	public int beatBlocks = 0;
 
 	public HashMap<String, Tank> tankLookupTable = null;
-
-	/** Always false for now. Dynamic chunk loading sometime maybe? */
-	public boolean mapLoad = false;
 
 	/**
 	 * A level string is structured like this:
@@ -119,6 +138,9 @@ public class Level
 				case "tanks":
 					parsing = 4;
 					break;
+				case "builds":
+					parsing = 5;
+					break;
 				default:
 					if (parsing == 0)
 					{
@@ -144,6 +166,11 @@ public class Level
 						TankAIControlled t = TankAIControlled.fromString(s);
 						this.customTanks.add(t);
 					}
+					else if (parsing == 5)
+					{
+						TankPlayer t = TankPlayer.fromString(s);
+						this.playerBuilds.add(t);
+					}
 					else
 					{
 						if (parsing == 1)
@@ -155,6 +182,12 @@ public class Level
 					}
 					break;
 			}
+		}
+
+		if (playerBuilds.isEmpty())
+		{
+			TankPlayer tp = new TankPlayer();
+			playerBuilds.add(tp);
 		}
 
 		if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
@@ -184,7 +217,7 @@ public class Level
 
 		for (int i = 0; i < this.startingItems.size(); i++)
 		{
-			this.itemNumbers.put(this.startingItems.get(i).item.name, -i - 1);
+			this.itemNumbers.put(this.startingItems.get(i).item.name, this.shop.size() + i + 1);
 		}
 
 		if (ScreenPartyLobby.isClient)
@@ -231,16 +264,18 @@ public class Level
 		if (sc == null)
 			Obstacle.draw_size = 0;
 		else
-			Obstacle.draw_size = Game.tile_size;
+			Obstacle.draw_size = 50;
 
 		this.remote = remote;
 
-		if (!remote && (sc == null || sc instanceof ScreenLevelEditor))
+		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
 
-		LinkedHashMap<String, TankAIControlled> customTanksMap = getTankMap();
+		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
+		for (TankAIControlled t : this.customTanks)
+			customTanksMap.put(t.name, t);
 
-        Tank.currentID = 0;
+		Tank.currentID = 0;
 		Tank.freeIDs.clear();
 
 		Game.currentLevel = this;
@@ -288,7 +323,7 @@ public class Level
 			}
 		}
 
-		currentCloudCount = (int)(Math.random() * (double)this.sizeX / 10.0D + Math.random() * (double)this.sizeY / 10.0D);
+		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
 
 		if (screen.length >= 9)
 		{
@@ -315,83 +350,93 @@ public class Level
 
 			s.selectedTiles = new boolean[sizeX][sizeY];
 			Game.movables.remove(Game.playerTank);
-
-			if (!enableTeams)
-			{
-				this.teamsList.add(Game.playerTeam);
-				this.teamsList.add(Game.enemyTeam);
-			}
-
-			s.teams = this.teamsList;
 		}
 
-		if (!mapLoad)
-			this.reloadTiles();
-		else
-			Chunk.populateChunks(this);
-
-		boolean[][] solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		this.reloadTiles();
 
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
 		{
-            for (String obstaclesPo : obstaclesPos)
-            {
-                String[] obs = obstaclesPo.split("-");
+			for (String obstaclesPo : obstaclesPos)
+			{
+				String[] obs = obstaclesPo.split("-");
 
-                String[] xPos = obs[0].split("\\.\\.\\.");
+				String[] xPos = obs[0].split("\\.\\.\\.");
 
-                double startX;
-                double endX;
+				double startX;
+				double endX;
 
-                startX = Double.parseDouble(xPos[0]);
-                endX = startX;
+				startX = Double.parseDouble(xPos[0]);
+				endX = startX;
 
-                if (xPos.length > 1)
-                    endX = Double.parseDouble(xPos[1]);
+				if (xPos.length > 1)
+					endX = Double.parseDouble(xPos[1]);
 
-                String[] yPos = obs[1].split("\\.\\.\\.");
+				String[] yPos = obs[1].split("\\.\\.\\.");
 
-                double startY;
-                double endY;
+				double startY;
+				double endY;
 
-                startY = Double.parseDouble(yPos[0]);
-                endY = startY;
+				startY = Double.parseDouble(yPos[0]);
+				endY = startY;
 
-                if (yPos.length > 1)
-                    endY = Double.parseDouble(yPos[1]);
+				if (yPos.length > 1)
+					endY = Double.parseDouble(yPos[1]);
 
-                String name = "normal";
+				String name = "normal";
 
-                if (obs.length >= 3)
-                    name = obs[2];
+				if (obs.length >= 3)
+					name = obs[2];
 
-                String meta = null;
+				String meta = null;
 
-                if (obs.length >= 4)
-                    meta = obs[3];
+				if (obs.length >= 4)
+					meta = obs[3];
 
-                for (double x = startX; x <= endX; x++)
-                {
-                    for (double y = startY; y <= endY; y++)
-                    {
-                        Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
-                        o.initSelectors(sc instanceof ScreenLevelEditor ? (ScreenLevelEditor) sc : null);
+				for (double x = startX; x <= endX; x++)
+				{
+					for (double y = startY; y <= endY; y++)
+					{
+						Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
 
-                        if (meta != null)
-                            o.setMetadata(meta);
+						if (meta != null)
+							o.setMetadata(meta);
 
-						Game.addObstacle(o, false);
+						if (o instanceof ObstacleBeatBlock)
+						{
+							this.synchronizeMusic = true;
+							this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
+						}
 
-						if (o.tankCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-                            solidGrid[(int) (x / Game.tile_size)][(int) (y / Game.tile_size)] = true;
+						Game.obstacles.add(o);
 					}
 				}
 			}
 		}
 
+		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		boolean[][] solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+
+		for (Obstacle o : Game.obstacles)
+		{
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
+
+			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			{
+				Game.game.solidGrid[x][y] = true;
+
+				if (!o.shouldShootThrough)
+					Game.game.unbreakableGrid[x][y] = true;
+			}
+
+			if (o.tankCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+				solidGrid[x][y] = true;
+		}
+
 		boolean[][] tankGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
-		for (Movable m: Game.movables)
+		for (Movable m : Game.movables)
 		{
 			if (m instanceof Tank)
 			{
@@ -399,7 +444,9 @@ public class Level
 				int y = (int) (m.posY / Game.tile_size);
 
 				if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+				{
 					tankGrid[x][y] = true;
+				}
 			}
 		}
 
@@ -407,13 +454,13 @@ public class Level
 
 		if (!preset[2].isEmpty())
 		{
-            for (String s : tanks)
-            {
-                String[] tank = s.split("-");
-                double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]) + startX);
-                double y = Game.tile_size * (0.5 + Double.parseDouble(tank[1]) + startY);
-                String type = tank[2].toLowerCase();
-                double angle = 0;
+			for (String s : tanks)
+			{
+				String[] tank = s.split("-");
+				double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]));
+				double y = Game.tile_size * (0.5 + Double.parseDouble(tank[1]));
+				String type = tank[2].toLowerCase();
+				double angle = 0;
 
 				StringBuilder metadata = new StringBuilder();
 				for (int i = 3; i < tank.length; i++)
@@ -423,69 +470,99 @@ public class Level
 						metadata.append("-");
 				}
 
-                if (tank.length >= 4)
-                    angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
+				if (tank.length >= 4)
+					angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
 
-                Team team = Game.enemyTeam;
+				Team team = Game.enemyTeam;
 
-                if (this.disableFriendlyFire)
-                    team = Game.enemyTeamNoFF;
+				if (this.disableFriendlyFire)
+					team = Game.enemyTeamNoFF;
 
-                if (enableTeams)
-                {
-                    if (tank.length >= 5)
-                        team = teamsMap.get(tank[4]);
-                    else
-                        team = null;
-                }
+				if (enableTeams)
+				{
+					if (tank.length >= 5)
+						team = teamsMap.get(tank[4]);
+					else
+						team = null;
+				}
 
-                Tank t;
-                if (type.equals("player"))
-                {
-                    if (team == Game.enemyTeam)
-                        team = Game.playerTeam;
+				Tank t;
+				if (type.equals("player"))
+				{
+					if (team == Game.enemyTeam)
+						team = Game.playerTeam;
 
-                    if (team == Game.enemyTeamNoFF)
-                        team = Game.playerTeamNoFF;
+					if (team == Game.enemyTeamNoFF)
+						team = Game.playerTeamNoFF;
 
-                    this.playerSpawnsX.add(x);
-                    this.playerSpawnsY.add(y);
-                    this.playerSpawnsAngle.add(angle);
-                    this.playerSpawnsTeam.add(team);
+					this.playerSpawnsX.add(x);
+					this.playerSpawnsY.add(y);
+					this.playerSpawnsAngle.add(angle);
+					this.playerSpawnsTeam.add(team);
 
-                    int x1 = (int) Double.parseDouble(tank[0]);
-                    int y1 = (int) Double.parseDouble(tank[1]);
+					int x1 = (int) Double.parseDouble(tank[0]);
+					int y1 = (int) Double.parseDouble(tank[1]);
 
-                    if (x1 >= 0 && y1 >= 0 && x1 < tankGrid.length && y1 < tankGrid[0].length)
-                        tankGrid[x1][y1] = true;
+					if (x1 >= 0 && y1 >= 0 && x1 < tankGrid.length && y1 < tankGrid[0].length)
+						tankGrid[x1][y1] = true;
 
-                    continue;
-                }
+					continue;
+				}
 
-                if (customTanksMap.get(type) != null)
-                    t = customTanksMap.get(type).instantiate(type, x, y, angle);
-                else
-                    t = Game.registryTank.getEntry(type).getTank(x, y, angle);
+				if (customTanksMap.get(type) != null)
+					t = customTanksMap.get(type).instantiate(type, x, y, angle);
+				else
+					t = Game.registryTank.getEntry(type).getTank(x, y, angle);
 
-                t.initSelectors(sc instanceof ScreenLevelEditor ? (ScreenLevelEditor) sc : null);
-                t.crusadeID = currentCrusadeID;
-                currentCrusadeID++;
+				t.crusadeID = currentCrusadeID;
+				currentCrusadeID++;
 
-                if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
-                    tanksToRemove.add(t);
-                else
-                    t.setMetadata(metadata.toString());
+				if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
+					tanksToRemove.add(t);
+				else
+					t.setMetadata(metadata.toString());
 
-                // Don't do this in your code! We only want to dynamically generate tank IDs on level load!
-                t.networkID = Tank.nextFreeNetworkID();
+				// Don't do this in your code! We only want to dynamically generate tank IDs on level load!
+				t.networkID = Tank.nextFreeNetworkID();
 				Tank.idMap.put(t.networkID, t);
 
-                if (remote)
-                    Game.movables.add(new TankRemote(t));
-                else
-                    Game.movables.add(t);
-            }
+				if (remote)
+					Game.movables.add(new TankRemote(t));
+				else
+					Game.movables.add(t);
+			}
 		}
+
+		if (sc instanceof ScreenLevelEditor)
+		{
+			ScreenLevelEditor s = (ScreenLevelEditor) sc;
+			if (!enableTeams)
+			{
+				enableTeams = true;
+
+				Team player = new Team(Game.playerTeam.name);
+				Team enemy = new Team(Game.enemyTeam.name);
+
+				for (Movable m : Game.movables)
+				{
+					if (m.team == Game.playerTeam)
+						m.team = player;
+					else if (m.team == Game.enemyTeam)
+						m.team = enemy;
+				}
+
+				this.teamsList.add(enemy);
+				this.teamsList.add(player);
+			}
+
+			s.teams = this.teamsList;
+			if (s.teams.size() > 0)
+			{
+				s.currentMetadata.put(SelectorTeam.selector_name, s.teams.get(0));
+				s.currentMetadata.put(SelectorTeam.player_selector_name, s.teams.get(Math.min(s.teams.size() - 1, 1)));
+			}
+		}
+
 
 		this.availablePlayerSpawns.clear();
 
@@ -612,8 +689,12 @@ public class Level
 			for (int i = 0; i < playerCount; i++)
 			{
 				if (this.availablePlayerSpawns.isEmpty())
-                    for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
-                        this.availablePlayerSpawns.add(j);
+				{
+					for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
+					{
+						this.availablePlayerSpawns.add(j);
+					}
+				}
 
 				int spawn = this.availablePlayerSpawns.remove((int) (Math.random() * this.availablePlayerSpawns.size()));
 
@@ -627,6 +708,7 @@ public class Level
 				else if (!remote)
 				{
 					TankPlayer tank = new TankPlayer(x, y, angle);
+					this.playerBuilds.get(0).clonePropertiesTo(tank);
 					Game.playerTank = tank;
 					tank.team = team;
 					tank.registerNetworkID();
@@ -640,8 +722,6 @@ public class Level
 			{
 				TankSpawnMarker t = new TankSpawnMarker("player", this.playerSpawnsX.get(i), this.playerSpawnsY.get(i), this.playerSpawnsAngle.get(i));
 				t.team = this.playerSpawnsTeam.get(i);
-				t.modify();
-				t.initSelectors(sc instanceof ScreenLevelEditor ? (ScreenLevelEditor) sc : null);
 				Game.movables.add(t);
 
 				if (sc != null)
@@ -662,27 +742,8 @@ public class Level
 			}
 		}
 
-		if (!mapLoad)
-			addLevelBorders();
-
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());
-	}
-
-	public LinkedHashMap<String, TankAIControlled> getTankMap()
-	{
-		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
-		for (TankAIControlled t: this.customTanks)
-			customTanksMap.put(t.name, t);
-		return customTanksMap;
-	}
-
-	public void addLevelBorders()
-	{
-		Chunk.getChunksInRange(0, 0, sizeX, 0).forEach(chunk -> chunk.addBorderFace(0, this));
-		Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(1, this));
-		Chunk.getChunksInRange(0, sizeY, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(2, this));
-		Chunk.getChunksInRange(0, 0, 0, sizeY).forEach(chunk -> chunk.addBorderFace(3, this));
 	}
 
 	public void reloadTiles()
@@ -701,19 +762,57 @@ public class Level
 		currentLightIntensity = light;
 		currentShadowIntensity = shadow;
 
+		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesDepth = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tilesFlash = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
+
+		Random tilesRandom = new Random(this.tilesRandomSeed);
+		for (int i = 0; i < Game.currentSizeX; i++)
+		{
+			for (int j = 0; j < Game.currentSizeY; j++)
+			{
+				if (Game.fancyTerrain)
+				{
+					Game.tilesR[i][j] = (colorR + tilesRandom.nextDouble() * colorVarR);
+					Game.tilesG[i][j] = (colorG + tilesRandom.nextDouble() * colorVarG);
+					Game.tilesB[i][j] = (colorB + tilesRandom.nextDouble() * colorVarB);
+					double rand = tilesRandom.nextDouble() * 10;
+					Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
+				}
+				else
+				{
+					Game.tilesR[i][j] = colorR;
+					Game.tilesG[i][j] = colorG;
+					Game.tilesB[i][j] = colorB;
+					Game.tilesDepth[i][j] = 0;
+				}
+			}
+		}
+
+		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.game.groundHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
+		Game.game.groundEdgeHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
 		Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
-		Chunk.populateChunks(Game.currentLevel);
-		if (!mapLoad)
-			addLevelBorders();
+
+		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
 		for (Obstacle o: Game.obstacles)
 		{
-            o.postOverride();
+			int x = (int) (o.posX / Game.tile_size);
+			int y = (int) (o.posY / Game.tile_size);
 
-			Chunk c = Chunk.getChunk(o.posX, o.posY);
-			if (c != null)
-				c.addObstacle(o);
-        }
+			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			{
+				Game.game.solidGrid[x][y] = true;
+
+				if (!o.shouldShootThrough)
+					Game.game.unbreakableGrid[x][y] = true;
+			}
+		}
 
 		ScreenLevelEditor s = null;
 		

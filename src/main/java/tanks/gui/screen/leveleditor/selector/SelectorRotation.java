@@ -3,49 +3,45 @@ package tanks.gui.screen.leveleditor.selector;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectRotation;
-import tanks.tank.Tank;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.translation.Translation;
 
-public class SelectorRotation<T extends GameObject> extends SelectorNumber<T>
+import java.lang.reflect.Field;
+
+public class SelectorRotation extends SelectorNumber
 {
-    @Override
-    protected void init()
+    public static final String selector_name = "rotation";
+
+    public SelectorRotation(Field f)
     {
-        this.id = "rotation";
-        this.keybind = Game.game.input.editorRotate;
-        this.loop = true;
+        super(f);
+        this.wrap = true;
         this.format = "%.0f";
         this.min = 0;
-        this.max = 4;
-
-        if (gameObject instanceof Tank)
-        {
-            this.objectProperty = "angle";
-            this.image = "rotate_tank.png";
-            this.title = "Select tank orientation";
-            this.buttonText = "Tank orientation";
-        }
-        else
-        {
-            this.objectProperty = "rotation";
-            this.image = "rotate_obstacle.png";
-            this.title = "Select obstacle orientation";
-            this.buttonText = "Obstacle rotation";
-        }
-    }
-
-    public Double getObject()
-    {
-        return super.getObject() / (Math.PI / 2);
-    }
-
-    public void setObject(Double o)
-    {
-        super.setObject(o * (Math.PI / 2));
+        this.max = Math.PI * 2;
+        this.step = Math.PI / 2;
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor e)
     {
-        Game.screen = new OverlaySelectRotation(Game.screen, editor, this);
+        Game.screen = new OverlaySelectRotation(Game.screen, e, this);
+    }
+
+    @Override
+    public String getMetadataDisplayString(GameObject o)
+    {
+        int i = (int) Math.round((double) this.getMetadata(o) / Math.PI * 2);
+
+        if (i == 0)
+            return Translation.translate("right");
+        else if (i == 1)
+            return Translation.translate("down");
+        else if (i == 2)
+            return Translation.translate("left");
+        else if (i == 3)
+            return Translation.translate("up");
+        else
+            return "???";
     }
 }

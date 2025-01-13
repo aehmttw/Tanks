@@ -30,6 +30,7 @@ public class Tanks
         boolean relaunch = System.getProperties().toString().contains("Mac OS X");
 
         // Goes through arguments and applies specified settings.
+        int i = 0;
         for (String arg : args)
         {
             if (arg.equals("online_server"))
@@ -40,6 +41,11 @@ public class Tanks
                 Game.debug = true;
             if (arg.equals("mac") || arg.equals("no_relaunch"))
                 relaunch = false;
+
+            if (i < args.length - 1 && args[i].equals("+connect_lobby"))
+                Game.steamLobbyInvite = Long.parseLong(args[i + 1]);
+
+            i++;
         }
 
         if (!Game.isOnlineServer)

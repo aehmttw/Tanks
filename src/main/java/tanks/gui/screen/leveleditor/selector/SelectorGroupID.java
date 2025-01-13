@@ -3,18 +3,16 @@ package tanks.gui.screen.leveleditor.selector;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 
-public class SelectorGroupID extends SelectorNumber<Obstacle>
-{
-    protected void init()
-    {
-        this.id = "group_id";
-        this.title = "Group ID";
-        this.objectProperty = "groupID";
+import java.lang.reflect.Field;
 
-        this.keybind = Game.game.input.editorGroupID;
-        this.format = "%.0f";
-        this.buttonText = "Group ID: %.0f";
-        this.image = "id.png";
+public class SelectorGroupID extends SelectorNumber
+{
+    public static final String selector_name = "group_id";
+
+    public SelectorGroupID(Field f)
+    {
+        super(f);
         this.min = 0;
+        this.format = "%.0f";
     }
 }

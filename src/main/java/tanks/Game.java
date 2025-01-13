@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.*;
+import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -13,6 +14,7 @@ import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.selector.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
@@ -133,6 +135,8 @@ public class Game
 	public static boolean showHitboxes = false;
 	public static final boolean cinematic = false;
 
+	public static long steamLobbyInvite = -1;
+
 	public static String lastVersion = "Tanks v0";
 
 	public static int port = 8080;
@@ -140,10 +144,14 @@ public class Game
 	public static String lastParty = "";
 	public static String lastOnlineServer = "";
 	public static boolean showIP = true;
+	public static boolean enableIPConnections = true;
+	public static SteamMatchmaking.LobbyType steamVisibility = SteamMatchmaking.LobbyType.Private;
+
+	public static boolean agreedToWorkshopAgreement = false;
 
 	public static double levelSize = 1;
 
-	public static Tank playerTank;
+	public static TankPlayer playerTank;
 
 	public static boolean bulletLocked = false;
 
@@ -159,7 +167,7 @@ public class Game
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
 
-	public static boolean fancyLights = false;
+	public static boolean fancyLights = true;
 
 	public static boolean tankTextures = true;
 
@@ -229,6 +237,7 @@ public class Game
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
+	public static RegistryMetadataSelectors registryMetadataSelectors = new RegistryMetadataSelectors();
 
 	public HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
 	public ShaderGroundIntro shaderIntro;
@@ -281,6 +290,7 @@ public class Game
 	public static final String replaysDir = directoryPath + "/replays/";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
+	public static final String screenshotsPath = directoryPath + "/screenshots/";
 
 	public static final String resourcesPath = directoryPath + "/resources/";
 	public static final String languagesPath = resourcesPath + "languages/";
@@ -293,6 +303,8 @@ public class Game
 	public static boolean connectedToOnline = false;
 
 	public static SteamNetworkHandler steamNetworkHandler;
+	public boolean runningCallbacks = false;
+	public Throwable callbackException = null;
 
 	public static String homedir;
 	public static Game game = new Game();
@@ -336,10 +348,13 @@ public class Game
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
+		NetworkEventMap.register(EventUpdateTankAbility.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
 		NetworkEventMap.register(EventPlayerAutoReady.class);
 		NetworkEventMap.register(EventPlayerAutoReadyConfirm.class);
+		NetworkEventMap.register(EventPlayerSetBuild.class);
+		NetworkEventMap.register(EventPlayerRevealBuild.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
@@ -482,6 +497,11 @@ public class Game
 		registryMinigame.minigameDescriptions.put(name, desc);
 	}
 
+	public static void registerMetadataSelector(String name, Class<? extends MetadataSelector> selector)
+	{
+		registryMetadataSelectors.metadataSelectors.put(name, selector);
+	}
+
 	public static void initScript()
 	{
 		version = "Tanks v" + Game.readVersionFromFile();
@@ -500,7 +520,7 @@ public class Game
 		registerEvents();
 		DefaultBullets.initialize();
 
-		registerObstacle(Obstacle.class, "normal");
+		registerObstacle(ObstacleStackable.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
 		registerObstacle(ObstacleHole.class, "hole");
 		registerObstacle(ObstacleBouncy.class, "bouncy");
@@ -516,6 +536,7 @@ public class Game
 		registerObstacle(ObstacleBoostPanel.class, "boostpanel");
 		registerObstacle(ObstacleTeleporter.class, "teleporter");
 		registerObstacle(ObstacleBeatBlock.class, "beat");
+		registerObstacle(ObstacleGroundPaint.class, "paint");
 //		registerObstacle(ObstacleText.class, "text");
 
 		registerTank(TankDummy.class, "dummy", 0);
@@ -561,6 +582,15 @@ public class Game
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
+
+		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
+		registerMetadataSelector(SelectorGroupID.selector_name, SelectorGroupID.class);
+		registerMetadataSelector(SelectorBeatPattern.selector_name, SelectorBeatPattern.class);
+		registerMetadataSelector(SelectorRotation.selector_name, SelectorRotation.class);
+		registerMetadataSelector(SelectorTeam.selector_name, SelectorTeam.class);
+		registerMetadataSelector(SelectorLuminosity.selector_name, SelectorLuminosity.class);
+		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
+		registerMetadataSelector(SelectorColorAndNoise.selector_name, SelectorColorAndNoise.class);
 
 		TankPlayer.default_bullet = new Bullet();
 		TankPlayer.default_mine = new Mine();
@@ -619,6 +649,12 @@ public class Game
 		BaseFile replaysFile = game.fileManager.getFile(homedir + replaysDir);
 		if (!replaysFile.exists())
 			replaysFile.mkdirs();
+
+		BaseFile screenshotsFile = game.fileManager.getFile(homedir + screenshotsPath);
+		if (!screenshotsFile.exists())
+		{
+			screenshotsFile.mkdirs();
+		}
 
 		BaseFile uuidFile = game.fileManager.getFile(homedir + uuidPath);
 		if (!uuidFile.exists())
@@ -886,6 +922,12 @@ public class Game
 
 	public static void exitToCrash(Throwable e)
 	{
+		while (e instanceof GameCrashedException)
+			e = ((GameCrashedException) e).originalException;
+
+		if (Game.game.runningCallbacks)
+			Game.game.callbackException = e;
+
 		throw new GameCrashedException(e);
 	}
 
@@ -1313,7 +1355,7 @@ public class Game
 		Game.player.hotbar.coins = 0;
 		Game.player.hotbar.enabledCoins = false;
 		Game.player.hotbar.itemBar = new ItemBar(Game.player);
-		Game.player.hotbar.enabledItemBar = false;
+		Game.player.hotbar.itemBar.showItems = false;
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);

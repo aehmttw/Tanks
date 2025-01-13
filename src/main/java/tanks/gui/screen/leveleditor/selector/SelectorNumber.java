@@ -3,62 +3,47 @@ package tanks.gui.screen.leveleditor.selector;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectNumber;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
-public class SelectorNumber<T extends GameObject> extends LevelEditorSelector<T, Double>
+public class SelectorNumber extends MetadataSelector
 {
+    public static final String selector_name = "number";
+
     public String format = "%.1f";
 
     /** Interval: [min, max). Just like <code>for</code> loops. */
     public double min = -99999999;
     public double max = 99999999;
-    public double defaultNum = 0;
     public double step = 1;
 
     /** When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
      * or the maximum value if it is below the minimum value. */
-    public boolean loop = false;
+    public boolean wrap = false;
 
-    /** When set to true, inputs from a text box will be rounded to the nearest number divisible by <code>step</code>. */
+    /** When inputted from a text box, rounds it to the nearest number divisible to <code>step</code>. */
     public boolean forceStep = true;
     public boolean allowDecimals = false;
 
-    @Override
-    public void baseInit()
+    public SelectorNumber(Field f)
     {
-        if (this.init)
-            return;
-
-        this.id = "number";
-        this.title = "Number Selector";
-
-        super.baseInit();
-        if (!modified)
-        {
-            setObject(defaultNum);
-            modified = false;
-        }
-        limit(min, max);
+        super(f);
     }
 
     @Override
-    public void onSelect()
+    public void openEditorOverlay(ScreenLevelEditor editor)
     {
         Game.screen = new OverlaySelectNumber(Game.screen, editor, this);
     }
 
-    public String numberString()
+    @Override
+    public void changeMetadata(ScreenLevelEditor e, GameObject o, int add)
     {
-        return String.format(Locale.US, format, number());   // bruh
-    }
+        double number = ((Number) this.getMetadata(o)).doubleValue() + add * step;
 
-    protected void changeMetadata(int add)
-    {
-        double number = number();
-        number += add * step;
-
-        if (loop)
+        if (wrap)
         {
             number = (number + this.max) % this.max;
 
@@ -67,47 +52,24 @@ public class SelectorNumber<T extends GameObject> extends LevelEditorSelector<T,
         }
         else
             number = Math.max(this.min, Math.min(this.max, number));
-        setObject(number);
-    }
 
-    public double number()
-    {
-        return getObject();
-    }
-
-    public void setNumber(Number number)
-    {
-        setObject(number.doubleValue());
-    }
-
-    public void min(double min)
-    {
-        limit(min, max);
-    }
-
-    public void max(double max)
-    {
-        limit(min, max);
-    }
-
-    public void limit(double min, double max)
-    {
-         setObject(Math.min(max, Math.max(min, getObject())));
+        if (this.metadataField.getType().equals(int.class))
+            this.setMetadata(e, o, (int) number);
+        else
+            this.setMetadata(e, o, number);
     }
 
     @Override
-    public void load()
+    public void setMetadata(ScreenLevelEditor ed, GameObject o, Object value)
     {
-        this.button.setText(buttonText, number());
+        if (this.metadataField.getType().equals(int.class))
+            super.setMetadata(ed, o, ((Number) value).intValue());
+        else
+            super.setMetadata(ed, o, value);
     }
 
-    public String getMetadata()
+    public String numberString(GameObject o)
     {
-        return numberString();
-    }
-
-    public void setMetadata(String d)
-    {
-        setObject(Double.parseDouble(d));
+        return String.format(Locale.ROOT, format, ((Number) this.getMetadata(o)).doubleValue());
     }
 }

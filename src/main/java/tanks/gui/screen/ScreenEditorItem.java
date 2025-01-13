@@ -174,9 +174,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                     {
                         Property p = f.getAnnotation(Property.class);
                         if (p != null && p.category().equals(this.category))
-                        {
                             this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
-                        }
                     }
                 }
 

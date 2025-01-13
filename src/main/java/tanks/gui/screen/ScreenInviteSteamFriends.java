@@ -1,7 +1,6 @@
 package tanks.gui.screen;
 
 import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamID;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -42,7 +41,7 @@ public class ScreenInviteSteamFriends extends Screen
         FriendsMixin d = Game.steamNetworkHandler.friends;
         for (int i: d.friendUserIDs.keySet())
         {
-            String name = d.friendNames.get(i);
+            String name = d.knownUsernamesByID.get(i);
 
             StringBuilder newName = new StringBuilder();
 

@@ -4,7 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBox;
+import tanks.gui.SearchBoxInstant;
 
 public class ScreenPlaySavedLevels extends Screen
 {
@@ -22,7 +22,7 @@ public class ScreenPlaySavedLevels extends Screen
 	}
 	);
 
-	SearchBox search = new SearchBox(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
 		@Override
 		public void run()

@@ -2,11 +2,12 @@ package tanks.gui.screen;
 
 import tanks.Game;
 
-public class ScreenWorkshopSearchWaiting extends ScreenWaiting
+public class ScreenWorkshopSearchWaiting extends ScreenWaitingCancelable
 {
     public ScreenWorkshopSearchWaiting()
     {
         super("Searching...");
+        this.previous = new ScreenSteamWorkshop();
     }
 
     @Override
@@ -16,7 +17,7 @@ public class ScreenWorkshopSearchWaiting extends ScreenWaiting
 
         if (Game.steamNetworkHandler.workshop.totalResults >= 0)
         {
-            Game.screen = new ScreenWorkshopLevels();
+            Game.screen = new ScreenWorkshopCreations();
         }
     }
 }

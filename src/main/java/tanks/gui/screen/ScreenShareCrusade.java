@@ -5,16 +5,18 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBox;
+import tanks.gui.SearchBoxInstant;
 
 public class ScreenShareCrusade extends Screen
 {
 	public SavedFilesList allCrusades;
 	public SavedFilesList crusades;
 
-	public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenShareSelect());
+	public Screen previous;
 
-	SearchBox search = new SearchBox(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+	public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = previous);
+
+	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
 		@Override
 		public void run()
@@ -47,10 +49,13 @@ public class ScreenShareCrusade extends Screen
 	{
 		super(350, 40, 380, 60);
 
+		this.previous = Game.screen;
+
 		this.music = "menu_4.ogg";
 		this.musicID = "menu";
 
-		allCrusades = new SavedFilesList(Game.homedir + Game.crusadeDir, ScreenCrusades.page, 0, -60,
+		boolean party = ScreenPartyLobby.isClient || ScreenPartyHost.isServer;
+		allCrusades = new SavedFilesList(Game.homedir + Game.crusadeDir, ScreenCrusades.page, 0, party ? -60 : -30,
 				(name, file) ->
                         Game.screen = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true), (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
@@ -127,6 +132,7 @@ public class ScreenShareCrusade extends Screen
 	@Override
 	public void setupLayoutParameters()
 	{
-		this.centerY -= this.objYSpace / 2;
+		if (ScreenPartyHost.isServer || ScreenPartyLobby.isClient)
+			this.centerY -= this.objYSpace / 2;
 	}
 }

@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBox;
+import tanks.gui.SearchBoxInstant;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
@@ -19,7 +19,7 @@ public class ScreenSavedLevels extends Screen
 
 	Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer());
 
-	SearchBox search = new SearchBox(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
 		@Override
 		public void run()

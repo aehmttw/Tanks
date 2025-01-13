@@ -35,7 +35,6 @@ public class EventLayMine extends PersonalEvent
 	{
 		if (clientID == null)
 		{
-			System.out.println(this.item);
 			Tank t = Tank.idMap.get(tank);
 
 			if (tank == -1)

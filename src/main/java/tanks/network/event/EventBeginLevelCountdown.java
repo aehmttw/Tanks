@@ -17,6 +17,7 @@ public class EventBeginLevelCountdown extends PersonalEvent
 		if (Game.screen instanceof ScreenGame && this.clientID == null)
 		{
 			((ScreenGame) Game.screen).shopScreen = false;
+			((ScreenGame) Game.screen).buildsScreen = false;
 			((ScreenGame) Game.screen).cancelCountdown = false;
 		}
 	}

@@ -136,7 +136,7 @@ public class BulletInstant extends Bullet
 		freeIDs.add(this.networkID);
 		idMap.remove(this.networkID);
 
-		if (this.affectsMaxLiveBullets)
+		if (this.affectsMaxLiveBullets && this.reboundSuccessor == null && !this.failedRebound)
 			this.item.liveBullets--;
 
 		this.addDestroyEffect();

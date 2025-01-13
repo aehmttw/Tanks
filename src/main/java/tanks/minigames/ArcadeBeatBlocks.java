@@ -47,7 +47,7 @@ public class ArcadeBeatBlocks extends Arcade
 
         for (Obstacle o : Game.obstacles)
         {
-            if (o instanceof ObstacleBeatBlock)
+            if (o instanceof ObstacleBeatBlock && !Game.removeObstacles.contains(o))
             {
                 Obstacle o1 = new ObstacleBeatBlock(o.name, (int) (o.posX / Game.tile_size), (int) (o.posY / Game.tile_size));
                 o1.setMetadata(((ObstacleBeatBlock)o).beatPattern % 2 + 2 * (value / 2) + "#" + ((ObstacleBeatBlock)o).stackHeight);

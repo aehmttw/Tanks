@@ -4,6 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.network.SteamNetworkHandler;
 
 public class ScreenParty extends Screen
 {
@@ -46,8 +47,7 @@ public class ScreenParty extends Screen
 	}
 	);
 	
-	Button join = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Join a party", () -> Game.screen = new ScreenJoinParty()
-	);
+	Button join = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Join a party", () -> Game.screen = new ScreenJoinParty());
 	
 	TextBox port = new TextBox(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Port", new Runnable()
 	{
@@ -78,21 +78,24 @@ public class ScreenParty extends Screen
 	public void draw()
 	{
 		this.drawDefaultBackground();
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Create or join a party");
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.setColor(0, 0, 0);
 
 		double offset = 0;
 		if (Game.steamNetworkHandler.initialized)
 		{
-			offset = 0.25;
-			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (0.75 + offset), "Joining via Steam peer-to-peer doesn't require port forwarding.");
+			offset = -0.5;
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (3.75 + offset), "Players using Steam can invite friends to their party or");
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (3.25 + offset), "make their party public to other Steam players.");
 		}
 
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (2.5 + offset), "Make sure that everyone is using the same port!");
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (2 + offset), "All players should be connected to the same");
+		Drawing.drawing.setInterfaceFontSize(this.titleSize);
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (3.5 - offset), "Create or join a party");
+
+		Drawing.drawing.setInterfaceFontSize(this.textSize);
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (2.5 + offset), "To join with an IP address, make sure that everyone is using");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (2 + offset), "the same port, and that all players are connected to the same");
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * (1.5 + offset), "network, unless the host is port forwarding.");
 
 		back.draw();

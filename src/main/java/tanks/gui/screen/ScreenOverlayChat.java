@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class ScreenOverlayChat
 {
+    public static ArrayList<ChatMessage> systemMessages = new ArrayList<>();
+
     public static void update(boolean persistent)
     {
         if (ScreenPartyHost.isServer)
@@ -20,26 +22,32 @@ public class ScreenOverlayChat
             ScreenPartyLobby.chatbox.update(persistent);
     }
 
+    public static ChatBox getChatBox()
+    {
+        if (ScreenPartyLobby.isClient)
+            return ScreenPartyLobby.chatbox;
+        else if (ScreenPartyHost.isServer)
+            return ScreenPartyHost.chatbox;
+
+        return null;
+    }
+
+    public static ArrayList<ChatMessage> getChat()
+    {
+        if (ScreenPartyLobby.isClient)
+            return ScreenPartyLobby.chat;
+        else if (ScreenPartyHost.isServer)
+            return ScreenPartyHost.chat;
+        else
+            return systemMessages;
+    }
+
     public static void draw(boolean persistent)
     {
-        if (ScreenPartyLobby.isClient && (Game.connectedToOnline || ScreenPartyLobby.chatbox == null))
-            return;
-
         Game.game.window.shapeRenderer.setBatchMode(false, false, false);
 
-        ChatBox chatbox = null;
-        ArrayList<ChatMessage> chat = null;
-
-        if (ScreenPartyLobby.isClient)
-        {
-            chatbox = ScreenPartyLobby.chatbox;
-            chat = ScreenPartyLobby.chat;
-        }
-        else if (ScreenPartyHost.isServer)
-        {
-            chatbox = ScreenPartyHost.chatbox;
-            chat = ScreenPartyHost.chat;
-        }
+        ChatBox chatbox = getChatBox();
+        ArrayList<ChatMessage> chat = getChat();
 
         if (chatbox != null)
         {
@@ -47,10 +55,16 @@ public class ScreenOverlayChat
                 chatbox.defaultTextColor = "\u00A7255255255255";
 
             chatbox.draw(persistent);
-            long time = System.currentTimeMillis();
 
+            if (isDark())
+                chatbox.defaultTextColor = "\u00A7127127127255";
+        }
+
+        if (chat != null)
+        {
             int i = 0;
-
+            int startY = chatbox == null ? 40 : 70;
+            long time = System.currentTimeMillis();
             synchronized (chat)
             {
                 for (int in = 0; in < chat.size(); in++)
@@ -58,9 +72,11 @@ public class ScreenOverlayChat
                     if (in >= 30)
                         continue;
 
+                    int timeout = chatbox == null ? 10000 : 30000;
+
                     ChatMessage c = chat.get(in);
 
-                    if (time - c.time <= 30000 || chatbox.selected)
+                    if (time - c.time <= timeout || (chatbox != null && chatbox.selected))
                     {
                         Drawing.drawing.setInterfaceFontSize(24);
 
@@ -81,52 +97,52 @@ public class ScreenOverlayChat
                         else
                             Drawing.drawing.setColor(255, 255, 255, 127);
 
-                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + radius / 2, width + xPad, radius);
-                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - 70 - radius / 2, width + xPad, radius);
-                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1) / 2.0) * 30 - 70, width + xPad + radius * 2, height + yPad - radius * 2);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + radius / 2, width + xPad, radius);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - startY - radius / 2, width + xPad, radius);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1) / 2.0) * 30 - startY, width + xPad + radius * 2, height + yPad - radius * 2);
 
                         Game.game.window.shapeRenderer.setBatchMode(true, false, false);
 
                         for (int j = 0; j < 15; j++)
                         {
-                            Drawing.drawing.addInterfaceVertex(xStart - xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70, 0);
+                            Drawing.drawing.addInterfaceVertex(xStart - xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY, 0);
                             Drawing.drawing.addInterfaceVertex(xStart - xPad / 2 + Math.cos((j + 15) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 15) / 30.0 * Math.PI) * radius, 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 15) / 30.0 * Math.PI) * radius, 0);
                             Drawing.drawing.addInterfaceVertex(xStart - xPad / 2 + Math.cos((j + 16) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 16) / 30.0 * Math.PI) * radius, 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 16) / 30.0 * Math.PI) * radius, 0);
                         }
 
                         for (int j = 15; j < 30; j++)
                         {
-                            Drawing.drawing.addInterfaceVertex(xStart - xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 - 30 * (c.lines.size() - 1), 0);
+                            Drawing.drawing.addInterfaceVertex(xStart - xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY - 30 * (c.lines.size() - 1), 0);
                             Drawing.drawing.addInterfaceVertex(xStart - xPad / 2 + Math.cos((j + 15) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 15) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 15) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
                             Drawing.drawing.addInterfaceVertex(xStart - xPad / 2 + Math.cos((j + 16) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 16) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 16) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
                         }
 
                         for (int j = 0; j < 15; j++)
                         {
-                            Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70, 0);
+                            Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY, 0);
                             Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2 + Math.cos((j + 45) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 15) / 30.0 * Math.PI) * radius, 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 15) / 30.0 * Math.PI) * radius, 0);
                             Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2 + Math.cos((j + 46) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 16) / 30.0 * Math.PI) * radius, 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 16) / 30.0 * Math.PI) * radius, 0);
                         }
 
                         for (int j = 15; j < 30; j++)
                         {
-                            Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 - 30 * (c.lines.size() - 1), 0);
+                            Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY - 30 * (c.lines.size() - 1), 0);
                             Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2 + Math.cos((j + 45) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 15) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 15) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
                             Drawing.drawing.addInterfaceVertex(width + xStart + xPad / 2 + Math.cos((j + 46) / 30.0 * Math.PI) * radius,
-                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70 + Math.sin((j + 16) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
+                                    Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + Math.sin((j + 16) / 30.0 * Math.PI) * radius - 30 * (c.lines.size() - 1), 0);
                         }
 
                         Game.game.window.shapeRenderer.setBatchMode(false, false, false);
 
                         double x = 34;
-                        double y = Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - 70;
+                        double y = Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - startY;
                         double size = Game.tile_size * 0.4;
 
                         if (c.enableTankIcon)
@@ -151,7 +167,7 @@ public class ScreenOverlayChat
                         for (int j = c.lines.size() - 1; j >= 0; j--)
                         {
                             double mx = 20;
-                            double my = Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - 70;
+                            double my = Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY;
 
                             if (isDark())
                                 Drawing.drawing.setColor(255, 255, 255);
@@ -164,14 +180,16 @@ public class ScreenOverlayChat
                     }
                 }
             }
-
-            if (isDark())
-                chatbox.defaultTextColor = "\u00A7127127127255";
         }
     }
 
     public static boolean isDark()
     {
         return (((Panel.win && Game.effectsEnabled) || Panel.darkness > 0) && Game.screen instanceof IDarkScreen) || (Level.isDark());
+    }
+
+    public static void addChat(String chat)
+    {
+        getChat().add(new ChatMessage(chat));
     }
 }

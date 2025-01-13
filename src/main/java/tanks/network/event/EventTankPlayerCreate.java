@@ -101,6 +101,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 				t = new TankPlayerController(posX, posY, angle, clientIdTarget);
 
 			Game.playerTank = (TankPlayer) t;
+			Game.player.tank = t;
 		}
 		else
 		{

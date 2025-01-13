@@ -6,11 +6,12 @@ import tanks.gui.InputSelector;
 
 public class ScreenControlsGame extends Screen
 {
-    InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 180, 700, 40, "Pause", Game.game.input.pause);
-    InputSelector play = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 90, 700, 40, "Play", Game.game.input.play);
-    InputSelector chat = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 0, 700, 40, "Chat", Game.game.input.chat);
-    InputSelector hidePause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 90, 700, 40, "Hide/show pause menu", Game.game.input.hidePause);
-    InputSelector fullscreen = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 180, 700, 40, "Toggle fullscreen", Game.game.input.fullscreen);
+    InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Pause", Game.game.input.pause);
+    InputSelector play = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Play", Game.game.input.play);
+    InputSelector chat = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Chat", Game.game.input.chat);
+    InputSelector hidePause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Hide/show pause menu", Game.game.input.hidePause);
+    InputSelector fullscreen = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle fullscreen", Game.game.input.fullscreen);
+    InputSelector screenshot = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Take screenshot", Game.game.input.screenshot);
 
     public ScreenControlsGame()
     {
@@ -26,6 +27,7 @@ public class ScreenControlsGame extends Screen
         chat.update();
         hidePause.update();
         fullscreen.update();
+        screenshot.update();
 
         ScreenOverlayControls.overlay.update();
     }
@@ -35,6 +37,7 @@ public class ScreenControlsGame extends Screen
     {
         this.drawDefaultBackground();
 
+        screenshot.draw();
         fullscreen.draw();
         hidePause.draw();
         chat.draw();

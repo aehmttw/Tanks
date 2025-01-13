@@ -7,8 +7,6 @@ import tanksonline.CommandExecutor;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServer;
 
-import java.io.File;
-
 public class TanksMacApp
 {
     public static void main(String[] args)
@@ -26,6 +24,9 @@ public class TanksMacApp
 
             if (args[i].equals("debug"))
                 Game.debug = true;
+
+            if (i < args.length - 1 && args[i].equals("+connect_lobby"))
+                Game.steamLobbyInvite = Long.parseLong(args[i + 1]);
         }
 
         if (!Game.isOnlineServer)

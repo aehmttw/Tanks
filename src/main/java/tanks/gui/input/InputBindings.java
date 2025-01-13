@@ -40,6 +40,7 @@ public class InputBindings
     public InputBindingGroup chat = new InputBindingGroup("game.chat", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_T));
     public InputBindingGroup hidePause = new InputBindingGroup("game.hidePauseMenu", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F1));
     public InputBindingGroup fullscreen = new InputBindingGroup("game.fullscreen", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F11), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F10));
+    public InputBindingGroup screenshot = new InputBindingGroup("game.screenshot", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_F12));
 
     public InputBindingGroup editorPause = new InputBindingGroup("editor.pause", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ESCAPE));
     public InputBindingGroup editorObjectMenu = new InputBindingGroup("editor.objects", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_SPACE));

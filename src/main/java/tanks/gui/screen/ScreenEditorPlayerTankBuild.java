@@ -156,7 +156,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
         this.controlsMusic = true;
 
         this.title = "Edit %s";
-        this.objName = "tank";
+        this.objName = "player build";
     }
 
     public class TabTankBuild extends Tab

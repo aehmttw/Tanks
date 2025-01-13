@@ -83,7 +83,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		this.angle = angle;
 		this.orientation = angle;
-		this.player.tank = this;
+
+		if (!ScreenPartyLobby.isClient)
+			this.player.tank = this;
 
 		this.addDefaultAbilities();
 
@@ -112,12 +114,6 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			this.nameTag.name = Game.player.username;
 			this.showName = true;
 		}
-
-		if (Game.invulnerable)
-		{
-			this.resistExplosions = true;
-			this.resistBullets = true;
-		}
 	}
 
 	public static TankPlayer fromString(String s)
@@ -142,6 +138,12 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@Override
 	public void update()
 	{
+		if (Game.invulnerable)
+		{
+			this.resistExplosions = true;
+			this.resistBullets = true;
+		}
+
 		boolean up = Game.game.input.moveUp.isPressed();
 		boolean down = Game.game.input.moveDown.isPressed();
 		boolean left = Game.game.input.moveLeft.isPressed();

@@ -5,6 +5,8 @@ import basewindow.transformation.Shear;
 import basewindow.transformation.Transformation;
 import basewindow.transformation.Translation;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -285,6 +287,8 @@ public abstract class BaseWindow
     public abstract BaseShapeBatchRenderer createShapeBatchRenderer(ShaderGroup shader);
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
+
+    public abstract BufferedImage screenshot(String dir) throws IOException;
 
     public void setShader(ShaderBase s)
     {

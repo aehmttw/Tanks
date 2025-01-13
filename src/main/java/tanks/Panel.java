@@ -10,6 +10,7 @@ import tanks.network.Client;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
 import tanks.network.event.EventBeginLevelCountdown;
+import tanks.network.event.EventPlayerRevealBuild;
 import tanks.network.event.INetworkEvent;
 import tanks.network.event.IStackableEvent;
 import tanks.network.event.online.IOnlineServerEvent;
@@ -94,6 +95,9 @@ public class Panel
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
 	public boolean continuationMusic = false;
+
+	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
+	public String saveScreenshotDir = null;
 
 	public static void initialize()
 	{
@@ -208,6 +212,35 @@ public class Panel
 
 	public void update()
 	{
+		if (saveScreenshotDir != null)
+		{
+			try
+			{
+				Game.game.window.screenshot(saveScreenshotDir);
+				saveScreenshotDir = null;
+			}
+			catch (Exception e)
+			{
+				Game.exitToCrash(e);
+			}
+		}
+
+		if (Game.game.input.screenshot.isValid())
+		{
+			Game.game.input.screenshot.invalidate();
+			try
+			{
+				String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
+				Game.game.window.screenshot(dir);
+				ScreenOverlayChat.addChat("\u00A7000200000255Screenshot saved to " + dir);
+				Drawing.drawing.playSound("join.ogg", 2f);
+			}
+			catch (Exception e)
+			{
+				Game.exitToCrash(e);
+			}
+		}
+
 		this.frameStartTime = System.currentTimeMillis();
 
 		if (firstFrame)
@@ -368,6 +401,29 @@ public class Panel
 				{
 					Game.eventsOut.add(new EventBeginLevelCountdown());
 					((ScreenGame) Game.screen).cancelCountdown = false;
+
+					for (Movable m: Game.movables)
+					{
+						if (m instanceof TankPlayable)
+						{
+							System.out.println(((TankPlayable) m).buildName);
+							int build = -1;
+							for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
+							{
+								TankPlayable t = Game.currentLevel.playerBuilds.get(i);
+								if (t.name.equals(((TankPlayable) m).buildName))
+								{
+									build = i;
+									System.out.println(t.emblem);
+									t.clonePropertiesTo((TankPlayable) m);
+									System.out.println(((TankPlayable) m).emblem);
+									break;
+								}
+							}
+
+							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
+						}
+					}
 				}
 
 				ScreenPartyHost.disconnectedPlayers.clear();
@@ -587,6 +643,9 @@ public class Panel
 
 	public void draw()
 	{
+		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+			this.age += Panel.frameFrequency;
+
 		if (continuation != null && Game.game.window.drawingShadow)
 			return;
 
@@ -739,8 +798,6 @@ public class Panel
 
 		Game.screen.drawPostMouse();
 
-		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
-			this.age += Panel.frameFrequency;
 
 //		if (!Game.game.window.drawingShadow)
 //			Drawing.drawing.terrainRenderer2.draw();

@@ -226,7 +226,7 @@ public class ScreenCrusades extends Screen
 	@Override
 	public void onFilesDropped(String... filePaths)
 	{
-		ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade");
+		ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade", s -> new Crusade(s, "test"), "... Maybe they were levels?");
 		fullCrusadesList.refresh();
 		createNewCrusadesList();
 	}

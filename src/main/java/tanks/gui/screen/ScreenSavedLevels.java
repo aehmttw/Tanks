@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.ComputerFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.ScreenElement;
@@ -102,34 +99,54 @@ public class ScreenSavedLevels extends Screen
         }
     }, "Sorting by name");
 
-    public static void importLevels(String[] filePaths, String dir, String levelType)
+    public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, String failedMessage)
     {
-        List<String> paths = Arrays.stream(filePaths).filter(path -> path.endsWith(".tanks")).collect(Collectors.toList());
-        if (paths.isEmpty()) return;
+        new Thread(() -> {
+            List<String> paths = Arrays.stream(filePaths).filter(path -> path.endsWith(".tanks")).collect(Collectors.toList());
+            if (paths.isEmpty()) return;
 
-        ArrayList<ComputerFile> existing = new ArrayList<>();
-        for (String path : paths)
-        {
-            ComputerFile file = (ComputerFile) Game.game.fileManager.getFile(path);
-            if (!file.moveTo(Game.homedir + dir))
-                existing.add(file);
-        }
+            ArrayList<ComputerFile> existing = new ArrayList<>(), failed = new ArrayList<>();
+            for (String path : paths)
+            {
+                ComputerFile file = (ComputerFile) Game.game.fileManager.getFile(path);
+                try
+                {
+                    StringBuilder b = new StringBuilder();
+                    file.startReading();
+                    while (file.hasNextLine())
+                        b.append(file.nextLine()).append("\n");
+                    validation.accept(String.join("\n", b.toString()));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace(System.err);
+                    failed.add(file);
+                    continue;
+                }
 
-        if (!existing.isEmpty())
-        {
-            Game.screen = new ScreenPopupWarning(Game.screen,
-                    getNumberString(existing.size(), "file") + " already exist" + (existing.size() == 1 ? "s" : "") + "!",
-                    existing.stream().limit(10).map(f -> f.file.getName()).collect(Collectors.joining(", ")),
-                    () ->
-                    {
-                        existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
-                        Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), levelType)));
-                    })
-                    .setContinueText("Replace all");
-        }
+                if (!file.moveTo(Game.homedir + dir))
+                    existing.add(file);
+            }
 
-        if (paths.size() > existing.size())
-            Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size() - existing.size(), levelType)));
+            if (!existing.isEmpty())
+            {
+                Game.screen = new ScreenPopupWarning(Game.screen,
+                        getNumberString(existing.size(), "file") + " already exist" + (existing.size() == 1 ? "s" : "") + "!",
+                        existing.stream().limit(10).map(f -> f.file.getName()).collect(Collectors.joining(", ")),
+                        () ->
+                        {
+                            existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
+                            Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), levelType)));
+                        })
+                        .setContinueText("Replace all").setCancelText("Skip");
+            }
+
+            int successful = paths.size() - existing.size() - failed.size();
+            if (successful > 0)
+                Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(successful, levelType)));
+            if (!failed.isEmpty())
+                Panel.notifs.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + (failed.size() > 1 ? " are" : " is") + " corrupted and have been skipped" + failedMessage));
+        }).start();
     }
 
     public static String getNumberString(int count, String s)
@@ -209,7 +226,7 @@ public class ScreenSavedLevels extends Screen
     @Override
     public void onFilesDropped(String... filePaths)
     {
-        importLevels(filePaths, Game.levelDir, "level");
+        importLevels(filePaths, Game.levelDir, "level", Level::new, "... Maybe they were crusades?");
         fullSavedLevelsList.refresh();
         createNewLevelsList();
     }

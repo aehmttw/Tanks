@@ -29,7 +29,7 @@ public abstract class ScreenElement
         {
             this.text = Drawing.drawing.wrapText(text, 250, 16);
             this.duration = duration;
-            this.sY = Math.max(4, this.text.size()) * 20;
+            this.sY = Math.max(4, this.text.size() + 2) * 20;
         }
 
         public void draw(double prevSY)

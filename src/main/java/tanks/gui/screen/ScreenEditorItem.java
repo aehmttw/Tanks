@@ -31,6 +31,39 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 Game.screen = this;
             }, "My", Item.class)
     );
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
+    {
+        Item.ItemStack<?> t = target.get();
+        this.writeItemAndConfirm(t, false);
+    }
+    );
+
+    public ScreenEditorItem(Pointer<Item.ItemStack<?>> itemStack, Screen screen)
+    {
+        super(itemStack, screen);
+
+        if (this.target.get() == null) return;
+
+        this.title = "Edit %s";
+
+        this.itemTabButton.image = "item.png";
+        this.itemTabButton.drawImageShadow = true;
+        this.itemTabButton.imageSizeX = 40;
+        this.itemTabButton.imageSizeY = 40;
+        this.itemTabButton.imageXOffset = -145;
+
+        this.delete.function = () ->
+        {
+            setTarget(null);
+            this.quit.function.run();
+        };
+
+        this.deleteText = "Delete item";
+        this.showDeleteObj = false;
+        this.delete.setText("Delete item");
+
+        this.resetTabs();
+    }
 
     public boolean writeItem(Item.ItemStack<?> t)
     {
@@ -69,40 +102,6 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             Game.screen = new ScreenItemSavedInfo(this);
         else
             Game.screen = new ScreenItemSaveOverwrite(this, i);
-    }
-
-    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
-    {
-        Item.ItemStack<?> t = target.get();
-        this.writeItemAndConfirm(t, false);
-    }
-    );
-
-    public ScreenEditorItem(Pointer<Item.ItemStack<?>> itemStack, Screen screen)
-    {
-        super(itemStack, screen);
-
-        if (this.target.get() == null) return;
-
-        this.title = "Edit %s";
-
-        this.itemTabButton.image = "item.png";
-        this.itemTabButton.drawImageShadow = true;
-        this.itemTabButton.imageSizeX = 40;
-        this.itemTabButton.imageSizeY = 40;
-        this.itemTabButton.imageXOffset = -145;
-
-        this.delete.function = () ->
-        {
-            setTarget(null);
-            this.quit.function.run();
-        };
-
-        this.deleteText = "Delete item";
-        this.showDeleteObj = false;
-        this.delete.setText("Delete item");
-
-        this.resetTabs();
     }
 
     @Override
@@ -147,65 +146,6 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         catch (Exception e)
         {
             Game.exitToCrash(e);
-        }
-    }
-
-    public class TabItemProperties extends Tab
-    {
-        public TabItemProperties(ScreenEditorTanksONable<Item.ItemStack<?>> screen, String name, String category)
-        {
-            super(screen, name, category);
-        }
-
-        public void addFields()
-        {
-            try
-            {
-                this.uiElements.clear();
-
-                Item i = this.screen.target.get().item;
-
-                // Item name, icon, cooldown
-                FieldPointer<Item> ip = new FieldPointer<>(screen.target.get(), screen.target.getType().getField("item"));
-                for (Field f : i.getClass().getFields())
-                {
-                    if (f.getDeclaringClass().equals(Item.class))
-                    {
-                        Property p = f.getAnnotation(Property.class);
-                        if (p != null && p.category().equals(this.category))
-                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
-                    }
-                }
-
-                // Move the cooldown to be after stack size and max stack size
-                ITrigger cooldown = this.uiElements.remove(this.uiElements.size() - 1);
-                for (Field f : this.screen.fields)
-                {
-                    Property p = f.getAnnotation(Property.class);
-                    if (p != null && p.category().equals(this.category) && !p.id().equals("item"))
-                    {
-                        this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(screen.target.get(), f), p));
-                    }
-                }
-                this.uiElements.add(cooldown);
-
-                // Other per-item settings
-                for (Field f : i.getClass().getFields())
-                {
-                    if (!f.getDeclaringClass().equals(Item.class))
-                    {
-                        Property p = f.getAnnotation(Property.class);
-                        if (p != null && p.category().equals(this.category))
-                        {
-                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Game.exitToCrash(e);
-            }
         }
     }
 
@@ -277,5 +217,64 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             this.delete.update();
 
         this.save.update();
+    }
+
+    public class TabItemProperties extends Tab
+    {
+        public TabItemProperties(ScreenEditorTanksONable<Item.ItemStack<?>> screen, String name, String category)
+        {
+            super(screen, name, category);
+        }
+
+        public void addFields()
+        {
+            try
+            {
+                this.uiElements.clear();
+
+                Item i = this.screen.target.get().item;
+
+                // Item name, icon, cooldown
+                FieldPointer<Item> ip = new FieldPointer<>(screen.target.get(), screen.target.getType().getField("item"));
+                for (Field f : i.getClass().getFields())
+                {
+                    if (f.getDeclaringClass().equals(Item.class))
+                    {
+                        Property p = f.getAnnotation(Property.class);
+                        if (p != null && p.category().equals(this.category))
+                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
+                    }
+                }
+
+                // Move the cooldown to be after stack size and max stack size
+                ITrigger cooldown = this.uiElements.remove(this.uiElements.size() - 1);
+                for (Field f : this.screen.fields)
+                {
+                    Property p = f.getAnnotation(Property.class);
+                    if (p != null && p.category().equals(this.category) && !p.id().equals("item"))
+                    {
+                        this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(screen.target.get(), f), p));
+                    }
+                }
+                this.uiElements.add(cooldown);
+
+                // Other per-item settings
+                for (Field f : i.getClass().getFields())
+                {
+                    if (!f.getDeclaringClass().equals(Item.class))
+                    {
+                        Property p = f.getAnnotation(Property.class);
+                        if (p != null && p.category().equals(this.category))
+                        {
+                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+        }
     }
 }

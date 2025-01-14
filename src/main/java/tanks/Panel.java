@@ -811,6 +811,8 @@ public class Panel
 					sy -= Math.min(750, System.currentTimeMillis() - lastNotifTime) * (notifs.get(0).sY + 100) / 750;
 
 				Notification n = notifs.get(i);
+				if (i > 0)
+					n.age = Math.max(0, Math.min(n.age, notifs.get(i-1).age - 25));
 				n.draw(sy);
 				sy += n.sY + 15;
 			}

@@ -64,4 +64,10 @@ public class ScreenPopupWarning extends Screen
         this.okButton.setText(text);
         return this;
     }
+
+    public ScreenPopupWarning setCancelText(String text)
+    {
+        this.cancel.setText(text);
+        return this;
+    }
 }

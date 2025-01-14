@@ -2524,7 +2524,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
 
 				Drawing.drawing.setColor(0, 0, 0, 127);
-				Drawing.drawing.drawPopup(this.centerX, this.centerY + shopOffset + 50, 1200, 600);
+				Drawing.drawing.drawPopup(this.centerX, this.centerY + shopOffset + 50, 1100, 650);
 
 				this.exitShop.draw();
 

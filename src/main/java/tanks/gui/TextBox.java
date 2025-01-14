@@ -12,10 +12,7 @@ import java.util.Locale;
 public class TextBox implements IDrawable, ITrigger
 {
 	public Runnable function;
-	public double posX;
-	public double posY;
-	public double sizeX;
-	public double sizeY;
+	public double posX, posY, sizeX, sizeY;
 
 	public String rawLabelText;
 	public String labelText;
@@ -54,24 +51,12 @@ public class TextBox implements IDrawable, ITrigger
 	public double maxValue = Integer.MAX_VALUE;
 	public double minValue = Integer.MIN_VALUE;
 
-	public double colorR = 255;
-	public double colorG = 255;
-	public double colorB = 255;
-	public double bgColorR = 200;
-	public double bgColorG = 200;
-	public double bgColorB = 200;
-	public double hoverColorR = 240;
-	public double hoverColorG = 240;
-	public double hoverColorB = 255;
-	public double selectedColorR = 220;
-	public double selectedColorG = 255;
-	public double selectedColorB = 220;
-	public double selectedFullColorR = 255;
-	public double selectedFullColorG = 255;
-	public double selectedFullColorB = 220;
-	public double selectedFullFlashColorR = 255;
-	public double selectedFullFlashColorG = 200;
-	public double selectedFullFlashColorB = 200;
+	public double colorR = 255, colorG = 255, colorB = 255;
+	public double bgColorR = 200, bgColorG = 200, bgColorB = 200;
+	public double hoverColorR = 240, hoverColorG = 240, hoverColorB = 255;
+	public double selectedColorR = 220, selectedColorG = 255, selectedColorB = 220;
+	public double selectedFullColorR = 255, selectedFullColorG = 255, selectedFullColorB = 220;
+	public double selectedFullFlashColorR = 255, selectedFullFlashColorG = 200, selectedFullFlashColorB = 200;
 	public double flashAnimation = 0;
 
 	public long lastFrame;

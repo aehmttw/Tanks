@@ -17,8 +17,7 @@ public class ScreenCrusades extends Screen
 	public static int page = 0;
 	public static boolean sortByTime = false;
 
-	public SavedFilesList fullCrusadesList;
-	public SavedFilesList crusadesList;
+	public SavedFilesList fullCrusadesList, crusadesList;
 
 	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
@@ -209,7 +208,7 @@ public class ScreenCrusades extends Screen
 
 		search.draw();
 
-		if (crusadesList.buttons.size() <= 0)
+		if (crusadesList.buttons.isEmpty())
 		{
 			Drawing.drawing.setColor(0, 0, 0);
 			Drawing.drawing.setInterfaceFontSize(24);
@@ -222,5 +221,13 @@ public class ScreenCrusades extends Screen
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Crusades");
+	}
+
+	@Override
+	public void onFilesDropped(String... filePaths)
+	{
+		ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade");
+		fullCrusadesList.refresh();
+		createNewCrusadesList();
 	}
 }

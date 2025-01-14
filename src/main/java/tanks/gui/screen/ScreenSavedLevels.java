@@ -102,7 +102,7 @@ public class ScreenSavedLevels extends Screen
         }
     }, "Sorting by name");
 
-    public static void importLevels(String[] filePaths, String dir)
+    public static void importLevels(String[] filePaths, String dir, String levelType)
     {
         List<String> paths = Arrays.stream(filePaths).filter(path -> path.endsWith(".tanks")).collect(Collectors.toList());
         if (paths.isEmpty()) return;
@@ -123,13 +123,13 @@ public class ScreenSavedLevels extends Screen
                     () ->
                     {
                         existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
-                        Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), "level")));
+                        Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), levelType)));
                     })
                     .setContinueText("Replace all");
         }
 
         if (paths.size() > existing.size())
-            Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size() - existing.size(), "level")));
+            Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size() - existing.size(), levelType)));
     }
 
     public static String getNumberString(int count, String s)
@@ -209,6 +209,8 @@ public class ScreenSavedLevels extends Screen
     @Override
     public void onFilesDropped(String... filePaths)
     {
-        importLevels(filePaths, Game.levelDir);
+        importLevels(filePaths, Game.levelDir, "level");
+        fullSavedLevelsList.refresh();
+        createNewLevelsList();
     }
 }

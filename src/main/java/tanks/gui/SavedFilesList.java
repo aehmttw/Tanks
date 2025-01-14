@@ -8,12 +8,17 @@ import tanks.Game;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 
 public class SavedFilesList extends ButtonList
 {
+    public BiConsumer<String, BaseFile> behavior;
+    public Function<BaseFile, String> hover;
+    public String extension;
+    public BaseFile directoryFile;
+
     public String directory;
     public boolean sortedByTime = false;
     public BiConsumer<BaseFile, Button> auxiliarySetup = null;
@@ -51,21 +56,31 @@ public class SavedFilesList extends ButtonList
         this.openFolder.imageSizeX = 30;
         this.openFolder.imageSizeY = 30;
 
-        BaseFile directory = Game.game.fileManager.getFile(dir);
-        if (!directory.exists())
-        {
-            directory.mkdirs();
-        }
+        this.behavior = behavior;
+        this.hover = hover;
+        this.extension = ext;
+        this.directoryFile = Game.game.fileManager.getFile(dir);
+
+        if (!directoryFile.exists())
+            directoryFile.mkdirs();
+
+        refresh();
+    }
+
+    public void refresh()
+    {
+        buttons.clear();
+        fileButtons.clear();
 
         ArrayList<String> files = new ArrayList<>();
 
         try
         {
-            ArrayList<String> ds = directory.getSubfiles();
+            ArrayList<String> ds = directoryFile.getSubfiles();
 
             for (String p : ds)
             {
-                if (p.endsWith(ext))
+                if (p.endsWith(extension))
                     files.add(p);
             }
         }
@@ -102,9 +117,7 @@ public class SavedFilesList extends ButtonList
         }
 
         //this.buttons.sort(Comparator.comparing(o -> o.text) /*(int) Math.signum(times.get(o2) - times.get(o1))*/);
-        Collections.sort(buttons, (o1, o2) -> o1.text.compareTo(o2.text));
-
-        this.sortButtons();
+        sort(sortedByTime);
     }
 
     protected SavedFilesList()
@@ -136,9 +149,9 @@ public class SavedFilesList extends ButtonList
 
         // IMPORTANT: there's a nicer way to do this but libgdx doesnt support it
         if (byTime)
-            Collections.sort(this.fileButtons, (o1, o2) -> (int) Math.signum(times.get(o2) - times.get(o1)));
+            this.fileButtons.sort((o1, o2) -> (int) Math.signum(times.get(o2) - times.get(o1)));
         else
-            Collections.sort(this.fileButtons, (o1, o2) -> o1.text.toLowerCase().compareTo(o2.text.toLowerCase()));
+            this.fileButtons.sort(Comparator.comparing(o -> o.text.toLowerCase()));
 
         this.buttons.addAll(this.fileButtons);
     }

@@ -18,7 +18,7 @@ public abstract class ScreenElement
         public double sY;
         public boolean fadeStart = false;
 
-        public int colorR = 50, colorG = 200, colorB = 50;
+        public int colorR = 255, colorG = 255, colorB = 128;
 
         public Notification(String text)
         {

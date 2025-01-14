@@ -40,4 +40,8 @@ public abstract class BaseFile
     public abstract void mkdirs();
 
     public abstract long lastModified();
+
+    public abstract boolean moveTo(String s);
+
+    public abstract boolean moveTo(String s, boolean override);
 }

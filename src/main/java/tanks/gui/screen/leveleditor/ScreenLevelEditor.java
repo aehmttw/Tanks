@@ -109,7 +109,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public double fontBrightness = 0;
 
-	public boolean modified = true;
+	public boolean modified = false;
 
 	EditorButton pause = new EditorButton(buttons.topRight, "pause.png", 40, 40, () ->
 	{
@@ -1568,6 +1568,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void save(String levelName)
 	{
+		if (!modified && undoActions.isEmpty())
+			return;
+
 		StringBuilder level = new StringBuilder("{");
 
 		if (!this.level.editable)

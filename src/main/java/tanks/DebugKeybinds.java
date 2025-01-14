@@ -33,7 +33,7 @@ public class DebugKeybinds
         {
             Panel.pauseOnDefocus = !Panel.pauseOnDefocus;
             notifs.add(new ScreenElement.Notification("Pause on lost focus: \u00a7255200000255"
-                    + (Panel.pauseOnDefocus ? "enabled" : "disabled")).setColor(255, 255, 128));
+                    + (Panel.pauseOnDefocus ? "enabled" : "disabled")));
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_P);
         }
 
@@ -46,7 +46,7 @@ public class DebugKeybinds
                 Replay.read("test").loadAndPlay();
 
             notifs.add(new ScreenElement.Notification("Recording \u00a7255200000255"
-                    + (Replay.isRecording ? "started" : "stopped")).setColor(255, 255, 128));
+                    + (Replay.isRecording ? "started" : "stopped")));
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_R);
         }
 
@@ -55,7 +55,7 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_B);
             Game.showHitboxes = !Game.showHitboxes;
             notifs.add(new ScreenElement.Notification("Collision boxes: \u00a7255200000255"
-                    + (Game.showHitboxes ? "shown" : "hidden"), 200).setColor(255, 255, 128));
+                    + (Game.showHitboxes ? "shown" : "hidden"), 200));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_R))
@@ -65,7 +65,7 @@ public class DebugKeybinds
                 Game.currentLevel.reloadTiles();
             notifs.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles" : "Reload tiles failed: " +
                     "Game.\u00a7200125255255currentLevel\u00a7255255255255 = \u00a7255128128255null",
-                    200).setColor(255, 255, 128));
+                    200));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))
@@ -73,7 +73,7 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_G);
             Chunk.debug = !Chunk.debug;
             notifs.add(new ScreenElement.Notification("Chunk borders: \u00a7255200000255"
-                    + (Chunk.debug ? "shown" : "hidden"), 200).setColor(255, 255, 128));
+                    + (Chunk.debug ? "shown" : "hidden"), 200));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
@@ -84,7 +84,7 @@ public class DebugKeybinds
             System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
             System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
             System.out.println("textPressedKeys: " + func.apply(Game.game.window.textPressedKeys));
-            notifs.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 300).setColor(255, 255, 128));
+            notifs.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 300));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_BRACKET))
@@ -123,7 +123,7 @@ public class DebugKeybinds
                 {
                     chat.clear();
                 }
-                notifs.add(new ScreenElement.Notification("Chat cleared", 200).setColor(255, 255, 128));
+                notifs.add(new ScreenElement.Notification("Chat cleared", 200));
             }
         }
 
@@ -134,7 +134,7 @@ public class DebugKeybinds
             if (!(Game.screen instanceof ScreenCrusadeDetails))
             {
                 Drawing.drawing.terrainRenderer.reset();
-                notifs.add(new ScreenElement.Notification("Terrain reloaded!").setColor(255, 255, 128));
+                notifs.add(new ScreenElement.Notification("Terrain reloaded!"));
             }
             else
                 notifs.add(new ScreenElement.Notification("F3+A doesn't work here!").setColor(255, 200, 128));
@@ -172,7 +172,7 @@ public class DebugKeybinds
 
             Game.game.shaderInstances = newShaders;
             Drawing.drawing.terrainRenderer.reset();
-            notifs.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)").setColor(255, 255, 128));
+            notifs.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)"));
         }
 
         int brightness;

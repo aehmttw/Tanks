@@ -1,168 +1,214 @@
 package tanks.gui.screen;
 
+import basewindow.ComputerFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.gui.ScreenElement;
 import tanks.gui.SearchBoxInstant;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ScreenSavedLevels extends Screen
 {
-	public static int page = 0;
-	public static boolean sortByTime = false;
+    public static int page = 0;
+    public static boolean sortByTime = false;
 
-	public SavedFilesList fullSavedLevelsList;
-	public SavedFilesList savedLevelsList;
+    public SavedFilesList fullSavedLevelsList;
+    public SavedFilesList savedLevelsList;
 
-	Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer());
+    Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer());
+    Button newLevel = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "New level", () ->
+    {
+        String name = System.currentTimeMillis() + ".tanks";
 
-	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			createNewLevelsList();
-			savedLevelsList.filter(search.inputText);
-			savedLevelsList.sortButtons();
+        Level l = new Level("{28,18||0-0-player}");
+        ScreenLevelEditor sl = new ScreenLevelEditor(name, l);
+        sl.modified = true;
+        Game.screen = sl;
+        l.loadLevel((ILevelPreviewScreen) Game.screen);
+    }
+    );    SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            createNewLevelsList();
+            savedLevelsList.filter(search.inputText);
+            savedLevelsList.sortButtons();
 
-			if (search.inputText.length() <= 0)
-				savedLevelsList.page = page;
-		}
-	}, "");
+            if (search.inputText.length() <= 0)
+                savedLevelsList.page = page;
+        }
+    }, "");
 
-	Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			fullSavedLevelsList.sortedByTime = !fullSavedLevelsList.sortedByTime;
-			fullSavedLevelsList.sort(fullSavedLevelsList.sortedByTime);
-			createNewLevelsList();
-			savedLevelsList.filter(search.inputText);
-			savedLevelsList.sortButtons();
+    public ScreenSavedLevels()
+    {
+        super(350, 40, 380, 60);
 
-			if (fullSavedLevelsList.sortedByTime)
-				sort.setHoverText("Sorting by last modified");
-			else
-				sort.setHoverText("Sorting by name");
-		}
-	}, "Sorting by name");
+        this.music = "menu_4.ogg";
+        this.musicID = "menu";
 
-	Button newLevel = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "New level", () ->
-	{
-		String name = System.currentTimeMillis() + ".tanks";
+        fullSavedLevelsList = new SavedFilesList(Game.homedir + Game.levelDir, page, 0, -30,
+                (name, file) ->
+                {
+                    ScreenLevelEditor s = new ScreenLevelEditor(name + ".tanks", null);
 
-		Level l = new Level("{28,18||0-0-player}");
-		ScreenLevelEditor sl = new ScreenLevelEditor(name, l);
-		sl.modified = true;
-		Game.screen = sl;
-		l.loadLevel((ILevelPreviewScreen) Game.screen);
-	}
-	);
+                    if (Game.loadLevel(file, s))
+                    {
+                        s.level = Game.currentLevel;
+                        s.paused = true;
+                        Game.screen = new OverlayEditorMenu(s, s);
+                    }
+                },
+                (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
-	public ScreenSavedLevels()
-	{
-		super(350, 40, 380, 60);
+        fullSavedLevelsList.drawOpenFileButton = true;
+        fullSavedLevelsList.sortedByTime = sortByTime;
+        fullSavedLevelsList.sort(sortByTime);
 
-		this.music = "menu_4.ogg";
-		this.musicID = "menu";
+        if (fullSavedLevelsList.sortedByTime)
+            sort.setHoverText("Sorting by last modified");
+        else
+            sort.setHoverText("Sorting by name");
 
-		fullSavedLevelsList = new SavedFilesList(Game.homedir + Game.levelDir, page, 0, -30,
-				(name, file) ->
-				{
-					ScreenLevelEditor s = new ScreenLevelEditor(name + ".tanks", null);
+        savedLevelsList = fullSavedLevelsList.clone();
+        createNewLevelsList();
 
-					if (Game.loadLevel(file, s))
-					{
-						s.level = Game.currentLevel;
-						s.paused = true;
-						Game.screen = new OverlayEditorMenu(s, s);
-					}
-				},
-				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+        search.enableCaps = true;
+    }    Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            fullSavedLevelsList.sortedByTime = !fullSavedLevelsList.sortedByTime;
+            fullSavedLevelsList.sort(fullSavedLevelsList.sortedByTime);
+            createNewLevelsList();
+            savedLevelsList.filter(search.inputText);
+            savedLevelsList.sortButtons();
 
-		fullSavedLevelsList.drawOpenFileButton = true;
-		fullSavedLevelsList.sortedByTime = sortByTime;
-		fullSavedLevelsList.sort(sortByTime);
+            if (fullSavedLevelsList.sortedByTime)
+                sort.setHoverText("Sorting by last modified");
+            else
+                sort.setHoverText("Sorting by name");
+        }
+    }, "Sorting by name");
 
-		if (fullSavedLevelsList.sortedByTime)
-			sort.setHoverText("Sorting by last modified");
-		else
-			sort.setHoverText("Sorting by name");
+    public static void importLevels(String[] filePaths, String dir)
+    {
+        List<String> paths = Arrays.stream(filePaths).filter(path -> path.endsWith(".tanks")).collect(Collectors.toList());
+        if (paths.isEmpty()) return;
 
-		savedLevelsList = fullSavedLevelsList.clone();
-		createNewLevelsList();
+        ArrayList<ComputerFile> existing = new ArrayList<>();
+        for (String path : paths)
+        {
+            ComputerFile file = (ComputerFile) Game.game.fileManager.getFile(path);
+            if (!file.moveTo(Game.homedir + dir))
+                existing.add(file);
+        }
 
-		search.enableCaps = true;
-	}
+        if (!existing.isEmpty())
+        {
+            Game.screen = new ScreenPopupWarning(Game.screen,
+                    getNumberString(existing.size(), "file") + " already exist" + (existing.size() == 1 ? "s" : "") + "!",
+                    existing.stream().limit(10).map(f -> f.file.getName()).collect(Collectors.joining(", ")),
+                    () ->
+                    {
+                        existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
+                        Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), "level")));
+                    })
+                    .setContinueText("Replace all");
+        }
 
-	public void createNewLevelsList()
-	{
-		savedLevelsList.buttons.clear();
-		savedLevelsList.buttons.addAll(fullSavedLevelsList.buttons);
-		savedLevelsList.sortButtons();
-	}
+        if (paths.size() > existing.size())
+            Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size() - existing.size(), "level")));
+    }
 
-	@Override
-	public void update()
-	{
-		savedLevelsList.update();
+    public static String getNumberString(int count, String s)
+    {
+        if (count == 0)
+            return "no " + s + "s";
+        return count + " " + s + (count > 1 ? "s" : "");
+    }
 
-		if (search.inputText.length() <= 0)
-			page = savedLevelsList.page;
+    public void createNewLevelsList()
+    {
+        savedLevelsList.buttons.clear();
+        savedLevelsList.buttons.addAll(fullSavedLevelsList.buttons);
+        savedLevelsList.sortButtons();
+    }
 
-		quit.update();
-		search.update();
-		newLevel.update();
+    @Override
+    public void update()
+    {
+        savedLevelsList.update();
 
-		this.sort.imageSizeX = 25;
-		this.sort.imageSizeY = 25;
-		this.sort.fullInfo = true;
+        if (search.inputText.length() <= 0)
+            page = savedLevelsList.page;
 
-		sortByTime = fullSavedLevelsList.sortedByTime;
+        quit.update();
+        search.update();
+        newLevel.update();
 
-		if (this.fullSavedLevelsList.sortedByTime)
-			this.sort.image = "icons/sort_chronological.png";
-		else
-			this.sort.image = "icons/sort_alphabetical.png";
+        this.sort.imageSizeX = 25;
+        this.sort.imageSizeY = 25;
+        this.sort.fullInfo = true;
 
-		this.sort.update();
-	}
+        sortByTime = fullSavedLevelsList.sortedByTime;
 
-	@Override
-	public void draw()
-	{
-		this.drawDefaultBackground();
+        if (this.fullSavedLevelsList.sortedByTime)
+            this.sort.image = "icons/sort_chronological.png";
+        else
+            this.sort.image = "icons/sort_alphabetical.png";
 
-		savedLevelsList.draw();
+        this.sort.update();
+    }
 
-		if (savedLevelsList.buttons.size() <= 0)
-		{
-			Drawing.drawing.setColor(0, 0, 0);
-			Drawing.drawing.setInterfaceFontSize(24);
+    @Override
+    public void draw()
+    {
+        this.drawDefaultBackground();
 
-			if (!search.inputText.isEmpty())
-			{
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No levels found");
-			}
-			else
-			{
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 30, "You have no levels");
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 30, "Create a level with the 'New level' button!");
-			}
-		}
+        savedLevelsList.draw();
 
-		quit.draw();
-		search.draw();
-		newLevel.draw();
+        if (savedLevelsList.buttons.size() <= 0)
+        {
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(24);
 
-		this.sort.draw();
+            if (!search.inputText.isEmpty())
+            {
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No levels found");
+            }
+            else
+            {
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 30, "You have no levels");
+                Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 30, "Create a level with the 'New level' button!");
+            }
+        }
 
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "My levels");
-	}
+        quit.draw();
+        search.draw();
+        newLevel.draw();
+
+        this.sort.draw();
+
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "My levels");
+    }
+
+    @Override
+    public void onFilesDropped(String... filePaths)
+    {
+        importLevels(filePaths, Game.levelDir);
+    }
 }

@@ -1003,7 +1003,7 @@ public class Drawing
 
 	public void drawInterfaceText(double x, double y, String text)
 	{
-		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+ 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
 		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
 		double drawX = (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);

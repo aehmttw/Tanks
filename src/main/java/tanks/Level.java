@@ -72,7 +72,6 @@ public class Level
 	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
 	public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
 	public ArrayList<TankPlayer> playerBuilds = new ArrayList<>();
-	public ArrayList<String> playerBuildStrings = new ArrayList<>();
 
 	// Saved on the client to keep track of what each item is
 	public int clientStartingCoins;
@@ -153,12 +152,12 @@ public class Level
 					}
 					else if (parsing == 4)
 					{
-						TankAIControlled t = TankAIControlled.fromString(s);
-						this.customTanks.add(t);
+						this.customTanks.add(TankAIControlled.fromString(s));
 					}
 					else if (parsing == 5)
 					{
-						this.playerBuildStrings.add(s);
+						if (TankModels.tank != null)
+							this.playerBuilds.add(TankPlayer.fromString(s));
 					}
 					else
 					{
@@ -248,9 +247,6 @@ public class Level
 			Obstacle.draw_size = 0;
 		else
 			Obstacle.draw_size = Game.tile_size;
-
-		for (String s : playerBuildStrings)
-            playerBuilds.add(TankPlayer.fromString(s));
 
 		if (playerBuilds.isEmpty())
 		{

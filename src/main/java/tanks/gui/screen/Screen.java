@@ -163,19 +163,9 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
-	public static class FlashingTile implements IBatchRenderableObject
+	public void onFilesDropped(String... filePaths)
 	{
-		public boolean redrawn = false;
-		public int posX;
-		public int posY;
 
-		public double flash;
-
-		public FlashingTile(int x, int y)
-		{
-			this.posX = x;
-			this.posY = y;
-		}
 	}
 
 	/** Setup all light info in Panel.lights to be sent to the shader */

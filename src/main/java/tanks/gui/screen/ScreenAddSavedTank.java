@@ -1,7 +1,9 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
+import tanks.BiConsumer;
+import tanks.Drawing;
+import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
@@ -33,32 +35,15 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
     public boolean deleting = false;
 
     public boolean removeNow = false;
-
-    public Runnable drawDelete = () -> this.delete.draw();
-
     public Button nextTankPage = new Button(this.centerX + 290, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Next page", () -> tankPage++);
-
     public Button previousTankPage = new Button(this.centerX - 290, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Previous page", () -> tankPage--);
-
     public Button firstTankPage = new Button(this.centerX - 500, this.centerY + this.objYSpace * 3, 40, 40, "", () -> tankPage = 0);
-
     public Button lastTankPage = new Button(this.centerX + 500, this.centerY + this.objYSpace * 3, 40, 40, "", () -> tankPage = (tankButtons.size() - 1) / objectButtonRows / objectButtonCols);
-
+    public Button quit = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", () -> Game.screen = (Screen) tankScreen);
+    public Button delete = new Button(0, 0, 32, 32, "x", () -> removeNow = true);
+    public Runnable drawDelete = () -> this.delete.draw();
     Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, this.objHeight, this.objHeight, "", () ->
-            Game.game.fileManager.openFileManager(Game.homedir + Game.tankDir), "Open folder in file manager");
-
-
-    public Button quit = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = ((Screen) tankScreen);
-        }
-    }
-    );
-
-    public Button deleteMode = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Delete templates", new Runnable()
+            Game.game.fileManager.openFileManager(Game.homedir + Game.tankDir), "Open folder in file manager");    public Button deleteMode = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Delete templates", new Runnable()
     {
         @Override
         public void run()
@@ -70,13 +55,11 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b: tankButtons)
+            for (Button b : tankButtons)
                 b.enabled = !deleting;
         }
     }
     );
-
-    public Button delete = new Button(0, 0, 32, 32, "x", () -> removeNow = true);
 
     public ScreenAddSavedTank(ITankScreen tankScreen)
     {
@@ -141,7 +124,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 s.drawBehindScreen = true;
                 Game.screen = s;
             }
-                , t.description);
+                    , t.description);
 
             if (t.description.isEmpty())
                 b.enableHover = false;
@@ -190,9 +173,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
         BaseFile directory = Game.game.fileManager.getFile(Game.homedir + Game.tankDir);
         if (!directory.exists())
-        {
             directory.mkdirs();
-        }
 
         ArrayList<String> files = new ArrayList<>();
 
@@ -215,7 +196,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
         if (tankScreen instanceof OverlayObjectMenu)
         {
-            for (TankAIControlled t: ((OverlayObjectMenu) tankScreen).editor.level.customTanks)
+            for (TankAIControlled t : ((OverlayObjectMenu) tankScreen).editor.level.customTanks)
             {
                 int index = count % (rows * cols);
                 double x = this.centerX - 450 + 100 * (index % cols);
@@ -254,7 +235,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         levelTankCount = count;
 
         final ArrayList<TankAIControlled> savedTanks = new ArrayList<>();
-        for (String l: files)
+        for (String l : files)
         {
             BaseFile file = Game.game.fileManager.getFile(l);
 
@@ -479,7 +460,6 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
                     Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
-
         }
 
         for (int i = tankButtons.size() - 1; i >= 0; i--)
@@ -496,7 +476,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     if (delete.selected)
                         ((ButtonObject) this.tankButtons.get(i)).tempDisableHover = true;
 
-                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;
+                    ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;
                 }
 
                 tankButtons.get(i).draw();
@@ -514,12 +494,6 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         deleteMode.draw();
         openFolder.draw();
         quit.draw();
-    }
-
-    @Override
-    public void setupLayoutParameters()
-    {
-
     }
 
     @Override
@@ -561,6 +535,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
     @Override
     public void onAttemptClose()
     {
-        ((Screen)this.tankScreen).onAttemptClose();
+        ((Screen) this.tankScreen).onAttemptClose();
     }
+
+
 }

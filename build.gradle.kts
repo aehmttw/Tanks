@@ -9,7 +9,7 @@ fun get_hash(): String {
         .inputStream
         .bufferedReader()
         .readLine()
-        ?.trim() ?: ""
+        ?.trim() ?: "00000000"
 }
 
 val lwjglVersion = "3.3.3"

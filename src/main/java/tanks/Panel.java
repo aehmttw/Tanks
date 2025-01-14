@@ -192,10 +192,9 @@ public class Panel
 		Game.loadTankMusic();
 
 		if (Game.game.window.soundsEnabled)
+		{
 			Game.game.window.soundPlayer.musicPlaying = true;
 
-		if (Game.game.window.soundsEnabled)
-		{
 			Game.game.window.soundPlayer.loadMusic("/music/ready_music_1.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/ready_music_2.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");

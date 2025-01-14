@@ -410,10 +410,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
 		}
 
-		if (shoot && this.getItem(0) != null && this.getItem(0).cooldown <= 0 && !this.disabled)
+		if (shoot && !this.disabled)
 			this.action(false);
 
-		if (mine && this.getItem(1) != null && this.getItem(1).cooldown <= 0 && !this.disabled)
+		if (mine && !this.disabled)
 			this.action(true);
 
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && (Game.screen instanceof ScreenGame || Game.screen instanceof ScreenTitle))

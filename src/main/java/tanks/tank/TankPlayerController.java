@@ -83,10 +83,10 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
             this.action2 = true;
 
         if (action1 && this.getPrimaryAbility().destroy && Game.player.hotbar.itemBar != null)
-            Game.player.hotbar.itemBar.setItem(ItemBar.item_bar_size + this.selectedPrimaryAbility);
+            Game.player.hotbar.itemBar.setItem((Game.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0) + this.selectedPrimaryAbility);
 
         if (action2 && this.getSecondaryAbility().destroy && Game.player.hotbar.itemBar != null)
-            Game.player.hotbar.itemBar.setItem(ItemBar.item_bar_size + this.selectedSecondaryAbility);
+            Game.player.hotbar.itemBar.setItem((Game.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0) + this.selectedSecondaryAbility);
     }
 
     @Override

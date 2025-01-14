@@ -75,11 +75,12 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
 //            Game.screen = new ScreenTankSaveOverwrite(this, t);
     }
 
-    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template"
+            /*, () ->
     {
         TankPlayer t = target.get();
         this.writeTankAndShowConfirmation(t, false);
-    }
+    }*/
     );
 
     public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);

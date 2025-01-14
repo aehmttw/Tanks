@@ -224,7 +224,7 @@ public class TextBox implements IDrawable, ITrigger
 			Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
 		}
 
-		if (selected && !inputText.isEmpty())
+		if (selected && inputText.length() > 0)
 		{
 			if (Game.glowEnabled)
 			{
@@ -297,7 +297,7 @@ public class TextBox implements IDrawable, ITrigger
 				double mx = Drawing.drawing.getInterfacePointerX(p.x);
 				double my = Drawing.drawing.getInterfacePointerY(p.y);
 
-				boolean handled = checkMouse(mx, my, true, p.valid && p.tag.isEmpty(), p);
+				boolean handled = checkMouse(mx, my, true, p.valid && p.tag.equals(""), p);
 
 				if (handled)
 					p.tag = "textbox";
@@ -406,7 +406,7 @@ public class TextBox implements IDrawable, ITrigger
 			}
 		}
 
-		if (clearSelected && valid && !inputText.isEmpty())
+		if (clearSelected && valid && inputText.length() > 0)
 		{
 			handled = true;
 			this.clear();
@@ -626,24 +626,24 @@ public class TextBox implements IDrawable, ITrigger
 						inputText += key;
 				}
 
-				if (allowNegatives && inputText.isEmpty() || inputText.toLowerCase(Locale.ROOT).endsWith("e"))
+				if (allowNegatives && inputText.length() == 0 || (inputText.toLowerCase(Locale.ROOT).endsWith("e")) && allowDoubles)
 				{
 					if ('-' == key)
 						inputText += key;
 				}
 
-				if (allowDoubles && !inputText.contains(".") && !inputText.toLowerCase(Locale.ROOT).contains("e"))
+				if (allowDoubles && !inputText.contains(".") && (!inputText.toLowerCase(Locale.ROOT).contains("e")) && allowDoubles)
 				{
 					if ('.' == key)
 						inputText += key;
 				}
 
-				if (allowDoubles && (inputText.isEmpty() || inputText.equals("-")) && 'i' == Character.toLowerCase(key))
+				if (allowDoubles && (inputText.length() == 0 || inputText.equals("-")) && 'i' == Character.toLowerCase(key))
 				{
 					inputText += "Infinity";
 				}
 
-				if (allowDoubles && !inputText.toLowerCase(Locale.ROOT).contains("e") && (!this.inputText.isEmpty() && !this.inputText.equals("-")))
+				if (allowDoubles && !inputText.toLowerCase(Locale.ROOT).contains("e") && (this.inputText.length() >= 1 && !this.inputText.equals("-")))
 				{
 					if ('e' == Character.toLowerCase(key))
 						inputText += "E";

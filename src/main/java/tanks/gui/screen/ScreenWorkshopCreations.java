@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class ScreenWorkshopCreations extends Screen
 {
-	public String title = "Online levels";
+	public String title = "Online creations";
 
 	public ButtonList creations;
 
@@ -47,7 +47,7 @@ public class ScreenWorkshopCreations extends Screen
 		public void run()
 		{
 			Game.screen = new ScreenWorkshopSearchWaiting();
-			Game.steamNetworkHandler.workshop.search("Level", 0, 18, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText, !Game.steamNetworkHandler.workshop.searchByScore);
+			Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, 0, 18, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText, !Game.steamNetworkHandler.workshop.searchByScore);
 
 			if (!Game.steamNetworkHandler.workshop.searchByScore)
 				sort.setHoverText("Sorting by upload date");
@@ -73,6 +73,11 @@ public class ScreenWorkshopCreations extends Screen
 
 		if (Game.steamNetworkHandler.workshop.searchText != null)
 			search.inputText = Game.steamNetworkHandler.workshop.searchText;
+
+		if (Objects.equals(Game.steamNetworkHandler.workshop.searchType, "Levels"))
+			this.title = "Online levels";
+		else if (Objects.equals(Game.steamNetworkHandler.workshop.searchType, "Crusades"))
+			this.title = "Online crusades";
 	}
 
 	public void initializeLevels()
@@ -99,7 +104,7 @@ public class ScreenWorkshopCreations extends Screen
 		if (ScreenWorkshopCreations.page != this.creations.page)
 		{
 			ScreenWorkshopCreations.page = this.creations.page;
-			Game.steamNetworkHandler.workshop.search("Level", page * this.creations.columns * this.creations.rows, (page + 1) * this.creations.columns * this.creations.rows - 1, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText, Game.steamNetworkHandler.workshop.searchByScore);
+			Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, page * this.creations.columns * this.creations.rows, (page + 1) * this.creations.columns * this.creations.rows - 1, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText, Game.steamNetworkHandler.workshop.searchByScore);
 		}
 
 		if (this.lastLoadedLevels != Game.steamNetworkHandler.workshop.publishedFiles.size())
@@ -115,7 +120,7 @@ public class ScreenWorkshopCreations extends Screen
 					b.setSubtext("\u00A7000200000255+%d \u00A7200000000255-%d", d.getVotesUp(), d.getVotesDown());
 					b.function = () ->
 					{
-						Game.screen = new ScreenWaitingCancelable("Downloading level...");
+						Game.screen = new ScreenWaitingCancelable("Downloading...");
 						Game.steamNetworkHandler.workshop.download(d);
 					};
 				}
@@ -155,7 +160,7 @@ public class ScreenWorkshopCreations extends Screen
 				if (d != null && Game.steamNetworkHandler.friends.knownUsernamesByID.containsKey(d.getOwnerID().getAccountID()))
 					Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, Game.steamNetworkHandler.friends.knownUsernamesByID.get(d.getOwnerID().getAccountID()), false);
 			}
-			else
+			else if (d != null)
 			{
 				if (d.getTags().toLowerCase().contains("level"))
 					Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Level", false);
@@ -168,7 +173,7 @@ public class ScreenWorkshopCreations extends Screen
 		{
 			Drawing.drawing.setColor(0, 0, 0);
 			Drawing.drawing.setInterfaceFontSize(24);
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No levels found");
+			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No creations found");
 		}
 
 		if (Game.steamNetworkHandler.workshop.searchUser == null)
@@ -184,8 +189,8 @@ public class ScreenWorkshopCreations extends Screen
 		}
 		else
 		{
-			sort.setHoverText("Sorting by vote score");
-			sort.image = "icons/sort_alphabetical.png";
+			sort.setHoverText("Sorting by positive votes");
+			sort.image = "icons/sort_votes.png";
 		}
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);

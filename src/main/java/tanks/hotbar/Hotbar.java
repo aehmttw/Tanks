@@ -172,7 +172,7 @@ public class Hotbar
 					max = ib.item.bullet.maxLiveBullets;
 
 					if (ib.stackSize > 0 && ib.stackSize < max)
-						max = ib.stackSize;
+						max = Math.min(max, ib.stackSize + live);
 
 					if (ib.destroy)
 					{
@@ -202,10 +202,10 @@ public class Hotbar
 			}
 
 			Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, 1 - ammo2));
+			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, Math.max(0, 1 - ammo2)));
 
 			Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
-			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, 1 - ammo);
+			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5,  Math.min(1, Math.max(0, 1 - ammo)));
 
 			Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
 			Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, Math.max(0, -ammo2 * max)));

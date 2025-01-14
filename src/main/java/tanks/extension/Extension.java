@@ -54,7 +54,8 @@ public class Extension
         String path = "sounds/" + sound;
         try
         {
-            Game.game.window.soundPlayer.createSound(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
+            if (Game.game.window.soundsEnabled)
+                Game.game.window.soundPlayer.createSound(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
         }
         catch (Exception e)
         {
@@ -70,7 +71,8 @@ public class Extension
         String path = "music/" + music;
         try
         {
-            Game.game.window.soundPlayer.createMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
+            if (Game.game.window.soundsEnabled)
+                Game.game.window.soundPlayer.createMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
         }
         catch (Exception e)
         {
@@ -86,7 +88,8 @@ public class Extension
         String path = "music/" + music;
         try
         {
-            Game.game.window.soundPlayer.loadMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
+            if (Game.game.window.soundsEnabled)
+                Game.game.window.soundPlayer.loadMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
         }
         catch (Exception e)
         {

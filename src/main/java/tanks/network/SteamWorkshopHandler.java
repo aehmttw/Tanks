@@ -117,7 +117,10 @@ public class SteamWorkshopHandler
                     SteamUGCDetails d = new SteamUGCDetails();
                     workshop.getQueryUGCResult(query, i, d);
                     if (!handler.friends.knownUsernamesByID.containsKey(d.getOwnerID().getAccountID()))
-                        handler.friends.friends.requestUserInformation(d.getOwnerID(), true);
+                    {
+                        if (!handler.friends.friends.requestUserInformation(d.getOwnerID(), true))
+                            handler.friends.knownUsernamesByID.put(d.getOwnerID().getAccountID(), handler.friends.friends.getFriendPersonaName(d.getOwnerID()));
+                    }
                     publishedFiles.put(i + page * results_count, d);
                 }
 

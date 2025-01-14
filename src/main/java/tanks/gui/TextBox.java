@@ -626,13 +626,13 @@ public class TextBox implements IDrawable, ITrigger
 						inputText += key;
 				}
 
-				if (allowNegatives && inputText.length() == 0 || inputText.toLowerCase(Locale.ROOT).endsWith("e"))
+				if (allowNegatives && inputText.length() == 0 || (inputText.toLowerCase(Locale.ROOT).endsWith("e")) && allowDoubles)
 				{
 					if ('-' == key)
 						inputText += key;
 				}
 
-				if (allowDoubles && !inputText.contains(".") && !inputText.toLowerCase(Locale.ROOT).contains("e"))
+				if (allowDoubles && !inputText.contains(".") && (!inputText.toLowerCase(Locale.ROOT).contains("e")) && allowDoubles)
 				{
 					if ('.' == key)
 						inputText += key;

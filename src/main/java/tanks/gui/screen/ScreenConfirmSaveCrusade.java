@@ -5,7 +5,7 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
 
-public class ScreenConfirmSaveCrusade extends Screen
+public class ScreenConfirmSaveCrusade extends Screen implements IBlankBackgroundScreen
 {
     public ScreenCrusadeEditor screenCrusadeEditor;
     public Screen previous;

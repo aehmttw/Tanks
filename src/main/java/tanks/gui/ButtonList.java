@@ -193,7 +193,6 @@ public class ButtonList
             buttons.get(i).imageG = this.imageG;
             buttons.get(i).imageB = this.imageB;
 
-
             if (hideText)
                 buttons.get(i).text = "";
         }

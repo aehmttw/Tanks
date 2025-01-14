@@ -99,7 +99,7 @@ public class ScreenSavedLevels extends Screen
         }
     }, "Sorting by name");
 
-    public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, String failedMessage)
+    public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, Runnable onComplete, String failedMessage)
     {
         new Thread(() -> {
             List<String> paths = Arrays.stream(filePaths).filter(path -> path.endsWith(".tanks")).collect(Collectors.toList());
@@ -146,6 +146,8 @@ public class ScreenSavedLevels extends Screen
                 Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(successful, levelType)));
             if (!failed.isEmpty())
                 Panel.notifs.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + (failed.size() > 1 ? " are" : " is") + " corrupted and have been skipped" + failedMessage));
+
+            onComplete.run();
         }).start();
     }
 
@@ -226,8 +228,10 @@ public class ScreenSavedLevels extends Screen
     @Override
     public void onFilesDropped(String... filePaths)
     {
-        importLevels(filePaths, Game.levelDir, "level", Level::new, "... Maybe they were crusades?");
-        fullSavedLevelsList.refresh();
-        createNewLevelsList();
+        importLevels(filePaths, Game.levelDir, "level", Level::new, () ->
+        {
+            fullSavedLevelsList.refresh();
+            createNewLevelsList();
+        }, "... Maybe they were crusades?");
     }
 }

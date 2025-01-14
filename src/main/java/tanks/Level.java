@@ -212,6 +212,12 @@ public class Level
 			this.startingItems = new ArrayList<>();
 			this.shop = new ArrayList<>();
 		}
+
+		if (TankModels.tank != null && playerBuilds.isEmpty())
+		{
+			TankPlayer tp = new TankPlayer();
+			playerBuilds.add(tp);
+		}
 	}
 
 	public void loadLevel()
@@ -247,12 +253,6 @@ public class Level
 			Obstacle.draw_size = 0;
 		else
 			Obstacle.draw_size = Game.tile_size;
-
-		if (playerBuilds.isEmpty())
-		{
-			TankPlayer tp = new TankPlayer();
-			playerBuilds.add(tp);
-		}
 
 		this.remote = remote;
 

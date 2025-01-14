@@ -72,9 +72,9 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
     public Button edit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", () ->
     {
-        if (crusade.started)
-            Game.screen = new ScreenCrusadeEditWarning(Game.screen, crusade);
-        else
+//        if (crusade.started)
+//            Game.screen = new ScreenCrusadeEditWarning(Game.screen, crusade);
+//        else
             Game.screen = new ScreenCrusadeEditor(crusade);
     });
 

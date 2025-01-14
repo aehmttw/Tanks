@@ -28,6 +28,13 @@ public class FriendsMixin
 			Drawing.drawing.playSound("join.ogg", 2f);
 			ScreenOverlayChat.addChat(Translation.translate("\u00A7000200000255Head over to the 'Join a party' menu under 'Multiplayer' to join the party you were invited to!"));
 		}
+
+		@Override
+		public void onPersonaStateChange(SteamID steamID, SteamFriends.PersonaChange change)
+		{
+			if (change == SteamFriends.PersonaChange.NameFirstSet)
+				knownUsernamesByID.put(steamID.getAccountID(), friends.getFriendPersonaName(steamID));
+		}
 	};
 
 	public FriendsMixin()

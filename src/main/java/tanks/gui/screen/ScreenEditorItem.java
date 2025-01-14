@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -25,10 +26,14 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     public Button itemTabButton;
 
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
-            Game.screen = new ScreenAddSavedItem(this, (b) ->
+            Game.screen = new ScreenAddSavedItem(this, new Consumer<Item.ItemStack<?>>()
             {
-                this.setTarget(b);
-                Game.screen = this;
+                @Override
+                public void accept(Item.ItemStack<?> b)
+                {
+                    ScreenEditorItem.this.setTarget(b);
+                    Game.screen = ScreenEditorItem.this;
+                }
             }, "My", Item.class)
     );
     public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
@@ -42,7 +47,8 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     {
         super(itemStack, screen);
 
-        if (this.target.get() == null) return;
+        Item.ItemStack<?> item = this.target.get();
+        if (item == null) return;
 
         this.title = "Edit %s";
 

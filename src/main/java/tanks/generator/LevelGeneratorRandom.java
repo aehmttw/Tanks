@@ -127,7 +127,7 @@ public class LevelGeneratorRandom extends LevelGenerator
 		if (random.nextDouble() > 0.2)
 			time = 0;
 		else
-			time += 45 * (size / Game.levelSize - 1);
+			time += (int) (45 * (size / Game.levelSize - 1));
 
 		double light = 100;
 		double shadeFactor = 0.5;

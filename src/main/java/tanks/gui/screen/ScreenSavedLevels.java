@@ -99,6 +99,18 @@ public class ScreenSavedLevels extends Screen
         }
     }, "Sorting by name");
 
+    /** After running <code>validation</code> (validation is successful if it doesn't crash),
+     * moves the specified <code>filePaths</code> to <Code>dir</Code>.
+     * If files exist already, creates a popup that asks the user whether to replace the existing files.
+     *
+     * @param filePaths full paths to files to be moved
+     * @param dir full directory path to move the files to
+     * @param validation Function that takes the file contents as a string, throw an exception if validation fails
+     * @param onComplete Runs after moving the files is complete. If files exist already, the function
+     *                   will be run again if the user selects the "Replace all" option.
+     * @param failedMessage Sends a notification if files are corrupted: <code>"%i files are corrupted... " + failedMessage</code>
+     * @apiNote IT IS NOT A BLOCKING FUNCTION! (It starts a new thread.)
+     * Make sure to use the <code>onComplete</code> runnable when necessary! */
     public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, Runnable onComplete, String failedMessage)
     {
         new Thread(() -> {
@@ -137,6 +149,7 @@ public class ScreenSavedLevels extends Screen
                         {
                             existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
                             Panel.notifs.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), levelType)));
+                            onComplete.run();
                         })
                         .setContinueText("Replace all").setCancelText("Skip");
             }

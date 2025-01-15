@@ -1252,11 +1252,16 @@ public abstract class Tank extends Movable implements ISolidObject
 		return Math.max(nearest, farthestInSight);
 	}
 
+	private double autoZoomCache = -1;
+
 	public double getAutoZoom()
 	{
+		if (autoZoomCache >= 0 && Panel.panel.ageFrames % 20 != 0)
+			return autoZoomCache;
+
 		double dist = Math.min(4, Math.max(1, getAutoZoomRaw()));
 		double targetScale = Drawing.drawing.interfaceScale / dist;
-		return Math.max(Math.min((targetScale - Drawing.drawing.unzoomedScale) / Math.max(0.001, Drawing.drawing.interfaceScale - Drawing.drawing.unzoomedScale), 1), 0);
+		return autoZoomCache = Math.max(Math.min((targetScale - Drawing.drawing.unzoomedScale) / Math.max(0.001, Drawing.drawing.interfaceScale - Drawing.drawing.unzoomedScale), 1), 0);
 	}
 
 	public String getMetadata()

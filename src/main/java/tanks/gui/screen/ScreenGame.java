@@ -1500,6 +1500,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			for (Obstacle o : Game.updateObstacles)
                 o.update();
 
+			for (Obstacle o : Game.checkUpdateObstacles)
+			{
+				if (o.update)
+					Game.updateObstacles.add(o);
+				else
+					Game.updateObstacles.remove(o);
+			}
+			Game.checkUpdateObstacles.clear();
+
 			for (Effect e : Game.tracks)
 				e.update();
 
@@ -1516,7 +1525,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (m.team == null)
 					{
-						if (m instanceof TankPlayer || m instanceof TankPlayerController)
+						if (m instanceof TankPlayer)
 							t = new Team(Game.clientID.toString());
 						else if (m instanceof TankPlayerRemote)
 							t = new Team(((TankPlayerRemote) m).player.clientID.toString());

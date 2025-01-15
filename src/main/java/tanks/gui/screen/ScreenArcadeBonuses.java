@@ -31,25 +31,6 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
     public ArrayList<Bonus> bonuses = new ArrayList<>();
 
-    public static class Bonus
-    {
-        public String name;
-        public int value;
-
-        public double red;
-        public double green;
-        public double blue;
-
-        public Bonus(String name, int value, double r, double g, double b)
-        {
-            this.name = name;
-            this.value = value;
-            this.red = r;
-            this.green = g;
-            this.blue = b;
-        }
-    }
-
     public ScreenArcadeBonuses(Arcade a)
     {
         this.music = "arcade/drumroll.ogg";
@@ -97,7 +78,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         }
 
         if (a.maxKillsPerFrame >= 2)
-            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int)(a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
+            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int) (a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
 
         if ((a.score + "").contains("69"))
             bonuses.add(new Bonus("Nice! ;)", 69, 230, 220, 190));
@@ -201,6 +182,60 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         }
     }
 
+    public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max, double r, double g, double b)
+    {
+        Effect e = Effect.createNewEffect(posX, posY, Effect.EffectType.interfacePieceSparkle);
+        e.radius = Math.random() * 10 - 5;
+
+        if (mul == -1)
+            mul = 2 * Math.max(0, (sizeY / 2 - 20) / sizeY);
+
+        double total = (sizeX - sizeY) * 2 + sizeY * Math.PI;
+        double rand = Math.random() * total;
+
+        if (rand < sizeX - sizeY)
+        {
+            e.posX = posX + rand - (sizeX - sizeY) / 2;
+            e.posY = posY + sizeY / 2 * mul;
+            e.vY = velocity;
+        }
+        else if (rand < (sizeX - sizeY) * 2)
+        {
+            e.posX = posX + rand - (sizeX - sizeY) * 3 / 2;
+            e.posY = posY - sizeY / 2 * mul;
+            e.vY = -velocity;
+        }
+        else if (rand < (sizeX - sizeY) * 2 + sizeY * Math.PI / 2)
+        {
+            double a = (rand - (sizeX - sizeY) * 2) / sizeY * 2 - Math.PI / 2;
+            e.posX = posX + (sizeX - sizeY) / 2;
+            e.posX += sizeY / 2 * Math.cos(a) * mul;
+            e.posY += sizeY / 2 * Math.sin(a) * mul;
+            e.setPolarMotion(a, velocity);
+        }
+        else
+        {
+            double a = (rand - (sizeX - sizeY) * 2 + sizeY * Math.PI / 2) / sizeY * 2 + Math.PI / 2;
+            e.posX = posX - (sizeX - sizeY) / 2;
+            e.posX += sizeY / 2 * Math.cos(a) * mul;
+            e.posY += sizeY / 2 * Math.sin(a) * mul;
+            e.setPolarMotion(a, velocity);
+        }
+
+        //e.size = 0.5;
+        e.colR = r;
+        e.colG = g;
+        e.colB = b;
+        e.glowR = r / 4;
+        e.glowG = g / 4;
+        e.glowB = b / 4;
+        double v = Math.random() * 0.5 + 0.25;
+        e.vX *= v;
+        e.vY *= v;
+        e.maxAge *= (Math.random() + 0.5) * max;
+        glowEffects.add(e);
+    }
+
     @Override
     public void update()
     {
@@ -212,7 +247,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         this.age += Panel.frameFrequency;
 
-        for (Effect e: Game.effects)
+        for (Effect e : Game.effects)
             e.update();
 
         Game.effects.removeAll(Game.removeEffects);
@@ -275,11 +310,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 this.lastPoints = this.age;
             }
 
-            long fireworks =  ( (long)pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
+            long fireworks = ((long) pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
             double maxFireworks = 1000;
             if (fireworks > maxFireworks)
             {
-                pointsPerFirework *= Math.ceil(fireworks / maxFireworks);
+                pointsPerFirework *= (int) Math.ceil(fireworks / maxFireworks);
                 fireworksToSpawn = (int) maxFireworks;
             }
             else
@@ -332,11 +367,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             drawing.displayInterfaceText(50, 260, false, "If you see this screen again, restart the game.");
             drawing.displayInterfaceText(50, 290, false, "Also, you may want to report this crash!");
 
-            drawing.displayInterfaceText(50, 350,  false, "Crash details:");
+            drawing.displayInterfaceText(50, 350, false, "Crash details:");
             drawing.drawInterfaceText(50, 380, "Error 404: Bonus not found!", false);
             drawing.drawInterfaceText(50, 410, "This isn't an actual crash lmao", false);
 
-            drawing.displayInterfaceText(50, 470,  false, "Check the crash report file for more information: ");
+            drawing.displayInterfaceText(50, 470, false, "Check the crash report file for more information: ");
             drawing.drawInterfaceText(50, 500, Game.homedir.replace("\\", "/") + Game.crashesPath + "lmaothisisnta.crash", false);
 
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
@@ -352,10 +387,10 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, yPos - this.objYSpace * 2, "Bonus points");
 
-        for (Effect e: Game.effects)
+        for (Effect e : Game.effects)
             e.draw();
 
-        for (Effect e: Game.effects)
+        for (Effect e : Game.effects)
             e.drawGlow();
 
         Drawing.drawing.setColor(255, 255, 255, 255);
@@ -366,8 +401,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 int j = 2 - i;
                 Drawing.drawing.setColor(bonuses.get(j).red, bonuses.get(j).green, bonuses.get(j).blue, 255);
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).name);
-                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).value + "");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, bonuses.get(j).name);
+                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * this.objYSpace * 4 / 6, bonuses.get(j).value + "");
             }
         }
 
@@ -412,7 +447,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
             ArrayList<Firework> fireworks = this.fireworksDisplay.getFireworkArray();
             ArrayList<Firework> removeFireworks = new ArrayList<>();
-            for (Firework f: this.spawnedFireworks)
+            for (Firework f : this.spawnedFireworks)
             {
                 if (!fireworks.contains(f))
                 {
@@ -454,57 +489,22 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
     }
 
-    public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max, double r, double g, double b)
+    public static class Bonus
     {
-        Effect e = Effect.createNewEffect(posX, posY, Effect.EffectType.interfacePieceSparkle);
-        e.radius = Math.random() * 10 - 5;
+        public String name;
+        public int value;
 
-        if (mul == -1)
-            mul = 2 * Math.max(0, (sizeY / 2 - 20) / sizeY);
+        public double red;
+        public double green;
+        public double blue;
 
-        double total = (sizeX - sizeY) * 2 + sizeY * Math.PI;
-        double rand = Math.random() * total;
-
-        if (rand < sizeX - sizeY)
+        public Bonus(String name, int value, double r, double g, double b)
         {
-            e.posX = posX + rand - (sizeX - sizeY) / 2;
-            e.posY = posY + sizeY / 2 * mul;
-            e.vY = velocity;
+            this.name = name;
+            this.value = value;
+            this.red = r;
+            this.green = g;
+            this.blue = b;
         }
-        else if (rand < (sizeX - sizeY) * 2)
-        {
-            e.posX = posX + rand - (sizeX - sizeY) * 3 / 2;
-            e.posY = posY - sizeY / 2 * mul;
-            e.vY = -velocity;
-        }
-        else if (rand < (sizeX - sizeY) * 2 + sizeY * Math.PI / 2)
-        {
-            double a = (rand - (sizeX - sizeY) * 2) / sizeY * 2 - Math.PI / 2;
-            e.posX = posX + (sizeX - sizeY) / 2;
-            e.posX += sizeY / 2 * Math.cos(a) * mul;
-            e.posY += sizeY / 2 * Math.sin(a) * mul;
-            e.setPolarMotion(a, velocity);
-        }
-        else
-        {
-            double a = (rand - (sizeX - sizeY) * 2 + sizeY * Math.PI / 2) / sizeY * 2 + Math.PI / 2;
-            e.posX = posX - (sizeX - sizeY) / 2;
-            e.posX += sizeY / 2 * Math.cos(a) * mul;
-            e.posY += sizeY / 2 * Math.sin(a) * mul;
-            e.setPolarMotion(a, velocity);
-        }
-
-        //e.size = 0.5;
-        e.colR = r;
-        e.colG = g;
-        e.colB = b;
-        e.glowR = r / 4;
-        e.glowG = g / 4;
-        e.glowB = b / 4;
-        double v = Math.random() * 0.5 + 0.25;
-        e.vX *= v;
-        e.vY *= v;
-        e.maxAge *= (Math.random() + 0.5) * max;
-        glowEffects.add(e);
     }
 }

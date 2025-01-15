@@ -107,6 +107,9 @@ public class Ray
 		return this;
 	}
 
+	/** Caches the result objects to avoid creating new temp objects */
+	public static Result dynamic = new Result(), stat = new Result();
+
 	public Movable getTarget()
 	{
 		double remainder = 0;
@@ -139,7 +142,6 @@ public class Ray
 
 		while (this.bounces >= 0 && this.bouncyBounces >= 0)
 		{
-			double t = Double.MAX_VALUE;
 			double collisionX = -1;
 			double collisionY = -1;
 			Result result = null;
@@ -191,8 +193,8 @@ public class Ray
 						}
 					}
 
-					Result dynamic = checkCollisionIn(chunk.faces, firstBounce, collisionX, collisionY);
-					Result stat = checkCollisionIn(chunk.staticFaces, firstBounce, collisionX, collisionY);
+					checkCollisionIn(dynamic, chunk.faces, firstBounce, collisionX, collisionY);
+					checkCollisionIn(stat, chunk.staticFaces, firstBounce, collisionX, collisionY);
 
 					if (dynamic.collisionFace != null && stat.collisionFace != null)
 					{
@@ -296,7 +298,7 @@ public class Ray
 		return null;
 	}
 
-	public Result checkCollisionIn(Chunk.FaceList faceList, boolean firstBounce, double collisionX, double collisionY)
+	public void checkCollisionIn(Result result, Chunk.FaceList faceList, boolean firstBounce, double collisionX, double collisionY)
 	{
 		Face collisionFace = null;
 		double t = Double.MAX_VALUE;
@@ -330,7 +332,7 @@ public class Ray
 		}
 		else if (vX < 0)
 		{
-			for (Face f : faceList.rightFaces.descendingSet())
+			for (Face f : faceList.rightFaces)
 			{
 				double size = this.size;
 
@@ -390,7 +392,7 @@ public class Ray
 		}
 		else if (vY < 0)
 		{
-			for (Face f : faceList.bottomFaces.descendingSet())
+			for (Face f : faceList.bottomFaces)
 			{
 				double size = this.size;
 
@@ -422,7 +424,7 @@ public class Ray
 			}
 		}
 
-		return new Result(t, collisionX, collisionY, collisionFace, corner);
+		result.set(t, collisionX, collisionY, collisionFace, corner);
 	}
 
 	private boolean passesThrough(Face f)
@@ -442,13 +444,13 @@ public class Ray
 
     public static final class Result
     {
-        private final double t;
-        private final double collisionX;
-        private final double collisionY;
-        private final Face collisionFace;
-        private final boolean corner;
+        private double t;
+        private double collisionX;
+        private double collisionY;
+        private Face collisionFace;
+        private boolean corner;
 
-        public Result(double t, double collisionX, double collisionY, Face collisionFace, boolean corner)
+        public void set(double t, double collisionX, double collisionY, Face collisionFace, boolean corner)
         {
             this.t = t;
             this.collisionX = collisionX;

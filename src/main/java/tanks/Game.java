@@ -96,6 +96,7 @@ public class Game
 	public static Player player;
 
 	public static ArrayList<Obstacle> updateObstacles = new ArrayList<>();
+	public static ArrayList<Obstacle> checkUpdateObstacles = new ArrayList<>();
 
 	public static HashSet<Movable> removeMovables = new HashSet<>();
 	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
@@ -1040,17 +1041,20 @@ public class Game
 
 	public static Obstacle getObstacle(int tileX, int tileY)
 	{
-		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).obstacle;
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t.obstacle;
 	}
 
 	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
 	{
-		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).surfaceObstacle;
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t.surfaceObstacle;
 	}
 
 	public static Obstacle getExtraObstacle(int tileX, int tileY)
 	{
-		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).extraObstacle;
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t.extraObstacle;
 	}
 
 	public static Obstacle getObstacle(double posX, double posY)
@@ -1129,27 +1133,32 @@ public class Game
 
 	public static boolean isSolid(int tileX, int tileY)
 	{
-		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).solid();
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t != null && t.solid();
 	}
 
 	public static boolean isSolid(double posX, double posY)
 	{
-		return Chunk.getTileOptional(posX, posY).orElse(Chunk.emptyTile).solid();
+		Chunk.Tile t = Chunk.getTile(posX, posY);
+		return t != null && t.solid();
 	}
 
 	public static boolean isUnbreakable(int tileX, int tileY)
 	{
-		return Chunk.getTileOptional(tileX, tileY).orElse(Chunk.emptyTile).unbreakable();
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t != null && t.unbreakable();
 	}
 
 	public static boolean isUnbreakable(double posX, double posY)
 	{
-		return Chunk.getTileOptional(posX, posY).orElse(Chunk.emptyTile).unbreakable();
+		Chunk.Tile t = Chunk.getTile(posX, posY);
+		return t != null && t.unbreakable();
 	}
 
 	public static double getTileHeight(double posX, double posY)
 	{
-		return Chunk.getTileOptional(posX, posY).orElse(Chunk.emptyTile).height();
+		Chunk.Tile t = Chunk.getTile(posX, posY);
+		return t != null ? t.height() : 0;
 	}
 
 	public static void removeSurfaceObstacle(Obstacle o)

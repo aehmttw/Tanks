@@ -1224,7 +1224,7 @@ public class TankAIControlled extends Tank implements ITankField
 						for (int j = -1; j <= 1; j++)
 						{
 							if (x + i > 0 && x + i < tiles.length && y + j > 0 && y + j < tiles[0].length)
-								tiles[x + i][y + j].unfavorability = Math.max(tile.unfavorability, 1);
+								tiles[x + i][y + j].unfavorability = tile.unfavorability;
 						}
 					}
 				}
@@ -1953,6 +1953,9 @@ public class TankAIControlled extends Tank implements ITankField
 			}
 		}
 
+		if ((Panel.panel.ageFrames + networkID) % 5 == 0)
+			return;
+
 		this.testSearch(this.searchAngle);
 
 		if (this.searchPhase != RotationPhase.aiming)
@@ -1995,6 +1998,9 @@ public class TankAIControlled extends Tank implements ITankField
 	public void lookAtTargetEnemy()
 	{
 		if (!this.hasTarget || this.targetEnemy == null)
+			return;
+
+		if ((Panel.panel.ageFrames + networkID) % 5 == 0)
 			return;
 
 		double a;

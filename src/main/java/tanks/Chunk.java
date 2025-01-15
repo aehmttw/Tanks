@@ -347,11 +347,11 @@ public class Chunk implements Comparable<Chunk>
         /** dynamic x, static y */
         public final TreeSet<Face> topFaces = new TreeSet<>();
         /** dynamic x, static y */
-        public final TreeSet<Face> bottomFaces = new TreeSet<>();
+        public final TreeSet<Face> bottomFaces = new TreeSet<>(Comparator.reverseOrder());
         /** static x, dynamic y */
         public final TreeSet<Face> leftFaces = new TreeSet<>();
         /** static x, dynamic y */
-        public final TreeSet<Face> rightFaces = new TreeSet<>();
+        public final TreeSet<Face> rightFaces = new TreeSet<>(Comparator.reverseOrder());
 
         public void addFaces(ISolidObject s)
         {

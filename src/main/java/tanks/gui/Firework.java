@@ -393,7 +393,7 @@ public class Firework extends Movable
 
 			int limit = (int) (powerMul * (Math.random() * 250 + 100));
 			if (circle && star)
-				limit *= 0.75;
+				limit *= (int) 0.75;
 			else if (circle)
 				limit /= 2;
 

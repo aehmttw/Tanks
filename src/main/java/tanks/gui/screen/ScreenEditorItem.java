@@ -47,8 +47,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     {
         super(itemStack, screen);
 
-        Item.ItemStack<?> item = this.target.get();
-        if (item == null) return;
+        if (this.target.get() == null) return;
 
         this.title = "Edit %s";
 

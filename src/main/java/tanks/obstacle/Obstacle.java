@@ -120,10 +120,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public void setUpdate(boolean update)
 	{
 		this.update = update;
-		if (update)
-			Game.updateObstacles.add(this);
-		else
-			Game.updateObstacles.remove(this);
+		Game.checkUpdateObstacles.add(this);
 	}
 
 	@Override

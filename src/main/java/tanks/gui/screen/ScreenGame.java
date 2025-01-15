@@ -773,7 +773,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				double[] l = ((IDrawableLightSource) o).getLightInfo();
 				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
 				l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-				l[2] = (o instanceof ObstacleStackable ? ((ObstacleStackable) o).startHeight : 0 + 25) * Drawing.drawing.scale;
+				l[2] = (o instanceof ObstacleStackable ? ((ObstacleStackable) o).startHeight : 25) * Drawing.drawing.scale;
 				Panel.panel.lights.add(l);
 			}
 		}
@@ -2313,7 +2313,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (i == 9 && (Game.playerTank instanceof ILocalPlayerTank && ((ILocalPlayerTank) Game.playerTank).showTouchCircle()))
+			if (i == 9 && (Game.playerTank != null && ((ILocalPlayerTank) Game.playerTank).showTouchCircle()))
 			{
 				Drawing.drawing.setColor(255, 127, 0, 63);
 				Drawing.drawing.fillInterfaceOval(Drawing.drawing.toInterfaceCoordsX(Game.playerTank.posX),
@@ -2321,7 +2321,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						((ILocalPlayerTank) Game.playerTank).getTouchCircleSize(), ((ILocalPlayerTank) Game.playerTank).getTouchCircleSize());
 			}
 
-			if (i == 9 && Game.playerTank instanceof ILocalPlayerTank && !Game.game.window.drawingShadow)
+			if (i == 9 && Game.playerTank != null && !Game.game.window.drawingShadow)
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 50);
@@ -2891,32 +2891,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			this.overlay.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-	}
-
-	int[] bx = {0, 1, 0, -1}, by = {-1, 0, 1, 0};
-	int[] bsx = {2, 1, 2, 1}, bsy = {1, 2, 1, 0};
-
-	public void drawBorders()
-	{
-		double frac = Obstacle.draw_size / Game.tile_size;
-		Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16 * frac + Level.currentColorB * (1 - frac));
-		for (Chunk c : Chunk.chunkList)
-		{
-			for (int side = 0; side < 4; side++)
-			{
-				Face bf = c.borderFaces[side];
-				if (c.borderFaces[side] != null)
-				{
-					double sizeX = (bf.endX - bf.startX), sizeY = (bf.endY - bf.startY);
-					double x = bf.startX + sizeX / 2, y = bf.startY + sizeY / 2;
-					Drawing.drawing.fillBox(this,
-							x + Game.tile_size * 0.5 * bx[side],
-							y + Game.tile_size * 0.5 * by[side], -Game.tile_size,
-							sizeX + Game.tile_size * bsx[side],
-							sizeY + Game.tile_size * bsy[side], Obstacle.draw_size * 2, (byte) 1);
-				}
-			}
-		}
 	}
 
 	public static boolean shouldHide(Face f)

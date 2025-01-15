@@ -81,12 +81,12 @@ public class Chunk implements Comparable<Chunk>
         return !Chunk.chunkList.isEmpty();
     }
 
-    public static ArrayList<Chunk> iterateOutwards(double posX, double posY, int radius)
+    public static ArrayList<Chunk> iterateOutwards(double posX, double posY, int maxDist)
     {
-        return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), radius);
+        return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), maxDist);
     }
 
-    public static ArrayList<Chunk> iterateOutwards(int tileX, int tileY, int radius)
+    public static ArrayList<Chunk> iterateOutwards(int tileX, int tileY, int maxDist)
     {
         ArrayList<Chunk> out = new ArrayList<>();
         ArrayDeque<Chunk> queue = new ArrayDeque<>();
@@ -106,7 +106,7 @@ public class Chunk implements Comparable<Chunk>
                 int newX = c.chunkX + Game.dirX[i];
                 int newY = c.chunkY + Game.dirY[i];
                 Chunk next = Chunk.getChunk(newX, newY);
-                if (next != null && start.manhattanDist(next) < radius && visited.add(next))
+                if (next != null && start.manhattanDist(next) < maxDist && visited.add(next))
                 {
                     out.add(next);
                     queue.add(next);

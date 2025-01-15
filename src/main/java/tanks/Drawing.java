@@ -10,7 +10,6 @@ import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventPlaySound;
 import tanks.obstacle.Obstacle;
-import tanks.rendering.StaticTerrainRenderer;
 import tanks.rendering.TerrainRenderer;
 import tanks.rendering.TrackRenderer;
 import tanks.tank.TankPlayer;
@@ -189,6 +188,32 @@ public class Drawing
 		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
 	}
 
+	public void fillLargeGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
+	{
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		boolean inBounds = false;
+		for (int i = 0; i < 2; i++)
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				if (!isOutOfBounds(drawX + drawSizeX * i / 2, drawY + drawSizeY * j / 2))
+				{
+					inBounds = true;
+				}
+			}
+		}
+
+		if (!inBounds)
+			return;
+
+		Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
+	}
+
 	public void fillOval(double x, double y, double z, double sizeX, double sizeY)
 	{
 		this.fillOval(x, y, z, sizeX, sizeY, true, true);
@@ -299,6 +324,37 @@ public class Drawing
 
 		double drawSizeX = (sizeX * scale);
 		double drawSizeY = (sizeY * scale);
+
+		double dZ = z * scale;
+
+		if (Game.game.window.angled && facing)
+			Game.game.window.shapeRenderer.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
+		else
+			Game.game.window.shapeRenderer.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
+	}
+
+	public void fillLargeGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade, boolean light)
+	{
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		boolean inBounds = false;
+		for (int i = 0; i < 2; i++)
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				if (!isOutOfBounds(drawX + drawSizeX * i / 2, drawY + drawSizeY * j / 2))
+				{
+					inBounds = true;
+				}
+			}
+		}
+
+		if (!inBounds)
+			return;
 
 		double dZ = z * scale;
 
@@ -1386,6 +1442,7 @@ public class Drawing
 			return 0;
 
 		double x = playerX;
+
 
 		if (Panel.panel.pastPlayerTime.size() == 1)
 			x = Panel.panel.pastPlayerX.get(0);

@@ -260,9 +260,9 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                                     {
                                         if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).playerKillCoins > 0)
                                             ((TankPlayerRemote) this.tank).player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
-                                        else
-                                            ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
                                     }
+                                    else
+                                        ((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
                                     Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
                                 }
                             }

@@ -1024,9 +1024,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public Ray getRay()
 	{
-		Ray r = new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank);
-		r.size = this.size;
-		return r;
+		return new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank).setSize(this.size);
 	}
 
 	public void updateHoming()

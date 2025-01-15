@@ -1050,7 +1050,7 @@ public class Panel
 		allocatedThisSecond += Math.max(0, used - lastMemory);
 		lastMemory = used;
 
-		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + allocatedLastSecond / 1048576 + " MB/s)");
+		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{

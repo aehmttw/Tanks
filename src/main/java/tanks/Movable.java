@@ -161,9 +161,7 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 			}
 
 			for (AttributeModifier a : toRemove)
-			{
-				attributes.remove(a);
-			}
+                attributes.remove(a);
 
 			this.updateStatusEffects();
 

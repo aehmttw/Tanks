@@ -213,6 +213,11 @@ public class Chunk implements Comparable<Chunk>
         return t;
     }
 
+    public static void update()
+    {
+
+    }
+
     public static void reset()
     {
         populateChunks(defaultLevel);

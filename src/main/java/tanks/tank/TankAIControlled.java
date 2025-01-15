@@ -1357,6 +1357,9 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void checkForBulletThreats()
 	{
+		if (!toAvoid.isEmpty() || !toAvoidDeflect.isEmpty())
+			dodgeBulletThreats();
+
 		if (!frameTimerTriggered)
 			return;
 
@@ -1367,12 +1370,7 @@ public class TankAIControlled extends Tank implements ITankField
 		toAvoidDeflectDist.clear();
 
 		findBulletThreats();
-
-		if (toAvoid.isEmpty() && toAvoidDeflect.isEmpty())
-            return;
-
-		dodgeBulletThreats();
-	}
+    }
 
 	public void findBulletThreats()
 	{

@@ -26,6 +26,7 @@ import static tanks.tank.TankPropertyCategory.*;
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
+@SuppressWarnings("unchecked")
 @TanksONable("tank")
 public class TankAIControlled extends Tank implements ITankField
 {
@@ -519,7 +520,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		for (int i = 0; i < fleeDirections.length; i++)
 		{
-			fleeDirections[i] = Math.PI / 4 + (i * 2 / fleeDirections.length) * Math.PI / 2 + i * Math.PI / fleeDirections.length;
+			fleeDirections[i] = Math.PI / 4 + ((double) i * 2 / fleeDirections.length) * Math.PI / 2 + i * Math.PI / fleeDirections.length;
 		}
 
 		this.fromRegistry = !this.getClass().equals(TankAIControlled.class);
@@ -572,7 +573,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.justTransformed = false;
 
-		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
+		if (!this.spawnedTankEntries.isEmpty() && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
 		if (!this.destroy)
@@ -871,6 +872,9 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void updateTarget()
 	{
+		if ((Panel.panel.ageFrames + networkID) % 5 != 0)
+			return;
+
 		if (this.transformMimic)
 			if (this.updateTargetMimic())
 				return;
@@ -924,9 +928,8 @@ public class TankAIControlled extends Tank implements ITankField
 			if (m instanceof Tank && !(m instanceof TankAIControlled && ((TankAIControlled) m).transformMimic) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
 					&& ((Tank) m).targetable && Movable.distanceBetween(m, this) < this.mimicRange && ((Tank) m).size == this.size && !m.destroy)
 			{
-				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
-				r.moveOut(5);
-				if (r.getTarget() != m)
+				if (new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this)
+						.moveOut(5).getTarget() != m)
 					continue;
 
 				double distance = Movable.distanceBetween(this, m);
@@ -1140,7 +1143,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			int chosenDir = (int)(this.random.nextDouble() * directions.size());
 
-			if (directions.size() == 0)
+			if (directions.isEmpty())
 				this.direction = (this.direction + 2) % 4;
 			else
 				this.direction = directions.get(chosenDir);
@@ -1190,12 +1193,8 @@ public class TankAIControlled extends Tank implements ITankField
 		Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
 
 		for (int i = 0; i < tiles.length; i++)
-		{
-			for (int j = 0; j < tiles[i].length; j++)
-			{
-				tiles[i][j] = new Tile(this.random, i, j);
-			}
-		}
+            for (int j = 0; j < tiles[i].length; j++)
+                tiles[i][j] = new Tile(this.random, i, j);
 
 		for (Obstacle o: Game.obstacles)
 		{
@@ -1299,7 +1298,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		double mul = 1;
 
-		if (this.path.size() > 0 && this.path.get(0).type == Tile.Type.destructible)
+		if (!this.path.isEmpty() && this.path.get(0).type == Tile.Type.destructible)
 			mul = 3;
 		else if (this.path.size() > 1 && this.path.get(1).type == Tile.Type.destructible)
 			mul = 2;
@@ -1465,7 +1464,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 					for (int dir = 0; dir < count; dir++)
 					{
-						Ray r = new Ray(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size);
+						Ray r = new Ray(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size).setMaxChunks(4);
 						r.size = Game.tile_size * this.hitboxSize - 1;
 
 						boolean b = this.targetEnemy != null && this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge && Movable.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
@@ -2643,7 +2642,7 @@ public class TankAIControlled extends Tank implements ITankField
 			Tank t;
 			if (c.equals(TankAIControlled.class))
 			{
-				t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.colorR, this.colorG, this.colorB, this.angle, ((TankAIControlled) ct).shootAIType);
+                t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.colorR, this.colorG, this.colorB, this.angle, ((TankAIControlled) ct).shootAIType);
 				((TankAIControlled) ct).cloneProperties((TankAIControlled) t);
 			}
 			else
@@ -2994,7 +2993,7 @@ public class TankAIControlled extends Tank implements ITankField
 							int end = s.indexOf("]");
 							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
 							HashSet<String> hashSet;
-							if (csv[0].equals(""))
+							if (csv[0].isEmpty())
 								hashSet = new HashSet<>();
 							else
 								hashSet = new HashSet<>(Arrays.asList(csv));
@@ -3135,7 +3134,8 @@ public class TankAIControlled extends Tank implements ITankField
 			return t1;
 	}
 
-	public void cloneProperties(TankAIControlled t)
+	@SuppressWarnings("unchecked")
+    public void cloneProperties(TankAIControlled t)
 	{
 		try
 		{
@@ -3165,7 +3165,7 @@ public class TankAIControlled extends Tank implements ITankField
 					{
 						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
 
-						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
+						ArrayList<SpawnedTankEntry> al = new ArrayList<>();
 						for (SpawnedTankEntry o: a1)
 						{
 							al.add(new SpawnedTankEntry(cloneTankField(o.tank), o.weight));

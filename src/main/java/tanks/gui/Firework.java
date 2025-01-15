@@ -166,7 +166,7 @@ public class Firework extends Movable
 
 				Drawing.drawing.playSound("destroy.ogg", 0.75f, 0.75f);
 
-				int count = 1;
+				int count;
 
 				boolean circle = Math.random() < 0.3;
 				boolean star = circle && Math.random() < 0.5;
@@ -370,7 +370,7 @@ public class Firework extends Movable
 		public double maxAge = 240;
 		public float[] gravity = new float[]{0, 0.03125f, 0};
 		public float[] colors = new float[4];
-		public boolean circle = false;
+		public boolean circle;
 
 		public boolean hasTrail = Math.random() < 0.25;
 
@@ -393,7 +393,7 @@ public class Firework extends Movable
 
 			int limit = (int) (powerMul * (Math.random() * 250 + 100));
 			if (circle && star)
-				limit *= (int) 0.75;
+				limit *= 0;
 			else if (circle)
 				limit /= 2;
 
@@ -434,10 +434,9 @@ public class Firework extends Movable
 			double a = Math.random() * 2 * Math.PI;
 
 			double starInner = Math.random() * 0.6 + 0.2;
-			int starPoints = 0;
+			int starPoints;
 
-			double[] starX = null;
-			double[] starY = null;
+			double[] starX, starY;
 
 			if (star)
 			{
@@ -486,16 +485,7 @@ public class Firework extends Movable
 					double px = Math.sin(angle1);
 					double py = Math.cos(angle1);
 
-					if (star)
-					{
-						int starPart = (int) (Math.random() * starPoints * 2);
-						int nextStarPart = (starPart + 1) % (starPoints * 2);
-						double frac = Math.random();
-						px = frac * starX[starPart] + (1.0 - frac) * starX[nextStarPart];
-						py = frac * starY[starPart] + (1.0 - frac) * starY[nextStarPart];
-					}
-
-					rotateAxis(vel, aX, aY, aZ, a, px, py, 0);
+                    rotateAxis(vel, aX, aY, aZ, a, px, py, 0);
 					velX = vel[0] * power + f.vX;
 					velY = vel[1] * power + f.vY;
 					velZ = vel[2] * power + f.vZ;

@@ -38,6 +38,7 @@ import tanks.tank.*;
 import java.io.*;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Game
 {
     public enum Framework {lwjgl, libgdx}
@@ -748,7 +749,7 @@ public class Game
 	 */
 	public static void addTank(Tank tank)
 	{
-		if (tank instanceof TankPlayer || tank instanceof TankPlayerController || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
+		if (tank instanceof TankPlayer || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
 			Game.exitToCrash(new RuntimeException("Invalid tank added with Game.addTank(" + tank + ")"));
 
 		tank.registerNetworkID();
@@ -813,11 +814,7 @@ public class Game
 
 		if (redraw)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
-				Game.redrawGroundTiles.add(new GroundTile(x, y));
+			redraw(o);
 
 			Game.redrawObstacles.add(o);
 		}
@@ -1042,19 +1039,19 @@ public class Game
 	public static Obstacle getObstacle(int tileX, int tileY)
 	{
 		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t.obstacle;
+		return t != null ? t.obstacle : null;
 	}
 
 	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
 	{
 		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t.surfaceObstacle;
+		return t != null ? t.surfaceObstacle : null;
 	}
 
 	public static Obstacle getExtraObstacle(int tileX, int tileY)
 	{
 		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t.extraObstacle;
+		return t != null ? t.extraObstacle : null;
 	}
 
 	public static Obstacle getObstacle(double posX, double posY)
@@ -1119,17 +1116,22 @@ public class Game
 		c.removeSurfaceIfEquals(o);
 		c.removeExtraIfEquals(o);
 
-		int x = (int) (o.posX / Game.tile_size);
-		int y = (int) (o.posY / Game.tile_size);
-
-		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
-			Game.redrawGroundTiles.add(new GroundTile(x, y));
+		redraw(o);
 
 		for (Obstacle o1 : o.getNeighbors())
 			o1.onNeighborUpdate();
 
 		Game.obstacles.remove(o);
     }
+
+	public static void redraw(Obstacle o)
+	{
+		int x = (int) (o.posX / Game.tile_size);
+		int y = (int) (o.posY / Game.tile_size);
+
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
+			Game.redrawGroundTiles.add(new GroundTile(x, y));
+	}
 
 	public static boolean isSolid(int tileX, int tileY)
 	{

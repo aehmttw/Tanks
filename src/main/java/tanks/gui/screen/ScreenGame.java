@@ -1995,9 +1995,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
 			{
-				if (Game.enable3d)
-					Game.redrawGroundTiles.add(new Game.GroundTile(x, y));
-
+				Game.redraw(o);
 				Game.removeObstacle(o);
 				Game.removeSurfaceObstacle(o);
 			}

@@ -733,9 +733,9 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
             Drawing.drawing.setColor(tank.secondaryColorR * preview.glowIntensity, tank.secondaryColorG * preview.glowIntensity, tank.secondaryColorB * preview.glowIntensity, 255, 1);
-            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.glowSize / 4, s * 1.5 * preview.glowSize / 4);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.glowSize / 4), s * 1.5 * Math.min(2, preview.glowSize / 4));
             Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
-            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.lightSize / 4, s * 1.5 * preview.lightSize / 4, false, true);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.lightSize / 4), s * 1.5 * Math.min(2, preview.lightSize / 4), false, true);
 
             Drawing.drawing.setColor(0, 0, 0, 64);
             for (int i = 0; i < 3; i++)

@@ -1020,6 +1020,21 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         }
         else
         {
+            if (this.target.get() != null)
+            {
+                if (this.currentTab != null)
+                    this.currentTab.draw();
+
+                Drawing.drawing.setInterfaceFontSize(this.titleSize);
+                if (Level.isDark())
+                    Drawing.drawing.setColor(255, 255, 255);
+                else
+                    Drawing.drawing.setColor(0, 0, 0);
+
+                if (this.currentTab != null)
+                    Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
+            }
+
             double extraHeight = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
             double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;
 
@@ -1030,27 +1045,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY + extraHeight / 2, width, extraHeight);
             Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 60, width, 120);
 
-            Drawing.drawing.setInterfaceFontSize(this.titleSize);
-            Drawing.drawing.setColor(255, 255, 255);
-
-            double pos = 60;
-            if ((topLevelButtons.size() <= 1 && !this.forceDisplayTabs) || this.target.get() == null)
-                pos = 100;
-            else if (topLevelButtons.size() >= 5)
-                pos = 30;
-
-            Drawing.drawing.displayInterfaceText(this.centerX, pos, this.title, this.objName);
-
-            if (Level.isDark())
-                Drawing.drawing.setColor(255, 255, 255);
-            else
-                Drawing.drawing.setColor(0, 0, 0);
-
             if (this.target.get() != null)
             {
-                if (this.currentTab != null)
-                    Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 200, this.currentTab.name);
-
                 if (this.topLevelButtons.size() > 1 || this.forceDisplayTabs)
                 {
                     for (Button b : this.topLevelButtons)
@@ -1059,10 +1055,22 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         b.draw();
                     }
                 }
-
-                if (this.currentTab != null)
-                    this.currentTab.draw();
             }
+
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
+            Drawing.drawing.setColor(255, 255, 255);
+
+            double pos = 60;
+            if ((topLevelButtons.size() <= 1 && !this.forceDisplayTabs) || this.target.get() == null)
+                pos = 100;
+            else if (topLevelButtons.size() >= 5)
+                pos = 30;
+            Drawing.drawing.displayInterfaceText(this.centerX, pos, this.title, this.objName);
+
+            if (Level.isDark())
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
 
             this.quit.draw();
 

@@ -291,8 +291,10 @@ public class TankAIControlled extends Tank implements ITankField
 	public double spawnChance = 0.003;
 
 	/** Whether the tank should commit suicide when there are no allied tanks on the field */
-	@Property(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and explode. The explosion will use the properties of the tank's mine.")
+	@Property(category = lastStand, id = "enable_suicide", name = "Last stand", desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and destroy itself.")
 	public boolean enableSuicide = false;
+	@Property(category = lastStand, id = "suicide_explosion", name = "Destroy explosion", desc="When destroying itself from its last stand ability, the tank will explode with this explosion.", nullable = true)
+	public Explosion suicideExplosion = new Explosion();
 	/** Base factor in calculating suicide timer: base + random * Math.random()*/
 	@Property(category = lastStand, id = "suicide_timer_base", minValue = 0.0, name = "Base timer", desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
 	public double suicideTimerBase = 500;
@@ -2472,9 +2474,13 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (this.timeUntilDeath <= 0)
 		{
-			Explosion e = new Explosion(this.posX, this.posY, this, this.mineItem);
-			this.mine.explosion.clonePropertiesTo(e);
-			e.explode();
+			if (this.suicideExplosion != null)
+			{
+				Explosion e = new Explosion(this.posX, this.posY, this, this.mineItem);
+				this.suicideExplosion.clonePropertiesTo(e);
+				e.explode();
+			}
+
 			this.destroy = true;
 			this.health = 0;
 		}
@@ -2967,6 +2973,7 @@ public class TankAIControlled extends Tank implements ITankField
 		String original = s;
 		TankAIControlled t = new TankAIControlled(null, 0, 0, 0, 0, 0, 0, 0, ShootAI.none);
 
+		boolean explodeOnDeath = false;
 		try
 		{
 			s = s.substring(s.indexOf("[") + 1);
@@ -3084,6 +3091,11 @@ public class TankAIControlled extends Tank implements ITankField
 							f.set(t, ((ItemMine)i.item).mine);
 							s = s.substring(s.indexOf("]") + 1);
 						}
+						else if (Explosion.class.isAssignableFrom(f.getType()))
+						{
+							if (value.equals("true"))
+								explodeOnDeath = true;
+						}
 						else if (ITankField.class.isAssignableFrom(f.getType()) || propname.equals("spawned_tank"))
 						{
 							TankAIControlled target;
@@ -3135,6 +3147,11 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (remainder != null)
 			remainder[0] = s;
+
+		t.suicideExplosion = t.mineItem.item.mine.explosion;
+
+		if (explodeOnDeath)
+			t.explodeOnDestroy = t.mineItem.item.mine.explosion;
 
 		return t;
 	}

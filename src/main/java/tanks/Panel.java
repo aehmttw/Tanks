@@ -68,6 +68,10 @@ public class Panel
 	public long firstFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
 	public long lastFrameSec = (long) (System.currentTimeMillis() / 1000.0 * frameSampling);
 
+	public long lastMemory = 0;
+	public long allocatedThisSecond = 0;
+	public long allocatedLastSecond = 0;
+
 	public long startTime = System.currentTimeMillis();
 	public long frameStartTime = System.currentTimeMillis();
 
@@ -655,8 +659,15 @@ public class Panel
 
 	public void draw()
 	{
-		if (!Game.game.window.drawingShadow && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+		if ((Game.game.window.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
 			this.age += Panel.frameFrequency;
+
+		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
+		{
+			Panel.panel.pastPlayerX.remove(0);
+			Panel.panel.pastPlayerY.remove(0);
+			Panel.panel.pastPlayerTime.remove(0);
+		}
 
 		if (continuation != null && Game.game.window.drawingShadow)
 			return;
@@ -723,6 +734,8 @@ public class Panel
 				{
 					lastFPS = (int) (frames * 1.0 * frameSampling);
 					frames = 0;
+					allocatedLastSecond = allocatedThisSecond;
+					allocatedThisSecond = 0;
 				}
 
 				lastFrameSec = time;
@@ -1034,7 +1047,10 @@ public class Panel
 		long total = Runtime.getRuntime().totalMemory();
 		long used = total - free;
 
-		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB");
+		allocatedThisSecond += Math.max(0, used - lastMemory);
+		lastMemory = used;
+
+		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + allocatedLastSecond / 1048576 + " MB/s)");
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{

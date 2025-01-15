@@ -5,11 +5,7 @@ import tanks.Game;
 import tanks.IDrawableLightSource;
 import tanks.gui.screen.leveleditor.selector.SelectorColor;
 import tanks.gui.screen.leveleditor.selector.SelectorLuminosity;
-import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
-import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.tankson.MetadataProperty;
-
-import java.util.Arrays;
 
 public class ObstacleLight extends Obstacle implements IDrawableLightSource
 {
@@ -76,7 +72,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 		Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
 
 		if (!Game.fancyLights)
-			Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
+			Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
 	}
 
 	@Override

@@ -788,7 +788,11 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (Game.glowEnabled && !transparent)
 		{
-			double size = this.glowSize * s;
+			double gs = this.glowSize;
+			if (forInterface && gs > 8)
+				gs = 8;
+
+			double size = gs * s;
 			if (forInterface)
 				Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size);
 			else if (!in3d)
@@ -803,11 +807,17 @@ public abstract class Tank extends Movable implements ISolidObject
 
 			while (i > 0)
 			{
-				double size = this.lightSize * s * i / this.lightIntensity;
+				double ls = this.lightSize;
+				if (forInterface && ls > 8)
+					ls = 8;
+
+				double size = ls * s * i / this.lightIntensity;
 				Drawing.drawing.setColor(255, 255, 255, i * 255);
 
-				if (!(forInterface && !in3d))
-					Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
+				if (forInterface)
+					Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size, false, true);
+				else if (!(forInterface && !in3d))
+					Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
 
 				i--;
 			}

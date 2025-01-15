@@ -21,11 +21,12 @@ jobs:
       with:
         java-version: 8.0.312
         distribution: liberica
-        cache: gradle
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Build
       run: ./gradlew build
+      with:
+        cache: gradle
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:

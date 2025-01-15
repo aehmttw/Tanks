@@ -38,8 +38,8 @@ public class Ray
 	public double age = 0;
 	public int traceAge;
 
-	public Tank tank;
-	public Tank targetTank;
+	public Tank tank, targetTank;
+	public double targetTankSizeMul = 0;
 
 	public ArrayList<Double> bounceX = new ArrayList<>();
 	public ArrayList<Double> bounceY = new ArrayList<>();
@@ -69,17 +69,8 @@ public class Ray
 	public Movable getTarget(double mul, Tank targetTank)
 	{
 		this.targetTank = targetTank;
-		this.targetTank.removeFaces();
-		this.targetTank.size *= mul;
-		this.targetTank.addFaces();
-
-		Movable m = this.getTarget();
-
-		this.targetTank.removeFaces();
-		this.targetTank.size /= mul;
-		this.targetTank.addFaces();
-
-		return m;
+		this.targetTankSizeMul = mul;
+		return this.getTarget();
 	}
 
 	public Ray setMaxChunks(int maxChunks)
@@ -312,6 +303,8 @@ public class Ray
 
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
+				if (f.owner != null && f.owner == targetTank)
+					size *= targetTankSizeMul;
 
 				if (passesThrough(f))
 					continue;

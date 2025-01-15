@@ -486,17 +486,18 @@ public class TankAIControlled extends Tank implements ITankField
 	/** True if able to mimic other tanks*/
 	protected boolean canCurrentlyMimic = true;
 
-	protected double baseColorR;
-	protected double baseColorG;
-	protected double baseColorB;
-	protected double baseMaxSpeed;
+	protected double baseColorR, baseColorG, baseColorB, baseMaxSpeed;
 
-	ArrayList<Bullet> toAvoid = new ArrayList<>();
-	ArrayList<Double> toAvoidDist = new ArrayList<>();
-	ArrayList<Bullet> toAvoidDeflect = new ArrayList<>();
-	ArrayList<Double> toAvoidDeflectDist = new ArrayList<>();
+	ArrayList<Bullet> toAvoid = new ArrayList<>(), toAvoidDeflect = new ArrayList<>();
+	ArrayList<Double> toAvoidDist = new ArrayList<>(), toAvoidDeflectDist = new ArrayList<>();
 	ArrayList<Ray> toAvoidTargets = new ArrayList<>();
 
+	/** Is set to true for 1 frame every 0.05s */
+	protected boolean frameTimerTriggered = false;
+	/** Timer to track time passed in intervals of 0.05s */
+	protected double frameSkipTimer = 0;
+	/** Increases by 1 every 0.05s */
+	protected int frameTimerTriggeredCnt = 0;
 
 	/** Set if tank transformed in the last frame */
 	public boolean justTransformed = false;
@@ -580,6 +581,13 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.justTransformed = false;
 
+        //noinspection AssignmentUsedAsCondition
+        if (frameTimerTriggered = ((frameSkipTimer -= Panel.frameFrequency) < -3 * networkID))
+		{
+			frameSkipTimer += 5;
+			frameTimerTriggeredCnt++;
+		}
+
 		if (!this.spawnedTankEntries.isEmpty() && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
@@ -613,7 +621,7 @@ public class TankAIControlled extends Tank implements ITankField
 					this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
 
 					if (this.enableDefensiveFiring)
-						this.handleBulletThreats();
+						this.checkForBulletThreats();
 				}
 			}
 
@@ -879,7 +887,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void updateTarget()
 	{
-		if ((Panel.panel.ageFrames + networkID) % 5 != 0)
+		if (!frameTimerTriggered)
 			return;
 
 		if (this.transformMimic)
@@ -959,7 +967,7 @@ public class TankAIControlled extends Tank implements ITankField
 	public void updateMotionAI()
 	{
 		if (this.enableBulletAvoidance || this.enableDefensiveFiring)
-			this.handleBulletThreats();
+			this.checkForBulletThreats();
 
 		if (this.avoidTimer > 0 && this.enableBulletAvoidance)
 		{
@@ -1345,9 +1353,9 @@ public class TankAIControlled extends Tank implements ITankField
 		this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
 	}
 
-	public void handleBulletThreats()
+	public void checkForBulletThreats()
 	{
-		if ((Panel.panel.ageFrames + networkID) % 5 != 0)
+		if (!frameTimerTriggered)
 			return;
 
 		toAvoid.clear();
@@ -1356,6 +1364,16 @@ public class TankAIControlled extends Tank implements ITankField
 		toAvoidDeflect.clear();
 		toAvoidDeflectDist.clear();
 
+		findBulletThreats();
+
+		if (toAvoid.isEmpty() && toAvoidDeflect.isEmpty())
+            return;
+
+		dodgeBulletThreats();
+	}
+
+	public void findBulletThreats()
+	{
 		outer : for (Chunk chunk : Chunk.iterateOutwards(posX, posY, Chunk.chunkSize * 4))
 		{
 			for (Movable m : chunk.movables)
@@ -1415,11 +1433,6 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 
 		this.bulletThreatCount = toAvoidDeflect.size();
-
-        if (toAvoid.isEmpty() && toAvoidDeflect.isEmpty())
-            return;
-
-		dodgeBulletThreats();
 	}
 
 	public void dodgeBulletThreats()
@@ -1967,7 +1980,7 @@ public class TankAIControlled extends Tank implements ITankField
 			}
 		}
 
-		if ((Panel.panel.ageFrames + networkID) % 5 == 0)
+		if (!frameTimerTriggered)
 			return;
 
 		this.testSearch(this.searchAngle);
@@ -2011,10 +2024,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void lookAtTargetEnemy()
 	{
-		if (!this.hasTarget || this.targetEnemy == null)
-			return;
-
-		if ((Panel.panel.ageFrames + networkID) % 5 == 0)
+		if (!this.hasTarget || this.targetEnemy == null || !frameTimerTriggered)
 			return;
 
 		double a;

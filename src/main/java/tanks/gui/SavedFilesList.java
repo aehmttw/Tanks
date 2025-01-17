@@ -145,6 +145,7 @@ public class SavedFilesList extends ButtonList
 
     public void sort(boolean byTime)
     {
+        this.fileButtons.removeIf(b -> b.text == null);
         this.buttons.removeAll(this.fileButtons);
 
         // IMPORTANT: there's a nicer way to do this but libgdx doesnt support it

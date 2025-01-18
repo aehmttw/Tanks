@@ -6,7 +6,6 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.item.Item;
-import tanks.tankson.MonitoredArrayListIndexPointer;
 
 public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundScreen
 {
@@ -36,15 +35,11 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
     }
 
     public Button replace = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Replace template", () ->
-    {
-        this.previous.writeItemAndConfirm(item, true);
-    }
+            this.previous.writeItemAndConfirm(item, true)
     );
 
     public Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Back", () ->
-    {
-        Game.screen = this.previous;
-    }
+            Game.screen = this.previous
     );
 
     @Override

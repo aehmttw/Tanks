@@ -57,7 +57,6 @@ public class ScreenControlsEditor extends Screen
     InputSelector circle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Circle tool", Game.game.input.editorCircle);
     InputSelector line = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Line tool", Game.game.input.editorLine);
     InputSelector wand = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Wand tool", Game.game.input.editorWand);
-    InputSelector wandDiscont = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Non-contiguous wand tool", Game.game.input.editorWandDiscontiguous);
 
 
     Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++);
@@ -147,7 +146,6 @@ public class ScreenControlsEditor extends Screen
             square.update();
             line.update();
             wand.update();
-            wandDiscont.update();
         }
 
         next.enabled = page < page_count - 1;
@@ -226,7 +224,6 @@ public class ScreenControlsEditor extends Screen
             square.draw();
             line.draw();
             wand.draw();
-            wandDiscont.draw();
         }
 
         next.draw();

@@ -72,9 +72,9 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
     public Button edit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Edit", () ->
     {
-        if (crusade.started)
-            Game.screen = new ScreenCrusadeEditWarning(Game.screen, crusade);
-        else
+//        if (crusade.started)
+//            Game.screen = new ScreenCrusadeEditWarning(Game.screen, crusade);
+//        else
             Game.screen = new ScreenCrusadeEditor(crusade);
     });
 
@@ -256,7 +256,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
         if (Game.previewCrusades)
         {
-            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.setColor(0, 0, 0, 115);
             Drawing.drawing.drawPopup(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * 0.7, this.objYSpace * sizeY);
             Drawing.drawing.setColor(255, 255, 255);
         }

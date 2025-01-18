@@ -3,6 +3,8 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -16,17 +18,20 @@ import tanks.network.event.IStackableEvent;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
+import tanks.replay.Replay;
 import tanks.tank.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Panel
 {
+    public static boolean onlinePaused;
+    public static LinkedList<Notification> notifs = new LinkedList<>();
+	public static long lastNotifTime = 0;
+	public static CenterMessage currentMessage;
 	public static String lastWindowTitle = "";
-
-	public static boolean onlinePaused;
 
 	public double zoomTimer = 0;
 	public static double zoomTarget = -1;
@@ -38,6 +43,7 @@ public class Panel
 
 	public static boolean showMouseTarget = true;
 	public static boolean showMouseTargetHeight = false;
+	public static boolean pauseOnDefocus = true;
 
 	public static Panel panel;
 
@@ -70,6 +76,7 @@ public class Panel
 	public long frameStartTime = System.currentTimeMillis();
 
 	public long lastFrameNano = 0;
+	public static boolean tickSprint;
 
 	public int lastFPS = 0;
 
@@ -87,6 +94,8 @@ public class Panel
 
 	public double age = 0;
 	public long ageFrames = 0;
+
+	protected boolean prevFocused = true;
 
 	public boolean started = false;
 	public boolean settingUp = true;
@@ -312,7 +321,9 @@ public class Panel
 		Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 		Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
 
-		if (Game.deterministicMode && Game.deterministic30Fps)
+		if (tickSprint)
+			Panel.frameFrequency = 2;
+		else if (Game.deterministicMode && Game.deterministic30Fps)
 			Panel.frameFrequency = 100.0 / 30;
 		else if (Game.deterministicMode)
 			Panel.frameFrequency = 100.0 / 60;
@@ -351,17 +362,8 @@ public class Panel
 		}
 
 		for (INetworkEvent e: stackedEventsIn.values())
-		{
-			e.execute();
-		}
+            e.execute();
 		stackedEventsIn.clear();
-
-		for (int i = 0; i < Game.game.heightGrid.length; i++)
-		{
-			Arrays.fill(Game.game.heightGrid[i], -1000);
-			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-		}
 
 		if (ScreenPartyHost.isServer)
 		{
@@ -407,23 +409,26 @@ public class Panel
 
 					for (Movable m: Game.movables)
 					{
-						if (m instanceof TankPlayable)
-						{
-							int build = -1;
-							for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
-							{
-								TankPlayable t = Game.currentLevel.playerBuilds.get(i);
-								if (t.name.equals(((TankPlayable) m).buildName))
-								{
-									build = i;
-									t.clonePropertiesTo((TankPlayable) m);
-									break;
-								}
-							}
+                        if (!(m instanceof TankPlayable))
+                            continue;
 
-							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
-						}
-					}
+                        System.out.println(((TankPlayable) m).buildName);
+                        int build = -1;
+                        for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
+                        {
+                            TankPlayable t = Game.currentLevel.playerBuilds.get(i);
+                            if (t.name.equals(((TankPlayable) m).buildName))
+                            {
+                                build = i;
+                                System.out.println(t.emblem);
+                                t.clonePropertiesTo((TankPlayable) m);
+                                System.out.println(((TankPlayable) m).emblem);
+                                break;
+                            }
+                        }
+
+                        Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
+                    }
 				}
 
 				ScreenPartyHost.disconnectedPlayers.clear();
@@ -565,10 +570,20 @@ public class Panel
 		Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
 		Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
 
+		if (Game.game.window.focused != prevFocused)
+		{
+			prevFocused = Game.game.window.focused;
+			Game.screen.onFocusChange(prevFocused);
+		}
+
+		Replay.preUpdate();
+
 		if (!onlinePaused)
 			Game.screen.update();
 		else
 			this.onlineOverlay.update();
+
+		Replay.update();
 
 		if (Game.game.input.fullscreen.isValid())
 		{
@@ -605,10 +620,11 @@ public class Panel
 			Panel.selectedTextBox = null;
 		}
 
+		if (Replay.isRecording)
+			Replay.currentReplay.updateRecording(new ArrayList<>(Game.eventsOut));
+
 		if (ScreenPartyLobby.isClient)
-		{
-			Client.handler.reply();
-		}
+            Client.handler.reply();
 
 		if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
 		{
@@ -736,6 +752,7 @@ public class Panel
 			try
 			{
 				Game.screen.draw();
+				Replay.draw();
 				this.continuation = null;
 				this.continuationMusic = false;
 			}
@@ -797,8 +814,30 @@ public class Panel
 			this.drawBar();
 		}
 
+		if (!notifs.isEmpty())
+		{
+			double sy = 0;
+			for (int i = 0; i < notifs.size(); i++)
+			{
+				if (i == 1 && notifs.get(0).fadeStart)
+					sy -= Math.min(750, System.currentTimeMillis() - lastNotifTime) * (notifs.get(0).sY + 100) / 750;
+
+				Notification n = notifs.get(i);
+				if (i > 0)
+					n.age = Math.max(0, Math.min(n.age, notifs.get(i-1).age - 25));
+				n.draw(sy);
+				sy += n.sY + 15;
+			}
+
+			if (notifs.get(0).age > notifs.get(0).duration)
+				notifs.pop();
+		}
+
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
+
+		if (currentMessage != null)
+			currentMessage.draw();
 
 		Drawing.drawing.setColor(255, 255, 255);
 
@@ -808,8 +847,7 @@ public class Panel
 		Game.screen.drawPostMouse();
 
 
-//		if (!Game.game.window.drawingShadow)
-//			Drawing.drawing.terrainRenderer2.draw();
+		DebugKeybinds.update();
 	}
 
 	public void drawMouseTarget()
@@ -861,18 +899,11 @@ public class Panel
 		if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) || Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)
 		{
 			double c = 127 * Obstacle.draw_size / Game.tile_size;
+            double a = 255;
 
-			double r = c;
-			double g = c;
-			double b = c;
-			double a = 255;
+			double r2 = 0, g2 = 0, b2 = 0, a2 = 0;
 
-			double r2 = 0;
-			double g2 = 0;
-			double b2 = 0;
-			double a2 = 0;
-
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Game.game.window.shapeRenderer.setBatchMode(true, false, true, true, false);
 
 			double size = 12 * Drawing.drawing.interfaceScale / Drawing.drawing.scale;
@@ -888,81 +919,81 @@ public class Panel
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - size, y - thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y - thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + size, y - thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y - thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y - thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y + thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - size, y - thickness, 0);
 			Drawing.drawing.addVertex(x - size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + size, y - thickness, 0);
 			Drawing.drawing.addVertex(x + size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y - size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x - thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y + size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x - thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + thickness, y - size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x + thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + thickness, y + size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x + thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y - size, 0);
 			Drawing.drawing.addVertex(x + thickness, y - size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y + size, 0);
 			Drawing.drawing.addVertex(x + thickness, y + size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			double res = 40;
 			double height2 = height * 0.75;
 			for (int i = 0; i < res; i++)
 			{
-				Drawing.drawing.setColor(r, g, b, a, 1);
+				Drawing.drawing.setColor(c, c, c, a, 1);
 				double x1 = Math.cos(i / res * Math.PI * 2) * size;
 				double x2 = Math.cos((i + 1) / res * Math.PI * 2) * size;
 				double y1 = Math.sin(i / res * Math.PI * 2) * size;
@@ -998,6 +1029,8 @@ public class Panel
 		Drawing.drawing.setInterfaceFontSize(12);
 
 		double boundary = Game.game.window.getEdgeBounds();
+		double rightEdge = Panel.windowWidth - 5;
+		double bottomEdge = Panel.windowHeight;
 
 		if (Game.framework == Game.Framework.libgdx)
 			boundary += 40;
@@ -1009,7 +1042,6 @@ public class Panel
 		Drawing.drawing.setColor(255, 227, 186);
 
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
-
 		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
 
 		long free = Runtime.getRuntime().freeMemory();
@@ -1019,7 +1051,7 @@ public class Panel
 		allocatedThisSecond += Math.max(0, used - lastMemory);
 		lastMemory = used;
 
-		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + allocatedLastSecond / 1048576 + " MB/s)");
+		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
@@ -1031,8 +1063,16 @@ public class Panel
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
 		{
 			Drawing.drawing.setColor(255, 227, 186);
-			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s");
-			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s");
+			if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
+			{
+				Drawing.drawing.setColor(255, 227, 186);
+
+				String s = "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s";
+				Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, s);
+
+				s = "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s";
+				Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
+			}
 		}
 	}
 

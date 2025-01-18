@@ -18,9 +18,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     });
 
     Button noSaveExit = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Exit without saving", () ->
-    {
-        System.exit(0);
-    });
+            System.exit(0));
 
 
     Button cancel = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Don't exit", this::escape);
@@ -29,6 +27,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     public OverlayConfirmSave(Screen previous, ScreenLevelEditor s)
     {
         super(previous, s);
+        this.allowClose = previous.allowClose;
         Drawing.drawing.playSound("timer.ogg");
     }
 

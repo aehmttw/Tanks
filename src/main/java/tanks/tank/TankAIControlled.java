@@ -26,6 +26,7 @@ import static tanks.tank.TankPropertyCategory.*;
 /** This class is the 'skeleton' tank class.
  *  It can be extended and values can be changed to easily produce an AI for another tank.
  *  Also, the behavior is split into many methods which are intended to be overridden easily.*/
+@SuppressWarnings("unchecked")
 @TanksONable("tank")
 public class TankAIControlled extends Tank implements ITankField
 {
@@ -487,10 +488,18 @@ public class TankAIControlled extends Tank implements ITankField
 	/** True if able to mimic other tanks*/
 	protected boolean canCurrentlyMimic = true;
 
-	protected double baseColorR;
-	protected double baseColorG;
-	protected double baseColorB;
-	protected double baseMaxSpeed;
+	protected double baseColorR, baseColorG, baseColorB, baseMaxSpeed;
+
+	ArrayList<Bullet> toAvoid = new ArrayList<>(), toAvoidDeflect = new ArrayList<>();
+	ArrayList<Double> toAvoidDist = new ArrayList<>(), toAvoidDeflectDist = new ArrayList<>();
+	ArrayList<Ray> toAvoidTargets = new ArrayList<>();
+
+	/** Is set to true for 1 frame every 0.05s */
+	protected boolean frameTimerTriggered = false;
+	/** Timer to track time passed in intervals of 0.05s */
+	protected double frameSkipTimer = 0;
+	/** Increases by 1 every 0.05s */
+	protected int frameTimerTriggeredCnt = 0;
 
 	/** Set if tank transformed in the last frame */
 	public boolean justTransformed = false;
@@ -521,7 +530,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		for (int i = 0; i < fleeDirections.length; i++)
 		{
-			fleeDirections[i] = Math.PI / 4 + (i * 2 / fleeDirections.length) * Math.PI / 2 + i * Math.PI / fleeDirections.length;
+			fleeDirections[i] = Math.PI / 4 + ((double) i * 2 / fleeDirections.length) * Math.PI / 2 + i * Math.PI / fleeDirections.length;
 		}
 
 		this.fromRegistry = !this.getClass().equals(TankAIControlled.class);
@@ -574,7 +583,14 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.justTransformed = false;
 
-		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
+        //noinspection AssignmentUsedAsCondition
+        if (frameTimerTriggered = ((frameSkipTimer -= Panel.frameFrequency) < -3 * networkID))
+		{
+			frameSkipTimer += 5;
+			frameTimerTriggeredCnt++;
+		}
+
+		if (!this.spawnedTankEntries.isEmpty() && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
 		if (!this.destroy)
@@ -873,6 +889,9 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void updateTarget()
 	{
+		if (!frameTimerTriggered)
+			return;
+
 		if (this.transformMimic)
 			if (this.updateTargetMimic())
 				return;
@@ -926,9 +945,8 @@ public class TankAIControlled extends Tank implements ITankField
 			if (m instanceof Tank && !(m instanceof TankAIControlled && ((TankAIControlled) m).transformMimic) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
 					&& ((Tank) m).targetable && Movable.distanceBetween(m, this) < this.mimicRange && ((Tank) m).size == this.size && !m.destroy)
 			{
-				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
-				r.moveOut(5);
-				if (r.getTarget() != m)
+				if (new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this)
+						.moveOut(5).getTarget() != m)
 					continue;
 
 				double distance = Movable.distanceBetween(this, m);
@@ -1142,7 +1160,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			int chosenDir = (int)(this.random.nextDouble() * directions.size());
 
-			if (directions.size() == 0)
+			if (directions.isEmpty())
 				this.direction = (this.direction + 2) % 4;
 			else
 				this.direction = directions.get(chosenDir);
@@ -1192,12 +1210,8 @@ public class TankAIControlled extends Tank implements ITankField
 		Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
 
 		for (int i = 0; i < tiles.length; i++)
-		{
-			for (int j = 0; j < tiles[i].length; j++)
-			{
-				tiles[i][j] = new Tile(this.random, i, j);
-			}
-		}
+            for (int j = 0; j < tiles[i].length; j++)
+                tiles[i][j] = new Tile(this.random, i, j);
 
 		for (Obstacle o: Game.obstacles)
 		{
@@ -1226,7 +1240,7 @@ public class TankAIControlled extends Tank implements ITankField
 						for (int j = -1; j <= 1; j++)
 						{
 							if (x + i > 0 && x + i < tiles.length && y + j > 0 && y + j < tiles[0].length)
-								tiles[x + i][y + j].unfavorability = Math.max(tile.unfavorability, 1);
+								tiles[x + i][y + j].unfavorability = tile.unfavorability;
 						}
 					}
 				}
@@ -1301,7 +1315,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		double mul = 1;
 
-		if (this.path.size() > 0 && this.path.get(0).type == Tile.Type.destructible)
+		if (!this.path.isEmpty() && this.path.get(0).type == Tile.Type.destructible)
 			mul = 3;
 		else if (this.path.size() > 1 && this.path.get(1).type == Tile.Type.destructible)
 			mul = 2;
@@ -1343,220 +1357,231 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void checkForBulletThreats()
 	{
-		boolean avoid = false;
+		if (!toAvoid.isEmpty() || !toAvoidDeflect.isEmpty())
+			dodgeBulletThreats();
 
-		ArrayList<Bullet> toAvoid = new ArrayList<>();
-		ArrayList<Double> toAvoidDist = new ArrayList<>();
-		ArrayList<Bullet> toAvoidDeflect = new ArrayList<>();
-		ArrayList<Double> toAvoidDeflectDist = new ArrayList<>();
-		ArrayList<Ray> toAvoidTargets = new ArrayList<>();
+		if (!frameTimerTriggered)
+			return;
 
-		for (int i = 0; i < Game.movables.size(); i++)
+		toAvoid.clear();
+		toAvoidDist.clear();
+		toAvoidTargets.clear();
+		toAvoidDeflect.clear();
+		toAvoidDeflectDist.clear();
+
+		findBulletThreats();
+    }
+
+	public void findBulletThreats()
+	{
+		outer : for (Chunk chunk : Chunk.iterateOutwards(posX, posY, Chunk.chunkSize * 4))
 		{
-			if (Game.movables.get(i) instanceof Bullet && !Game.movables.get(i).destroy)
+			for (Movable m : chunk.movables)
 			{
-				Bullet b = (Bullet) Game.movables.get(i);
-				double dist = Movable.distanceBetween(this, b);
+                if (!(m instanceof Bullet) || m.destroy)
+                    continue;
 
-				double distBox = this.enableMovement ? 10 : 20;
-				if (!(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire)
-						&& (b.damage > 0 || b.hitStun > 0 || b.freezing || b.hitExplosion != null) && Math.abs(b.posX - this.posX) < Game.tile_size * distBox && Math.abs(b.posY - this.posY) < Game.tile_size * distBox
-						&& (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3))
-				{
-					int c = enableMovement ? 1 : 0;
-					for (int o = 0; o <= c; o++)
-					{
-						int mul = o == 1 ? 3 : 1;
+                Bullet b = (Bullet) m;
+                double dist = Movable.distanceBetween(this, b);
+                if (!isThreat(b, dist))
+                    continue;
 
-						if (dist < this.size * mul)
-						{
-							avoid = true;
+                int c = enableMovement ? 1 : 0;
+                for (int o = 0; o <= c; o++)
+                {
+                    int mul = o == 1 ? 3 : 1;
 
-							if (o == 1)
-							{
-								toAvoid.add(b);
-								toAvoidDist.add(dist);
-								toAvoidTargets.add(b.getRay());
-							}
-							else
-							{
-								toAvoidDeflect.add(b);
-								toAvoidDeflectDist.add(dist);
-							}
-						}
-						else
-						{
-							Ray r = b.getRay();
-							r.tankHitSizeMul = 3;
-							double d = r.getTargetDist(mul, this);
-							if (d >= 0)
-							{
-								avoid = true;
+                    if (dist < this.size * mul)
+                    {
+                        if (o == 1)
+                        {
+                            toAvoid.add(b);
+                            toAvoidDist.add(dist);
+                            toAvoidTargets.add(b.getRay());
+                        }
+                        else
+                        {
+                            toAvoidDeflect.add(b);
+                            toAvoidDeflectDist.add(dist);
+                        }
+                    }
+                    else
+                    {
+                        Ray r = b.getRay();
+                        r.tankHitSizeMul = 3;
+                        double d = r.getTargetDist(mul, this);
+                        if (d >= 0)
+                        {
+                            if (o == 1)
+                            {
+                                toAvoid.add(b);
+                                toAvoidDist.add(d);
+                                toAvoidTargets.add(r);
+                            }
+                            else
+                            {
+                                toAvoidDeflect.add(b);
+                                toAvoidDeflectDist.add(dist);
+                            }
+                        }
+                    }
 
-								if (o == 1)
-								{
-									toAvoid.add(b);
-									toAvoidDist.add(d);
-									toAvoidTargets.add(r);
-								}
-								else
-								{
-									toAvoidDeflect.add(b);
-									toAvoidDeflectDist.add(dist);
-								}
-							}
-						}
-					}
-				}
-			}
+					if (toAvoid.size() > 8 || toAvoidDeflect.size() > 8)
+						break outer;
+                }
+            }
 		}
 
 		this.bulletThreatCount = toAvoidDeflect.size();
+	}
 
-		if (avoid)
+	public void dodgeBulletThreats()
+	{
+		Bullet nearest = null;
+		Ray nearestTarget = null;
+		double nearestDist = Double.MAX_VALUE;
+
+		for (int i = 0; i < toAvoid.size(); i++)
 		{
-			Bullet nearest = null;
-			Ray nearestTarget = null;
-			double nearestDist = Double.MAX_VALUE;
-
-			for (int i = 0; i < toAvoid.size(); i++)
+			Bullet b = toAvoid.get(i);
+			double dist = toAvoidDist.get(i) / b.getSpeed();
+			if (dist < nearestDist)
 			{
-				Bullet b = toAvoid.get(i);
-				double dist = toAvoidDist.get(i) / b.getSpeed();
-				if (dist < nearestDist)
-				{
-					nearest = b;
-					nearestTarget = toAvoidTargets.get(i);
-					nearestDist = dist;
-				}
+				nearest = b;
+				nearestTarget = toAvoidTargets.get(i);
+				nearestDist = dist;
 			}
-
-			Bullet nearestDeflectable = null;
-			double nearestDeflectableDist = Double.MAX_VALUE;
-			for (int i = 0; i < toAvoidDeflect.size(); i++)
-			{
-				Bullet b = toAvoidDeflect.get(i);
-				double dist = toAvoidDeflectDist.get(i) / b.getSpeed();
-				if (!b.heavy && b.canBeCanceled && (!Team.isAllied(this, b) || !this.enableMovement) && dist < nearestDeflectableDist)
-				{
-					nearestDeflectable = b;
-					nearestDeflectableDist = dist;
-				}
-			}
-
-			this.nearestBulletDeflect = nearestDeflectable;
-			this.nearestBulletDeflectDist = nearestDeflectableDist;
-
-			if (nearestDeflectable != null || nearest != null)
-				this.avoidTimer = this.bulletAvoidTimerBase;
-
-			if (nearest == null)
-				return;
-
-			double direction = nearest.getPolarDirection();
-			double distance = Movable.distanceBetween(this, nearest);
-			double diff = Movable.angleBetween(direction, this.getAngleInDirection(nearest.posX, nearest.posY));
-
-			if (this.enableMovement)
-			{
-				double m = distance / nearest.getSpeed() * this.maxSpeed;
-				if (m > Game.tile_size * 4 && avoidanceSeekOpenSpaces)
-				{
-					int count = fleeDistances.length;
-					double[] d = fleeDistances;
-
-					for (int dir = 0; dir < count; dir++)
-					{
-						Ray r = new Ray(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size);
-						r.size = Game.tile_size * this.hitboxSize - 1;
-
-						boolean b = this.targetEnemy != null && this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge && Movable.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
-
-						double dist = r.getDist();
-						d[dir] = dist;
-
-						if (b)
-							d[dir] = Math.min(d[dir] - Game.tile_size, Game.tile_size * 3);
-					}
-
-					int greatest = -1;
-					double gValue = -1;
-					for (int i = 0; i < d.length; i++)
-					{
-						if (d[i] > gValue)
-						{
-							gValue = d[i];
-							greatest = i;
-						}
-					}
-
-					if (gValue < Game.tile_size * 4)
-						this.avoidDirection = direction + fleeDirections[greatest];
-					else if (this.avoidTimer <= 0)
-					{
-						// randomly pick one >= 3 tiles
-						while (true)
-						{
-							int c = (int) (this.random.nextDouble() * count);
-							if (d[c] >= Game.tile_size * 4)
-							{
-								this.avoidDirection = direction + fleeDirections[greatest];
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					double frac = Math.max(0, 2 - Math.max(m / (Game.tile_size * 2), 1));
-
-					if (this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge || this.bulletAvoidBehvavior == BulletAvoidBehavior.dodge)
-					{
-						double invert = 1;
-
-						if (this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge)
-							invert = -1;
-
-						this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * invert / 2) * Math.signum(diff);
-					}
-					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off)
-						this.avoidDirection = nearest.getAngleInDirection(this.posX, this.posY);
-					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off_dodge)
-					{
-						double a = nearest.getAngleInDirection(this.posX, this.posY);
-						Ray r = new Ray(this.posX, this.posY, a, 0, this, Game.tile_size);
-						r.size = Game.tile_size * this.hitboxSize - 1;
-						double d = r.getDist();
-
-						if (d < Game.tile_size * 2)
-							this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * -1 / 2) * Math.signum(diff);
-						else
-							this.avoidDirection = a;
-					}
-					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.intersect)
-					{
-						double targetX = nearestTarget.targetX;
-						double targetY = nearestTarget.targetY;
-
-						this.avoidDirection = this.getAngleInDirection(targetX, targetY) + Math.PI;
-						diff = Movable.angleBetween(this.avoidDirection, direction);
-
-						if (Math.abs(diff) < Math.PI / 4)
-							this.avoidDirection = direction + Math.signum(diff) * Math.PI / 4;
-
-						Ray r = new Ray(this.posX, this.posY, this.avoidDirection, 0, this, Game.tile_size);
-						r.size = Game.tile_size * this.hitboxSize - 1;
-						double d = r.getDist();
-
-						if (d < Game.tile_size * 2)
-							this.avoidDirection = direction - diff;
-					}
-				}
-			}
-
-			this.nearestBullet = nearest;
-			this.nearestBulletDist = nearestDist;
 		}
+
+		Bullet nearestDeflectable = null;
+		double nearestDeflectableDist = Double.MAX_VALUE;
+		for (int i = 0; i < toAvoidDeflect.size(); i++)
+		{
+			Bullet b = toAvoidDeflect.get(i);
+			double dist = toAvoidDeflectDist.get(i) / b.getSpeed();
+			if (!b.heavy && b.canBeCanceled && (!Team.isAllied(this, b) || !this.enableMovement) && dist < nearestDeflectableDist)
+			{
+				nearestDeflectable = b;
+				nearestDeflectableDist = dist;
+			}
+		}
+
+		this.nearestBulletDeflect = nearestDeflectable;
+		this.nearestBulletDeflectDist = nearestDeflectableDist;
+
+		if (nearestDeflectable != null || nearest != null)
+			this.avoidTimer = this.bulletAvoidTimerBase;
+
+		if (nearest == null)
+			return;
+
+		double direction = nearest.getPolarDirection();
+		double distance = Movable.distanceBetween(this, nearest);
+		double diff = Movable.angleBetween(direction, this.getAngleInDirection(nearest.posX, nearest.posY));
+
+		if (this.enableMovement)
+		{
+			double m = distance / nearest.getSpeed() * this.maxSpeed;
+			if (m > Game.tile_size * 4 && avoidanceSeekOpenSpaces)
+			{
+				int count = fleeDistances.length;
+				double[] d = fleeDistances;
+
+				for (int dir = 0; dir < count; dir++)
+				{
+					Ray r = new Ray(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size).setMaxChunks(4);
+					r.size = Game.tile_size * this.hitboxSize - 1;
+
+					boolean b = this.targetEnemy != null && this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge &&
+							Movable.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
+					double dist = r.getDist();
+					d[dir] = dist;
+					if (b) d[dir] = Math.min(d[dir] - Game.tile_size, Game.tile_size * 3);
+				}
+
+				int greatest = -1;
+				double gValue = -1;
+				for (int i = 0; i < d.length; i++)
+				{
+					if (d[i] > gValue)
+					{
+						gValue = d[i];
+						greatest = i;
+					}
+				}
+
+				if (gValue < Game.tile_size * 4)
+					this.avoidDirection = direction + fleeDirections[greatest];
+				else if (this.avoidTimer <= 0)
+				{
+					// randomly pick one >= 3 tiles
+					while (true)
+					{
+						int c = (int) (this.random.nextDouble() * count);
+						if (d[c] >= Game.tile_size * 4)
+						{
+							this.avoidDirection = direction + fleeDirections[greatest];
+							break;
+						}
+					}
+				}
+			}
+			else
+			{
+				double frac = Math.max(0, 2 - Math.max(m / (Game.tile_size * 2), 1));
+
+				if (this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge || this.bulletAvoidBehvavior == BulletAvoidBehavior.dodge)
+				{
+					double mult = this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge ? 1 : -1;
+					this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * mult / 2) * Math.signum(diff);
+				}
+				else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off)
+					this.avoidDirection = nearest.getAngleInDirection(this.posX, this.posY);
+				else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off_dodge)
+				{
+					double a = nearest.getAngleInDirection(this.posX, this.posY);
+					Ray r = new Ray(this.posX, this.posY, a, 0, this, Game.tile_size);
+					r.size = Game.tile_size * this.hitboxSize - 1;
+					double d = r.getDist();
+
+					if (d < Game.tile_size * 2)
+						this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * -1 / 2) * Math.signum(diff);
+					else
+						this.avoidDirection = a;
+				}
+				else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.intersect)
+				{
+					double targetX = nearestTarget.targetX;
+					double targetY = nearestTarget.targetY;
+
+					this.avoidDirection = this.getAngleInDirection(targetX, targetY) + Math.PI;
+					diff = Movable.angleBetween(this.avoidDirection, direction);
+
+					if (Math.abs(diff) < Math.PI / 4)
+						this.avoidDirection = direction + Math.signum(diff) * Math.PI / 4;
+
+					Ray r = new Ray(this.posX, this.posY, this.avoidDirection, 0, this, Game.tile_size);
+					r.size = Game.tile_size * this.hitboxSize - 1;
+					double d = r.getDist();
+
+					if (d < Game.tile_size * 2)
+						this.avoidDirection = direction - diff;
+				}
+			}
+		}
+
+		this.nearestBullet = nearest;
+		this.nearestBulletDist = nearestDist;
+	}
+
+	public boolean isThreat(Bullet b, double dist)
+	{
+		double distBox = this.enableMovement ? 10 : 20;
+		return !(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire)
+				&& (b.damage > 0 || b.hitStun > 0 || b.freezing || b.hitExplosion != null) &&
+				Math.abs(b.posX - this.posX) < Game.tile_size * distBox &&
+				Math.abs(b.posY - this.posY) < Game.tile_size * distBox
+				&& (b.getMotionInDirection(b.getAngleInDirection(this.posX, this.posY)) > 0 || dist < this.size * 3);
 	}
 
 	public void updateTurretAI()
@@ -1955,6 +1980,9 @@ public class TankAIControlled extends Tank implements ITankField
 			}
 		}
 
+		if (!frameTimerTriggered)
+			return;
+
 		this.testSearch(this.searchAngle);
 
 		if (this.searchPhase != RotationPhase.aiming)
@@ -1996,7 +2024,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void lookAtTargetEnemy()
 	{
-		if (!this.hasTarget || this.targetEnemy == null)
+		if (!this.hasTarget || this.targetEnemy == null || !frameTimerTriggered)
 			return;
 
 		double a;
@@ -2643,7 +2671,7 @@ public class TankAIControlled extends Tank implements ITankField
 			Tank t;
 			if (c.equals(TankAIControlled.class))
 			{
-				t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.colorR, this.colorG, this.colorB, this.angle, ((TankAIControlled) ct).shootAIType);
+                t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.colorR, this.colorG, this.colorB, this.angle, ((TankAIControlled) ct).shootAIType);
 				((TankAIControlled) ct).cloneProperties((TankAIControlled) t);
 			}
 			else
@@ -2995,7 +3023,7 @@ public class TankAIControlled extends Tank implements ITankField
 							int end = s.indexOf("]");
 							String[] csv = s.substring(s.indexOf("[") + 1, end).split(", ");
 							HashSet<String> hashSet;
-							if (csv[0].equals(""))
+							if (csv[0].isEmpty())
 								hashSet = new HashSet<>();
 							else
 								hashSet = new HashSet<>(Arrays.asList(csv));
@@ -3146,7 +3174,8 @@ public class TankAIControlled extends Tank implements ITankField
 			return t1;
 	}
 
-	public void cloneProperties(TankAIControlled t)
+	@SuppressWarnings("unchecked")
+    public void cloneProperties(TankAIControlled t)
 	{
 		try
 		{
@@ -3176,7 +3205,7 @@ public class TankAIControlled extends Tank implements ITankField
 					{
 						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
 
-						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
+						ArrayList<SpawnedTankEntry> al = new ArrayList<>();
 						for (SpawnedTankEntry o: a1)
 						{
 							al.add(new SpawnedTankEntry(cloneTankField(o.tank), o.weight));

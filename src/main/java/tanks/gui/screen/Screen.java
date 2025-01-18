@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.IBatchRenderableObject;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.ScreenIntro;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;
@@ -48,8 +45,6 @@ public abstract class Screen implements IBatchRenderableObject
 	protected boolean redrawn = false;
 	public boolean splitTiles = false;
 	public boolean drawn = false;
-
-	public IBatchRenderableObject[][] tiles;
 
 	public double lastObsSize;
 
@@ -95,18 +90,6 @@ public abstract class Screen implements IBatchRenderableObject
 
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
-
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.heightGrid[i][j] <= -1000)
-					Game.game.heightGrid[i][j] = 0;
-
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
 
 		double frac = 0;
 
@@ -175,19 +158,14 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
-	public static class FlashingTile implements IBatchRenderableObject
+	public void onFocusChange(boolean focused)
 	{
-		public boolean redrawn = false;
-		public int posX;
-		public int posY;
 
-		public double flash;
+	}
 
-		public FlashingTile(int x, int y)
-		{
-			this.posX = x;
-			this.posY = y;
-		}
+	public void onFilesDropped(String... filePaths)
+	{
+
 	}
 
 	/** Setup all light info in Panel.lights to be sent to the shader */

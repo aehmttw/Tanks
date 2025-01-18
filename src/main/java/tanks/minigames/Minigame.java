@@ -56,19 +56,6 @@ public abstract class Minigame extends Level
 
         Game.screen = new ScreenGame();
         Game.screen.splitTiles = flashBackground;
-
-        if (this.flashBackground)
-        {
-            Game.screen.tiles = new Screen.FlashingTile[Game.currentSizeX][Game.currentSizeY];
-
-            for (int i = 0; i < Game.screen.tiles.length; i++)
-            {
-                for (int j = 0; j < Game.screen.tiles[i].length; j++)
-                {
-                    Game.screen.tiles[i][j] = new Screen.FlashingTile(i, j);
-                }
-            }
-        }
     }
 
     /**

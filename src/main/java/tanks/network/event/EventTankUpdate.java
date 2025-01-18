@@ -60,46 +60,46 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 	public void execute()
 	{
 		Tank t = Tank.idMap.get(this.tank);
-		
-		if (t != null && this.clientID == null)
-		{
-			if (t instanceof TankRemote)
-			{
-				TankRemote r = (TankRemote) t;
-				double iTime = Math.min(100, (time - r.lastUpdate) / 10.0);
 
-				r.prevKnownPosX = r.posX;
-				r.prevKnownPosY = r.posY;
-				r.prevKnownVX = r.vX;
-				r.prevKnownVY = r.vY;
-				r.prevKnownVXFinal = r.lastFinalVX;
-				r.prevKnownVYFinal = r.lastFinalVY;
+        if (t == null || this.clientID != null)
+            return;
 
-				r.currentKnownPosX = this.posX;
-				r.currentKnownPosY = this.posY;
-				r.currentKnownVX = this.vX;
-				r.currentKnownVY = this.vY;
+        if (t instanceof TankRemote)
+        {
+            TankRemote r = (TankRemote) t;
+            double iTime = Math.min(100, (time - r.lastUpdate) / 10.0);
 
-				r.timeSinceRefresh = 0;
-				r.interpolationTime = iTime;
-				r.lastUpdate = time;
+            r.prevKnownPosX = r.posX;
+            r.prevKnownPosY = r.posY;
+            r.prevKnownVX = r.vX;
+            r.prevKnownVY = r.vY;
+            r.prevKnownVXFinal = r.lastFinalVX;
+            r.prevKnownVYFinal = r.lastFinalVY;
 
-				r.lastAngle = r.angle;
-				r.lastPitch = r.pitch;
-				r.currentAngle = this.angle;
-				r.currentPitch = this.pitch;
-			}
-			else
-			{
-				t.posX = this.posX;
-				t.posY = this.posY;
-				t.vX = this.vX;
-				t.vY = this.vY;
-				t.angle = this.angle;
-				t.pitch = this.pitch;
-			}
-		}
-	}
+            r.currentKnownPosX = this.posX;
+            r.currentKnownPosY = this.posY;
+            r.currentKnownVX = this.vX;
+            r.currentKnownVY = this.vY;
+
+            r.timeSinceRefresh = 0;
+            r.interpolationTime = iTime;
+            r.lastUpdate = time;
+
+            r.lastAngle = r.angle;
+            r.lastPitch = r.pitch;
+            r.currentAngle = this.angle;
+            r.currentPitch = this.pitch;
+        }
+        else
+        {
+            t.posX = this.posX;
+            t.posY = this.posY;
+            t.vX = this.vX;
+            t.vY = this.vY;
+            t.angle = this.angle;
+            t.pitch = this.pitch;
+        }
+    }
 
 	@Override
 	public int getIdentifier()

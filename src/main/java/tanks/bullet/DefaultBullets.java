@@ -4,24 +4,10 @@ import tanks.tank.Explosion;
 
 public class DefaultBullets
 {
-    public static Bullet basic_bullet;
-    public static Bullet mini_bullet;
-    public static Bullet mega_bullet;
-    public static Bullet rocket;
-    public static Bullet sniper_rocket;
-    public static Bullet void_rocket;
-    public static Bullet homing_rocket;
-    public static Bullet freezing_bullet;
-    public static Bullet booster_bullet;
-    public static Bullet explosive_bullet;
-
-    public static BulletInstant laser;
-    public static BulletInstant zap;
-    public static BulletInstant healing_ray;
-
-    public static BulletGas flamethrower;
-    public static BulletGas air;
-
+    public static Bullet basic_bullet, mini_bullet, mega_bullet, rocket, sniper_rocket, void_rocket, homing_rocket,
+            freezing_bullet, booster_bullet, explosive_bullet;
+    public static BulletInstant laser, zap, healing_ray;
+    public static BulletGas flamethrower, air;
     public static BulletArc artillery_shell;
 
     public static void initialize()

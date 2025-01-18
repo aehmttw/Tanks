@@ -797,7 +797,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         radius = Math.min(radius, Math.min(width, (Math.min(sX, sY) - width) / 2));
 
-        width /= 2;
         double innerRadius = radius / 2;
         int sides = Math.max(4, (int) (radius / 4) + 5);
         double change = Math.PI / 2 / sides;
@@ -805,7 +804,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         // Where the outer arc begins
         final double[] xs = {x + radius, x + sX - radius, x + sX - radius, x + radius};
         final double[] ys = {y + radius, y + radius, y + sY - radius, y + sY - radius};
-        int[] order = {2, 3, 4, 1};
+        int[] order = {2, 3, 4, 1};     // used to access the data of the next corner (could be done using modulo but too lazy to reimplement)
 
         final double[] xRadius = {0, radius, 0, -radius};
         final double[] yRadius = {-radius, 0, radius, 0};
@@ -818,9 +817,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             double maxJ = Math.PI * 2 * (order[i] + 1) / 4;
 
             for (double j = Math.PI * 2 * (order[i] / 4.); j <= maxJ + change / 2; j += change)
-            {
                 glVertex2d(xs[i] + Math.cos(j) * radius, ys[i] + Math.sin(j) * radius);
-            }
 
             int nextI = (i + 1) % 4;
             glVertex2d(xs[nextI] + xRadius[i], ys[nextI] + yRadius[i]);

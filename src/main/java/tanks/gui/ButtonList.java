@@ -193,7 +193,6 @@ public class ButtonList
             buttons.get(i).imageG = this.imageG;
             buttons.get(i).imageB = this.imageB;
 
-
             if (hideText)
                 buttons.get(i).text = "";
         }
@@ -236,7 +235,7 @@ public class ButtonList
         while (page * rows * columns >= buttons.size() && page > 0)
             page--;
 
-        if (this.arrowsEnabled && this.buttons.size() > 0)
+        if (this.arrowsEnabled && !this.buttons.isEmpty())
         {
             upButtons.get(0).enabled = false;
             downButtons.get(downButtons.size() - 1).enabled = false;
@@ -284,7 +283,7 @@ public class ButtonList
         first.enabled = previous.enabled;
         last.enabled = next.enabled;
 
-        if (this.arrowsEnabled && this.buttons.size() > 0)
+        if (this.arrowsEnabled && !this.buttons.isEmpty())
         {
             upButtons.get(fixedFirstElements).enabled = false;
             downButtons.get(downButtons.size() - fixedLastElements - 1).enabled = false;

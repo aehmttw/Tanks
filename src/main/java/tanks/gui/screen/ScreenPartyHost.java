@@ -61,9 +61,7 @@ public class ScreenPartyHost extends Screen
     });
 
     public Button invite = new Button(this.centerX + 190, this.centerY - 340, this.objWidth, this.objHeight, "Invite Steam friends", () ->
-    {
-        Game.screen = new ScreenInviteSteamFriends(Game.screen);
-    });
+            Game.screen = new ScreenInviteSteamFriends(Game.screen));
 
     Button newLevel = new Button(this.centerX + 190, this.centerY - 250, this.objWidth, this.objHeight, "Random co-op", () ->
     {
@@ -103,9 +101,7 @@ public class ScreenPartyHost extends Screen
             "Fight battles in an order,---and see how long you can survive!");
 
     Button minigames = new Button(this.centerX + 190, this.centerY - 70, this.objWidth, this.objHeight, "Minigames", () ->
-    {
-        Game.screen = new ScreenMinigames();
-    },
+            Game.screen = new ScreenMinigames(),
             "Play Tanks in new ways!");
 
     Button myLevels = new Button(this.centerX + 190, this.centerY - 10, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenPlaySavedLevels(),

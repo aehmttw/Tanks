@@ -571,7 +571,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     }
     );
 
-    Button showRecordButton = new Button(-1000, -1000, 35, 35, "", () -> {this.showRecord = !this.showRecord; }, "Toggle showing best time");
+    Button showRecordButton = new Button(-1000, -1000, 35, 35, "", () -> this.showRecord = !this.showRecord, "Toggle showing best time");
 
     Button previousPage = new Button(this.centerX, 0, 500, 30, "Previous page", () ->
     {

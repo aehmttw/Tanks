@@ -24,6 +24,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
     protected boolean lastOn = false;
     protected boolean firstUpdate = true;
 
+    private boolean refreshHitboxes;
+
     public ObstacleBeatBlock(String name, double posX, double posY)
     {
         super(name, posX, posY);
@@ -66,17 +68,20 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.bulletCollision = on;
         this.tankCollision = on;
 
+        addMusic();
+        if (this.refreshHitboxes)
+        {
+            this.refreshHitboxes = false;
+            refreshHitboxes();
+        }
+
         if (this.tankCollision != lastOn || firstUpdate)
         {
             if (firstUpdate)
                 this.postOverride();
 
             this.firstUpdate = false;
-            int x = (int) (this.posX / Game.tile_size);
-            int y = (int) (this.posY / Game.tile_size);
-
-            if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-                Game.game.solidGrid[x][y] = this.tankCollision;
+            this.refreshHitboxes = true;
 
             this.verticalFaces = null;
             this.horizontalFaces = null;
@@ -89,6 +94,15 @@ public class ObstacleBeatBlock extends ObstacleStackable
         {
             this.allowBounce = true;
             this.shouldClip = false;
+        }
+    }
+
+    public void addMusic()
+    {
+        if (Game.currentLevel != null)
+        {
+            Game.currentLevel.synchronizeMusic = true;
+            Game.currentLevel.beatBlocks |= (int) beatFrequency;
         }
     }
 
@@ -183,8 +197,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
     {
         float cx = (float) this.posX;
         float cy = (float) this.posY;
-        float h = (float) (Game.sampleGroundHeight(this.posX, this.posY));
-        float cz = (float) (h);
+        float cz = (float) Game.sampleDefaultGroundHeight(this.posX, this.posY);
 
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
 

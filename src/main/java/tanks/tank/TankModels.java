@@ -8,17 +8,7 @@ import java.util.HashMap;
 
 public class TankModels
 {
-    public static FullTankModel tank;
-    public static FullTankModel checkerboard;
-    public static FullTankModel fixed;
-    public static FullTankModel cross;
-    public static FullTankModel horizontalStripes;
-    public static FullTankModel verticalStripes;
-    public static FullTankModel diagonalStripes;
-    public static FullTankModel arrow;
-    public static FullTankModel camo;
-    public static FullTankModel flames;
-
+    public static FullTankModel tank, checkerboard, fixed, cross, horizontalStripes, verticalStripes, diagonalStripes, arrow, camo, flames;
     public static HashMap<String, FullTankModel> fullTankModels = new HashMap<>();
 
     public static class FullTankModel

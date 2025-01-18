@@ -24,9 +24,7 @@ public class ScreenLanguage extends Screen
 
         languages = new SavedFilesList(Game.homedir + Game.languagesPath, page, 0, -30,
                 (name, file) ->
-                {
-                    changeLanguage(new Translation(file));
-                }, (file) -> null, (file, button) ->
+                        changeLanguage(new Translation(file)), (file) -> null, (file, button) ->
                 {
                     try
                     {
@@ -41,15 +39,11 @@ public class ScreenLanguage extends Screen
                 }, ".lang");
 
         languages.buttons.add(0, new Button(0, 0, 350, 40, "English", () ->
-        {
-            changeLanguage(null);
-        }
+                changeLanguage(null)
         ));
 
         languages.buttons.add(1, new Button(0, 0, 350, 40, "Français", () ->
-        {
-            changeLanguage(new Translation("fr.lang"));
-        }
+                changeLanguage(new Translation("fr.lang"))
         ));
 
         /*languages.buttons.add(2, new Button(0, 0, 350, 40, "Español", () ->
@@ -59,9 +53,7 @@ public class ScreenLanguage extends Screen
         ));*/
 
         languages.buttons.add(2, new Button(0, 0, 350, 40, "Svenska", () ->
-        {
-            changeLanguage(new Translation("se.lang"));
-        }
+                changeLanguage(new Translation("se.lang"))
         ));
 
         /*languages.buttons.add(3, new Button(0, 0, 350, 40, "Română", () ->

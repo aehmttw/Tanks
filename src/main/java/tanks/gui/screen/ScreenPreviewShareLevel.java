@@ -103,9 +103,6 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
 
         if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
             levelName.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     boolean mouseTarget;

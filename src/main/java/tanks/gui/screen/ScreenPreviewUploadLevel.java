@@ -53,9 +53,6 @@ public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScr
     {
         this.back.update();
         this.upload.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

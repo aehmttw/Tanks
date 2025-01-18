@@ -4,11 +4,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
-import tanks.gui.ButtonObject;
-import tanks.item.Item;
-import tanks.tank.Tank;
-
-import java.util.ArrayList;
 
 public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScreen
 {
@@ -17,9 +12,7 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
     public int pageEntries = 10;
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () ->
-    {
-        Game.screen = this.previous;
-    }
+            Game.screen = this.previous
     );
 
     public ScreenItemSavedInfo(Screen s)

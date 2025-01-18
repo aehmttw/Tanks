@@ -29,16 +29,12 @@ public class GameWindowHandler implements IWindowHandler
 		ScreenOptions.saveOptions(Game.homedir);
 
 		if (ScreenPartyHost.isServer)
-		{
-			ScreenPartyHost.server.close("The party host has closed their game");
-		}
+            ScreenPartyHost.server.close("The party host has closed their game");
 
 		try
 		{
 			if (Crusade.currentCrusade != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient && Game.screen instanceof ScreenGame)
-			{
-				Crusade.currentCrusade.quit();
-			}
+                Crusade.currentCrusade.quit();
 		}
 		catch (Exception e)
 		{
@@ -49,4 +45,9 @@ public class GameWindowHandler implements IWindowHandler
 			Game.steamNetworkHandler.exit();
 	}
 
+	@Override
+	public void onFilesDropped(String... filePaths)
+	{
+		Game.screen.onFilesDropped(filePaths);
+	}
 }

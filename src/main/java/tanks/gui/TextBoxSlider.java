@@ -269,8 +269,8 @@ public class TextBoxSlider extends TextBox
 
     public void submit()
     {
-        super.submit();
         this.value = Double.parseDouble(this.inputText);
+        super.submit();
     }
 
     public boolean shouldAddEffect()

@@ -85,9 +85,7 @@ public class ScreenOptions extends Screen
 	Button miscOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
 
 	Button openFolder = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Open game folder", () ->
-	{
-		Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath);
-	});
+            Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath));
 
 
 	@Override
@@ -140,7 +138,7 @@ public class ScreenOptions extends Screen
 		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
 			Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
 
-		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && Game.player.username.length() >= 1)
+		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && !Game.player.username.isEmpty())
 		{
 			Drawing.drawing.setColor(127, 127, 127);
 			double s = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale;
@@ -159,7 +157,7 @@ public class ScreenOptions extends Screen
 		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
 		Drawing.drawing.drawInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, Game.player.username);
 
-		if (Game.player.username.length() < 1)
+		if (Game.player.username.isEmpty())
 		{
 			Drawing.drawing.setColor(127, 127, 127);
 			Drawing.drawing.displayInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, "Pick a username...");
@@ -221,6 +219,7 @@ public class ScreenOptions extends Screen
 			f.println("xray_bullets=" + Game.xrayBullets);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("mouse_target_height=" + Panel.showMouseTargetHeight);
+			f.println("pause_on_lost_focus=" + Panel.pauseOnDefocus);
 			f.println("constrain_mouse=" + Game.constrainMouse);
 			f.println("fullscreen=" + fullscreen);
 			f.println("vibrations=" + Game.enableVibrations);
@@ -346,6 +345,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "mouse_target_height":
 						Panel.showMouseTargetHeight = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "pause_on_lost_focus":
+						Panel.pauseOnDefocus = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "constrain_mouse":
 						Game.constrainMouse = Boolean.parseBoolean(optionLine[1]);

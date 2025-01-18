@@ -57,10 +57,7 @@ public class ScreenShareCrusade extends Screen
 		boolean party = ScreenPartyLobby.isClient || ScreenPartyHost.isServer;
 		allCrusades = new SavedFilesList(Game.homedir + Game.crusadeDir, ScreenCrusades.page, 0, party ? -60 : -30,
 				(name, file) ->
-				{
-					Game.screen = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true);
-
-				}, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+                        Game.screen = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true), (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
 		this.allCrusades.drawOpenFileButton = true;
 		crusades = allCrusades.clone();

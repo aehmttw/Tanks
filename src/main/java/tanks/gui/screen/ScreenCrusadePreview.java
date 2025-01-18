@@ -213,7 +213,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadeShopItemScre
         crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight,
                 !uploadMode ? "Crusade save name" : "Crusade upload name", () ->
         {
-            if (crusadeName.inputText.equals(""))
+            if (crusadeName.inputText.isEmpty())
                 crusadeName.inputText = crusadeName.previousInputText;
             updateDownloadButton();
         }

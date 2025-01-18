@@ -95,9 +95,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
             }
 
             ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
-            {
-                this.editTank(j);
-            }, t.description);
+                    this.editTank(j), t.description);
 
             if (t.description.isEmpty())
                 b.enableHover = false;

@@ -17,10 +17,9 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 
     public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor editor)
     {
-        this.allowClose = false;
-
         this.previous = previous;
         this.editor = editor;
+        this.windowTitle = editor.windowTitle;
 
         this.music = previous.music;
         this.musicID = previous.musicID;
@@ -59,7 +58,9 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void update()
     {
-        Game.recomputeHeightGrid();
+        allowClose = editor.undoActions.isEmpty() && !editor.modified;
+        windowTitle = (allowClose ? "" : "*");
+
         this.editor.updateMusic(this.musicInstruments);
 
         if (Game.game.input.editorPause.isValid())

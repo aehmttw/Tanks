@@ -1,7 +1,6 @@
 package tanks.tankson;
 
 import tanks.Game;
-import tanks.tank.Mine;
 
 import java.lang.reflect.Field;
 

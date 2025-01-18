@@ -3,32 +3,25 @@ package tanks.tankson;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemEmpty;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class Serializer
 {
 
     public static HashMap<Class<?>, Object> defaults = new HashMap<>();
-
     public static HashMap<String, Tank> userTanks = new HashMap<>();
 
     public static Class<?> getCorrectClass(Object o)
     {
         if (o instanceof TankAIControlled)
-        {
             return TankAIControlled.class;
-        }
         else
-        {
             return o.getClass();
-        }
     }
 
     public static Object getDefault(Class<?> c)
@@ -182,7 +175,8 @@ public final class Serializer
     {
         if (m == null)
             return null;
-        Object o = null;
+
+        Object o;
         switch ((String) m.get("obj_type"))
         {
             case "tank":
@@ -240,7 +234,7 @@ public final class Serializer
                 o = new TankReference((String) m.get("tank"));
                 break;
             default:
-                throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
+                throw new RuntimeException("Bad object type: " + m.get("obj_type"));
         }
         for (Field f : o.getClass().getFields())
         {
@@ -252,7 +246,10 @@ public final class Serializer
                     if (isTanksONable(f))
                     {
                         Object o3 = m.get(getid(f));
-                        f.set(o, parseObject((Map) o3));
+                        if (o3 instanceof Map)
+                            f.set(o, parseObject((Map) o3));
+                        else
+                            f.set(o, defaultObject(o3, f));
                     }
                     else if (o2 instanceof ArrayList)
                     {
@@ -261,9 +258,7 @@ public final class Serializer
                         {
                             ArrayList o3s = new ArrayList();
                             for (Map o3 : ((ArrayList<Map>) m.get(getid(f))))
-                            {
                                 o3s.add(parseObject(o3));
-                            }
                             f.set(o, o3s);
                         }
                         else
@@ -291,4 +286,17 @@ public final class Serializer
         return o;
     }
 
+    private static Object defaultObject(Object o, Field f)
+    {
+        try
+        {
+            if (o instanceof Boolean && (Boolean) o)
+                return f.getType().getConstructor().newInstance();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+        return null;
+    }
 }

@@ -76,7 +76,7 @@ public class Joystick implements IDrawable
                 double py = Drawing.drawing.getInterfacePointerY(p.y);
 
                 double distSq = Math.pow(px - this.posX, 2) + Math.pow(py - this.posY, 2);
-                if (!ScreenGame.finished && (p.tag.equals("") &&
+                if (!ScreenGame.finished && (p.tag.isEmpty() &&
                         ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) || (this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden) || (this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden)))
                         || (this.activeInput == i && p.tag.equals(this.name)))
                 {

@@ -83,7 +83,7 @@ public class ChatBox extends TextBox
 				double mx = Drawing.drawing.getInterfacePointerX(p.x);
 				double my = Drawing.drawing.getInterfacePointerY(p.y);
 
-				if (p.tag.equals(""))
+				if (p.tag.isEmpty())
 				{
 					boolean handled = checkMouse(mx, my, p.valid);
 
@@ -112,7 +112,7 @@ public class ChatBox extends TextBox
 
 		if (this.selected && Game.game.window.validPressedKeys.contains(InputCodes.KEY_ENTER))
 		{
-			if (this.inputText.trim().length() > 0)
+			if (!this.inputText.trim().isEmpty())
 				this.function.run();
 
 			Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);

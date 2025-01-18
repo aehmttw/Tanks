@@ -96,9 +96,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     });
 
     public Button delete = new Button(200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Remove from server", () ->
-    {
-        confirmingDelete = true;
-    });
+            confirmingDelete = true);
 
     public Button more = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "More by this user", () ->
     {
@@ -107,7 +105,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> confirmingDelete = false);
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
@@ -141,9 +139,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     }, "Dislike the level");
 
     public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 45, Drawing.drawing.interfaceSizeY - 190, this.objHeight, this.objHeight, "", () ->
-    {
-        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
-    }, "View level page on Steam");
+            Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default), "View level page in Steam");
 
     public ScreenSaveLevel(String name, String level, Screen s)
     {
@@ -176,6 +172,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             levelName.posY += 40;
             download.posY += 40;
             back.posY += 40;
+            delete.posY += 40;
         }
 
         voteUp.fullInfo = true;
@@ -223,9 +220,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 more.update();
             }
         }
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

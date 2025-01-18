@@ -52,6 +52,8 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
 
         teamName.lowerCase = true;
 
+        screenLevelEditor.modified = true;
+
         if (team.friendlyFire)
             teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.onText);
         else
@@ -96,9 +98,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     );
 
     public Button teamColor = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Team color", () ->
-        {
-            Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
-        }
+            Game.screen = new OverlayEditTeamColor(Game.screen, editor, team)
     );
 
     @Override

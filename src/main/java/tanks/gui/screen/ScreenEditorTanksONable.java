@@ -182,7 +182,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
         public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - 190, Drawing.drawing.interfaceSizeY / 2 + 240, 350, 40, "Previous page", () -> page--);
 
-        public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", () -> {screen.setTab(screen.currentTab.parent);});
+        public Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, 350, 40, "Back", () -> screen.setTab(screen.currentTab.parent));
 
         public Tab(ScreenEditorTanksONable<T> screen, String name, String category)
         {

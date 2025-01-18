@@ -38,17 +38,12 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
     {
         super(previous, screenLevelEditor);
 
-        this.allowClose = false;
-
         if (!screenLevelEditor.level.editable)
         {
             play.posY += 60;
             delete.posY -= 60;
             quit.posY -= 60;
         }
-
-        //this.music = "editor_paused.ogg";
-        //this.musicID = "editor";
     }
 
     public void update()
@@ -67,12 +62,12 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         quit.update();
         clone.update();
 
-        if (editor.spawns.size() > 0)
+        if (!editor.spawns.isEmpty())
             play.update();
         else
             playUnavailable.update();
 
-        if (Game.game.input.editorPlay.isValid() && editor.spawns.size() > 0)
+        if (Game.game.input.editorPlay.isValid() && !editor.spawns.isEmpty())
         {
             editor.play();
             Game.game.input.play.invalidate();
@@ -98,7 +93,7 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         quit.draw();
         clone.draw();
 
-        if (editor.spawns.size() > 0)
+        if (!editor.spawns.isEmpty())
             play.draw();
         else
             playUnavailable.draw();

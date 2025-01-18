@@ -1,8 +1,6 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
 import tanks.bullet.DefaultBullets;
 
 /**

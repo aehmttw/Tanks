@@ -7,7 +7,6 @@ import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
 import tanks.bullet.BulletPropertyCategory;
 import tanks.gui.*;
-import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Turret;
@@ -32,19 +31,15 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Button glowButton;
 
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
-    {
-        Game.screen = new ScreenAddSavedItem(this, (b) ->
-        {
-            this.setTarget(((ItemBullet) b.item).bullet);
-            Game.screen = this;
-        }, "Bullet", ItemBullet.class);
-    }
+            Game.screen = new ScreenAddSavedItem(this, (b) ->
+            {
+                this.setTarget(((ItemBullet) b.item).bullet);
+                Game.screen = this;
+            }, "Bullet", ItemBullet.class)
     );
 
     public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
-    {
-        Game.screen = new ScreenSaveUnnamedItem(this);
-    }
+            Game.screen = new ScreenSaveUnnamedItem(this)
     );
 
     public ScreenEditorBullet(Pointer<Bullet> bullet, Screen screen)

@@ -1836,6 +1836,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		}
 	}
 
+	@Override
+	public boolean disableRayCollision()
+	{
+		return !enableCollision || !enableExternalCollisions || !canBeCanceled;
+	}
+
 	public double getRangeMin()
 	{
 		return -1;

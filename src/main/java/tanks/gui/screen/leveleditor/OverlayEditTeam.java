@@ -52,6 +52,8 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
 
         teamName.lowerCase = true;
 
+        screenLevelEditor.modified = true;
+
         if (team.friendlyFire)
             teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.onText);
         else

@@ -17,10 +17,9 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
 
     public ScreenLevelEditorOverlay(Screen previous, ScreenLevelEditor editor)
     {
-        this.allowClose = false;
-
         this.previous = previous;
         this.editor = editor;
+        this.windowTitle = editor.windowTitle;
 
         this.music = previous.music;
         this.musicID = previous.musicID;

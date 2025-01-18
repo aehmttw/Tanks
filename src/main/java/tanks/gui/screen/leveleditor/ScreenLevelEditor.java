@@ -279,9 +279,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.music = "battle_editor.ogg";
 		this.musicID = "editor";
 
-		// todo
-		this.allowClose = false;
-
 		if (Game.game.window.touchscreen)
 			controlsSizeMultiplier = 1.0;
 
@@ -291,9 +288,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.setMousePlaceable();
 
 		for (int i = 0; i < drawables.length; i++)
-		{
-			drawables[i] = new ArrayList<>();
-		}
+            drawables[i] = new ArrayList<>();
 
 		Obstacle.draw_size = Game.tile_size;
 
@@ -469,7 +464,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (mousePlaceable instanceof Tank)
 			((Tank) mousePlaceable).angle = ((Tank) mousePlaceable).orientation;
 
-//		allowClose = this.undoActions.isEmpty() && !modified;
+		allowClose = this.undoActions.isEmpty() && !modified;
+		windowTitle = (allowClose ? "" : "*");
 		clickCooldown = Math.max(0, clickCooldown - Panel.frameFrequency);
 
 		if (grab.keybind.isValid())
@@ -1568,7 +1564,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void save(String levelName)
 	{
-		if (!modified && undoActions.isEmpty())
+		if (allowClose)
 			return;
 
 		StringBuilder level = new StringBuilder("{");
@@ -1891,8 +1887,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.fontBrightness = 255;
 		else
 			this.fontBrightness = 0;
-
-		windowTitle = (allowClose ? "" : "*");
 
 		if (Panel.panel.continuation == null)
 		{

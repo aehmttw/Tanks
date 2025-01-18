@@ -38,17 +38,12 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
     {
         super(previous, screenLevelEditor);
 
-        this.allowClose = false;
-
         if (!screenLevelEditor.level.editable)
         {
             play.posY += 60;
             delete.posY -= 60;
             quit.posY -= 60;
         }
-
-        //this.music = "editor_paused.ogg";
-        //this.musicID = "editor";
     }
 
     public void update()

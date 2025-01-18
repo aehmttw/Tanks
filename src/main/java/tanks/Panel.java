@@ -1029,6 +1029,8 @@ public class Panel
 		Drawing.drawing.setInterfaceFontSize(12);
 
 		double boundary = Game.game.window.getEdgeBounds();
+		double rightEdge = Panel.windowWidth - 5;
+		double bottomEdge = Panel.windowHeight;
 
 		if (Game.framework == Game.Framework.libgdx)
 			boundary += 40;
@@ -1040,7 +1042,6 @@ public class Panel
 		Drawing.drawing.setColor(255, 227, 186);
 
 		Game.game.window.fontRenderer.drawString(boundary + 2, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "FPS: " + lastFPS);
-
 		Game.game.window.fontRenderer.drawString(boundary + 600, offset + (int) (Panel.windowHeight - 40 + 10), 0.6, 0.6, Game.screen.screenHint);
 
 		long free = Runtime.getRuntime().freeMemory();
@@ -1062,8 +1063,16 @@ public class Panel
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
 		{
 			Drawing.drawing.setColor(255, 227, 186);
-			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s");
-			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s");
+			if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
+			{
+				Drawing.drawing.setColor(255, 227, 186);
+
+				String s = "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s";
+				Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, s);
+
+				s = "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s";
+				Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
+			}
 		}
 	}
 

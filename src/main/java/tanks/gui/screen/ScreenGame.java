@@ -1495,8 +1495,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				m.update();
 			}
 
-			Game.currentLevel.beatBlocks = 0;
-			Game.currentLevel.synchronizeMusic = false;
+			if (Game.currentLevel != null)
+			{
+				Game.currentLevel.beatBlocks = 0;
+				Game.currentLevel.synchronizeMusic = false;
+			}
+
 			for (Obstacle o : Game.updateObstacles)
                 o.update();
 

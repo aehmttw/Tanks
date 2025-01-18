@@ -1348,6 +1348,9 @@ public class Game
 
 	public static void silentCleanUp()
 	{
+		if (Game.currentLevel != null)
+			Chunk.populateChunks(Game.currentLevel);
+
 		obstacles.clear();
 		tracks.clear();
 		movables.clear();

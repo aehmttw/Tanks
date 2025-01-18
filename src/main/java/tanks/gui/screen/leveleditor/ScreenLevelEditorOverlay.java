@@ -58,8 +58,10 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
     @Override
     public void update()
     {
+        allowClose = editor.undoActions.isEmpty() && !editor.modified;
+        windowTitle = (allowClose ? "" : "*");
+
         this.editor.updateMusic(this.musicInstruments);
-        this.windowTitle = this.editor.windowTitle;
 
         if (Game.game.input.editorPause.isValid())
         {

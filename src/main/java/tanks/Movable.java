@@ -1,7 +1,7 @@
 package tanks;
 
 import tanks.effect.AttributeModifier;
-import tanks.effect.AttributeManager;
+import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.obstacle.Face;
@@ -11,7 +11,7 @@ import tanks.tankson.MetadataProperty;
 
 public abstract class Movable extends GameObject implements IDrawableForInterface, ISolidObject
 {
-	private AttributeManager em;
+	private EffectManager em;
 
 	public double lastPosX, lastPosY, lastPosZ = 0;
 	public double vX, vY, vZ = 0;
@@ -93,28 +93,28 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 		}
 	}
 
-	public void initEffectManager(AttributeManager em)
+	public void initEffectManager(EffectManager em)
 	{
 
 	}
 
 	/** Alias for {@link #getEffectManager()} */
-	public AttributeManager em()
+	public EffectManager em()
 	{
 		return getEffectManager();
 	}
 
-	public AttributeManager getEffectManager()
+	public EffectManager getEffectManager()
 	{
 		if (em == null)
 		{
-			em = new AttributeManager(this);
+			em = new EffectManager(this);
 			initEffectManager(em);
 		}
 		return em;
 	}
 
-	public void setEffectManager(AttributeManager em)
+	public void setEffectManager(EffectManager em)
 	{
 		this.em = em;
 	}

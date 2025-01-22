@@ -11,7 +11,7 @@ import tanks.tank.Tank;
 
 import java.util.*;
 
-public class AttributeManager
+public class EffectManager
 {
     private static final ObjectArrayList<String> toRemove = new ObjectArrayList<>();
     private static final ObjectArrayList<AttributeModifier> expiredAttributes = new ObjectArrayList<>();
@@ -29,7 +29,7 @@ public class AttributeManager
 
     public BiConsumer<AttributeModifier, Boolean> addAttributeCallback;
 
-    public AttributeManager(Movable m)
+    public EffectManager(Movable m)
     {
         this.movable = m;
     }

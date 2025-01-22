@@ -3,7 +3,7 @@ package tanks.obstacle;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.effect.AttributeModifier;
-import tanks.effect.AttributeManager;
+import tanks.effect.EffectManager;
 import tanks.effect.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
@@ -68,7 +68,7 @@ public class ObstacleBoostPanel extends Obstacle
 
         this.onObjectEntryLocal(m);
 
-        AttributeManager mem = m.em();
+        EffectManager mem = m.em();
         AttributeModifier.Instance am = mem.getAttribute(AttributeModifier.glow);
         boolean effect = am == null || (am.age() >= am.deteriorationAge() && am.deteriorationAge() > 0);
 

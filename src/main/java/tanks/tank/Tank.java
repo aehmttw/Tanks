@@ -4,7 +4,7 @@ import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.effect.AttributeModifier;
-import tanks.effect.AttributeManager;
+import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -544,7 +544,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		double boost = 0;
 
-		AttributeManager em = getEffectManager();
+		EffectManager em = getEffectManager();
 		AttributeModifier.Instance a = em.getAttribute(AttributeModifier.healray);
 		if (a != null && health < baseHealth)
 			em.removeAttribute(AttributeModifier.healray);
@@ -927,7 +927,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	}
 
 	@Override
-	public void initEffectManager(AttributeManager em)
+	public void initEffectManager(EffectManager em)
 	{
 		em.addAttributeCallback = this::sendEvent;
 	}

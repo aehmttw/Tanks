@@ -2,7 +2,7 @@ package tanks.bullet;
 
 import tanks.*;
 import tanks.effect.AttributeModifier;
-import tanks.effect.AttributeManager;
+import tanks.effect.EffectManager;
 import tanks.effect.StatusEffect;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
@@ -524,7 +524,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				if (this.boosting)
 				{
-					AttributeManager tem = t.getEffectManager();
+					EffectManager tem = t.getEffectManager();
 					AttributeModifier c = new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3);
 					c.duration = 10 * this.size;
 					c.deteriorationAge = 5 * this.size;
@@ -1727,7 +1727,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	}
 
 	@Override
-	public void initEffectManager(AttributeManager em)
+	public void initEffectManager(EffectManager em)
 	{
 		em.addAttributeCallback = this::sendEvent;
 	}

@@ -1,43 +1,23 @@
 package tanks;
 
-import tanks.bullet.Bullet;
+import tanks.effect.AttributeModifier;
+import tanks.effect.AttributeManager;
 import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
-import tanks.network.event.EventStatusEffectBegin;
-import tanks.network.event.EventStatusEffectDeteriorate;
-import tanks.network.event.EventStatusEffectEnd;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
 import tanks.tank.NameTag;
-import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
-public abstract class Movable extends GameObject implements IDrawableForInterface
+public abstract class Movable extends GameObject implements IDrawableForInterface, ISolidObject
 {
-	public double lastPosX;
-	public double lastPosY;
-	public double lastPosZ = 0;
+	private AttributeManager em;
 
-	public double vX;
-	public double vY;
-	public double vZ = 0;
-
-	public double lastFinalVX;
-	public double lastFinalVY;
-	public double lastFinalVZ;
-
-	public double lastVX;
-	public double lastVY;
-	public double lastVZ;
-
-	public double lastOriginalVX;
-	public double lastOriginalVY;
-	public double lastOriginalVZ;
+	public double lastPosX, lastPosY, lastPosZ = 0;
+	public double vX, vY, vZ = 0;
+	public double lastFinalVX, lastFinalVY, lastFinalVZ;
+	public double lastVX, lastVY, lastVZ;
+	public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
 
 	public boolean destroy = false;
 	public boolean dealsDamage = true;
@@ -53,14 +33,10 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public boolean isRemote = false;
 	public boolean managedMotion = true;
 
-	public ArrayList<AttributeModifier> attributes = new ArrayList<>();
-	public HashMap<StatusEffect, StatusEffect.Instance> statusEffects = new HashMap<>();
-	public HashSet<String> attributeImmunities = new HashSet<>();
-
 	@MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
 	public Team team;
 
-	protected ArrayList<StatusEffect> removeStatusEffects = new ArrayList<>();
+	public Face[] horizontalFaces, verticalFaces;
 
 	public Movable(double x, double y)
 	{
@@ -93,34 +69,18 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 		if (!destroy)
 		{
+			em().update();
+
 			double vX2 = this.vX;
 			double vY2 = this.vY;
 			double vZ2 = this.vZ;
 
-			ArrayList<AttributeModifier> toRemove = new ArrayList<>();
-			for (AttributeModifier a : attributes)
-			{
-				if (a.expired)
-				{
-					// Adds attribute to list to later get removed.
-					toRemove.add(a);
-				}
-
-				a.update();
-			}
-
-			for (AttributeModifier a : toRemove)
-			{
-				attributes.remove(a);
-			}
-
-			this.updateStatusEffects();
-
 			if (this.managedMotion)
 			{
-				vX2 = this.getAttributeValue(AttributeModifier.velocity, vX2);
-				vY2 = this.getAttributeValue(AttributeModifier.velocity, vY2);
-				vZ2 = this.getAttributeValue(AttributeModifier.velocity, vZ2);
+				// Apply velocity modifiers
+				vX2 = em.getAttributeValue(AttributeModifier.velocity, vX2);
+				vY2 = em.getAttributeValue(AttributeModifier.velocity, vY2);
+				vZ2 = em.getAttributeValue(AttributeModifier.velocity, vZ2);
 
 				this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 				this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
@@ -133,76 +93,53 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 		}
 	}
 
+	public void initEffectManager(AttributeManager em)
+	{
+
+	}
+
+	/** Alias for {@link #getEffectManager()} */
+	public AttributeManager em()
+	{
+		return getEffectManager();
+	}
+
+	public AttributeManager getEffectManager()
+	{
+		if (em == null)
+		{
+			em = new AttributeManager(this);
+			initEffectManager(em);
+		}
+		return em;
+	}
+
+	public void setEffectManager(AttributeManager em)
+	{
+		this.em = em;
+	}
+
 	public void setMotionInDirection(double x, double y, double velocity)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX = velX;
-		this.vY = velY;
+		double angle = getAngleInDirection(x, y);
+		this.vX = velocity * Math.cos(angle);
+		this.vY = velocity * Math.sin(angle);
 	}
 
 	public void setMotionAwayFromDirection(double x, double y, double velocity)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
+		double angle = getAngleInDirection(x, y);
 		angle += Math.PI;
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX = velX;
-		this.vY = velY;
-
+		this.vX = velocity * Math.cos(angle);
+		this.vY = velocity * Math.sin(angle);
 	}
 
 	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
+		double angle = getAngleInDirection(x, y);
 		angle += a;
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX = velX;
-		this.vY = velY;
+		this.vX = velocity * Math.cos(angle);
+		this.vY = velocity * Math.sin(angle);
 	}
 
 	static double pi_over_4 = Math.PI / 4;
@@ -221,9 +158,9 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 		double angle = 0;
 		if (x > 0)
-			angle = fastAtan(y/x);
+			angle = fastAtan(y / x);
 		else if (x < 0)
-			angle = fastAtan(y/x) + Math.PI;
+			angle = fastAtan(y / x) + Math.PI;
 		else
 		{
 			if (y > 0)
@@ -254,9 +191,9 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	{
 		double angle = 0;
 		if (x > 0)
-			angle = Math.atan(y/x);
+			angle = Math.atan(y / x);
 		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
+			angle = Math.atan(y / x) + Math.PI;
 		else
 		{
 			if (y > 0)
@@ -320,12 +257,12 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	public double getSpeed()
 	{
-		return Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2));
+		return Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 	}
 
 	public double getLastSpeed()
 	{
-		return Math.sqrt(Math.pow(this.lastVX, 2) + Math.pow(this.lastVY, 2));
+		return Math.sqrt(this.lastVX * this.lastVX + this.lastVY * this.lastVY);
 	}
 
 	public double getMotionInDirection(double angle)
@@ -345,162 +282,44 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 			Drawing.drawing.drawText(this.posX, this.posY + 35, this.team.name);
 	}
 
-
-	public void addAttribute(AttributeModifier m)
+	@Override
+	public Face[] getHorizontalFaces()
 	{
-		if (!this.attributeImmunities.contains(m.name))
-			this.attributes.add(m);
+		double s = this.getSize() / 2;
+
+		if (this.horizontalFaces == null)
+		{
+			this.horizontalFaces = new Face[2];
+			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, true, true);
+			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false, true, true);
+		}
+		else
+		{
+			this.horizontalFaces[0].update(this.posX - s, this.posY - s, this.posX + s, this.posY - s);
+			this.horizontalFaces[1].update(this.posX - s, this.posY + s, this.posX + s, this.posY + s);
+		}
+
+		return this.horizontalFaces;
 	}
 
-	public void addUnduplicateAttribute(AttributeModifier m)
+	@Override
+	public Face[] getVerticalFaces()
 	{
-		if (this.attributeImmunities.contains(m.name))
-			return;
+		double s = this.getSize() / 2;
 
-		for (int i = 0; i < this.attributes.size(); i++)
+		if (this.verticalFaces == null)
 		{
-			if (this.attributes.get(i).name.equals(m.name))
-			{
-				this.attributes.remove(i);
-				i--;
-			}
+			this.verticalFaces = new Face[2];
+			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, true, true);
+			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, true, true);
+		}
+		else
+		{
+			this.verticalFaces[0].update(this.posX - s, this.posY - s, this.posX - s, this.posY + s);
+			this.verticalFaces[1].update(this.posX + s, this.posY - s, this.posX + s, this.posY + s);
 		}
 
-		this.attributes.add(m);
-	}
-
-	public void addStatusEffect(StatusEffect s, double warmup, double deterioration, double duration)
-	{
-		this.addStatusEffect(s, 0, warmup, deterioration, duration);
-	}
-
-	public void addStatusEffect(StatusEffect s, double age, double warmup, double deterioration, double duration)
-	{
-		if (deterioration > duration)
-			throw new RuntimeException("Deterioration age > duration");
-
-		StatusEffect prevEffect = null;
-		for (StatusEffect e: this.statusEffects.keySet())
-		{
-			if (e.family != null && e.family.equals(s.family))
-				prevEffect = e;
-		}
-
-		if (prevEffect != null)
-			this.statusEffects.remove(prevEffect);
-
-		boolean dontAdd = false;
-		if (warmup <= age && this.statusEffects.get(s) != null)
-		{
-			StatusEffect.Instance i = this.statusEffects.get(s);
-			if (i.age >= i.warmupAge && i.age < i.deteriorationAge)
-				dontAdd = true;
-		}
-
-		if (!dontAdd && (this instanceof Bullet || this instanceof Tank) && ScreenPartyHost.isServer)
-			Game.eventsOut.add(new EventStatusEffectBegin(this, s, age, warmup));
-
-		this.statusEffects.put(s, new StatusEffect.Instance(s, age, warmup, deterioration, duration));
-	}
-
-	public void updateStatusEffects()
-	{
-		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
-
-		for (StatusEffect s: this.statusEffects.keySet())
-		{
-			StatusEffect.Instance i = this.statusEffects.get(s);
-
-			if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this instanceof Bullet || this instanceof Tank))
-			{
-				Game.eventsOut.add(new EventStatusEffectDeteriorate(this, s, i.duration - i.deteriorationAge));
-			}
-
-			if (i.duration <= 0 || i.age + frameFrequency <= i.duration)
-				i.age += frameFrequency;
-			else
-			{
-				this.removeStatusEffects.add(s);
-
-				if (this instanceof Bullet || this instanceof Tank)
-					Game.eventsOut.add(new EventStatusEffectEnd(this, s));
-			}
-		}
-
-		for (StatusEffect s: this.removeStatusEffects)
-		{
-			this.statusEffects.remove(s);
-		}
-
-		removeStatusEffects.clear();
-	}
-
-	public double getAttributeValue(AttributeModifier.Type type, double value)
-	{
-		for (AttributeModifier a : attributes)
-		{
-			if (!a.expired && a.type.equals(type))
-			{
-				value = a.getValue(value);
-			}
-		}
-
-		for (StatusEffect s : this.statusEffects.keySet())
-		{
-			value = this.statusEffects.get(s).getValue(value, type);
-		}
-
-		return value;
-	}
-
-	public AttributeModifier getAttribute(AttributeModifier.Type type)
-	{
-		AttributeModifier best = null;
-		double bestTime = Double.MIN_VALUE;
-
-		for (AttributeModifier a : attributes)
-		{
-			if (!a.expired && a.type.equals(type))
-			{
-				if (a.deteriorationAge - a.age > bestTime || a.deteriorationAge <= 0)
-				{
-					bestTime = a.deteriorationAge - a.age;
-					best = a;
-
-					if (a.deteriorationAge <= 0)
-						bestTime = Double.MAX_VALUE;
-				}
-			}
-		}
-
-		for (StatusEffect s : this.statusEffects.keySet())
-		{
-			StatusEffect.Instance i = this.statusEffects.get(s);
-
-			if (i != null)
-			{
-				for (AttributeModifier a : s.attributeModifiers)
-				{
-					if (a.type.equals(type))
-					{
-						if (i.deteriorationAge - i.age > bestTime || a.deteriorationAge <= 0)
-						{
-							bestTime = i.deteriorationAge - i.age;
-							best = new AttributeModifier(a.type, a.effect, a.value);
-							best.warmupAge = i.warmupAge;
-							best.deteriorationAge = i.deteriorationAge;
-							best.age = i.age;
-							best.duration = i.duration;
-
-							if (a.deteriorationAge <= 0)
-								bestTime = Double.MAX_VALUE;
-						}
-					}
-				}
-			}
-		}
-
-		return best;
+		return this.verticalFaces;
 	}
 
 	public static double[] getLocationInDirection(double angle, double distance)
@@ -509,7 +328,12 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	}
 
 	public abstract void draw();
-	
+
+	public double getSize()
+	{
+		return 0;
+	}
+
 	public void drawAt(double x, double y)
 	{	
 		double x1 = this.posX;
@@ -524,6 +348,31 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public void drawForInterface(double x, double y)
 	{	
 		this.drawAt(x, y);
+	}
+
+	public static double distanceBetween(double x1, double y1, double x2, double y2)
+	{
+		return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
+	}
+
+	public static double sqDistBetw(double x1, double y1, double x2, double y2)
+	{
+		return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
+	}
+
+	public static double sqDistBetw(final GameObject a, final GameObject b)
+	{
+		return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
+	}
+
+	public static boolean withinRange(final GameObject a, final GameObject b, double range)
+	{
+		return sqDistBetw(a, b) < range * range;
+	}
+
+	public static double distanceBetween(final GameObject a, final GameObject b)
+	{
+		return distanceBetween(a.posX, a.posY, b.posX, b.posY);
 	}
 
 	public static double angleBetween(double a, double b)

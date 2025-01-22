@@ -2,6 +2,9 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.effect.AttributeModifier;
+import tanks.effect.AttributeManager;
+import tanks.effect.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.EventObstacleBoostPanelEffect;
@@ -65,16 +68,17 @@ public class ObstacleBoostPanel extends Obstacle
 
         this.onObjectEntryLocal(m);
 
-        AttributeModifier am = m.getAttribute(AttributeModifier.glow);
-        boolean effect = am == null || (am.age >= am.deteriorationAge && am.deteriorationAge > 0);
+        AttributeManager mem = m.em();
+        AttributeModifier.Instance am = mem.getAttribute(AttributeModifier.glow);
+        boolean effect = am == null || (am.age() >= am.deteriorationAge() && am.deteriorationAge() > 0);
 
         if (effect)
             addEntryEffect(m);
 
         if (m instanceof Tank)
-            m.addStatusEffect(StatusEffect.boost_tank, 0, 10, 50);
+            mem.addStatusEffect(StatusEffect.boost_tank, 0, 10, 50);
         else
-            m.addStatusEffect(StatusEffect.boost_bullet, 0, 10, 50);
+            mem.addStatusEffect(StatusEffect.boost_bullet, 0, 10, 50);
     }
 
     public void addEntryEffect(Movable m)
@@ -88,17 +92,13 @@ public class ObstacleBoostPanel extends Obstacle
 
             double radius = 250000;
             if (distsq <= radius)
-            {
                 Drawing.drawing.playSound("boost.ogg", 1, (float) ((radius - distsq) / radius));
-            }
         }
 
         if (Game.effectsEnabled && !ScreenGame.finished && !(m instanceof Bullet && !((Bullet) m).playPopSound))
         {
             for (int i = 0; i < 25 * Game.effectMultiplier; i++)
-            {
                 this.addEffect(m.posX, m.posY, 0.5);
-            }
         }
     }
 

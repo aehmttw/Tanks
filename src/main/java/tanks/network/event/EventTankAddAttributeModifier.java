@@ -1,7 +1,7 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.AttributeModifier;
+import tanks.effect.AttributeModifier;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
@@ -34,7 +34,7 @@ public class EventTankAddAttributeModifier extends PersonalEvent
         this.deteriorationAge = m.deteriorationAge;
         this.warmupAge = m.warmupAge;
         this.value = m.value;
-        this.effect = m.effect.toString();
+        this.effect = m.operation.toString();
         this.age = m.age;
         this.type = m.type.name;
         this.expired = m.expired;
@@ -95,9 +95,9 @@ public class EventTankAddAttributeModifier extends PersonalEvent
             m.expired = this.expired;
 
             if (unduplicate)
-                t.addUnduplicateAttribute(m);
+                t.em().addUnduplicateAttribute(m);
             else
-                t.addAttribute(m);
+                t.em().addAttribute(m);
         }
     }
 

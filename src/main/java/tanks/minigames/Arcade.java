@@ -2,6 +2,7 @@ package tanks.minigames;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.effect.StatusEffect;
 import tanks.gui.screen.IDarkScreen;
 import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
@@ -241,7 +242,7 @@ public class Arcade extends Minigame
                             detAge = 0;
                         }
 
-                        m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
+                        m.em().addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
                     }
                 }
 

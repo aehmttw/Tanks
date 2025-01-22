@@ -1,6 +1,9 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.effect.AttributeModifier;
+import tanks.effect.AttributeManager;
+import tanks.effect.StatusEffect;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
@@ -289,14 +292,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (!this.tank.isRemote && this.affectsMaxLiveBullets)
 			this.item.liveBullets++;
 
-		AttributeModifier a = this.tank.getAttribute(AttributeModifier.bullet_boost);
-
+		AttributeModifier.Instance a = this.tank.em().getAttribute(AttributeModifier.bullet_boost);
 		if (a != null)
-			this.addStatusEffect(StatusEffect.boost_bullet, a.age, 0, a.deteriorationAge, a.duration);
+			em().addStatusEffect(StatusEffect.boost_bullet, a.age(), 0, a.deteriorationAge(), a.duration());
 
 		if (!this.tank.isRemote)
 		{
-			if (freeIDs.size() > 0)
+			if (!freeIDs.isEmpty())
 				this.networkID = freeIDs.remove(0);
 			else
 			{
@@ -310,25 +312,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		this.previousRebounds.add(this.tank);
 
 		this.drawLevel = 8;
-
-//		for (IFixedMenu m : ModAPI.menuGroup)
-//		{
-//			if (m instanceof Scoreboard)
-//			{
-//				if (((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired) ||
-//						(((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.shots_fired_no_multiple_fire)
-//								&& !(this instanceof BulletHealing || this instanceof BulletFlame)))
-//				{
-//					if (((Scoreboard) m).players.isEmpty())
-//						((Scoreboard) m).addTeamScore(this.team, 1);
-//					else if (this.tank instanceof TankPlayer)
-//						((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-//					else if (this.tank instanceof TankPlayerRemote)
-//						((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-//				}
-//			}
-//		}
-	}
+    }
 
 	public void setColorFromTank()
 	{
@@ -463,7 +447,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					Drawing.drawing.playGlobalSound("heal2.ogg", pitch, freq);
 				}
 
-				t.addAttribute(new AttributeModifier("healray", AttributeModifier.healray, AttributeModifier.Operation.add, 1.0));
+				t.em().addAttribute(new AttributeModifier("healray", AttributeModifier.healray, AttributeModifier.Operation.add, 1.0));
 			}
 
 			if (kill)
@@ -510,7 +494,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					((TankPlayerRemote) this.tank).player.hotbar.coins += t.coinValue;
 					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
-				else if ((Game.currentLevel.shop.size() > 0 || Game.currentLevel.startingItems.size() > 0) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
+				else if ((!Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty()) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
 				{
 					if (this.tank instanceof TankPlayerRemote)
 					{
@@ -540,30 +524,31 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				if (this.boosting)
 				{
+					AttributeManager tem = t.getEffectManager();
 					AttributeModifier c = new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3);
 					c.duration = 10 * this.size;
 					c.deteriorationAge = 5 * this.size;
-					t.addUnduplicateAttribute(c);
+					tem.addUnduplicateAttribute(c);
 
 					AttributeModifier e = new AttributeModifier("bullet_boost", AttributeModifier.bullet_boost, AttributeModifier.Operation.multiply, 1);
 					e.duration = 10 * this.size;
 					e.deteriorationAge = 5 * this.size;
-					t.addUnduplicateAttribute(e);
+					tem.addUnduplicateAttribute(e);
 
 					AttributeModifier a = new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1);
 					a.duration = 10 * this.size;
 					a.deteriorationAge = 5 * this.size;
-					t.addUnduplicateAttribute(a);
+					tem.addUnduplicateAttribute(a);
 
 					AttributeModifier b = new AttributeModifier("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75);
 					b.duration = 10 * this.size;
 					b.deteriorationAge = 5 * this.size;
-					t.addUnduplicateAttribute(b);
+					tem.addUnduplicateAttribute(b);
 
 					AttributeModifier d = new AttributeModifier("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1);
 					d.duration = 10 * this.size;
 					d.deteriorationAge = 5 * this.size;
-					t.addUnduplicateAttribute(d);
+					tem.addUnduplicateAttribute(d);
 				}
 			}
 		}
@@ -1156,7 +1141,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	{
 		AttributeModifier a = new AttributeModifier(AttributeModifier.velocity, AttributeModifier.Operation.multiply, -1);
 		a.duration = this.hitStun;
-		movable.addAttribute(a);
+		movable.em().addAttribute(a);
 		if (!this.tank.isRemote)
 		{
 			Game.eventsOut.add(new EventBulletStunEffect(movable.posX, movable.posY, this.posZ, this.hitStun / 100.0));
@@ -1597,7 +1582,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.delay > 0)
 			return;
 
-		double glow = this.getAttributeValue(AttributeModifier.glow, 0.5);
+		double glow = this.em().getAttributeValue(AttributeModifier.glow, 0.5);
 
 		if (this.freezing && Game.bulletTrails)
 		{
@@ -1742,21 +1727,15 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	}
 
 	@Override
-	public void addAttribute(AttributeModifier m)
+	public void initEffectManager(AttributeManager em)
 	{
-		super.addAttribute(m);
-
-		if (!this.isRemote)
-			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, false));
+		em.addAttributeCallback = this::sendEvent;
 	}
 
-	@Override
-	public void addUnduplicateAttribute(AttributeModifier m)
+	public void sendEvent(AttributeModifier m, boolean unduplicate)
 	{
-		super.addUnduplicateAttribute(m);
-
 		if (!this.isRemote)
-			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, true));
+			Game.eventsOut.add(new EventBulletAddAttributeModifier(this, m, unduplicate));
 	}
 
 	public void onDestroy()
@@ -1836,6 +1815,17 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			Game.effects.add(e);
 		}
+	}
+
+	@Override
+	public boolean disableRayCollision()
+	{
+		return !externalBulletCollision || !canBeCanceled || !enableCollision || this instanceof BulletInstant;
+	}
+
+	public double getSize()
+	{
+		return size;
 	}
 
 	public double getRangeMin()

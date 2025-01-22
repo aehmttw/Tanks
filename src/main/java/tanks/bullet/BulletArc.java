@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
 import tanks.tank.Tank;
@@ -66,7 +67,7 @@ public class BulletArc extends Bullet
         if (this.delay > 0)
             return;
 
-        double gravMod = this.getAttributeValue(AttributeModifier.velocity, 1);
+        double gravMod = em().getAttributeValue(AttributeModifier.velocity, 1);
 
         this.vZ -= gravity * Panel.frameFrequency * gravMod;
         this.posZ -= gravity * gravMod * Panel.frameFrequency * Panel.frameFrequency * 0.5;

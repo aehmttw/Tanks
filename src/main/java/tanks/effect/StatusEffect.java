@@ -1,4 +1,4 @@
-package tanks;
+package tanks.effect;
 
 import tanks.minigames.Arcade;
 
@@ -77,13 +77,13 @@ public class StatusEffect
         public double age;
 
         /**Duration of the Attribute Modifier, leave at 0 for indefinite duration*/
-        public double duration = 0;
+        public double duration;
 
         /**Age at which the Attribute starts to wear off*/
-        public double deteriorationAge = 0;
+        public double deteriorationAge;
 
         /**Age at which the Attribute is at full strength*/
-        public double warmupAge = 0;
+        public double warmupAge;
 
         public Instance(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
         {
@@ -92,11 +92,6 @@ public class StatusEffect
             this.deteriorationAge = deteriorationAge;
             this.duration = maxAge;
             this.warmupAge = warmupAge;
-        }
-
-        public double getValue(double in, AttributeModifier.Type type)
-        {
-            return this.effect.getValue(in, age, type, warmupAge, deteriorationAge, duration);
         }
     }
 
@@ -112,34 +107,5 @@ public class StatusEffect
         this.name = name;
 
         statusEffectRegistry.put(name, this);
-    }
-
-    public double getValue(double in, double age, AttributeModifier.Type type, double warmupAge, double deteriorationAge, double duration)
-    {
-        for (AttributeModifier a: this.attributeModifiers)
-        {
-            if (a.type.equals(type))
-            {
-                if (age >= duration && duration > 0)
-                    return in;
-
-                double val;
-                if (age < warmupAge)
-                    val = a.value * age / warmupAge;
-                else if (age < deteriorationAge || deteriorationAge <= 0)
-                    val = a.value;
-                else
-                    val = a.value * (duration - age) / (duration - deteriorationAge);
-
-                if (a.effect == AttributeModifier.Operation.add)
-                    return in + val;
-                else if (a.effect == AttributeModifier.Operation.multiply)
-                    return in * (val + 1);
-                else
-                    return in;
-            }
-        }
-
-        return in;
     }
 }

@@ -16,6 +16,7 @@ public class EffectManager
     private static final ObjectArrayList<String> toRemove = new ObjectArrayList<>();
     private static final ObjectArrayList<AttributeModifier> expiredAttributes = new ObjectArrayList<>();
     private static final ObjectArrayList<StatusEffect.Instance> expiredStatusEffects = new ObjectArrayList<>();
+    private static final BiConsumer<AttributeModifier, Boolean> empty = (a, b) -> {};
 
     public Movable movable;
 
@@ -27,7 +28,7 @@ public class EffectManager
     public Object2ObjectOpenHashMap<String, StatusEffect.Instance> statusEffects = new Object2ObjectOpenHashMap<>();
     private final ObjectCollection<StatusEffect.Instance> stValues = statusEffects.values();
 
-    public BiConsumer<AttributeModifier, Boolean> addAttributeCallback;
+    public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = empty;
 
     public EffectManager(Movable m)
     {

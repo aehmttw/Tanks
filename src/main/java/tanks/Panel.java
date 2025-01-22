@@ -801,16 +801,8 @@ public class Panel
 			this.drawMouseTarget();
 
 		Drawing.drawing.setColor(255, 255, 255);
-
-//		Drawing.drawing.setColor(0, 0, 0, 0);
-//		Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
-
-		Game.screen.drawPostMouse();
-
-
-//		if (!Game.game.window.drawingShadow)
-//			Drawing.drawing.terrainRenderer2.draw();
-	}
+        Game.screen.drawPostMouse();
+    }
 
 	public void drawMouseTarget()
 	{
@@ -861,18 +853,14 @@ public class Panel
 		if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) || Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)
 		{
 			double c = 127 * Obstacle.draw_size / Game.tile_size;
-
-			double r = c;
-			double g = c;
-			double b = c;
-			double a = 255;
+            double a = 255;
 
 			double r2 = 0;
 			double g2 = 0;
 			double b2 = 0;
 			double a2 = 0;
 
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Game.game.window.shapeRenderer.setBatchMode(true, false, true, true, false);
 
 			double size = 12 * Drawing.drawing.interfaceScale / Drawing.drawing.scale;
@@ -888,81 +876,81 @@ public class Panel
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - size, y - thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y - thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + size, y - thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y - thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y - thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y + thickness, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - size, y - thickness, 0);
 			Drawing.drawing.addVertex(x - size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + size, y - thickness, 0);
 			Drawing.drawing.addVertex(x + size, y + thickness, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y - size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x - thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y + size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x - thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + thickness, y - size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x + thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x + thickness, y + size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x + thickness, y, 0);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y - size, 0);
 			Drawing.drawing.addVertex(x + thickness, y - size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			Drawing.drawing.setColor(r2, g2, b2, a2, 1);
 			Drawing.drawing.addVertex(x - thickness, y + size, 0);
 			Drawing.drawing.addVertex(x + thickness, y + size, 0);
-			Drawing.drawing.setColor(r, g, b, a, 1);
+			Drawing.drawing.setColor(c, c, c, a, 1);
 			Drawing.drawing.addVertex(x, y, height);
 
 			double res = 40;
 			double height2 = height * 0.75;
 			for (int i = 0; i < res; i++)
 			{
-				Drawing.drawing.setColor(r, g, b, a, 1);
+				Drawing.drawing.setColor(c, c, c, a, 1);
 				double x1 = Math.cos(i / res * Math.PI * 2) * size;
 				double x2 = Math.cos((i + 1) / res * Math.PI * 2) * size;
 				double y1 = Math.sin(i / res * Math.PI * 2) * size;
@@ -1019,7 +1007,7 @@ public class Panel
 		allocatedThisSecond += Math.max(0, used - lastMemory);
 		lastMemory = used;
 
-		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + allocatedLastSecond / 1048576 + " MB/s)");
+		Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
 
 		if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
 		{
@@ -1031,8 +1019,12 @@ public class Panel
 		if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
 		{
 			Drawing.drawing.setColor(255, 227, 186);
-			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s");
-			Game.game.window.fontRenderer.drawString(boundary + 400, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s");
+
+			String s = "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s";
+			Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, s);
+
+			s = "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s";
+			Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
 		}
 	}
 

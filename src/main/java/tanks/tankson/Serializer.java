@@ -3,12 +3,9 @@ package tanks.tankson;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemEmpty;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -242,17 +239,25 @@ public final class Serializer
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
+
+        Set<String> processed = new HashSet<>();
+
         for (Field f : o.getClass().getFields())
         {
             if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f)))
             {
+                processed.add(getid(f));
                 try
                 {
                     Object o2 = f.get(o);
                     if (isTanksONable(f))
                     {
                         Object o3 = m.get(getid(f));
-                        f.set(o, parseObject((Map) o3));
+                        try {
+                            f.set(o, parseObject((Map<String, Object>) o3));
+                        } catch (ClassCastException e) {
+                            f.set(o, Compatibility.convert(f, o3));
+                        }
                     }
                     else if (o2 instanceof ArrayList)
                     {
@@ -284,10 +289,30 @@ public final class Serializer
                 }
                 catch (Exception e)
                 {
+                    System.out.println(getid(f));
                     throw new RuntimeException(e);
                 }
             }
         }
+
+        Set<String> unused = m.keySet();
+        unused.removeAll(processed);
+        for (String k : unused) {
+            try {
+                o.getClass().getField(Compatibility.convert(k)).set(o, m.get(k));
+            } catch (ClassCastException e) {
+                try {
+                    Field f = o.getClass().getField(Compatibility.convert(k));
+                    f.set(o, Compatibility.convert(f, m.get(k)));
+                } catch (NoSuchFieldException | IllegalAccessException f) {
+                    throw new RuntimeException(f);
+                }
+            } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e) {
+                System.out.println("Unconvertable field found!");
+            }
+        }
+
+
         return o;
     }
 

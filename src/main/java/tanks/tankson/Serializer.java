@@ -306,7 +306,6 @@ public final class Serializer
                     f.set(o, Compatibility.convert(f, m.get(k)));
                 } catch (NoSuchFieldException | IllegalAccessException f) {
                     throw new RuntimeException(f);
-                    System.out.println("Random Change!");
                 }
             } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e) {
                 System.out.println("Unconvertable field found!");

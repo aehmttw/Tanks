@@ -46,6 +46,20 @@ To develop the game we suggest using Eclipse or IntelliJ. Eclipse can be install
 
 To access the source code you also need to install Git.<br>
 
+### Gradle Build (Recommended)
+It is recommended you use gradle to build Tanks using the following commands:
+
+#### Windows
+```powershell
+./gradlew.bat clean build
+```
+
+#### Unix (OSX, Linux, etc.)
+```bash
+./gradlew clean build
+```
+
+### IDE Build
 You will need to add the following libraries to the build path of the project: <br>
 PNGDecoder by Matthias Mann in TWL<br>
 Netty<br>
@@ -80,6 +94,7 @@ Pythonmcpi<br>
 Cool TM<br>
 QazCetelic<br>
 Lancelot<br>
+Parth Iyer (ghostlypi)<br>
 
 ### Supporters:
 SapphireDrew<br>

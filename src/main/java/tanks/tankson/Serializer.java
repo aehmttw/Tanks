@@ -300,6 +300,13 @@ public final class Serializer
         for (String k : unused) {
             try {
                 o.getClass().getField(Compatability.convert(k)).set(o, m.get(k));
+            } catch (ClassCastException e) {
+                try {
+                    Field f = o.getClass().getField(Compatability.convert(k));
+                    f.set(o, Compatability.convert(f, m.get(k)));
+                } catch (NoSuchFieldException | IllegalAccessException f) {
+                    throw new RuntimeException(f);
+                }
             } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e) {
                 System.out.println("Unconvertable field found!");
             }

@@ -256,7 +256,7 @@ public final class Serializer
                         try {
                             f.set(o, parseObject((Map<String, Object>) o3));
                         } catch (ClassCastException e) {
-                            f.set(o, Compatability.convert(f, o3));
+                            f.set(o, Compatibility.convert(f, o3));
                         }
                     }
                     else if (o2 instanceof ArrayList)
@@ -299,13 +299,14 @@ public final class Serializer
         unused.removeAll(processed);
         for (String k : unused) {
             try {
-                o.getClass().getField(Compatability.convert(k)).set(o, m.get(k));
+                o.getClass().getField(Compatibility.convert(k)).set(o, m.get(k));
             } catch (ClassCastException e) {
                 try {
-                    Field f = o.getClass().getField(Compatability.convert(k));
-                    f.set(o, Compatability.convert(f, m.get(k)));
+                    Field f = o.getClass().getField(Compatibility.convert(k));
+                    f.set(o, Compatibility.convert(f, m.get(k)));
                 } catch (NoSuchFieldException | IllegalAccessException f) {
                     throw new RuntimeException(f);
+                    System.out.println("Random Change!");
                 }
             } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e) {
                 System.out.println("Unconvertable field found!");

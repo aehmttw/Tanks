@@ -4,19 +4,18 @@ import tanks.tank.Explosion;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
-public class Compatability {
-    public static final HashMap<String, Function<Object, Object>> compatability_table = new HashMap<>();
+public class Compatibility {
+    public static final HashMap<String, Function<Object, Object>> compatibility_table = new HashMap<>();
     public static final HashMap<String, String> field_table = new HashMap<>();
 
     public static void init() {
-        compatability_table.put("explode_on_destroy", Compatability::updateExplosion);
+        compatibility_table.put("explode_on_destroy", Compatibility::updateExplosion);
     }
 
     public static Object convert(Field f, Object v) {
-        return compatability_table.get(Serializer.getid(f)).apply(v);
+        return compatibility_table.get(Serializer.getid(f)).apply(v);
     }
 
     public static String convert(String f) {

@@ -139,6 +139,9 @@ public class BulletInstant extends Bullet
 		if (this.affectsMaxLiveBullets && this.reboundSuccessor == null && !this.failedRebound)
 			this.item.liveBullets--;
 
+		if (!this.isRemote)
+			this.onDestroy();
+
 		this.addDestroyEffect();
 		this.expired = true;
 	}

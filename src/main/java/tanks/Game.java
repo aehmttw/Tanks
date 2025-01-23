@@ -518,6 +518,7 @@ public class Game
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
+		tanks.tankson.Compatability.init();
 
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 

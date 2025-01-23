@@ -1,8 +1,8 @@
 package tanks.effect;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.Panel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -122,7 +122,7 @@ public class AttributeModifier
 	{
 		public final AttributeModifier.Type type;
 		/** All AttributeModifiers that modify 'type'. */
-		public ArrayList<AttributeModifier> attributeList = new ArrayList<>();
+		public ObjectArrayList<AttributeModifier> attributeList = new ObjectArrayList<>();
 
 		public Instance(AttributeModifier.Type type)
 		{
@@ -167,5 +167,13 @@ public class AttributeModifier
 		{
 			return attributeList.isEmpty();
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof AttributeModifier)
+			return name.equals(((AttributeModifier) obj).name);
+		return super.equals(obj);
 	}
 }

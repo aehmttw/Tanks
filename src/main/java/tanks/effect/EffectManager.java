@@ -106,16 +106,14 @@ public class EffectManager
 
     /**
      * Remove attribute by name
-     * @return the attribute object that was removed
      */
-    public AttributeModifier removeAttribute(String name)
+    public void removeAttribute(String name)
     {
         AttributeModifier a = attributes.remove(name);
         if (a == null)
-            return null;
+            return;
 
         typeInstances.get(a.type).attributeList.remove(a);
-        return a;
     }
 
     /**

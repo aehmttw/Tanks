@@ -3,7 +3,7 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
-import tanks.StatusEffect;
+import tanks.effect.StatusEffect;
 import tanks.rendering.ShaderGroundIce;
 import tanks.rendering.ShaderIce;
 import tanks.tank.Tank;
@@ -50,9 +50,7 @@ public class ObstacleIce extends Obstacle
     public void onObjectEntry(Movable m)
     {
         if (m instanceof Tank)
-        {
-            m.addStatusEffect(StatusEffect.ice, 0, 5, 10);
-        }
+            m.em().addStatusEffect(StatusEffect.ice, 0, 5, 10);
     }
 
     @Override

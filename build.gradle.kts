@@ -51,6 +51,7 @@ dependencies {
     api(libs.org.l33tlabs.twl.pngdecoder)
     api(libs.org.apache.commons.commons.io)
     implementation("io.netty:netty-all:4.1.68.Final")
+    implementation("it.unimi.dsi:fastutil:8.3.1")
 
     //Steamworks
     api(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))
@@ -58,7 +59,7 @@ dependencies {
 }
 
 group = "com.aehmttw"
-version = rootProject.file("src/main/resources/version.txt").readText().toString().trim()
+version = rootProject.file("src/main/resources/version.txt").readText().trim()
 rootProject.file("src/main/resources/hash.txt").writeText(get_hash())
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8

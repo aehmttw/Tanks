@@ -237,13 +237,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
 			{
-				throw new RuntimeException("Movable with NaN position: " + m.toString() + " " + m.lastPosX + " " + m.lastPosY);
+				throw new RuntimeException("Movable with NaN position: " + m + " " + m.lastPosX + " " + m.lastPosY);
 			}
 
-			if (m instanceof ISolidObject && !(m instanceof Tank && !(((Tank) m).targetable || ((Tank) m).invulnerabilityTimer > 0)))
+			if (!m.disableRayCollision() && !(m instanceof Tank && !(((Tank) m).targetable || ((Tank) m).invulnerabilityTimer > 0)))
 			{
 				Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
-
 				Game.verticalFaces.addAll(Arrays.asList(((ISolidObject) m).getVerticalFaces()));
 			}
 		}

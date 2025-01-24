@@ -2,7 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Movable;
-import tanks.StatusEffect;
+import tanks.effect.StatusEffect;
 import tanks.bullet.Bullet;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
@@ -69,8 +69,8 @@ public class EventStatusEffectDeteriorate extends PersonalEvent
 
         if (m != null)
         {
-            m.statusEffects.remove(StatusEffect.statusEffectRegistry.get(this.effect));
-            m.addStatusEffect(StatusEffect.statusEffectRegistry.get(this.effect), 1, 0, 1, remainingTime + 1);
+            m.em().removeStatusEffect(this.effect);
+            m.em().addStatusEffect(StatusEffect.statusEffectRegistry.get(this.effect), 1, 0, 1, remainingTime + 1);
         }
     }
 }

@@ -180,6 +180,8 @@ public final class Serializer
         if (m == null)
             return null;
         Object o = null;
+        Set<String> processed = new HashSet<>();
+        processed.add("obj_type");
         switch ((String) m.get("obj_type"))
         {
             case "tank":
@@ -192,6 +194,7 @@ public final class Serializer
             {
                 try
                 {
+                    processed.add("bullet_type");
                     o = Game.registryBullet.getEntry((String) m.get("bullet_type")).bullet.newInstance();
                 }
                 catch (Exception e)
@@ -207,6 +210,7 @@ public final class Serializer
             {
                 try
                 {
+                    processed.add("item_type");
                     o = Game.registryItem.getEntry((String) m.get("item_type")).item.getConstructor().newInstance();
                 }
                 catch (Exception e)
@@ -217,6 +221,7 @@ public final class Serializer
             }
             case "item_stack":
             {
+                processed.add("item");
                 Item i = (Item) parseObject((Map) m.get("item"));
                 o = (i.getStack(null));
                 break;
@@ -231,16 +236,18 @@ public final class Serializer
                 o = new Explosion();
                 break;
             case "spawned_tank":
+                processed.add("tank");
+                processed.add("weight");
                 o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
                 break;
-            case "tank_ref":
+            case "tank_ref": {
+                processed.add("tank");
                 o = new TankReference((String) m.get("tank"));
                 break;
+            }
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
-
-        Set<String> processed = new HashSet<>();
 
         for (Field f : o.getClass().getFields())
         {
@@ -295,7 +302,7 @@ public final class Serializer
             }
         }
 
-        Set<String> unused = m.keySet();
+        Set<String> unused = new HashSet<>(m.keySet());
         unused.removeAll(processed);
         for (String k : unused) {
             try {

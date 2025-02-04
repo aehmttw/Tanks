@@ -6,18 +6,21 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
+import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayable;
+import tanks.tank.TankPlayer;
 
 public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundScreen
 {
-    public ScreenEditorTank previous;
-    public TankAIControlled tank;
-    public TankAIControlled oldTank;
+    public ScreenEditorTanksONable<?> previous;
+    public Tank tank;
+    public Tank oldTank;
 
     public ButtonObject tankButton;
     public ButtonObject oldTankButton;
 
-    public ScreenTankSaveOverwrite(ScreenEditorTank s, TankAIControlled tank)
+    public ScreenTankSaveOverwrite(ScreenEditorTanksONable<?>  s, Tank tank)
     {
         this.previous = s;
         this.music = this.previous.music;
@@ -50,7 +53,10 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
 
     public Button replace = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Replace template", () ->
     {
-        this.previous.writeTankAndShowConfirmation(tank, true);
+        if (this.tank instanceof TankAIControlled)
+            ((ScreenEditorTank) this.previous).writeTankAndShowConfirmation((TankAIControlled) tank, true);
+        else if (this.tank instanceof TankPlayer)
+            ((ScreenEditorPlayerTankBuild) this.previous).writeTankAndShowConfirmation((TankPlayer) tank, true);
     }
     );
 

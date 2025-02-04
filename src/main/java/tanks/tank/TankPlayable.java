@@ -12,6 +12,9 @@ import tanks.tankson.Serializer;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import static tanks.tank.TankPropertyCategory.*;
+import static tanks.tank.TankPropertyCategory.appearanceEmblem;
+
 public abstract class TankPlayable extends Tank implements ICopyable<TankPlayable>
 {
     @TankBuildProperty @Property(id = "abilities", name = "Abilities", category = TankPropertyCategory.abilities)
@@ -27,6 +30,17 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     public static String default_mine_name = "Basic mine";
 
     public String buildName = "player";
+
+    @Property(category = appearanceBody, id = "override_color1", name = "Override color", miscType = Property.MiscType.color)
+    public boolean overridePrimaryColor = false;
+    @Property(category = appearanceTurretBarrel, id = "override_color2", name = "Override color", miscType = Property.MiscType.color)
+    public boolean overrideSecondaryColor = false;
+    @Property(category = appearanceTurretBase, id = "override_color3", name = "Override color", miscType = Property.MiscType.color)
+    public boolean overrideTertiaryColor = false;
+    @Property(category = appearanceEmblem, id = "override_color_emblem", name = "Override color", miscType = Property.MiscType.color)
+    public boolean overrideEmblemColor = false;
+
+    public double[] savedColors = new double[12];
 
     public TankPlayable(double x, double y)
     {
@@ -47,6 +61,12 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public void updateAbilities()
     {
+        if (this.selectedPrimaryAbility >= this.abilities.size())
+            this.selectedPrimaryAbility = -1;
+
+        if (this.selectedSecondaryAbility >= this.abilities.size())
+            this.selectedSecondaryAbility = -1;
+
         if (this.getAbility(this.selectedPrimaryAbility) != null && this.getAbility(this.selectedPrimaryAbility).item.rightClick)
         {
             for (int i = 0; i < this.abilities.size(); i++)
@@ -64,12 +84,62 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                     this.selectedSecondaryAbility = i;
             }
         }
+
+        for (int i = 0; i < this.abilities.size(); i++)
+        {
+            if (this.abilities.get(i).item.rightClick && this.selectedSecondaryAbility < 0)
+                this.selectedSecondaryAbility = i;
+
+            if (!this.abilities.get(i).item.rightClick && this.selectedPrimaryAbility < 0)
+                this.selectedPrimaryAbility = i;
+
+        }
     }
 
     @Override
     public String toString()
     {
         return Serializer.toTanksON(this);
+    }
+
+    /** Fully copies properties unlike "clone" - useful for making a template from another template */
+    public TankPlayable copyPropertiesTo(TankPlayable m)
+    {
+        try
+        {
+            for (Field f : m.getClass().getFields())
+            {
+                Property p = f.getAnnotation(Property.class);
+                if (p != null)
+                {
+                    try
+                    {
+                        Object v = f.get(this);
+                        if (v instanceof ICopyable)
+                            f.set(m, ((ICopyable<?>) v).getCopy());
+                        else
+                            f.set(m, v);
+                    }
+                    catch (Exception ignored) { }
+                }
+            }
+
+            m.abilities = new ArrayList<>();
+            for (Item.ItemStack<?> s: this.abilities)
+            {
+                m.abilities.add(s.getCopy());
+            }
+        }
+        catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
+
+        m.health = m.baseHealth;
+
+        m.updateAbilities();
+
+        return m;
     }
 
     @Override
@@ -100,10 +170,37 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                 m.abilities.add(s.getCopy());
             }
 
+            m.restoreColors();
+            m.enableTertiaryColor = true;
+            if (this.overridePrimaryColor)
+            {
+                m.colorR = this.colorR;
+                m.colorG = this.colorG;
+                m.colorB = this.colorB;
+            }
+
+            if (this.overrideSecondaryColor)
+            {
+                m.secondaryColorR = this.secondaryColorR;
+                m.secondaryColorG = this.secondaryColorG;
+                m.secondaryColorB = this.secondaryColorB;
+            }
+
+            if (this.overrideTertiaryColor)
+            {
+                m.tertiaryColorR = this.tertiaryColorR;
+                m.tertiaryColorG = this.tertiaryColorG;
+                m.tertiaryColorB = this.tertiaryColorB;
+            }
+
+            if (this.overrideEmblemColor)
+            {
+                m.emblemR = this.emblemR;
+                m.emblemG = this.emblemG;
+                m.emblemB = this.emblemB;
+            }
+
             m.buildName = this.name;
-            m.emblemR = m.secondaryColorR;
-            m.emblemG = m.secondaryColorG;
-            m.emblemB = m.secondaryColorB;
         }
         catch (Exception e)
         {
@@ -139,5 +236,43 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             return this.abilities.get(this.selectedSecondaryAbility);
         else
             return null;
+    }
+
+    public void saveColors()
+    {
+        this.savedColors[0] = this.colorR;
+        this.savedColors[1] = this.colorG;
+        this.savedColors[2] = this.colorB;
+
+        this.savedColors[3] = this.secondaryColorR;
+        this.savedColors[4] = this.secondaryColorG;
+        this.savedColors[5] = this.secondaryColorB;
+
+        this.savedColors[6] = this.tertiaryColorR;
+        this.savedColors[7] = this.tertiaryColorG;
+        this.savedColors[8] = this.tertiaryColorB;
+
+        this.savedColors[9] = this.emblemR;
+        this.savedColors[10] = this.emblemG;
+        this.savedColors[11] = this.emblemB;
+    }
+
+    public void restoreColors()
+    {
+        this.colorR = this.savedColors[0];
+        this.colorG = this.savedColors[1];
+        this.colorB = this.savedColors[2];
+
+        this.secondaryColorR = this.savedColors[3];
+        this.secondaryColorG = this.savedColors[4];
+        this.secondaryColorB = this.savedColors[5];
+
+        this.tertiaryColorR = this.savedColors[6];
+        this.tertiaryColorG = this.savedColors[7];
+        this.tertiaryColorB = this.savedColors[8];
+
+        this.emblemR = this.savedColors[9];
+        this.emblemG = this.savedColors[10];
+        this.emblemB = this.savedColors[11];
     }
 }

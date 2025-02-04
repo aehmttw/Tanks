@@ -175,7 +175,11 @@ public final class Serializer
 
     public static Object fromTanksON(String s)
     {
-        return parseObject((Map<String, Object>) TanksON.parseObject(s));
+        Object o = TanksON.parseObject(s);
+        if (o instanceof Map)
+            return parseObject((Map<String, Object>) o);
+        else
+            throw new RuntimeException("Unexpected type of object: " + o.toString());
     }
 
     public static Object parseObject(Map<String, Object> m)
@@ -229,6 +233,12 @@ public final class Serializer
                 break;
             case "crusade_shop_item":
                 o = new Item.CrusadeShopItem();
+                break;
+            case "shop_build":
+                o = new TankPlayer.ShopTankBuild();
+                break;
+            case "crusade_shop_build":
+                o = new TankPlayer.CrusadeShopTankBuild();
                 break;
             case "explosion":
                 o = new Explosion();

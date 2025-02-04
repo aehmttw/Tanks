@@ -9,12 +9,15 @@ import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class CrusadePlayer
 {
     public Player player;
 
     public ItemBar itemBar;
+    public HashSet<String> ownedBuilds = new HashSet<>();
+    public String currentBuild;
 
     public int coins;
 

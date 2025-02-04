@@ -56,6 +56,7 @@ public class Crusade
 
 	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
 	public ArrayList<Item.CrusadeShopItem> crusadeShopItems = new ArrayList<>();
+	public ArrayList<TankPlayer.CrusadeShopTankBuild> crusadeShopBuilds = new ArrayList<>();
 
 	public String name = "";
 	public String fileName = "";
@@ -154,6 +155,9 @@ public class Crusade
 				case "tanks":
 					parsing = 3;
 					break;
+				case "builds":
+					parsing = 4;
+					break;
 				default:
 					if (parsing == 0)
 					{
@@ -193,11 +197,19 @@ public class Crusade
 						tankOccurrences.put(t, first);
 						this.customTanks.add(t);
 					}
+					else if (parsing == 4)
+					{
+						TankPlayer.CrusadeShopTankBuild t = TankPlayer.CrusadeShopTankBuild.fromString(s);
+						this.crusadeShopBuilds.add(t);
+					}
 					break;
 			}
 
 			i++;
 		}
+
+		if (crusadeShopBuilds.isEmpty())
+			crusadeShopBuilds.add(new TankPlayer.CrusadeShopTankBuild());
 		
 		this.name = name;
 
@@ -259,6 +271,10 @@ public class Crusade
 			{
 				livesTotal += player.remainingLives;
 				playersTotal++;
+
+				CrusadePlayer cp = crusadePlayers.get(player);
+				if (cp.currentBuild == null)
+					cp.currentBuild = this.crusadeShopBuilds.get(0).name;
 			}
 		}
 
@@ -450,6 +466,20 @@ public class Crusade
 		for (int i = 0; i < this.crusadeShopItems.size(); i++)
 		{
 			Item.CrusadeShopItem item = this.crusadeShopItems.get(i);
+			if (item.levelUnlock <= this.currentLevel)
+				shop.add(item);
+		}
+
+		return shop;
+	}
+
+	public ArrayList<TankPlayer.ShopTankBuild> getBuildsShop()
+	{
+		ArrayList<TankPlayer.ShopTankBuild> shop = new ArrayList<>();
+
+		for (int i = 0; i < this.crusadeShopBuilds.size(); i++)
+		{
+			TankPlayer.CrusadeShopTankBuild item = this.crusadeShopBuilds.get(i);
 			if (item.levelUnlock <= this.currentLevel)
 				shop.add(item);
 		}

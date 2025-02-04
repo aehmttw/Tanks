@@ -297,6 +297,7 @@ public class Game
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
 	public static final String tankDir = directoryPath + "/tanks";
+	public static final String buildDir = directoryPath + "/builds";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
 	public static final String screenshotsPath = directoryPath + "/screenshots/";

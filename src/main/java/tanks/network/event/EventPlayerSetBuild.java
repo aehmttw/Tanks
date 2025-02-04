@@ -44,6 +44,7 @@ public class EventPlayerSetBuild extends PersonalEvent
                 if (Game.players.get(i).clientID.equals(this.clientID))
                 {
                     Player p = Game.players.get(i);
+                    p.buildName = Game.currentLevel.playerBuilds.get(build).name;
 
                     for (Movable m: Game.movables)
                     {

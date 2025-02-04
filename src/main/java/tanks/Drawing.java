@@ -1251,7 +1251,6 @@ public class Drawing
 	{
 		fillInterfaceRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius * (1.0 - (borderWidth / borderRadius)));
 		fillInterfaceRect(x, y, sX, sY, borderRadius);
-		Drawing.drawing.setColor(255, 255, 255);
 	}
 
 	public void playMusic(String sound, float volume, boolean looped, String id, long fadeTime)

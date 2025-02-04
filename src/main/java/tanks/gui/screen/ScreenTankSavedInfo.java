@@ -6,6 +6,7 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayable;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,8 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
     public int pageEntries = 10;
 
+    public boolean isBuild = false;
+
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Ok", () ->
     {
         Game.screen = this.previous;
@@ -47,6 +50,8 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.previous = s;
         this.music = this.previous.music;
         this.musicID = this.previous.musicID;
+
+        this.isBuild = tank instanceof TankPlayable;
 
         double cY = this.centerY + 40;
 
@@ -171,10 +176,20 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         else
             Drawing.drawing.setColor(0, 0, 0);
 
-        if (this.copiedToTemplate)
-            Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank saved to templates!");
+        if (isBuild)
+        {
+            if (this.copiedToTemplate)
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Player build saved to templates!");
+            else
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Player build added to level!");
+        }
         else
-            Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank added to level!");
+        {
+            if (this.copiedToTemplate)
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank saved to templates!");
+            else
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank added to level!");
+        }
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 

@@ -117,11 +117,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** Time this tank has been invisible for*/
 	public double timeInvisible = 0;
 
-	@Property(category = appearanceBody, id = "color_r", name = "Red", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceBody, id = "color_r", name = "Red", miscType = Property.MiscType.color)
 	public double colorR;
-	@Property(category = appearanceBody, id = "color_g", name = "Green", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceBody, id = "color_g", name = "Green", miscType = Property.MiscType.color)
 	public double colorG;
-	@Property(category = appearanceBody, id = "color_b", name = "Blue", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceBody, id = "color_b", name = "Blue", miscType = Property.MiscType.color)
 	public double colorB;
 
 	@TankBuildProperty @Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
@@ -138,11 +138,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
 	@Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.color)
 	public boolean enableSecondaryColor = false;
-	@Property(category = appearanceTurretBarrel, id = "color_r2", name = "Red", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color_r2", name = "Red", miscType = Property.MiscType.color)
 	public double secondaryColorR;
-	@Property(category = appearanceTurretBarrel, id = "color_g2", name = "Green", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color_g2", name = "Green", miscType = Property.MiscType.color)
 	public double secondaryColorG;
-	@Property(category = appearanceTurretBarrel, id = "color_b2", name = "Blue", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color_b2", name = "Blue", miscType = Property.MiscType.color)
 	public double secondaryColorB;
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
 	public double turretSize = 8;
@@ -154,11 +154,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** Important: tertiary color values will not be used unless this option is set to true! */
 	@Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.color)
 	public boolean enableTertiaryColor = false;
-	@Property(category = appearanceTurretBase, id = "color_r3", name = "Red", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color_r3", name = "Red", miscType = Property.MiscType.color)
 	public double tertiaryColorR;
-	@Property(category = appearanceTurretBase, id = "color_g3", name = "Green", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color_g3", name = "Green", miscType = Property.MiscType.color)
 	public double tertiaryColorG;
-	@Property(category = appearanceTurretBase, id = "color_b3", name = "Blue", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color_b3", name = "Blue", miscType = Property.MiscType.color)
 	public double tertiaryColorB;
 
 	@TankBuildProperty @Property(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
@@ -181,11 +181,11 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = Property.MiscType.emblem)
 	public String emblem = null;
-	@Property(category = appearanceEmblem, id = "emblem_r", name = "Red", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_r", name = "Red", miscType = Property.MiscType.color)
 	public double emblemR;
-	@Property(category = appearanceEmblem, id = "emblem_g", name = "Green", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_g", name = "Green", miscType = Property.MiscType.color)
 	public double emblemG;
-	@Property(category = appearanceEmblem, id = "emblem_b", name = "Blue", miscType = Property.MiscType.color)
+	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_b", name = "Blue", miscType = Property.MiscType.color)
 	public double emblemB;
 
 	@MetadataProperty(id = "rotation", name = "Rotation", selector = SelectorRotation.selector_name, image = "rotate_tank.png", keybind = "editor.rotate")
@@ -193,7 +193,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public double hitboxSize = 0.95;
 
-	@Property(category = general, id = "explode_on_destroy", name = "Destroy explosion", desc="When destroyed, the tank will explode with this explosion.", nullable = true)
+	@TankBuildProperty @Property(category = general, id = "explode_on_destroy", name = "Destroy explosion", desc="When destroyed, the tank will explode with this explosion.", nullable = true)
 	public Explosion explodeOnDestroy = null;
 
 	public boolean droppedFromCrate = false;
@@ -760,9 +760,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			if (forInterface)
 				Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size);
 			else if (!in3d)
-				Drawing.drawing.fillGlow(this.posX, this.posY, size, size);
+				Drawing.drawing.fillLargeGlow(this.posX, this.posY, size, size, false, false);
 			else
-				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size,true, false);
+				Drawing.drawing.fillLargeGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size, true, false, false, false);
 		}
 
 		if (this.lightIntensity > 0 && this.lightSize > 0 && !transparent)

@@ -34,6 +34,7 @@ import tanks.rendering.ShaderGroundIntro;
 import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
+import tanks.tankson.Compatibility;
 
 import java.io.*;
 import java.util.*;
@@ -519,6 +520,7 @@ public class Game
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
+		Compatibility.init();
 
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 

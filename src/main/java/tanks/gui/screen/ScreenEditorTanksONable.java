@@ -53,6 +53,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
     {
         this.clearMusicTracks();
         this.resetLayout();
+
         Game.screen = this.prevScreen;
 
         if (this.onComplete != null)
@@ -786,6 +787,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 s = new ScreenEditorMine(p.cast(), Game.screen);
             else if (Explosion.class.isAssignableFrom(p.getType()))
                 s = new ScreenEditorExplosion(p.cast(), Game.screen);
+            else if (TankPlayer.class.isAssignableFrom(p.getType()))
+                s = new ScreenEditorPlayerTankBuild(p.cast(), Game.screen);
             else if (ITankField.class.isAssignableFrom(p.getType()))
             {
                 if (p.get() != null && TankAIControlled.class.isAssignableFrom(p.get().getClass()))
@@ -809,8 +812,6 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             ((IScreenWithCompletion) s).setOnComplete(() ->
             {
                 b.tank = null;
-
-//                if (p instanceof ArrayListIndexPointer && )
 
                 ITanksONEditable o = p.get();
                 b.value = p.get();

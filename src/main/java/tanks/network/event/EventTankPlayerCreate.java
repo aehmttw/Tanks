@@ -102,6 +102,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 			Game.playerTank = (TankPlayer) t;
 			Game.player.tank = t;
+			Game.player.buildName = Game.currentLevel.playerBuilds.get(0).name;
 		}
 		else
 		{
@@ -153,6 +154,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.emblemR = this.colorR2;
 		t.emblemG = this.colorG2;
 		t.emblemB = this.colorB2;
+
+		if (t instanceof TankPlayable)
+			((TankPlayable) t).saveColors();
 
 		t.drawAge = this.drawAge;
 

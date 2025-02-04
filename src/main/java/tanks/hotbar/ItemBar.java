@@ -354,12 +354,12 @@ public class ItemBar
 
 			if (i == selected)
 				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.player.hotbar.percentHidden) * 2.55);
-			else if (i - items == p.selectedPrimaryAbility)
+			else if (i - items == p.selectedPrimaryAbility && p.selectedPrimaryAbility >= 0)
 			{
 				double a = (selected >= 0 && !(slots[selected].item instanceof ItemEmpty) && !slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotPrimarySelectedR + eb, slotPrimarySelectedG + eb, slotPrimarySelectedB + eb, (100 - this.player.hotbar.percentHidden) * 1.27 * a);
 			}
-			else if (i - items == p.selectedSecondaryAbility)
+			else if (i - items == p.selectedSecondaryAbility && p.selectedSecondaryAbility >= 0)
 			{
 				double a = (selected >= 0 && !(slots[selected].item instanceof ItemEmpty) && slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotSecondarySelectedR + eb, slotSecondarySelectedG + eb, slotSecondarySelectedB + eb, (100 - this.player.hotbar.percentHidden) * 1.27 * a);

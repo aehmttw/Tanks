@@ -15,7 +15,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 {
     public Crusade.CrusadeLevel level;
     public Screen previous;
-    public ScreenCrusadeEditor previous2;
+    public ScreenCrusadeListEditor previous2;
     public TextBox index;
     public int insertionIndex;
     public DisplayLevel levelDisplay;
@@ -34,7 +34,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             Game.cleanUp();
-            previous2.refreshLevelButtons();
+            previous2.refreshButtons();
 
             Game.screen = previous;
         }
@@ -53,7 +53,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             Game.cleanUp();
-            previous2.refreshLevelButtons();
+            previous2.refreshButtons();
 
             Game.screen = previous;
         }
@@ -65,7 +65,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             previous2.crusade.levels.add(insertionIndex, level);
-            previous2.refreshLevelButtons();
+            previous2.refreshButtons();
 
             Game.cleanUp();
 
@@ -156,7 +156,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> saveMenu = false);
 
-    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeEditor s2)
+    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeListEditor s2)
     {
         this(level, s2, s2);
         this.edit = true;
@@ -175,7 +175,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         this.allowClose = false;
     }
 
-    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, Screen s, ScreenCrusadeEditor s2)
+    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, Screen s, ScreenCrusadeListEditor s2)
     {
         super(350, 40, 380, 60);
 
@@ -289,8 +289,24 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             {
                 this.saveLevel.update();
                 this.remove.update();
-                this.next.update();
-                this.prev.update();
+
+                if (Game.game.window.validScrollUp)
+                {
+                    Game.game.window.validScrollUp = false;
+                    if (this.prev.enabled)
+                        this.prev.function.run();
+                }
+                else if (Game.game.window.validScrollDown)
+                {
+                    Game.game.window.validScrollDown = false;
+                    if (this.next.enabled)
+                        this.next.function.run();
+                }
+                else
+                {
+                    this.next.update();
+                    this.prev.update();
+                }
             }
             else
                 this.back.update();
@@ -405,6 +421,6 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     @Override
     public void onAttemptClose()
     {
-        Game.screen = new ScreenConfirmSaveCrusade(Game.screen, this.previous2);
+        //Game.screen = new ScreenConfirmSaveCrusade(Game.screen, this.previous2);
     }
 }

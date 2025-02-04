@@ -14,9 +14,11 @@ import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.Serializer;
 import tanks.tankson.TanksONable;
+import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -3133,6 +3135,13 @@ public class TankAIControlled extends Tank implements ITankField
 		return t;
 	}
 
+	public TankPlayer convertToPlayer(double x, double y, double angle)
+	{
+		TankPlayer t = new TankPlayer(x, y, angle);
+		this.cloneProperties(t);
+		return t;
+	}
+
 	public static ITankField cloneTankField(ITankField t1)
 	{
 		if (t1 instanceof TankAIControlled)
@@ -3155,16 +3164,10 @@ public class TankAIControlled extends Tank implements ITankField
 				Property a = f.getAnnotation(Property.class);
 				if (a != null)
 				{
-					if (Bullet.class.isAssignableFrom(f.getType()))
+					if (ICopyable.class.isAssignableFrom(f.getType()))
 					{
-						Bullet i1 = (Bullet) f.get(this);
-						Bullet i2 = i1.getCopy();
-						f.set(t, i2);
-					}
-					else if (Mine.class.isAssignableFrom(f.getType()))
-					{
-						Mine i1 = (Mine) f.get(this);
-						Mine i2 = i1.getCopy();
+						ICopyable<?> i1 = (ICopyable<?>) f.get(this);
+						Object i2 = i1 == null ? null : i1.getCopy();
 						f.set(t, i2);
 					}
 					else if (ITankField.class.isAssignableFrom(f.getType()))
@@ -3195,6 +3198,87 @@ public class TankAIControlled extends Tank implements ITankField
 						f.set(t, f.get(this));
 				}
 			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
+
+		t.health = t.baseHealth;
+	}
+
+	public void cloneProperties(TankPlayable t)
+	{
+		try
+		{
+			for (Field f : Tank.class.getFields())
+			{
+				t.abilities.clear();
+
+				Property a = f.getAnnotation(Property.class);
+				TankBuildProperty bp = f.getAnnotation(TankBuildProperty.class);
+				if (a != null && bp != null)
+				{
+					if (ICopyable.class.isAssignableFrom(f.getType()))
+					{
+						ICopyable<?> i1 = (ICopyable<?>) f.get(this);
+						Object i2 = i1 == null ? null : i1.getCopy();
+						f.set(t, i2);
+					}
+					else if (ITankField.class.isAssignableFrom(f.getType()))
+					{
+						ITankField t1 = (ITankField) f.get(this);
+						f.set(t, cloneTankField(t1));
+					}
+					else if (a.miscType() == Property.MiscType.spawnedTanks)
+					{
+						ArrayList<SpawnedTankEntry> a1 = (ArrayList<SpawnedTankEntry>) f.get(this);
+
+						ArrayList<SpawnedTankEntry> al = new ArrayList<SpawnedTankEntry>();
+						for (SpawnedTankEntry o: a1)
+						{
+							al.add(new SpawnedTankEntry(cloneTankField(o.tank), o.weight));
+						}
+
+						f.set(t, al);
+					}
+					else if (a.miscType() == Property.MiscType.music)
+					{
+						if (f.get(this) != null)
+							f.set(t, new HashSet<>((HashSet<String>) f.get(this)));
+						else
+							f.set(t, new HashSet<>());
+					}
+					else
+						f.set(t, f.get(this));
+				}
+			}
+
+			if (!this.enableMovement)
+				t.maxSpeed = 0;
+
+			if (this.shootAIType != ShootAI.none)
+			{
+				ItemBullet.ItemStackBullet b = this.bulletItem;
+				b.item.name = Translation.translate("Bullet");
+				b.item.cooldownBase = this.cooldownBase;
+				if (!this.enableMovement)
+					b.item.bullet.recoil = 0;
+				t.abilities.add(b);
+			}
+
+			if (this.enableMineLaying)
+			{
+				ItemMine.ItemStackMine m = this.mineItem;
+				m.item.name = Translation.translate("Mine");
+				m.item.cooldownBase = this.mineTimerBase;
+				t.abilities.add(m);
+			}
+
+			t.overrideEmblemColor = true;
+			t.overridePrimaryColor = true;
+			t.overrideSecondaryColor = true;
+			t.overrideTertiaryColor = true;
 		}
 		catch (Exception e)
 		{

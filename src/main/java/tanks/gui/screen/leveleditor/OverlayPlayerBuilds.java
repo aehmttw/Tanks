@@ -4,9 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.gui.screen.IRenamableScreen;
-import tanks.gui.screen.Screen;
-import tanks.gui.screen.ScreenEditorPlayerTankBuild;
+import tanks.gui.screen.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
@@ -16,7 +14,7 @@ import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
-public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRenamableScreen
+public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRenamableScreen, ITankBuildScreen
 {
     public ArrayList<Button> tankButtons = new ArrayList<>();
     public int rows = 3;
@@ -75,18 +73,14 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
             if (i < count)
             {
                 t = Game.currentLevel.playerBuilds.get(i);
-                t.emblemR = t.secondaryColorR;
-                t.emblemG = t.secondaryColorG;
-                t.emblemB = t.secondaryColorB;
             }
             else
             {
                 Button b = new Button(x, y, 50, 50, "+",  () ->
                 {
-                    TankPlayer p = new TankPlayer();
-                    p.name = System.currentTimeMillis() + "";
-                    editor.level.playerBuilds.add(p);
-                    this.editTank(j);
+                    ScreenAddSavedTankBuild s = new ScreenAddSavedTankBuild(this, this.editor.level.playerBuilds);
+                    s.drawBehindScreen = true;
+                    Game.screen = s;
                 }, "Create a new player tank build!");
                 this.tankButtons.add(b);
                 b.fullInfo = true;
@@ -108,7 +102,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
     public void editTank(int index)
     {
-        Pointer<TankPlayer> p = new ArrayListIndexPointer<>(editor.level.playerBuilds, index);
+        Pointer<TankPlayer.ShopTankBuild> p = new ArrayListIndexPointer<>(editor.level.playerBuilds, index);
         ScreenEditorPlayerTankBuild s = new ScreenEditorPlayerTankBuild(p, this);
 
         if (editor.level.playerBuilds.size() == 1)
@@ -153,6 +147,9 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public void draw()
     {
         super.draw();
+
+        if (Game.screen != this)
+            return;
 
         Drawing.drawing.setColor(0, 0, 0, 128);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 600);
@@ -202,4 +199,24 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
         return true;
     }
+
+    @Override
+    public Pointer<TankPlayer.ShopTankBuild> addTank(TankPlayer.ShopTankBuild t, boolean select)
+    {
+        this.editor.level.playerBuilds.add(t);
+        return new ArrayListIndexPointer<>(this.editor.level.playerBuilds, this.editor.level.playerBuilds.size() - 1).cast();
+    }
+
+    @Override
+    public void removeTank(TankPlayer t)
+    {
+        this.editor.level.playerBuilds.remove(t);
+    }
+
+    @Override
+    public void refreshTanks(TankPlayer t)
+    {
+        this.refreshButtons();
+    }
+
 }

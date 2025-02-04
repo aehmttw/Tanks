@@ -26,7 +26,7 @@ public class ScreenCrusadeEditWarning extends Screen
         public void run()
         {
             Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + crusade.name).delete();
-            Game.screen = new ScreenCrusadeEditor(crusade);
+            Game.screen = new ScreenCrusadeListEditor(crusade);
         }
     }
     );

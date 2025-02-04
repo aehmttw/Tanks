@@ -7,9 +7,9 @@ import tanks.gui.SavedFilesList;
 
 public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
 {
-    public ScreenCrusadeEditor previous;
+    public ScreenCrusadeListEditor previous;
 
-    public ScreenCrusadeAddLevel(ScreenCrusadeEditor s)
+    public ScreenCrusadeAddLevel(ScreenCrusadeListEditor s)
     {
         this.music = "menu_editor.ogg";
         this.musicID = "menu";
@@ -68,6 +68,6 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
     @Override
     public void onAttemptClose()
     {
-        Game.screen = new ScreenConfirmSaveCrusade(Game.screen, previous);
+        //Game.screen = new ScreenConfirmSaveCrusade(Game.screen, previous);
     }
 }

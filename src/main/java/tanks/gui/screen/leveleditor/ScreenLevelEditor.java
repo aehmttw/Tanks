@@ -2503,6 +2503,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.player.hotbar.coins = this.level.startingCoins;
 
 		Game.currentLevel.playerBuilds.get(0).clonePropertiesTo(Game.playerTank);
+		Game.player.buildName = Game.currentLevel.playerBuilds.get(0).buildName;
 	}
 
 	public void replaceSpawns()

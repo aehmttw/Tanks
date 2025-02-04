@@ -18,7 +18,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         {
             Crusade.currentCrusade.retry = true;
             Crusade.currentCrusade.loadLevel();
-            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Game.screen = new ScreenGame(Crusade.currentCrusade);
         }
     }
     );
@@ -28,7 +28,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         if (checkCrusadeEnd())
         {
             Crusade.currentCrusade.loadLevel();
-            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Game.screen = new ScreenGame(Crusade.currentCrusade);
             Crusade.currentCrusade.replay = true;
         }
     }
@@ -45,7 +45,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             Crusade.currentCrusade.currentLevel++;
             Crusade.currentCrusade.replay = false;
             Crusade.currentCrusade.loadLevel();
-            Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+            Game.screen = new ScreenGame(Crusade.currentCrusade);
         }
     }
     );

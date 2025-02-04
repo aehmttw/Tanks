@@ -17,14 +17,16 @@ import tanks.gui.screen.ScreenTitle;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.*;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemRemote;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
-import tanks.tankson.*;
+import tanks.tankson.Property;
+import tanks.tankson.Serializer;
+import tanks.tankson.TanksONable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
+import static tanks.tank.TankPropertyCategory.general;
 
 /**
  * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
@@ -61,6 +63,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 	public double mouseX;
 	public double mouseY;
+
+	public static int[] default_primary_color = new int[]{0, 150, 255};
+	public static int[] default_secondary_color = new int[]{(int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255)};
+	public static int[] default_tertiary_color = new int[]{(default_primary_color[0] + default_secondary_color[0]) / 2, (default_primary_color[1] + default_secondary_color[1]) / 2, (default_primary_color[2] + default_secondary_color[2]) / 2};
 
 	public static final int max_abilities = 5;
 
@@ -102,6 +108,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		this.emblemR = this.secondaryColorR;
 		this.emblemG = this.secondaryColorG;
 		this.emblemB = this.secondaryColorB;
+		this.saveColors();
 
 		if (enableDestroyCheat)
 		{
@@ -681,6 +688,49 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					i.cooldown = Math.max(i.cooldown, value);
 				}
 			}
+		}
+	}
+
+	@TanksONable("shop_build")
+	public static class ShopTankBuild extends TankPlayer
+	{
+		@TankBuildProperty @Property(id = "price", name = "Price", category = general)
+		public int price;
+
+		public ShopTankBuild()
+		{
+
+		}
+
+		public ShopTankBuild(TankPlayable p)
+		{
+			p.copyPropertiesTo(this);
+		}
+
+		public static ShopTankBuild fromString(String s)
+		{
+			return (ShopTankBuild) Serializer.fromTanksON(s);
+		}
+	}
+
+	@TanksONable("crusade_shop_build")
+	public static class CrusadeShopTankBuild extends ShopTankBuild
+	{
+		@TankBuildProperty @Property(id = "unlock_level", name = "Unlocks after level", category = general)
+		public int levelUnlock;
+
+		public CrusadeShopTankBuild()
+		{
+
+		}
+		public CrusadeShopTankBuild(TankPlayable p)
+		{
+			p.copyPropertiesTo(this);
+		}
+
+		public static CrusadeShopTankBuild fromString(String s)
+		{
+			return (CrusadeShopTankBuild) Serializer.fromTanksON(s);
 		}
 	}
 }

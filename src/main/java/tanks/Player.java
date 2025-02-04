@@ -21,6 +21,7 @@ public class Player
     public UUID clientID;
     public String username;
     public Tank tank;
+    public String buildName = "player";
 
     public int colorR = 0;
     public int colorG = 150;

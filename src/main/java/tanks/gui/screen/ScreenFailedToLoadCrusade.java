@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.GameCrashedException;
 import tanks.gui.Button;
 
 import java.util.Date;
@@ -15,9 +16,13 @@ public class ScreenFailedToLoadCrusade extends Screen
 	public String path;
 	public int hashcode;
 
-	public ScreenFailedToLoadCrusade(String name, String contents, Exception e, Screen s)
+	public ScreenFailedToLoadCrusade(String name, String contents, Exception e1, Screen s)
 	{
 		super(350, 40, 380, 60);
+
+		Throwable e = e1;
+		while (e instanceof GameCrashedException)
+			e = ((GameCrashedException) e).originalException;
 
 		this.fileName = name.substring(name.replace("\\", "/").lastIndexOf("/") + 1);
 		Game.currentSizeX = 28;

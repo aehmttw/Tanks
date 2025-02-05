@@ -62,7 +62,7 @@ public final class Serializer
         return ann;
     }
 
-    public static String getID(Field f)
+    public static String getId(Field f)
     {
         return f.getAnnotation(Property.class).id();
     }
@@ -98,7 +98,7 @@ public final class Serializer
                     Object o2 = f.get(o);
                     if (o2 != null && isTanksONable(f))
                     {
-                        p.put(getID(f), toMap(o2));
+                        p.put(getId(f), toMap(o2));
                     }
                     else if (o2 instanceof ArrayList)
                     {
@@ -109,19 +109,19 @@ public final class Serializer
                             {
                                 o3s.add(toMap(o3));
                             }
-                            p.put(getID(f), o3s);
+                            p.put(getId(f), o3s);
                         }
                         else
                         {
-                            p.put(getID(f), f.get(o));
+                            p.put(getId(f), f.get(o));
                         }
                     }
                     else if (o2 instanceof Enum)
-                        p.put(getID(f), ((Enum) o2).name());
+                        p.put(getId(f), ((Enum) o2).name());
                     else if (o2 instanceof Serializable)
-                        p.put(getID(f), ((Serializable) o2).serialize());
+                        p.put(getId(f), ((Serializable) o2).serialize());
                     else
-                        p.put(getID(f), f.get(o));
+                        p.put(getId(f), f.get(o));
                 }
             }
             catch (Exception e)
@@ -228,15 +228,15 @@ public final class Serializer
 
         for (Field f : o.getClass().getFields())
         {
-            if (f.isAnnotationPresent(Property.class) && m.containsKey(getID(f)))
+            if (f.isAnnotationPresent(Property.class) && m.containsKey(getId(f)))
             {
-                processed.add(getID(f));
+                processed.add(getId(f));
                 try
                 {
                     Object o2 = f.get(o);
                     if (isTanksONable(f))
                     {
-                        Object o3 = m.get(getID(f));
+                        Object o3 = m.get(getId(f));
                         try {
                             f.set(o, parseObject((Map<String, Object>) o3));
                         } catch (ClassCastException e) {
@@ -245,35 +245,35 @@ public final class Serializer
                     }
                     else if (o2 instanceof ArrayList)
                     {
-                        ArrayList arr = (ArrayList) m.get(getID(f));
+                        ArrayList arr = (ArrayList) m.get(getId(f));
                         if (!arr.isEmpty() && (arr.get(0) instanceof Map))
                         {
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(getID(f))))
+                            for (Map o3 : ((ArrayList<Map>) m.get(getId(f))))
                             {
                                 o3s.add(parseObject(o3));
                             }
                             f.set(o, o3s);
                         }
                         else
-                            f.set(o, m.get(getID(f)));
+                            f.set(o, m.get(getId(f)));
                     }
                     else if (o2 instanceof HashSet)
-                        f.set(o, new HashSet<>((ArrayList) m.get(getID(f))));
+                        f.set(o, new HashSet<>((ArrayList) m.get(getId(f))));
                     else if (o2 instanceof Enum)
-                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getID(f))));
+                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getId(f))));
                     else if (o2 instanceof Serializable)
-                        f.set(o, ((Serializable) o2).deserialize((String) m.get(getID(f))));
+                        f.set(o, ((Serializable) o2).deserialize((String) m.get(getId(f))));
                     else if (o2 instanceof Integer)
-                        f.set(o, ((Double) m.get(getID(f))).intValue());
+                        f.set(o, ((Double) m.get(getId(f))).intValue());
                     else if (o2 instanceof Boolean)
-                        f.set(o, m.get(getID(f)));
+                        f.set(o, m.get(getId(f)));
                     else
-                        f.set(o, m.get(getID(f)));
+                        f.set(o, m.get(getId(f)));
                 }
                 catch (Exception e)
                 {
-                    System.out.println(getID(f));
+                    System.out.println(getId(f));
                     throw new RuntimeException(e);
                 }
             }

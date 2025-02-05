@@ -20,7 +20,7 @@ public class Compatibility {
 
         }
 
-        return compatibility_table.get(Serializer.getID(f)).apply(o);
+        return compatibility_table.get(Serializer.getId(f)).apply(o);
     }
 
     public static String convert(String f) {

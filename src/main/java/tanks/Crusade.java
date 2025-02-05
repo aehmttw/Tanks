@@ -7,6 +7,7 @@ import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
+import tanks.network.ServerHandler;
 import tanks.network.event.*;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
@@ -271,11 +272,10 @@ public class Crusade
 			{
 				livesTotal += player.remainingLives;
 				playersTotal++;
-
-				CrusadePlayer cp = crusadePlayers.get(player);
-				if (cp.currentBuild == null)
-					cp.currentBuild = this.crusadeShopBuilds.get(0).name;
 			}
+
+			if (player.buildName == null)
+				player.buildName = this.crusadeShopBuilds.get(0).name;
 		}
 
 		for (Player player : Game.players)
@@ -319,6 +319,8 @@ public class Crusade
 
 		l.loadLevel();
 
+		ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
+
 		for (Player player : Game.players)
 		{
 			player.hotbar.coins = crusadePlayers.get(player).coins;
@@ -353,6 +355,43 @@ public class Crusade
 					else if (item instanceof ItemMine.ItemStackMine)
 						((ItemMine.ItemStackMine) item).liveMines = 0;
 				}
+			}
+		}
+
+		if (ScreenPartyHost.isServer)
+		{
+			for (ServerHandler h : ScreenPartyHost.server.connections)
+			{
+				if (h.player != null)
+				{
+					for (String s : h.player.ownedBuilds)
+					{
+						h.queueEvent(new EventPurchaseBuild(s));
+					}
+
+					for (int n = 0; n < builds.size(); n++)
+					{
+						TankPlayer.ShopTankBuild s = builds.get(n);
+						if (s.name.equals(h.player.buildName))
+							h.queueEvent(new EventPlayerSetBuild(n));
+					}
+				}
+			}
+		}
+
+		for (Movable m: Game.movables)
+		{
+			if (m instanceof TankPlayerRemote)
+				((TankPlayerRemote) m).buildName = ((TankPlayerRemote) m).player.buildName;
+		}
+
+		if (Game.playerTank != null)
+		{
+			for (int n = 0; n < builds.size(); n++)
+			{
+				TankPlayer.ShopTankBuild s = builds.get(n);
+				if (s.name.equals(Game.player.buildName))
+					s.clonePropertiesTo(Game.playerTank);
 			}
 		}
 

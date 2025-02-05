@@ -403,16 +403,17 @@ public class Panel
 				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).cancelCountdown)
 				{
 					Game.eventsOut.add(new EventBeginLevelCountdown());
-					((ScreenGame) Game.screen).cancelCountdown = false;
+					ScreenGame s = (ScreenGame) Game.screen;
+					s.cancelCountdown = false;
 
 					for (Movable m: Game.movables)
 					{
 						if (m instanceof TankPlayable)
 						{
 							int build = -1;
-							for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
+							for (int i = 0; i < s.builds.size(); i++)
 							{
-								TankPlayable t = Game.currentLevel.playerBuilds.get(i);
+								TankPlayable t = s.builds.get(i);
 								if (t.name.equals(((TankPlayable) m).buildName))
 								{
 									build = i;
@@ -585,11 +586,7 @@ public class Panel
 			{
 				for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
 				{
-					synchronized (ScreenPartyHost.server.connections.get(j).events)
-					{
-						ScreenPartyHost.server.connections.get(j).events.addAll(Game.eventsOut);
-					}
-
+					ScreenPartyHost.server.connections.get(j).addEvents(Game.eventsOut);
 					ScreenPartyHost.server.connections.get(j).reply();
 				}
 			}

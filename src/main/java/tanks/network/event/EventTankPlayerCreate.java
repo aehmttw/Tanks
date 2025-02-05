@@ -1,6 +1,7 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
+import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
 import tanks.Team;
@@ -102,7 +103,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 			Game.playerTank = (TankPlayer) t;
 			Game.player.tank = t;
-			Game.player.buildName = Game.currentLevel.playerBuilds.get(0).name;
+
+			if (!Crusade.crusadeMode)
+				Game.player.buildName = Game.currentLevel.playerBuilds.get(0).name;
 		}
 		else
 		{

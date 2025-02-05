@@ -71,7 +71,7 @@ public class TankNPC extends TankDummy
     {
         super(name, x, y * 50 + 25, angle);
 
-        this.targetable = false;
+        this.currentlyTargetable = false;
 
         this.messages = messages.split("\n");
         this.shopItems = shop;

@@ -34,7 +34,6 @@ import tanks.rendering.ShaderGroundIntro;
 import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
-import tanks.tankson.Compatibility;
 
 import java.io.*;
 import java.util.*;
@@ -520,7 +519,6 @@ public class Game
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
-		Compatibility.init();
 
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
@@ -713,7 +711,7 @@ public class Game
 		catch (FileNotFoundException e)
 		{
 			Game.logger = System.err;
-			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
+			Game.logger.println(new Date() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 
 		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
@@ -767,7 +765,7 @@ public class Game
 	 */
 	public static void addTank(Tank tank)
 	{
-		if (tank instanceof TankPlayer || tank instanceof TankPlayerController || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
+		if (tank instanceof TankPlayer || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
 			Game.exitToCrash(new RuntimeException("Invalid tank added with Game.addTank(" + tank + ")"));
 
 		tank.registerNetworkID();
@@ -1007,10 +1005,10 @@ public class Game
 		}
 
 		Game.crashTime = System.currentTimeMillis();
-		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
+		Game.logger.println(new Date() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
 
-		if (!(Game.screen instanceof ScreenCrashed) && !(Game.screen instanceof ScreenOutOfMemory))
+		if (!(Game.screen instanceof ScreenCrashed))
 		{
 			try
 			{
@@ -1022,7 +1020,7 @@ public class Game
 				f.create();
 
 				f.startWriting();
-				f.println("Tanks crash report: " + Game.version + " - " + new Date().toString() + "\n");
+				f.println("Tanks crash report: " + Game.version + " - " + new Date() + "\n");
 
 				f.println(e.toString());
 				for (StackTraceElement el: e.getStackTrace())
@@ -1427,7 +1425,7 @@ public class Game
 				return lb.toString().length() - la.toString().length();
 			else if (la.toString().length() != lb.toString().length())
 				return la.toString().length() - lb.toString().length();
-			else if (!la.toString().equals(lb.toString()))
+			else if (!la.toString().contentEquals(lb))
 				return la.toString().compareTo(lb.toString());
 		}
 

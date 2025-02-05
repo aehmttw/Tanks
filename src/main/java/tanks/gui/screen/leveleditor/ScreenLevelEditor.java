@@ -2770,8 +2770,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 		else if (this.currentPlaceable == Placeable.playerTank)
 		{
-			this.mousePlaceable = new TankPlayer(0, 0, 0);
-			((TankPlayer) mousePlaceable).setDefaultColor();
+			this.mousePlaceable = new TankPlayer(0, 0, 0).setDefaultColor();
 		}
 
 		this.buttons.bottomRight.removeAll(this.shortcutButtons);

@@ -1,18 +1,8 @@
 package tanks.tankson;
 
 import basewindow.IModel;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.item.Item;
-import tanks.tank.Explosion;
-import tanks.tank.Mine;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankReference;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -248,7 +238,7 @@ public class TanksON
             StringBuilder s = new StringBuilder("{");
             HashMap<?, ?> h = ((HashMap<?, ?>) o);
 
-            ArrayList<String> keys = new ArrayList<String>((Collection<? extends String>) h.keySet());
+            ArrayList<String> keys = new ArrayList<>((Collection<? extends String>) h.keySet());
             if (keys.remove("name"))
                 keys.add(0, "name");
 

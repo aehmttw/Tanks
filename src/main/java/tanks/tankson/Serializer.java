@@ -9,160 +9,127 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class Serializer
 {
-
     public static HashMap<Class<?>, Object> defaults = new HashMap<>();
-
-    public static HashMap<String, Tank> userTanks = new HashMap<>();
 
     public static Class<?> getCorrectClass(Object o)
     {
-        if (o instanceof TankAIControlled)
-        {
-            return TankAIControlled.class;
-        }
-        else
-        {
-            return o.getClass();
-        }
+        return o instanceof TankAIControlled ? TankAIControlled.class : o.getClass();
     }
 
     public static Object getDefault(Class<?> c)
     {
-        if (defaults.containsKey(c))
-        {
-            return defaults.get(c);
-        }
-        else
+        return defaults.computeIfAbsent(c, c1 ->
         {
             try
             {
-                Object o = c.getConstructor().newInstance();
-                defaults.put(c, o);
-                return o;
+                return c1.getConstructor().newInstance();
             }
-            catch (Exception ignore)
+            catch (Exception e)
             {
+                return null;
             }
-        }
-        return null;
+        });
     }
 
     public static boolean isTanksONable(Object o)
     {
-        if (o != null)
-        {
-            Class c = o.getClass();
-            while (c != null)
-            {
-                if (c.isAnnotationPresent(TanksONable.class))
-                    return true;
-                else
-                    c = c.getSuperclass();
-            }
-        }
-        return false;
+        return isTanksONable(o.getClass());
     }
 
     public static boolean isTanksONable(Field f)
     {
-        if (f != null)
-        {
-            Class c = f.getType();
-            while (c != null)
-            {
-                if (c.isAnnotationPresent(TanksONable.class))
-                    return true;
-                else
-                    c = c.getSuperclass();
-            }
-        }
-        return false;
+        if (f == null) return false;
+        return isTanksONable(f.getType());
+    }
+
+    public static boolean isTanksONable(Class<?> c)
+    {
+        while (c != null && !c.isAnnotationPresent(TanksONable.class))
+            c = c.getSuperclass();
+        return c != null;
     }
 
     public static <A extends Annotation> A getAnnotation(Object o, Class<A> a)
     {
-        Class<?> target = o.getClass();
-        while (target != null)
-        {
-            A r = target.getAnnotation(a);
-
-            if (r != null)
-                return r;
-
-            target = target.getSuperclass();
-        }
-
-        return null;
+        if (o == null) return null;
+        Class<?> c = o.getClass();
+        A ann = null;
+        while (c != null && (ann = c.getAnnotation(a)) == null)
+            c = c.getSuperclass();
+        return ann;
     }
 
-    public static String getid(Field f)
+    public static String getID(Field f)
     {
         return f.getAnnotation(Property.class).id();
     }
 
     public static Map<String, Object> toMap(Object o)
     {
-        if (isTanksONable(o))
+        if (!isTanksONable(o))
+            return null;
+
+        HashMap<String, Object> p = new HashMap<>();
+        p.put("obj_type", getAnnotation(o, TanksONable.class).value());
+        if (o instanceof Item)
         {
-            HashMap<String, Object> p = new HashMap<>();
-            p.put("obj_type", getAnnotation(o, TanksONable.class).value());
-            if (o instanceof Item)
-                try
-                {
-                    p.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
-                }
-                catch (Exception ignore)
-                {
-                }
-            else if (o instanceof Bullet)
-                p.put("bullet_type", ((Bullet) o).typeName);
-
-
-            for (Field f : o.getClass().getFields())
+            try
             {
-                try
+                p.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
+            }
+            catch (Exception ignored)
+            {
+
+            }
+        }
+        else if (o instanceof Bullet)
+            p.put("bullet_type", ((Bullet) o).typeName);
+
+
+        for (Field f : o.getClass().getFields())
+        {
+            try
+            {
+                if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                 {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
+                    Object o2 = f.get(o);
+                    if (o2 != null && isTanksONable(f))
                     {
-                        Object o2 = f.get(o);
-                        if (o2 != null && isTanksONable(f))
-                        {
-                            p.put(getid(f), toMap(o2));
-                        }
-                        else if (o2 instanceof ArrayList)
-                        {
-                            if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
-                            {
-                                ArrayList<Map<String, Object>> o3s = new ArrayList<>();
-                                for (Object o3 : ((ArrayList) o2))
-                                {
-                                    o3s.add(toMap(o3));
-                                }
-                                p.put(getid(f), o3s);
-                            }
-                            else
-                            {
-                                p.put(getid(f), f.get(o));
-                            }
-                        }
-                        else if (o2 instanceof Enum)
-                            p.put(getid(f), ((Enum) o2).name());
-                        else if (o2 instanceof Serializable)
-                            p.put(getid(f), ((Serializable) o2).serialize());
-                        else
-                            p.put(getid(f), f.get(o));
+                        p.put(getID(f), toMap(o2));
                     }
-                }
-                catch (Exception e)
-                {
-                    throw new RuntimeException(e);
+                    else if (o2 instanceof ArrayList)
+                    {
+                        if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
+                        {
+                            ArrayList<Map<String, Object>> o3s = new ArrayList<>();
+                            for (Object o3 : ((ArrayList) o2))
+                            {
+                                o3s.add(toMap(o3));
+                            }
+                            p.put(getID(f), o3s);
+                        }
+                        else
+                        {
+                            p.put(getID(f), f.get(o));
+                        }
+                    }
+                    else if (o2 instanceof Enum)
+                        p.put(getID(f), ((Enum) o2).name());
+                    else if (o2 instanceof Serializable)
+                        p.put(getID(f), ((Serializable) o2).serialize());
+                    else
+                        p.put(getID(f), f.get(o));
                 }
             }
-            return p;
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
-        return null;
+        return p;
     }
 
     public static String toTanksON(Object o)
@@ -183,7 +150,7 @@ public final class Serializer
     {
         if (m == null)
             return null;
-        Object o = null;
+        Object o;
         Set<String> processed = new HashSet<>();
         processed.add("obj_type");
         switch ((String) m.get("obj_type"))
@@ -256,20 +223,20 @@ public final class Serializer
                 break;
             }
             default:
-                throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
+                throw new RuntimeException("Bad object type: " + m.get("obj_type"));
         }
 
         for (Field f : o.getClass().getFields())
         {
-            if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f)))
+            if (f.isAnnotationPresent(Property.class) && m.containsKey(getID(f)))
             {
-                processed.add(getid(f));
+                processed.add(getID(f));
                 try
                 {
                     Object o2 = f.get(o);
                     if (isTanksONable(f))
                     {
-                        Object o3 = m.get(getid(f));
+                        Object o3 = m.get(getID(f));
                         try {
                             f.set(o, parseObject((Map<String, Object>) o3));
                         } catch (ClassCastException e) {
@@ -278,35 +245,35 @@ public final class Serializer
                     }
                     else if (o2 instanceof ArrayList)
                     {
-                        ArrayList arr = (ArrayList) m.get(getid(f));
+                        ArrayList arr = (ArrayList) m.get(getID(f));
                         if (!arr.isEmpty() && (arr.get(0) instanceof Map))
                         {
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f))))
+                            for (Map o3 : ((ArrayList<Map>) m.get(getID(f))))
                             {
                                 o3s.add(parseObject(o3));
                             }
                             f.set(o, o3s);
                         }
                         else
-                            f.set(o, m.get(getid(f)));
+                            f.set(o, m.get(getID(f)));
                     }
                     else if (o2 instanceof HashSet)
-                        f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
+                        f.set(o, new HashSet<>((ArrayList) m.get(getID(f))));
                     else if (o2 instanceof Enum)
-                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
+                        f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getID(f))));
                     else if (o2 instanceof Serializable)
-                        f.set(o, ((Serializable) o2).deserialize((String) m.get(getid(f))));
+                        f.set(o, ((Serializable) o2).deserialize((String) m.get(getID(f))));
                     else if (o2 instanceof Integer)
-                        f.set(o, ((Double) m.get(getid(f))).intValue());
+                        f.set(o, ((Double) m.get(getID(f))).intValue());
                     else if (o2 instanceof Boolean)
-                        f.set(o, m.get(getid(f)));
+                        f.set(o, m.get(getID(f)));
                     else
-                        f.set(o, m.get(getid(f)));
+                        f.set(o, m.get(getID(f)));
                 }
                 catch (Exception e)
                 {
-                    System.out.println(getid(f));
+                    System.out.println(getID(f));
                     throw new RuntimeException(e);
                 }
             }
@@ -328,9 +295,6 @@ public final class Serializer
                 System.out.println("Unconvertable field found!");
             }
         }
-
-
         return o;
     }
-
 }

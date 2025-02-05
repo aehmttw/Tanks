@@ -7,9 +7,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
-import tanks.item.ItemBullet;
 import tanks.item.ItemDummyTankExplosion;
-import tanks.item.ItemMine;
 import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
@@ -50,7 +48,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean depthTest = true;
 
 	public boolean invulnerable = false;
-	public boolean targetable = true;
+	public boolean currentlyTargetable = true;
 	public double invulnerabilityTimer = 0;
 
 	public boolean disabled = false;
@@ -84,6 +82,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public boolean resistExplosions = false;
 	@TankBuildProperty @Property(category = general, id = "resist_freezing", name = "Freezing immunity")
 	public boolean resistFreeze = false;
+
+	@TankBuildProperty @Property(category = general, id = "targetable", name = "Targetable", desc = "If disabled, AI-controlled tanks will not try to target this tank")
+	public boolean targetable = true;
 
 	public int networkID = -1;
 	public int crusadeID = -1;
@@ -469,6 +470,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			// If you get this crash, please make sure you call Game.addTank() to add them to movables, or use registerNetworkID()!
 			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank! " + this.name));
 		}
+
+		if (this.age <= 0)
+			this.currentlyTargetable = targetable;
 
 		this.updateVisibility();
 

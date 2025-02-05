@@ -354,6 +354,7 @@ public class Game
 		NetworkEventMap.register(EventAddShopItem.class);
 		NetworkEventMap.register(EventSortShopButtons.class);
 		NetworkEventMap.register(EventPurchaseItem.class);
+		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);

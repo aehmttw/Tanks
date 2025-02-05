@@ -3,7 +3,6 @@ package tanks.obstacle;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorGroupID;
-import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.tank.Tank;
 import tanks.tank.TeleporterOrb;
 import tanks.tankson.MetadataProperty;
@@ -145,7 +144,7 @@ public class ObstacleTeleporter extends Obstacle
 			{
 				Movable m = Game.movables.get(i);
 
-				if (m instanceof Tank && ((Tank) m).targetable && Movable.distanceBetween(this, m) < ((Tank) m).size)
+				if (m instanceof Tank && ((Tank) m).currentlyTargetable && Movable.distanceBetween(this, m) < ((Tank) m).size)
 				{
 					t = (Tank) m;
 

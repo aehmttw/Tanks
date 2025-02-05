@@ -22,6 +22,7 @@ public class Player
     public String username;
     public Tank tank;
     public String buildName = "player";
+    public HashSet<String> ownedBuilds = new HashSet<>();
 
     public int colorR = 0;
     public int colorG = 150;

@@ -889,7 +889,7 @@ public class TankAIControlled extends Tank implements ITankField
 			Movable m = Game.movables.get(i);
 
 			boolean correctTeam = (this.isSupportTank() && Team.isAllied(this, m)) || (!this.isSupportTank() && !Team.isAllied(this, m));
-			if (m instanceof Tank && correctTeam && !((Tank) m).hidden && ((Tank) m).targetable && m != this)
+			if (m instanceof Tank && correctTeam && !((Tank) m).hidden && ((Tank) m).currentlyTargetable && m != this)
 			{
 				if (this.bullet.damage < 0 && ((Tank) m).health - ((Tank) m).baseHealth >= this.bullet.maxExtraHealth && this.bullet.maxExtraHealth > 0)
 					continue;
@@ -926,7 +926,7 @@ public class TankAIControlled extends Tank implements ITankField
 			Movable m = Game.movables.get(i);
 
 			if (m instanceof Tank && !(m instanceof TankAIControlled && ((TankAIControlled) m).transformMimic) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
-					&& ((Tank) m).targetable && Movable.distanceBetween(m, this) < this.mimicRange && ((Tank) m).size == this.size && !m.destroy)
+					&& ((Tank) m).currentlyTargetable && Movable.distanceBetween(m, this) < this.mimicRange && ((Tank) m).size == this.size && !m.destroy)
 			{
 				Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 				r.moveOut(5);
@@ -2502,7 +2502,7 @@ public class TankAIControlled extends Tank implements ITankField
 		else
 			this.transformRevertTimer = this.sightTransformRevertTime;
 
-		if (this.transformRevertTimer <= 0 && this.targetable)
+		if (this.transformRevertTimer <= 0 && this.currentlyTargetable)
 		{
 			Game.removeMovables.add(this.sightTransformTank);
 			Tank.idMap.put(this.networkID, this);
@@ -2575,7 +2575,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.mimicRevertCounter = this.mimicRevertTime;
 
 		Tank t = this.possessingTank.getBottomLevelPossessing();
-		if (this.mimicRevertCounter <= 0 && this.targetable)
+		if (this.mimicRevertCounter <= 0 && this.currentlyTargetable)
 		{
 			Tank.idMap.put(this.networkID, this);
 			this.health = t.health;

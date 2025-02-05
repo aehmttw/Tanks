@@ -95,20 +95,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		this.addDefaultAbilities();
 
-		this.colorR = Game.player.colorR;
-		this.colorG = Game.player.colorG;
-		this.colorB = Game.player.colorB;
-		this.secondaryColorR = Game.player.colorR2;
-		this.secondaryColorG = Game.player.colorG2;
-		this.secondaryColorB = Game.player.colorB2;
-		this.enableTertiaryColor = Game.player.enableTertiaryColor;
-		this.tertiaryColorR = Game.player.colorR3;
-		this.tertiaryColorG = Game.player.colorG3;
-		this.tertiaryColorB = Game.player.colorB3;
-		this.emblemR = this.secondaryColorR;
-		this.emblemG = this.secondaryColorG;
-		this.emblemB = this.secondaryColorB;
-		this.saveColors();
+		this.setPlayerColor();
 
 		if (enableDestroyCheat)
 		{
@@ -139,6 +126,25 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
         this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
         this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
         this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
+		return this;
+	}
+
+	public TankPlayer setPlayerColor()
+	{
+		this.colorR = Game.player.colorR;
+		this.colorG = Game.player.colorG;
+		this.colorB = Game.player.colorB;
+		this.secondaryColorR = Game.player.colorR2;
+		this.secondaryColorG = Game.player.colorG2;
+		this.secondaryColorB = Game.player.colorB2;
+		this.enableTertiaryColor = Game.player.enableTertiaryColor;
+		this.tertiaryColorR = Game.player.colorR3;
+		this.tertiaryColorG = Game.player.colorG3;
+		this.tertiaryColorB = Game.player.colorB3;
+		this.emblemR = this.secondaryColorR;
+		this.emblemG = this.secondaryColorG;
+		this.emblemB = this.secondaryColorB;
+		this.saveColors();
 		return this;
 	}
 
@@ -709,7 +715,11 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		public static ShopTankBuild fromString(String s)
 		{
-			return (ShopTankBuild) Serializer.fromTanksON(s);
+			Object o = Serializer.fromTanksON(s);
+			if (o instanceof ShopTankBuild)
+				return (ShopTankBuild) o;
+			else
+				return new ShopTankBuild((TankPlayable) o);
 		}
 	}
 

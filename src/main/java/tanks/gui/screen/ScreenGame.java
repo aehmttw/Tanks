@@ -587,6 +587,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			this.initBuilds(Game.currentLevel.playerBuilds);
 
+			for (TankPlayer.ShopTankBuild b: Game.currentLevel.playerBuilds)
+			{
+				if (b.price > 0)
+				{
+					shop = true;
+					break;
+				}
+			}
+
 			if (!Game.currentLevel.startingItems.isEmpty())
 			{
 				startingItems = true;
@@ -597,6 +606,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				p.hotbar.itemBar = new ItemBar(p);
 				p.hotbar.itemBar.showItems = false;
 				p.hotbar.enabledCoins = false;
+
+				p.ownedBuilds.clear();
+				p.ownedBuilds.add(Game.currentLevel.playerBuilds.get(0).name);
 
 				if (startingItems)
 				{
@@ -718,17 +730,32 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.builds = builds;
 		for (int i = 0; i < builds.size(); i++)
 		{
-			TankPlayer t = builds.get(i);
+			TankPlayer.ShopTankBuild t = builds.get(i);
+			TankPlayable display = t.clonePropertiesTo(new TankPlayer().setPlayerColor());
 			int j = i;
-			ButtonObject b = new ButtonObject(t, 0, 0, 75, 75, () ->
+			ButtonObject b = new ButtonObject(display, 0, 0, 75, 75, () ->
 			{
-				t.clonePropertiesTo(Game.playerTank);
 				if (ScreenPartyLobby.isClient)
 					Game.eventsOut.add(new EventPlayerSetBuild(j));
+				else
+				{
+					boolean success = false;
+					if (Game.player.ownedBuilds.contains(t.name))
+						success = true;
+					else if (Game.player.hotbar.coins >= t.price)
+					{
+						Game.player.ownedBuilds.add(t.name);
+						Game.player.hotbar.coins -= t.price;
+						success = true;
+					}
 
-				Game.player.buildName = t.name;
+					if (success)
+					{
+						t.clonePropertiesTo(Game.playerTank);
+						Game.player.buildName = t.name;
+					}
+				}
 			}, t.description);
-			//b.text = t.name;
 			this.playerBuildButtons.add(b);
 		}
 
@@ -1308,7 +1335,24 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					{
 						for (int i = 0; i < this.builds.size(); i++)
 						{
-							this.playerBuildsList.buttons.get(i).enabled = !this.builds.get(i).name.equals(Game.player.buildName);
+							Button b = this.playerBuildsList.buttons.get(i);
+							TankPlayer.ShopTankBuild t = this.builds.get(i);
+
+							int p = t.price;
+
+							((ButtonObject)b).showText = true;
+
+							String prefix = p > Game.player.hotbar.coins ? "\u00A7255127127255" : "";
+							if (Game.player.ownedBuilds.contains(t.name))
+								b.setText("Owned");
+							else if (p == 0)
+								b.setText("Free!");
+							else if (p == 1)
+								b.setText("%s1 coin", prefix);
+							else
+								b.setText("%s%d coins", prefix, p);
+
+							b.enabled = !t.name.equals(Game.player.buildName);
 						}
 					}
 					this.playerBuildsList.update();
@@ -1501,7 +1545,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Game.removeMovables.add(m);
 					Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
 				}
-				else if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).targetable))
+				else if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).currentlyTargetable))
 				{
 					Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
 

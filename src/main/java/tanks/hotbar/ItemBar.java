@@ -189,7 +189,7 @@ public class ItemBar
 				for (ServerHandler sh : ScreenPartyHost.server.connections)
 				{
 					if (sh.player.equals(this.player))
-						sh.events.add(new EventSetItemBarSlot(-1));
+						sh.queueEvent(new EventSetItemBarSlot(-1));
 				}
 			}
 		}

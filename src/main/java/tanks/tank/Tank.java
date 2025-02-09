@@ -19,6 +19,7 @@ import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static tanks.tank.TankPropertyCategory.*;

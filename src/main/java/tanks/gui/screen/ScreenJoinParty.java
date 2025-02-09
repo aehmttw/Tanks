@@ -85,6 +85,7 @@ public class ScreenJoinParty extends Screen
 			ScreenPartyLobby.sharedLevels.clear();
 
 			ScreenPartyLobby.connections.clear();
+			ScreenPartyLobby.connectedBots = 0;
 			Game.eventsOut.clear();
 
 			if (ip.inputText.startsWith("lobby:") && Game.steamNetworkHandler.initialized)

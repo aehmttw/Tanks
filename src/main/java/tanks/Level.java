@@ -572,7 +572,7 @@ public class Level
 
 		int playerCount = 1;
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null && sc == null)
-			playerCount += ScreenPartyHost.server.connections.size();
+			playerCount = Game.players.size();
 
 		if (!this.includedPlayers.isEmpty())
 			playerCount = this.includedPlayers.size();

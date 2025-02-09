@@ -1217,6 +1217,9 @@ public class TankAIControlled extends Tank implements ITankField
 				Tile tile = tiles[x][y];
 				tile.type = t;
 
+				if (o instanceof ObstacleTeleporter)
+					tile.teleporterID = ((ObstacleTeleporter) o).groupID;
+
 				if (o.unfavorability >= 0)
 					tile.unfavorability = o.unfavorability;
 				else if (o.tankCollision)
@@ -2636,7 +2639,7 @@ public class TankAIControlled extends Tank implements ITankField
 			if (c.equals(TankRemote.class))
 				c = ((TankRemote) this.targetEnemy).tank.getClass();
 
-			if (c.equals(TankPlayer.class) || c.equals(TankPlayerRemote.class))
+			if (IServerPlayerTank.class.isAssignableFrom(c))
 			{
 				c = TankPlayerMimic.class;
 				player = true;
@@ -2772,6 +2775,8 @@ public class TankAIControlled extends Tank implements ITankField
 		public boolean interesting = false;
 		public int unfavorability = 0;
 
+		public int teleporterID = -1;
+
 		public Tile(Random r, int x, int y)
 		{
 			this.shiftedX = (r.nextDouble() - 0.5) * Game.tile_size / 2;
@@ -2789,6 +2794,23 @@ public class TankAIControlled extends Tank implements ITankField
 
 		public boolean search(Queue<Tile> queue, Tile[][] map)
 		{
+			if (this.teleporterID >= 0)
+			{
+				for (Obstacle o: Game.obstacles)
+				{
+					if (o instanceof ObstacleTeleporter && ((ObstacleTeleporter) o).groupID == this.teleporterID)
+					{
+						int x = (int) (o.posX / Game.tile_size);
+						int y = (int) (o.posY / Game.tile_size);
+
+						if (x >= 0 && x < Game.currentSizeX && y > 0 && y < Game.currentSizeY)
+						{
+							map[x][y].explore(this, queue);
+						}
+					}
+				}
+			}
+
 			boolean freeLeft = this.tileX > 0;
 			boolean freeTop = this.tileY > 0;
 			boolean freeRight = this.tileX < map.length - 1;

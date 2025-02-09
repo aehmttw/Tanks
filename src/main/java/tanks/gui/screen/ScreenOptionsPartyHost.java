@@ -19,7 +19,7 @@ public class ScreenOptionsPartyHost extends Screen
 
     public boolean fromParty = false;
 
-    Button anticheat = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+    Button anticheat = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -48,7 +48,7 @@ public class ScreenOptionsPartyHost extends Screen
     },
             "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
 
-    Button disableFriendlyFire = new Button(this.centerX, this.centerY - this.objYSpace * 0, this.objWidth, this.objHeight, "", new Runnable()
+    Button disableFriendlyFire = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -75,7 +75,8 @@ public class ScreenOptionsPartyHost extends Screen
     }
     );
 
-    TextBox timer;
+    public TextBox timer;
+    public TextBox bots;
 
     public ScreenOptionsPartyHost()
     {
@@ -94,7 +95,7 @@ public class ScreenOptionsPartyHost extends Screen
         else
             disableFriendlyFire.setText(disableFriendlyFireText, defaultText);
 
-        timer = new TextBox(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Countdown time", () ->
+        timer = new TextBox(this.centerX, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Countdown time", () ->
         {
             if (timer.inputText.length() == 0)
                 timer.inputText = Game.partyStartTime / 100.0 + "";
@@ -108,6 +109,23 @@ public class ScreenOptionsPartyHost extends Screen
         timer.allowDoubles = true;
         timer.allowLetters = false;
         timer.allowSpaces = false;
+
+        bots = new TextBox(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Bot players", () ->
+        {
+            if (bots.inputText.length() == 0)
+                bots.inputText = Game.botPlayerCount + "";
+            else
+                Game.botPlayerCount = Integer.parseInt(bots.inputText);
+
+            if (ScreenPartyHost.isServer)
+                ScreenPartyHost.setBotCount(Game.botPlayerCount);
+        }, Game.botPlayerCount + "", "How many extra bot players---to add to parties");
+
+        bots.maxValue = 1000;
+        bots.maxChars = 3;
+        bots.checkMaxValue = true;
+        bots.allowLetters = false;
+        bots.allowSpaces = false;
     }
 
     @Override
@@ -116,6 +134,7 @@ public class ScreenOptionsPartyHost extends Screen
         back.update();
         timer.update();
         anticheat.update();
+        bots.update();
         disableFriendlyFire.update();
     }
 
@@ -126,6 +145,7 @@ public class ScreenOptionsPartyHost extends Screen
         back.draw();
         anticheat.draw();
         disableFriendlyFire.draw();
+        bots.draw();
         timer.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

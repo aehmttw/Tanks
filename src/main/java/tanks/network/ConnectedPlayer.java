@@ -20,6 +20,8 @@ public class ConnectedPlayer
 	public double colorG3;
 	public double colorB3;
 
+	public boolean isBot;
+
 	public ConnectedPlayer(UUID id, String name)
 	{
 		this.clientId = id;

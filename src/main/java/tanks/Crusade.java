@@ -236,6 +236,7 @@ public class Crusade
 		{
 			Game.players.get(i).hotbar.itemBar = new ItemBar(Game.players.get(i));
 			Game.players.get(i).hotbar.coins = 0;
+			Game.players.get(i).ownedBuilds = new HashSet<>();
 			Game.players.get(i).remainingLives = startingLives;
 		}
 
@@ -323,9 +324,12 @@ public class Crusade
 
 		for (Player player : Game.players)
 		{
-			player.hotbar.coins = crusadePlayers.get(player).coins;
+			CrusadePlayer cp = crusadePlayers.get(player);
+			player.hotbar.coins = cp.coins;
+			player.ownedBuilds = cp.ownedBuilds;
+			player.buildName = cp.currentBuild;
 
-			ItemBar i = crusadePlayers.get(player).itemBar;
+			ItemBar i = cp.itemBar;
 
 			if (i == null)
 				player.hotbar.itemBar = new ItemBar(player);
@@ -540,6 +544,8 @@ public class Crusade
 
 			cp.itemBar = p.hotbar.itemBar;
 			cp.coins = p.hotbar.coins;
+			cp.ownedBuilds = p.ownedBuilds;
+			cp.currentBuild = p.buildName;
 		}
 	}
 

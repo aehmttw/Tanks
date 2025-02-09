@@ -746,7 +746,7 @@ public class LevelGeneratorRandom extends LevelGenerator
 		int numPlayers = 1;
 
 		if (ScreenPartyHost.isServer)
-			numPlayers += ScreenPartyHost.server.connections.size();
+			numPlayers = Game.players.size();
 
 		playerTankX = new int[numPlayers];
 		playerTankY = new int[numPlayers];

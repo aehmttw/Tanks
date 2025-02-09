@@ -2,9 +2,13 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Player;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
-import tanks.network.SteamNetworkHandler;
+import tanks.obstacle.ObstacleTeleporter;
+import tanks.tank.Turret;
+
+import java.util.UUID;
 
 public class ScreenParty extends Screen
 {
@@ -38,6 +42,9 @@ public class ScreenParty extends Screen
 
 		Game.players.clear();
 		Game.players.add(Game.player);
+
+		ScreenPartyHost.setBotCount(Game.botPlayerCount);
+		Game.players.addAll(Game.botPlayers);
 
 		ScreenPartyHost.disconnectedPlayers.clear();
 

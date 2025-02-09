@@ -9,18 +9,17 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.network.Client;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
-import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.EventPlayerRevealBuild;
-import tanks.network.event.INetworkEvent;
-import tanks.network.event.IStackableEvent;
+import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.rendering.*;
 import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Panel
 {
@@ -99,6 +98,8 @@ public class Panel
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
 	public boolean continuationMusic = false;
+
+	public double timeSinceBotUpdate;
 
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;

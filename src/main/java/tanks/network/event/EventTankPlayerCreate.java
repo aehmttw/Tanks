@@ -94,7 +94,11 @@ public class EventTankPlayerCreate extends PersonalEvent
 		else if (ScreenPartyLobby.isClient)
 			ScreenPartyLobby.includedPlayers.add(this.clientIdTarget);
 
-		if (clientIdTarget.equals(Game.clientID))
+		if (player != null && player.isBot)
+		{
+			t = new TankPlayerBot(player.username, posX, posY, angle, player);
+		}
+		else if (clientIdTarget.equals(Game.clientID))
 		{
 			if (!ScreenPartyLobby.isClient)
 				t = new TankPlayer(posX, posY, angle);

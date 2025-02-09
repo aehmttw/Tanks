@@ -19,6 +19,7 @@ import java.util.UUID;
 public class ScreenPartyLobby extends Screen
 {
 	public static ArrayList<ConnectedPlayer> connections = new ArrayList<>();
+	public static int connectedBots = 0;
 	public static boolean isClient = false;
 	public static ArrayList<UUID> includedPlayers = new ArrayList<>();
 	public static ArrayList<ConnectedPlayer> readyPlayers = new ArrayList<>();

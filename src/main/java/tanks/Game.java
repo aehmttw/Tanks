@@ -72,6 +72,9 @@ public class Game
 	public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
 
+	public static ArrayList<Player> botPlayers = new ArrayList<>();
+	public static int botPlayerCount = 0;
+
 	/**
 	 * Obstacles that need to change how they look next frame
 	 */
@@ -1332,6 +1335,8 @@ public class Game
 		Game.player.hotbar.enabledCoins = false;
 		Game.player.hotbar.itemBar = new ItemBar(Game.player);
 		Game.player.hotbar.itemBar.showItems = false;
+		Game.player.ownedBuilds = new HashSet<>();
+		Game.player.buildName = "player";
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);

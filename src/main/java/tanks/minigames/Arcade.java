@@ -157,7 +157,7 @@ public class Arcade extends Minigame
     @Override
     public void onBulletFire(Bullet b)
     {
-        if (b.tank instanceof TankPlayer || b.tank instanceof TankPlayerRemote)
+        if (b.tank instanceof IServerPlayerTank)
         {
             bulletsFired++;
         }
@@ -190,7 +190,7 @@ public class Arcade extends Minigame
             playerDeathTimes.put(((IServerPlayerTank) target).getPlayer(), this.age);
         }
 
-        if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IServerPlayerTank))
+        if ((attacker instanceof IServerPlayerTank) && !(target instanceof IServerPlayerTank))
         {
             if (spawnedFrenzyTanks.contains(target))
                 frenzyTanksDestroyed++;
@@ -327,24 +327,17 @@ public class Arcade extends Minigame
 
             for (Movable m : Game.movables)
             {
-                if (m instanceof TankPlayer)
+                if (m instanceof IServerPlayerTank)
                 {
-                    totalPlayers.add(((TankPlayer) m).player);
-                    alivePlayers.add(((TankPlayer) m).player);
-                }
-                else if (m instanceof TankPlayerRemote)
-                {
-                    totalPlayers.add(((TankPlayerRemote) m).player);
-                    alivePlayers.add(((TankPlayerRemote) m).player);
+                    totalPlayers.add(((IServerPlayerTank) m).getPlayer());
+                    alivePlayers.add(((IServerPlayerTank) m).getPlayer());
                 }
 
                 if (m instanceof Crate)
                 {
                     m = ((Crate) m).tank;
-                    if (m instanceof TankPlayer)
-                        totalPlayers.add(((TankPlayer) m).player);
-                    else if (m instanceof TankPlayerRemote)
-                        totalPlayers.add(((TankPlayerRemote) m).player);
+                    if (m instanceof IServerPlayerTank)
+                        totalPlayers.add(((IServerPlayerTank) m).getPlayer());
                 }
 
             }
@@ -379,7 +372,7 @@ public class Arcade extends Minigame
 
                 for (Movable m : Game.movables)
                 {
-                    if (m instanceof Crate && (((Crate) m).tank instanceof TankPlayer || ((Crate) m).tank instanceof TankPlayerRemote))
+                    if (m instanceof Crate && (((Crate) m).tank instanceof IServerPlayerTank))
                         continue;
 
                     setRampage(0);
@@ -649,7 +642,7 @@ public class Arcade extends Minigame
 
                 for (Movable m: Game.movables)
                 {
-                    if ((m instanceof TankPlayer || m instanceof TankPlayerRemote) && (Math.pow(m.posX - (x * Game.tile_size), 2) + Math.pow(m.posY - (y * Game.tile_size), 2) <= Math.pow(Game.tile_size * 5, 2)))
+                    if ((m instanceof IServerPlayerTank) && (Math.pow(m.posX - (x * Game.tile_size), 2) + Math.pow(m.posY - (y * Game.tile_size), 2) <= Math.pow(Game.tile_size * 5, 2)))
                     {
                         found = false;
                         break;

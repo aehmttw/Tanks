@@ -39,6 +39,8 @@ public class Player
     public boolean enableSecondaryColor = false;
     public boolean enableTertiaryColor = false;
 
+    public boolean isBot = false;
+
     protected ConnectedPlayer connectedPlayer;
 
     public Player(UUID clientID, String username)
@@ -111,6 +113,12 @@ public class Player
                 c.retry = c.livingTankIDs.size() > 0;
             }
 
+            if (f.hasNextLine())
+            {
+                parseStringHashSet(cp.ownedBuilds, f.nextLine());
+                cp.currentBuild = f.nextLine();
+            }
+
             f.stopReading();
 
             ArrayList<Item.ShopItem> shop = c.getShop();
@@ -181,6 +189,19 @@ public class Player
                 continue;
 
             set.add(Integer.parseInt(s));
+        }
+    }
+
+    public static void parseStringHashSet(HashSet<String> set, String str)
+    {
+        String[] parts = str.replace("[", "").replace("]", "").split(", ");
+
+        for (String s: parts)
+        {
+            if (s.length() <= 0)
+                continue;
+
+            set.add(s);
         }
     }
 

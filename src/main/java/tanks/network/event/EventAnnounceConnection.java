@@ -33,7 +33,15 @@ public class EventAnnounceConnection extends PersonalEvent
 
 		if (this.joined)
 		{
-			ScreenPartyLobby.connections.add(new ConnectedPlayer(this.clientIdTarget, this.name));
+			ConnectedPlayer c = new ConnectedPlayer(this.clientIdTarget, this.name);
+			if (name.startsWith("Bot "))
+			{
+				c.isBot = true;
+				ScreenPartyLobby.connectedBots++;
+				ScreenPartyLobby.connections.add(c);
+			}
+			else
+				ScreenPartyLobby.connections.add(ScreenPartyLobby.connections.size() - ScreenPartyLobby.connectedBots, c);
 		}
 		else
 		{
@@ -43,6 +51,9 @@ public class EventAnnounceConnection extends PersonalEvent
 			{
 				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))
 				{
+					if (ScreenPartyLobby.connections.get(i).isBot)
+						ScreenPartyLobby.connectedBots--;
+
 					ScreenPartyLobby.connections.remove(i);
 					i--;
 				}

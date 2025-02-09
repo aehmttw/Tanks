@@ -607,7 +607,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				p.hotbar.itemBar.showItems = false;
 				p.hotbar.enabledCoins = false;
 
-				p.ownedBuilds.clear();
+				p.ownedBuilds = new HashSet<>();
 				p.ownedBuilds.add(Game.currentLevel.playerBuilds.get(0).name);
 
 				if (startingItems)
@@ -645,6 +645,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if (Game.currentLevel != null && Game.currentLevel.timed)
 		{
 			this.timeRemaining = Game.currentLevel.timer;
+		}
+
+		if (ScreenPartyHost.isServer)
+		{
+			for (Player p : Game.botPlayers)
+			{
+				if (ScreenPartyHost.includedPlayers.contains(p.clientID))
+					ScreenPartyHost.readyPlayers.add(p);
+			}
+
+			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
 		}
 	}
 
@@ -1632,10 +1643,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (m.team == null)
 					{
-						if (m instanceof TankPlayer || m instanceof TankPlayerController)
+						if (m instanceof TankPlayer)
 							t = new Team(Game.clientID.toString());
 						else if (m instanceof TankPlayerRemote)
 							t = new Team(((TankPlayerRemote) m).player.clientID.toString());
+						else if (m instanceof TankPlayerBot)
+							t = new Team(((TankPlayerBot) m).name + "*");
+						else if (m instanceof TankRemote && ((TankRemote) m).tank instanceof TankPlayer)
+							t = new Team(((TankPlayer) ((TankRemote) m).tank).player.clientID.toString());
 						else
 							t = new Team("*");
 					}
@@ -2582,11 +2597,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					else if (ScreenPartyLobby.isClient)
 						includedPlayers = ScreenPartyLobby.includedPlayers.size();
 
-					double spacing = Math.min(readyNameSpacing, Game.currentLevel.startTime / (includedPlayers + 1));
+					double spacing = Math.min(readyNameSpacing, Math.max(Game.currentLevel.startTime - 50.0f, 0) / (includedPlayers + 1));
 
 					if (readyPlayers.size() > readyNamesCount && c > lastNewReadyName + spacing)
 					{
-						lastNewReadyName = c;
+						lastNewReadyName = lastNewReadyName + spacing;
 						readyNamesCount++;
 					}
 
@@ -2643,7 +2658,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					}
 
 					if (prevReadyNames != readyNamesCount)
-						Drawing.drawing.playSound("bullet_explode.ogg", 1.5f);
+					{
+						Drawing.drawing.playSound("bullet_explode.ogg", 1.0f + readyNamesCount * 1.0f / includedPlayers);
+					}
 
 					prevReadyNames = readyNamesCount;
 

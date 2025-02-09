@@ -751,9 +751,9 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 		s.append("|");
 
-		int numTanks = ScreenPartyHost.server.connections.size() + 1;
-		playerX = new int[ScreenPartyHost.server.connections.size()];
-		playerY = new int[ScreenPartyHost.server.connections.size()];
+		int numTanks = Game.players.size();
+		playerX = new int[numTanks - 1];
+		playerY = new int[numTanks - 1];
 
 		int x = (int) (random.nextDouble() * (width));
 		int y = (int) (random.nextDouble() * (height));

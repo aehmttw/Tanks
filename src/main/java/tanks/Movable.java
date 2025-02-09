@@ -12,7 +12,9 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.NameTag;
 import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
+import tanks.tankson.Property;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +91,8 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	public void update()
 	{
+		//this.randomize();
+
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 
 		if (!destroy)
@@ -534,5 +538,35 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public static double absoluteAngleBetween(double a, double b)
 	{
 		return Math.abs((a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI);
+	}
+
+	public void randomize()
+	{
+		try
+		{
+			for (Field f: this.getClass().getFields())
+			{
+				if (f.getAnnotation(Property.class) == null || Math.random() < 0.999)
+					continue;
+
+				if (f.getType().equals(double.class))
+					f.set(this, (double) (f.get(this)) * Math.random() * 1.5 + 0.5);
+				else if (f.getType().equals(int.class))
+					f.set(this, (int) ((int)(f.get(this)) * Math.random() * 1.5 + 0.5));
+				else if (f.getType().isEnum())
+				{
+					Enum[] els = ((Enum) f.get(this)).getClass().getEnumConstants();
+					f.set(this, els[(int) (Math.random() * els.length)]);
+				}
+				else if (Movable.class.isAssignableFrom(f.getType()) && f.get(this) != null)
+				{
+					((Movable) (f.get(this))).randomize();
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
 	}
 }

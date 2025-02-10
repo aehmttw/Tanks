@@ -1349,10 +1349,14 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawSpinny(double s)
 	{
+		double mul = 1;
+		if (Game.playerTank != null)
+			mul = Math.max(1, 5 * (1.0 - Math.cos(Math.PI / 2 * Math.max(0, 1 - Game.playerTank.drawAge / 100))));
+
 		double fade = Math.max(0, Math.sin(Math.min(s, 50) / 100 * Math.PI));
 
 		double frac = (System.currentTimeMillis() % 2000) / 2000.0;
-		double size = Math.max(800 * (0.5 - frac), 0) * fade;
+		double size = Math.max(800 * (0.5 - frac), 0) * fade * mul;
 		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
 
 		if (Game.enable3d)
@@ -1361,7 +1365,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			Drawing.drawing.fillOval(this.posX, this.posY, size, size);
 
 		double frac2 = ((250 + System.currentTimeMillis()) % 2000) / 2000.0;
-		double size2 = Math.max(800 * (0.5 - frac2), 0) * fade;
+		double size2 = Math.max(800 * (0.5 - frac2), 0) * fade * mul;
 
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
 
@@ -1371,9 +1375,9 @@ public abstract class Tank extends Movable implements ISolidObject
 			Drawing.drawing.fillOval(this.posX, this.posY, size2, size2);
 
 		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-		this.drawSpinny(this.posX, this.posY, this.size / 2, 200, 4, 0.3, 75 * fade, 0.5 * fade, false);
+		this.drawSpinny(this.posX, this.posY, this.size / 2, 200, 4, 0.3, 75 * fade * mul, 0.5 * fade * mul, false);
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
-		this.drawSpinny(this.posX, this.posY, this.size / 2, 198, 3, 0.5, 60 * fade, 0.375 * fade, false);
+		this.drawSpinny(this.posX, this.posY, this.size / 2, 198, 3, 0.5, 60 * fade * mul, 0.375 * fade * mul, false);
 	}
 
 	public void drawSpinny(double x, double y, double z, int max, int parts, double speed, double size, double dotSize, boolean invert)
@@ -1475,5 +1479,22 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 			return false;
 		}
+	}
+
+	public Tank setDefaultPlayerColor()
+	{
+		this.colorR = 0;
+		this.colorG = 150;
+		this.colorB = 255;
+		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
+		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
+		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
+		this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
+		this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
+		this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
+		this.emblemR = this.secondaryColorR;
+		this.emblemG = this.secondaryColorG;
+		this.emblemB = this.secondaryColorB;
+		return this;
 	}
 }

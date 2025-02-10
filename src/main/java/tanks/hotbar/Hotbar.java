@@ -366,9 +366,10 @@ public class Hotbar
 
 			if (((ScreenGame) Game.screen).timeRemaining <= 0)
 			{
-				Drawing.drawing.setColor(255, 0, 0, 255 * Obstacle.draw_size / Game.tile_size);
-
 				Drawing.drawing.setInterfaceFontSize(100);
+				Drawing.drawing.setColor(127, 0, 0, 255 * Obstacle.draw_size / Game.tile_size);
+				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 8, Drawing.drawing.interfaceSizeY / 2 + 8, "Out of time!");
+				Drawing.drawing.setColor(255, 0, 0, 255 * Obstacle.draw_size / Game.tile_size);
 				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Out of time!");
 			}
 			else

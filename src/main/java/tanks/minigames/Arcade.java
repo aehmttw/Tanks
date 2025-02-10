@@ -17,6 +17,7 @@ import tanks.translation.Translation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 public class Arcade extends Minigame
@@ -38,6 +39,11 @@ public class Arcade extends Minigame
 
     public ArrayList<Tank> spawnedTanks = new ArrayList<>();
     public ArrayList<Tank> spawnedFrenzyTanks = new ArrayList<>();
+
+    public HashSet<String> musics = new HashSet<>();
+
+    public HashSet<String> playingMusics = new HashSet<>();
+    public HashSet<String> prevMusics = new HashSet<>();
 
     public double timer = 13950;
     public double frenzyTime = -1000;
@@ -79,6 +85,7 @@ public class Arcade extends Minigame
         this.showItems = true;
         this.introMusic = "arcade/battle_intro.ogg";
         this.disableFriendlyFire = true;
+        this.removeMusicWhenDead = true;
 
         if (Game.deterministicMode)
             this.random = new Random(0);
@@ -206,7 +213,12 @@ public class Arcade extends Minigame
             kills++;
 
             score += target.coinValue;
-            Drawing.drawing.playSound("hit_chain.ogg", (float) Math.pow(2, Math.min(max_power * 3 - 1, chain) / 12.0), 0.5f);
+
+            String s = "hit_chain_2.ogg";
+            if (Game.playerTank != null && !Game.playerTank.destroy)
+                s = "hit_chain.ogg";
+
+            Drawing.drawing.playSound(s, (float) Math.pow(2, Math.min(max_power * 3 - 1, chain) / 12.0), 0.5f);
             chain++;
             Game.eventsOut.add(new EventArcadeHit(chain, target.posX, target.posY, target.size / 2, target.coinValue));
             maxChain = Math.max(chain, maxChain);
@@ -268,19 +280,21 @@ public class Arcade extends Minigame
         if (value <= 0)
         {
             chain = 0;
-            for (int i = 1; i <= 8; i++)
-            {
-                Drawing.drawing.removeSyncedMusic("arcade/rampage" + i + ".ogg", 2000);
-            }
+            this.musics.clear();
         }
         else
         {
             lastRampage = age;
-            Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (value - 1) / 12.0));
+            String s = "rampage2.ogg";
+
+            if (Game.playerTank != null && !Game.playerTank.destroy)
+                s = "rampage.ogg";
+
+            Drawing.drawing.playSound(s, (float) Math.pow(2, (value - 1) / 12.0));
             score += value * 5;
             if (chain / 3 <= 8)
             {
-                Drawing.drawing.addSyncedMusic("arcade/rampage" + value + ".ogg", Game.musicVolume, true, 500);
+                this.musics.add("arcade/rampage" + value + ".ogg");
             }
         }
     }
@@ -453,6 +467,26 @@ public class Arcade extends Minigame
             if (seconds > newSeconds && (newSeconds == 10 || newSeconds == 30 || newSeconds == 60))
                 Drawing.drawing.playSound("timer.ogg");
         }
+
+        this.playingMusics.clear();
+
+        if (Game.playerTank != null && !Game.playerTank.destroy)
+            this.playingMusics.addAll(this.musics);
+
+        for (String s: this.playingMusics)
+        {
+            if (!this.prevMusics.contains(s))
+                Drawing.drawing.addSyncedMusic(s, Game.musicVolume, true, 500);
+        }
+
+        for (String s: this.prevMusics)
+        {
+            if (!this.playingMusics.contains(s))
+                Drawing.drawing.removeSyncedMusic(s, 2000);
+        }
+
+        this.prevMusics.clear();
+        this.prevMusics.addAll(this.playingMusics);
     }
 
     public void respawnPlayer(Player p)

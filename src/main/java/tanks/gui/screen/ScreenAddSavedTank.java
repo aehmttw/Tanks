@@ -5,8 +5,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
+import tanks.tank.*;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
@@ -190,30 +189,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
         delete.fontSize = this.textSize;
 
-        BaseFile directory = Game.game.fileManager.getFile(Game.homedir + Game.tankDir);
-        if (!directory.exists())
-        {
-            directory.mkdirs();
-        }
-
-        ArrayList<String> files = new ArrayList<>();
-
-        try
-        {
-            ArrayList<String> ds = directory.getSubfiles();
-
-            for (String p : ds)
-            {
-                if (p.endsWith(".tanks"))
-                    files.add(p);
-            }
-        }
-        catch (IOException e)
-        {
-            Game.exitToCrash(e);
-        }
-
-        Collections.sort(files);
+        ArrayList<String> files = searchDirectory(Game.tankDir);
 
         if (tankScreen instanceof OverlayObjectMenu)
         {
@@ -381,6 +357,124 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 e.printStackTrace();
             }
         }
+
+        for (TankPlayer t: Game.currentLevel.playerBuilds)
+        {
+            String desc = t.description;
+            if (!t.description.equals(""))
+                desc += " \n \n ";
+
+            desc += "\u00A7255000255255Player build from this level";
+
+            this.addTank(t, count, desc).disabledColG = 127;
+            count++;
+        }
+
+        files = searchDirectory(Game.buildDir);
+        for (String l: files)
+        {
+            BaseFile file = Game.game.fileManager.getFile(l);
+
+            try
+            {
+                file.startReading();
+                String tankStr = file.nextLine();
+                file.stopReading();
+                TankPlayer t = TankPlayer.fromString(tankStr);
+
+                String desc = t.description;
+                if (!t.description.equals(""))
+                    desc += " \n \n ";
+
+                desc += "\u00A7255127000255Saved player build";
+
+                ButtonObject b = this.addTank(t, count, desc);
+                b.disabledColR = 255;
+                b.disabledColG = 160;
+                b.disabledColB = 60;
+                b.text = l;
+            }
+            catch (Exception e)
+            {
+                System.err.println("Failed to load a custom tank build from file: " + l);
+                e.printStackTrace();
+            }
+
+            count++;
+        }
+    }
+
+    public ArrayList<String> searchDirectory(String s)
+    {
+        BaseFile directory = Game.game.fileManager.getFile(Game.homedir + s);
+        if (!directory.exists())
+            directory.mkdirs();
+
+        ArrayList<String> files = new ArrayList<>();
+
+        try
+        {
+            ArrayList<String> ds = directory.getSubfiles();
+
+            for (String p : ds)
+            {
+                if (p.endsWith(".tanks"))
+                    files.add(p);
+            }
+        }
+        catch (IOException e)
+        {
+            Game.exitToCrash(e);
+        }
+
+        Collections.sort(files);
+        return files;
+    }
+
+    public ButtonObject addTank(Tank t, int count, String desc)
+    {
+        int rows = objectButtonRows;
+        int cols = objectButtonCols;
+        int index = count % (rows * cols);
+        double x = this.centerX - 450 + 100 * (index % cols);
+        double y = this.centerY - 100 + 100 * ((index / cols) % rows);
+        ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
+        {
+            TankAIControlled clone;
+
+            if (t instanceof TankAIControlled)
+                clone = ((TankAIControlled) t).instantiate(t.name, t.posX, t.posY, t.angle);
+            else
+                clone = ((TankPlayer) t).clonePropertiesTo((TankAIControlled) new TankPurple(t.name, t.posX, t.posY, t.angle).setDefaultPlayerColor());
+
+            boolean duplicate = t.name.equals("player");
+            for (TankAIControlled t1: Game.currentLevel.customTanks)
+            {
+                if (t1.name.equals(t.name))
+                {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (duplicate)
+                clone.name = System.currentTimeMillis() + "";
+
+            Pointer<TankAIControlled> p = tankScreen.addTank(clone);
+            ScreenEditorTank s = new ScreenEditorTank(p, (Screen) tankScreen);
+            s.onComplete = () ->
+            {
+                if (p.get() == null)
+                    this.tankScreen.removeTank(clone);
+                else
+                    this.tankScreen.refreshTanks(p.get());
+            };
+            s.drawBehindScreen = true;
+            Game.screen = s;
+        }
+                , desc);
+
+        this.tankButtons.add(b);
+        return b;
     }
 
     @Override
@@ -401,10 +495,10 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             if (i / (this.objectButtonCols * this.objectButtonRows) == tankPage)
             {
                 this.tankButtons.get(i).update();
+                Button b = this.tankButtons.get(i);
 
-                if (i >= levelTankCount && deleting)
+                if (!b.text.isEmpty() && deleting)
                 {
-                    Button b = this.tankButtons.get(i);
                     this.delete.posX = b.posX + 35;
                     this.delete.posY = b.posY + 35;
                     this.delete.update();
@@ -488,9 +582,10 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         {
             if (i / (objectButtonCols * objectButtonRows) == tankPage)
             {
-                if (i >= levelTankCount && deleting)
+                Button b = this.tankButtons.get(i);
+
+                if (!b.text.isEmpty() && deleting)
                 {
-                    Button b = this.tankButtons.get(i);
                     this.delete.posX = b.posX + 35;
                     this.delete.posY = b.posY + 35;
                     this.delete.update();
@@ -498,8 +593,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     if (delete.selected)
                         ((ButtonObject) this.tankButtons.get(i)).tempDisableHover = true;
 
-                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;
-                }
+                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;}
 
                 tankButtons.get(i).draw();
             }

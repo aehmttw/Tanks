@@ -332,7 +332,10 @@ public class ScreenPartyHost extends Screen
 
         Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY + 40, "Level and crusade sharing:");
 
-        Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "Players in this party:");
+        if (Game.players.size() > 1)
+            Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "%d players in this party:", Game.players.size());
+        else
+            Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "1 player in this party:");
 
         if (server != null && server.connections != null)
         {
@@ -446,7 +449,7 @@ public class ScreenPartyHost extends Screen
 
         for (int i = Game.botPlayers.size(); i < bots; i++)
         {
-            Player p = new Player(UUID.randomUUID(), "Bot " + i);
+            Player p = new Player(UUID.randomUUID(), "Bot " + (i + 1));
             double[] col = ObstacleTeleporter.getColorFromID(i);
             p.colorR = (int) col[0];
             p.colorG = (int) col[1];

@@ -44,7 +44,6 @@ public class ScreenParty extends Screen
 		Game.players.add(Game.player);
 
 		ScreenPartyHost.setBotCount(Game.botPlayerCount);
-		Game.players.addAll(Game.botPlayers);
 
 		ScreenPartyHost.disconnectedPlayers.clear();
 

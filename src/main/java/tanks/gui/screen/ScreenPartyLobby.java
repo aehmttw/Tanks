@@ -116,7 +116,11 @@ public class ScreenPartyLobby extends Screen
 
 		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, title);
 
-		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
+		if (connections != null && connections.size() > 1)
+			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "%d players in this party:", connections.size());
+		else
+			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "1 player in this party:");
+
 
 		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Level and crusade sharing:");
 

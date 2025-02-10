@@ -115,20 +115,6 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		return (TankPlayer) Serializer.fromTanksON(s);
 	}
 
-	public TankPlayer setDefaultColor()
-	{
-		this.colorR = 0;
-		this.colorG = 150;
-		this.colorB = 255;
-		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
-		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
-		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
-        this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
-        this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
-        this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
-		return this;
-	}
-
 	public TankPlayer setPlayerColor()
 	{
 		this.colorR = Game.player.colorR;
@@ -145,6 +131,12 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		this.emblemG = this.secondaryColorG;
 		this.emblemB = this.secondaryColorB;
 		this.saveColors();
+		return this;
+	}
+
+	public TankPlayer setDefaultColor()
+	{
+		this.setDefaultPlayerColor();
 		return this;
 	}
 

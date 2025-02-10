@@ -96,7 +96,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 		if (player != null && player.isBot)
 		{
-			t = new TankPlayerBot(player.username, posX, posY, angle, player);
+			t = new TankPlayerBot(posX, posY, angle, player);
+			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayerBot) t);
 		}
 		else if (clientIdTarget.equals(Game.clientID))
 		{

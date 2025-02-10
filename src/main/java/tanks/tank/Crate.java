@@ -115,7 +115,7 @@ public class Crate extends Movable
         {
             this.posZ = 0;
             this.destroy = true;
-            Drawing.drawing.playSound("open1.ogg");
+            Drawing.drawing.playSound("open2.ogg");
 
             tank.droppedFromCrate = true;
             tank.drawAge = 50;

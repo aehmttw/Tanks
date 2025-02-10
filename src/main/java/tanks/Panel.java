@@ -425,6 +425,12 @@ public class Panel
 
 							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
 						}
+						else if (m instanceof TankPlayerBot)
+						{
+							int b = (int) (Math.random() * s.builds.size());
+							s.builds.get(b).clonePropertiesTo((TankPlayerBot) m);
+							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayerBot) m).networkID, b));
+						}
 					}
 				}
 

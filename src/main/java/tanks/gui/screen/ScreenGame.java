@@ -250,6 +250,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			Level level = new Level(Game.currentLevelString);
 			level.loadLevel();
+
+			ScreenGame s = new ScreenGame();
+			s.name = name;
+			Game.screen = s;
 		}
 		else
 		{
@@ -263,10 +267,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Game.exitToCrash(e);
 			}
 		}
-
-		ScreenGame s = new ScreenGame();
-		s.name = name;
-		Game.screen = s;
 	}
 	);
 
@@ -1033,9 +1033,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			this.prevTankMusics.addAll(this.tankMusics);
 			this.tankMusics.clear();
 
+			boolean dead = Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).removeMusicWhenDead && Game.playerTank != null && Game.playerTank.destroy;
+
 			if (!this.paused)
 			{
-				if (!Game.currentLevel.timed)
+				if (!Game.currentLevel.timed && !dead)
 				{
 					for (Movable m : Game.movables)
 					{
@@ -1048,7 +1050,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 				if (Game.currentLevel.beatBlocks > 0)
 				{
-					this.tankMusics.add("beatblocks/beat_blocks.ogg");
+					if (!dead)
+						this.tankMusics.add("beatblocks/beat_blocks.ogg");
 
 					if ((Game.currentLevel.beatBlocks & 1) != 0)
 						this.tankMusics.add("beatblocks/beat_beeps_1.ogg");
@@ -1702,15 +1705,22 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				{
 					this.saveRemainingTanks();
 
+					boolean found = false;
 					for (int i = 0; i < Game.movables.size(); i++)
 					{
 						Movable m = Game.movables.get(i);
+
+						if (!m.destroy)
+							found = true;
 
 						m.destroy = true;
 
 						if (m instanceof Tank)
 							((Tank) m).health = 0;
 					}
+
+					if (found)
+						Drawing.drawing.playGlobalSound("leave.ogg");
 				}
 			}
 

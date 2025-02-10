@@ -76,7 +76,7 @@ public class RampageTrial extends Minigame
             playerDeaths.put(((IServerPlayerTank) target).getPlayer(), target);
         }
 
-        if ((attacker instanceof TankPlayer || attacker instanceof TankPlayerRemote) && !(target instanceof IServerPlayerTank))
+        if ((attacker instanceof IServerPlayerTank) && !(target instanceof IServerPlayerTank))
         {
             Drawing.drawing.playSound("hit_chain.ogg", (float) Math.pow(2, Math.min(maxPower * 3 - 1, chain) / 12.0), 0.5f);
             chain++;
@@ -172,24 +172,17 @@ public class RampageTrial extends Minigame
             int enemies = 0;
             for (Movable m : Game.movables)
             {
-                if (m instanceof TankPlayer)
+                if (m instanceof IServerPlayerTank)
                 {
-                    totalPlayers.add(((TankPlayer) m).player);
-                    alivePlayers.add(((TankPlayer) m).player);
-                }
-                else if (m instanceof TankPlayerRemote)
-                {
-                    totalPlayers.add(((TankPlayerRemote) m).player);
-                    alivePlayers.add(((TankPlayerRemote) m).player);
+                    totalPlayers.add(((IServerPlayerTank) m).getPlayer());
+                    alivePlayers.add(((IServerPlayerTank) m).getPlayer());
                 }
 
                 if (m instanceof Crate)
                 {
                     m = ((Crate) m).tank;
-                    if (m instanceof TankPlayer)
-                        totalPlayers.add(((TankPlayer) m).player);
-                    else if (m instanceof TankPlayerRemote)
-                        totalPlayers.add(((TankPlayerRemote) m).player);
+                    if (m instanceof IServerPlayerTank)
+                        totalPlayers.add(((IServerPlayerTank) m).getPlayer());
                 }
 
                 else if (m instanceof Tank && m.team != Game.playerTeamNoFF)

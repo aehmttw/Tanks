@@ -20,7 +20,7 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
     public ButtonObject tankButton;
     public ButtonObject oldTankButton;
 
-    public ScreenTankSaveOverwrite(ScreenEditorTanksONable<?>  s, Tank tank)
+    public ScreenTankSaveOverwrite(ScreenEditorTanksONable<?> s, Tank tank)
     {
         this.previous = s;
         this.music = this.previous.music;
@@ -29,11 +29,11 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
 
         try
         {
-            BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tankDir + "/" + tank.name + ".tanks");
+            BaseFile f = Game.game.fileManager.getFile(Game.homedir + (tank instanceof TankPlayable ? Game.buildDir : Game.tankDir) + "/" + tank.name + ".tanks");
             f.startReading();
             String t = f.nextLine();
             f.stopReading();
-            this.oldTank = TankAIControlled.fromString(t);
+            this.oldTank = (tank instanceof TankPlayable ? TankPlayer.fromString(t) : TankAIControlled.fromString(t));
         }
         catch (Exception e)
         {

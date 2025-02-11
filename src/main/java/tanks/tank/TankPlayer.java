@@ -227,14 +227,14 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				a = 3 * Math.PI / 4;
 			else if (x == -1 && y == 0)
 				a = Math.PI;
-			else if (x == -1 && y == -1)
+			else if (x == -1)
 				a = 5 * Math.PI / 4;
 			else if (x == 0 && y == -1)
 				a = 3 * Math.PI / 2;
-			else if (x == 1 && y == -1)
+			else if (x == 1)
 				a = 7 * Math.PI / 4;
 
-			double intensity = 1;
+			double intensity;
 
 			if (a < 0 && Game.game.window.touchscreen)
 			{
@@ -244,7 +244,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					a = controlStick.inputAngle;
 			}
 
-			if (a >= 0 && intensity >= 0.2)
+			if (a >= 0)
 			{
 				if (Game.followingCam)
 					a += this.angle + Math.PI / 2;
@@ -272,10 +272,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
-		for (Item.ItemStack s: this.abilities)
-		{
-			s.updateCooldown(reload);
-		}
+		for (Item.ItemStack<?> s: this.abilities)
+            s.updateCooldown(reload);
 
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
@@ -283,9 +281,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			for (Item.ItemStack<?> i: h.itemBar.slots)
 			{
 				if (i != null && !i.isEmpty)
-				{
-					i.updateCooldown(reload);
-				}
+                    i.updateCooldown(reload);
 			}
 		}
 
@@ -343,7 +339,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					{
 						InputPoint p = Game.game.window.touchPoints.get(i);
 
-						if (!p.tag.equals("") && !p.tag.equals("aim") && !p.tag.equals("shoot"))
+						if (!p.tag.isEmpty() && !p.tag.equals("aim") && !p.tag.equals("shoot"))
 							continue;
 
 						if (Game.screen instanceof ScreenGame)
@@ -426,7 +422,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			double lifespan = -1;
 			double rangeMin = -1;
 			double rangeMax = -1;
-			boolean showTrace = true;
+			boolean showTrace;
 
 			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 			ItemBullet.ItemStackBullet i = null;

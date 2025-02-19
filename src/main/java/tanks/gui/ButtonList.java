@@ -42,6 +42,13 @@ public class ButtonList
     public double objXSpace = 380;
     public double objYSpace = 60;
 
+    public double buttonWidth = 350;
+    public double buttonHeight = 40;
+    public double buttonXSpace = 380;
+    public double buttonYSpace = 60;
+
+    public boolean shiftWhenNoPages = true;
+
     public double imageR = 255;
     public double imageG = 255;
     public double imageB = 255;
@@ -161,7 +168,7 @@ public class ButtonList
         this.first.imageSizeY = 20;
         this.first.imageXOffset = 0;
 
-        double oy = this.buttons.size() < rows * columns ? 30 : 0;
+        double oy = shiftWhenNoPages && (this.buttons.size() <= rows * columns) ? 30 : 0;
 
         for (int i = 0; i < buttons.size(); i++)
         {
@@ -179,15 +186,15 @@ public class ButtonList
                 r = (i / columns) % rows;
                 c = i % columns;
                 cols = Math.min(columns, buttons.size());
-                rs = entries / cols + Math.min(1, entries % cols);
+                rs = Math.min(buttons.size() / cols + Math.min(1, entries % cols), rows);
             }
 
-            double offset = -this.objXSpace / 2 * (cols - 1);
+            double offset = -this.buttonXSpace / 2 * (cols - 1);
 
-            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.objYSpace + oy;
-            buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + c * this.objXSpace + xOffset;
-            buttons.get(i).sizeX = this.objWidth;
-            buttons.get(i).sizeY = this.objHeight;
+            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.buttonYSpace + oy;
+            buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + c * this.buttonXSpace + xOffset;
+            buttons.get(i).sizeX = this.buttonWidth;
+            buttons.get(i).sizeY = this.buttonHeight;
             buttons.get(i).translated = this.translate;
             buttons.get(i).imageR = this.imageR;
             buttons.get(i).imageG = this.imageG;
@@ -214,19 +221,35 @@ public class ButtonList
 
             int finalI = i;
 
-            Button up = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2 - b.sizeY, b.posY, b.sizeY * 0.8, b.sizeY * 0.8, "", () -> reorderBehavior.accept(finalI - 1, finalI));
+            double s = this.objHeight * 0.8;
+
+            Button up = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2 - b.sizeY, b.posY, s, s, "", () -> reorderBehavior.accept(finalI - 1, finalI));
 
             up.image = "icons/arrow_up.png";
             up.imageSizeX = 15;
             up.imageSizeY = 15;
             this.upButtons.add(up);
 
-            Button down = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2, b.posY, b.sizeY * 0.8, b.sizeY * 0.8, "", () -> reorderBehavior.accept(finalI + 1, finalI));
+            Button down = new Button(b.posX + b.sizeX / 2 - b.sizeY / 2, b.posY, s, s, "", () -> reorderBehavior.accept(finalI + 1, finalI));
 
             down.image = "icons/arrow_down.png";
             down.imageSizeX = 15;
             down.imageSizeY = 15;
             this.downButtons.add(down);
+
+            if (this.objHeight != this.buttonHeight)
+            {
+                up.posX = b.posX - this.objHeight / 2;
+                up.posY = b.posY + b.sizeY / 2 - this.objHeight / 2;
+                down.posX = b.posX + this.objHeight / 2;
+                down.posY = b.posY + b.sizeY / 2 - this.objHeight / 2;
+            }
+
+            if (horizontalLayout)
+            {
+                up.image = "icons/back.png";
+                down.image = "icons/forward.png";
+            }
         }
     }
 
@@ -235,10 +258,17 @@ public class ButtonList
         while (page * rows * columns >= buttons.size() && page > 0)
             page--;
 
+
+        for (int n = 0; n < this.upButtons.size(); n++)
+        {
+            this.upButtons.get(n).enabled = true;
+            this.downButtons.get(n).enabled = true;
+        }
+
         if (this.arrowsEnabled && this.buttons.size() > 0)
         {
-            upButtons.get(0).enabled = false;
-            downButtons.get(downButtons.size() - 1).enabled = false;
+            upButtons.get(this.fixedFirstElements).enabled = false;
+            downButtons.get(downButtons.size() - 1 - this.fixedLastElements).enabled = false;
         }
 
         for (int i = page * rows * columns; i < Math.min(page * rows * columns + rows * columns, buttons.size()); i++)
@@ -317,11 +347,16 @@ public class ButtonList
             String n = b.text;
 
             boolean e = b.enabled;
+            boolean hover = b.enableHover;
             if (this.arrowsEnabled && this.reorder)
+            {
                 b.enabled = false;
+                b.enableHover = false;
+            }
 
             if (indexPrefix)
                 b.text = (i + 1) + ". " + n;
+
 
             b.draw();
 
@@ -335,6 +370,7 @@ public class ButtonList
             }
 
             b.enabled = e;
+            b.enableHover = hover;
         }
     }
 

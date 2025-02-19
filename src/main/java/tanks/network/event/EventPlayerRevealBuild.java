@@ -53,6 +53,7 @@ public class EventPlayerRevealBuild extends PersonalEvent
                 {
                     Game.currentLevel.playerBuilds.get(build).clonePropertiesTo((TankPlayable) ((TankRemote) m).tank);
                     ((TankRemote) m).copyTank(((TankRemote) m).tank);
+                    ((TankRemote) m).health = ((TankRemote) m).baseHealth;
                 }
             }
         }

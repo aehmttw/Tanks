@@ -77,7 +77,7 @@ public class ScreenPartyLobby extends Screen
 		if (this.usernamePage > 0)
 			this.previousUsernamePage.update();
 
-		if ((this.usernamePage + 1) * 10 < connections.size())
+		if ((this.usernamePage + 1) * entries_per_page < connections.size() - 1)
 			this.nextUsernamePage.update();
 
 		share.update();
@@ -126,10 +126,12 @@ public class ScreenPartyLobby extends Screen
 
 		if (connections != null)
 		{
+			this.usernamePage = Math.min(this.usernamePage, (connections.size() - 2) / 10);
+
 			if (this.usernamePage > 0)
 				this.previousUsernamePage.draw();
 
-			if ((this.usernamePage + 1) * entries_per_page < connections.size())
+			if ((this.usernamePage + 1) * entries_per_page < connections.size() - 1)
 				this.nextUsernamePage.draw();
 
 

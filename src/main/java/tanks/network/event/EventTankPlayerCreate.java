@@ -118,6 +118,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 			{
 				TankPlayer t2 = new TankPlayer(posX, posY, angle);
 				t2.player = new Player(clientIdTarget, "");
+				setColor(t2);
+				t2.saveColors();
 				Game.currentLevel.playerBuilds.get(0).clonePropertiesTo(t2);
 				t = new TankRemote(t2);
 			}
@@ -146,6 +148,23 @@ public class EventTankPlayerCreate extends PersonalEvent
 		else
 			t.team = Game.currentLevel.teamsMap.get(team);
 
+		setColor(t);
+
+		if (t instanceof TankPlayable)
+			((TankPlayable) t).saveColors();
+
+		t.drawAge = this.drawAge;
+
+		t.setNetworkID(this.networkID);
+
+		if ((Game.currentLevel instanceof Arcade || Game.currentLevel instanceof RampageTrial) && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
+			t.invulnerabilityTimer = 250;
+
+		Game.movables.add(t);
+	}
+
+	public void setColor(Tank t)
+	{
 		t.colorR = this.colorR;
 		t.colorG = this.colorG;
 		t.colorB = this.colorB;
@@ -162,18 +181,6 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.emblemR = this.colorR2;
 		t.emblemG = this.colorG2;
 		t.emblemB = this.colorB2;
-
-		if (t instanceof TankPlayable)
-			((TankPlayable) t).saveColors();
-
-		t.drawAge = this.drawAge;
-
-		t.setNetworkID(this.networkID);
-
-		if ((Game.currentLevel instanceof Arcade || Game.currentLevel instanceof RampageTrial) && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
-			t.invulnerabilityTimer = 250;
-
-		Game.movables.add(t);
 	}
 
 	@Override

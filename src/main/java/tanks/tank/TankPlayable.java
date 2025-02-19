@@ -276,35 +276,46 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             boolean foundBullet = false;
             boolean foundMine = false;
 
-            for (Item.ItemStack<?> i: this.abilities)
+            if (m instanceof TankPlayerBot)
             {
-                if (i instanceof ItemBullet.ItemStackBullet && !foundBullet)
+                ((TankPlayerBot) m).abilities = new ArrayList<>();
+                for (Item.ItemStack<?> i: this.abilities)
                 {
-                    foundBullet = true;
-                    Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
-
-                    if (b instanceof BulletArc || b instanceof BulletAirStrike)
-                        m.shootAIType = TankAIControlled.ShootAI.straight;
-                    else if (b.homingSharpness > 0)
-                        m.shootAIType = TankAIControlled.ShootAI.homing;
-                    else if (b.bounces > 1)
-                        m.shootAIType = TankAIControlled.ShootAI.reflect;
-                    else if (b.bounces > 0)
-                        m.shootAIType = TankAIControlled.ShootAI.alternate;
-                    else
-                        m.shootAIType = TankAIControlled.ShootAI.straight;
-
-                    m.cooldownBase = i.item.cooldownBase;
-                    m.cooldownRandom = 0;
-                    m.setBullet(b);
+                    ((TankPlayerBot) m).abilities.add(i.getCopy());
                 }
-                else if (i instanceof ItemMine.ItemStackMine && !foundMine)
+            }
+            else
+            {
+                for (Item.ItemStack<?> i : this.abilities)
                 {
-                    foundMine = true;
-                    Mine n = ((ItemMine.ItemStackMine) i).item.mine;
+                    if (i instanceof ItemBullet.ItemStackBullet && !foundBullet)
+                    {
+                        foundBullet = true;
+                        Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
 
-                    m.enableMineLaying = true;
-                    m.setMine(n);
+                        if (b instanceof BulletArc || b instanceof BulletAirStrike)
+                            m.shootAIType = TankAIControlled.ShootAI.straight;
+                        else if (b.homingSharpness > 0)
+                            m.shootAIType = TankAIControlled.ShootAI.homing;
+                        else if (b.bounces > 1)
+                            m.shootAIType = TankAIControlled.ShootAI.reflect;
+                        else if (b.bounces > 0)
+                            m.shootAIType = TankAIControlled.ShootAI.alternate;
+                        else
+                            m.shootAIType = TankAIControlled.ShootAI.straight;
+
+                        m.cooldownBase = i.item.cooldownBase;
+                        m.cooldownRandom = 0;
+                        m.setBullet(b);
+                    }
+                    else if (i instanceof ItemMine.ItemStackMine && !foundMine)
+                    {
+                        foundMine = true;
+                        Mine n = ((ItemMine.ItemStackMine) i).item.mine;
+
+                        m.enableMineLaying = true;
+                        m.setMine(n);
+                    }
                 }
             }
         }

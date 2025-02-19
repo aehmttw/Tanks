@@ -2,10 +2,7 @@ package tanks.tank;
 
 import basewindow.IModel;
 import tanks.*;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
-import tanks.bullet.BulletGas;
-import tanks.bullet.Laser;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
@@ -563,11 +560,18 @@ public class TankAIControlled extends Tank implements ITankField
 			this.healthTransformTank = ((TankAIControlled) this.healthTransformTankField.resolve()).instantiate(this.name, 0, 0, 0);
 	}
 
+	public void updateStart()
+	{
+
+	}
+
 	@Override
 	public void update()
 	{
 		if (this.age <= 0)
 			this.initialize();
+
+		this.updateStart();
 
 		this.bulletItem.item.bullet = this.bullet;
 		this.mineItem.item.mine = this.mine;
@@ -707,7 +711,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 					double an = this.angle;
 
-					if (this.targetEnemy != null && this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
+					if (this.targetEnemy != null && !(this.bullet instanceof BulletInstant) && this.enablePredictiveFiring && this.shootAIType == ShootAI.straight)
 						an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
 					Ray a2 = new Ray(this.posX, this.posY, an, this.bullet.bounces, this);
@@ -1191,6 +1195,8 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void pathfind()
 	{
+		long time = System.currentTimeMillis();
+
 		Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
 
 		for (int i = 0; i < tiles.length; i++)
@@ -1715,15 +1721,20 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
-			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
-			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
-
-			if (speed < this.bullet.speed)
+			if (this.bullet instanceof BulletInstant)
+				this.aimAngle = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY);
+			else
 			{
-				double d = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY) - Math.asin(speed / this.bullet.speed);
+				double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
+				double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
 
-				if (!Double.isNaN(d))
-					this.aimAngle = d;
+				if (speed < this.bullet.speed)
+				{
+					double d = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY) - Math.asin(speed / this.bullet.speed);
+
+					if (!Double.isNaN(d))
+						this.aimAngle = d;
+				}
 			}
 
 			this.disableOffset = true;
@@ -1779,7 +1790,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void setAimAngleStraight()
 	{
-		if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
+		if (this.enablePredictiveFiring && !(this.bullet instanceof BulletInstant) && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
 		{
 			Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
 			r.ignoreDestructible = this.aimIgnoreDestructible;
@@ -1895,17 +1906,25 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
-			double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
-			double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
-
-			if (speed < this.bullet.speed)
+			if (this.bullet instanceof BulletInstant)
 			{
-				double d = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY) - Math.asin(speed / this.bullet.speed);
+				this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX, this.nearestBullet.posY);
+				this.aim = true;
+			}
+			else
+			{
+				double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / this.bullet.speed * this.nearestBulletDeflect.vY);
+				double speed = this.nearestBulletDeflect.getLastMotionInDirection(a + Math.PI / 2);
 
-				if (!Double.isNaN(d))
+				if (speed < this.bullet.speed)
 				{
-					this.aimAngle = d;
-					this.aim = true;
+					double d = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY) - Math.asin(speed / this.bullet.speed);
+
+					if (!Double.isNaN(d))
+					{
+						this.aimAngle = d;
+						this.aim = true;
+					}
 				}
 			}
 
@@ -2876,7 +2895,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public boolean isSupportTank()
 	{
-		return !this.suicidal && this.bullet.damage <= 0 && this.bullet.bulletHitKnockback == 0 && this.bullet.tankHitKnockback == 0 && this.bullet.hitStun <= 0;
+		return !this.suicidal && this.bullet.damage <= 0 && !this.bullet.freezing && this.bullet.bulletHitKnockback == 0 && this.bullet.tankHitKnockback == 0 && this.bullet.hitStun <= 0;
 	}
 
 	public void setPolarAcceleration(double angle, double acceleration)

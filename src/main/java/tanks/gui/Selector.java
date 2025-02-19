@@ -45,6 +45,7 @@ public class Selector implements IDrawable, ITrigger
     public double hoverColorR = 240;
     public double hoverColorG = 240;
     public double hoverColorB = 255;
+    public boolean manualDarkMode = false;
 
     public long lastFrame;
     public double effectTimer;
@@ -364,6 +365,7 @@ public class Selector implements IDrawable, ITrigger
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.images = this.images;
         s.models = this.models;
+        s.buttonList.manualDarkMode = this.manualDarkMode;
 
         if (this.images != null)
             s.drawImages = true;

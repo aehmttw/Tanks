@@ -229,7 +229,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         });
 
         changePlayer.selectedOption = us;
-
+        changePlayer.manualDarkMode = true;
         changePlayer.quick = true;
     }
 

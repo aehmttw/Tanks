@@ -240,7 +240,9 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
 
             int p = c.crusadeShopBuilds.get(ii).price;
 
-            if (p == 0)
+            if (ii == 0)
+                this.setSubtext("Default build");
+            else if (p == 0)
                 this.setSubtext("Free!");
             else if (p == 1)
                 this.setSubtext("1 coin");
@@ -329,6 +331,15 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
                     levels++;
                     ((CrusadeLevelButton) b).setText(levels);
                 }
+            }
+
+            if (this.buttons.buttons.get(i) instanceof CrusadeBuildButton)
+            {
+                if (i == 0)
+                    this.buttons.buttons.get(i).setSubtext("Default build");
+
+                if (j == 1)
+                    this.buttons.buttons.get(j).setSubtext("Free!");
             }
         };
 
@@ -428,7 +439,9 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
         this.crusade.crusadeShopBuilds.sort(Comparator.comparingInt(o -> o.levelUnlock));
 
         int j = 0;
-        int k = 0;
+        int k = 1;
+
+        this.buttons.buttons.add(new CrusadeBuildButton(this, 0));
 
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
@@ -481,6 +494,19 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
     @Override
     public void update()
     {
+        buttons.fixedFirstElements = showBuilds ? 1 : 0;
+
+        if (showBuilds && buttons.buttons.size() > 1)
+        {
+            Button b = buttons.buttons.get(1);
+            if (b instanceof CrusadeBuildButton)
+            {
+                CrusadeBuildButton cb = (CrusadeBuildButton) b;
+                if (cb.build.price == 0)
+                    buttons.fixedFirstElements = 0;
+            }
+        }
+
         buttons.update();
 
         quit.update();

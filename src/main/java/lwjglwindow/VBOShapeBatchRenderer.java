@@ -6,6 +6,7 @@ import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
+import tanks.Drawing;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -512,8 +513,17 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * 4, new float[4 * size]);
         for (ShaderGroup.Attribute a: attributeBuffers.keySet())
         {
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.attributeVBOs.get(a));
-            GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * a.count, new float[a.count * size]);
+            Integer v = this.attributeVBOs.get(a);
+            if (v != null)
+            {
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, v);
+                GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * a.count, new float[a.count * size]);
+            }
+            else
+            {
+                Drawing.drawing.playSound("obliterate.ogg");
+                new Exception().printStackTrace();
+            }
         }
     }
 

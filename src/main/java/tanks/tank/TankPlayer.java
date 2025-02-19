@@ -20,8 +20,10 @@ import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemRemote;
+import tanks.network.ConnectedPlayer;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
+import tanks.network.event.EventUpdateEliminatedPlayers;
 import tanks.tankson.Property;
 import tanks.tankson.Serializer;
 import tanks.tankson.TanksONable;
@@ -272,8 +274,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
-		for (Item.ItemStack s: this.abilities)
+		for (Item.ItemStack<?> s: this.abilities)
 		{
+			s.player = this.player;
 			s.updateCooldown(reload);
 		}
 
@@ -608,6 +611,13 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					((Scoreboard) m).addPlayerScore(this.player, 1);
 			}
 		}
+
+		if (Game.screen instanceof ScreenGame)
+		{
+			((ScreenGame) Game.screen).eliminatedPlayers.add(new ConnectedPlayer(this.player));
+			Game.eventsOut.add(new EventUpdateEliminatedPlayers(((ScreenGame) Game.screen).eliminatedPlayers));
+			((ScreenGame) Game.screen).onPlayerDeath(this.player);
+		}
 	}
 
 	@Override
@@ -692,7 +702,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@TanksONable("shop_build")
 	public static class ShopTankBuild extends TankPlayer
 	{
-		@TankBuildProperty @Property(id = "price", name = "Price", category = general)
+		@TankBuildProperty @Property(id = "price", name = "Price", category = general, miscType = Property.MiscType.defaultBuildForbidden)
 		public int price;
 
 		public ShopTankBuild()
@@ -718,7 +728,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@TanksONable("crusade_shop_build")
 	public static class CrusadeShopTankBuild extends ShopTankBuild
 	{
-		@TankBuildProperty @Property(id = "unlock_level", name = "Unlocks after level", category = general)
+		@TankBuildProperty @Property(id = "unlock_level", name = "Unlocks after level", category = general, miscType = Property.MiscType.defaultBuildForbidden)
 		public int levelUnlock;
 
 		public CrusadeShopTankBuild()

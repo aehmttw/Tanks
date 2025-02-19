@@ -170,7 +170,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 
 		for (Player p1: Game.botPlayers)
 		{
-			s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(p1.clientID, p1.username), true));
+			s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(p1.clientID, p1.username, true), true));
 			s.sendEvent(new EventUpdateTankColors(p1));
 		}
 

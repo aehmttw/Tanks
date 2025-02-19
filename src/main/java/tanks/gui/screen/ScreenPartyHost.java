@@ -17,6 +17,7 @@ import tanks.translation.Translation;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class ScreenPartyHost extends Screen
@@ -50,6 +51,8 @@ public class ScreenPartyHost extends Screen
     public String visibilityText = "Steam visibility: ";
     public static final String publicText = "\u00A7000200000255public";
     public static final String privateText = "\u00A7200000000255private";
+
+    public static ArrayList<String> botNames;
 
     public Button visibility = new Button(this.centerX - 190, this.centerY - 340, this.objWidth, this.objHeight, "", () ->
     {
@@ -250,6 +253,8 @@ public class ScreenPartyHost extends Screen
 
         if (server != null && server.connections != null)
         {
+            this.usernamePage = Math.min(this.usernamePage, (server.connections.size() + Game.botPlayers.size() - 1) / 10);
+
             if (this.usernamePage > 0)
                 this.previousUsernamePage.update();
 
@@ -431,9 +436,18 @@ public class ScreenPartyHost extends Screen
         }
     }
 
+    public static void readBots()
+    {
+        botNames = Game.game.fileManager.getInternalFileContents("/bot_names.txt");
+    }
+
     public static void setBotCount(int bots)
     {
+        if (botNames == null)
+            readBots();
+
         int old = Game.botPlayers.size();
+        Game.players.removeAll(Game.botPlayers);
 
         for (int i = bots; i < Game.botPlayers.size(); i++)
         {
@@ -443,13 +457,12 @@ public class ScreenPartyHost extends Screen
             e.joined = false;
             e.name = p.username;
             Game.eventsOut.add(e);
-            Game.players.remove(p);
             i--;
         }
 
         for (int i = Game.botPlayers.size(); i < bots; i++)
         {
-            Player p = new Player(UUID.randomUUID(), "Bot " + (i + 1));
+            Player p = new Player(UUID.randomUUID(), botNames.get((int) (Math.random() * botNames.size())));
             double[] col = ObstacleTeleporter.getColorFromID(i);
             p.colorR = (int) col[0];
             p.colorG = (int) col[1];
@@ -463,7 +476,6 @@ public class ScreenPartyHost extends Screen
             p.colorB3 = (p.colorB + p.colorB2) / 2;
             p.isBot = true;
             Game.botPlayers.add(p);
-            Game.players.add(p);
 
             EventAnnounceConnection e = new EventAnnounceConnection();
             e.clientIdTarget = p.clientID;
@@ -472,6 +484,8 @@ public class ScreenPartyHost extends Screen
             Game.eventsOut.add(e);
             Game.eventsOut.add(new EventUpdateTankColors(p));
         }
+
+        Game.players.addAll(Game.botPlayers);
 
         if (old < Game.botPlayers.size())
         {

@@ -9,10 +9,7 @@ import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.network.ServerHandler;
 import tanks.network.event.*;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 import java.util.*;
 
@@ -276,7 +273,9 @@ public class Crusade
 			}
 
 			if (player.buildName == null)
+			{
 				player.buildName = this.crusadeShopBuilds.get(0).name;
+			}
 		}
 
 		for (Player player : Game.players)
@@ -328,6 +327,8 @@ public class Crusade
 			player.hotbar.coins = cp.coins;
 			player.ownedBuilds = cp.ownedBuilds;
 			player.buildName = cp.currentBuild;
+
+			player.ownedBuilds.add(player.buildName);
 
 			ItemBar i = cp.itemBar;
 
@@ -485,12 +486,10 @@ public class Crusade
 				boolean found = false;
 				for (Movable m: Game.movables)
 				{
-					if (m instanceof TankPlayer && ((TankPlayer) m).player == p && m.destroy)
-						return false;
-					else if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == p && m.destroy)
+					if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p && m.destroy)
 						return false;
 
-					if ((m instanceof TankPlayer && ((TankPlayer) m).player == p) || (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == p))
+					if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p)
 						found = true;
 				}
 
@@ -612,10 +611,8 @@ public class Crusade
 		{
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
-					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
-				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
-					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+				if (Game.movables.get(i) instanceof IServerPlayerTank && !Game.movables.get(i).destroy)
+					((IServerPlayerTank) Game.movables.get(i)).getPlayer().remainingLives--;
 			}
 		}
 

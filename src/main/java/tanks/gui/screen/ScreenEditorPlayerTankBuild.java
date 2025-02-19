@@ -186,7 +186,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 Property p = f.getAnnotation(Property.class);
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
 
-                if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)))
+                if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)) &&
+                !(target instanceof ArrayListIndexPointer && ((ArrayListIndexPointer<T>) target).getIndex() == 0 && p.miscType() == Property.MiscType.defaultBuildForbidden))
                 {
                     if (p.miscType() == Property.MiscType.description)
                     {

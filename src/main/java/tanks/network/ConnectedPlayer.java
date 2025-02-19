@@ -1,6 +1,7 @@
 package tanks.network;
 
 import tanks.Game;
+import tanks.Player;
 
 import java.util.UUID;
 
@@ -30,6 +31,25 @@ public class ConnectedPlayer
 		
 		if (Game.enableChatFilter)
 			this.username = Game.chatFilter.filterChat(this.rawUsername);
+	}
+
+	public ConnectedPlayer(UUID id, String name, boolean bot)
+	{
+		this(id, name);
+		this.isBot = bot;
+	}
+
+	public ConnectedPlayer(Player p)
+	{
+		this.clientId = p.clientID;
+		this.username = p.username;
+		this.rawUsername = p.username;
+
+		if (Game.enableChatFilter)
+			this.username = Game.chatFilter.filterChat(this.rawUsername);
+
+		this.isBot = p.isBot;
+		this.setColors(p.colorR, p.colorG, p.colorB, p.colorR2, p.colorG2, p.colorB2, p.colorR3, p.colorG3, p.colorB3);
 	}
 
 	public void setColors(double r, double g, double b, double r2, double g2, double b2, double r3, double g3, double b3)

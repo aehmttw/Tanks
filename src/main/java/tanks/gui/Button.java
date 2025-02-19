@@ -167,7 +167,7 @@ public class Button implements IDrawable, ITrigger
 
 		if (this.fontSize < 0)
 		{
-			if (this.enableHover)
+			if (this.enableHover || this.fullInfo)
 				drawing.setBoundedInterfaceFontSize(this.sizeY * 0.6, this.sizeX - 80, this.text);
 			else
 				drawing.setBoundedInterfaceFontSize(this.sizeY * 0.6, this.sizeX - 40, this.text);

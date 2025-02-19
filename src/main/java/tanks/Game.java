@@ -369,6 +369,7 @@ public class Game
 		NetworkEventMap.register(EventPlayerSetBuild.class);
 		NetworkEventMap.register(EventPlayerRevealBuild.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
+		NetworkEventMap.register(EventUpdateEliminatedPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
 		NetworkEventMap.register(EventTankUpdate.class);

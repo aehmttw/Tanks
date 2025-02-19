@@ -12,6 +12,7 @@ public class EventAnnounceConnection extends PersonalEvent
 	public String name;
 	public UUID clientIdTarget;
 	public boolean joined;
+	public boolean isBot;
 
 	public EventAnnounceConnection()
 	{
@@ -23,6 +24,7 @@ public class EventAnnounceConnection extends PersonalEvent
 		this.name = p.rawUsername;
 		this.clientIdTarget = p.clientId;
 		this.joined = joined;
+		this.isBot = p.isBot;
 	}
 
 	@Override
@@ -34,7 +36,7 @@ public class EventAnnounceConnection extends PersonalEvent
 		if (this.joined)
 		{
 			ConnectedPlayer c = new ConnectedPlayer(this.clientIdTarget, this.name);
-			if (name.startsWith("Bot "))
+			if (isBot)
 			{
 				c.isBot = true;
 				ScreenPartyLobby.connectedBots++;
@@ -67,6 +69,7 @@ public class EventAnnounceConnection extends PersonalEvent
 		this.joined = b.readBoolean();
 		this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
 		this.name = NetworkUtils.readString(b);
+		this.isBot = b.readBoolean();
 	}
 	
 	@Override
@@ -75,6 +78,7 @@ public class EventAnnounceConnection extends PersonalEvent
 		b.writeBoolean(this.joined);
 		NetworkUtils.writeString(b, this.clientIdTarget.toString());
 		NetworkUtils.writeString(b, this.name);
+		b.writeBoolean(this.isBot);
 	}
 
 }

@@ -53,6 +53,9 @@ public class OverlayPlayerRankings
 
         double spacing = Math.min(10, Math.max(Game.currentLevel.startTime - 50.0f, 0) / (includedPlayers + 1));
 
+        if (screen.eliminatedPlayers.size() < namesCount)
+            namesCount = screen.eliminatedPlayers.size();
+
         if (screen.eliminatedPlayers.size() > namesCount && c > lastNewName + spacing)
         {
             lastNewName = lastNewName + spacing;
@@ -83,9 +86,13 @@ public class OverlayPlayerRankings
                     else
                         name = cp.username;
 
+                    int n = includedPlayers - i;
+                    if (!(Game.screen instanceof ScreenGame))
+                        n = namesCount - i;
+
                     Drawing.drawing.setBoundedInterfaceFontSize(this.screen.textSize, 250, name);
-                    Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 180, 40 * j + 100, (includedPlayers - i) + ". " + name);
-                    Tank.drawTank(Drawing.drawing.interfaceSizeX - 220 - Drawing.drawing.getStringWidth((includedPlayers - i) + ". " + name) / 2, 40 * j + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, cp.colorR3, cp.colorG3, cp.colorB3, opacity / 255 * 25);
+                    Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 180, 40 * j + 100, n + ". " + name);
+                    Tank.drawTank(Drawing.drawing.interfaceSizeX - 220 - Drawing.drawing.getStringWidth(n + ". " + name) / 2, 40 * j + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, cp.colorR3, cp.colorG3, cp.colorB3, opacity / 255 * 25);
                 }
             }
 

@@ -612,7 +612,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			}
 		}
 
-		if (Game.screen instanceof ScreenGame)
+		if (Game.screen instanceof ScreenGame && !ScreenPartyLobby.isClient)
 		{
 			((ScreenGame) Game.screen).eliminatedPlayers.add(new ConnectedPlayer(this.player));
 			Game.eventsOut.add(new EventUpdateEliminatedPlayers(((ScreenGame) Game.screen).eliminatedPlayers));

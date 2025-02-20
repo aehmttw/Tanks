@@ -86,7 +86,7 @@ public class ScreenOverlayChat
                         double yPad = 5;
 
                         double opacity = 1;
-                        if (!boxSelected && Game.screen instanceof ScreenGame)
+                        if (!boxSelected && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy)
                             opacity = 0.5;
 
                         double width = 0;

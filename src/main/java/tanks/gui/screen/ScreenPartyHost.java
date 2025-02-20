@@ -18,6 +18,7 @@ import tanks.translation.Translation;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class ScreenPartyHost extends Screen
@@ -460,9 +461,16 @@ public class ScreenPartyHost extends Screen
             i--;
         }
 
+        ArrayList<String> namesList = new ArrayList<>(botNames);
+        for (Player p: Game.botPlayers)
+            namesList.remove(p.username);
+
         for (int i = Game.botPlayers.size(); i < bots; i++)
         {
-            Player p = new Player(UUID.randomUUID(), botNames.get((int) (Math.random() * botNames.size())));
+            if (namesList.isEmpty())
+                namesList.addAll(botNames);
+
+            Player p = new Player(UUID.randomUUID(), namesList.remove((int) (Math.random() * namesList.size())));
             double[] col = ObstacleTeleporter.getColorFromID(i);
             p.colorR = (int) col[0];
             p.colorG = (int) col[1];

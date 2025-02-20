@@ -346,6 +346,7 @@ public class Game
 		NetworkEventMap.register(EventPlayerChat.class);
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
+		NetworkEventMap.register(EventSetLevelVersus.class);
 		NetworkEventMap.register(EventLevelEndQuick.class);
 		NetworkEventMap.register(EventLevelEnd.class);
 		NetworkEventMap.register(EventReturnToLobby.class);

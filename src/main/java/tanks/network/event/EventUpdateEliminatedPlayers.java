@@ -36,7 +36,7 @@ public class EventUpdateEliminatedPlayers extends PersonalEvent
 	{
 		if (this.clientID == null && Game.screen instanceof ScreenGame)
 		{
-			ScreenPartyLobby.readyPlayers.clear();
+			((ScreenGame) Game.screen).eliminatedPlayers.clear();
 
 			String[] players = eliminatedPlayers.split(",");
 			for (String p: players)

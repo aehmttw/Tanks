@@ -520,6 +520,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public ScreenGame()
 	{
 		Game.recomputeHeightGrid();
+		eliminatedPlayers.clear();
 		this.selfBatch = false;
 		this.enableMargins = !Game.followingCam;
 
@@ -1040,7 +1041,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						boolean lose = false;
 						for (Movable m: Game.movables)
 						{
-							if (m instanceof IServerPlayerTank && !m.destroy && m != Game.playerTank)
+							if (m instanceof Tank && !m.destroy && m != Game.playerTank)
 							{
 								lose = true;
 								break;
@@ -1715,7 +1716,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					Team t;
 
 					if (Game.playerTank != null && m instanceof IServerPlayerTank && !Team.isAllied(m, Game.playerTank))
+					{
+						if (!isVersus)
+							Game.eventsOut.add(new EventSetLevelVersus());
 						isVersus = true;
+					}
 
 					if (m.team == null)
 					{
@@ -1885,7 +1890,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						}
 					}
 
-					if (Game.effects.size() <= 0 && noMovables && !(isVersus && rankingsTime * 10 < introResultsMusicEnd))
+					if (Game.effects.size() <= 0 && noMovables && !(isVersus && finishQuickTimer < introResultsMusicEnd / 10.0 - rankingsTimeIntro))
 					{
 						if (Game.followingCam)
 							Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);
@@ -2700,6 +2705,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					double spacing = Math.min(readyNameSpacing, Math.max(Game.currentLevel.startTime - 50.0f, 0) / (includedPlayers + 1));
 
+					if (readyPlayers.size() < readyNamesCount)
+						readyNamesCount = readyPlayers.size();
+
 					if (readyPlayers.size() > readyNamesCount && c > lastNewReadyName + spacing)
 					{
 						lastNewReadyName = lastNewReadyName + spacing;
@@ -3013,7 +3021,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				remaining++;
 		}
 
-		if (isVersus)
+		if (isVersus && ScreenPartyHost.isServer)
 		{
 			String s = "\u00A7255060000255%s was eliminated. %d players remain.";
 			if (remaining == 1)

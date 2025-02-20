@@ -5,6 +5,7 @@ import tanks.bullet.Bullet;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
@@ -566,8 +567,11 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         if (Game.screen instanceof ScreenGame)
         {
-            ((ScreenGame) Game.screen).eliminatedPlayers.add(new ConnectedPlayer(this.player));
-            Game.eventsOut.add(new EventUpdateEliminatedPlayers(((ScreenGame) Game.screen).eliminatedPlayers));
+            if (ScreenPartyHost.includedPlayers.contains(this.player.clientID))
+            {
+                ((ScreenGame) Game.screen).eliminatedPlayers.add(new ConnectedPlayer(this.player));
+                Game.eventsOut.add(new EventUpdateEliminatedPlayers(((ScreenGame) Game.screen).eliminatedPlayers));
+            }
             ((ScreenGame) Game.screen).onPlayerDeath(this.player);
         }
     }

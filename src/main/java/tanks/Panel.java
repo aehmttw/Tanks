@@ -204,6 +204,8 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_4.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_8.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/results.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/finished_music.ogg");
 
 			for (int i = 1; i <= 8; i++)
 			{
@@ -373,8 +375,15 @@ public class Panel
 					for (int j = 0; j < Game.movables.size(); j++)
 					{
 						Movable m = Game.movables.get(j);
+
+						if (m instanceof TankPlayerRemote)
+							System.out.println(((TankPlayerRemote) m).player.clientID + " " + ScreenPartyHost.disconnectedPlayers.get(i));
+
 						if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
+						{
 							((TankPlayerRemote) m).health = 0;
+							m.destroy = true;
+						}
 					}
 
 					ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
@@ -384,6 +393,20 @@ public class Panel
 						if (p.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
 						{
 							ScreenPartyHost.readyPlayers.remove(p);
+
+							if (Game.screen instanceof ScreenGame)
+							{
+								ScreenGame sg = (ScreenGame) Game.screen;
+								for (int j = 0; j < sg.eliminatedPlayers.size(); j++)
+								{
+									if (sg.eliminatedPlayers.get(i).clientId.equals(p.clientID))
+									{
+										sg.eliminatedPlayers.remove(i);
+										Game.eventsOut.add(new EventUpdateEliminatedPlayers(sg.eliminatedPlayers));
+										break;
+									}
+								}
+							}
 
 							if (Crusade.currentCrusade != null)
 							{
@@ -418,7 +441,10 @@ public class Panel
 								if (t.name.equals(((TankPlayable) m).buildName))
 								{
 									build = i;
+									boolean d = m.destroy;
 									t.clonePropertiesTo((TankPlayable) m);
+									if (d)
+										((TankPlayable) m).health = 0;
 									break;
 								}
 							}

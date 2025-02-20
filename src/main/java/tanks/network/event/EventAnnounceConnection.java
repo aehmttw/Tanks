@@ -53,6 +53,8 @@ public class EventAnnounceConnection extends PersonalEvent
 			{
 				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))
 				{
+					ScreenPartyLobby.readyPlayers.remove(ScreenPartyLobby.connections.get(i));
+
 					if (ScreenPartyLobby.connections.get(i).isBot)
 						ScreenPartyLobby.connectedBots--;
 

@@ -1530,12 +1530,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 					double mx = mousePlaceable.posX;
 					double my = mousePlaceable.posY;
 
-					if (currentPlaceable == Placeable.obstacle)
-					{
-						mx = mousePlaceable.posX;
-						my = mousePlaceable.posY;
-					}
-
 					if ((mousePlaceable instanceof ObstacleStackable && ((ObstacleStackable) mousePlaceable).startHeight <= 0 && ((Obstacle) mousePlaceable).type == Obstacle.ObstacleType.full) || currentPlaceable != Placeable.obstacle)
 					{
 						for (Movable m : Game.movables)

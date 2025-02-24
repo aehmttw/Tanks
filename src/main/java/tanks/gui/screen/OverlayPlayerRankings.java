@@ -51,7 +51,7 @@ public class OverlayPlayerRankings
         else if (ScreenPartyLobby.isClient)
             includedPlayers = ScreenPartyLobby.includedPlayers.size();
 
-        double spacing = Math.min(10, Math.max(Game.currentLevel.startTime - 50.0f, 0) / (includedPlayers + 1));
+        double spacing = Math.max(2, Math.min(10, 50.0 / (screen.eliminatedPlayers.size() - namesCount)));
 
         if (screen.eliminatedPlayers.size() < namesCount)
             namesCount = screen.eliminatedPlayers.size();
@@ -76,9 +76,8 @@ public class OverlayPlayerRankings
                 if (j < slots)
                 {
                     j++;
-                    Drawing.drawing.setColor(255, 255, 255, opacity);
-
                     ConnectedPlayer cp = screen.eliminatedPlayers.get(i);
+                    Drawing.drawing.setColor(cp.teamColorR, cp.teamColorG, cp.teamColorB, opacity);
 
                     String name;
                     if (Game.enableChatFilter)
@@ -100,7 +99,7 @@ public class OverlayPlayerRankings
             {
                 Drawing.drawing.setColor(255, 255, 255, opacity / 2);
                 Drawing.drawing.setInterfaceFontSize(this.screen.textSize);
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 100, "%d still alive...", includedPlayers - namesCount);
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 100, "%d remaining...", includedPlayers - namesCount);
             }
         }
 

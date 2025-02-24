@@ -10,6 +10,7 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.minigames.Arcade;
 import tanks.minigames.RampageTrial;
+import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
 
@@ -147,6 +148,31 @@ public class EventTankPlayerCreate extends PersonalEvent
 			t.team = null;
 		else
 			t.team = Game.currentLevel.teamsMap.get(team);
+
+		if (player != null)
+			player.tank = t;
+
+		if (ScreenPartyLobby.isClient)
+		{
+			for (ConnectedPlayer c: ScreenPartyLobby.connections)
+			{
+				if (c.clientId.equals(clientIdTarget))
+				{
+					if (t.team != null && t.team.enableColor)
+					{
+						c.teamColorR = t.team.teamColorR;
+						c.teamColorG = t.team.teamColorG;
+						c.teamColorB = t.team.teamColorB;
+					}
+					else
+					{
+						c.teamColorR = 255;
+						c.teamColorG = 255;
+						c.teamColorB = 255;
+					}
+				}
+			}
+		}
 
 		setColor(t);
 

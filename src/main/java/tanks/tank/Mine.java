@@ -211,7 +211,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
             }
         }
 
-        if (enemyNear && !allyNear && this.timer > this.triggeredTimer && !this.isRemote)
+        if (enemyNear && !allyNear && this.timer > this.triggeredTimer && !ScreenPartyLobby.isClient)
         {
             this.timer = this.triggeredTimer;
             Game.eventsOut.add(new EventMineChangeTimer(this));

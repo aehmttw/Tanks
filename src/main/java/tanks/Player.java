@@ -237,6 +237,14 @@ public class Player
         this.connectedPlayer.colorR3 = this.colorR3;
         this.connectedPlayer.colorG3 = this.colorG3;
         this.connectedPlayer.colorB3 = this.colorB3;
+
+        if (this.tank != null && this.tank.team != null && this.tank.team.enableColor)
+        {
+            this.connectedPlayer.teamColorR = this.tank.team.teamColorR;
+            this.connectedPlayer.teamColorG = this.tank.team.teamColorG;
+            this.connectedPlayer.teamColorB = this.tank.team.teamColorB;
+        }
+
         return this.connectedPlayer;
     }
 }

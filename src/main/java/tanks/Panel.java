@@ -376,9 +376,6 @@ public class Panel
 					{
 						Movable m = Game.movables.get(j);
 
-						if (m instanceof TankPlayerRemote)
-							System.out.println(((TankPlayerRemote) m).player.clientID + " " + ScreenPartyHost.disconnectedPlayers.get(i));
-
 						if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
 						{
 							((TankPlayerRemote) m).health = 0;
@@ -399,9 +396,9 @@ public class Panel
 								ScreenGame sg = (ScreenGame) Game.screen;
 								for (int j = 0; j < sg.eliminatedPlayers.size(); j++)
 								{
-									if (sg.eliminatedPlayers.get(i).clientId.equals(p.clientID))
+									if (sg.eliminatedPlayers.get(j).clientId.equals(p.clientID))
 									{
-										sg.eliminatedPlayers.remove(i);
+										sg.eliminatedPlayers.remove(j);
 										Game.eventsOut.add(new EventUpdateEliminatedPlayers(sg.eliminatedPlayers));
 										break;
 									}

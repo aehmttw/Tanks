@@ -7,6 +7,7 @@ import basewindow.transformation.Translation;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import tanks.Drawing;
+import tanks.Game;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -258,6 +259,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
         if (this.modifyingSize >= 0 && this.modifyingWritten >= this.modifyingSize)
         {
+            System.out.println("a migration is required");
             this.migrate(o);
         }
 
@@ -319,6 +321,8 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
                 }
             }
         }
+
+        System.out.println("end " + start + " " + this.modifyingSize + " ");
 
         this.vertBuffer.position(start * 3);
         this.colBuffer.position(start * 4);
@@ -500,12 +504,6 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
             }
         }
 
-        this.vertBuffer.rewind();
-        this.colBuffer.rewind();
-        for (ShaderGroup.Attribute a: attributeBuffers.keySet())
-        {
-            this.attributeBuffers.get(a).rewind();
-        }
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertVBO);
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * 3, new float[3 * size]);
@@ -524,6 +522,13 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
                 Drawing.drawing.playSound("obliterate.ogg");
                 new Exception().printStackTrace();
             }
+        }
+
+        this.vertBuffer.rewind();
+        this.colBuffer.rewind();
+        for (ShaderGroup.Attribute a: attributeBuffers.keySet())
+        {
+            this.attributeBuffers.get(a).rewind();
         }
     }
 
@@ -578,6 +583,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         this.vertBuffer.rewind();
         this.colBuffer.rewind();
 
+        System.out.println("migrate");
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertVBO);
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * 3, new float[3 * size]);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colVBO);

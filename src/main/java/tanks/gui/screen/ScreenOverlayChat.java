@@ -87,7 +87,10 @@ public class ScreenOverlayChat
 
                         double opacity = 1;
                         if (!boxSelected && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy)
-                            opacity = 0.5;
+                            opacity = Math.max(0, 1.0 - in / 10.0);
+
+                        if (!boxSelected)
+                            opacity = Math.max(0, opacity * (1 - (1.0 * time - c.time) / timeout));
 
                         double width = 0;
 

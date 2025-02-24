@@ -104,7 +104,7 @@ public class BulletBlock extends BulletArc
         {
             for (Obstacle o1 : Game.obstacles)
             {
-                if (o1.posX == o.posX && o1.posY == o.posY)
+                if (o1.posX == o.posX && o1.posY == o.posY && !Obstacle.canPlaceOn(o.type, o1.type))
                 {
                     found = true;
                     break;

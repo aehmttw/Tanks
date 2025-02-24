@@ -268,7 +268,7 @@ public class Game
 	public static boolean autoLoadExtensions = true;
 	public static ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
-	public static Extension[] extraExtensions;
+	public static Extension[] extraExtensions = new Extension[0];
 	public static int[] extraExtensionOrder;
 
 	public BaseWindow window;
@@ -743,6 +743,11 @@ public class Game
 			}
 		}
 
+		if (!enableExtensions && extraExtensions != null)
+		{
+			System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to launchWithExtensions() will be used.");
+		}
+
 		for (Extension e: extensionRegistry.extensions)
 			e.setUp();
 
@@ -840,6 +845,7 @@ public class Game
 			Arrays.fill(Game.game.heightGrid[i], -1000);
 			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
 			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
+			Arrays.fill(Game.tileDrawables[i], null);
 		}
 
 		for (int i = 0; i < Game.obstacles.size(); i++)

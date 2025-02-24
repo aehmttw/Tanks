@@ -109,7 +109,8 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     {
         Game.player.hotbar.percentHidden = 100;
 
-        this.previous = (ScreenGame) Game.screen;
+        if (Game.screen instanceof ScreenGame)
+            this.previous = (ScreenGame) Game.screen;
 
         if (Panel.win)
         {
@@ -122,7 +123,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             this.music = "lose_music.ogg";
         }
 
-        if (this.previous.isVersus)
+        if (this.previous != null && this.previous.isVersus)
         {
             this.music = "finished_music.ogg";
             this.musicID = "versus_results";
@@ -211,7 +212,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
 
-        if (previous.isVersus)
+        if (this.previous != null && this.previous.isVersus)
             previous.rankingsOverlay.draw();
 
         if (!ScreenInterlevel.fromMinigames)

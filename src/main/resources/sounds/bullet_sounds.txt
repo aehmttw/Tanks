@@ -25,6 +25,7 @@ lay_mine.ogg
 obliterate.ogg
 open.ogg
 open2.ogg
+plop.ogg
 rampage.ogg
 rampage2.ogg
 shield.ogg

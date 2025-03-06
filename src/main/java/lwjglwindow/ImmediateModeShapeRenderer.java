@@ -952,15 +952,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!this.window.textures.containsKey(image))
             this.window.createImage(image);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
         if (depthtest)
             this.window.enableDepthtest();
-
-        this.window.loadPerspective();
-
-        glMatrixMode(GL_MODELVIEW);
 
         this.window.enableTexture();
         glEnable(GL_BLEND);
@@ -991,7 +984,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glEnd();
 
-        glMatrixMode(GL_PROJECTION);
         this.window.disableTexture();
 
         glDepthMask(true);
@@ -1013,14 +1005,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!this.window.textures.containsKey(image))
             this.window.createImage(image);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
         if (depthtest)
             this.window.enableDepthtest();
-
-        this.window.loadPerspective();
-        glMatrixMode(GL_MODELVIEW);
 
         this.window.enableTexture();
         glEnable(GL_BLEND);
@@ -1051,7 +1037,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glEnd();
 
-        glMatrixMode(GL_PROJECTION);
         this.window.disableTexture();
 
         glDepthMask(true);

@@ -19,7 +19,6 @@ import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 import static tanks.tank.TankPropertyCategory.*;
@@ -910,7 +909,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			Drawing.drawing.drawText(this.posX, this.posY, 50, this.networkID + "");
 		}
 
-
+		// For team color
 		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
 	}
 

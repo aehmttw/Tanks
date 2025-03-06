@@ -72,6 +72,8 @@ public class Drawing
 
 	public HashMap<String, Model> modelsByDir = new HashMap<>();
 
+	public String[] tooltip = null;
+
 	private Drawing()
 	{
 	}
@@ -1194,9 +1196,11 @@ public class Drawing
 
 	public void drawTooltip(String[] text)
 	{
-		double x = getInterfaceMouseX();
-		double y = getInterfaceMouseY();
+		this.tooltip = text;
+	}
 
+	public void drawTooltip(String[] text, double x, double y)
+	{
 		int xPadding = 16;
 		int yPadding = 8;
 

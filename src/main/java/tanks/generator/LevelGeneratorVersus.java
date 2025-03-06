@@ -299,8 +299,11 @@ public class LevelGeneratorVersus extends LevelGenerator
 					{
 						boolean chosen = false;
 
-						while (!chosen)
+						int attempts = 0;
+						while (!chosen && attempts < 100)
 						{
+							attempts++;
+
 							x = (int) (random.nextDouble() * (width - l));
 							y = (int) (random.nextDouble() * (height));
 							xEnd = x + l;
@@ -432,8 +435,11 @@ public class LevelGeneratorVersus extends LevelGenerator
 					{
 						boolean chosen = false;
 
-						while (!chosen)
+						int attempts = 0;
+						while (!chosen && attempts < 100)
 						{
+							attempts++;
+
 							x = (int) (random.nextDouble() * (width));
 							y = (int) (random.nextDouble() * (height - l));
 							xEnd = x;

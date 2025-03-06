@@ -824,6 +824,11 @@ public class Panel
 			this.drawBar();
 		}
 
+		if (Drawing.drawing.tooltip != null)
+			Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
+
+		Drawing.drawing.tooltip = null;
+
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 

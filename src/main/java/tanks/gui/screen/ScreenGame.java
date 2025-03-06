@@ -339,6 +339,30 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	}
 	);
 
+
+	Button backToQuickPlay = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Back", () ->
+	{
+		Game.cleanUp();
+		System.gc();
+		Panel.panel.zoomTimer = 0;
+
+		Level level = new Level(Game.currentLevelString);
+		level.loadLevel(ScreenInterlevel.fromQuickPlay);
+		Game.screen = (Screen) ScreenInterlevel.fromQuickPlay;
+
+		ScreenInterlevel.fromSavedLevels = false;
+		ScreenInterlevel.fromMinigames = false;
+		ScreenInterlevel.fromQuickPlay = null;
+
+		if (ScreenPartyHost.isServer)
+		{
+			ScreenPartyHost.readyPlayers.clear();
+			ScreenPartyHost.includedPlayers.clear();
+			Game.eventsOut.add(new EventReturnToLobby());
+		}
+	}
+	);
+
 	Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back to party", () ->
 	{
 		Game.cleanUp();
@@ -690,12 +714,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			for (Player p : Game.botPlayers)
 			{
-				for (int i = 0; i < 5; i++)
+				int j = 0;
+				for (int i = 0; i < 5 && j < 100; i++)
 				{
 					int n = (int) (Math.random() * this.shop.size());
 					Item.ShopItem si = this.shop.get(n);
 					if (p.hotbar.coins >= si.price && p.hotbar.itemBar.addItem(si.itemStack))
+					{
 						p.hotbar.coins -= si.price;
+						if (!Crusade.crusadeMode)
+							i--;
+
+						j++;
+					}
 				}
 			}
 		}
@@ -709,8 +740,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void unpause()
 	{
+		this.unpause(true);
+	}
+
+	public void unpause(boolean mouse)
+	{
 		this.paused = false;
-		Game.playerTank.setBufferCooldown(20);
+
+		if (mouse)
+			Game.playerTank.setBufferCooldown(20);
 
 		if (Game.currentLevel.synchronizeMusic && !(ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && playing)
 			Game.game.window.soundPlayer.setMusicPos(this.pausedMusicPos);
@@ -1185,7 +1223,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			else
 			{
 				if (this.paused)
-					this.unpause();
+					this.unpause(false);
 				else
 					this.pause();
 			}
@@ -1258,11 +1296,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					}
 					else if (ScreenPartyHost.isServer)
 					{
-						if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames)
+						if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames || ScreenInterlevel.fromQuickPlay != null)
 						{
 							closeMenuLowerPos.update();
 							restartLowerPos.update();
-							back.update();
+
+							if (ScreenInterlevel.fromQuickPlay == null)
+								back.update();
+							else
+								backToQuickPlay.update();
 						}
 						else if (Crusade.crusadeMode)
 						{
@@ -1321,6 +1363,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							quitCrusade.update();
 						}
 
+						resumeLowerPos.update();
+					}
+					else if (ScreenInterlevel.fromQuickPlay != null)
+					{
+						backToQuickPlay.update();
+						restartLowerPos.update();
 						resumeLowerPos.update();
 					}
 					else if (name != null)
@@ -1996,7 +2044,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 							}
 							else if (Game.currentLevel != null && !Game.currentLevel.remote)
 							{
-								if (name != null)
+								if (ScreenInterlevel.fromQuickPlay != null)
+									backToQuickPlay.function.run();
+								else if (name != null)
 									Game.exitToEditor(name);
 								else
 									Game.exitToInterlevel();
@@ -2716,7 +2766,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					if (readyPlayers.size() < readyNamesCount)
 						readyNamesCount = readyPlayers.size();
 
-					if (readyPlayers.size() > readyNamesCount && c > lastNewReadyName + spacing)
+					while (readyPlayers.size() > readyNamesCount && c > lastNewReadyName + spacing)
 					{
 						lastNewReadyName = lastNewReadyName + spacing;
 						readyNamesCount++;
@@ -2851,7 +2901,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			Game.player.hotbar.draw();
 
-			if ((Game.showSpeedrunTimer && !(paused && screenshotMode) && !(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).hideSpeedrunTimer)) || (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).forceSpeedrunTimer))
+			if (((Game.showSpeedrunTimer || Game.showBestTime) && !(paused && screenshotMode) && !(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).hideSpeedrunTimer)) || (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).forceSpeedrunTimer))
 				SpeedrunTimer.draw();
 
 			minimap.draw();
@@ -2908,11 +2958,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 			else if (ScreenPartyHost.isServer)
 			{
-				if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames)
+				if (ScreenInterlevel.fromSavedLevels || ScreenInterlevel.fromMinigames || ScreenInterlevel.fromQuickPlay != null)
 				{
 					closeMenuLowerPos.draw();
 					restartLowerPos.draw();
-					back.draw();
+
+					if (ScreenInterlevel.fromQuickPlay == null)
+						back.draw();
+					else
+						backToQuickPlay.draw();
 				}
 				else if (Crusade.crusadeMode)
 				{
@@ -2971,6 +3025,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					restartCrusade.draw();
 				}
 
+				resumeLowerPos.draw();
+			}
+			else if (ScreenInterlevel.fromQuickPlay != null)
+			{
+				backToQuickPlay.draw();
+				restartLowerPos.draw();
 				resumeLowerPos.draw();
 			}
 			else if (name != null)

@@ -199,8 +199,10 @@ public class Game
 	public static boolean enableVibrations = true;
 
 	public static boolean enableChatFilter = true;
-	public static boolean showSpeedrunTimer = false;
 	public static boolean nameInMultiplayer = true;
+
+	public static boolean showSpeedrunTimer = false;
+	public static boolean showBestTime = false;
 
 	public static boolean previewCrusades = true;
 
@@ -268,7 +270,7 @@ public class Game
 	public static boolean autoLoadExtensions = true;
 	public static ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
-	public static Extension[] extraExtensions = new Extension[0];
+	public static Extension[] extraExtensions = null;
 	public static int[] extraExtensionOrder;
 
 	public BaseWindow window;

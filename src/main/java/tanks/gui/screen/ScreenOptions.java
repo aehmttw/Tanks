@@ -235,6 +235,7 @@ public class ScreenOptions extends Screen
 			f.println("auto_start=" + Game.autostart);
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
+			f.println("best_run=" + Game.showBestTime);
 			f.println("deterministic=" + Game.deterministicMode);
 			f.println("deterministic_30fps=" + Game.deterministic30Fps);
 			f.println("warn_before_closing=" + Game.warnBeforeClosing);

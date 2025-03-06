@@ -29,6 +29,8 @@ public class Crusade
 	public int currentLevel = 0;
 	public int saveLevel = 0;
 
+	public ArrayList<Double> bestTimes = null;
+
 	public double timePassed = 0;
 
 	public static class CrusadeLevel
@@ -77,6 +79,9 @@ public class Crusade
 
 	public String description = null;
 
+	/**
+	 * Used for internal built-in crusades
+	 */
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
 		internal = true;
@@ -88,6 +93,27 @@ public class Crusade
 			c.append(s).append("\n");
 
 		contents = c.substring(0, c.length() - 1);
+
+		BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/records/internal" + fileName.replace(".tanks", ".record"));
+		if (f.exists())
+		{
+			try
+			{
+				f.startReading();
+				this.bestTimes = new ArrayList<>();
+
+				while (f.hasNextLine())
+				{
+					this.bestTimes.add(Double.parseDouble(f.nextLine()));
+				}
+
+				f.stopReading();
+			}
+			catch (Exception e)
+			{
+				Game.exitToCrash(e);
+			}
+		}
 	}
 
 	public Crusade(String s, String name)

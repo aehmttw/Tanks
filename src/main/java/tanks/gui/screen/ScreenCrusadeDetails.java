@@ -20,9 +20,9 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
     public double bestTime = -1;
 
-    private int textOffset = 0;
-    private int levelsTextOffset = 0;
-    private int sizeY = 9;
+    protected int textOffset = 0;
+    protected int levelsTextOffset = 0;
+    protected int sizeY = 9;
 
     public Button begin = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play", new Runnable()
     {
@@ -75,7 +75,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
         if (crusade.started)
             Game.screen = new ScreenCrusadeEditWarning(Game.screen, crusade);
         else
-            Game.screen = new ScreenCrusadeListEditor(crusade);
+            Game.screen = new ScreenCrusadeEditor(crusade);
     });
 
     public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", () -> Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade));
@@ -275,13 +275,20 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             if (Game.previewCrusades)
             {
                 Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * (sizeY / 2. - 0.5), true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
-                showRecordButton.posY = this.centerY + this.objYSpace * (sizeY / 2. - 0.5);
+                showRecordButton.posY = this.centerY + this.objYSpace * (sizeY / 2.0 - 0.5);
             }
             else
+            {
+                showRecordButton.posX = this.centerX + this.objXSpace / 2;
+                showRecordButton.posY = this.centerY + textOffset + this.objYSpace * 4;
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.objYSpace * 4, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+            }
 
             this.showRecordButton.draw();
         }
+
+        if (!Game.previewCrusades)
+            Drawing.drawing.setColor(0, 0, 0, 255);
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 2.5, "Levels: %d", crusade.levels.size());

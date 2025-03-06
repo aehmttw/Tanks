@@ -218,8 +218,9 @@ public class Button implements IDrawable, ITrigger
 
 		if (this.subtext != null)
 		{
+			double ox = this.enableHover ? this.sizeY / 2 : 0;
 			drawing.setInterfaceFontSize(12);
-			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2, this.posY + this.sizeY * 0.325, this.subtext, true);
+			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2 - ox, this.posY + this.sizeY * 0.325, this.subtext, true);
 		}
 
 		if (this.image != null)
@@ -637,6 +638,7 @@ public class Button implements IDrawable, ITrigger
 		this.hoverTextRaw = hoverText;
 		this.hoverTextRawTranslated = Translation.translate(hoverText, objects);
 		this.hoverText = this.hoverTextRawTranslated.split("---");
+		this.enableHover = true;
 	}
 
 	public void setHoverTextUntranslated(String hoverText)

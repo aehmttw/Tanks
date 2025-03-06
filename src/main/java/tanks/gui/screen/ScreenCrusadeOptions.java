@@ -1,26 +1,15 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
-import tanks.Consumer;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.Selector;
 import tanks.gui.TextBox;
-import tanks.item.Item;
-import tanks.registry.RegistryItem;
-import tanks.tank.TankAIControlled;
-import tanks.tankson.MonitoredArrayListIndexPointer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ScreenCrusadeOptions extends Screen
 {
     public Crusade crusade;
-    public ScreenCrusadeListEditor previous;
+    public ScreenCrusadeEditor previous;
 
     public TextBox startingLives;
     public TextBox bonusLifeFrequency;
@@ -67,7 +56,7 @@ public class ScreenCrusadeOptions extends Screen
     }
     );
 
-    public ScreenCrusadeOptions(ScreenCrusadeListEditor p)
+    public ScreenCrusadeOptions(ScreenCrusadeEditor p)
     {
         super(350, 40, 380, 60);
 

@@ -15,13 +15,14 @@ public class EventAirdropTank extends EventTankCreate
     public double colorR2;
     public double colorG2;
     public double colorB2;
+    public double height;
 
     public EventAirdropTank()
     {
 
     }
 
-    public EventAirdropTank(Tank t)
+    public EventAirdropTank(Tank t, double height)
     {
         super(t);
 
@@ -31,6 +32,7 @@ public class EventAirdropTank extends EventTankCreate
         this.colorR2 = t.secondaryColorR;
         this.colorG2 = t.secondaryColorG;
         this.colorB2 = t.secondaryColorB;
+        this.height = height;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class EventAirdropTank extends EventTankCreate
             t.secondaryColorR = colorR2;
             t.secondaryColorG = colorG2;
             t.secondaryColorB = colorB2;
-            Game.movables.add(new Crate(new TankRemote(t)));
+            Game.movables.add(new Crate(new TankRemote(t), height));
         }
     }
 
@@ -66,6 +68,7 @@ public class EventAirdropTank extends EventTankCreate
         this.colorR2 = b.readDouble();
         this.colorG2 = b.readDouble();
         this.colorB2 = b.readDouble();
+        this.height = b.readDouble();
     }
 
     @Override
@@ -78,5 +81,6 @@ public class EventAirdropTank extends EventTankCreate
         b.writeDouble(this.colorR2);
         b.writeDouble(this.colorG2);
         b.writeDouble(this.colorB2);
+        b.writeDouble(this.height);
     }
 }

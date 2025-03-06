@@ -7,9 +7,9 @@ import tanks.gui.SavedFilesList;
 
 public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
 {
-    public ScreenCrusadeListEditor previous;
+    public ScreenCrusadeEditor previous;
 
-    public ScreenCrusadeAddLevel(ScreenCrusadeListEditor s)
+    public ScreenCrusadeAddLevel(ScreenCrusadeEditor s)
     {
         this.music = "menu_editor.ogg";
         this.musicID = "menu";

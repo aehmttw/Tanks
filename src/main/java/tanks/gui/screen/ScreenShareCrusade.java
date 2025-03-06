@@ -58,7 +58,10 @@ public class ScreenShareCrusade extends Screen
 		allCrusades = new SavedFilesList(Game.homedir + Game.crusadeDir, ScreenCrusades.page, 0, party ? -60 : -30,
 				(name, file) ->
 				{
-					Game.screen = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true);
+					ScreenCrusadePreview sc = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true);
+					if (!(previous instanceof ScreenSteamWorkshop))
+						sc.setOffset(sc.objHeight);
+					Game.screen = sc;
 
 				}, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 

@@ -25,7 +25,7 @@ public class SteamNetworkHandler
 	public int[] msgSize = new int[1];
 
 	public SteamID currentLobby = null;
-	public String lobbyHostStatus = null;
+	public SteamResult lobbyHostStatus = null;
 	protected int lastPlayerCount = -1;
 
 	protected HashMap<Integer, Long> toClose = new HashMap<>();
@@ -100,7 +100,7 @@ public class SteamNetworkHandler
 				}
 			}
 			else
-				lobbyHostStatus = result.name();
+				lobbyHostStatus = result;
 		}
 
 		@Override

@@ -262,7 +262,7 @@ public class ScreenPartyHost extends Screen
             }
             else if (Game.steamNetworkHandler.lobbyHostStatus != null)
             {
-                steamHostFailed.setHoverText("Hosting failed with status: %s------If you keep getting this error---try restarting the game.", Game.steamNetworkHandler.lobbyHostStatus);
+                steamHostFailed.setHoverText("Hosting failed:---%s------If you keep getting this error try restarting the game.", SteamResults.getMessage(Game.steamNetworkHandler.lobbyHostStatus));
                 steamHostFailed.update();
             }
         }

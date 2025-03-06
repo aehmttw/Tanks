@@ -47,6 +47,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     public TankPlayable(double x, double y)
     {
         super("player", x, y, Game.tile_size, 0, 150, 255);
+        this.enableTertiaryColor = true;
     }
 
     public void addDefaultAbilities()

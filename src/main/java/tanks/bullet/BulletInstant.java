@@ -175,7 +175,7 @@ public class BulletInstant extends Bullet
 		{
 			for (int j = 0; j < 2; j++)
 			{
-				int segs = (int) ((Math.random() * 0.4 + 0.8) * dist / 50);
+				int segs = (int) Math.min(1000, (Math.random() * 0.4 + 0.8) * dist / 50);
 
 				double lX = this.lastX;
 				double lY = this.lastY;

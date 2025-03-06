@@ -60,8 +60,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         }
     });
 
-
-
     public ScreenCrusadePreviewLevel(Crusade crusade, String level, int index, Screen s)
     {
         super(350, 40, 380, 60);

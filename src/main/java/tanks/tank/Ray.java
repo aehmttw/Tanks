@@ -160,6 +160,9 @@ public class Ray
 
 	public Movable getTarget()
 	{
+		this.bounceX.add(0, this.posX);
+		this.bounceY.add(0, this.posY);
+
 		double remainder = 0;
 
 		if (isInsideObstacle(this.posX - size / 2, this.posY - size / 2) ||
@@ -421,10 +424,8 @@ public class Ray
 
 	public double getDist()
 	{
-		this.bounceX.add(0, this.posX);
-		this.bounceY.add(0, this.posY);
-
-		this.getTarget();
+		if (this.bounceX.isEmpty())
+			this.getTarget();
 
 		double dist = 0;
 		for (int i = 0; i < this.bounceX.size() - 1; i++)
@@ -437,9 +438,6 @@ public class Ray
 
 	public double getTargetDist(double mul, Tank m)
 	{
-		this.bounceX.add(0, this.posX);
-		this.bounceY.add(0, this.posY);
-
 		if (this.getTarget(mul, m) != m)
 			return -1;
 

@@ -508,8 +508,9 @@ public class Arcade extends Minigame
         t.secondaryColorR = p.colorR2;
         t.secondaryColorG = p.colorG2;
         t.secondaryColorB = p.colorB2;
-        Game.movables.add(new Crate(t));
-        Game.eventsOut.add(new EventAirdropTank(t));
+        double h = this.random.nextDouble() * 400 + 800;
+        Game.movables.add(new Crate(t, h));
+        Game.eventsOut.add(new EventAirdropTank(t, h));
     }
 
     public String getRampageTitle()
@@ -700,13 +701,15 @@ public class Arcade extends Minigame
 
         Tank t = e.getTank(destX, destY, (int)(this.random.nextDouble() * 4));
         t.team = Game.enemyTeamNoFF;
-        Game.eventsOut.add(new EventAirdropTank(t));
+
+        double h = this.random.nextDouble() * 400 + 800;
+        Game.eventsOut.add(new EventAirdropTank(t, h));
         this.spawnedTanks.add(t);
 
         if (frenzy)
             this.spawnedFrenzyTanks.add(t);
 
-        Game.movables.add(new Crate(t));
+        Game.movables.add(new Crate(t, h));
     }
 
     public void drawTimer()

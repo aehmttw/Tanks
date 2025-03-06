@@ -15,7 +15,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 {
     public Crusade.CrusadeLevel level;
     public Screen previous;
-    public ScreenCrusadeListEditor previous2;
+    public ScreenCrusadeEditor previous2;
     public TextBox index;
     public int insertionIndex;
     public DisplayLevel levelDisplay;
@@ -156,7 +156,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> saveMenu = false);
 
-    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeListEditor s2)
+    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeEditor s2)
     {
         this(level, s2, s2);
         this.edit = true;
@@ -175,7 +175,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         this.allowClose = false;
     }
 
-    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, Screen s, ScreenCrusadeListEditor s2)
+    public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, Screen s, ScreenCrusadeEditor s2)
     {
         super(350, 40, 380, 60);
 

@@ -858,7 +858,7 @@ public class TankAIControlled extends Tank implements ITankField
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 		b.speed = Math.abs(speed);
 
-		if (b instanceof BulletArc)
+		if (b instanceof BulletArc || b instanceof BulletAirStrike)
 			b.setTargetLocation(this.posX + this.distance * Math.cos(this.angle + offset + this.shotOffset), this.posY + this.distance * Math.sin(this.angle + offset + this.shotOffset));
 			//b.vZ = this.distance / b.speed * 0.5 * BulletArc.gravity;
 		else
@@ -1593,7 +1593,7 @@ public class TankAIControlled extends Tank implements ITankField
 		else
 			this.updateTurretReflect();
 
-		if (!(this.bullet instanceof BulletArc))
+		if (!(this.bullet instanceof BulletArc || this.bullet instanceof BulletAirStrike))
 			this.pitch -= Movable.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
 
 		if (!this.chargeUp)
@@ -1745,6 +1745,8 @@ public class TankAIControlled extends Tank implements ITankField
 			{
 				if (this.bullet instanceof BulletArc)
 					this.setAimAngleArc();
+				else if (this.bullet instanceof BulletAirStrike)
+					this.setAimAngleAirStrike();
 				else
 					this.setAimAngleStraight();
 			}
@@ -1756,6 +1758,11 @@ public class TankAIControlled extends Tank implements ITankField
 		if (this.bullet instanceof BulletArc)
 		{
 			double pitch = Math.atan(this.distance / this.bullet.speed * 0.5 * BulletArc.gravity / this.bullet.speed);
+			this.pitch -= Movable.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+		}
+		else if (this.bullet instanceof BulletAirStrike)
+		{
+			double pitch = Math.PI / 2;
 			this.pitch -= Movable.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
 		}
 
@@ -1871,12 +1878,35 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 	}
 
+	public void setAimAngleAirStrike()
+	{
+		if (this.targetEnemy == null)
+			return;
+
+		if (this.enablePredictiveFiring && this.targetEnemy instanceof Tank && (this.targetEnemy.vX != 0 || this.targetEnemy.vY != 0))
+		{
+			double t1 = (-0.1 + Math.sqrt(0.01 + 2 * this.bullet.speed / 31.25 * 1100)) / (this.bullet.speed / 31.25);
+			double t2 = (-0.1 + Math.sqrt(0.01 + 4 * this.bullet.speed / 31.25 * 1100)) / (2 * this.bullet.speed / 31.25);
+			double x = this.targetEnemy.posX + (t1 + t2) * this.targetEnemy.vX;
+			double y = this.targetEnemy.posY + (t1 + t2) * this.targetEnemy.vY;
+			this.aimAngle = this.getAngleInDirection(x, y);
+			this.distance = Math.sqrt(Math.pow(x - this.posX, 2) + Math.pow(y - this.posY, 2));
+		}
+		else
+		{
+			this.aimAngle = this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY);
+			this.distance = Math.sqrt(Math.pow(targetEnemy.posX - this.posX, 2) + Math.pow(targetEnemy.posY - this.posY, 2));
+		}
+
+		this.disableOffset = false;
+	}
+
 
 	public void checkAndShoot()
 	{
 		Movable m = null;
 
-		boolean arc = this.bullet instanceof BulletArc;
+		boolean arc = this.bullet instanceof BulletArc || this.bullet instanceof BulletAirStrike;
 
 		if (this.targetEnemy != null && !arc)
 		{
@@ -1994,8 +2024,11 @@ public class TankAIControlled extends Tank implements ITankField
 		ray.ignoreShootThrough = true;
 
 		Movable target = ray.getTarget();
+		double dist = ray.getDist();
+		double bulletRange = this.bullet.lifespan * this.bullet.speed;
+		boolean inRange = bulletRange == 0 || dist <= bulletRange;
 
-		if (target == null && this.shootAIType == ShootAI.homing && this.targetEnemy != null)
+		if (target == null && this.shootAIType == ShootAI.homing && this.targetEnemy != null && inRange)
 		{
 			Ray ray2 = new Ray(ray.posX, ray.posY, ray.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
 			ray2.moveOut(this.size / 50);
@@ -2006,7 +2039,7 @@ public class TankAIControlled extends Tank implements ITankField
 			target = ray2.getTarget();
 		}
 
-		if (target != null && !(target instanceof TankNPC) && target.equals(this.targetEnemy) || (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this)))
+		if (inRange && (target != null && !(target instanceof TankNPC) && target.equals(this.targetEnemy) || (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this))))
 		{
 			this.targetEnemy = target;
 			this.lockedAngle = searchAngle;

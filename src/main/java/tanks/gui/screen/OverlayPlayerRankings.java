@@ -56,7 +56,7 @@ public class OverlayPlayerRankings
         if (screen.eliminatedPlayers.size() < namesCount)
             namesCount = screen.eliminatedPlayers.size();
 
-        if (screen.eliminatedPlayers.size() > namesCount && c > lastNewName + spacing)
+        while (screen.eliminatedPlayers.size() > namesCount && c > lastNewName + spacing)
         {
             lastNewName = lastNewName + spacing;
             namesCount++;

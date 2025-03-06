@@ -244,6 +244,12 @@ public class Player
             this.connectedPlayer.teamColorG = this.tank.team.teamColorG;
             this.connectedPlayer.teamColorB = this.tank.team.teamColorB;
         }
+        else
+        {
+            this.connectedPlayer.teamColorR = 255;
+            this.connectedPlayer.teamColorG = 255;
+            this.connectedPlayer.teamColorB = 255;
+        }
 
         return this.connectedPlayer;
     }

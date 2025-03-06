@@ -224,8 +224,8 @@ public class RampageTrial extends Minigame
         t.secondaryColorG = p.colorG2;
         t.secondaryColorB = p.colorB2;
         t.invulnerabilityTimer = 250;
-        Game.movables.add(new Crate(t));
-        Game.eventsOut.add(new EventAirdropTank(t));
+        Game.movables.add(new Crate(t, 1000));
+        Game.eventsOut.add(new EventAirdropTank(t, 1000));
     }
 
     public String getRampageTitle()

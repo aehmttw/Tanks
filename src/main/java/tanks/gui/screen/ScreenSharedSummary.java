@@ -59,7 +59,10 @@ public class ScreenSharedSummary extends Screen
             buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
             {
                 Crusade c = new Crusade(l.crusade, l.name);
-                Game.screen = new ScreenCrusadePreview(c, Game.screen, false);
+
+                ScreenCrusadePreview sc = new ScreenCrusadePreview(c, Game.screen, false);
+                sc.setOffset(sc.objHeight);
+                Game.screen = sc;
             }
                     , "Shared by " + l.creator));
         }

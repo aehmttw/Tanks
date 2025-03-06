@@ -24,6 +24,15 @@ public class LevelGeneratorRandom extends LevelGenerator
 
 		double size = Game.levelSize;
 
+		if (random.nextDouble() < 0.3)
+			size *= 2;
+
+		if (Game.players.size() > 10)
+			size *= 2;
+
+		if (Game.players.size() > 40)
+			size *= 2;
+
 		double randomNum = random.nextDouble();
 
 		if (random.nextDouble() < 0.3)
@@ -226,8 +235,11 @@ public class LevelGeneratorRandom extends LevelGenerator
 					{
 						boolean chosen = false;
 
-						while (!chosen)
+						int attempts = 0;
+						while (!chosen && attempts < 100)
 						{
+							attempts++;
+
 							x = (int) (random.nextDouble() * (width - l));
 							y = (int) (random.nextDouble() * (height));
 							xEnd = x + l;
@@ -359,8 +371,11 @@ public class LevelGeneratorRandom extends LevelGenerator
 					{
 						boolean chosen = false;
 
-						while (!chosen)
+						int attempts = 0;
+						while (!chosen && attempts < 100)
 						{
+							attempts++;
+
 							x = (int) (random.nextDouble() * (width));
 							y = (int) (random.nextDouble() * (height - l));
 							xEnd = x;
@@ -731,8 +746,10 @@ public class LevelGeneratorRandom extends LevelGenerator
 		int x = (int) (random.nextDouble() * (width));
 		int y = (int) (random.nextDouble() * (height));
 
-		while (cells[x][y])
+		int attempts = 0;
+		while (cells[x][y] && attempts < 100)
 		{
+			attempts++;
 			x = (int) (random.nextDouble() * (width));
 			y = (int) (random.nextDouble() * (height));
 		}
@@ -757,8 +774,10 @@ public class LevelGeneratorRandom extends LevelGenerator
 			x = (int) (random.nextDouble() * (width));
 			y = (int) (random.nextDouble() * (height));
 
-			while (cells[x][y])
+			int attempts2 = 0;
+			while (cells[x][y] && attempts2 < 100)
 			{
+				attempts2++;
 				x = (int) (random.nextDouble() * (width));
 				y = (int) (random.nextDouble() * (height));
 			}
@@ -792,8 +811,10 @@ public class LevelGeneratorRandom extends LevelGenerator
 			x = (int) (random.nextDouble() * (width));
 			y = (int) (random.nextDouble() * (height));
 
-			while (cells[x][y])
+			int attempts2 = 0;
+			while (cells[x][y] && attempts2 < 100)
 			{
+				attempts2++;
 				x = (int) (random.nextDouble() * (width));
 				y = (int) (random.nextDouble() * (height));
 			}

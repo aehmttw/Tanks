@@ -37,6 +37,8 @@ public class Team
 
 	public static boolean isAllied(Movable a, Movable b)
 	{
+//		if (a == b && Game.currentLevel != null && Game.currentLevel.disableFriendlyFire)
+//			return true;
 		if (a == null || b == null)
 			return false;
 		if (a == b)

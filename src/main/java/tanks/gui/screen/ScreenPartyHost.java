@@ -400,7 +400,9 @@ public class ScreenPartyHost extends Screen
                 for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), server.connections.size() + Game.botPlayers.size()); i++)
                 {
                     ServerHandler h = i < server.connections.size() ? server.connections.get(i) : null;
-                    Player p =  i < server.connections.size() ? h.player : Game.botPlayers.get(i - server.connections.size());
+                    Player p = i < server.connections.size() ? h.player : Game.botPlayers.get(i - server.connections.size());
+                    if (p == null)
+                        continue;
                     String username = p.username;
                     if (username != null)
                     {

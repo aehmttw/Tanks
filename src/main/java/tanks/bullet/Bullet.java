@@ -1043,7 +1043,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		for (Movable m: Game.movables)
 		{
-			if (m instanceof Tank && !Team.isAllied(this, m) && !m.destroy)
+			if (m instanceof Tank && (Team.isAllied(this, m) != this.isHarmful()) && !m.destroy)
 			{
 				Tank t = (Tank) m;
 				double d = Movable.distanceBetween(this, m);
@@ -1208,6 +1208,11 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		for (int i = 0; i < this.trails.length; i++)
 			this.trails[i] = new ArrayList<>();
+	}
+
+	public boolean isHarmful()
+	{
+		return !(this.damage <= 0 && !this.freezing && this.bulletHitKnockback == 0 && this.tankHitKnockback == 0 && this.hitStun <= 0);
 	}
 
 	@Override

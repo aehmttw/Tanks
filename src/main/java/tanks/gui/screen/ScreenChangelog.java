@@ -510,6 +510,7 @@ public class ScreenChangelog extends Screen
                             "*What's new in Tanks v1.6.c:\n\n" +
                                     "Added configurable player tank builds\n" +
                                     "Added Steam Workshop support\n" +
+                                    "Added public Steam parties\n" +
                                     "New crusade editor\n" +
                                     "Added option to add bot players to parties\n" +
                                     "Added best run display option for speedrunning\n" +

@@ -30,6 +30,7 @@ public @interface Property
         spawnedTanks,
         bulletSound,
         itemIcon,
-        name
+        name,
+        defaultBuildForbidden
     }
 }

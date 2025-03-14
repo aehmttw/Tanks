@@ -76,6 +76,7 @@ public class FontRenderer extends BaseFontRenderer
 	public void drawString(double x, double y, double z, double sX, double sY, String s)
 	{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		double opacity = this.window.colorA;
 
 		double curX = x;
 		char[] c = s.toCharArray();
@@ -95,7 +96,7 @@ public class FontRenderer extends BaseFontRenderer
 					int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
 					int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
 					int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
-					this.window.setColor(r, g, b, a);
+					this.window.setColor(r, g, b, a * opacity);
 				}
 				catch (Exception e)
 				{
@@ -115,6 +116,7 @@ public class FontRenderer extends BaseFontRenderer
 	{
 		double curX = x;
 		char[] c = s.toCharArray();
+		double opacity = this.window.colorA;
 
 		for (int i = 0; i < c.length; i++)
 		{
@@ -131,7 +133,7 @@ public class FontRenderer extends BaseFontRenderer
 					int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
 					int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
 					int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
-					this.window.setColor(r, g, b, a);
+					this.window.setColor(r, g, b, a * opacity);
 				}
 				catch (Exception e)
 				{

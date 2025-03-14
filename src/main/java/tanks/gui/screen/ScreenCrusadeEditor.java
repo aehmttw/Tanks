@@ -13,12 +13,13 @@ import tanks.tank.TankPlayer;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.MonitoredArrayListIndexPointer;
 import tanks.tankson.Pointer;
+import tanks.translation.Translation;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 
-public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
+public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
 {
     public Crusade crusade;
 
@@ -32,13 +33,21 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
 
     public TextBox crusadeName;
 
+    public boolean readOnly;
+    public Screen previous;
+
     public Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Exit", new Runnable()
     {
         @Override
         public void run()
         {
-            save();
-            Game.screen = new ScreenCrusadeDetails(new Crusade(Game.game.fileManager.getFile(crusade.fileName), crusade.name));
+            if (!readOnly)
+            {
+                save();
+                Game.screen = new ScreenCrusadeDetails(new Crusade(Game.game.fileManager.getFile(crusade.fileName), crusade.name));
+            }
+            else
+                Game.screen = previous;
         }
     }
     );
@@ -146,20 +155,32 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
     {
         public Crusade.CrusadeLevel level;
 
-        public CrusadeLevelButton(Crusade c, int li)
+        public CrusadeLevelButton(Crusade c, int li, boolean readOnly)
         {
             super(0, 0, 350, 40, "", () ->
             {
                 Game.game.window.validScrollDown = false;
                 Game.game.window.validScrollUp = false;
 
-                Crusade.CrusadeLevel level = c.levels.remove(li);
+                if (!readOnly)
+                {
+                    Crusade.CrusadeLevel level = c.levels.remove(li);
+                    ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, li + 1, (ScreenCrusadeEditor) Game.screen);
+                    Level l = new Level(level.levelString);
+                    l.customTanks = level.tanks;
+                    l.loadLevel(s);
+                    Game.screen = s;
+                }
+                else
+                {
+                    String level = c.levels.get(li).levelString;
 
-                ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, li + 1, (ScreenCrusadeListEditor) Game.screen);
-                Level l = new Level(level.levelString);
-                l.customTanks = level.tanks;
-                l.loadLevel(s);
-                Game.screen = s;
+                    ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(c, level, li, Game.screen);
+                    Level l = new Level(level);
+                    l.customTanks = c.customTanks;
+                    l.loadLevel(s);
+                    Game.screen = s;
+                }
             });
             this.level = c.levels.get(li);
             this.setText(li + 1);
@@ -180,7 +201,7 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
     {
         public Item.CrusadeShopItem item;
 
-        public CrusadeItemButton(ScreenCrusadeListEditor sc, int ii)
+        public CrusadeItemButton(ScreenCrusadeEditor sc, int ii)
         {
             super(0, 0, 350, 40, "", () ->
             {
@@ -223,7 +244,7 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
     {
         public TankPlayer.CrusadeShopTankBuild build;
 
-        public CrusadeBuildButton(ScreenCrusadeListEditor sc, int ii)
+        public CrusadeBuildButton(ScreenCrusadeEditor sc, int ii)
         {
             super(0, 0, 350, 40, "", () ->
             {
@@ -240,7 +261,9 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
 
             int p = c.crusadeShopBuilds.get(ii).price;
 
-            if (p == 0)
+            if (ii == 0)
+                this.setSubtext("Default build");
+            else if (p == 0)
                 this.setSubtext("Free!");
             else if (p == 1)
                 this.setSubtext("1 coin");
@@ -258,14 +281,28 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
         }
     }
 
-    public ScreenCrusadeListEditor(Crusade c)
+    public ScreenCrusadeEditor(Crusade c)
+    {
+        this(c, false, null);
+    }
+
+    public ScreenCrusadeEditor(Crusade c, boolean readOnly, Screen prev)
     {
         super(350, 40, 380, 60);
 
         this.music = "menu_editor.ogg";
         this.musicID = "menu";
 
-        this.allowClose = false;
+        this.allowClose = readOnly;
+        this.readOnly = readOnly;
+        this.previous = prev;
+
+        if (readOnly)
+        {
+            this.toggleBuilds.posX += add_offset - hide_offset;
+            this.toggleItems.posX += add_offset - hide_offset;
+            this.toggleLevels.posX += add_offset - hide_offset;
+        }
 
         this.crusade = c;
 
@@ -329,6 +366,15 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
                     levels++;
                     ((CrusadeLevelButton) b).setText(levels);
                 }
+            }
+
+            if (this.buttons.buttons.get(i) instanceof CrusadeBuildButton)
+            {
+                if (i == 0)
+                    this.buttons.buttons.get(i).setSubtext("Default build");
+
+                if (j == 1)
+                    this.buttons.buttons.get(j).setSubtext("Free!");
             }
         };
 
@@ -428,7 +474,9 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
         this.crusade.crusadeShopBuilds.sort(Comparator.comparingInt(o -> o.levelUnlock));
 
         int j = 0;
-        int k = 0;
+        int k = 1;
+
+        this.buttons.buttons.add(new CrusadeBuildButton(this, 0));
 
         for (int i = 0; i < this.crusade.levels.size(); i++)
         {
@@ -450,7 +498,7 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
                     break;
             }
 
-            this.buttons.buttons.add(new CrusadeLevelButton(this.crusade, i));
+            this.buttons.buttons.add(new CrusadeLevelButton(this.crusade, i, readOnly));
         }
 
         for (; j < this.crusade.crusadeShopItems.size(); j++)
@@ -473,6 +521,8 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
                 this.buttons.buttons.remove(i);
                 i--;
             }
+            else if (!(b instanceof CrusadeLevelButton) && readOnly)
+                b.enabled = false;
         }
 
         this.buttons.sortButtons();
@@ -481,22 +531,40 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
     @Override
     public void update()
     {
+        buttons.fixedFirstElements = showBuilds ? 1 : 0;
+
+        if (showBuilds && buttons.buttons.size() > 1)
+        {
+            Button b = buttons.buttons.get(1);
+            if (b instanceof CrusadeBuildButton)
+            {
+                CrusadeBuildButton cb = (CrusadeBuildButton) b;
+                if (cb.build.price == 0)
+                    buttons.fixedFirstElements = 0;
+            }
+        }
+
         buttons.update();
 
         quit.update();
-        addLevel.update();
-        addItem.update();
-        addBuild.update();
-        options.update();
 
-        if (showLevels)
-            reorder.update();
+        if (!readOnly)
+        {
+            addLevel.update();
+            addItem.update();
+            addBuild.update();
+
+            options.update();
+
+            if (showLevels)
+                reorder.update();
+
+            crusadeName.update();
+        }
 
         toggleLevels.update();
         toggleItems.update();
         toggleBuilds.update();
-
-        crusadeName.update();
     }
 
     @Override
@@ -511,8 +579,11 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, -extraHeight / 2, width, extraHeight);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, 60, width, 120);
 
-        if (showLevels)
+        if (showLevels && !readOnly)
             reorder.draw();
+
+        if (readOnly)
+            quit.setText("Back");
 
         quit.draw();
 
@@ -543,16 +614,18 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
                 m++;
             }
 
+            double o = readOnly ? 0 : -30;
+
             if (m == 0)
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "Everything is currently hidden!");
             else if (m == 1)
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 30, "There are no %s in the crusade.", missing[0]);
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + o, "There are no %s in the crusade.", missing[0]);
             else if (m == 2)
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 30, "There are no %s or %s in the crusade.", missing[0], missing[1]);
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + o, "There are no %s or %s in the crusade.", missing[0], missing[1]);
             else if (m == 3)
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 30, "There are no %s, %s, or %s in the crusade.", missing[0], missing[1], missing[2]);
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + o, "There are no %s, %s, or %s in the crusade.", missing[0], missing[1], missing[2]);
 
-            if (m > 0)
+            if (m > 0 && !readOnly)
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + 30, "Use the '+' buttons at the top to add some!");
         }
 
@@ -573,15 +646,34 @@ public class ScreenCrusadeListEditor extends Screen implements ITankBuildScreen
         Drawing.drawing.drawInterfaceImage("item.png", Drawing.drawing.interfaceSizeX / 2 + icon_offset, Drawing.drawing.interfaceSizeY / 2 + titleOffset, objHeight, objHeight);
         Drawing.drawing.drawInterfaceImage("tank_builds.png", Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + icon_offset, Drawing.drawing.interfaceSizeY / 2 + titleOffset, objHeight, objHeight);
 
-        addLevel.draw();
-        addItem.draw();
-        addBuild.draw();
+        if (!readOnly)
+        {
+            addLevel.draw();
+            addItem.draw();
+            addBuild.draw();
+            options.draw();
+            crusadeName.draw();
+        }
+        else
+        {
+            Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
+            double w1 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, this.crusade.name.replace("_", " ")) / Drawing.drawing.interfaceScale;
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            double w2 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, "Bonus life frequency: " + this.crusade.bonusLifeFrequency) / Drawing.drawing.interfaceScale;
+            double o = this.objYSpace;
+            double w = w1 + w2 + o;
+
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
+            Drawing.drawing.drawInterfaceText(crusadeName.posX - w / 2, crusadeName.posY - this.objHeight / 2, this.crusade.name.replace("_", " "), false);
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.drawInterfaceText(crusadeName.posX - w / 2 + w1 + o, crusadeName.posY - this.objHeight / 2 - 15, Translation.translate("Starting lives: %d", this.crusade.startingLives), false);
+            Drawing.drawing.drawInterfaceText(crusadeName.posX - w / 2 + w1 + o, crusadeName.posY - this.objHeight / 2 + 15, Translation.translate("Bonus life frequency: %d", this.crusade.bonusLifeFrequency), false);
+        }
+
         toggleLevels.draw();
         toggleItems.draw();
         toggleBuilds.draw();
-        options.draw();
-
-        crusadeName.draw();
     }
 
     public void save()

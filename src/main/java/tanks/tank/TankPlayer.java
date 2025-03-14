@@ -20,8 +20,10 @@ import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemRemote;
+import tanks.network.ConnectedPlayer;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
+import tanks.network.event.EventUpdateEliminatedPlayers;
 import tanks.tankson.Property;
 import tanks.tankson.Serializer;
 import tanks.tankson.TanksONable;
@@ -95,20 +97,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		this.addDefaultAbilities();
 
-		this.colorR = Game.player.colorR;
-		this.colorG = Game.player.colorG;
-		this.colorB = Game.player.colorB;
-		this.secondaryColorR = Game.player.colorR2;
-		this.secondaryColorG = Game.player.colorG2;
-		this.secondaryColorB = Game.player.colorB2;
-		this.enableTertiaryColor = Game.player.enableTertiaryColor;
-		this.tertiaryColorR = Game.player.colorR3;
-		this.tertiaryColorG = Game.player.colorG3;
-		this.tertiaryColorB = Game.player.colorB3;
-		this.emblemR = this.secondaryColorR;
-		this.emblemG = this.secondaryColorG;
-		this.emblemB = this.secondaryColorB;
-		this.saveColors();
+		this.setPlayerColor();
 
 		if (enableDestroyCheat)
 		{
@@ -128,17 +117,28 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		return (TankPlayer) Serializer.fromTanksON(s);
 	}
 
+	public TankPlayer setPlayerColor()
+	{
+		this.colorR = Game.player.colorR;
+		this.colorG = Game.player.colorG;
+		this.colorB = Game.player.colorB;
+		this.secondaryColorR = Game.player.colorR2;
+		this.secondaryColorG = Game.player.colorG2;
+		this.secondaryColorB = Game.player.colorB2;
+		this.enableTertiaryColor = Game.player.enableTertiaryColor;
+		this.tertiaryColorR = Game.player.colorR3;
+		this.tertiaryColorG = Game.player.colorG3;
+		this.tertiaryColorB = Game.player.colorB3;
+		this.emblemR = this.secondaryColorR;
+		this.emblemG = this.secondaryColorG;
+		this.emblemB = this.secondaryColorB;
+		this.saveColors();
+		return this;
+	}
+
 	public TankPlayer setDefaultColor()
 	{
-		this.colorR = 0;
-		this.colorG = 150;
-		this.colorB = 255;
-		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
-		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
-		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
-        this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
-        this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
-        this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
+		this.setDefaultPlayerColor();
 		return this;
 	}
 
@@ -274,8 +274,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
-		for (Item.ItemStack s: this.abilities)
+		for (Item.ItemStack<?> s: this.abilities)
 		{
+			s.player = this.player;
 			s.updateCooldown(reload);
 		}
 
@@ -610,6 +611,13 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					((Scoreboard) m).addPlayerScore(this.player, 1);
 			}
 		}
+
+		if (Game.screen instanceof ScreenGame && !ScreenPartyLobby.isClient)
+		{
+			((ScreenGame) Game.screen).eliminatedPlayers.add(new ConnectedPlayer(this.player));
+			Game.eventsOut.add(new EventUpdateEliminatedPlayers(((ScreenGame) Game.screen).eliminatedPlayers));
+			((ScreenGame) Game.screen).onPlayerDeath(this.player);
+		}
 	}
 
 	@Override
@@ -694,7 +702,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@TanksONable("shop_build")
 	public static class ShopTankBuild extends TankPlayer
 	{
-		@TankBuildProperty @Property(id = "price", name = "Price", category = general)
+		@TankBuildProperty @Property(id = "price", name = "Price", category = general, miscType = Property.MiscType.defaultBuildForbidden)
 		public int price;
 
 		public ShopTankBuild()
@@ -709,14 +717,18 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		public static ShopTankBuild fromString(String s)
 		{
-			return (ShopTankBuild) Serializer.fromTanksON(s);
+			Object o = Serializer.fromTanksON(s);
+			if (o instanceof ShopTankBuild)
+				return (ShopTankBuild) o;
+			else
+				return new ShopTankBuild((TankPlayable) o);
 		}
 	}
 
 	@TanksONable("crusade_shop_build")
 	public static class CrusadeShopTankBuild extends ShopTankBuild
 	{
-		@TankBuildProperty @Property(id = "unlock_level", name = "Unlocks after level", category = general)
+		@TankBuildProperty @Property(id = "unlock_level", name = "Unlocks after level", category = general, miscType = Property.MiscType.defaultBuildForbidden)
 		public int levelUnlock;
 
 		public CrusadeShopTankBuild()

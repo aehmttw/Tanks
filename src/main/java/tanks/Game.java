@@ -72,6 +72,9 @@ public class Game
 	public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
 
+	public static ArrayList<Player> botPlayers = new ArrayList<>();
+	public static int botPlayerCount = 0;
+
 	/**
 	 * Obstacles that need to change how they look next frame
 	 */
@@ -196,8 +199,10 @@ public class Game
 	public static boolean enableVibrations = true;
 
 	public static boolean enableChatFilter = true;
-	public static boolean showSpeedrunTimer = false;
 	public static boolean nameInMultiplayer = true;
+
+	public static boolean showSpeedrunTimer = false;
+	public static boolean showBestTime = false;
 
 	public static boolean previewCrusades = true;
 
@@ -265,7 +270,7 @@ public class Game
 	public static boolean autoLoadExtensions = true;
 	public static ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
-	public static Extension[] extraExtensions;
+	public static Extension[] extraExtensions = null;
 	public static int[] extraExtensionOrder;
 
 	public BaseWindow window;
@@ -343,6 +348,7 @@ public class Game
 		NetworkEventMap.register(EventPlayerChat.class);
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
+		NetworkEventMap.register(EventSetLevelVersus.class);
 		NetworkEventMap.register(EventLevelEndQuick.class);
 		NetworkEventMap.register(EventLevelEnd.class);
 		NetworkEventMap.register(EventReturnToLobby.class);
@@ -354,6 +360,7 @@ public class Game
 		NetworkEventMap.register(EventAddShopItem.class);
 		NetworkEventMap.register(EventSortShopButtons.class);
 		NetworkEventMap.register(EventPurchaseItem.class);
+		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
@@ -365,6 +372,7 @@ public class Game
 		NetworkEventMap.register(EventPlayerSetBuild.class);
 		NetworkEventMap.register(EventPlayerRevealBuild.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
+		NetworkEventMap.register(EventUpdateEliminatedPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
 		NetworkEventMap.register(EventTankUpdate.class);
@@ -590,7 +598,7 @@ public class Game
 
 		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
-//		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
+		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 
 		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
@@ -737,6 +745,11 @@ public class Game
 			}
 		}
 
+		if (!enableExtensions && extraExtensions != null)
+		{
+			System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to launchWithExtensions() will be used.");
+		}
+
 		for (Extension e: extensionRegistry.extensions)
 			e.setUp();
 
@@ -834,6 +847,7 @@ public class Game
 			Arrays.fill(Game.game.heightGrid[i], -1000);
 			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
 			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
+			Arrays.fill(Game.tileDrawables[i], null);
 		}
 
 		for (int i = 0; i < Game.obstacles.size(); i++)
@@ -1331,6 +1345,8 @@ public class Game
 		Game.player.hotbar.enabledCoins = false;
 		Game.player.hotbar.itemBar = new ItemBar(Game.player);
 		Game.player.hotbar.itemBar.showItems = false;
+		Game.player.ownedBuilds = new HashSet<>();
+		Game.player.buildName = "player";
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);

@@ -2,10 +2,7 @@ package tanks.network;
 
 import basewindow.BaseFile;
 import com.codedisaster.steamworks.*;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.*;
 
 import java.util.*;
@@ -19,6 +16,7 @@ public class SteamWorkshopHandler
     public String uploadingType = null;
     public String uploadingContents = null;
     public String uploadingName = null;
+    public String uploadingDescription = null;
     public String uploadMainDir = Game.directoryPath + "/upload";
     public String screenshotDir = Game.directoryPath + "/screenshot.png";
     public String uploadDir = uploadMainDir;
@@ -54,10 +52,8 @@ public class SteamWorkshopHandler
         @Override
         public void onCreateItem(SteamPublishedFileID publishedFileID, boolean needsToAcceptWLA, SteamResult result)
         {
-            if (needsToAcceptWLA)
-                Game.screen = new ScreenInfo(Game.screen, "Failed", new String[]{"You need to accept the Steam Subscriber Agreement!"});
-            else if (result != SteamResult.OK)
-                Game.screen = new ScreenInfo(Game.screen, "Failed", new String[]{"Failed: " + result.name()});
+            if (result != SteamResult.OK)
+                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Upload failed!", SteamResults.getMessage(result), false);
             else
             {
                 SteamUGCUpdateHandle v = workshop.startItemUpdate(handler.clientUtils.getAppID(), publishedFileID);
@@ -70,7 +66,7 @@ public class SteamWorkshopHandler
                     f.println(uploadingContents);
                     f.stopWriting();
                     workshop.setItemTitle(v, uploadingName.replace("_", " "));
-                    workshop.setItemDescription(v, "A level created via Tanks!");
+                    workshop.setItemDescription(v, uploadingDescription);
                     workshop.setItemTags(v, new String[]{uploadingType, Game.version});
                     workshop.setItemPreview(v, Game.homedir + screenshotDir);
                     workshop.setItemVisibility(v, SteamRemoteStorage.PublishedFileVisibility.Public);
@@ -82,7 +78,6 @@ public class SteamWorkshopHandler
                     e.printStackTrace();
                     Game.exitToCrash(e);
                 }
-
             }
         }
 
@@ -91,7 +86,11 @@ public class SteamWorkshopHandler
         {
             if (result == SteamResult.OK)
             {
-                Game.screen = new ScreenInfo(new ScreenSteamWorkshop(), "Uploaded!", new String[]{uploadingType + " was uploaded to Steam Workshop!", uploadingName});
+                if (!needsToAcceptWLA)
+                    Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n Please note that it may take a few minutes for it to show up in listings.", true);
+                else
+                    Game.screen = new ScreenWorkshopMustAcceptAgreement(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n However, you haven't yet accepted the Steam Workshop Legal agreement. \n Your " + uploadingType.toLowerCase() + " will be private until you do so.", true);
+
                 Game.game.fileManager.getFile(Game.homedir + uploadDir + "/" + uploadingName).delete();
                 Game.game.fileManager.getFile(Game.homedir + screenshotDir).delete();
                 Game.game.fileManager.getFile(Game.homedir + uploadMainDir).delete();
@@ -105,7 +104,7 @@ public class SteamWorkshopHandler
         public void onUGCQueryCompleted(SteamUGCQuery query, int numResultsReturned, int totalMatchingResults, boolean isCachedData, SteamResult result)
         {
             if (result != SteamResult.OK)
-                Game.screen = new ScreenInfo(new ScreenSteamWorkshop(), "Failed", new String[]{"Failed: " + result.name()});
+                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Query failed!", SteamResults.getMessage(result), false);
             else if (currentQuery.equals(query))
             {
                 currentQuery = null;
@@ -148,7 +147,7 @@ public class SteamWorkshopHandler
                     }
                 }
                 else
-                    Game.screen = new ScreenInfo(new ScreenSteamWorkshop(), "Failed!", new String[]{result.name()});
+                    Game.screen = new ScreenWorkshopLevelDownloadFailed(result, downloadFile, new ScreenSteamWorkshop());
             }
         }
 
@@ -156,9 +155,9 @@ public class SteamWorkshopHandler
         public void onDeleteItem(SteamPublishedFileID publishedFileID, SteamResult result)
         {
             if (result.equals(SteamResult.OK))
-                Game.screen = new ScreenInfo(new ScreenSteamWorkshop(), "Success!", new String[]{"The level was removed from the server"});
+                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Success!", uploadingType + " was removed from Steam Workshop! \n Please note that it may take a few minutes for it to disappear from listings.", true);
             else
-                Game.screen = new ScreenInfo(new ScreenSteamWorkshop(), "Failed!", new String[]{result.name()});
+                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Failed to remove " + uploadingType.toLowerCase() + "!", SteamResults.getMessage(result), false);
         }
 
         @Override
@@ -178,11 +177,14 @@ public class SteamWorkshopHandler
         public void onSetUserItemVote(SteamPublishedFileID publishedFileID, boolean voteUp, SteamResult result)
         {
             if (!result.equals(SteamResult.OK))
-                Game.screen = new ScreenInfo(Game.screen, "Vote failed!", new String[]{result.name()});
+            {
+                Drawing.drawing.playSound("leave.ogg");
+                ScreenOverlayChat.addChat("\u00A7255000000255Failed to submit vote. " + SteamResults.getMessage(result));
+            }
         }
     };
 
-    public void upload(String type, String name, String contents)
+    public void upload(String type, String name, String contents, String description)
     {
         if (uploadingName != null)
             return;
@@ -193,6 +195,7 @@ public class SteamWorkshopHandler
         uploadingName = name;
         uploadingType = type;
         uploadingContents = contents;
+        uploadingDescription = description;
         workshop.createItem(handler.clientUtils.getAppID(), SteamRemoteStorage.WorkshopFileType.Community);
     }
 
@@ -260,8 +263,9 @@ public class SteamWorkshopHandler
         workshop.downloadItem(d.getPublishedFileID(), true);
     }
 
-    public void delete(SteamUGCDetails d)
+    public void delete(SteamUGCDetails d, String type)
     {
+        this.uploadingType = type;
         workshop.deleteItem(d.getPublishedFileID());
     }
 
@@ -288,6 +292,12 @@ public class SteamWorkshopHandler
             if (downloadFile.getTags().toLowerCase().contains("level"))
             {
                 ScreenSaveLevel sc = new ScreenSaveLevel(downloadingName, s.toString(), s1);
+                if (downloadFile.getDescription() != null)
+                {
+                    ArrayList<String> desc = Drawing.drawing.wrapText(downloadFile.getDescription(), 400, 12);
+                    sc.description = new String[desc.size()];
+                    desc.toArray(sc.description);
+                }
                 sc.workshopDetails = downloadFile;
                 sc.votesUp = downloadFile.getVotesUp();
                 sc.votesDown = downloadFile.getVotesDown();
@@ -308,6 +318,12 @@ public class SteamWorkshopHandler
             else if (downloadFile.getTags().toLowerCase().contains("crusade"))
             {
                 ScreenCrusadePreview sc = new ScreenCrusadePreview(new Crusade(s.toString(), downloadFile.getTitle()), s1, false);
+                if (downloadFile.getDescription() != null)
+                {
+                    ArrayList<String> desc = Drawing.drawing.wrapText(downloadFile.getDescription(), 400, 12);
+                    sc.descriptionText = new String[desc.size()];
+                    desc.toArray(sc.descriptionText);
+                }
                 sc.workshopDetails = downloadFile;
                 sc.votesUp = downloadFile.getVotesUp();
                 sc.votesDown = downloadFile.getVotesDown();

@@ -112,21 +112,25 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.nextCopiedPage.imageSizeX = 35;
         this.nextCopiedPage.imageSizeY = 35;
         this.nextCopiedPage.imageXOffset = 0;
+        this.nextCopiedPage.enabled = false;
 
         this.prevCopiedPage.image = "icons/back.png";
         this.prevCopiedPage.imageSizeX = 35;
         this.prevCopiedPage.imageSizeY = 35;
         this.prevCopiedPage.imageXOffset = 0;
+        this.prevCopiedPage.enabled = false;
 
         this.nextNotCopiedPage.image = "icons/forward.png";
         this.nextNotCopiedPage.imageSizeX = 35;
         this.nextNotCopiedPage.imageSizeY = 35;
         this.nextNotCopiedPage.imageXOffset = 0;
+        this.nextNotCopiedPage.enabled = false;
 
         this.prevNotCopiedPage.image = "icons/back.png";
         this.prevNotCopiedPage.imageSizeX = 35;
         this.prevNotCopiedPage.imageSizeY = 35;
         this.prevNotCopiedPage.imageXOffset = 0;
+        this.prevNotCopiedPage.enabled = false;
     }
 
     @Override

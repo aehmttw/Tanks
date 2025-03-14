@@ -7,11 +7,9 @@ import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
+import tanks.network.ServerHandler;
 import tanks.network.event.*;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 import java.util.*;
 
@@ -30,6 +28,8 @@ public class Crusade
 
 	public int currentLevel = 0;
 	public int saveLevel = 0;
+
+	public ArrayList<Double> bestTimes = null;
 
 	public double timePassed = 0;
 
@@ -79,6 +79,9 @@ public class Crusade
 
 	public String description = null;
 
+	/**
+	 * Used for internal built-in crusades
+	 */
 	public Crusade(ArrayList<String> levelArray, String name, String file)
 	{
 		internal = true;
@@ -90,6 +93,27 @@ public class Crusade
 			c.append(s).append("\n");
 
 		contents = c.substring(0, c.length() - 1);
+
+		BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/records/internal" + fileName.replace(".tanks", ".record"));
+		if (f.exists())
+		{
+			try
+			{
+				f.startReading();
+				this.bestTimes = new ArrayList<>();
+
+				while (f.hasNextLine())
+				{
+					this.bestTimes.add(Double.parseDouble(f.nextLine()));
+				}
+
+				f.stopReading();
+			}
+			catch (Exception e)
+			{
+				Game.exitToCrash(e);
+			}
+		}
 	}
 
 	public Crusade(String s, String name)
@@ -235,6 +259,7 @@ public class Crusade
 		{
 			Game.players.get(i).hotbar.itemBar = new ItemBar(Game.players.get(i));
 			Game.players.get(i).hotbar.coins = 0;
+			Game.players.get(i).ownedBuilds = new HashSet<>();
 			Game.players.get(i).remainingLives = startingLives;
 		}
 
@@ -271,10 +296,11 @@ public class Crusade
 			{
 				livesTotal += player.remainingLives;
 				playersTotal++;
+			}
 
-				CrusadePlayer cp = crusadePlayers.get(player);
-				if (cp.currentBuild == null)
-					cp.currentBuild = this.crusadeShopBuilds.get(0).name;
+			if (player.buildName == null)
+			{
+				player.buildName = this.crusadeShopBuilds.get(0).name;
 			}
 		}
 
@@ -319,11 +345,18 @@ public class Crusade
 
 		l.loadLevel();
 
+		ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
+
 		for (Player player : Game.players)
 		{
-			player.hotbar.coins = crusadePlayers.get(player).coins;
+			CrusadePlayer cp = crusadePlayers.get(player);
+			player.hotbar.coins = cp.coins;
+			player.ownedBuilds = cp.ownedBuilds;
+			player.buildName = cp.currentBuild;
 
-			ItemBar i = crusadePlayers.get(player).itemBar;
+			player.ownedBuilds.add(player.buildName);
+
+			ItemBar i = cp.itemBar;
 
 			if (i == null)
 				player.hotbar.itemBar = new ItemBar(player);
@@ -353,6 +386,43 @@ public class Crusade
 					else if (item instanceof ItemMine.ItemStackMine)
 						((ItemMine.ItemStackMine) item).liveMines = 0;
 				}
+			}
+		}
+
+		if (ScreenPartyHost.isServer)
+		{
+			for (ServerHandler h : ScreenPartyHost.server.connections)
+			{
+				if (h.player != null)
+				{
+					for (String s : h.player.ownedBuilds)
+					{
+						h.queueEvent(new EventPurchaseBuild(s));
+					}
+
+					for (int n = 0; n < builds.size(); n++)
+					{
+						TankPlayer.ShopTankBuild s = builds.get(n);
+						if (s.name.equals(h.player.buildName))
+							h.queueEvent(new EventPlayerSetBuild(n));
+					}
+				}
+			}
+		}
+
+		for (Movable m: Game.movables)
+		{
+			if (m instanceof TankPlayerRemote)
+				((TankPlayerRemote) m).buildName = ((TankPlayerRemote) m).player.buildName;
+		}
+
+		if (Game.playerTank != null)
+		{
+			for (int n = 0; n < builds.size(); n++)
+			{
+				TankPlayer.ShopTankBuild s = builds.get(n);
+				if (s.name.equals(Game.player.buildName))
+					s.clonePropertiesTo(Game.playerTank);
 			}
 		}
 
@@ -442,12 +512,10 @@ public class Crusade
 				boolean found = false;
 				for (Movable m: Game.movables)
 				{
-					if (m instanceof TankPlayer && ((TankPlayer) m).player == p && m.destroy)
-						return false;
-					else if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == p && m.destroy)
+					if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p && m.destroy)
 						return false;
 
-					if ((m instanceof TankPlayer && ((TankPlayer) m).player == p) || (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player == p))
+					if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p)
 						found = true;
 				}
 
@@ -501,6 +569,8 @@ public class Crusade
 
 			cp.itemBar = p.hotbar.itemBar;
 			cp.coins = p.hotbar.coins;
+			cp.ownedBuilds = p.ownedBuilds;
+			cp.currentBuild = p.buildName;
 		}
 	}
 
@@ -567,10 +637,8 @@ public class Crusade
 		{
 			for (int i = 0; i < Game.movables.size(); i++)
 			{
-				if (Game.movables.get(i) instanceof TankPlayer && !Game.movables.get(i).destroy)
-					((TankPlayer) Game.movables.get(i)).player.remainingLives--;
-				else if (Game.movables.get(i) instanceof TankPlayerRemote && !Game.movables.get(i).destroy)
-					((TankPlayerRemote) Game.movables.get(i)).player.remainingLives--;
+				if (Game.movables.get(i) instanceof IServerPlayerTank && !Game.movables.get(i).destroy)
+					((IServerPlayerTank) Game.movables.get(i)).getPlayer().remainingLives--;
 			}
 		}
 

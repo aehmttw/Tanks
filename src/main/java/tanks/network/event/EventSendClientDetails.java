@@ -168,6 +168,12 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 			}
 		}
 
+		for (Player p1: Game.botPlayers)
+		{
+			s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(p1.clientID, p1.username, true), true));
+			s.sendEvent(new EventUpdateTankColors(p1));
+		}
+
 		Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(s.clientID, s.rawUsername), true));
 		Game.eventsOut.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
 	}

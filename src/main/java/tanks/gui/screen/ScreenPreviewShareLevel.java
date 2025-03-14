@@ -51,7 +51,7 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             }
             else
             {
-                Game.steamNetworkHandler.workshop.upload("Level", name, level.levelString);
+                Game.steamNetworkHandler.workshop.upload("Level", name, level.levelString, description.inputText);
                 hideUI = true;
                 infoBar = Drawing.drawing.enableStats;
                 mouseTarget = Panel.showMouseTarget;
@@ -64,6 +64,8 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
     });
 
     public TextBox levelName;
+
+    public TextBox description;
 
     public ScreenPreviewShareLevel(String name, Screen s)
     {
@@ -93,6 +95,16 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
         }
                 , name.replace("_", " "));
         levelName.enableCaps = true;
+
+        description = new TextBox(320, this.back.posY, 590, this.objHeight, "Description", () -> {
+
+        }, "");
+        description.enableCaps = true;
+        description.allowSpaces = true;
+        description.enableSpaces = true;
+        description.enablePunctuation = true;
+        description.maxChars = 100;
+        description.hintText = "Click to add a description...";
     }
 
     @Override
@@ -102,7 +114,10 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
         this.upload.update();
 
         if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+        {
             levelName.update();
+            description.update();
+        }
 
         if (Game.enable3d)
             Game.recomputeHeightGrid();
@@ -135,13 +150,14 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             this.upload.draw();
 
             if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+            {
                 levelName.draw();
+                description.draw();
+            }
         }
 
         if (hideUI && !Game.game.window.drawingShadow)
-        {
             showUI = true;
-        }
     }
 
     @Override

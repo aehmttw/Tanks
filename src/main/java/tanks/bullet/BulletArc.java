@@ -25,6 +25,9 @@ public class BulletArc extends Bullet
     @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
     public double accuracySpreadCircle = 0;
 
+    @Property(id = "bounciness", minValue = 0.0, name = "Bounciness", category = BulletPropertyCategory.travel, desc = "How high the bullet should bounce as a fraction of its initial height")
+    public double bounciness = 0.75;
+
     protected double warningIndicatorTime = 100;
 
     public BulletArc()
@@ -77,7 +80,7 @@ public class BulletArc extends Bullet
             {
                 this.bounces--;
                 this.posZ += 2 * ((Game.tile_size / 2) - this.posZ);
-                this.vZ = Math.abs(this.vZ) * 0.75;
+                this.vZ = Math.abs(this.vZ) * this.bounciness;
 
                 if (!this.tank.isRemote)
                     this.checkCollision();

@@ -235,6 +235,7 @@ public class ScreenOptions extends Screen
 			f.println("auto_start=" + Game.autostart);
 			f.println("full_stats=" + Game.fullStats);
 			f.println("timer=" + Game.showSpeedrunTimer);
+			f.println("best_run=" + Game.showBestTime);
 			f.println("deterministic=" + Game.deterministicMode);
 			f.println("deterministic_30fps=" + Game.deterministic30Fps);
 			f.println("warn_before_closing=" + Game.warnBeforeClosing);
@@ -251,6 +252,7 @@ public class ScreenOptions extends Screen
 			f.println("anticheat_weak=" + TankPlayerRemote.weakTimeCheck);
 			f.println("disable_party_friendly_fire=" + Game.disablePartyFriendlyFire);
 			f.println("party_countdown=" + Game.partyStartTime);
+			f.println("party_bots=" + Game.botPlayerCount);
 			f.println("tank_secondary_color=" + Game.player.enableSecondaryColor);
 			f.println("tank_tertiary_color=" + Game.player.enableTertiaryColor);
 			f.println("tank_red=" + Game.player.colorR);
@@ -476,6 +478,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "party_countdown":
 						Game.partyStartTime = Double.parseDouble(optionLine[1]);
+						break;
+					case "party_bots":
+						Game.botPlayerCount = Integer.parseInt(optionLine[1]);
 						break;
 					case "tank_secondary_color":
 						Game.player.enableSecondaryColor = Boolean.parseBoolean(optionLine[1]);

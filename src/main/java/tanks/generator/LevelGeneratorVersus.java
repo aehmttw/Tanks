@@ -27,6 +27,12 @@ public class LevelGeneratorVersus extends LevelGenerator
 		if (random.nextDouble() < 0.3)
 			size *= 2;
 
+		if (Game.players.size() > 10)
+			size *= 2;
+
+		if (Game.players.size() > 40)
+			size *= 2;
+
 		int height = (int)(18 * size);
 		int width = (int)(28 * size);
 		double amountWalls = 12 * size * size;
@@ -84,7 +90,42 @@ public class LevelGeneratorVersus extends LevelGenerator
 		boolean explosives = random.nextDouble() < 0.2;
 		int numExplosives = (int) (walls / 5 + random.nextDouble() * 4 + 1);
 
-		int time = (int) (random.nextDouble() * 24 + 12) * 5;
+		boolean beatBlocks = random.nextDouble() < 0.2;
+		double beatBlocksWeight = random.nextDouble() * 0.5 + 0.2;
+		ArrayList<Integer> beatBlocksKinds = new ArrayList<>();
+		double br = random.nextDouble();
+		if (br < 0.5)
+			beatBlocksKinds.add(0);
+		else if (br < 0.7)
+			beatBlocksKinds.add(1);
+		else if (br < 0.8)
+			beatBlocksKinds.add(2);
+		else if (br < 0.85)
+		{
+			beatBlocksKinds.add(0);
+			beatBlocksKinds.add(1);
+		}
+		else if (br < 0.9)
+		{
+			beatBlocksKinds.add(0);
+			beatBlocksKinds.add(2);
+		}
+		else if (br < 0.95)
+		{
+			beatBlocksKinds.add(1);
+			beatBlocksKinds.add(2);
+		}
+		else
+		{
+			beatBlocksKinds.add(0);
+			beatBlocksKinds.add(1);
+			beatBlocksKinds.add(2);
+		}
+
+		if (random.nextDouble() < 0.05)
+			beatBlocksKinds.add(3);
+
+		int time = (int) (random.nextDouble() * 24 + 12 * size) * 5;
 
 		if (random.nextDouble() > 0.2)
 			time = 0;
@@ -220,6 +261,11 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 			if (bouncy && random.nextDouble() < bouncyWeight)
 				type = "-bouncy";
+			else if (beatBlocks && random.nextDouble() < beatBlocksWeight)
+			{
+				type = "-beat-" + (int) ((beatBlocksKinds.get((int) (random.nextDouble() * beatBlocksKinds.size())) + random.nextDouble()) * 2);
+				passable = true;
+			}
 			else if (nobounce && random.nextDouble() < noBounceWeight)
 			{
 				type = "-nobounce";
@@ -253,8 +299,11 @@ public class LevelGeneratorVersus extends LevelGenerator
 					{
 						boolean chosen = false;
 
-						while (!chosen)
+						int attempts = 0;
+						while (!chosen && attempts < 100)
 						{
+							attempts++;
+
 							x = (int) (random.nextDouble() * (width - l));
 							y = (int) (random.nextDouble() * (height));
 							xEnd = x + l;
@@ -386,8 +435,11 @@ public class LevelGeneratorVersus extends LevelGenerator
 					{
 						boolean chosen = false;
 
-						while (!chosen)
+						int attempts = 0;
+						while (!chosen && attempts < 100)
 						{
+							attempts++;
+
 							x = (int) (random.nextDouble() * (width));
 							y = (int) (random.nextDouble() * (height - l));
 							xEnd = x;
@@ -751,15 +803,17 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 		s.append("|");
 
-		int numTanks = ScreenPartyHost.server.connections.size() + 1;
-		playerX = new int[ScreenPartyHost.server.connections.size()];
-		playerY = new int[ScreenPartyHost.server.connections.size()];
+		int numTanks = Game.players.size();
+		playerX = new int[numTanks - 1];
+		playerY = new int[numTanks - 1];
 
 		int x = (int) (random.nextDouble() * (width));
 		int y = (int) (random.nextDouble() * (height));
 
-		while (cells[x][y])
+		int attempts = 0;
+		while (cells[x][y] && attempts < 100)
 		{
+			attempts++;
 			x = (int) (random.nextDouble() * (width));
 			y = (int) (random.nextDouble() * (height));
 		}
@@ -770,8 +824,10 @@ public class LevelGeneratorVersus extends LevelGenerator
 			x = (int) (random.nextDouble() * (width));
 			y = (int) (random.nextDouble() * (height));
 
-			while (cells[x][y])
+			int attempts1 = 0;
+			while (cells[x][y] && attempts1 < 100)
 			{
+				attempts1++;
 				x = (int) (random.nextDouble() * (width));
 				y = (int) (random.nextDouble() * (height));
 			}

@@ -18,6 +18,8 @@ import tanks.obstacle.ObstacleUnknown;
 import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
+import tanks.tankson.Serializer;
+import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.util.*;
@@ -1885,7 +1887,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				level.append("\n").append(t.toString());
 		}
 
-		if (!this.level.playerBuilds.isEmpty())
+		if (!this.level.playerBuilds.isEmpty() && !(this.level.playerBuilds.size() == 1 && Serializer.equivalent(this.level.playerBuilds.get(0), new TankPlayer.ShopTankBuild())))
 		{
 			level.append("\nbuilds");
 

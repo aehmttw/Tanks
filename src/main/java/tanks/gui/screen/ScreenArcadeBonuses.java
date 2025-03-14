@@ -119,6 +119,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (digits.length() == 4 && a.score % 1111 == 0)
             bonuses.add(new Bonus("Quadruple digits!!", 250, 255, 40, 160));
 
+        if (a.score > 9000)
+            bonuses.add(new Bonus("It's over 9000!!!!", 250, 255, 0, 0));
+
         if (a.score > 0)
         {
             if (a.score % 1000 == 0)

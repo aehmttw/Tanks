@@ -30,6 +30,7 @@ public abstract class Minigame extends Level
     public boolean customIntroMusic = false;
     public boolean showItems = false;
     public boolean flashBackground = false;
+    public boolean removeMusicWhenDead = false;
 
     public String name;
 

@@ -256,9 +256,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         }
 
         if (this.modifyingSize >= 0 && this.modifyingWritten >= this.modifyingSize)
-        {
             this.migrate(o);
-        }
 
         if (this.bufferStartPoints.get(o) == null)
         {
@@ -499,12 +497,6 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
             }
         }
 
-        this.vertBuffer.rewind();
-        this.colBuffer.rewind();
-        for (ShaderGroup.Attribute a: attributeBuffers.keySet())
-        {
-            this.attributeBuffers.get(a).rewind();
-        }
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertVBO);
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * 3, new float[3 * size]);
@@ -512,8 +504,19 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * 4, new float[4 * size]);
         for (ShaderGroup.Attribute a: attributeBuffers.keySet())
         {
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.attributeVBOs.get(a));
-            GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * a.count, new float[a.count * size]);
+            Integer v = this.attributeVBOs.get(a);
+            if (v != null)
+            {
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, v);
+                GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) Float.BYTES * pos * a.count, new float[a.count * size]);
+            }
+        }
+
+        this.vertBuffer.rewind();
+        this.colBuffer.rewind();
+        for (ShaderGroup.Attribute a: attributeBuffers.keySet())
+        {
+            this.attributeBuffers.get(a).rewind();
         }
     }
 

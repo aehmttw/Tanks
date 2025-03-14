@@ -75,11 +75,14 @@ public class SoundPlayer extends BaseSoundPlayer
             // Start with some reasonable size
             ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
 
+            int totalRead = 0;
             while (true)
             {
                 int bytesRead = channel.read(buffer);
                 if (bytesRead == -1)
                     break;  // EOF
+
+                totalRead += bytesRead;
 
                 // Expand buffer if there’s no more room
                 if (!buffer.hasRemaining())
@@ -430,8 +433,16 @@ public class SoundPlayer extends BaseSoundPlayer
 
         //Send the data to OpenAL
         if (rawAudioBuffer != null)
+        {
+//            for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+//            {
+//                short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+//                rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+//                rawAudioBuffer.put(i, s);
+//            }
+            processAudio(rawAudioBuffer);
             alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
-
+        }
         //Free the memory allocated by STB
         free(rawAudioBuffer);
 
@@ -442,6 +453,56 @@ public class SoundPlayer extends BaseSoundPlayer
     {
         return this.setupMusic(path, null);
     }
+
+    double[] kernel;
+    public void processAudio(ShortBuffer rawAudioBuffer)
+    {
+//        if (kernel == null)
+//        {
+//            kernel = new double[1000];
+//            for (int j = 0; j < 1000; j++)
+//            {
+//                kernel[j] = Math.sin(j / 10.0) * (1000.0 - j) / 1000;
+//            }
+//        }
+//
+//        short[] n = new short[rawAudioBuffer.limit()];
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            double s = rawAudioBuffer.get(i);
+//            for (int j = 0; j < 1000; j++)
+//            {
+//                if (i - j >= 0)
+//                {
+//                    s += rawAudioBuffer.get(i - j) * kernel[j];
+//                }
+//            }
+//            n[i] = (short) Math.min(32767, Math.max(-32768, s / 50));
+//        }
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            rawAudioBuffer.put(i, n[i]);
+//        }
+
+//        int k = 1;
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            if (i % 96000 == 0)
+//                k = (int) (Math.random() * 64 + 1);
+//            rawAudioBuffer.put(i, rawAudioBuffer.get(i / k * k));
+//        }
+
+//        for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+//        {
+//            if ((i / 48000) % 2 == 0)
+//            {
+//                short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+//                rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+//                rawAudioBuffer.put(i, s);
+//            }
+//        }
+    }
+
 
     protected int setupMusic(String path, InputStream in)
     {
@@ -484,6 +545,15 @@ public class SoundPlayer extends BaseSoundPlayer
 
         //Send the data to OpenAL
         assert rawAudioBuffer != null;
+
+//        for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+//        {
+//            short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+//            rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+//            rawAudioBuffer.put(i, s);
+//        }
+
+        processAudio(rawAudioBuffer);
         alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
 
         //Free the memory allocated by STB

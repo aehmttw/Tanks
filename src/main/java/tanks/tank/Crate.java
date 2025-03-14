@@ -6,6 +6,8 @@ import tanks.Movable;
 import tanks.Panel;
 import tanks.obstacle.Obstacle;
 
+import java.util.Random;
+
 public class Crate extends Movable
 {
     public Tank tank;
@@ -13,10 +15,10 @@ public class Crate extends Movable
     public double age = 0;
     public double iPosZ;
 
-    public Crate(Tank tank)
+    public Crate(Tank tank, double height)
     {
         super(tank.posX, tank.posY);
-        this.iPosZ = Math.random() * 400 + 800;
+        this.iPosZ = height;
         this.posZ = this.iPosZ;
         this.tank = tank;
         this.size = tank.size * 1.5;
@@ -115,7 +117,7 @@ public class Crate extends Movable
         {
             this.posZ = 0;
             this.destroy = true;
-            Drawing.drawing.playSound("open1.ogg");
+            Drawing.drawing.playSound("open2.ogg");
 
             tank.droppedFromCrate = true;
             tank.drawAge = 50;

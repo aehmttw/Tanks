@@ -75,14 +75,22 @@ public class ScreenOverlayChat
                     int timeout = chatbox == null ? 10000 : 30000;
 
                     ChatMessage c = chat.get(in);
+                    boolean boxSelected = (chatbox != null && chatbox.selected);
 
-                    if (time - c.time <= timeout || (chatbox != null && chatbox.selected))
+                    if (time - c.time <= timeout || boxSelected)
                     {
                         Drawing.drawing.setInterfaceFontSize(24);
 
                         double xStart = 20;
                         double xPad = -10;
                         double yPad = 5;
+
+                        double opacity = 1;
+                        if (!boxSelected && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy)
+                            opacity = Math.max(0, 1.0 - in / 10.0);
+
+                        if (!boxSelected)
+                            opacity = Math.max(0, opacity * (1 - (1.0 * time - c.time) / timeout));
 
                         double width = 0;
 
@@ -93,9 +101,9 @@ public class ScreenOverlayChat
                         double radius = 13.5;
 
                         if (isDark())
-                            Drawing.drawing.setColor(0, 0, 0, 127);
+                            Drawing.drawing.setColor(0, 0, 0, 127 * opacity);
                         else
-                            Drawing.drawing.setColor(255, 255, 255, 127);
+                            Drawing.drawing.setColor(255, 255, 255, 127 * opacity);
 
                         Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + radius / 2, width + xPad, radius);
                         Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - startY - radius / 2, width + xPad, radius);
@@ -170,9 +178,9 @@ public class ScreenOverlayChat
                             double my = Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY;
 
                             if (isDark())
-                                Drawing.drawing.setColor(255, 255, 255);
+                                Drawing.drawing.setColor(255, 255, 255, 255 * opacity);
                             else
-                                Drawing.drawing.setColor(0, 0, 0);
+                                Drawing.drawing.setColor(0, 0, 0, 255 * opacity);
 
                             Drawing.drawing.drawInterfaceText(mx, my, c.lines.get(j), false);
                             i++;

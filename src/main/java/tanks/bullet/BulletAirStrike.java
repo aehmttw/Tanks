@@ -94,6 +94,7 @@ public class BulletAirStrike extends Bullet
 
             this.addTrail(true);
             Drawing.drawing.playSound("beep.ogg", 1.25f);
+            Drawing.drawing.playSound("accel.ogg", (float) (Math.sqrt(this.speed) * 0.4));
         }
 
         double mul = 1;

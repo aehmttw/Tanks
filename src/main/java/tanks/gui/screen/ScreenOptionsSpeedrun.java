@@ -8,11 +8,12 @@ public class ScreenOptionsSpeedrun extends Screen
 {
     public static final String deterministicText = "Deterministic: ";
     public static final String timerText = "Timer: ";
+    public static final String bestRunText = "Show best run: ";
 
     public static final String deterministic30 = "\u00A700010020025530 FPS";
     public static final String deterministic60 = "\u00A700020000025560 FPS";
 
-    Button timer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button timer = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -27,7 +28,23 @@ public class ScreenOptionsSpeedrun extends Screen
     },
             "When enabled, time spent---in the current level attempt---and crusade will be displayed");
 
-    Button deterministic = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "", new Runnable()
+    Button bestRun = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.showBestTime = !Game.showBestTime;
+
+            if (Game.showBestTime)
+                bestRun.setText(bestRunText, ScreenOptions.onText);
+            else
+                bestRun.setText(bestRunText, ScreenOptions.offText);
+        }
+    },
+            "When enabled and playing a built-in---crusade that you've already completed---at least once, the time difference from---your best run's time will show upon---clearing a level.");
+
+
+    Button deterministic = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -72,6 +89,11 @@ public class ScreenOptionsSpeedrun extends Screen
             deterministic.setText(deterministicText, deterministic60);
         else
             deterministic.setText(deterministicText, ScreenOptions.offText);
+
+        if (Game.showBestTime)
+            bestRun.setText(bestRunText, ScreenOptions.onText);
+        else
+            bestRun.setText(bestRunText, ScreenOptions.offText);
     }
 
     @Override
@@ -80,6 +102,7 @@ public class ScreenOptionsSpeedrun extends Screen
         back.update();
         timer.update();
         deterministic.update();
+        bestRun.update();
     }
 
     @Override
@@ -90,6 +113,7 @@ public class ScreenOptionsSpeedrun extends Screen
         back.draw();
         deterministic.draw();
         timer.draw();
+        bestRun.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);

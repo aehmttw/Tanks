@@ -572,7 +572,7 @@ public class Level
 
 		int playerCount = 1;
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null && sc == null)
-			playerCount += ScreenPartyHost.server.connections.size();
+			playerCount = Game.players.size();
 
 		if (!this.includedPlayers.isEmpty())
 			playerCount = this.includedPlayers.size();
@@ -712,7 +712,18 @@ public class Level
 				else if (!remote)
 				{
 					TankPlayer tank = new TankPlayer(x, y, angle);
-					this.playerBuilds.get(0).clonePropertiesTo(tank);
+
+					TankPlayer.ShopTankBuild build = this.playerBuilds.get(0);
+					if (Crusade.crusadeMode)
+					{
+						ArrayList<TankPlayer.ShopTankBuild> builds = Crusade.currentCrusade.getBuildsShop();
+						for (TankPlayer.ShopTankBuild shopTankBuild : builds)
+						{
+							if (shopTankBuild.name.equals(Game.player.buildName))
+								build = shopTankBuild;
+						}
+					}
+					build.clonePropertiesTo(tank);
 					Game.playerTank = tank;
 					Game.player.buildName = tank.buildName;
 					tank.team = team;

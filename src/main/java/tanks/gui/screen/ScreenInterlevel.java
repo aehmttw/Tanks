@@ -14,6 +14,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public static boolean fromSavedLevels = false;
 	public static boolean fromMinigames = false;
 	public static boolean tutorial = false;
+	public static ILevelPreviewScreen fromQuickPlay = null;
 
 	public boolean showCrusadeResultsNow = false;
 	public DisplayFireworks fireworksDisplay;

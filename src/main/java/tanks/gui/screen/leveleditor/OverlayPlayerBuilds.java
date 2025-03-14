@@ -3,29 +3,45 @@ package tanks.gui.screen.leveleditor;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.*;
-import tanks.tank.Tank;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
-import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
 public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRenamableScreen, ITankBuildScreen
 {
-    public ArrayList<Button> tankButtons = new ArrayList<>();
+    public ButtonList tankButtons;
     public int rows = 3;
     public int cols = 10;
+
+    public Button addButton;
     
     public static int page = 0;
 
     public Button nextTankPage = new Button(this.centerX + 290, this.centerY + 60 * 3, 350, 40, "Next page", () -> page++);
     public Button previousTankPage = new Button(this.centerX - 290, this.centerY + 60 * 3, 350, 40, "Previous page", () -> page--);
     public Button firstTankPage = new Button(this.centerX - 500, this.centerY + 60 * 3, 40, 40, "", () -> page = 0);
-    public Button lastTankPage = new Button(this.centerX + 500, this.centerY + 60 * 3, 40, 40, "", () -> page = (tankButtons.size() - 1) / rows / cols);
+    public Button lastTankPage = new Button(this.centerX + 500, this.centerY + 60 * 3, 40, 40, "", () -> page = (tankButtons.buttons.size() - 1) / rows / cols);
+
+    public String[] reorderFail = new String[]{"The default player tank build must be free!"};
+
+    public Button reorder = new Button(this.centerX - this.objXSpace, this.centerY + 240, 350, 40, "Reorder", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            tankButtons.reorder = !tankButtons.reorder;
+            if (tankButtons.reorder)
+                reorder.setText("Stop reordering");
+            else
+                reorder.setText("Reorder");
+        }
+    });
 
     public Button back = new Button(this.centerX, this.centerY + 240, 350, 40, "Back", this::escape);
 
@@ -53,12 +69,31 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         this.firstTankPage.imageSizeY = 20;
         this.firstTankPage.imageXOffset = 0;
 
+        this.tankButtons = new ButtonList(new ArrayList<>(), page, 0, 0);
+        this.tankButtons.buttonWidth = 75;
+        this.tankButtons.buttonHeight = 75;
+        this.tankButtons.buttonXSpace = 100;
+        this.tankButtons.buttonYSpace = 100;
+        this.tankButtons.horizontalLayout = true;
+        this.tankButtons.columns = 10;
+        this.tankButtons.rows = 3;
+        this.tankButtons.yOffset = -30;
+        this.tankButtons.controlsYOffset = 20;
+
+        this.tankButtons.fixedLastElements = 1;
+        this.tankButtons.setupArrows();
+        this.tankButtons.reorderBehavior = (i, j) ->
+        {
+            this.editor.level.playerBuilds.add(j, this.editor.level.playerBuilds.remove((int) i));
+            this.refreshButtons();
+        };
+
         this.refreshButtons();
     }
 
     public void refreshButtons()
     {
-        this.tankButtons.clear();
+        this.tankButtons.buttons.clear();
         int count = Game.currentLevel.playerBuilds.size();
         for (int i = 0; i <= count; i++)
         {
@@ -68,7 +103,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
             final int j = i;
 
-            Tank t;
+            TankPlayer.ShopTankBuild t;
 
             if (i < count)
             {
@@ -76,14 +111,14 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
             }
             else
             {
-                Button b = new Button(x, y, 50, 50, "+",  () ->
+                addButton = new Button(x, y, 50, 50, "+",  () ->
                 {
                     ScreenAddSavedTankBuild s = new ScreenAddSavedTankBuild(this, this.editor.level.playerBuilds);
                     s.drawBehindScreen = true;
                     Game.screen = s;
                 }, "Create a new player tank build!");
-                this.tankButtons.add(b);
-                b.fullInfo = true;
+                this.tankButtons.buttons.add(addButton);
+                addButton.fullInfo = true;
 
                 continue;
             }
@@ -93,11 +128,27 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
                 this.editTank(j);
             }, t.description);
 
+            b.showText = true;
+
+            int p = t.price;
+            if (i == 0)
+                b.setText("Default build");
+            else if (p == 0)
+                b.setText("Free!");
+            else if (p == 1)
+                b.setText("1 coin");
+            else
+                b.setText("%d coins", p);
+
             if (t.description.isEmpty())
                 b.enableHover = false;
 
-            this.tankButtons.add(b);
+            this.tankButtons.buttons.add(b);
         }
+        this.tankButtons.sortButtons();
+
+        addButton.sizeX = 50;
+        addButton.sizeY = 50;
     }
 
     public void editTank(int index)
@@ -116,30 +167,15 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     @Override
     public void update()
     {
-        for (int i = 0; i < this.tankButtons.size(); i++)
-        {
-            Button b = this.tankButtons.get(i);
+        tankButtons.fixedFirstElements = 1;
+        if (editor.level.playerBuilds.size() > 1 && editor.level.playerBuilds.get(1).price <= 0)
+            tankButtons.fixedFirstElements = 0;
 
-            if (i / (this.cols * this.rows) == page)
-                b.update();
-        }
-
-        nextTankPage.enabled = (this.tankButtons.size() - 1) / (this.rows * this.cols) > page;
-        previousTankPage.enabled = page > 0;
-
-        if (this.tankButtons.size() > this.rows * this.cols)
-        {
-            nextTankPage.update();
-            previousTankPage.update();
-
-            if ((tankButtons.size() - 1) / rows / cols >= 2)
-            {
-                lastTankPage.update();
-                firstTankPage.update();
-            }
-        }
+        tankButtons.update();
+        page = tankButtons.page;
 
         back.update();
+        reorder.update();
         super.update();
     }
     
@@ -160,29 +196,11 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
         back.draw();
 
-        if (this.tankButtons.size() > this.rows * this.cols)
-        {
-            nextTankPage.draw();
-            previousTankPage.draw();
+        reorder.draw();
+        tankButtons.draw();
 
-            if ((tankButtons.size() - 1) / rows / cols >= 2)
-            {
-                lastTankPage.draw();
-                firstTankPage.draw();
-            }
-
-            Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                    Translation.translate("Page %d of %d", (page + 1), (tankButtons.size() / (cols * rows) + Math.min(1, tankButtons.size() % (cols * rows)))));
-
-        }
-
-        for (int i = tankButtons.size() - 1; i >= 0; i--)
-        {
-            if (i / (cols * rows) == page)
-                tankButtons.get(i).draw();
-        }
+        if (tankButtons.reorder && tankButtons.upButtons.size() > 0 && tankButtons.upButtons.get(1).selected && tankButtons.fixedFirstElements > 0)
+            Drawing.drawing.drawTooltip(reorderFail);
     }
 
     @Override

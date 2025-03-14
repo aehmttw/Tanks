@@ -518,6 +518,13 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     }
             );
+
+            new Changelog("v1.6.d", new String[]
+                    {
+                            "*What's new in Tanks v1.6.d:\n\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
         }
     }
 }

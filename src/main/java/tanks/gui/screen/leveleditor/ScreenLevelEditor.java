@@ -2061,6 +2061,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			drawables[i].clear();
 		}
 
+		if (Level.isDark())
+			Drawing.drawing.setColor(255, 255, 255, 64);
+		else
+			Drawing.drawing.setColor(0, 0, 0, 64);
+
+		Drawing.drawing.drawImage("level_center.png", Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, 50, 50);
+
+
 		if (!paused && !Game.game.window.touchscreen)
 		{
 			if (currentMode == EditorMode.erase)

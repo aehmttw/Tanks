@@ -43,7 +43,7 @@ public class EventBulletUpdateTarget extends PersonalEvent
     {
         Bullet b = Bullet.idMap.get(this.bullet);
 
-        if (this.clientID == null)
+        if (this.clientID == null && b != null)
         {
             b.homingTarget = Tank.idMap.get(this.target);
         }

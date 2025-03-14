@@ -2928,7 +2928,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public boolean isSupportTank()
 	{
-		return !this.suicidal && this.bullet.damage <= 0 && !this.bullet.freezing && this.bullet.bulletHitKnockback == 0 && this.bullet.tankHitKnockback == 0 && this.bullet.hitStun <= 0;
+		return !this.suicidal && !this.bullet.isHarmful();
 	}
 
 	public void setPolarAcceleration(double angle, double acceleration)

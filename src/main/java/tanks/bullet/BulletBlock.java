@@ -1,5 +1,7 @@
 package tanks.bullet;
 
+import basewindow.Model;
+import basewindow.transformation.AxisRotation;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
@@ -13,6 +15,14 @@ import tanks.tank.Tank;
 public class BulletBlock extends BulletArc
 {
     public static String bullet_class_name = "block";
+
+    public static Model block = null;
+
+    public double initialTime = -1;
+    public double initialAngle = -1;
+    public double finalAngle = -1;
+
+    AxisRotation[] rotations = new AxisRotation[]{new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.yaw, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0)};
 
     public BulletBlock()
     {
@@ -153,8 +163,23 @@ public class BulletBlock extends BulletArc
             return;
 
         double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
+        if (Double.isNaN(time))
+            time = 0;
+
+        time = Math.max(0, time);
+
         double frac = Math.max(100 - time, 0) / 100.0;
         double size = frac * Game.tile_size + (1.0 - frac) * this.size;
+
+        if (this.initialTime < 0)
+        {
+            this.initialTime = time;
+            this.initialAngle = this.getPolarDirection();
+            long r = Math.round(this.initialAngle / Math.PI * 2);
+            this.finalAngle = Math.PI * 0.5 * r;
+            this.rotations[2].angle = r % 2 * Math.PI / 2;
+        }
+
         if (this.destroy)
         {
             size = Game.tile_size * Math.max((this.maxDestroyTimer - this.destroyTimer) / this.maxDestroyTimer, 0);
@@ -162,8 +187,18 @@ public class BulletBlock extends BulletArc
 
         Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
 
+        // todo 2d
+        double frac2 = time / this.initialTime;
+        double yaw = this.initialAngle * frac2 + this.finalAngle * (1.0 - frac2);
+        double pitch = (this.getPolarPitch() + Math.PI / 2) * (1.0 - frac);
 
-        Drawing.drawing.fillBox(this.posX, this.posY, this.posZ - size / 2, size, size, size);
+        if (Double.isNaN(pitch))
+            pitch = 0;
+
+        rotations[0].angle = yaw;
+        rotations[1].angle = -pitch;
+        Drawing.drawing.drawModel(block, this.posX, this.posY, this.posZ, size, size, size, rotations);
+        //Drawing.drawing.fillBox(this.posX, this.posY, this.posZ - size / 2, size, size, size);
     }
 
     @Override

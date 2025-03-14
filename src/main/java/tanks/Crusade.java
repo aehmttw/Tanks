@@ -290,6 +290,13 @@ public class Crusade
 
 		int playersTotal = 0;
 		int livesTotal = 0;
+
+		HashSet<String> availableBuilds = new HashSet<>();
+		for (TankPlayer.ShopTankBuild b: this.getBuildsShop())
+		{
+			availableBuilds.add(b.name);
+		}
+
 		for (Player player : Game.players)
 		{
 			if (crusadePlayers.get(player) != null)
@@ -298,7 +305,7 @@ public class Crusade
 				playersTotal++;
 			}
 
-			if (player.buildName == null)
+			if (player.buildName == null || !availableBuilds.contains(player.buildName))
 			{
 				player.buildName = this.crusadeShopBuilds.get(0).name;
 			}
@@ -339,8 +346,6 @@ public class Crusade
 
 			if (player.remainingLives > 0)
 				l.includedPlayers.add(player);
-
-			player.hotbar.itemBar.showItems = true;
 		}
 
 		l.loadLevel();

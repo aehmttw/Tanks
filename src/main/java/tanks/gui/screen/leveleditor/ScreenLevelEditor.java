@@ -24,6 +24,7 @@ import tanks.translation.Translation;
 import java.io.IOException;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 {
 	public Placeable currentPlaceable = Placeable.enemyTank;
@@ -567,7 +568,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				this.currentMode = EditorMode.build;
 		}
 
-		if (undoActions.size() > 0 && undo.keybind.isValid())
+		if (!undoActions.isEmpty() && undo.keybind.isValid())
 		{
 			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT))
 				this.undoCount = 10;
@@ -583,7 +584,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		if (redoActions.size() > 0 && redo.keybind.isValid())
+		if (!redoActions.isEmpty() && redo.keybind.isValid())
 		{
 			if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(InputCodes.KEY_RIGHT_SHIFT))
 				this.redoCount = 10;
@@ -1213,10 +1214,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 								mousePlaceable.posX = (i + 0.5) * Game.tile_size;
 								mousePlaceable.posY = (j + 0.5) * Game.tile_size;
 
-								mousePlaceable.posX = mousePlaceable.posX;
-								mousePlaceable.posY = mousePlaceable.posY;
-
-								handled = handlePlace(handled, left, right, validLeft, validRight, true);
+                                handled = handlePlace(handled, left, right, validLeft, validRight, true);
 							}
 						}
 					}
@@ -1230,10 +1228,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 					this.undoActions = actions;
 
-					mousePlaceable.posX = ox;
-					mousePlaceable.posY = oy;
-
-					mousePlaceable.posX = ox;
+                    mousePlaceable.posX = ox;
 					mousePlaceable.posY = oy;
 				}
 				else
@@ -1255,8 +1250,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			double x = s.xs.get(i), y = s.ys.get(i);
 
-			mousePlaceable.posX = mousePlaceable.posX = (x + 0.5) * Game.tile_size;
-			mousePlaceable.posY = mousePlaceable.posY = (y + 0.5) * Game.tile_size;
+			mousePlaceable.posX = (x + 0.5) * Game.tile_size;
+			mousePlaceable.posY = (y + 0.5) * Game.tile_size;
 
 			handlePlace(handled, true, false, true, false, true, false);
 		}
@@ -1389,35 +1384,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		orientations.add(originalOrientation);
 
 		if (mousePlaceable.posX >= symmetryX1 && mousePlaceable.posX <= symmetryX2 && mousePlaceable.posY >= symmetryY1 && mousePlaceable.posY <= symmetryY2)
-		{
-			if (symmetryType == SymmetryType.flipHorizontal || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
-			{
-				for (int i = 0; i < posX.size(); i++)
-				{
-					posY.add(symmetryY1 + (symmetryY2 - posY.get(i)));
-					posX.add(posX.get(i));
-
-					if (orientations.get(i) == 1 || orientations.get(i) == 3)
-						orientations.add((orientations.get(i) + 2) % 4);
-					else
-						orientations.add(orientations.get(i));
-				}
-			}
-
-			if (symmetryType == SymmetryType.flipVertical || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
-			{
-				for (int i = 0; i < posX.size(); i++)
-				{
-					posX.add(symmetryX1 + (symmetryX2 - posX.get(i)));
-					posY.add(posY.get(i));
-
-					if (orientations.get(i) == 0 || orientations.get(i) == 2)
-						orientations.add((orientations.get(i) + 2) % 4);
-					else
-						orientations.add(orientations.get(i));
-				}
-			}
-		}
+            handleSymmetry(posX, posY, orientations);
 
 		for (int oi = 0; oi < orientations.size(); oi++)
 		{
@@ -1430,232 +1397,287 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (mousePlaceable.posX > 0 && mousePlaceable.posY > 0 && mousePlaceable.posX < Game.tile_size * Game.currentSizeX && mousePlaceable.posY < Game.tile_size * Game.currentSizeY)
 			{
 				if (validLeft && currentMode == EditorMode.paste && !paste)
-				{
-					paste();
-
-					mousePlaceable.posX = originalX;
-					mousePlaceable.posY = originalY;
-
-					if (mousePlaceable instanceof Tank)
-						((Tank) mousePlaceable).orientation = originalOrientation;
-
-					return new boolean[]{true, true};
-				}
+                    return handlePaste(originalX, originalY, originalOrientation);
 
 				if ((currentMode == EditorMode.build && right) || (currentMode == EditorMode.erase && (left || right)))
-				{
-					boolean skip = false;
-
-					if (validRight || (currentMode == EditorMode.erase && validLeft))
-					{
-						for (Movable m : Game.movables)
-						{
-							if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() == 1))
-							{
-								skip = true;
-
-								if (m instanceof TankSpawnMarker)
-								{
-									this.spawns.remove(m);
-									this.undoActions.add(new EditorAction.ActionPlayerSpawn(this, (TankSpawnMarker) m, false));
-								}
-								else
-									this.undoActions.add(new EditorAction.ActionTank((Tank) m, false));
-
-								Game.removeMovables.add(m);
-
-								if (!batch)
-								{
-									Drawing.drawing.playVibration("click");
-
-									for (int z = 0; z < 100 * Game.effectMultiplier; z++)
-									{
-										Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
-										double var = 50;
-										e.colR = Math.min(255, Math.max(0, ((Tank) m).colorR + Math.random() * var - var / 2));
-										e.colG = Math.min(255, Math.max(0, ((Tank) m).colorG + Math.random() * var - var / 2));
-										e.colB = Math.min(255, Math.max(0, ((Tank) m).colorB + Math.random() * var - var / 2));
-
-										if (Game.enable3d)
-											e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * 2);
-										else
-											e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2);
-
-										e.maxAge /= 2;
-										Game.effects.add(e);
-									}
-								}
-
-								break;
-							}
-						}
-					}
-
-					for (int i = 0; i < Game.obstacles.size(); i++)
-					{
-						Obstacle m = Game.obstacles.get(i);
-						if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY)
-						{
-							skip = true;
-							this.undoActions.add(new EditorAction.ActionObstacle(m, false));
-							Game.removeObstacles.add(m);
-
-							if (!batch)
-								Drawing.drawing.playVibration("click");
-
-							break;
-						}
-					}
-
-
-					if (!batch && !Game.game.window.touchscreen && !skip && validRight)
-					{
-						int add = Game.game.window.shift ? -1 : 1;
-
-						MetadataSelector s = mousePlaceable.getSecondaryMetadataProperty();
-						if (s != null)
-							s.changeMetadata(this, mousePlaceable, add);
-
-					}
-
-					if (Game.game.window.touchscreen)
-						handled[0] = true;
-
-					handled[1] = true;
-				}
+					handleErase(handled, validLeft, validRight, batch);
 
 				if (currentMode != EditorMode.erase && clickCooldown <= 0 && (validLeft || (currentMode != EditorMode.paste && left && currentPlaceable == Placeable.obstacle && this.mousePlaceable.draggable)))
-				{
-					boolean skip = false;
-
-					double mx = mousePlaceable.posX;
-					double my = mousePlaceable.posY;
-
-					if ((mousePlaceable instanceof ObstacleStackable && ((ObstacleStackable) mousePlaceable).startHeight <= 0 && ((Obstacle) mousePlaceable).type == Obstacle.ObstacleType.full) || currentPlaceable != Placeable.obstacle)
-					{
-						for (Movable m : Game.movables)
-						{
-							if (m.posX == mx && m.posY == my)
-							{
-								skip = true;
-								break;
-							}
-						}
-					}
-
-					for (int i = 0; i < Game.obstacles.size(); i++)
-					{
-						Obstacle m = Game.obstacles.get(i);
-						if (m.posX == mx && m.posY == my)
-						{
-							if (!validRight)
-							{
-								if (m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type)))
-								{
-									skip = true;
-									break;
-								}
-							}
-							else
-							{
-								this.undoActions.add(new EditorAction.ActionObstacle(m, false));
-								Game.removeObstacles.add(m);
-							}
-						}
-					}
-
-					if (!skip)
-					{
-						if (currentPlaceable == Placeable.enemyTank)
-						{
-							Tank t;
-
-							if (paste)
-								t = (Tank) mousePlaceable;
-							else
-							{
-								if (tankNum < Game.registryTank.tankEntries.size())
-									t = Game.registryTank.getEntry(tankNum).getTank(mousePlaceable.posX, mousePlaceable.posY, ((Tank) mousePlaceable).angle);
-								else
-									t = ((TankAIControlled) mousePlaceable).instantiate(((TankAIControlled) mousePlaceable).name, mousePlaceable.posX, mousePlaceable.posY, ((TankAIControlled) mousePlaceable).angle);
-							}
-
-							t.setMetadata(mousePlaceable.getMetadata());
-
-							this.undoActions.add(new EditorAction.ActionTank(t, true));
-							Game.movables.add(t);
-
-							if (!batch)
-								Drawing.drawing.playVibration("click");
-						}
-						else if (currentPlaceable == Placeable.playerTank)
-						{
-							ArrayList<TankSpawnMarker> spawnsClone = (ArrayList<TankSpawnMarker>) spawns.clone();
-							if (this.movePlayer && !paste)
-							{
-								for (Movable m : Game.movables)
-								{
-									if (m instanceof TankSpawnMarker)
-										Game.removeMovables.add(m);
-								}
-
-								this.spawns.clear();
-							}
-
-							TankSpawnMarker t = new TankSpawnMarker("player", mousePlaceable.posX, mousePlaceable.posY, 0);
-							t.setMetadata(mousePlaceable.getMetadata());
-							t.angle = t.orientation;
-
-							this.spawns.add(t);
-
-							if (this.movePlayer && !paste)
-								this.undoActions.add(new EditorAction.ActionMovePlayer(this, spawnsClone, t));
-							else
-								this.undoActions.add(new EditorAction.ActionPlayerSpawn(this, t, true));
-
-							Game.movables.add(t);
-
-							if (!batch)
-								Drawing.drawing.playVibration("click");
-
-							if (this.movePlayer)
-								t.drawAge = 50;
-						}
-						else if (currentPlaceable == Placeable.obstacle)
-						{
-							Obstacle o = !paste ? Game.registryObstacle.getEntry(obstacleNum)
-									.getObstacle(mousePlaceable.posX / Game.tile_size - 0.5, mousePlaceable.posY / Game.tile_size - 0.5)
-									: (Obstacle) mousePlaceable;
-							o.setMetadata(mousePlaceable.getMetadata());
-
-							if (o instanceof ObstacleStackable)
-							{
-								if (((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0)
-								{
-									if (this.stagger && !this.oddStagger)
-										((ObstacleStackable) o).stackHeight -= 0.5;
-								}
-								else if (this.stagger && this.oddStagger)
-									((ObstacleStackable) o).stackHeight -= 0.5;
-
-								o.refreshMetadata();
-							}
-
-							this.undoActions.add(new EditorAction.ActionObstacle(o, true));
-							Game.addObstacle(o);
-
-							if (!batch)
-								Drawing.drawing.playVibration("click");
-						}
-					}
-
-					handled[0] = true;
-					handled[1] = true;
-				}
+					handleBuild(handled, validRight, batch, paste);
 			}
 		}
 
 		return handled;
+	}
+
+	private void handleBuild(boolean[] handled, boolean validRight, boolean batch, boolean paste)
+	{
+		boolean skip = false;
+
+		double mx = mousePlaceable.posX;
+		double my = mousePlaceable.posY;
+
+		if (currentPlaceable == Placeable.obstacle)
+		{
+			mx = mousePlaceable.posX;
+			my = mousePlaceable.posY;
+		}
+
+		if ((mousePlaceable instanceof ObstacleStackable && ((ObstacleStackable) mousePlaceable).startHeight <= 0 && ((Obstacle) mousePlaceable).type == Obstacle.ObstacleType.full) || currentPlaceable != Placeable.obstacle)
+            skip = checkForMovable(mx, my);
+		
+		if (skip) return;
+		skip = checkForObstacle(validRight, mx, my);
+
+		handled[0] = true;
+		handled[1] = true;
+
+        if (skip) return;
+		
+        if (currentPlaceable == Placeable.enemyTank)
+			placeEnemyTank(batch, paste);
+		else if (currentPlaceable == Placeable.playerTank)
+			placePlayerTank(batch, paste);
+		else if (currentPlaceable == Placeable.obstacle)
+			placeObstacle(batch, paste);
+	}
+
+	private boolean checkForObstacle(boolean validRight, double mx, double my)
+	{
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle m = Game.obstacles.get(i);
+			if (m.posX == mx && m.posY == my)
+			{
+				if (!validRight)
+				{
+					if (m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type)))
+						return true;
+				}
+				else
+				{
+					this.undoActions.add(new EditorAction.ActionObstacle(m, false));
+					Game.removeObstacles.add(m);
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean checkForMovable(double mx, double my)
+	{
+		for (Movable m : Game.movables)
+		{
+			if (m.posX == mx && m.posY == my)
+				return true;
+		}
+		return false;
+	}
+
+	private void placeObstacle(boolean batch, boolean paste)
+	{
+		Obstacle o = !paste ? Game.registryObstacle.getEntry(obstacleNum)
+				.getObstacle(mousePlaceable.posX / Game.tile_size - 0.5, mousePlaceable.posY / Game.tile_size - 0.5)
+				: (Obstacle) mousePlaceable;
+		o.setMetadata(mousePlaceable.getMetadata());
+
+		if (o instanceof ObstacleStackable)
+		{
+			boolean evenTile = ((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0;
+			if (this.stagger && evenTile == !oddStagger)
+                ((ObstacleStackable) o).stackHeight -= 0.5;
+			o.refreshMetadata();
+		}
+
+		this.undoActions.add(new EditorAction.ActionObstacle(o, true));
+		Game.addObstacle(o);
+
+		if (!batch)
+			Drawing.drawing.playVibration("click");
+	}
+
+	private void placePlayerTank(boolean batch, boolean paste)
+	{
+		ArrayList<TankSpawnMarker> spawnsClone = (ArrayList<TankSpawnMarker>) spawns.clone();
+		if (this.movePlayer && !paste)
+		{
+			for (Movable m : Game.movables)
+			{
+				if (m instanceof TankSpawnMarker)
+					Game.removeMovables.add(m);
+			}
+
+			this.spawns.clear();
+		}
+
+		TankSpawnMarker t = new TankSpawnMarker("player", mousePlaceable.posX, mousePlaceable.posY, 0);
+		t.setMetadata(mousePlaceable.getMetadata());
+		t.angle = t.orientation;
+
+		this.spawns.add(t);
+
+		if (this.movePlayer && !paste)
+			this.undoActions.add(new EditorAction.ActionMovePlayer(this, spawnsClone, t));
+		else
+			this.undoActions.add(new EditorAction.ActionPlayerSpawn(this, t, true));
+
+		Game.movables.add(t);
+
+		if (!batch)
+			Drawing.drawing.playVibration("click");
+
+		if (this.movePlayer)
+			t.drawAge = 50;
+	}
+
+	private void placeEnemyTank(boolean batch, boolean paste)
+	{
+		Tank t;
+
+		if (paste)
+			t = (Tank) mousePlaceable;
+		else
+		{
+			if (tankNum < Game.registryTank.tankEntries.size())
+				t = Game.registryTank.getEntry(tankNum).getTank(mousePlaceable.posX, mousePlaceable.posY, ((Tank) mousePlaceable).angle);
+			else
+				t = ((TankAIControlled) mousePlaceable).instantiate(((TankAIControlled) mousePlaceable).name, mousePlaceable.posX, mousePlaceable.posY, ((TankAIControlled) mousePlaceable).angle);
+		}
+
+		t.setMetadata(mousePlaceable.getMetadata());
+
+		this.undoActions.add(new EditorAction.ActionTank(t, true));
+		Game.movables.add(t);
+
+		if (!batch)
+			Drawing.drawing.playVibration("click");
+	}
+
+	private void handleErase(boolean[] handled, boolean validLeft, boolean validRight, boolean batch)
+	{
+		boolean skip = false;
+
+		if (validRight || (currentMode == EditorMode.erase && validLeft))
+		{
+			for (Movable m : Game.movables)
+			{
+				if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY && m instanceof Tank && !(this.spawns.contains(m) && this.spawns.size() == 1))
+				{
+					skip = true;
+
+					if (m instanceof TankSpawnMarker)
+					{
+						this.spawns.remove(m);
+						this.undoActions.add(new EditorAction.ActionPlayerSpawn(this, (TankSpawnMarker) m, false));
+					}
+					else
+						this.undoActions.add(new EditorAction.ActionTank((Tank) m, false));
+
+					Game.removeMovables.add(m);
+
+					if (!batch)
+                        createEraseEffect(m);
+
+					break;
+				}
+			}
+		}
+
+		for (int i = 0; i < Game.obstacles.size(); i++)
+		{
+			Obstacle m = Game.obstacles.get(i);
+			if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY)
+			{
+				skip = true;
+				this.undoActions.add(new EditorAction.ActionObstacle(m, false));
+				Game.removeObstacles.add(m);
+
+				if (!batch)
+					Drawing.drawing.playVibration("click");
+
+				break;
+			}
+		}
+
+		if (!batch && !Game.game.window.touchscreen && !skip && validRight)
+		{
+			int add = Game.game.window.shift ? -1 : 1;
+
+			MetadataSelector s = mousePlaceable.getSecondaryMetadataProperty();
+			if (s != null)
+				s.changeMetadata(this, mousePlaceable, add);
+		}
+
+		if (Game.game.window.touchscreen)
+			handled[0] = true;
+
+		handled[1] = true;
+	}
+
+	private static void createEraseEffect(Movable m)
+	{
+		Drawing.drawing.playVibration("click");
+
+		for (int z = 0; z < 100 * Game.effectMultiplier; z++)
+		{
+			Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
+			double var = 50;
+			e.colR = Math.min(255, Math.max(0, ((Tank) m).colorR + Math.random() * var - var / 2));
+			e.colG = Math.min(255, Math.max(0, ((Tank) m).colorG + Math.random() * var - var / 2));
+			e.colB = Math.min(255, Math.max(0, ((Tank) m).colorB + Math.random() * var - var / 2));
+
+			if (Game.enable3d)
+				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * 2);
+			else
+				e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2);
+
+			e.maxAge /= 2;
+			Game.effects.add(e);
+		}
+	}
+
+	private boolean[] handlePaste(double originalX, double originalY, double originalOrientation)
+	{
+		paste();
+
+		mousePlaceable.posX = originalX;
+		mousePlaceable.posY = originalY;
+
+		if (mousePlaceable instanceof Tank)
+			((Tank) mousePlaceable).orientation = originalOrientation;
+
+		return new boolean[]{true, true};
+	}
+
+	private void handleSymmetry(ArrayList<Double> posX, ArrayList<Double> posY, ArrayList<Double> orientations)
+	{
+		if (symmetryType == SymmetryType.flipHorizontal || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
+		{
+			for (int i = 0; i < posX.size(); i++)
+			{
+				posY.add(symmetryY1 + (symmetryY2 - posY.get(i)));
+				posX.add(posX.get(i));
+
+				if (orientations.get(i) == 1 || orientations.get(i) == 3)
+					orientations.add((orientations.get(i) + 2) % 4);
+				else
+					orientations.add(orientations.get(i));
+			}
+		}
+
+		if (symmetryType == SymmetryType.flipVertical || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
+		{
+			for (int i = 0; i < posX.size(); i++)
+			{
+				posX.add(symmetryX1 + (symmetryX2 - posX.get(i)));
+				posY.add(posY.get(i));
+
+				if (orientations.get(i) == 0 || orientations.get(i) == 2)
+					orientations.add((orientations.get(i) + 2) % 4);
+				else
+					orientations.add(orientations.get(i));
+			}
+		}
 	}
 
 	public boolean[] handlePlace(boolean[] handled, boolean left, boolean right, boolean validLeft, boolean validRight, boolean batch)
@@ -1775,24 +1797,23 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		for (int i = 0; i < unmarked.size(); i++)
-		{
-			level.append((int)(unmarked.get(i).posX / Game.tile_size)).append("-").append((int)(unmarked.get(i).posY / Game.tile_size));
-			level.append("-").append(unmarked.get(i).name);
+        for (Obstacle obstacle : unmarked)
+        {
+            level.append((int) (obstacle.posX / Game.tile_size)).append("-").append((int) (obstacle.posY / Game.tile_size));
+            level.append("-").append(obstacle.name);
 
-			Obstacle u = unmarked.get(i);
-			if (u instanceof ObstacleUnknown && ((ObstacleUnknown) u).metadata != null)
-				level.append("-").append(((ObstacleUnknown) u).metadata);
-			else
-			{
-				String meta = u.getMetadata();
-				if (!meta.isEmpty())
-					level.append("-").append(meta);
-			}
+            if (obstacle instanceof ObstacleUnknown && ((ObstacleUnknown) obstacle).metadata != null)
+                level.append("-").append(((ObstacleUnknown) obstacle).metadata);
+            else
+            {
+                String meta = obstacle.getMetadata();
+                if (!meta.isEmpty())
+                    level.append("-").append(meta);
+            }
 
 
-			level.append(",");
-		}
+            level.append(",");
+        }
 
 		if (level.charAt(level.length() - 1) == ',')
 		{
@@ -1819,24 +1840,21 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		if (Game.movables.size() == 0)
-		{
-			level.append("|");
-		}
+		if (Game.movables.isEmpty())
+            level.append("|");
 
 		level = new StringBuilder(level.substring(0, level.length() - 1));
 
 		level.append("|");
 
-		for (int i = 0; i < teams.size(); i++)
-		{
-			Team t = teams.get(i);
-			level.append(t.name).append("-").append(t.friendlyFire);
-			if (t.enableColor)
-				level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
+        for (Team t : teams)
+        {
+            level.append(t.name).append("-").append(t.friendlyFire);
+            if (t.enableColor)
+                level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
 
-			level.append(",");
-		}
+            level.append(",");
+        }
 
 		level = new StringBuilder(level.substring(0, level.length() - 1));
 
@@ -2380,7 +2398,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		if (xPos.size() > 0)
+		if (!xPos.isEmpty())
 		{
 			this.undoActions.add(new EditorAction.ActionSelectTiles(this, !selectInverted, xPos, yPos));
 			this.refreshSelection();
@@ -2595,17 +2613,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			heightBlocksSelected = false;
 			int i = (int) (o.posX / Game.tile_size);
 			int j = (int) (o.posY / Game.tile_size);
-			if (i >= 0 && i < Game.currentSizeX && j >= 0 && j < Game.currentSizeY && selectedTiles[i][j])
+			if (i >= 0 && i < Game.currentSizeX && j >= 0 && j < Game.currentSizeY && selectedTiles[i][j] &&
+					o.getMetadataProperty("stack_height") != null)
 			{
-				if (selectedTiles[i][j])
-				{
-					if (o.getMetadataProperty("stack_height") != null)
-					{
-						heightBlocksSelected = true;
-						break;
-					}
-				}
-			}
+                heightBlocksSelected = true;
+                break;
+            }
 		}
 	}
 

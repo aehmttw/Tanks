@@ -4,19 +4,20 @@ import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.NetworkUtils;
 
-public class EventLevelEndQuick extends PersonalEvent
+public class EventLevelFinishedQuick extends PersonalEvent
 {
     public String winningTeam;
 
-    public EventLevelEndQuick()
+    public EventLevelFinishedQuick()
     {
 
     }
 
-    public EventLevelEndQuick(String winner)
+    public EventLevelFinishedQuick(String winner)
     {
         this.winningTeam = winner;
     }
@@ -37,7 +38,8 @@ public class EventLevelEndQuick extends PersonalEvent
         {
             Panel.win = false;
             Panel.winlose = "You were destroyed!";
-            Drawing.drawing.playSound("lose.ogg", 1.0f, true);
+            if (!(Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).isVersus))
+                Drawing.drawing.playSound("lose.ogg", 1.0f, true);
         }
 
         ScreenGame.finishedQuick = true;

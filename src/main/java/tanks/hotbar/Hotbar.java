@@ -34,6 +34,11 @@ public class Hotbar
 
 	public static Button toggle;
 
+	public Hotbar(Player p)
+	{
+		this.itemBar = new ItemBar(p);
+	}
+
 	public void update()
 	{
 		Hotbar.toggle.posX = Drawing.drawing.interfaceSizeX / 2;

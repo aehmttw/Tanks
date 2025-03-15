@@ -119,14 +119,13 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             ls = ls + tanks;
         }
 
-        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen);
+        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen, true);
         Level lev = new Level(ls);
 
         lev.preview = true;
         lev.loadLevel(sc);
         Game.screen = sc;
 
-        sc.fromInterlevel = true;
         sc.music = music;
         sc.musicID = musicID;
         sc.updateDownloadButton();

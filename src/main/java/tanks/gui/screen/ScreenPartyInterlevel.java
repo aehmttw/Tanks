@@ -92,13 +92,12 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
-        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen, true);
         Level lev = new Level(Game.currentLevelString);
         lev.preview = true;
         lev.loadLevel(sc);
         Game.screen = sc;
 
-        sc.fromInterlevel = true;
         sc.music = music;
         sc.musicID = musicID;
         sc.updateDownloadButton();

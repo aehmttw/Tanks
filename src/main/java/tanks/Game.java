@@ -349,8 +349,9 @@ public class Game
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
 		NetworkEventMap.register(EventSetLevelVersus.class);
-		NetworkEventMap.register(EventLevelEndQuick.class);
-		NetworkEventMap.register(EventLevelEnd.class);
+		NetworkEventMap.register(EventLevelFinishedQuick.class);
+		NetworkEventMap.register(EventLevelFinished.class);
+		NetworkEventMap.register(EventLevelExit.class);
 		NetworkEventMap.register(EventReturnToLobby.class);
 		NetworkEventMap.register(EventBeginCrusade.class);
 		NetworkEventMap.register(EventReturnToCrusade.class);
@@ -1006,6 +1007,9 @@ public class Game
 
 		ScreenPartyHost.isServer = false;
 		ScreenPartyLobby.isClient = false;
+
+		Game.eventsIn.clear();
+		Game.eventsOut.clear();
 
 		cleanUp();
 

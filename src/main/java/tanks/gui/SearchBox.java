@@ -156,6 +156,10 @@ public class SearchBox extends TextBox
 
 	public void drawInput()
 	{
+		double size = this.sizeY * 0.6;
+		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale > this.sizeX - 120)
+			Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 120) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale));
+
 		if (selected)
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText + "\u00a7127127127255_");
 		else

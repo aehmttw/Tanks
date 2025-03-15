@@ -16,7 +16,7 @@ import java.util.UUID;
 public class Player
 {
     public int remainingLives;
-    public Hotbar hotbar = new Hotbar();
+    public Hotbar hotbar = new Hotbar(this);
 
     public UUID clientID;
     public String username;
@@ -74,7 +74,7 @@ public class Player
             else
                 c = new Crusade(Game.game.fileManager.getFile(fileName), name);
 
-            this.hotbar = new Hotbar();
+            this.hotbar = new Hotbar(this);
             this.hotbar.itemBar = new ItemBar(this);
 
             c.currentLevel = Integer.parseInt(f.nextLine());

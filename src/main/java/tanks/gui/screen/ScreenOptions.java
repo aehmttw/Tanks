@@ -388,6 +388,9 @@ public class ScreenOptions extends Screen
 					case "timer":
 						Game.showSpeedrunTimer = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "best_run":
+						Game.showBestTime = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "deterministic":
 						Game.deterministicMode = Boolean.parseBoolean(optionLine[1]);
 						break;

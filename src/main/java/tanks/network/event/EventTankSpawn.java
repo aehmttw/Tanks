@@ -43,7 +43,7 @@ public class EventTankSpawn extends PersonalEvent
     @Override
     public void execute()
     {
-        if (this.clientID != null)
+        if (this.clientID != null || Game.currentLevel == null)
             return;
 
         Tank parent = Tank.idMap.get(this.parent);

@@ -101,14 +101,14 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		if (enableDestroyCheat)
 		{
-			this.showName = true;
+			this.hasName = true;
 			this.nameTag.name = "Destroy cheat enabled!!!";
 		}
 
 		if (Game.nameInMultiplayer && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
 		{
 			this.nameTag.name = Game.player.username;
-			this.showName = true;
+			this.hasName = true;
 		}
 	}
 

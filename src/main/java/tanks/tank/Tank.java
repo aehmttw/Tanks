@@ -207,6 +207,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Property(category = general, id = "music", name = "Music tracks", miscType = Property.MiscType.music)
 	public HashSet<String> musicTracks = new HashSet<>();
 
+	public boolean hasName = false;
+
 	public boolean[][] hiddenPoints = new boolean[3][3];
 	public boolean hidden = false;
 
@@ -652,6 +654,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if (this.invisible)
 		{
+			this.showName = false;
 			if (this.currentlyVisible)
 			{
 				this.currentlyVisible = false;
@@ -921,6 +924,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public void draw()
 	{
+		this.nameTag.oy = this.size / 7 * 5;
+		this.nameTag.oz = this.size / 2;
+		this.showName = this.hasName && !this.hidden && !this.invisible;
+
+
 		if (this.currentlyVisible || this.destroy)
 		{
 			if (!Game.game.window.drawingShadow)

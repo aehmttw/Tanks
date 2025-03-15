@@ -44,6 +44,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public long lastLatency;
 	public boolean pingReceived = true;
 
+	public boolean joined = false;
 	public boolean closed = false;
 
 	public ServerHandler(Server s)

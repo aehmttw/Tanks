@@ -846,6 +846,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 						this.collisionX = this.posX - (horizontalDist - bound);
 						this.collisionY = this.posY - (horizontalDist - bound) / vX * vY;
+						if (Math.abs(this.vX) < 0.0001)
+							this.collisionY = this.posY;
 					}
 					else if (!up && dy <= 0 && dy > 0 - bound && horizontalDist < verticalDist)
 					{
@@ -857,6 +859,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 						this.collisionX = this.posX - (verticalDist - bound) / vY * vX;
 						this.collisionY = this.posY - (verticalDist - bound);
+						if (Math.abs(this.vY) < 0.0001)
+							this.collisionX = this.posX;
 					}
 					else if (!right && dx >= 0 && dx < bound && horizontalDist > verticalDist)
 					{
@@ -868,6 +872,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 						this.collisionX = this.posX + (horizontalDist - bound);
 						this.collisionY = this.posY + (horizontalDist - bound) / vX * vY;
+						if (Math.abs(this.vX) < 0.0001)
+							this.collisionY = this.posY;
 					}
 					else if (!down && dy >= 0 && dy < bound && horizontalDist < verticalDist)
 					{
@@ -879,6 +885,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 						this.collisionX = this.posX + (verticalDist - bound) / vY * vX;
 						this.collisionY = this.posY + (verticalDist - bound);
+						if (Math.abs(this.vY) < 0.0001)
+							this.collisionX = this.posX;
 					}
 				}
 			}
@@ -1250,7 +1258,18 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			double nearestDist = Double.MAX_VALUE;
 			for (Movable m1: Game.movables)
 			{
-				if (!Team.isAllied(this, m1) && this != m1 && !m1.destroy && !this.previousRebounds.contains(m1) && ((m1 instanceof Bullet && ((Bullet) m1).enableCollision && ((Bullet) m1).bulletCollision && ((Bullet) m1).delay <= 0) || m1 instanceof Mine || m1 instanceof Tank))
+				boolean eligible = false;
+				if (m1 instanceof Tank && this.isHarmful() != Team.isAllied(this, m1))
+					eligible = true;
+				else if ((m1 instanceof Bullet && ((Bullet) m1).enableCollision && ((Bullet) m1).bulletCollision && ((Bullet) m1).delay <= 0) && this.bulletCollision && !Team.isAllied(this, m1))
+					eligible = true;
+				else if (m1 instanceof Mine && this.mineCollision && !Team.isAllied(this, m1))
+					eligible = true;
+
+				if (this == m1 || m1.destroy || this.previousRebounds.contains(m1))
+					eligible = false;
+
+				if (eligible)
 				{
 					double d = Movable.distanceBetween(this, m1);
 					if (d < nearestDist)

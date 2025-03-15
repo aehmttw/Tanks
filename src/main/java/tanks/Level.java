@@ -164,7 +164,8 @@ public class Level
 					else if (parsing == 4)
 					{
 						TankAIControlled t = TankAIControlled.fromString(s);
-						this.customTanks.add(t);
+						if (t != null)
+							this.customTanks.add(t);
 					}
 					else if (parsing == 5)
 					{

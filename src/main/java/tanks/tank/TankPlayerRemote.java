@@ -83,7 +83,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     {
         super(x, y);
         this.player = p;
-        this.showName = true;
+        this.hasName = true;
         this.angle = angle;
         this.orientation = angle;
 

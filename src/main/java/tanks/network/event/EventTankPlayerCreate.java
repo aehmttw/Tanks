@@ -137,6 +137,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 				t.nameTag.name = Game.chatFilter.filterChat(t.nameTag.name);
 		}
 
+		setColor(t);
+
 		if (t instanceof TankPlayable)
 			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayable) t);
 
@@ -174,11 +176,6 @@ public class EventTankPlayerCreate extends PersonalEvent
 			}
 		}
 
-		setColor(t);
-
-		if (t instanceof TankPlayable)
-			((TankPlayable) t).saveColors();
-
 		t.drawAge = this.drawAge;
 
 		t.setNetworkID(this.networkID);
@@ -207,6 +204,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 		t.emblemR = this.colorR2;
 		t.emblemG = this.colorG2;
 		t.emblemB = this.colorB2;
+
+		if (t instanceof TankPlayable)
+			((TankPlayable) t).saveColors();
 	}
 
 	@Override

@@ -301,6 +301,8 @@ public class SteamWorkshopHandler
                 sc.workshopDetails = downloadFile;
                 sc.votesUp = downloadFile.getVotesUp();
                 sc.votesDown = downloadFile.getVotesDown();
+                sc.download.posY -= sc.objHeight;
+                sc.levelName.posY -= sc.objHeight;
 
                 if (downloadFile.getOwnerID().equals(Game.steamNetworkHandler.playerID))
                     sc.showDelete = true;

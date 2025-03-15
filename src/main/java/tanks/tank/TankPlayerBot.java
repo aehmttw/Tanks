@@ -29,7 +29,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.colorR = 0;
         this.colorG = 150;
         this.colorB = 255;
-        this.showName = true;
+        this.hasName = true;
         this.player = p;
 
         this.turretAimSpeed *= 2;

@@ -616,7 +616,9 @@ public class Panel
 			{
 				for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
 				{
-					ScreenPartyHost.server.connections.get(j).addEvents(Game.eventsOut);
+					if (ScreenPartyHost.server.connections.get(j).joined)
+						ScreenPartyHost.server.connections.get(j).addEvents(Game.eventsOut);
+
 					ScreenPartyHost.server.connections.get(j).reply();
 				}
 			}

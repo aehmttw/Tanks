@@ -290,7 +290,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
     {
         super(350, 40, 380, 60);
 
-        this.music = "menu_editor.ogg";
+        this.music = readOnly ? "menu_4.ogg" : "menu_editor.ogg";
         this.musicID = "menu";
 
         this.allowClose = readOnly;

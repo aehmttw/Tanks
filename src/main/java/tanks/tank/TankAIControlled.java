@@ -3023,6 +3023,9 @@ public class TankAIControlled extends Tank implements ITankField
 		try
 		{
 			s = s.substring(s.indexOf("[") + 1);
+			if (s.isEmpty())
+				return null;
+
 			while (s.charAt(0) != ']')
 			{
 				int equals = s.indexOf("=");

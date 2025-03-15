@@ -145,7 +145,7 @@ public class ScreenPartyHost extends Screen
     {
         super(350, 40, 380, 60);
 
-        if (ScreenPartyHost.server == null || ScreenPartyHost.server.connections.size() <= 0)
+        if (ScreenPartyHost.server == null || Game.players.size() <= 1)
             this.music = "menu_3.ogg";
         else
             this.music = "menu_4.ogg";
